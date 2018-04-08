@@ -61,6 +61,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="category forms\Control1.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control1.Designer.cs">
+      <DependentUpon>Control1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CategoryWrapper.cs" />
     <Compile Include="SFCategory.cs" />
     <Compile Include="SFCategoryElement.cs" />
     <Compile Include="Spellforce Data Editor.cs">
@@ -71,6 +78,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="category forms\Control1.resx">
+      <DependentUpon>Control1.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Spellforce Data Editor.resx">
       <DependentUpon>Spellforce Data Editor.cs</DependentUpon>
     </EmbeddedResource>

@@ -17,15 +17,18 @@ namespace SpellforceDataEditor
         protected SFCategoryElement[] elements;
         protected string elem_format;
         protected int elem_size;
-        protected int[] string_size;
+        protected int[] string_size;   //if category element holds a string (one or more), a list of string lengths is required
         protected int current_string;
 
+        //constructor (requires block size in bytes)
+        //each block has different size, and it determines how many elements belong to a given category
         public SFCategory(int size)
         {
             block_length = (uint)size;
             string_size = new int[1] { 0 };
         }
 
+        //calculates size of element given a format, and calculates number of elements that belong to this category
         protected void initialize(string fm)
         {
             elem_format = fm;
@@ -33,6 +36,7 @@ namespace SpellforceDataEditor
             item_count = (uint)(block_length / elem_size);
         }
 
+        //calculates size of element given a format
         protected void calculate_element_size(string fm)
         {
             current_string = 0;
@@ -54,6 +58,7 @@ namespace SpellforceDataEditor
             elem_size = s;
         }
 
+        //retrieves next variant from a buffer, given a type (indicated by a character contained in a format)
         public Object get_single_variant(BinaryReader sr, char t, int s_size)
         {
             switch (t)
@@ -80,6 +85,41 @@ namespace SpellforceDataEditor
             }
         }
 
+        //puts a single variant to a buffer
+        public void put_single_variant(BinaryWriter sw, SFVariant var, int s_size)
+        {
+            switch (var.vtype)
+            {
+                case TYPE.Byte:
+                    sw.Write((SByte)var.value);
+                    break;
+                case TYPE.UByte:
+                    sw.Write((Byte)var.value);
+                    break;
+                case TYPE.Short:
+                    sw.Write((Int16)var.value);
+                    break;
+                case TYPE.UShort:
+                    sw.Write((UInt16)var.value);
+                    break;
+                case TYPE.Int:
+                    sw.Write((Int32)var.value);
+                    break;
+                case TYPE.UInt:
+                    sw.Write((UInt32)var.value);
+                    break;
+                case TYPE.Float:
+                    sw.Write((Single)var.value);
+                    break;
+                case TYPE.String:
+                    sw.Write((char[])var.value);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        //retrieves next element from a buffer
         public Object[] get_element(BinaryReader sr)
         {
             current_string = 0;
@@ -91,12 +131,32 @@ namespace SpellforceDataEditor
             return objs;
         }
 
+        //puts a new element to a buffer
+        public void put_element(BinaryWriter sw, SFVariant[] vars)
+        {
+            current_string = 0;
+            for (int i = 0; i < elem_format.Length; i++)
+            {
+                put_single_variant(sw, vars[i], string_size[current_string]);
+            }
+        }
+
+        //reads a buffer and retrieves all expected elements
         public void read(BinaryReader sr)
         {
             elements = new SFCategoryElement[item_count];
             for (int i = 0; i < item_count; i++)
             {
                 elements[i].set(get_element(sr));
+            }
+        }
+
+        //writes all elements to a buffer
+        public void write(BinaryWriter sw)
+        {
+            for (int i = 0; i < item_count; i++)
+            {
+                put_element(sw, elements[i].get());
             }
         }
 
@@ -110,7 +170,7 @@ namespace SpellforceDataEditor
     {
         public SFCategory1(int size) : base(size)
         {
-            initialize("HHBBBBBBBBBBBBHIIHHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+            initialize("HHBBBBBBBBBBBBHIIHHIIIIIIIIIIBBBB");
         }
     }
 
