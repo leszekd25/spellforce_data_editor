@@ -61,6 +61,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SFCategory.cs" />
+    <Compile Include="SFCategoryElement.cs" />
     <Compile Include="Spellforce Data Editor.cs">
       <SubType>Form</SubType>
     </Compile>
