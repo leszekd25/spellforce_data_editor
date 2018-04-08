@@ -8,6 +8,7 @@ namespace SpellforceDataEditor
 {
     public enum TYPE { UByte, Byte, UShort, Short, UInt, Int, Float, String, Unknown };
 
+    //this class can hold any type you can read from gamedata.cff file
     public class SFVariant
     {
         public Object value;
@@ -65,6 +66,8 @@ namespace SpellforceDataEditor
         }
     }
 
+    //category element is a single entry from a category
+    //this entry can hold different types of data depending on which category it belongs to
     public abstract class SFCategoryElement
     {
         protected SFVariant[] properties;
