@@ -181,17 +181,143 @@
     <Compile Include="category forms\Control27.Designer.cs">
       <DependentUpon>Control27.cs</DependentUpon>
     </Compile>
+    <Compile Include="category forms\Control28.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control28.Designer.cs">
+      <DependentUpon>Control28.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control29.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control29.Designer.cs">
+      <DependentUpon>Control29.cs</DependentUpon>
+    </Compile>
     <Compile Include="category forms\Control3.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="category forms\Control3.Designer.cs">
       <DependentUpon>Control3.cs</DependentUpon>
     </Compile>
+    <Compile Include="category forms\Control30.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control30.Designer.cs">
+      <DependentUpon>Control30.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control31.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control31.Designer.cs">
+      <DependentUpon>Control31.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control32.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control32.Designer.cs">
+      <DependentUpon>Control32.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control33.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control33.Designer.cs">
+      <DependentUpon>Control33.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control34.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control34.Designer.cs">
+      <DependentUpon>Control34.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control35.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control35.Designer.cs">
+      <DependentUpon>Control35.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control36.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control36.Designer.cs">
+      <DependentUpon>Control36.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control38.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control38.Designer.cs">
+      <DependentUpon>Control38.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control39.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control39.Designer.cs">
+      <DependentUpon>Control39.cs</DependentUpon>
+    </Compile>
     <Compile Include="category forms\Control4.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="category forms\Control4.Designer.cs">
       <DependentUpon>Control4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control40.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control40.Designer.cs">
+      <DependentUpon>Control40.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control41.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control41.Designer.cs">
+      <DependentUpon>Control41.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control42.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control42.Designer.cs">
+      <DependentUpon>Control42.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control43.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control43.Designer.cs">
+      <DependentUpon>Control43.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control44.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control44.Designer.cs">
+      <DependentUpon>Control44.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control45.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control45.Designer.cs">
+      <DependentUpon>Control45.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control46.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control46.Designer.cs">
+      <DependentUpon>Control46.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control47.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control47.Designer.cs">
+      <DependentUpon>Control47.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control48.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control48.Designer.cs">
+      <DependentUpon>Control48.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control49.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control49.Designer.cs">
+      <DependentUpon>Control49.cs</DependentUpon>
     </Compile>
     <Compile Include="category forms\Control5.cs">
       <SubType>UserControl</SubType>
@@ -223,7 +349,18 @@
     <Compile Include="category forms\Control9.Designer.cs">
       <DependentUpon>Control9.cs</DependentUpon>
     </Compile>
-    <Compile Include="CategoryWrapper.cs" />
+    <Compile Include="category forms\Control37.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control37.Designer.cs">
+      <DependentUpon>Control37.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\SFControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\SFControl.Designer.cs">
+      <DependentUpon>SFControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFCategory.cs" />
     <Compile Include="SFCategoryElement.cs" />
     <Compile Include="Spellforce Data Editor.cs">
@@ -234,6 +371,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility.cs" />
     <EmbeddedResource Include="category forms\Control1.resx">
       <DependentUpon>Control1.cs</DependentUpon>
     </EmbeddedResource>
@@ -294,11 +432,77 @@
     <EmbeddedResource Include="category forms\Control27.resx">
       <DependentUpon>Control27.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control28.resx">
+      <DependentUpon>Control28.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control29.resx">
+      <DependentUpon>Control29.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="category forms\Control3.resx">
       <DependentUpon>Control3.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control30.resx">
+      <DependentUpon>Control30.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control31.resx">
+      <DependentUpon>Control31.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control32.resx">
+      <DependentUpon>Control32.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control33.resx">
+      <DependentUpon>Control33.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control34.resx">
+      <DependentUpon>Control34.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control35.resx">
+      <DependentUpon>Control35.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control36.resx">
+      <DependentUpon>Control36.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control37.resx">
+      <DependentUpon>Control37.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control38.resx">
+      <DependentUpon>Control38.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control39.resx">
+      <DependentUpon>Control39.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="category forms\Control4.resx">
       <DependentUpon>Control4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control40.resx">
+      <DependentUpon>Control40.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control41.resx">
+      <DependentUpon>Control41.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control42.resx">
+      <DependentUpon>Control42.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control43.resx">
+      <DependentUpon>Control43.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control44.resx">
+      <DependentUpon>Control44.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control45.resx">
+      <DependentUpon>Control45.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control46.resx">
+      <DependentUpon>Control46.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control47.resx">
+      <DependentUpon>Control47.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control48.resx">
+      <DependentUpon>Control48.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control49.resx">
+      <DependentUpon>Control49.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="category forms\Control5.resx">
       <DependentUpon>Control5.cs</DependentUpon>
@@ -314,6 +518,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="category forms\Control9.resx">
       <DependentUpon>Control9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\SFControl.resx">
+      <DependentUpon>SFControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Spellforce Data Editor.resx">
       <DependentUpon>Spellforce Data Editor.cs</DependentUpon>

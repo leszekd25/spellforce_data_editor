@@ -89,5 +89,9 @@ namespace SpellforceDataEditor
         {
             return properties;
         }
+        public SFVariant get_single_variant(int index)
+        {
+            return properties[index];
+        }
     }
 }

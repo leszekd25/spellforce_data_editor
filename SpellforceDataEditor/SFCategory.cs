@@ -131,6 +131,21 @@ namespace SpellforceDataEditor
             return objs;
         }
 
+        public SFCategoryElement get_element(int index)
+        {
+            return elements[index];
+        }
+
+        public SFVariant get_element_variant(int elem_index, int var_index)
+        {
+            return elements[elem_index].get_single_variant(var_index);
+        }
+
+        public void set_element_variant(int elem_index, int var_index, object obj)
+        {
+            elements[elem_index].get()[var_index].set(obj);
+        }
+
         //puts a new element to a buffer
         public void put_element(BinaryWriter sw, SFVariant[] vars)
         {
@@ -170,7 +185,7 @@ namespace SpellforceDataEditor
     {
         public SFCategory1(int size) : base(size)
         {
-            initialize("HHBBBBBBBBBBBBHIIHHIIIIIIIIIIBBBB");
+            initialize("HHBBBBBBBBBBBBHIIHHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
         }
     }
 
@@ -518,7 +533,7 @@ namespace SpellforceDataEditor
     {
         public SFCategory39(int size) : base(size)
         {
-            initialize("HHHHHBH");
+            initialize("HIHHBBB");
         }
     }
 

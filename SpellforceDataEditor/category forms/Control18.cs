@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace SpellforceDataEditor.category_forms
 {
-    public partial class Control18 : UserControl
+    public partial class Control18 : SpellforceDataEditor.category_forms.SFControl
     {
         public Control18()
         {
