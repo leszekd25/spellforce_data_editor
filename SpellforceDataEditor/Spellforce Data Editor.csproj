@@ -67,6 +67,162 @@
     <Compile Include="category forms\Control1.Designer.cs">
       <DependentUpon>Control1.cs</DependentUpon>
     </Compile>
+    <Compile Include="category forms\Control10.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control10.Designer.cs">
+      <DependentUpon>Control10.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control11.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control11.Designer.cs">
+      <DependentUpon>Control11.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control12.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control12.Designer.cs">
+      <DependentUpon>Control12.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control13.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control13.Designer.cs">
+      <DependentUpon>Control13.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control14.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control14.Designer.cs">
+      <DependentUpon>Control14.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control15.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control15.Designer.cs">
+      <DependentUpon>Control15.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control16.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control16.Designer.cs">
+      <DependentUpon>Control16.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control17.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control17.Designer.cs">
+      <DependentUpon>Control17.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control18.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control18.Designer.cs">
+      <DependentUpon>Control18.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control19.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control19.Designer.cs">
+      <DependentUpon>Control19.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control2.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control2.Designer.cs">
+      <DependentUpon>Control2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control20.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control20.Designer.cs">
+      <DependentUpon>Control20.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control21.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control21.Designer.cs">
+      <DependentUpon>Control21.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control22.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control22.Designer.cs">
+      <DependentUpon>Control22.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control23.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control23.Designer.cs">
+      <DependentUpon>Control23.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control24.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control24.Designer.cs">
+      <DependentUpon>Control24.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control25.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control25.Designer.cs">
+      <DependentUpon>Control25.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control26.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control26.Designer.cs">
+      <DependentUpon>Control26.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control27.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control27.Designer.cs">
+      <DependentUpon>Control27.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control3.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control3.Designer.cs">
+      <DependentUpon>Control3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control4.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control4.Designer.cs">
+      <DependentUpon>Control4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control5.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control5.Designer.cs">
+      <DependentUpon>Control5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control6.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control6.Designer.cs">
+      <DependentUpon>Control6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control7.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control7.Designer.cs">
+      <DependentUpon>Control7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control8.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control8.Designer.cs">
+      <DependentUpon>Control8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="category forms\Control9.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="category forms\Control9.Designer.cs">
+      <DependentUpon>Control9.cs</DependentUpon>
+    </Compile>
     <Compile Include="CategoryWrapper.cs" />
     <Compile Include="SFCategory.cs" />
     <Compile Include="SFCategoryElement.cs" />
@@ -80,6 +236,84 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="category forms\Control1.resx">
       <DependentUpon>Control1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control10.resx">
+      <DependentUpon>Control10.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control11.resx">
+      <DependentUpon>Control11.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control12.resx">
+      <DependentUpon>Control12.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control13.resx">
+      <DependentUpon>Control13.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control14.resx">
+      <DependentUpon>Control14.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control15.resx">
+      <DependentUpon>Control15.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control16.resx">
+      <DependentUpon>Control16.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control17.resx">
+      <DependentUpon>Control17.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control18.resx">
+      <DependentUpon>Control18.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control19.resx">
+      <DependentUpon>Control19.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control2.resx">
+      <DependentUpon>Control2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control20.resx">
+      <DependentUpon>Control20.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control21.resx">
+      <DependentUpon>Control21.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control22.resx">
+      <DependentUpon>Control22.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control23.resx">
+      <DependentUpon>Control23.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control24.resx">
+      <DependentUpon>Control24.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control25.resx">
+      <DependentUpon>Control25.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control26.resx">
+      <DependentUpon>Control26.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control27.resx">
+      <DependentUpon>Control27.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control3.resx">
+      <DependentUpon>Control3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control4.resx">
+      <DependentUpon>Control4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control5.resx">
+      <DependentUpon>Control5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control6.resx">
+      <DependentUpon>Control6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control7.resx">
+      <DependentUpon>Control7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control8.resx">
+      <DependentUpon>Control8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="category forms\Control9.resx">
+      <DependentUpon>Control9.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Spellforce Data Editor.resx">
       <DependentUpon>Spellforce Data Editor.cs</DependentUpon>

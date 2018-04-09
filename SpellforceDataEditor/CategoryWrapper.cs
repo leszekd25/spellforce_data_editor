@@ -11,7 +11,6 @@ namespace SpellforceDataEditor
     {
         protected int current_index;
 
-
         public CategoryWrapper(Control form)
         {
             return;
@@ -20,19 +19,6 @@ namespace SpellforceDataEditor
         public virtual void show_element(int ind)
         {
             current_index = ind;
-        }
-    }
-
-    public class CategoryWrapper1: CategoryWrapper
-    {
-        public CategoryWrapper1(Control form): base(form)
-        {
-            return;
-        }
-
-        public override void show_element(int ind)
-        {
-            base.show_element(ind);
         }
     }
 }

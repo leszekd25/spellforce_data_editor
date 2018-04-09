@@ -104,7 +104,7 @@
             // 
             this.tb_typeID.Location = new System.Drawing.Point(362, 19);
             this.tb_typeID.Name = "tb_typeID";
-            this.tb_typeID.Size = new System.Drawing.Size(120, 20);
+            this.tb_typeID.Size = new System.Drawing.Size(126, 20);
             this.tb_typeID.TabIndex = 3;
             // 
             // lb_typeID
@@ -162,21 +162,21 @@
             // 
             this.tb_ctm.Location = new System.Drawing.Point(362, 71);
             this.tb_ctm.Name = "tb_ctm";
-            this.tb_ctm.Size = new System.Drawing.Size(120, 20);
+            this.tb_ctm.Size = new System.Drawing.Size(126, 20);
             this.tb_ctm.TabIndex = 9;
             // 
             // tb_mnc
             // 
             this.tb_mnc.Location = new System.Drawing.Point(362, 45);
             this.tb_mnc.Name = "tb_mnc";
-            this.tb_mnc.Size = new System.Drawing.Size(120, 20);
+            this.tb_mnc.Size = new System.Drawing.Size(126, 20);
             this.tb_mnc.TabIndex = 8;
             // 
             // tb_rtm
             // 
             this.tb_rtm.Location = new System.Drawing.Point(362, 97);
             this.tb_rtm.Name = "tb_rtm";
-            this.tb_rtm.Size = new System.Drawing.Size(120, 20);
+            this.tb_rtm.Size = new System.Drawing.Size(126, 20);
             this.tb_rtm.TabIndex = 10;
             // 
             // tb_rng_min
@@ -188,7 +188,7 @@
             // 
             // tb_rng_max
             // 
-            this.tb_rng_max.Location = new System.Drawing.Point(432, 123);
+            this.tb_rng_max.Location = new System.Drawing.Point(438, 123);
             this.tb_rng_max.Name = "tb_rng_max";
             this.tb_rng_max.Size = new System.Drawing.Size(50, 20);
             this.tb_rng_max.TabIndex = 12;
@@ -196,7 +196,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(416, 126);
+            this.label7.Location = new System.Drawing.Point(422, 126);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(10, 13);
             this.label7.TabIndex = 13;
@@ -342,7 +342,7 @@
             // 
             this.tb_sd6.Location = new System.Drawing.Point(362, 152);
             this.tb_sd6.Name = "tb_sd6";
-            this.tb_sd6.Size = new System.Drawing.Size(120, 20);
+            this.tb_sd6.Size = new System.Drawing.Size(126, 20);
             this.tb_sd6.TabIndex = 33;
             // 
             // lb_sd6
@@ -358,7 +358,7 @@
             // 
             this.tb_sd7.Location = new System.Drawing.Point(362, 178);
             this.tb_sd7.Name = "tb_sd7";
-            this.tb_sd7.Size = new System.Drawing.Size(120, 20);
+            this.tb_sd7.Size = new System.Drawing.Size(126, 20);
             this.tb_sd7.TabIndex = 37;
             // 
             // lb_sd7
@@ -390,7 +390,7 @@
             // 
             this.tb_sd8.Location = new System.Drawing.Point(362, 204);
             this.tb_sd8.Name = "tb_sd8";
-            this.tb_sd8.Size = new System.Drawing.Size(120, 20);
+            this.tb_sd8.Size = new System.Drawing.Size(126, 20);
             this.tb_sd8.TabIndex = 41;
             // 
             // lb_sd8
@@ -422,7 +422,7 @@
             // 
             this.tb_sd9.Location = new System.Drawing.Point(362, 230);
             this.tb_sd9.Name = "tb_sd9";
-            this.tb_sd9.Size = new System.Drawing.Size(120, 20);
+            this.tb_sd9.Size = new System.Drawing.Size(126, 20);
             this.tb_sd9.TabIndex = 45;
             // 
             // lb_sd9
@@ -454,7 +454,7 @@
             // 
             this.tb_sd10.Location = new System.Drawing.Point(362, 256);
             this.tb_sd10.Name = "tb_sd10";
-            this.tb_sd10.Size = new System.Drawing.Size(120, 20);
+            this.tb_sd10.Size = new System.Drawing.Size(126, 20);
             this.tb_sd10.TabIndex = 49;
             // 
             // lb_sd10
