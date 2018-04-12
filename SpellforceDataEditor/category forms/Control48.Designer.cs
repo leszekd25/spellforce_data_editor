@@ -62,6 +62,7 @@
             this.tb_sd10.Name = "tb_sd10";
             this.tb_sd10.Size = new System.Drawing.Size(126, 20);
             this.tb_sd10.TabIndex = 71;
+            this.tb_sd10.TextChanged += new System.EventHandler(this.tb_sd10_TextChanged);
             // 
             // lb_sd10
             // 
@@ -78,6 +79,7 @@
             this.sb_sd5.Name = "sb_sd5";
             this.sb_sd5.Size = new System.Drawing.Size(126, 20);
             this.sb_sd5.TabIndex = 69;
+            this.sb_sd5.TextChanged += new System.EventHandler(this.sb_sd5_TextChanged);
             // 
             // lb_sd5
             // 
@@ -94,6 +96,7 @@
             this.tb_sd9.Name = "tb_sd9";
             this.tb_sd9.Size = new System.Drawing.Size(126, 20);
             this.tb_sd9.TabIndex = 67;
+            this.tb_sd9.TextChanged += new System.EventHandler(this.tb_sd9_TextChanged);
             // 
             // lb_sd9
             // 
@@ -110,6 +113,7 @@
             this.tb_sd4.Name = "tb_sd4";
             this.tb_sd4.Size = new System.Drawing.Size(126, 20);
             this.tb_sd4.TabIndex = 65;
+            this.tb_sd4.TextChanged += new System.EventHandler(this.tb_sd4_TextChanged);
             // 
             // lb_sd4
             // 
@@ -126,6 +130,7 @@
             this.tb_sd8.Name = "tb_sd8";
             this.tb_sd8.Size = new System.Drawing.Size(126, 20);
             this.tb_sd8.TabIndex = 63;
+            this.tb_sd8.TextChanged += new System.EventHandler(this.tb_sd8_TextChanged);
             // 
             // lb_sd8
             // 
@@ -142,6 +147,7 @@
             this.tb_sd3.Name = "tb_sd3";
             this.tb_sd3.Size = new System.Drawing.Size(126, 20);
             this.tb_sd3.TabIndex = 61;
+            this.tb_sd3.TextChanged += new System.EventHandler(this.tb_sd3_TextChanged);
             // 
             // lb_sd3
             // 
@@ -158,6 +164,7 @@
             this.tb_sd7.Name = "tb_sd7";
             this.tb_sd7.Size = new System.Drawing.Size(126, 20);
             this.tb_sd7.TabIndex = 59;
+            this.tb_sd7.TextChanged += new System.EventHandler(this.tb_sd7_TextChanged);
             // 
             // lb_sd7
             // 
@@ -174,6 +181,7 @@
             this.tb_sd2.Name = "tb_sd2";
             this.tb_sd2.Size = new System.Drawing.Size(126, 20);
             this.tb_sd2.TabIndex = 57;
+            this.tb_sd2.TextChanged += new System.EventHandler(this.tb_sd2_TextChanged);
             // 
             // lb_sd2
             // 
@@ -190,6 +198,7 @@
             this.tb_sd6.Name = "tb_sd6";
             this.tb_sd6.Size = new System.Drawing.Size(126, 20);
             this.tb_sd6.TabIndex = 55;
+            this.tb_sd6.TextChanged += new System.EventHandler(this.tb_sd6_TextChanged);
             // 
             // lb_sd6
             // 
@@ -206,6 +215,7 @@
             this.tb_sd1.Name = "tb_sd1";
             this.tb_sd1.Size = new System.Drawing.Size(126, 20);
             this.tb_sd1.TabIndex = 53;
+            this.tb_sd1.TextChanged += new System.EventHandler(this.tb_sd1_TextChanged);
             // 
             // lb_sd1
             // 
@@ -222,6 +232,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 75;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label1
             // 
@@ -238,6 +249,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(126, 20);
             this.textBox2.TabIndex = 73;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // label2
             // 
@@ -251,9 +263,11 @@
             // textBox3
             // 
             this.textBox3.Location = new System.Drawing.Point(105, 253);
+            this.textBox3.MaxLength = 64;
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(383, 20);
             this.textBox3.TabIndex = 77;
+            this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // label3
             // 
@@ -295,7 +309,6 @@
             this.Controls.Add(this.tb_sd1);
             this.Controls.Add(this.lb_sd1);
             this.Name = "Control48";
-            this.Size = new System.Drawing.Size(500, 520);
             this.ResumeLayout(false);
             this.PerformLayout();
 

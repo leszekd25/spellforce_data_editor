@@ -40,6 +40,7 @@
             this.tb_effID.Name = "tb_effID";
             this.tb_effID.Size = new System.Drawing.Size(126, 20);
             this.tb_effID.TabIndex = 3;
+            this.tb_effID.TextChanged += new System.EventHandler(this.tb_effID_TextChanged);
             // 
             // lb_effID
             // 
@@ -58,6 +59,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(383, 20);
             this.textBox1.TabIndex = 5;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label1
             // 
@@ -79,7 +81,6 @@
             this.Controls.Add(this.tb_effID);
             this.Controls.Add(this.lb_effID);
             this.Name = "Control43";
-            this.Size = new System.Drawing.Size(500, 520);
             this.ResumeLayout(false);
             this.PerformLayout();
 

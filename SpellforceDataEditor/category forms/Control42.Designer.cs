@@ -42,6 +42,7 @@
             this.sb_sd5.Name = "sb_sd5";
             this.sb_sd5.Size = new System.Drawing.Size(126, 20);
             this.sb_sd5.TabIndex = 53;
+            this.sb_sd5.TextChanged += new System.EventHandler(this.sb_sd5_TextChanged);
             // 
             // lb_sd5
             // 
@@ -58,6 +59,7 @@
             this.tb_sd4.Name = "tb_sd4";
             this.tb_sd4.Size = new System.Drawing.Size(126, 20);
             this.tb_sd4.TabIndex = 51;
+            this.tb_sd4.TextChanged += new System.EventHandler(this.tb_sd4_TextChanged);
             // 
             // lb_sd4
             // 
@@ -74,6 +76,7 @@
             this.tb_sd3.Name = "tb_sd3";
             this.tb_sd3.Size = new System.Drawing.Size(126, 20);
             this.tb_sd3.TabIndex = 49;
+            this.tb_sd3.TextChanged += new System.EventHandler(this.tb_sd3_TextChanged);
             // 
             // lb_sd3
             // 
@@ -95,7 +98,6 @@
             this.Controls.Add(this.tb_sd3);
             this.Controls.Add(this.lb_sd3);
             this.Name = "Control42";
-            this.Size = new System.Drawing.Size(500, 520);
             this.ResumeLayout(false);
             this.PerformLayout();
 

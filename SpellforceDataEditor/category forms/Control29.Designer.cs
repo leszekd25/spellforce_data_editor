@@ -58,6 +58,7 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(126, 20);
             this.textBox3.TabIndex = 53;
+            this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // textBox1
             // 
@@ -65,6 +66,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 52;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // Control29
             // 
@@ -75,7 +77,6 @@
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.textBox1);
             this.Name = "Control29";
-            this.Size = new System.Drawing.Size(500, 520);
             this.ResumeLayout(false);
             this.PerformLayout();
 

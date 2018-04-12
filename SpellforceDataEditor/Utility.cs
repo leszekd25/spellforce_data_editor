@@ -91,5 +91,17 @@ namespace SpellforceDataEditor
             }
             return bytearray;
         }
+
+        static public Char[] FixedLengthString(string s, int length)
+        {
+            char[] charray = new char[length];
+            char[] text_array = s.ToCharArray();
+            for (int i = 0; i < length; i++)
+                if (i < text_array.Length)
+                    charray[i] = text_array[i];
+                else
+                    charray[i] = '\0';
+            return charray;
+        }
     }
 }

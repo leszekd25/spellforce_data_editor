@@ -57,7 +57,7 @@ namespace SpellforceDataEditor
                 vtype = TYPE.Float;
                 return;
             }
-            if (t.Equals(typeof(string)))
+            if (t.Equals(typeof(char[])))
             {
                 vtype = TYPE.String;
                 return;

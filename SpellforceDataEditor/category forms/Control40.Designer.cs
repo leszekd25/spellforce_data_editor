@@ -28,32 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tb_req4_3 = new System.Windows.Forms.TextBox();
-            this.tb_req4_2 = new System.Windows.Forms.TextBox();
             this.tb_req4_1 = new System.Windows.Forms.TextBox();
             this.lb_req4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
-            // tb_req4_3
-            // 
-            this.tb_req4_3.Location = new System.Drawing.Point(193, 19);
-            this.tb_req4_3.Name = "tb_req4_3";
-            this.tb_req4_3.Size = new System.Drawing.Size(38, 20);
-            this.tb_req4_3.TabIndex = 33;
-            // 
-            // tb_req4_2
-            // 
-            this.tb_req4_2.Location = new System.Drawing.Point(149, 19);
-            this.tb_req4_2.Name = "tb_req4_2";
-            this.tb_req4_2.Size = new System.Drawing.Size(38, 20);
-            this.tb_req4_2.TabIndex = 32;
             // 
             // tb_req4_1
             // 
             this.tb_req4_1.Location = new System.Drawing.Point(105, 19);
             this.tb_req4_1.Name = "tb_req4_1";
-            this.tb_req4_1.Size = new System.Drawing.Size(38, 20);
+            this.tb_req4_1.Size = new System.Drawing.Size(126, 20);
             this.tb_req4_1.TabIndex = 31;
+            this.tb_req4_1.TextChanged += new System.EventHandler(this.tb_req4_1_TextChanged);
             // 
             // lb_req4
             // 
@@ -68,21 +53,15 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.tb_req4_3);
-            this.Controls.Add(this.tb_req4_2);
             this.Controls.Add(this.tb_req4_1);
             this.Controls.Add(this.lb_req4);
             this.Name = "Control40";
-            this.Size = new System.Drawing.Size(500, 520);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox tb_req4_3;
-        private System.Windows.Forms.TextBox tb_req4_2;
         private System.Windows.Forms.TextBox tb_req4_1;
         private System.Windows.Forms.Label lb_req4;
     }

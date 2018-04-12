@@ -40,6 +40,7 @@
             this.tb_sd2.Name = "tb_sd2";
             this.tb_sd2.Size = new System.Drawing.Size(126, 20);
             this.tb_sd2.TabIndex = 39;
+            this.tb_sd2.TextChanged += new System.EventHandler(this.tb_sd2_TextChanged);
             // 
             // lb_sd2
             // 
@@ -56,6 +57,7 @@
             this.tb_sd1.Name = "tb_sd1";
             this.tb_sd1.Size = new System.Drawing.Size(126, 20);
             this.tb_sd1.TabIndex = 37;
+            this.tb_sd1.TextChanged += new System.EventHandler(this.tb_sd1_TextChanged);
             // 
             // lb_sd1
             // 
@@ -75,7 +77,6 @@
             this.Controls.Add(this.tb_sd1);
             this.Controls.Add(this.lb_sd1);
             this.Name = "Control41";
-            this.Size = new System.Drawing.Size(500, 520);
             this.ResumeLayout(false);
             this.PerformLayout();
 

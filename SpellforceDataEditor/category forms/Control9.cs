@@ -16,5 +16,15 @@ namespace SpellforceDataEditor.category_forms
         {
             InitializeComponent();
         }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 0, Utility.TryParseUInt16(textBox1.Text));
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 1, Utility.TryParseUInt16(textBox2.Text));
+        }
     }
 }

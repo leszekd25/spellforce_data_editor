@@ -35,8 +35,6 @@
             this.tb_rng_max = new System.Windows.Forms.TextBox();
             this.tb_rng_min = new System.Windows.Forms.TextBox();
             this.lb_rng = new System.Windows.Forms.Label();
-            this.tb_req4_3 = new System.Windows.Forms.TextBox();
-            this.tb_req4_2 = new System.Windows.Forms.TextBox();
             this.tb_req4_1 = new System.Windows.Forms.TextBox();
             this.lb_req4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -47,6 +45,7 @@
             this.tb_effID.Name = "tb_effID";
             this.tb_effID.Size = new System.Drawing.Size(126, 20);
             this.tb_effID.TabIndex = 3;
+            this.tb_effID.TextChanged += new System.EventHandler(this.tb_effID_TextChanged);
             // 
             // lb_effID
             // 
@@ -65,6 +64,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 5;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label1
             // 
@@ -83,6 +83,7 @@
             this.tb_rng_max.Name = "tb_rng_max";
             this.tb_rng_max.Size = new System.Drawing.Size(50, 20);
             this.tb_rng_max.TabIndex = 16;
+            this.tb_rng_max.TextChanged += new System.EventHandler(this.tb_rng_max_TextChanged);
             // 
             // tb_rng_min
             // 
@@ -90,6 +91,7 @@
             this.tb_rng_min.Name = "tb_rng_min";
             this.tb_rng_min.Size = new System.Drawing.Size(50, 20);
             this.tb_rng_min.TabIndex = 15;
+            this.tb_rng_min.TextChanged += new System.EventHandler(this.tb_rng_min_TextChanged);
             // 
             // lb_rng
             // 
@@ -101,26 +103,13 @@
             this.lb_rng.Text = "Position";
             this.lb_rng.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // tb_req4_3
-            // 
-            this.tb_req4_3.Location = new System.Drawing.Point(193, 97);
-            this.tb_req4_3.Name = "tb_req4_3";
-            this.tb_req4_3.Size = new System.Drawing.Size(38, 20);
-            this.tb_req4_3.TabIndex = 33;
-            // 
-            // tb_req4_2
-            // 
-            this.tb_req4_2.Location = new System.Drawing.Point(149, 97);
-            this.tb_req4_2.Name = "tb_req4_2";
-            this.tb_req4_2.Size = new System.Drawing.Size(38, 20);
-            this.tb_req4_2.TabIndex = 32;
-            // 
             // tb_req4_1
             // 
             this.tb_req4_1.Location = new System.Drawing.Point(105, 97);
             this.tb_req4_1.Name = "tb_req4_1";
-            this.tb_req4_1.Size = new System.Drawing.Size(38, 20);
+            this.tb_req4_1.Size = new System.Drawing.Size(126, 20);
             this.tb_req4_1.TabIndex = 31;
+            this.tb_req4_1.TextChanged += new System.EventHandler(this.tb_req4_1_TextChanged);
             // 
             // lb_req4
             // 
@@ -135,8 +124,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.tb_req4_3);
-            this.Controls.Add(this.tb_req4_2);
             this.Controls.Add(this.tb_req4_1);
             this.Controls.Add(this.lb_req4);
             this.Controls.Add(this.tb_rng_max);
@@ -147,7 +134,6 @@
             this.Controls.Add(this.tb_effID);
             this.Controls.Add(this.lb_effID);
             this.Name = "Control39";
-            this.Size = new System.Drawing.Size(500, 520);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -162,8 +148,6 @@
         private System.Windows.Forms.TextBox tb_rng_max;
         private System.Windows.Forms.TextBox tb_rng_min;
         private System.Windows.Forms.Label lb_rng;
-        private System.Windows.Forms.TextBox tb_req4_3;
-        private System.Windows.Forms.TextBox tb_req4_2;
         private System.Windows.Forms.TextBox tb_req4_1;
         private System.Windows.Forms.Label lb_req4;
     }

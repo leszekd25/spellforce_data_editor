@@ -36,6 +36,12 @@ namespace SpellforceDataEditor
             item_count = (uint)(block_length / elem_size);
         }
 
+        protected void skip()
+        {
+            item_count = 0;
+            return;
+        }
+
         //calculates size of element given a format
         protected void calculate_element_size(string fm)
         {
@@ -159,6 +165,12 @@ namespace SpellforceDataEditor
         //reads a buffer and retrieves all expected elements
         public void read(BinaryReader sr)
         {
+            if(item_count == 0)
+            {
+                char[] readall_buffer = new char[block_length];
+                sr.Read(readall_buffer, 0, (int)block_length);
+                return;
+            }
             elements = new SFCategoryElement[item_count];
             for (int i = 0; i < item_count; i++)
             {
@@ -213,7 +225,7 @@ namespace SpellforceDataEditor
     {
         public SFCategory4(int size) : base(size)
         {
-            initialize("HHBHHHHHHHHHHHHHHHHHIBHB");
+            initialize("HHBHHHHHHHBBHHHHHHHHBBIBHB");
         }
     }
 
@@ -342,7 +354,7 @@ namespace SpellforceDataEditor
         public SFCategory18(int size) : base(size)
         {
             string_size = new int[1] { 40 };
-            initialize("HHHIHHHHHBHsB");
+            initialize("HHHIHIHBHHsB");
         }
     }
 
@@ -396,7 +408,8 @@ namespace SpellforceDataEditor
     {
         public SFCategory24(int size) : base(size)
         {
-            initialize("HBBBBBBBBBBBBBBBBBBBBB");
+            //initialize("HBBBBBBBBBBBBBBBBBBBBB");
+            skip();
         }
     }
 
@@ -405,7 +418,8 @@ namespace SpellforceDataEditor
     {
         public SFCategory25(int size) : base(size)
         {
-            initialize("");    //todo
+            skip();
+            //initialize("");    //todo
         }
     }
 
@@ -486,8 +500,8 @@ namespace SpellforceDataEditor
     {
         public SFCategory34(int size) : base(size)
         {
-            string_size = new int[1] { 47 };
-            initialize("HBBBBBs");
+            string_size = new int[1] { 40 };
+            initialize("HBBBBBsBBBBBBB");
         }
     }
 
@@ -614,8 +628,8 @@ namespace SpellforceDataEditor
     {
         public SFCategory48(int size) : base(size)
         {
-            string_size = new int[1] { 40 };
-            initialize("HHHHHHHHHHHsHI");
+            string_size = new int[1] { 64 };
+            initialize("HHHHHHHHHHHsI");
         }
     }
 

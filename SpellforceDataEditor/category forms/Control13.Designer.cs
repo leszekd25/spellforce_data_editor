@@ -89,6 +89,7 @@
             // textBox4
             // 
             this.textBox4.Location = new System.Drawing.Point(105, 97);
+            this.textBox4.MaxLength = 64;
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(383, 20);
             this.textBox4.TabIndex = 22;
@@ -115,7 +116,6 @@
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
             this.Name = "Control13";
-            this.Size = new System.Drawing.Size(500, 520);
             this.ResumeLayout(false);
             this.PerformLayout();
 
