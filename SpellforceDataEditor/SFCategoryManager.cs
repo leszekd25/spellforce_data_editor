@@ -11,10 +11,11 @@ namespace SpellforceDataEditor
     class SFCategoryManager
     {
         private SFCategory[] categories;
-        private int categoryNumber = 49;
+        private int categoryNumber;
         private Byte[] mainHeader;
         public SFCategoryManager()
         {
+            categoryNumber = 49;
             categories = new SFCategory[categoryNumber];
             for(int i = 1; i <= categoryNumber; i++)
             {
@@ -29,12 +30,13 @@ namespace SpellforceDataEditor
         public void load_cff(string filename)
         {
             FileStream fs = new FileStream(filename, FileMode.Open);
-            BinaryReader br = new BinaryReader(fs);
+            BinaryReader br = new BinaryReader(fs,Encoding.ASCII);
 
             mainHeader = br.ReadBytes(mainHeader.Length);
-            foreach(SFCategory category in categories)
+            for(int i = 0; i < categoryNumber; i++)
             {
-                category.read(br);
+                Console.WriteLine(get_category(i).get_name());
+                get_category(i).read(br);
             }
         }
         public int get_category_number()

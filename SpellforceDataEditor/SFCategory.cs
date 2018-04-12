@@ -26,6 +26,7 @@ namespace SpellforceDataEditor
         //each block has different size, and it determines how many elements belong to a given category
         public SFCategory()
         {
+            item_count = 1;
             categoryHeader = new Byte[12];
             string_size = new int[1] { 0 };
         }
@@ -90,7 +91,7 @@ namespace SpellforceDataEditor
                 case 'f':
                     return sr.ReadSingle();
                 case 's':
-                    current_string = Math.Min(string_size.Length, current_string + 1);
+                    current_string = Math.Min(string_size.Length - 1, current_string + 1);
                     return sr.ReadChars(s_size);
                 default:
                     return null;
@@ -171,18 +172,23 @@ namespace SpellforceDataEditor
         //reads a buffer and retrieves all expected elements
         public void read(BinaryReader sr)
         {
-            if(item_count == 0)
-            {
-                char[] readall_buffer = new char[categoryHeader.Length+block_length];
-                sr.Read(readall_buffer, 0, (int)(categoryHeader.Length+block_length));
-                return;
-            }
             categoryHeader = sr.ReadBytes(categoryHeader.Length);
             block_length = BitConverter.ToUInt32(categoryHeader, 6);
+            Console.WriteLine(block_length);
+            if (item_count == 0)
+            {
+                Console.WriteLine("not ok");
+                char[] readall_buffer = new char[block_length];
+                sr.Read(readall_buffer, 0, (int)(block_length));
+                return;
+            }
             item_count = (uint)(block_length / elem_size);
+            Console.WriteLine(item_count);
+            Console.WriteLine(elem_size);
             elements = new SFCategoryElement[item_count];
             for (int i = 0; i < item_count; i++)
             {
+                elements[i] = new SFCategoryElement();
                 elements[i].set(get_element(sr));
             }
         }
@@ -207,7 +213,7 @@ namespace SpellforceDataEditor
     {
         public SFCategory1() : base()
         {
-            initialize("HHBBBBBBBBBBBBHIIHHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+            initialize("HHBBBBBBBBBBBBHIIHHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
             category_name = "Spells/skills";
         }
     }
@@ -402,7 +408,7 @@ namespace SpellforceDataEditor
         public SFCategory20() : base()
         {
             initialize("HBH");
-            category_name = "Unit eq spells/skills";
+            category_name = "Unit spells/skills";
         }
     }
 
@@ -554,7 +560,8 @@ namespace SpellforceDataEditor
     {
         public SFCategory35() : base()
         {
-            initialize("");     //todo
+            //initialize("");     //todo
+            skip();
             category_name = "Monument/other world interactive object stats";
         }
     }
