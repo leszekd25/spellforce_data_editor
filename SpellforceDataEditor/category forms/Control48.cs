@@ -19,7 +19,7 @@ namespace SpellforceDataEditor.category_forms
 
         private void tb_sd1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 0, Utility.TryParseUInt16(tb_sdd1.Text));
+            category.set_element_variant(current_element, 0, Utility.TryParseUInt16(tb_sd1.Text));
         }
 
         private void tb_sd6_TextChanged(object sender, EventArgs e)

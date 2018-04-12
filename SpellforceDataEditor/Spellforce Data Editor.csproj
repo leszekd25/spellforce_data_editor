@@ -363,14 +363,15 @@
     </Compile>
     <Compile Include="SFCategory.cs" />
     <Compile Include="SFCategoryElement.cs" />
-    <Compile Include="Spellforce Data Editor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Spellforce Data Editor.Designer.cs">
-      <DependentUpon>Spellforce Data Editor.cs</DependentUpon>
-    </Compile>
+    <Compile Include="SFCategoryManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpelllforceCFFEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SpelllforceCFFEditor.Designer.cs">
+      <DependentUpon>SpelllforceCFFEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utility.cs" />
     <EmbeddedResource Include="category forms\Control1.resx">
       <DependentUpon>Control1.cs</DependentUpon>
@@ -522,9 +523,6 @@
     <EmbeddedResource Include="category forms\SFControl.resx">
       <DependentUpon>SFControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Spellforce Data Editor.resx">
-      <DependentUpon>Spellforce Data Editor.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -534,6 +532,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="SpelllforceCFFEditor.resx">
+      <DependentUpon>SpelllforceCFFEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
