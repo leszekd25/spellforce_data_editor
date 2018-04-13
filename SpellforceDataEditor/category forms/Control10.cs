@@ -56,5 +56,17 @@ namespace SpellforceDataEditor.category_forms
         {
             category.set_element_variant(current_element, 7, Utility.TryParseUInt16(textBox3.Text));
         }
+
+        public override void show_element()
+        {
+            textBox1.Text = variant_repr(0);
+            textBox6.Text = variant_repr(1);
+            textBox8.Text = variant_repr(2);
+            textBox5.Text = variant_repr(3);
+            textBox7.Text = variant_repr(4);
+            textBox4.Text = variant_repr(5);
+            textBox2.Text = variant_repr(6);
+            textBox3.Text = variant_repr(7);
+        }
     }
 }

@@ -41,5 +41,14 @@ namespace SpellforceDataEditor.category_forms
         {
             category.set_element_variant(current_element, 4, Utility.FixedLengthString(textBox5.Text, 512));
         }
+
+        public override void show_element()
+        {
+            textBox1.Text = variant_repr(0);
+            textBox2.Text = variant_repr(1);
+            textBox3.Text = variant_repr(2);
+            textBox4.Text = string_repr(3);
+            textBox5.Text = string_repr(4);
+        }
     }
 }

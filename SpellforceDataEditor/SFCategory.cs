@@ -277,7 +277,7 @@ namespace SpellforceDataEditor
     {
         public SFCategory7() : base()
         {
-            initialize("HHHHHHBIIB");
+            initialize("HBBHHHHBIIB");
             category_name = "Item type/name ID/price";
         }
     }
@@ -532,7 +532,7 @@ namespace SpellforceDataEditor
     {
         public SFCategory32() : base()
         {
-            initialize("BH");
+            initialize("BBB");
             category_name = "sql_good names";
         }
     }
@@ -584,7 +584,7 @@ namespace SpellforceDataEditor
     {
         public SFCategory37() : base()
         {
-            initialize("HHH");
+            initialize("HBBBB");
             category_name = "Unknown (2)";
         }
     }

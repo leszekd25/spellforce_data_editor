@@ -24,5 +24,10 @@ namespace SpellforceDataEditor.category_forms
             category.set_element_variant(current_element, 1, data_array[1]);
             category.set_element_variant(current_element, 2, data_array[2]);
         }
+
+        public override void show_element()
+        {
+            tb_req4_1.Text = bytearray_repr(0, 3);
+        }
     }
 }

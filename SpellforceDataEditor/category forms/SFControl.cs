@@ -47,7 +47,20 @@ namespace SpellforceDataEditor.category_forms
 
         public string variant_repr(int index)
         {
-            return category.get_element_variant(current_element, index).value.ToString();
+            SFVariant v = category.get_element_variant(current_element, index);
+            if (v == null)
+                return "ERROR: index out of bounds";
+            return v.value.ToString();
+        }
+
+        public string string_repr(int index)
+        {
+            SFVariant v = category.get_element_variant(current_element, index);
+            if (v == null)
+                return "ERROR: index out of bounds";
+            if (v.vtype != TYPE.String)
+                return "ERROR: wrong data type";
+            return new string((char[])v.value);
         }
 
         public string bytearray_repr(int index, int count)

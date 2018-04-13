@@ -146,5 +146,35 @@ namespace SpellforceDataEditor.category_forms
         {
             category.set_element_variant(current_element, 25, Utility.TryParseUInt8(textBox24.Text));
         }
+
+        public override void show_element()
+        {
+            textBox1.Text = variant_repr(0);
+            textBox6.Text = variant_repr(1);
+            textBox2.Text = variant_repr(2);
+            textBox7.Text = variant_repr(3);
+            textBox9.Text = variant_repr(4);
+            textBox8.Text = variant_repr(5);
+            textBox17.Text = variant_repr(6);
+            textBox4.Text = variant_repr(7);
+            textBox3.Text = variant_repr(8);
+            textBox18.Text = variant_repr(9);
+            textBox22.Text = variant_repr(10);
+            textBox19.Text = variant_repr(11);
+            textBox16.Text = variant_repr(12);
+            textBox10.Text = variant_repr(13);
+            textBox11.Text = variant_repr(14);
+            textBox12.Text = variant_repr(15);
+            textBox13.Text = variant_repr(16);
+            textBox14.Text = variant_repr(17);
+            textBox15.Text = variant_repr(18);
+            textBox5.Text = variant_repr(19);
+            textBox25.Text = variant_repr(20);
+            textBox23.Text = variant_repr(21);
+            textBox27.Text = variant_repr(22);
+            textBox26.Text = variant_repr(23);
+            textBox21.Text = variant_repr(24);
+            textBox24.Text = variant_repr(25);
+        }
     }
 }

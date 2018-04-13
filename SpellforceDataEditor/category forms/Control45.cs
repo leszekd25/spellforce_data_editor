@@ -28,5 +28,11 @@ namespace SpellforceDataEditor.category_forms
             category.set_element_variant(current_element, 1, data_array[0]);
             category.set_element_variant(current_element, 2, data_array[1]);
         }
+
+        public override void show_element()
+        {
+            tb_effID.Text = variant_repr(0);
+            textBox1.Text = bytearray_repr(1, 2);
+        }
     }
 }

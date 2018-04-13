@@ -26,5 +26,11 @@ namespace SpellforceDataEditor.category_forms
         {
             category.set_element_variant(current_element, 1, Utility.TryParseUInt16(tb_sd2.Text));
         }
+
+        public override void show_element()
+        {
+            tb_sd1.Text = variant_repr(0);
+            tb_sd2.Text = variant_repr(1);
+        }
     }
 }
