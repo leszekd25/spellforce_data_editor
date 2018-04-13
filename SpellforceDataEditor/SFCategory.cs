@@ -151,12 +151,15 @@ namespace SpellforceDataEditor
 
         public SFVariant get_element_variant(int elem_index, int var_index)
         {
+            if (elem_index >= elements.Length)
+                return null;
             return elements[elem_index].get_single_variant(var_index);
         }
 
         public void set_element_variant(int elem_index, int var_index, object obj)
         {
-            elements[elem_index].get()[var_index].set(obj);
+            if(elem_index < elements.Length)
+                elements[elem_index].get()[var_index].set(obj);
         }
 
         //puts a new element to a buffer

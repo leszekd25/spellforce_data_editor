@@ -38,6 +38,9 @@ namespace SpellforceDataEditor
                 Console.WriteLine(get_category(i).get_name());
                 get_category(i).read(br);
             }
+
+            br.Close();
+            fs.Close();
         }
         public int get_category_number()
         {

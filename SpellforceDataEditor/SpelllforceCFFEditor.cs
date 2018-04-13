@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,7 +13,8 @@ namespace SpellforceDataEditor
 {
     public partial class SpelllforceCFFEditor : Form
     {
-        SFCategoryManager manager;
+        private SFCategoryManager manager;
+        private category_forms.SFControl ElementDisplay;
         public SpelllforceCFFEditor()
         {
             InitializeComponent();
@@ -34,11 +36,25 @@ namespace SpellforceDataEditor
         {
             ElementSelect.Enabled = true;
             SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
+
             ElementSelect.Items.Clear();
             for(int i = 0; i < ctg.get_element_count(); i++)
             {
                 ElementSelect.Items.Add(ctg.get_element_string(i));
             }
+
+            ElementDisplay = Assembly.GetExecutingAssembly().CreateInstance(
+                "SpellforceDataEditor.category_forms.Control" + (CategorySelect.SelectedIndex+1).ToString())
+                as category_forms.SFControl;
+            ElementDisplay.set_category(ctg);
+            SFControlPanel.Controls.Clear();
+            SFControlPanel.Controls.Add(ElementDisplay);
+        }
+
+        private void ElementSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ElementDisplay.set_element(ElementSelect.SelectedIndex);
+            ElementDisplay.show_element();
         }
     }
 }

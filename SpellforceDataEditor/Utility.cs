@@ -86,6 +86,7 @@ namespace SpellforceDataEditor
             int i = 0;
             foreach(string hex in array)
             {
+                Console.WriteLine(hex);
                 bytearray[i] = Convert.ToByte(hex, 16);
                 i++;
             }

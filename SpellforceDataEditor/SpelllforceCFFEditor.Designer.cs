@@ -35,7 +35,7 @@
             this.CategorySelect = new System.Windows.Forms.ComboBox();
             this.ElementSelect = new System.Windows.Forms.ListBox();
             this.OpenGameData = new System.Windows.Forms.OpenFileDialog();
-            this.ElementDisplay = new SpellforceDataEditor.category_forms.SFControl();
+            this.SFControlPanel = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -89,25 +89,26 @@
             this.ElementSelect.Name = "ElementSelect";
             this.ElementSelect.Size = new System.Drawing.Size(295, 329);
             this.ElementSelect.TabIndex = 2;
+            this.ElementSelect.SelectedIndexChanged += new System.EventHandler(this.ElementSelect_SelectedIndexChanged);
             // 
             // OpenGameData
             // 
             this.OpenGameData.FileName = "GameData.cff";
             this.OpenGameData.Filter = "CFF file(*.cff)|*.cff";
             // 
-            // ElementDisplay
+            // SFControlPanel
             // 
-            this.ElementDisplay.Location = new System.Drawing.Point(402, 27);
-            this.ElementDisplay.Name = "ElementDisplay";
-            this.ElementDisplay.Size = new System.Drawing.Size(500, 520);
-            this.ElementDisplay.TabIndex = 3;
+            this.SFControlPanel.Location = new System.Drawing.Point(395, 27);
+            this.SFControlPanel.Name = "SFControlPanel";
+            this.SFControlPanel.Size = new System.Drawing.Size(500, 520);
+            this.SFControlPanel.TabIndex = 4;
             // 
             // SpelllforceCFFEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(944, 601);
-            this.Controls.Add(this.ElementDisplay);
+            this.Controls.Add(this.SFControlPanel);
             this.Controls.Add(this.ElementSelect);
             this.Controls.Add(this.CategorySelect);
             this.Controls.Add(this.menuStrip1);
@@ -129,7 +130,7 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ComboBox CategorySelect;
         private System.Windows.Forms.ListBox ElementSelect;
-        private SpellforceDataEditor.category_forms.SFControl ElementDisplay;
         private System.Windows.Forms.OpenFileDialog OpenGameData;
+        private System.Windows.Forms.Panel SFControlPanel;
     }
 }

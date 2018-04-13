@@ -80,6 +80,9 @@
             this.lb_sd5 = new System.Windows.Forms.Label();
             this.tb_unk = new System.Windows.Forms.TextBox();
             this.lb_unk = new System.Windows.Forms.Label();
+            this.tb_ct2 = new System.Windows.Forms.TextBox();
+            this.tb_ct1 = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lb_effID
@@ -513,7 +516,7 @@
             // 
             // tb_unk
             // 
-            this.tb_unk.Location = new System.Drawing.Point(105, 279);
+            this.tb_unk.Location = new System.Drawing.Point(362, 282);
             this.tb_unk.Name = "tb_unk";
             this.tb_unk.Size = new System.Drawing.Size(126, 20);
             this.tb_unk.TabIndex = 51;
@@ -522,16 +525,45 @@
             // lb_unk
             // 
             this.lb_unk.AutoSize = true;
-            this.lb_unk.Location = new System.Drawing.Point(47, 282);
+            this.lb_unk.Location = new System.Drawing.Point(304, 285);
             this.lb_unk.Name = "lb_unk";
             this.lb_unk.Size = new System.Drawing.Size(53, 13);
             this.lb_unk.TabIndex = 50;
             this.lb_unk.Text = "Unknown";
             // 
+            // tb_ct2
+            // 
+            this.tb_ct2.Location = new System.Drawing.Point(181, 278);
+            this.tb_ct2.Name = "tb_ct2";
+            this.tb_ct2.Size = new System.Drawing.Size(50, 20);
+            this.tb_ct2.TabIndex = 54;
+            this.tb_ct2.TextChanged += new System.EventHandler(this.tb_ct2_TextChanged);
+            // 
+            // tb_ct1
+            // 
+            this.tb_ct1.Location = new System.Drawing.Point(105, 278);
+            this.tb_ct1.Name = "tb_ct1";
+            this.tb_ct1.Size = new System.Drawing.Size(50, 20);
+            this.tb_ct1.TabIndex = 53;
+            this.tb_ct1.TextChanged += new System.EventHandler(this.tb_ct1_TextChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(34, 281);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(65, 13);
+            this.label2.TabIndex = 52;
+            this.label2.Text = "Casting type";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
             // Control1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.tb_ct2);
+            this.Controls.Add(this.tb_ct1);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.tb_unk);
             this.Controls.Add(this.lb_unk);
             this.Controls.Add(this.tb_sd10);
@@ -644,5 +676,8 @@
         private System.Windows.Forms.Label lb_sd5;
         private System.Windows.Forms.TextBox tb_unk;
         private System.Windows.Forms.Label lb_unk;
+        private System.Windows.Forms.TextBox tb_ct2;
+        private System.Windows.Forms.TextBox tb_ct1;
+        private System.Windows.Forms.Label label2;
     }
 }

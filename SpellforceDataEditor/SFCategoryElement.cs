@@ -91,6 +91,8 @@ namespace SpellforceDataEditor
         }
         public SFVariant get_single_variant(int index)
         {
+            if (index >= properties.Length)
+                return null;
             return properties[index];
         }
     }
