@@ -66,7 +66,6 @@ namespace SpellforceDataEditor.category_forms
         public string bytearray_repr(int index, int count)
         {
             Byte[] bytes = new Byte[count];
-            string str = "";
             for(int i = 0; i < count; i++)
             {
                 SFVariant v = category.get_element_variant(current_element, index + i);

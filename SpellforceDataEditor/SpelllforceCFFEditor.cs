@@ -40,7 +40,7 @@ namespace SpellforceDataEditor
             ElementSelect.Items.Clear();
             for(int i = 0; i < ctg.get_element_count(); i++)
             {
-                ElementSelect.Items.Add(ctg.get_element_string(i));
+                ElementSelect.Items.Add(ctg.get_element_string(manager, i));
             }
 
             ElementDisplay = Assembly.GetExecutingAssembly().CreateInstance(

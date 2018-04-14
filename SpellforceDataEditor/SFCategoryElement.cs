@@ -85,6 +85,19 @@ namespace SpellforceDataEditor
             }
             return;
         }
+        public void set_single_variant(int index, Object obj)
+        {
+            properties[index] = new SFVariant();
+            properties[index].set(obj);
+        }
+        public void resize(int size)
+        {
+            SFVariant[] prop2 = new SFVariant[size];
+            int elemnum = (size < properties.Length ? size : properties.Length);
+            for (int i = 0; i < elemnum; i++)
+                prop2[i] = properties[i];
+            properties = prop2;
+        }
         public SFVariant[] get()
         {
             return properties;

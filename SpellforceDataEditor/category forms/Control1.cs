@@ -24,7 +24,7 @@ namespace SpellforceDataEditor.category_forms
 
         private void tb_typeID_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 1, Utility.TryParseUInt16(tb_effID.Text));
+            category.set_element_variant(current_element, 1, Utility.TryParseUInt16(tb_typeID.Text));
         }
 
         private void tb_req1_1_TextChanged(object sender, EventArgs e)

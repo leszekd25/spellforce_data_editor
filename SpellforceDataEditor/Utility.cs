@@ -104,5 +104,13 @@ namespace SpellforceDataEditor
                     charray[i] = '\0';
             return charray;
         }
+
+        static public string CleanString(SFVariant ch)
+        {
+            if (ch.vtype != TYPE.String)
+                return "";
+            return (new string((char[])ch.value)).Replace("\0", string.Empty);
+        }
+
     }
 }
