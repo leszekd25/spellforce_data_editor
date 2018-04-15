@@ -72,6 +72,31 @@ namespace SpellforceDataEditor
             elem_size = s;
         }
 
+        public Object empty_variant(char t)
+        {
+            switch (t)
+            {
+                case 'b':
+                    return (SByte)0;
+                case 'B':
+                    return (Byte)0;
+                case 'h':
+                    return (Int16)0;
+                case 'H':
+                    return (UInt16)0;
+                case 'i':
+                    return (Int32)0;
+                case 'I':
+                    return (UInt32)0;
+                case 'f':
+                    return (Single)0;
+                case 's':
+                    return new char[0];
+                default:
+                    return null;
+            }
+        }
+
         //retrieves next variant from a buffer, given a type (indicated by a character contained in a format)
         public Object get_single_variant(BinaryReader sr, char t, int s_size)
         {
@@ -152,6 +177,11 @@ namespace SpellforceDataEditor
             return null;
         }
 
+        public List<SFCategoryElement> get_elements()
+        {
+            return elements;
+        }
+
         public SFVariant get_element_variant(int elem_index, int var_index)
         {
             if (elem_index >= elements.Count)
@@ -229,10 +259,10 @@ namespace SpellforceDataEditor
         }
 
         //puts a new element to a buffer
-        public void put_element(BinaryWriter sw, SFVariant[] vars)
+        public void put_element(BinaryWriter sw, List<SFVariant> vars)
         {
             current_string = 0;
-            for (int i = 0; i < vars.Length; i++)
+            for (int i = 0; i < vars.Count; i++)
             {
                 put_single_variant(sw, vars[i], string_size[current_string]);
             }
@@ -278,8 +308,8 @@ namespace SpellforceDataEditor
         public void set_element(BinaryWriter sw, int elem_index)
         {
             current_string = 0;
-            SFVariant[] vars = get_element(elem_index).get();
-            for (int i = 0; i < vars.Length; i++)
+            List<SFVariant> vars = get_element(elem_index).get();
+            for (int i = 0; i < vars.Count; i++)
             {
                 put_single_variant(sw, vars[i], string_size[current_string]);
                 if(vars[i].vtype == TYPE.String)
@@ -329,7 +359,12 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt16 type_id = (UInt16)get_element_variant(index, 1).value;
-            UInt16 text_id = (UInt16)manager.get_category(1).find_binary_element<UInt16>(0, type_id).get_single_variant(1).value;
+            SFCategoryElement stype_elem = manager.get_category(1).find_binary_element<UInt16>(0, type_id);
+            if(stype_elem == null)
+            {
+                return get_element_variant(index, 0).value.ToString();
+            }
+            UInt16 text_id = (UInt16)stype_elem.get_single_variant(1).value;
             SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
             string txt = Utility.CleanString(txt_elem.get_single_variant(4));
             Byte spell_level = (Byte)get_element_variant(index, 4).value;
@@ -778,11 +813,10 @@ namespace SpellforceDataEditor
                 SFCategoryElement elem = new SFCategoryElement();
                 elem.set(get_element(mr));
                 int vertex_count = (int)(Byte)elem.get_single_variant(3).value;
-                elem.resize(fm_length + 2 * vertex_count);
                 for(int j = 0; j < vertex_count; j++)
                 {
-                    elem.set_single_variant(4 + j * 2, mr.ReadInt16());
-                    elem.set_single_variant(4 + j * 2 + 1, mr.ReadInt16());
+                    elem.add_single_variant(mr.ReadInt16());
+                    elem.add_single_variant(mr.ReadInt16());
                 }
                 elements.Add(elem);
             }
@@ -983,11 +1017,10 @@ namespace SpellforceDataEditor
                 SFCategoryElement elem = new SFCategoryElement();
                 elem.set(get_element(mr));
                 int vertex_count = (int)(Byte)elem.get_single_variant(3).value;
-                elem.resize(fm_length + 2 * vertex_count);
                 for (int j = 0; j < vertex_count; j++)
                 {
-                    elem.set_single_variant(4 + j * 2, mr.ReadInt16());
-                    elem.set_single_variant(4 + j * 2 + 1, mr.ReadInt16());
+                    elem.add_single_variant(mr.ReadInt16());
+                    elem.add_single_variant(mr.ReadInt16());
                 }
                 elements.Add(elem);
             }

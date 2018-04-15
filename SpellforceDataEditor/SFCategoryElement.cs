@@ -91,18 +91,18 @@ namespace SpellforceDataEditor
     //this entry can hold different types of data depending on which category it belongs to
     public class SFCategoryElement
     {
-        protected SFVariant[] properties;
+        protected List<SFVariant> properties;
         public SFCategoryElement()
         {
-            properties = null;
+            properties = new List<SFVariant>();
         }
         public void set(Object[] objs)
         {
-            properties = new SFVariant[objs.Length];
             for (int i = 0; i < objs.Length; i++)
             {
-                properties[i] = new SFVariant();
-                properties[i].set(objs[i]);
+                SFVariant variant = new SFVariant();
+                variant.set(objs[i]);
+                properties.Add(variant);
             }
             return;
         }
@@ -111,21 +111,13 @@ namespace SpellforceDataEditor
             properties[index] = new SFVariant();
             properties[index].set(obj);
         }
-        public void resize(int size)
-        {
-            SFVariant[] prop2 = new SFVariant[size];
-            int elemnum = (size < properties.Length ? size : properties.Length);
-            for (int i = 0; i < elemnum; i++)
-                prop2[i] = properties[i];
-            properties = prop2;
-        }
-        public SFVariant[] get()
+        public List<SFVariant> get()
         {
             return properties;
         }
         public SFVariant get_single_variant(int index)
         {
-            if (index >= properties.Length)
+            if (index >= properties.Count)
                 return null;
             return properties[index];
         }
@@ -142,6 +134,12 @@ namespace SpellforceDataEditor
                     s += SFVariant.TYPE_SIZE[(int)v.vtype];
             }
             return s;
+        }
+        public void add_single_variant(Object obj)
+        {
+            SFVariant v = new SFVariant();
+            v.set(obj);
+            properties.Add(v);
         }
     }
 }

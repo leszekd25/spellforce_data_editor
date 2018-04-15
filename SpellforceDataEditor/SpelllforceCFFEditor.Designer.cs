@@ -45,9 +45,13 @@
             this.SearchButton = new System.Windows.Forms.Button();
             this.panelSearch = new System.Windows.Forms.Panel();
             this.groupSearch = new System.Windows.Forms.GroupBox();
+            this.panelElemManipulate = new System.Windows.Forms.Panel();
+            this.ButtonElemInsert = new System.Windows.Forms.Button();
+            this.ButtonElemRemove = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
+            this.panelElemManipulate.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -73,21 +77,21 @@
             // loadGameDatacffToolStripMenuItem
             // 
             this.loadGameDatacffToolStripMenuItem.Name = "loadGameDatacffToolStripMenuItem";
-            this.loadGameDatacffToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadGameDatacffToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.loadGameDatacffToolStripMenuItem.Text = "Load GameData.cff";
             this.loadGameDatacffToolStripMenuItem.Click += new System.EventHandler(this.loadGameDatacffToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // CategorySelect
@@ -121,7 +125,7 @@
             // 
             this.SearchPanel.Location = new System.Drawing.Point(395, 27);
             this.SearchPanel.Name = "SearchPanel";
-            this.SearchPanel.Size = new System.Drawing.Size(500, 520);
+            this.SearchPanel.Size = new System.Drawing.Size(500, 421);
             this.SearchPanel.TabIndex = 4;
             // 
             // SaveGameData
@@ -200,11 +204,42 @@
             this.groupSearch.TabIndex = 11;
             this.groupSearch.TabStop = false;
             // 
+            // panelElemManipulate
+            // 
+            this.panelElemManipulate.Controls.Add(this.ButtonElemRemove);
+            this.panelElemManipulate.Controls.Add(this.ButtonElemInsert);
+            this.panelElemManipulate.Location = new System.Drawing.Point(313, 54);
+            this.panelElemManipulate.Name = "panelElemManipulate";
+            this.panelElemManipulate.Size = new System.Drawing.Size(76, 115);
+            this.panelElemManipulate.TabIndex = 11;
+            this.panelElemManipulate.Visible = false;
+            // 
+            // ButtonElemInsert
+            // 
+            this.ButtonElemInsert.Location = new System.Drawing.Point(4, 4);
+            this.ButtonElemInsert.Name = "ButtonElemInsert";
+            this.ButtonElemInsert.Size = new System.Drawing.Size(69, 23);
+            this.ButtonElemInsert.TabIndex = 0;
+            this.ButtonElemInsert.Text = "Insert";
+            this.ButtonElemInsert.UseVisualStyleBackColor = true;
+            this.ButtonElemInsert.Click += new System.EventHandler(this.ButtonElemInsert_Click);
+            // 
+            // ButtonElemRemove
+            // 
+            this.ButtonElemRemove.Location = new System.Drawing.Point(3, 33);
+            this.ButtonElemRemove.Name = "ButtonElemRemove";
+            this.ButtonElemRemove.Size = new System.Drawing.Size(69, 23);
+            this.ButtonElemRemove.TabIndex = 1;
+            this.ButtonElemRemove.Text = "Remove";
+            this.ButtonElemRemove.UseVisualStyleBackColor = true;
+            this.ButtonElemRemove.Click += new System.EventHandler(this.ButtonElemRemove_Click);
+            // 
             // SpelllforceCFFEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(944, 601);
+            this.Controls.Add(this.panelElemManipulate);
             this.Controls.Add(this.panelSearch);
             this.Controls.Add(this.SearchPanel);
             this.Controls.Add(this.ElementSelect);
@@ -219,6 +254,7 @@
             this.panelSearch.PerformLayout();
             this.groupSearch.ResumeLayout(false);
             this.groupSearch.PerformLayout();
+            this.panelElemManipulate.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -243,5 +279,8 @@
         private System.Windows.Forms.Button SearchButton;
         private System.Windows.Forms.Panel panelSearch;
         private System.Windows.Forms.GroupBox groupSearch;
+        private System.Windows.Forms.Panel panelElemManipulate;
+        private System.Windows.Forms.Button ButtonElemRemove;
+        private System.Windows.Forms.Button ButtonElemInsert;
     }
 }

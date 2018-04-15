@@ -45,7 +45,7 @@ namespace SpellforceDataEditor.category_forms
         private void listBox1_update()
         {
             listBox1.Items.Clear();
-            int vertex_count = ((category.get_element(current_element).get().Length) - 4) / 2;
+            int vertex_count = ((category.get_element(current_element).get().Count) - 4) / 2;
             for (int i = 0; i < vertex_count; i++)
             {
                 Int16 x = (Int16)category.get_element_variant(current_element, 4 + i * 2).value;

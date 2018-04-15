@@ -59,11 +59,19 @@ namespace SpellforceDataEditor
             ElementDisplay.set_category(ctg);
             SearchPanel.Controls.Clear();
             SearchPanel.Controls.Add(ElementDisplay);
+            ElementDisplay.Visible = false;
             panelSearch.Visible = true;
+            panelElemManipulate.Visible = true;
         }
 
         private void ElementSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (ElementSelect.SelectedIndex == -1)
+            {
+                ElementDisplay.Visible = false;
+                return;
+            }
+            ElementDisplay.Visible = true;
             ElementDisplay.set_element(current_indices[ElementSelect.SelectedIndex]);
             ElementDisplay.show_element();
         }
@@ -103,6 +111,7 @@ namespace SpellforceDataEditor
                 return;
             if (SearchQuery.Text == "")
                 return;
+            panelElemManipulate.Visible = false;
             ElementSelect.Items.Clear();
             current_indices.Clear();
             int elem_found = 0;
@@ -130,6 +139,33 @@ namespace SpellforceDataEditor
                     ElementSelect_add_elements(ctg, query_result);
                 }
             }
+            ElementDisplay.Visible = false;
+        }
+
+        private void ButtonElemInsert_Click(object sender, EventArgs e)
+        {
+            int current_elem = current_indices[ElementSelect.SelectedIndex];
+            SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
+            SFCategoryElement elem = new SFCategoryElement();
+            string format_elem = ctg.get_element_format();
+            foreach(char c in format_elem)
+            {
+                elem.add_single_variant(ctg.empty_variant(c));
+            }
+            List<SFCategoryElement> elems = ctg.get_elements();
+            elems.Insert(current_elem+1, elem);
+            ElementSelect.Items.Insert(current_elem+1, ctg.get_element_string(manager, current_elem+1));
+            current_indices.Insert(current_elem+1, current_elem+1);
+        }
+
+        private void ButtonElemRemove_Click(object sender, EventArgs e)
+        {
+            int current_elem = current_indices[ElementSelect.SelectedIndex];
+            SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
+            List<SFCategoryElement> elems = ctg.get_elements();
+            current_indices.RemoveAt(current_elem);
+            ElementSelect.Items.RemoveAt(ElementSelect.SelectedIndex);
+            elems.RemoveAt(current_elem);
         }
     }
 }
