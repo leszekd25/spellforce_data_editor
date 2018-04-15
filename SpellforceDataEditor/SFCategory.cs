@@ -298,7 +298,7 @@ namespace SpellforceDataEditor
             }
         }
 
-        //manager is required to communicate with other cateegories to construct a short description
+        //manager is required to communicate with other categories to construct a short description
         public virtual string get_element_string(SFCategoryManager manager, int index)
         {
             return index.ToString();
@@ -307,6 +307,11 @@ namespace SpellforceDataEditor
         public int get_element_count()
         {
             return elements.Count;
+        }
+
+        public string get_element_format()
+        {
+            return elem_format;
         }
     }
 

@@ -65,6 +65,26 @@ namespace SpellforceDataEditor
             }
             vtype = TYPE.Unknown;
         }
+        public int to_int()
+        {
+            switch(vtype)
+            {
+                case TYPE.Byte:
+                    return (int)(SByte)value;
+                case TYPE.UByte:
+                    return (int)(Byte)value;
+                case TYPE.Short:
+                    return (int)(Int16)value;
+                case TYPE.UShort:
+                    return (int)(UInt16)value;
+                case TYPE.Int:
+                    return (int)(Int32)value;
+                case TYPE.UInt:
+                    return (int)(UInt32)value;
+                default:
+                    return 0;
+            }
+        }
     }
 
     //category element is a single entry from a category

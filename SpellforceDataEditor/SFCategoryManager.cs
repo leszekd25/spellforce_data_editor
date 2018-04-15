@@ -201,5 +201,33 @@ namespace SpellforceDataEditor
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
             return txt;
         }
+
+        public List<int> query_by_column_numeric(int categoryindex, int columnindex, int value)
+        {
+            List<int> items = new List<int>();
+            SFCategory cat = get_category(categoryindex);
+            for (int i = 0; i < cat.get_element_count(); i++)
+            {
+                SFVariant variant = cat.get_element_variant(i, columnindex);
+                int current_value = variant.to_int();
+                if (current_value == value)
+                    items.Add(i);
+            }
+            return items;
+        }
+
+        public List<int> query_by_column_text(int categoryindex, int columnindex, string value)
+        {
+            List<int> items = new List<int>();
+            SFCategory cat = get_category(categoryindex);
+            for (int i = 0; i < cat.get_element_count(); i++)
+            {
+                SFVariant variant = cat.get_element_variant(i, columnindex);
+                string current_value = Utility.CleanString(variant);
+                if (current_value.Contains(value))
+                    items.Add(i);
+            }
+            return items;
+        }
     }
 }
