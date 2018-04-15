@@ -45,12 +45,12 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(22, 48);
+            this.label1.Location = new System.Drawing.Point(57, 48);
             this.label1.Name = "label1";
             this.label1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label1.Size = new System.Drawing.Size(77, 13);
+            this.label1.Size = new System.Drawing.Size(42, 13);
             this.label1.TabIndex = 12;
-            this.label1.Text = "Unknown data";
+            this.label1.Text = "Text ID";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // tb_effID
@@ -64,12 +64,12 @@
             // lb_effID
             // 
             this.lb_effID.AutoSize = true;
-            this.lb_effID.Location = new System.Drawing.Point(32, 22);
+            this.lb_effID.Location = new System.Drawing.Point(12, 22);
             this.lb_effID.Name = "lb_effID";
             this.lb_effID.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lb_effID.Size = new System.Drawing.Size(67, 13);
+            this.lb_effID.Size = new System.Drawing.Size(87, 13);
             this.lb_effID.TabIndex = 10;
-            this.lb_effID.Text = "Unknown ID";
+            this.lb_effID.Text = "Weapon material";
             this.lb_effID.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // Control45

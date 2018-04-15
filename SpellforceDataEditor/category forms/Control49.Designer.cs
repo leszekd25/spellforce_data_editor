@@ -85,12 +85,12 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(46, 74);
+            this.label2.Location = new System.Drawing.Point(53, 74);
             this.label2.Name = "label2";
             this.label2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label2.Size = new System.Drawing.Size(53, 13);
+            this.label2.Size = new System.Drawing.Size(46, 13);
             this.label2.TabIndex = 18;
-            this.label2.Text = "Unknown";
+            this.label2.Text = "Set type";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // Control49

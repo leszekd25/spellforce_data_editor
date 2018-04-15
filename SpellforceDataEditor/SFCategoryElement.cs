@@ -13,6 +13,7 @@ namespace SpellforceDataEditor
     {
         public Object value;
         public TYPE vtype;
+        public static int[] TYPE_SIZE = { 1, 1, 2, 2, 4, 4, 4, 0, -1 };
         public SFVariant()
         {
             vtype = TYPE.Unknown;
@@ -107,6 +108,20 @@ namespace SpellforceDataEditor
             if (index >= properties.Length)
                 return null;
             return properties[index];
+        }
+        public int get_size()
+        {
+            int s = 0;
+            foreach(SFVariant v in properties)
+            {
+                if (v.vtype == TYPE.String)
+                {
+                    s += ((char[])v.value).Length;
+                }
+                else
+                    s += SFVariant.TYPE_SIZE[(int)v.vtype];
+            }
+            return s;
         }
     }
 }

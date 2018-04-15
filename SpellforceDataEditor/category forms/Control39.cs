@@ -37,12 +37,14 @@ namespace SpellforceDataEditor.category_forms
             category.set_element_variant(current_element, 3, Utility.TryParseUInt16(tb_rng_max.Text));
         }
 
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 4, (Byte)(checkBox1.Checked ? 1 : 0));
+        }
+
         private void tb_req4_1_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(tb_req4_1.Text, 3);
-            category.set_element_variant(current_element, 4, data_array[0]);
-            category.set_element_variant(current_element, 5, data_array[1]);
-            category.set_element_variant(current_element, 6, data_array[2]);
+            category.set_element_variant(current_element, 5, Utility.TryParseUInt16(tb_req4_1.Text));
         }
 
         public override void show_element()
@@ -51,7 +53,8 @@ namespace SpellforceDataEditor.category_forms
             textBox1.Text = variant_repr(1);
             tb_rng_min.Text = variant_repr(2);
             tb_rng_max.Text = variant_repr(3);
-            tb_req4_1.Text = bytearray_repr(4, 3);
+            checkBox1.Checked = ((Byte)category.get_element_variant(current_element, 4).value != 0);
+            tb_req4_1.Text = variant_repr(5);
         }
     }
 }

@@ -32,6 +32,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tb_effID = new System.Windows.Forms.TextBox();
             this.lb_effID = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBox1
@@ -45,12 +47,12 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(22, 48);
+            this.label1.Location = new System.Drawing.Point(57, 48);
             this.label1.Name = "label1";
             this.label1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label1.Size = new System.Drawing.Size(77, 13);
+            this.label1.Size = new System.Drawing.Size(42, 13);
             this.label1.TabIndex = 8;
-            this.label1.Text = "Unknown data";
+            this.label1.Text = "Text ID";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // tb_effID
@@ -64,18 +66,39 @@
             // lb_effID
             // 
             this.lb_effID.AutoSize = true;
-            this.lb_effID.Location = new System.Drawing.Point(32, 22);
+            this.lb_effID.Location = new System.Drawing.Point(14, 22);
             this.lb_effID.Name = "lb_effID";
             this.lb_effID.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lb_effID.Size = new System.Drawing.Size(67, 13);
+            this.lb_effID.Size = new System.Drawing.Size(85, 13);
             this.lb_effID.TabIndex = 6;
-            this.lb_effID.Text = "Unknown ID";
+            this.lb_effID.Text = "Weapon type ID";
             this.lb_effID.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(105, 71);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(38, 20);
+            this.textBox2.TabIndex = 11;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(46, 74);
+            this.label2.Name = "label2";
+            this.label2.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label2.Size = new System.Drawing.Size(53, 13);
+            this.label2.TabIndex = 10;
+            this.label2.Text = "Unknown";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // Control44
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tb_effID);
@@ -92,5 +115,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tb_effID;
         private System.Windows.Forms.Label lb_effID;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label2;
     }
 }

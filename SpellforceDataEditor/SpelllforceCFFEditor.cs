@@ -32,6 +32,16 @@ namespace SpellforceDataEditor
             }
         }
 
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CategorySelect.Enabled == false)
+                return;
+            if (SaveGameData.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                manager.save_cff(SaveGameData.FileName);
+            }
+        }
+
         private void CategorySelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             ElementSelect.Enabled = true;
@@ -56,5 +66,6 @@ namespace SpellforceDataEditor
             ElementDisplay.set_element(ElementSelect.SelectedIndex);
             ElementDisplay.show_element();
         }
+
     }
 }

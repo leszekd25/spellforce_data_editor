@@ -36,6 +36,8 @@
             this.ElementSelect = new System.Windows.Forms.ListBox();
             this.OpenGameData = new System.Windows.Forms.OpenFileDialog();
             this.SFControlPanel = new System.Windows.Forms.Panel();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaveGameData = new System.Windows.Forms.SaveFileDialog();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -53,6 +55,7 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadGameDatacffToolStripMenuItem,
+            this.saveAsToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -61,14 +64,14 @@
             // loadGameDatacffToolStripMenuItem
             // 
             this.loadGameDatacffToolStripMenuItem.Name = "loadGameDatacffToolStripMenuItem";
-            this.loadGameDatacffToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.loadGameDatacffToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadGameDatacffToolStripMenuItem.Text = "Load GameData.cff";
             this.loadGameDatacffToolStripMenuItem.Click += new System.EventHandler(this.loadGameDatacffToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // CategorySelect
@@ -103,6 +106,18 @@
             this.SFControlPanel.Size = new System.Drawing.Size(500, 520);
             this.SFControlPanel.TabIndex = 4;
             // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsToolStripMenuItem.Text = "Save as...";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            // 
+            // SaveGameData
+            // 
+            this.SaveGameData.FileName = "GameData_new.cff";
+            this.SaveGameData.Filter = "CFF file(*.cff)|*.cff";
+            // 
             // SpelllforceCFFEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -132,5 +147,7 @@
         private System.Windows.Forms.ListBox ElementSelect;
         private System.Windows.Forms.OpenFileDialog OpenGameData;
         private System.Windows.Forms.Panel SFControlPanel;
+        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog SaveGameData;
     }
 }

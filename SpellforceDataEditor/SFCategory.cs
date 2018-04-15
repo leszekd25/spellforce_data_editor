@@ -55,7 +55,7 @@ namespace SpellforceDataEditor
         {
             current_string = 0;
             int s = 0;
-            foreach(char c in fm)
+            foreach (char c in fm)
             {
                 if (c == 'b' || c == 'B')
                     s += 1;
@@ -147,7 +147,9 @@ namespace SpellforceDataEditor
 
         public SFCategoryElement get_element(int index)
         {
-            return elements[index];
+            if ((index >= 0) && (index < elements.Count))
+                return elements[index];
+            return null;
         }
 
         public SFVariant get_element_variant(int elem_index, int var_index)
@@ -207,6 +209,7 @@ namespace SpellforceDataEditor
             T val;
             while (current_start <= current_end)
             {
+
                 current_center = (current_start + current_end) / 2;    //care about overflow
                 val = (T)get_element(current_center).get_single_variant(v_index).value;
                 if (val.CompareTo(value) == 0)
@@ -221,7 +224,7 @@ namespace SpellforceDataEditor
 
         public void set_element_variant(int elem_index, int var_index, object obj)
         {
-            if(elem_index < elements.Count)
+            if (elem_index < elements.Count)
                 elements[elem_index].get()[var_index].set(obj);
         }
 
@@ -229,10 +232,20 @@ namespace SpellforceDataEditor
         public void put_element(BinaryWriter sw, SFVariant[] vars)
         {
             current_string = 0;
-            for (int i = 0; i < elem_format.Length; i++)
+            for (int i = 0; i < vars.Length; i++)
             {
                 put_single_variant(sw, vars[i], string_size[current_string]);
             }
+        }
+
+        public int get_size()
+        {
+            int s = 0;
+            foreach(SFCategoryElement elem in elements)
+            {
+                s += elem.get_size();
+            }
+            return s;
         }
 
         //reads a buffer and retrieves all expected elements
@@ -240,6 +253,8 @@ namespace SpellforceDataEditor
         {
             categoryHeader = sr.ReadBytes(categoryHeader.Length);
             block_length = BitConverter.ToUInt32(categoryHeader, 6);
+            Console.WriteLine(block_length);
+            elements = new List<SFCategoryElement>();
             Byte[] block_buffer = new Byte[block_length];
             sr.Read(block_buffer, 0, (int)(block_length));
             if (item_count == 0)
@@ -249,18 +264,39 @@ namespace SpellforceDataEditor
             }
             MemoryStream ms = new MemoryStream(block_buffer);
             BinaryReader mr = new BinaryReader(ms, Encoding.ASCII);
-            elements = new List<SFCategoryElement>();
-            while(mr.PeekChar() != -1)
+            while (mr.PeekChar() != -1)
             {
                 SFCategoryElement elem = new SFCategoryElement();
                 elem.set(get_element(mr));
                 elements.Add(elem);
             }
+            mr.Dispose();
+            ms.Dispose();
+            block_buffer = null;
         }
 
-        //public abstract SFVariant[] set_element(StreamWriter sw);
+        public void set_element(BinaryWriter sw, int elem_index)
+        {
+            current_string = 0;
+            SFVariant[] vars = get_element(elem_index).get();
+            for (int i = 0; i < vars.Length; i++)
+            {
+                put_single_variant(sw, vars[i], string_size[current_string]);
+                if(vars[i].vtype == TYPE.String)
+                    current_string = Math.Min(string_size.Length - 1, current_string + 1);
+            }
+        }
 
-        //public void write(StreamWriter sw);
+        public void write(BinaryWriter sw)
+        {
+            UInt32 new_block_size = (UInt32)get_size();
+            Utility.CopyUInt32ToByteArray(new_block_size, ref categoryHeader, 6);
+            sw.Write(categoryHeader);
+            for(int i = 0; i < get_element_count(); i++)
+            {
+                put_element(sw, elements[i].get());
+            }
+        }
 
         //manager is required to communicate with other cateegories to construct a short description
         public virtual string get_element_string(SFCategoryManager manager, int index)
@@ -287,8 +323,12 @@ namespace SpellforceDataEditor
         //can this be done better?
         public override string get_element_string(SFCategoryManager manager, int index)
         {
-            string txt = manager.get_effect_name((UInt16)get_element_variant(index, 1).value, true);
-            return get_element_variant(index, 0).value.ToString() + " " + txt;
+            UInt16 type_id = (UInt16)get_element_variant(index, 1).value;
+            UInt16 text_id = (UInt16)manager.get_category(1).find_binary_element<UInt16>(0, type_id).get_single_variant(1).value;
+            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
+            string txt = Utility.CleanString(txt_elem.get_single_variant(4));
+            Byte spell_level = (Byte)get_element_variant(index, 4).value;
+            return get_element_variant(index, 0).value.ToString() + " " + txt + " level "+spell_level.ToString();
         }
     }
 
@@ -716,6 +756,8 @@ namespace SpellforceDataEditor
         {
             categoryHeader = sr.ReadBytes(categoryHeader.Length);
             block_length = BitConverter.ToUInt32(categoryHeader, 6);
+            Console.WriteLine(block_length);
+            elements = new List<SFCategoryElement>();
             Byte[] block_buffer = new Byte[block_length];
             sr.Read(block_buffer, 0, (int)(block_length));
             if (item_count == 0)
@@ -726,7 +768,6 @@ namespace SpellforceDataEditor
             int fm_length = elem_format.Length;
             MemoryStream ms = new MemoryStream(block_buffer);
             BinaryReader mr = new BinaryReader(ms, Encoding.ASCII);
-            elements = new List<SFCategoryElement>();
             while (mr.PeekChar() != -1)
             {
                 SFCategoryElement elem = new SFCategoryElement();
@@ -759,6 +800,14 @@ namespace SpellforceDataEditor
             initialize("HBH");
             category_name = "Building requirements";
         }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt16 building_id = (UInt16)get_element_variant(index, 0).value;
+            Byte b_index = (Byte)get_element_variant(index, 1).value;
+            string txt_building = manager.get_building_name(building_id);
+            return building_id.ToString() + " " + txt_building + " [" + b_index.ToString() + "]";
+        }
     }
 
     //combat arms/magic ID with name ID (27th category)
@@ -768,6 +817,14 @@ namespace SpellforceDataEditor
         {
             initialize("BBH");
             category_name = "Combat arms/magic ID with name ID";
+        }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            int text_id = (int)(UInt16)get_element_variant(index, 2).value;
+            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
+            string txt = Utility.CleanString(txt_elem.get_single_variant(4));
+            return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
     }
 
@@ -779,6 +836,14 @@ namespace SpellforceDataEditor
             initialize("BBBBBBBBB");
             category_name = "Skill requirements";
         }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            Byte skill_major = (Byte)get_element_variant(index, 0).value;
+            Byte skill_level = (Byte)get_element_variant(index, 1).value;
+            string txt_skill = manager.get_skill_name(skill_major, 101, skill_level);
+            return txt_skill;
+        }
     }
 
     //merchant ID with unit ID (29th category)
@@ -788,6 +853,14 @@ namespace SpellforceDataEditor
         {
             initialize("HH");
             category_name = "Merchant ID with unit ID";
+        }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt16 merchant_id = (UInt16)get_element_variant(index, 0).value;
+            UInt16 unit_id = (UInt16)get_element_variant(index, 1).value;
+            string txt_unit = manager.get_unit_name(unit_id);
+            return merchant_id.ToString() + " " + txt_unit;
         }
     }
 
@@ -799,6 +872,15 @@ namespace SpellforceDataEditor
             initialize("HHH");
             category_name = "Merchant's inventory";
         }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt16 merchant_id = (UInt16)get_element_variant(index, 0).value;
+            UInt16 item_id = (UInt16)get_element_variant(index, 1).value;
+            string txt_merchant = manager.get_merchant_name(merchant_id);
+            string txt_item = manager.get_item_name(item_id);
+            return merchant_id.ToString() + " " + txt_merchant + " | " + txt_item;
+        }
     }
 
     //merchant's sell and buy rate (?) (31th category)
@@ -806,8 +888,15 @@ namespace SpellforceDataEditor
     {
         public SFCategory31() : base()
         {
-            initialize("BBBBB");
+            initialize("HBH");
             category_name = "Merchant's sell/buy rate";
+        }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt16 merchant_id = (UInt16)get_element_variant(index, 0).value;
+            string txt_merchant = manager.get_merchant_name(merchant_id);
+            return merchant_id.ToString() + " " + txt_merchant;
         }
     }
 
@@ -829,6 +918,12 @@ namespace SpellforceDataEditor
             initialize("BHHIBBHH");
             category_name = "Player level stats";
         }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            Byte level = (Byte)get_element_variant(index, 0).value;
+            return "Level "+level.ToString();
+        }
     }
 
     //object stats/names (34th category)
@@ -837,8 +932,17 @@ namespace SpellforceDataEditor
         public SFCategory34() : base()
         {
             string_size = new int[1] { 40 };
-            initialize("HBBBBBsBBBBBBB");
+            initialize("HHBBBsBBBBBBB");
             category_name = "Object stats/names";
+        }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt16 object_id = (UInt16)get_element_variant(index, 0).value;
+            UInt16 text_id = (UInt16)get_element_variant(index, 1).value;
+            string object_handle = Utility.CleanString(get_element_variant(index, 5));
+            string txt = Utility.CleanString(manager.find_element_text(text_id, 1).get_single_variant(4));
+            return object_id.ToString() + " " + object_handle + "/" + txt;
         }
     }
 
@@ -847,9 +951,49 @@ namespace SpellforceDataEditor
     {
         public SFCategory35() : base()
         {
-            //initialize("");     //todo
-            skip();
-            category_name = "Monument/other world interactive object stats";
+            initialize("HBBB");
+            category_name = "Interactive object stats";
+        }
+
+        //reads a buffer and retrieves all expected elements
+        //special override method for this category
+        public override void read(BinaryReader sr)
+        {
+            categoryHeader = sr.ReadBytes(categoryHeader.Length);
+            block_length = BitConverter.ToUInt32(categoryHeader, 6);
+            block_length = BitConverter.ToUInt32(categoryHeader, 6);
+            elements = new List<SFCategoryElement>();
+            Byte[] block_buffer = new Byte[block_length];
+            sr.Read(block_buffer, 0, (int)(block_length));
+            if (item_count == 0)
+            {
+                Console.WriteLine("not ok");
+                return;
+            }
+            int fm_length = elem_format.Length;
+            MemoryStream ms = new MemoryStream(block_buffer);
+            BinaryReader mr = new BinaryReader(ms, Encoding.ASCII);
+            while (mr.PeekChar() != -1)
+            {
+                SFCategoryElement elem = new SFCategoryElement();
+                elem.set(get_element(mr));
+                int vertex_count = (int)(Byte)elem.get_single_variant(3).value;
+                elem.resize(fm_length + 2 * vertex_count);
+                for (int j = 0; j < vertex_count; j++)
+                {
+                    elem.set_single_variant(4 + j * 2, mr.ReadInt16());
+                    elem.set_single_variant(4 + j * 2 + 1, mr.ReadInt16());
+                }
+                elements.Add(elem);
+            }
+        }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt16 object_id = (UInt16)get_element_variant(index, 0).value;
+            Byte b_index = (Byte)get_element_variant(index, 1).value;
+            string txt_building = manager.get_object_name(object_id);
+            return object_id.ToString() + " " + txt_building + " [" + b_index.ToString() + "]";
         }
     }
 
@@ -861,6 +1005,14 @@ namespace SpellforceDataEditor
             initialize("HBHBHBH");
             category_name = "Chest/corpse loot";
         }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt16 object_id = (UInt16)get_element_variant(index, 0).value;
+            Byte slot_id = (Byte)get_element_variant(index, 1).value;
+            string txt_unit = manager.get_object_name(object_id);
+            return object_id.ToString() + " " + txt_unit + " (" + slot_id.ToString() + ")";
+        }
     }
 
     //unknown2 (37th category)
@@ -868,8 +1020,16 @@ namespace SpellforceDataEditor
     {
         public SFCategory37() : base()
         {
-            initialize("HBBBB");
-            category_name = "Unknown (2)";
+            initialize("IH");
+            category_name = "NPC ID with names";
+        }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt32 object_id = (UInt32)get_element_variant(index, 0).value;
+            UInt16 text_id = (UInt16)get_element_variant(index, 1).value;
+            string txt_unk = Utility.CleanString(manager.find_element_text(text_id, 1).get_single_variant(4));
+            return object_id.ToString() + " " + txt_unk;
         }
     }
 
@@ -879,8 +1039,21 @@ namespace SpellforceDataEditor
         public SFCategory38() : base()
         {
             string_size = new int[1] { 64 };
-            initialize("HHBsH");
+            initialize("IBsH");
             category_name = "Quest maps (?)";
+        }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt32 map_id = (UInt32)get_element_variant(index, 0).value;
+            UInt16 text_id = (UInt16)get_element_variant(index, 3).value;
+            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
+            if (txt_elem != null)
+            {
+                string txt_map = Utility.CleanString(manager.find_element_text(text_id, 1).get_single_variant(4));
+                return map_id.ToString() + " " + txt_map;
+            }
+            return map_id.ToString() + " <name missing>";
         }
     }
 
@@ -889,8 +1062,21 @@ namespace SpellforceDataEditor
     {
         public SFCategory39() : base()
         {
-            initialize("HIHHBBB");
+            initialize("HIHHBH");
             category_name = "Portal locations";
+        }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt16 object_id = (UInt16)get_element_variant(index, 0).value;
+            UInt16 text_id = (UInt16)get_element_variant(index, 5).value;
+            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
+            if (txt_elem != null)
+            {
+                string txt_map = Utility.CleanString(manager.find_element_text(text_id, 1).get_single_variant(4));
+                return object_id.ToString() + " " + txt_map;
+            }
+            return object_id.ToString() + " <name missing>";
         }
     }
 
@@ -912,6 +1098,19 @@ namespace SpellforceDataEditor
             initialize("HH");
             category_name = "Quest game menu";
         }
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt16 desc_id = (UInt16)get_element_variant(index, 0).value;
+            UInt16 text_id = (UInt16)get_element_variant(index, 1).value;
+            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
+            if (txt_elem != null)
+            {
+                string txt_map = Utility.CleanString(manager.find_element_text(text_id, 1).get_single_variant(4));
+                return desc_id.ToString() + " " + txt_map;
+            }
+            return desc_id.ToString() + " <text missing>";
+        }
+
     }
 
     //game/button/menu description (42nd category)
@@ -922,6 +1121,19 @@ namespace SpellforceDataEditor
             initialize("HHH");
             category_name = "Game/button/menu description";
         }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt16 elem_id = (UInt16)get_element_variant(index, 0).value;
+            UInt16 desc_id = (UInt16)get_element_variant(index, 2).value;
+            SFCategoryElement txt_elem = manager.find_element_text(desc_id, 1);
+            if (txt_elem != null)
+            {
+                string txt_desc = Utility.CleanString(txt_elem.get_single_variant(4));
+                return elem_id.ToString() + " " + txt_desc;
+            }
+            return elem_id.ToString() + " <text missing>";
+        }
     }
 
     //quest IDs (43rd category)
@@ -929,9 +1141,23 @@ namespace SpellforceDataEditor
     {
         public SFCategory43() : base()
         {
-            initialize("HBBBBBBBBBBBBBBB");
+            initialize("IIBHHI");
             category_name = "Quest IDs";
         }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt32 elem_id = (UInt32)get_element_variant(index, 0).value;
+            UInt16 desc_id = (UInt16)get_element_variant(index, 3).value;
+            SFCategoryElement txt_elem = manager.find_element_text(desc_id, 1);
+            if (txt_elem != null)
+            {
+                string txt_desc = Utility.CleanString(txt_elem.get_single_variant(4));
+                return elem_id.ToString() + " " + txt_desc;
+            }
+            return elem_id.ToString() + " <text missing>";
+        }
+
     }
 
     //uweapon type stats (44th category)
@@ -939,8 +1165,21 @@ namespace SpellforceDataEditor
     {
         public SFCategory44() : base()
         {
-            initialize("HBBB");
+            initialize("HHB");
             category_name = "Weapon type stats";
+        }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt16 elem_id = (UInt16)get_element_variant(index, 0).value;
+            UInt16 desc_id = (UInt16)get_element_variant(index, 1).value;
+            SFCategoryElement txt_elem = manager.find_element_text(desc_id, 1);
+            if (txt_elem != null)
+            {
+                string txt_desc = Utility.CleanString(txt_elem.get_single_variant(4));
+                return elem_id.ToString() + " " + txt_desc;
+            }
+            return elem_id.ToString() + " <text missing>";
         }
     }
 
@@ -949,8 +1188,21 @@ namespace SpellforceDataEditor
     {
         public SFCategory45() : base()
         {
-            initialize("HBB");
+            initialize("HH");
             category_name = "Weapon materials";
+        }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt16 elem_id = (UInt16)get_element_variant(index, 0).value;
+            UInt16 desc_id = (UInt16)get_element_variant(index, 1).value;
+            SFCategoryElement txt_elem = manager.find_element_text(desc_id, 1);
+            if (txt_elem != null)
+            {
+                string txt_desc = Utility.CleanString(txt_elem.get_single_variant(4));
+                return elem_id.ToString() + " " + txt_desc;
+            }
+            return elem_id.ToString() + " <text missing>";
         }
     }
 
@@ -983,6 +1235,19 @@ namespace SpellforceDataEditor
             initialize("HHHHHHHHHHHsI");
             category_name = "Button upgrade stats UI";
         }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            UInt16 elem_id = (UInt16)get_element_variant(index, 0).value;
+            UInt16 desc_id = (UInt16)get_element_variant(index, 1).value;
+            SFCategoryElement txt_elem = manager.find_element_text(desc_id, 1);
+            if (txt_elem != null)
+            {
+                string txt_desc = Utility.CleanString(txt_elem.get_single_variant(4));
+                return elem_id.ToString() + " " + txt_desc;
+            }
+            return elem_id.ToString() + " <text missing>";
+        }
     }
 
     //item sets (49th category)
@@ -992,6 +1257,19 @@ namespace SpellforceDataEditor
         {
             initialize("BHB");
             category_name = "Item sets";
+        }
+
+        public override string get_element_string(SFCategoryManager manager, int index)
+        {
+            Byte elem_id = (Byte)get_element_variant(index, 0).value;
+            UInt16 desc_id = (UInt16)get_element_variant(index, 1).value;
+            SFCategoryElement txt_elem = manager.find_element_text(desc_id, 1);
+            if (txt_elem != null)
+            {
+                string txt_desc = Utility.CleanString(txt_elem.get_single_variant(4));
+                return elem_id.ToString() + " " + txt_desc;
+            }
+            return elem_id.ToString() + " <text missing>";
         }
     }
 

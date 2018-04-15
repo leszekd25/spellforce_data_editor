@@ -112,5 +112,12 @@ namespace SpellforceDataEditor
             return (new string((char[])ch.value)).Replace("\0", string.Empty);
         }
 
+        static public void CopyUInt32ToByteArray(UInt32 elem, ref Byte[] bytearray, int index)
+        {
+            bytearray[index] = (byte)(elem % 256);
+            bytearray[index+1] = (byte)(elem >> 8);
+            bytearray[index+2] = (byte)(elem >> 16);
+            bytearray[index+3] = (byte)(elem >> 24);
+        }
     }
 }

@@ -19,17 +19,24 @@ namespace SpellforceDataEditor.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(textBox1.Text, 5);
-            category.set_element_variant(current_element, 0, data_array[0]);
-            category.set_element_variant(current_element, 1, data_array[1]);
-            category.set_element_variant(current_element, 2, data_array[2]);
-            category.set_element_variant(current_element, 3, data_array[3]);
-            category.set_element_variant(current_element, 4, data_array[4]);
+            category.set_element_variant(current_element, 0, Utility.TryParseUInt16(textBox1.Text));
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox2.Text));
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 2, Utility.TryParseUInt16(textBox3.Text));
         }
 
         public override void show_element()
         {
-            textBox1.Text = bytearray_repr(0, 5);
+            textBox1.Text = variant_repr(0);
+            textBox2.Text = variant_repr(1);
+            textBox3.Text = variant_repr(2);
         }
     }
 }

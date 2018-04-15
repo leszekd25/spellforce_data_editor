@@ -19,33 +19,42 @@ namespace SpellforceDataEditor.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 0, Utility.TryParseUInt16(tb_effID.Text));
+            category.set_element_variant(current_element, 0, Utility.TryParseUInt32(tb_effID.Text));
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(textBox1.Text, 15);
-            category.set_element_variant(current_element, 1, data_array[0]);
-            category.set_element_variant(current_element, 2, data_array[1]);
-            category.set_element_variant(current_element, 3, data_array[2]);
-            category.set_element_variant(current_element, 4, data_array[3]);
-            category.set_element_variant(current_element, 5, data_array[4]);
-            category.set_element_variant(current_element, 6, data_array[5]);
-            category.set_element_variant(current_element, 7, data_array[6]);
-            category.set_element_variant(current_element, 8, data_array[7]);
-            category.set_element_variant(current_element, 9, data_array[8]);
-            category.set_element_variant(current_element, 10, data_array[9]);
-            category.set_element_variant(current_element, 11, data_array[10]);
-            category.set_element_variant(current_element, 12, data_array[11]);
-            category.set_element_variant(current_element, 13, data_array[12]);
-            category.set_element_variant(current_element, 14, data_array[13]);
-            category.set_element_variant(current_element, 15, data_array[14]);
+            category.set_element_variant(current_element, 1, Utility.TryParseUInt32(textBox1.Text));
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 2, (Byte)(checkBox1.Checked ? 1 : 0));
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 3, Utility.TryParseUInt16(textBox2.Text));
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 4, Utility.TryParseUInt16(textBox3.Text));
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 5, Utility.TryParseUInt32(textBox4.Text));
         }
 
         public override void show_element()
         {
             tb_effID.Text = variant_repr(0);
-            textBox1.Text = bytearray_repr(1, 15);
+            textBox1.Text = variant_repr(1);
+            checkBox1.Checked = ((Byte)category.get_element_variant(current_element, 2).value != 0);
+            textBox2.Text = variant_repr(3);
+            textBox3.Text = variant_repr(4);
+            textBox4.Text = variant_repr(5);
         }
     }
 }

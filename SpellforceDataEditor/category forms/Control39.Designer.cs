@@ -37,6 +37,8 @@
             this.lb_rng = new System.Windows.Forms.Label();
             this.tb_req4_1 = new System.Windows.Forms.TextBox();
             this.lb_req4 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // tb_effID
@@ -50,12 +52,12 @@
             // lb_effID
             // 
             this.lb_effID.AutoSize = true;
-            this.lb_effID.Location = new System.Drawing.Point(32, 22);
+            this.lb_effID.Location = new System.Drawing.Point(51, 22);
             this.lb_effID.Name = "lb_effID";
             this.lb_effID.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lb_effID.Size = new System.Drawing.Size(67, 13);
+            this.lb_effID.Size = new System.Drawing.Size(48, 13);
             this.lb_effID.TabIndex = 2;
-            this.lb_effID.Text = "Object ID (?)";
+            this.lb_effID.Text = "Portal ID";
             this.lb_effID.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // textBox1
@@ -69,12 +71,12 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(40, 48);
+            this.label1.Location = new System.Drawing.Point(57, 48);
             this.label1.Name = "label1";
             this.label1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label1.Size = new System.Drawing.Size(59, 13);
+            this.label1.Size = new System.Drawing.Size(42, 13);
             this.label1.TabIndex = 4;
-            this.label1.Text = "Unknown1";
+            this.label1.Text = "Map ID";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // tb_rng_max
@@ -105,7 +107,7 @@
             // 
             // tb_req4_1
             // 
-            this.tb_req4_1.Location = new System.Drawing.Point(105, 97);
+            this.tb_req4_1.Location = new System.Drawing.Point(105, 120);
             this.tb_req4_1.Name = "tb_req4_1";
             this.tb_req4_1.Size = new System.Drawing.Size(126, 20);
             this.tb_req4_1.TabIndex = 31;
@@ -114,16 +116,37 @@
             // lb_req4
             // 
             this.lb_req4.AutoSize = true;
-            this.lb_req4.Location = new System.Drawing.Point(40, 100);
+            this.lb_req4.Location = new System.Drawing.Point(40, 123);
             this.lb_req4.Name = "lb_req4";
-            this.lb_req4.Size = new System.Drawing.Size(59, 13);
+            this.lb_req4.Size = new System.Drawing.Size(49, 13);
             this.lb_req4.TabIndex = 30;
-            this.lb_req4.Text = "Unknown2";
+            this.lb_req4.Text = "Name ID";
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(105, 97);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(15, 14);
+            this.checkBox1.TabIndex = 32;
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(40, 97);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(59, 13);
+            this.label2.TabIndex = 33;
+            this.label2.Text = "Unknown2";
             // 
             // Control39
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.tb_req4_1);
             this.Controls.Add(this.lb_req4);
             this.Controls.Add(this.tb_rng_max);
@@ -150,5 +173,7 @@
         private System.Windows.Forms.Label lb_rng;
         private System.Windows.Forms.TextBox tb_req4_1;
         private System.Windows.Forms.Label lb_req4;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Label label2;
     }
 }
