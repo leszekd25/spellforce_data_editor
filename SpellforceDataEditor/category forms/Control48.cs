@@ -15,6 +15,19 @@ namespace SpellforceDataEditor.category_forms
         public Control48()
         {
             InitializeComponent();
+            column_dict.Add("Button ID", new int[1] { 0 });
+            column_dict.Add("Building ID", new int[1] { 1 });
+            column_dict.Add("Button name ID", new int[1] { 2 });
+            column_dict.Add("Button description ID", new int[1] { 3 });
+            column_dict.Add("Wood", new int[1] { 4 });
+            column_dict.Add("Stone", new int[1] { 5 });
+            column_dict.Add("Iron", new int[1] { 6 });
+            column_dict.Add("Lenya", new int[1] { 7 });
+            column_dict.Add("Aria", new int[1] { 8 });
+            column_dict.Add("Moonsilver", new int[1] { 9 });
+            column_dict.Add("Food", new int[1] { 10 });
+            column_dict.Add("Button handle", new int[1] { 11 });
+            column_dict.Add("Research time", new int[1] { 12 });
         }
 
         private void tb_sd1_TextChanged(object sender, EventArgs e)

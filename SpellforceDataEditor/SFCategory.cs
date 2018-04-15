@@ -283,13 +283,11 @@ namespace SpellforceDataEditor
         {
             categoryHeader = sr.ReadBytes(categoryHeader.Length);
             block_length = BitConverter.ToUInt32(categoryHeader, 6);
-            Console.WriteLine(block_length);
             elements = new List<SFCategoryElement>();
             Byte[] block_buffer = new Byte[block_length];
             sr.Read(block_buffer, 0, (int)(block_length));
             if (item_count == 0)
             {
-                Console.WriteLine("not ok");
                 return;
             }
             MemoryStream ms = new MemoryStream(block_buffer);
@@ -796,13 +794,11 @@ namespace SpellforceDataEditor
         {
             categoryHeader = sr.ReadBytes(categoryHeader.Length);
             block_length = BitConverter.ToUInt32(categoryHeader, 6);
-            Console.WriteLine(block_length);
             elements = new List<SFCategoryElement>();
             Byte[] block_buffer = new Byte[block_length];
             sr.Read(block_buffer, 0, (int)(block_length));
             if (item_count == 0)
             {
-                Console.WriteLine("not ok");
                 return;
             }
             int fm_length = elem_format.Length;
@@ -1006,7 +1002,6 @@ namespace SpellforceDataEditor
             sr.Read(block_buffer, 0, (int)(block_length));
             if (item_count == 0)
             {
-                Console.WriteLine("not ok");
                 return;
             }
             int fm_length = elem_format.Length;

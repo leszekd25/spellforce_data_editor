@@ -15,6 +15,16 @@ namespace SpellforceDataEditor.category_forms
         public Control2()
         {
             InitializeComponent();
+            column_dict.Add("Spell type ID", new int[1] { 0 });
+            column_dict.Add("Spell text ID", new int[1] { 1 });
+            column_dict.Add("Unknown1 1", new int[1] { 2 });
+            column_dict.Add("Unknown1 2", new int[1] { 3 });
+            column_dict.Add("Sorting 1", new int[1] { 4 });
+            column_dict.Add("Sorting 2", new int[1] { 5 });
+            column_dict.Add("Sorting 3", new int[1] { 6 });
+            column_dict.Add("Spell UI handle", new int[1] { 7 });
+            column_dict.Add("Unknown2 1", new int[1] { 8 });
+            column_dict.Add("Unknown2 2", new int[1] { 9 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

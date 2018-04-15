@@ -15,6 +15,24 @@ namespace SpellforceDataEditor.category_forms
         public Control8()
         {
             InitializeComponent();
+            column_dict.Add("Item ID", new int[1] { 0 });
+            column_dict.Add("Strength", new int[1] { 1 });
+            column_dict.Add("Stamina", new int[1] { 2 });
+            column_dict.Add("Agility", new int[1] { 3 });
+            column_dict.Add("Dexterity", new int[1] { 4 });
+            column_dict.Add("Health", new int[1] { 5 });
+            column_dict.Add("Charisma", new int[1] { 6 });
+            column_dict.Add("Intelligence", new int[1] { 7 });
+            column_dict.Add("Wisdom", new int[1] { 8 });
+            column_dict.Add("Mana", new int[1] { 9 });
+            column_dict.Add("Armor", new int[1] { 10 });
+            column_dict.Add("Fire resistance", new int[1] { 11 });
+            column_dict.Add("Ice resistance", new int[1] { 12 });
+            column_dict.Add("Black resistance", new int[1] { 13 });
+            column_dict.Add("Mind resistance", new int[1] { 14 });
+            column_dict.Add("Walking speed", new int[1] { 15 });
+            column_dict.Add("Fighting speed", new int[1] { 16 });
+            column_dict.Add("Casting speed", new int[1] { 17 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

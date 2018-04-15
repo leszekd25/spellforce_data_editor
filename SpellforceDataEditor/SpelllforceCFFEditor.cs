@@ -59,6 +59,10 @@ namespace SpellforceDataEditor
             ElementDisplay.set_category(ctg);
             SearchPanel.Controls.Clear();
             SearchPanel.Controls.Add(ElementDisplay);
+            SearchColumnID.Items.Clear();
+            Dictionary<string, int[]>.KeyCollection keys = ElementDisplay.get_column_descriptions();
+            foreach (string s in keys)
+                SearchColumnID.Items.Add(s);
             ElementDisplay.Visible = false;
             panelSearch.Visible = true;
             panelElemManipulate.Visible = true;
@@ -117,12 +121,28 @@ namespace SpellforceDataEditor
             int elem_found = 0;
             SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
             int columns = ctg.get_element_format().Length;
+
+            //determine columns to search
+            List<int> columns_searched = new List<int>();
+            if (checkSearchByColumn.Checked)
+            {
+                int[] query_columns = ElementDisplay.get_column_index(SearchColumnID.Text);
+                foreach(int i in query_columns)
+                    columns_searched.Add(i);
+            }
+            else
+            {
+                for (int i = 0; i < columns; i++)
+                    columns_searched.Add(i);
+            }
+
+            //search columns for value and append results to the list of results
             if (radioSearchNumeric.Checked)
             {
                 int val = Utility.TryParseInt32(SearchQuery.Text);
-                for (int i = 0; i < columns; i++)
+                foreach(int col in columns_searched)
                 {
-                    List<int> query_result = manager.query_by_column_numeric(CategorySelect.SelectedIndex, i, val);
+                    List<int> query_result = manager.query_by_column_numeric(CategorySelect.SelectedIndex, col, val);
                     elem_found += query_result.Count;
                     ElementSelect_add_elements(ctg, query_result);
                 }
@@ -130,11 +150,11 @@ namespace SpellforceDataEditor
             else
             {
                 string val = SearchQuery.Text;
-                for (int i = 0; i < columns; i++)
+                foreach (int col in columns_searched)
                 {
-                    if (ctg.get_element_format()[i] != 's')
+                    if (ctg.get_element_format()[col] != 's')
                         continue;
-                    List<int> query_result = manager.query_by_column_text(CategorySelect.SelectedIndex, i, val);
+                    List<int> query_result = manager.query_by_column_text(CategorySelect.SelectedIndex, col, val);
                     elem_found += query_result.Count;
                     ElementSelect_add_elements(ctg, query_result);
                 }
@@ -166,6 +186,11 @@ namespace SpellforceDataEditor
             current_indices.RemoveAt(current_elem);
             ElementSelect.Items.RemoveAt(ElementSelect.SelectedIndex);
             elems.RemoveAt(current_elem);
+        }
+
+        private void checkSearchByColumn_CheckedChanged(object sender, EventArgs e)
+        {
+            SearchColumnID.Enabled = checkSearchByColumn.Checked;
         }
     }
 }

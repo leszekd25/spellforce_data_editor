@@ -15,6 +15,9 @@ namespace SpellforceDataEditor.category_forms
         public Control44()
         {
             InitializeComponent();
+            column_dict.Add("Weapon type ID", new int[1] { 0 });
+            column_dict.Add("Text ID", new int[1] { 1 });
+            column_dict.Add("Unknown", new int[1] { 2 });
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)

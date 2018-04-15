@@ -14,10 +14,22 @@ namespace SpellforceDataEditor.category_forms
     {
         protected SFCategory category;
         protected int current_element;
+        protected Dictionary<string, int[]> column_dict;
 
         public SFControl()
         {
             InitializeComponent();
+            column_dict = new Dictionary<string, int[]>();
+        }
+
+        public int[] get_column_index(string s)
+        {
+            return column_dict[s];
+        }
+
+        public Dictionary<string, int[]>.KeyCollection get_column_descriptions()
+        {
+            return column_dict.Keys;
         }
 
         public void set_element(int index)

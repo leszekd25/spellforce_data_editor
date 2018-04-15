@@ -46,8 +46,11 @@
             this.panelSearch = new System.Windows.Forms.Panel();
             this.groupSearch = new System.Windows.Forms.GroupBox();
             this.panelElemManipulate = new System.Windows.Forms.Panel();
-            this.ButtonElemInsert = new System.Windows.Forms.Button();
             this.ButtonElemRemove = new System.Windows.Forms.Button();
+            this.ButtonElemInsert = new System.Windows.Forms.Button();
+            this.checkSearchByColumn = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.SearchColumnID = new System.Windows.Forms.ComboBox();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -184,13 +187,16 @@
             // 
             // panelSearch
             // 
+            this.panelSearch.Controls.Add(this.SearchColumnID);
+            this.panelSearch.Controls.Add(this.label2);
+            this.panelSearch.Controls.Add(this.checkSearchByColumn);
             this.panelSearch.Controls.Add(this.groupSearch);
             this.panelSearch.Controls.Add(this.label1);
             this.panelSearch.Controls.Add(this.SearchButton);
             this.panelSearch.Controls.Add(this.SearchQuery);
             this.panelSearch.Location = new System.Drawing.Point(12, 454);
             this.panelSearch.Name = "panelSearch";
-            this.panelSearch.Size = new System.Drawing.Size(297, 73);
+            this.panelSearch.Size = new System.Drawing.Size(297, 135);
             this.panelSearch.TabIndex = 10;
             this.panelSearch.Visible = false;
             // 
@@ -214,6 +220,16 @@
             this.panelElemManipulate.TabIndex = 11;
             this.panelElemManipulate.Visible = false;
             // 
+            // ButtonElemRemove
+            // 
+            this.ButtonElemRemove.Location = new System.Drawing.Point(3, 33);
+            this.ButtonElemRemove.Name = "ButtonElemRemove";
+            this.ButtonElemRemove.Size = new System.Drawing.Size(69, 23);
+            this.ButtonElemRemove.TabIndex = 1;
+            this.ButtonElemRemove.Text = "Remove";
+            this.ButtonElemRemove.UseVisualStyleBackColor = true;
+            this.ButtonElemRemove.Click += new System.EventHandler(this.ButtonElemRemove_Click);
+            // 
             // ButtonElemInsert
             // 
             this.ButtonElemInsert.Location = new System.Drawing.Point(4, 4);
@@ -224,15 +240,33 @@
             this.ButtonElemInsert.UseVisualStyleBackColor = true;
             this.ButtonElemInsert.Click += new System.EventHandler(this.ButtonElemInsert_Click);
             // 
-            // ButtonElemRemove
+            // checkSearchByColumn
             // 
-            this.ButtonElemRemove.Location = new System.Drawing.Point(3, 33);
-            this.ButtonElemRemove.Name = "ButtonElemRemove";
-            this.ButtonElemRemove.Size = new System.Drawing.Size(69, 23);
-            this.ButtonElemRemove.TabIndex = 1;
-            this.ButtonElemRemove.Text = "Remove";
-            this.ButtonElemRemove.UseVisualStyleBackColor = true;
-            this.ButtonElemRemove.Click += new System.EventHandler(this.ButtonElemRemove_Click);
+            this.checkSearchByColumn.AutoSize = true;
+            this.checkSearchByColumn.Location = new System.Drawing.Point(8, 81);
+            this.checkSearchByColumn.Name = "checkSearchByColumn";
+            this.checkSearchByColumn.Size = new System.Drawing.Size(111, 17);
+            this.checkSearchByColumn.TabIndex = 12;
+            this.checkSearchByColumn.Text = "Search by column";
+            this.checkSearchByColumn.UseVisualStyleBackColor = true;
+            this.checkSearchByColumn.CheckedChanged += new System.EventHandler(this.checkSearchByColumn_CheckedChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(5, 110);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(70, 13);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "Column index";
+            // 
+            // SearchColumnID
+            // 
+            this.SearchColumnID.FormattingEnabled = true;
+            this.SearchColumnID.Location = new System.Drawing.Point(81, 107);
+            this.SearchColumnID.Name = "SearchColumnID";
+            this.SearchColumnID.Size = new System.Drawing.Size(213, 21);
+            this.SearchColumnID.TabIndex = 15;
             // 
             // SpelllforceCFFEditor
             // 
@@ -282,5 +316,8 @@
         private System.Windows.Forms.Panel panelElemManipulate;
         private System.Windows.Forms.Button ButtonElemRemove;
         private System.Windows.Forms.Button ButtonElemInsert;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox checkSearchByColumn;
+        private System.Windows.Forms.ComboBox SearchColumnID;
     }
 }

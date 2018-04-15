@@ -15,6 +15,30 @@ namespace SpellforceDataEditor.category_forms
         public Control1()
         {
             InitializeComponent();
+            column_dict.Add("Spell effect ID", new int[1] { 0 });
+            column_dict.Add("Spell type ID", new int[1] { 1 });
+            column_dict.Add("Requirement 1 1", new int[1] { 2 }); column_dict.Add("Requirement 1 2", new int[1] { 3 }); column_dict.Add("Requirement 1 3", new int[1] { 4 });
+            column_dict.Add("Requirement 2 1", new int[1] { 5 }); column_dict.Add("Requirement 2 2", new int[1] { 6 }); column_dict.Add("Requirement 2 3", new int[1] { 7 });
+            column_dict.Add("Requirement 3 1", new int[1] { 8 }); column_dict.Add("Requirement 3 2", new int[1] { 9 }); column_dict.Add("Requirement 3 3", new int[1] { 10 });
+            column_dict.Add("Requirement 4 1", new int[1] { 11 }); column_dict.Add("Requirement 4 2", new int[1] { 12 }); column_dict.Add("Requirement 4 3", new int[1] { 13 });
+            column_dict.Add("Mana cost", new int[1] { 14 });
+            column_dict.Add("Cast time", new int[1] { 15 });
+            column_dict.Add("Recast time", new int[1] { 16 });
+            column_dict.Add("Minimum range", new int[1] { 17 });
+            column_dict.Add("Maximum range", new int[1] { 18 });
+            column_dict.Add("Casting type 1", new int[1] { 19 });
+            column_dict.Add("Casting type 2", new int[1] { 20 });
+            column_dict.Add("Spell data 1", new int[4] { 21, 22, 23, 24 });
+            column_dict.Add("Spell data 2", new int[4] { 25, 26, 27, 28 });
+            column_dict.Add("Spell data 3", new int[4] { 29, 30, 31, 32 });
+            column_dict.Add("Spell data 4", new int[4] { 33, 34, 35, 36 });
+            column_dict.Add("Spell data 5", new int[4] { 37, 38, 39, 40 });
+            column_dict.Add("Spell data 6", new int[4] { 41, 42, 43, 44 });
+            column_dict.Add("Spell data 7", new int[4] { 45, 46, 47, 48 });
+            column_dict.Add("Spell data 8", new int[4] { 49, 50, 51, 52 });
+            column_dict.Add("Spell data 9", new int[4] { 53, 54, 55, 56 });
+            column_dict.Add("Spell data 10", new int[4] { 57, 58, 59, 60 });
+            column_dict.Add("Unknown", new int[4] { 61, 62, 63, 64 });
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)

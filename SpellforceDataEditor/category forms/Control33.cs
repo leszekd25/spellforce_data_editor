@@ -15,6 +15,14 @@ namespace SpellforceDataEditor.category_forms
         public Control33()
         {
             InitializeComponent();
+            column_dict.Add("Level", new int[1] { 0 });
+            column_dict.Add("Health factor", new int[1] { 1 });
+            column_dict.Add("Mana factor", new int[1] { 2 });
+            column_dict.Add("Experience required", new int[1] { 3 });
+            column_dict.Add("Attribute point limit", new int[1] { 4 });
+            column_dict.Add("Skill point limit", new int[1] { 5 });
+            column_dict.Add("Damage factor", new int[1] { 6 });
+            column_dict.Add("Armor class factor", new int[1] { 7 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

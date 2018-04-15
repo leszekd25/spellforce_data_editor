@@ -37,11 +37,11 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(41, 22);
+            this.label1.Location = new System.Drawing.Point(56, 22);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(58, 13);
+            this.label1.Size = new System.Drawing.Size(43, 13);
             this.label1.TabIndex = 65;
-            this.label1.Text = "NPC ID (?)";
+            this.label1.Text = "NPC ID";
             // 
             // textBox1
             // 

@@ -15,6 +15,7 @@ namespace SpellforceDataEditor.category_forms
         public Control32()
         {
             InitializeComponent();
+            column_dict.Add("Unknown", new int[3] { 0, 1, 2 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

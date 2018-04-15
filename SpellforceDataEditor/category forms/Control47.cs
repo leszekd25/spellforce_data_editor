@@ -15,6 +15,7 @@ namespace SpellforceDataEditor.category_forms
         public Control47()
         {
             InitializeComponent();
+            column_dict.Add("Unknown ID", new int[1] { 0 });
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)

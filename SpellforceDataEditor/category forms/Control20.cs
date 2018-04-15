@@ -15,6 +15,9 @@ namespace SpellforceDataEditor.category_forms
         public Control20()
         {
             InitializeComponent();
+            column_dict.Add("Unit ID", new int[1] { 0 });
+            column_dict.Add("Unit spell index", new int[1] { 1 });
+            column_dict.Add("Spell ID", new int[1] { 2 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

@@ -35,7 +35,6 @@ namespace SpellforceDataEditor
             mainHeader = br.ReadBytes(mainHeader.Length);
             for (int i = 0; i < categoryNumber; i++)
             {
-                Console.WriteLine(get_category(i).get_name());
                 get_category(i).read(br);
             }
 
@@ -52,7 +51,6 @@ namespace SpellforceDataEditor
             bw.Write(mainHeader);
             for (int i = 0; i < categoryNumber; i++)
             {
-                Console.WriteLine(get_category(i).get_name());
                 get_category(i).write(bw);
             }
 

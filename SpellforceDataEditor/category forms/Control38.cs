@@ -15,6 +15,10 @@ namespace SpellforceDataEditor.category_forms
         public Control38()
         {
             InitializeComponent();
+            column_dict.Add("Map ID", new int[1] { 0 });
+            column_dict.Add("Unknown", new int[1] { 1 });
+            column_dict.Add("Map handle", new int[1] { 2 });
+            column_dict.Add("Name ID", new int[1] { 3 });
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)

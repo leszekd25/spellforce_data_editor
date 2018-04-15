@@ -116,7 +116,7 @@
             // lb_req4
             // 
             this.lb_req4.AutoSize = true;
-            this.lb_req4.Location = new System.Drawing.Point(40, 123);
+            this.lb_req4.Location = new System.Drawing.Point(50, 123);
             this.lb_req4.Name = "lb_req4";
             this.lb_req4.Size = new System.Drawing.Size(49, 13);
             this.lb_req4.TabIndex = 30;
@@ -135,11 +135,11 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(40, 97);
+            this.label2.Location = new System.Drawing.Point(46, 97);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(59, 13);
+            this.label2.Size = new System.Drawing.Size(53, 13);
             this.label2.TabIndex = 33;
-            this.label2.Text = "Unknown2";
+            this.label2.Text = "Unknown";
             // 
             // Control39
             // 

@@ -17,6 +17,10 @@ namespace SpellforceDataEditor.category_forms
         public Control25()
         {
             InitializeComponent();
+            column_dict.Add("Building ID", new int[1] { 0 });
+            column_dict.Add("Polygon index", new int[1] { 1 });
+            column_dict.Add("Unknown", new int[1] { 2 });
+            column_dict.Add("Vertex count", new int[1] { 3 });
             vertex_index = -1;
         }
 

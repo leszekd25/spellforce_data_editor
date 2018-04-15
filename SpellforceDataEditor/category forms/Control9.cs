@@ -15,6 +15,8 @@ namespace SpellforceDataEditor.category_forms
         public Control9()
         {
             InitializeComponent();
+            column_dict.Add("Inventory item ID", new int[1] { 0 });
+            column_dict.Add("Installed item ID", new int[1] { 1 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

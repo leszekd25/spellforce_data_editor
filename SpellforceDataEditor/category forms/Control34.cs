@@ -15,6 +15,11 @@ namespace SpellforceDataEditor.category_forms
         public Control34()
         {
             InitializeComponent();
+            column_dict.Add("Object ID", new int[1] { 0 });
+            column_dict.Add("Name ID", new int[1] { 1 });
+            column_dict.Add("Unknown", new int[3] { 2, 3, 4 });
+            column_dict.Add("Object handle", new int[1] { 5 });
+            column_dict.Add("Unknown2", new int[7] { 6, 7, 8, 9, 10, 11, 12 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

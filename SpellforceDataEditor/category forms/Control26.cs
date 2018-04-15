@@ -15,6 +15,9 @@ namespace SpellforceDataEditor.category_forms
         public Control26()
         {
             InitializeComponent();
+            column_dict.Add("Building ID", new int[1] { 0 });
+            column_dict.Add("Resource type", new int[1] { 1 });
+            column_dict.Add("Resource amount", new int[1] { 2 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
