@@ -49,8 +49,8 @@
             this.ButtonElemRemove = new System.Windows.Forms.Button();
             this.ButtonElemInsert = new System.Windows.Forms.Button();
             this.checkSearchByColumn = new System.Windows.Forms.CheckBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.SearchColumnID = new System.Windows.Forms.ComboBox();
+            this.checkSearchDescription = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -187,8 +187,8 @@
             // 
             // panelSearch
             // 
+            this.panelSearch.Controls.Add(this.checkSearchDescription);
             this.panelSearch.Controls.Add(this.SearchColumnID);
-            this.panelSearch.Controls.Add(this.label2);
             this.panelSearch.Controls.Add(this.checkSearchByColumn);
             this.panelSearch.Controls.Add(this.groupSearch);
             this.panelSearch.Controls.Add(this.label1);
@@ -251,22 +251,24 @@
             this.checkSearchByColumn.UseVisualStyleBackColor = true;
             this.checkSearchByColumn.CheckedChanged += new System.EventHandler(this.checkSearchByColumn_CheckedChanged);
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 110);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(70, 13);
-            this.label2.TabIndex = 14;
-            this.label2.Text = "Column index";
-            // 
             // SearchColumnID
             // 
+            this.SearchColumnID.Enabled = false;
             this.SearchColumnID.FormattingEnabled = true;
-            this.SearchColumnID.Location = new System.Drawing.Point(81, 107);
+            this.SearchColumnID.Location = new System.Drawing.Point(117, 79);
             this.SearchColumnID.Name = "SearchColumnID";
-            this.SearchColumnID.Size = new System.Drawing.Size(213, 21);
+            this.SearchColumnID.Size = new System.Drawing.Size(177, 21);
             this.SearchColumnID.TabIndex = 15;
+            // 
+            // checkSearchDescription
+            // 
+            this.checkSearchDescription.AutoSize = true;
+            this.checkSearchDescription.Location = new System.Drawing.Point(8, 106);
+            this.checkSearchDescription.Name = "checkSearchDescription";
+            this.checkSearchDescription.Size = new System.Drawing.Size(119, 17);
+            this.checkSearchDescription.TabIndex = 16;
+            this.checkSearchDescription.Text = "Search descriptions";
+            this.checkSearchDescription.UseVisualStyleBackColor = true;
             // 
             // SpelllforceCFFEditor
             // 
@@ -316,8 +318,8 @@
         private System.Windows.Forms.Panel panelElemManipulate;
         private System.Windows.Forms.Button ButtonElemRemove;
         private System.Windows.Forms.Button ButtonElemInsert;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox checkSearchByColumn;
         private System.Windows.Forms.ComboBox SearchColumnID;
+        private System.Windows.Forms.CheckBox checkSearchDescription;
     }
 }
