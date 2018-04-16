@@ -53,6 +53,7 @@
             this.ButtonElemRemove = new System.Windows.Forms.Button();
             this.ButtonElemInsert = new System.Windows.Forms.Button();
             this.ElementSelect_RefreshTimer = new System.Windows.Forms.Timer(this.components);
+            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -74,6 +75,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadGameDatacffToolStripMenuItem,
             this.saveAsToolStripMenuItem,
+            this.closeToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -96,8 +98,9 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // CategorySelect
             // 
@@ -277,6 +280,13 @@
             this.ElementSelect_RefreshTimer.Interval = 1000;
             this.ElementSelect_RefreshTimer.Tick += new System.EventHandler(this.ElementSelect_RefreshTimer_Tick);
             // 
+            // closeToolStripMenuItem
+            // 
+            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Text = "Close";
+            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            // 
             // SpelllforceCFFEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -329,5 +339,6 @@
         private System.Windows.Forms.ComboBox SearchColumnID;
         private System.Windows.Forms.CheckBox checkSearchDescription;
         private System.Windows.Forms.Timer ElementSelect_RefreshTimer;
+        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
     }
 }

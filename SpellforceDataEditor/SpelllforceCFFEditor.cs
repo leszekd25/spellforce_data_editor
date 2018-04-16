@@ -34,16 +34,19 @@ namespace SpellforceDataEditor
         {
             if(OpenGameData.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
+                if (CategorySelect.Enabled)
+                    close_data();
                 manager.load_cff(OpenGameData.FileName);
                 CategorySelect.Enabled = true;
                 for (int i = 0; i < manager.get_category_number(); i++)
                     CategorySelect.Items.Add(manager.get_category(i).get_name());
+                GC.Collect();
             }
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (CategorySelect.Enabled == false)
+            if (!CategorySelect.Enabled)
                 return;
             if (SaveGameData.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -242,6 +245,42 @@ namespace SpellforceDataEditor
             {
                 ElementSelect_RefreshTimer.Enabled = false;
             }
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CategorySelect.Enabled)
+            {
+                close_data();
+            }
+        }
+
+        public void close_data()
+        {
+            if (ElementSelect_RefreshTimer.Enabled)
+            {
+                ElementSelect_RefreshTimer.Stop();
+                ElementSelect_RefreshTimer.Enabled = false;
+            }
+            if(ElementDisplay != null)
+                ElementDisplay.Visible = false;
+            ElementSelect.Items.Clear();
+            ElementSelect.Enabled = false;
+            CategorySelect.Items.Clear();
+            CategorySelect.Enabled = false;
+            panelElemManipulate.Visible = false;
+            panelSearch.Visible = false;
+            manager.unload_all();
+            GC.Collect();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CategorySelect.Enabled)
+            {
+                close_data();
+            }
+            Application.Exit();
         }
     }
 }

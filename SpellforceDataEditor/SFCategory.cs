@@ -12,7 +12,6 @@ namespace SpellforceDataEditor
     {
         protected string name;
         protected uint id;
-        protected uint item_count;
         protected uint block_length;
         protected List<SFCategoryElement> elements;
         protected string elem_format;
@@ -21,13 +20,11 @@ namespace SpellforceDataEditor
         protected int[] string_size;   //if category element holds a string (one or more), a list of string lengths is required
         protected int current_string;
         protected Byte[] categoryHeader;
-        protected char[] unknown_buffer;
 
         //constructor (requires block size in bytes)
         //each block has different size, and it determines how many elements belong to a given category
         public SFCategory()
         {
-            item_count = 1;
             categoryHeader = new Byte[12];
             string_size = new int[1] { 0 };
         }
@@ -37,12 +34,6 @@ namespace SpellforceDataEditor
         {
             elem_format = fm;
             calculate_element_size(elem_format);
-        }
-
-        protected void skip()
-        {
-            item_count = 0;
-            return;
         }
 
         public string get_name()
@@ -286,10 +277,6 @@ namespace SpellforceDataEditor
             elements = new List<SFCategoryElement>();
             Byte[] block_buffer = new Byte[block_length];
             sr.Read(block_buffer, 0, (int)(block_length));
-            if (item_count == 0)
-            {
-                return;
-            }
             MemoryStream ms = new MemoryStream(block_buffer);
             BinaryReader mr = new BinaryReader(ms, Encoding.ASCII);
             while (mr.PeekChar() != -1)
@@ -340,6 +327,12 @@ namespace SpellforceDataEditor
         public string get_element_format()
         {
             return elem_format;
+        }
+
+        public void unload()
+        {
+            elements.Clear();
+            categoryHeader = new Byte[12];
         }
     }
 
@@ -797,10 +790,6 @@ namespace SpellforceDataEditor
             elements = new List<SFCategoryElement>();
             Byte[] block_buffer = new Byte[block_length];
             sr.Read(block_buffer, 0, (int)(block_length));
-            if (item_count == 0)
-            {
-                return;
-            }
             int fm_length = elem_format.Length;
             MemoryStream ms = new MemoryStream(block_buffer);
             BinaryReader mr = new BinaryReader(ms, Encoding.ASCII);
@@ -1000,10 +989,6 @@ namespace SpellforceDataEditor
             elements = new List<SFCategoryElement>();
             Byte[] block_buffer = new Byte[block_length];
             sr.Read(block_buffer, 0, (int)(block_length));
-            if (item_count == 0)
-            {
-                return;
-            }
             int fm_length = elem_format.Length;
             MemoryStream ms = new MemoryStream(block_buffer);
             BinaryReader mr = new BinaryReader(ms, Encoding.ASCII);

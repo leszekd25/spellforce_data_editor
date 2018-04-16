@@ -227,5 +227,11 @@ namespace SpellforceDataEditor
             }
             return items;
         }
+        public void unload_all()
+        {
+            foreach (SFCategory cat in categories)
+                cat.unload();
+            mainHeader = new Byte[20];
+        }
     }
 }
