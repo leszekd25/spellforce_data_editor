@@ -15,6 +15,11 @@ namespace SpellforceDataEditor
     {
         private SFCategoryManager manager;
         private category_forms.SFControl ElementDisplay;
+        private int elementselect_next_index = 0;
+        private int elementselect_last_index = 0;
+        private int elementselect_refresh_size = 100;
+        private int elementselect_refresh_rate = 50;
+
 
         protected List<int> current_indices;
 
@@ -60,6 +65,8 @@ namespace SpellforceDataEditor
             SearchPanel.Controls.Clear();
             SearchPanel.Controls.Add(ElementDisplay);
             SearchColumnID.Items.Clear();
+            SearchColumnID.SelectedIndex = -1;
+            SearchColumnID.Text = "";
             Dictionary<string, int[]>.KeyCollection keys = ElementDisplay.get_column_descriptions();
             foreach (string s in keys)
                 SearchColumnID.Items.Add(s);
@@ -84,11 +91,11 @@ namespace SpellforceDataEditor
         {
             ElementSelect.Items.Clear();
             current_indices.Clear();
-            for (int i = 0; i < ctg.get_element_count(); i++)
-            {
-                ElementSelect.Items.Add(ctg.get_element_string(manager, i));
-                current_indices.Add(i);
-            }
+            ElementSelect_RefreshTimer.Enabled = true;
+            elementselect_next_index = 0;
+            elementselect_last_index = ctg.get_element_count();
+            ElementSelect_RefreshTimer.Interval = 10;
+            ElementSelect_RefreshTimer.Start();
         }
 
         public void ElementSelect_add_elements(SFCategory ctg, List<int> indices)
@@ -115,7 +122,11 @@ namespace SpellforceDataEditor
                 return;
             if (SearchQuery.Text == "")
                 return;
-            panelElemManipulate.Visible = false;
+            if (ElementSelect_RefreshTimer.Enabled)
+            {
+                ElementSelect_RefreshTimer.Stop();
+                ElementSelect_RefreshTimer.Enabled = false;
+            }
             int elem_found = 0;
             SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
             int columns = ctg.get_element_format().Length;
@@ -123,7 +134,7 @@ namespace SpellforceDataEditor
             //determine columns to search
             List<int> columns_searched = new List<int>();
 
-            if (checkSearchByColumn.Checked)
+            if ((checkSearchByColumn.Checked) && (SearchColumnID.Text != ""))
             {
                 int[] query_columns = ElementDisplay.get_column_index(SearchColumnID.Text);
                 foreach(int i in query_columns)
@@ -177,6 +188,7 @@ namespace SpellforceDataEditor
                 }
             }
             ElementDisplay.Visible = false;
+            panelElemManipulate.Visible = false;
         }
 
         private void ButtonElemInsert_Click(object sender, EventArgs e)
@@ -208,6 +220,28 @@ namespace SpellforceDataEditor
         private void checkSearchByColumn_CheckedChanged(object sender, EventArgs e)
         {
             SearchColumnID.Enabled = checkSearchByColumn.Checked;
+        }
+
+        private void ElementSelect_RefreshTimer_Tick(object sender, EventArgs e)
+        {
+            SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
+            //code for adding stuff
+            int last = Math.Min(elementselect_next_index + elementselect_refresh_size, elementselect_last_index);
+            for (int i = elementselect_next_index; i < last; i++)
+            {
+                ElementSelect.Items.Add(ctg.get_element_string(manager, i));
+                current_indices.Add(i);
+            }
+            elementselect_next_index += elementselect_refresh_size;
+            if(last != elementselect_last_index)
+            {
+                ElementSelect_RefreshTimer.Interval = elementselect_refresh_rate;
+                ElementSelect_RefreshTimer.Start();
+            }
+            else
+            {
+                ElementSelect_RefreshTimer.Enabled = false;
+            }
         }
     }
 }

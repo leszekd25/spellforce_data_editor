@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadGameDatacffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,13 +45,14 @@
             this.radioSearchText = new System.Windows.Forms.RadioButton();
             this.SearchButton = new System.Windows.Forms.Button();
             this.panelSearch = new System.Windows.Forms.Panel();
+            this.checkSearchDescription = new System.Windows.Forms.CheckBox();
+            this.SearchColumnID = new System.Windows.Forms.ComboBox();
+            this.checkSearchByColumn = new System.Windows.Forms.CheckBox();
             this.groupSearch = new System.Windows.Forms.GroupBox();
             this.panelElemManipulate = new System.Windows.Forms.Panel();
             this.ButtonElemRemove = new System.Windows.Forms.Button();
             this.ButtonElemInsert = new System.Windows.Forms.Button();
-            this.checkSearchByColumn = new System.Windows.Forms.CheckBox();
-            this.SearchColumnID = new System.Windows.Forms.ComboBox();
-            this.checkSearchDescription = new System.Windows.Forms.CheckBox();
+            this.ElementSelect_RefreshTimer = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -200,6 +202,36 @@
             this.panelSearch.TabIndex = 10;
             this.panelSearch.Visible = false;
             // 
+            // checkSearchDescription
+            // 
+            this.checkSearchDescription.AutoSize = true;
+            this.checkSearchDescription.Location = new System.Drawing.Point(8, 106);
+            this.checkSearchDescription.Name = "checkSearchDescription";
+            this.checkSearchDescription.Size = new System.Drawing.Size(119, 17);
+            this.checkSearchDescription.TabIndex = 16;
+            this.checkSearchDescription.Text = "Search descriptions";
+            this.checkSearchDescription.UseVisualStyleBackColor = true;
+            // 
+            // SearchColumnID
+            // 
+            this.SearchColumnID.Enabled = false;
+            this.SearchColumnID.FormattingEnabled = true;
+            this.SearchColumnID.Location = new System.Drawing.Point(117, 79);
+            this.SearchColumnID.Name = "SearchColumnID";
+            this.SearchColumnID.Size = new System.Drawing.Size(177, 21);
+            this.SearchColumnID.TabIndex = 15;
+            // 
+            // checkSearchByColumn
+            // 
+            this.checkSearchByColumn.AutoSize = true;
+            this.checkSearchByColumn.Location = new System.Drawing.Point(8, 81);
+            this.checkSearchByColumn.Name = "checkSearchByColumn";
+            this.checkSearchByColumn.Size = new System.Drawing.Size(111, 17);
+            this.checkSearchByColumn.TabIndex = 12;
+            this.checkSearchByColumn.Text = "Search by column";
+            this.checkSearchByColumn.UseVisualStyleBackColor = true;
+            this.checkSearchByColumn.CheckedChanged += new System.EventHandler(this.checkSearchByColumn_CheckedChanged);
+            // 
             // groupSearch
             // 
             this.groupSearch.Controls.Add(this.radioSearchNumeric);
@@ -240,35 +272,10 @@
             this.ButtonElemInsert.UseVisualStyleBackColor = true;
             this.ButtonElemInsert.Click += new System.EventHandler(this.ButtonElemInsert_Click);
             // 
-            // checkSearchByColumn
+            // ElementSelect_RefreshTimer
             // 
-            this.checkSearchByColumn.AutoSize = true;
-            this.checkSearchByColumn.Location = new System.Drawing.Point(8, 81);
-            this.checkSearchByColumn.Name = "checkSearchByColumn";
-            this.checkSearchByColumn.Size = new System.Drawing.Size(111, 17);
-            this.checkSearchByColumn.TabIndex = 12;
-            this.checkSearchByColumn.Text = "Search by column";
-            this.checkSearchByColumn.UseVisualStyleBackColor = true;
-            this.checkSearchByColumn.CheckedChanged += new System.EventHandler(this.checkSearchByColumn_CheckedChanged);
-            // 
-            // SearchColumnID
-            // 
-            this.SearchColumnID.Enabled = false;
-            this.SearchColumnID.FormattingEnabled = true;
-            this.SearchColumnID.Location = new System.Drawing.Point(117, 79);
-            this.SearchColumnID.Name = "SearchColumnID";
-            this.SearchColumnID.Size = new System.Drawing.Size(177, 21);
-            this.SearchColumnID.TabIndex = 15;
-            // 
-            // checkSearchDescription
-            // 
-            this.checkSearchDescription.AutoSize = true;
-            this.checkSearchDescription.Location = new System.Drawing.Point(8, 106);
-            this.checkSearchDescription.Name = "checkSearchDescription";
-            this.checkSearchDescription.Size = new System.Drawing.Size(119, 17);
-            this.checkSearchDescription.TabIndex = 16;
-            this.checkSearchDescription.Text = "Search descriptions";
-            this.checkSearchDescription.UseVisualStyleBackColor = true;
+            this.ElementSelect_RefreshTimer.Interval = 1000;
+            this.ElementSelect_RefreshTimer.Tick += new System.EventHandler(this.ElementSelect_RefreshTimer_Tick);
             // 
             // SpelllforceCFFEditor
             // 
@@ -321,5 +328,6 @@
         private System.Windows.Forms.CheckBox checkSearchByColumn;
         private System.Windows.Forms.ComboBox SearchColumnID;
         private System.Windows.Forms.CheckBox checkSearchDescription;
+        private System.Windows.Forms.Timer ElementSelect_RefreshTimer;
     }
 }
