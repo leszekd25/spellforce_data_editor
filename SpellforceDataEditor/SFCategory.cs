@@ -1042,8 +1042,13 @@ namespace SpellforceDataEditor
         {
             UInt32 object_id = (UInt32)get_element_variant(index, 0).value;
             UInt16 text_id = (UInt16)get_element_variant(index, 1).value;
-            string txt_unk = Utility.CleanString(manager.find_element_text(text_id, 1).get_single_variant(4));
-            return object_id.ToString() + " " + txt_unk;
+            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
+            if (txt_elem != null)
+            {
+                string txt_unk = Utility.CleanString(txt_elem.get_single_variant(4));
+                return object_id.ToString() + " " + txt_unk;
+            }
+            return object_id.ToString() + " <text missing>";
         }
     }
 

@@ -119,8 +119,12 @@ namespace SpellforceDataEditor
                 return "<no name>";
             UInt16 spell_type = (UInt16)effect_elem.get_single_variant(1).value;
             SFCategoryElement spell_elem = get_category(1).find_binary_element<UInt16>(0, spell_type);
+            if (spell_elem == null)
+                return "<no name>";
             int text_id = (int)(UInt16)spell_elem.get_single_variant(1).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
+            if (text_elem == null)
+                return "<text missing>";
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
             if (effect_level)
                 txt += " level " + effect_elem.get_single_variant(4).value.ToString();
@@ -135,6 +139,8 @@ namespace SpellforceDataEditor
                 return "<no name>";
             int text_id = (int)(UInt16)unit_elem.get_single_variant(1).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
+            if (text_elem == null)
+                return "<text missing>";
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
             return txt;
         }
@@ -142,21 +148,24 @@ namespace SpellforceDataEditor
         //returns a name of a given skill
         public string get_skill_name(Byte skill_major, Byte skill_minor, Byte skill_lvl)
         {
+            string txt_major = "";
+            string txt_minor = "";
             int major_index = (int)(UInt16)get_category(26).find_element_index<Byte>(0, skill_major);
             if (major_index == 0)
                 return "<unknown string>";
             int total_index = major_index + (int)skill_minor;
             int text_id_major = (int)(UInt16)get_category(26).get_element_variant(major_index, 2).value;
             SFCategoryElement txt_elem_major = find_element_text(text_id_major, 1);
-            string txt_major = Utility.CleanString(txt_elem_major.get_single_variant(4));
-            string txt_minor = "";
+            if (txt_elem_major != null)
+                txt_major = Utility.CleanString(txt_elem_major.get_single_variant(4));
             if (skill_minor != 101)
             {
                 int text_id_minor = (int)(UInt16)get_category(26).get_element_variant(total_index, 2).value;
                 if ((text_id_minor != 0) && (major_index != total_index))
                 {
                     SFCategoryElement txt_elem_minor = find_element_text(text_id_minor, 1);
-                    txt_minor = Utility.CleanString(txt_elem_minor.get_single_variant(4));
+                    if(txt_elem_minor != null)
+                        txt_minor = Utility.CleanString(txt_elem_minor.get_single_variant(4));
                 }
             }
             return txt_major + " " + txt_minor + " " + skill_lvl.ToString();
@@ -170,6 +179,8 @@ namespace SpellforceDataEditor
                 return "<no name>";
             int text_id = (int)(UInt16)item_elem.get_single_variant(3).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
+            if (text_elem == null)
+                return "<text missing>";
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
             return txt;
         }
@@ -182,6 +193,8 @@ namespace SpellforceDataEditor
                 return "<no name>";
             int text_id = (int)(UInt16)building_elem.get_single_variant(5).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
+            if (text_elem == null)
+                return "<text missing>";
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
             return txt;
         }
@@ -203,6 +216,8 @@ namespace SpellforceDataEditor
                 return "<no name>";
             int text_id = (int)(UInt16)object_elem.get_single_variant(1).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
+            if (text_elem == null)
+                return "<text missing>";
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
             return txt;
         }
@@ -215,6 +230,8 @@ namespace SpellforceDataEditor
                 return "<no name>";
             int text_id = (int)(UInt16)desc_elem.get_single_variant(1).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
+            if (text_elem == null)
+                return "<text missing>";
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
             return txt;
         }

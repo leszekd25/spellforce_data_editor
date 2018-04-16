@@ -130,6 +130,7 @@ namespace SpellforceDataEditor
                 return;
 
             //prepare form for a search
+            bool timer_was_enabled = ElementSelect_RefreshTimer.Enabled;
             if (ElementSelect_RefreshTimer.Enabled)
             {
                 ElementSelect_RefreshTimer.Stop();
@@ -159,6 +160,7 @@ namespace SpellforceDataEditor
             if (checkSearchDescription.Checked)
             {
                 string val = SearchQuery.Text;
+                //all elements already displayed
                 for(int i = 0; i < ElementSelect.Items.Count; i++)
                 {
                     string elem_str = (string)ElementSelect.Items[i];
@@ -166,6 +168,19 @@ namespace SpellforceDataEditor
                     {
                         elem_found += 1;
                         query_result.Add(current_indices[i]);
+                    }
+                }
+                //elements yet to be displayed
+                if (timer_was_enabled)
+                {
+                    for (int i = ElementSelect.Items.Count; i < ctg.get_element_count(); i++)
+                    {
+                        string elem_str = ctg.get_element_string(manager, i);
+                        if (elem_str.Contains(val))
+                        {
+                            elem_found += 1;
+                            query_result.Add(i);
+                        }
                     }
                 }
             }
