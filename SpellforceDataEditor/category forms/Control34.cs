@@ -42,7 +42,7 @@ namespace SpellforceDataEditor.category_forms
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 5, Utility.FixedLengthString(textBox7.Text, 47));
+            category.set_element_variant(current_element, 5, Utility.FixedLengthString(textBox7.Text, 40));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)

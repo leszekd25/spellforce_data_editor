@@ -14,6 +14,7 @@ namespace SpellforceDataEditor
     public partial class SpelllforceCFFEditor : Form
     {
         private SFCategoryManager manager;                      //category manager to control all data
+        private int selected_category_index;
         private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
         //these parameters control item loading behavior
         private int elementselect_next_index = 0;
@@ -59,13 +60,15 @@ namespace SpellforceDataEditor
         //what happens when you choose category from a list
         private void CategorySelect_SelectedIndexChanged(object sender, EventArgs e)
         {
+            panelElemManipulate.Visible = false;
             ElementSelect.Enabled = true;
             SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
+            selected_category_index = CategorySelect.SelectedIndex;
 
             ElementSelect_refresh(ctg);
 
             ElementDisplay = Assembly.GetExecutingAssembly().CreateInstance(
-                "SpellforceDataEditor.category_forms.Control" + (CategorySelect.SelectedIndex+1).ToString())
+                "SpellforceDataEditor.category_forms.Control" + (selected_category_index + 1).ToString())
                 as category_forms.SFControl;
             ElementDisplay.set_category(ctg);
             SearchPanel.Controls.Clear();
@@ -78,7 +81,6 @@ namespace SpellforceDataEditor
                 SearchColumnID.Items.Add(s);
             ElementDisplay.Visible = false;
             panelSearch.Visible = true;
-            panelElemManipulate.Visible = true;
         }
 
         //what happens when you choose element from a list
@@ -97,6 +99,11 @@ namespace SpellforceDataEditor
         //start loading all elements from a category
         public void ElementSelect_refresh(SFCategory ctg)
         {
+            if (ElementSelect_RefreshTimer.Enabled)
+            {
+                ElementSelect_RefreshTimer.Stop();
+                ElementSelect_RefreshTimer.Enabled = false;
+            }
             ElementSelect.Items.Clear();
             current_indices.Clear();
             ElementSelect_RefreshTimer.Enabled = true;
@@ -137,7 +144,7 @@ namespace SpellforceDataEditor
                 ElementSelect_RefreshTimer.Enabled = false;
             }
             int elem_found = 0;
-            SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
+            SFCategory ctg = manager.get_category(selected_category_index);
             int columns = ctg.get_element_format().Length;
 
             //determine columns to search
@@ -225,16 +232,13 @@ namespace SpellforceDataEditor
         private void ButtonElemInsert_Click(object sender, EventArgs e)
         {
             int current_elem = current_indices[ElementSelect.SelectedIndex];
-            SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
-            SFCategoryElement elem = new SFCategoryElement();
-            string format_elem = ctg.get_element_format();
-            foreach(char c in format_elem)
-            {
-                elem.add_single_variant(ctg.empty_variant(c));
-            }
+            SFCategory ctg = manager.get_category(selected_category_index);
+            SFCategoryElement elem = ctg.generate_empty_element();
             List<SFCategoryElement> elems = ctg.get_elements();
             elems.Insert(current_elem+1, elem);
             ElementSelect.Items.Insert(current_elem+1, ctg.get_element_string(manager, current_elem+1));
+            for (int i = current_elem+1; i < current_indices.Count; i++)
+                current_indices[i] = current_indices[i] + 1;
             current_indices.Insert(current_elem+1, current_elem+1);
         }
 
@@ -242,8 +246,10 @@ namespace SpellforceDataEditor
         private void ButtonElemRemove_Click(object sender, EventArgs e)
         {
             int current_elem = current_indices[ElementSelect.SelectedIndex];
-            SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
+            SFCategory ctg = manager.get_category(selected_category_index);
             List<SFCategoryElement> elems = ctg.get_elements();
+            for (int i = current_elem; i < current_indices.Count; i++)
+                current_indices[i] = current_indices[i] - 1;
             current_indices.RemoveAt(current_elem);
             ElementSelect.Items.RemoveAt(ElementSelect.SelectedIndex);
             elems.RemoveAt(current_elem);
@@ -258,7 +264,7 @@ namespace SpellforceDataEditor
         //this is where elements are added if category is being refreshed
         private void ElementSelect_RefreshTimer_Tick(object sender, EventArgs e)
         {
-            SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
+            SFCategory ctg = manager.get_category(selected_category_index);
 
             int last = Math.Min(elementselect_next_index + elementselect_refresh_size, elementselect_last_index);
             for (int i = elementselect_next_index; i < last; i++)
@@ -276,6 +282,7 @@ namespace SpellforceDataEditor
             else
             {
                 ElementSelect_RefreshTimer.Enabled = false;
+                panelElemManipulate.Visible = true;
             }
         }
 
@@ -304,6 +311,7 @@ namespace SpellforceDataEditor
             CategorySelect.Enabled = false;
             panelElemManipulate.Visible = false;
             panelSearch.Visible = false;
+            selected_category_index = -1;
             manager.unload_all();
             GC.Collect();
         }

@@ -38,30 +38,46 @@ namespace SpellforceDataEditor
             return category_name;
         }
 
-        //returns an empty variant value, depending on a variant type
-        public Object empty_variant(char t)
+        //returns a new empty element for this category (used for adding new elements)
+        public SFCategoryElement generate_empty_element()
         {
-            switch (t)
+            current_string = 0;
+            SFCategoryElement elem = new SFCategoryElement();
+            foreach (char c in elem_format)
             {
-                case 'b':
-                    return (SByte)0;
-                case 'B':
-                    return (Byte)0;
-                case 'h':
-                    return (Int16)0;
-                case 'H':
-                    return (UInt16)0;
-                case 'i':
-                    return (Int32)0;
-                case 'I':
-                    return (UInt32)0;
-                case 'f':
-                    return (Single)0;
-                case 's':
-                    return new char[0];
-                default:
-                    return null;
+                switch (c)
+                {
+                    case 'b':
+                        elem.add_single_variant((SByte)0);
+                        break;
+                    case 'B':
+                        elem.add_single_variant((Byte)0);
+                        break;
+                    case 'h':
+                        elem.add_single_variant((Int16)0);
+                        break;
+                    case 'H':
+                        elem.add_single_variant((UInt16)0);
+                        break;
+                    case 'i':
+                        elem.add_single_variant((Int32)0);
+                        break;
+                    case 'I':
+                        elem.add_single_variant((UInt32)0);
+                        break;
+                    case 'f':
+                        elem.add_single_variant((Single)0);
+                        break;
+                    case 's':
+                        elem.add_single_variant(new char[string_size[current_string]]);
+                        current_string = Math.Min(string_size.Length - 1, current_string + 1);
+                        break;
+                    default:
+                        elem.add_single_variant(new object());
+                        break;
+                }
             }
+            return elem;
         }
 
         //retrieves next variant from a buffer, given a type (indicated by a character contained in a format)
