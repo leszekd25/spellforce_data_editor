@@ -8,11 +8,15 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor
 {
+    //this class is responsible for category management
+    //it provides with general functions to perform on categories as a database
     public class SFCategoryManager
     {
-        private SFCategory[] categories;
-        private int categoryNumber;
-        private Byte[] mainHeader;
+        private SFCategory[] categories;      //array of categories
+        private int categoryNumber;           //amount of categories (basically a constant)
+        private Byte[] mainHeader;            //gamedata.cff has a main header which is held here
+
+        //constructor, it creates categories
         public SFCategoryManager()
         {
             categoryNumber = 49;
@@ -23,10 +27,14 @@ namespace SpellforceDataEditor
             }
             mainHeader = new Byte[20];
         }
+
+        //returns category, given its index
         public SFCategory get_category(int index)
         {
             return categories[index];
         }
+
+        //loads gamedata.cff file
         public void load_cff(string filename)
         {
             FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
@@ -42,6 +50,7 @@ namespace SpellforceDataEditor
             fs.Close();
         }
 
+        //saves gamedata.cff file
         public void save_cff(string filename)
         {
             FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write);
@@ -58,6 +67,7 @@ namespace SpellforceDataEditor
             fs.Close();
         }
 
+        //returns category count
         public int get_category_number()
         {
             return categoryNumber;
@@ -100,6 +110,8 @@ namespace SpellforceDataEditor
             return categories[14].get_element(backup_index);
         }
 
+        //returns a name of a given effect
+        //it can also add the effect level
         public string get_effect_name(UInt16 effect_id, bool effect_level = false)
         {
             SFCategoryElement effect_elem = get_category(0).find_binary_element<UInt16>(0, effect_id);
@@ -115,6 +127,7 @@ namespace SpellforceDataEditor
             return txt;
         }
 
+        //returns a name of a given unit
         public string get_unit_name(UInt16 unit_id)
         {
             SFCategoryElement unit_elem = get_category(17).find_binary_element<UInt16>(0, unit_id);
@@ -126,6 +139,7 @@ namespace SpellforceDataEditor
             return txt;
         }
 
+        //returns a name of a given skill
         public string get_skill_name(Byte skill_major, Byte skill_minor, Byte skill_lvl)
         {
             int major_index = (int)(UInt16)get_category(26).find_element_index<Byte>(0, skill_major);
@@ -148,6 +162,7 @@ namespace SpellforceDataEditor
             return txt_major + " " + txt_minor + " " + skill_lvl.ToString();
         }
 
+        //returns a name of a given item
         public string get_item_name(UInt16 item_id)
         {
             SFCategoryElement item_elem = get_category(6).find_binary_element<UInt16>(0, item_id);
@@ -159,6 +174,7 @@ namespace SpellforceDataEditor
             return txt;
         }
 
+        //returns a name of a given building
         public string get_building_name(UInt16 building_id)
         {
             SFCategoryElement building_elem = get_category(23).find_binary_element<UInt16>(0, building_id);
@@ -170,6 +186,7 @@ namespace SpellforceDataEditor
             return txt;
         }
 
+        //returns a name of a given merchant
         public string get_merchant_name(UInt16 merchant_id)
         {
             SFCategoryElement merchant_elem = get_category(28).find_binary_element<UInt16>(0, merchant_id);
@@ -178,6 +195,7 @@ namespace SpellforceDataEditor
             return get_unit_name((UInt16)merchant_elem.get_single_variant(1).value);
         }
 
+        //returns a name of a given object
         public string get_object_name(UInt16 object_id)
         {
             SFCategoryElement object_elem = get_category(33).find_binary_element<UInt16>(0, object_id);
@@ -189,6 +207,7 @@ namespace SpellforceDataEditor
             return txt;
         }
 
+        //returns a description given its id
         public string get_description_name(UInt16 desc_id)
         {
             SFCategoryElement desc_elem = get_category(40).find_binary_element<UInt16>(0, desc_id);
@@ -200,6 +219,9 @@ namespace SpellforceDataEditor
             return txt;
         }
 
+        //returns a list of indices
+        //these indices correspond with all elements which contain given value in a given column
+        //value is numeric in this query
         public List<int> query_by_column_numeric(int categoryindex, int columnindex, int value)
         {
             List<int> items = new List<int>();
@@ -214,6 +236,9 @@ namespace SpellforceDataEditor
             return items;
         }
 
+        //returns a list of indices
+        //these indices correspond with all elements which contain given value in a given column
+        //value is a text in this query
         public List<int> query_by_column_text(int categoryindex, int columnindex, string value)
         {
             List<int> items = new List<int>();
@@ -227,6 +252,8 @@ namespace SpellforceDataEditor
             }
             return items;
         }
+
+        //frees all data, only empty categories remain
         public void unload_all()
         {
             foreach (SFCategory cat in categories)

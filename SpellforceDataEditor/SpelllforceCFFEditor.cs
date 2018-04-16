@@ -13,16 +13,16 @@ namespace SpellforceDataEditor
 {
     public partial class SpelllforceCFFEditor : Form
     {
-        private SFCategoryManager manager;
-        private category_forms.SFControl ElementDisplay;
+        private SFCategoryManager manager;                      //category manager to control all data
+        private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
+        //these parameters control item loading behavior
         private int elementselect_next_index = 0;
         private int elementselect_last_index = 0;
         private int elementselect_refresh_size = 100;
         private int elementselect_refresh_rate = 50;
+        protected List<int> current_indices;                    //list of indices corrsponding to all displayed elements
 
-
-        protected List<int> current_indices;
-
+        //constructor
         public SpelllforceCFFEditor()
         {
             InitializeComponent();
@@ -30,6 +30,7 @@ namespace SpellforceDataEditor
             current_indices = new List<int>();
         }
 
+        //load game data
         private void loadGameDatacffToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(OpenGameData.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -44,6 +45,7 @@ namespace SpellforceDataEditor
             }
         }
 
+        //save game data
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!CategorySelect.Enabled)
@@ -54,6 +56,7 @@ namespace SpellforceDataEditor
             }
         }
 
+        //what happens when you choose category from a list
         private void CategorySelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             ElementSelect.Enabled = true;
@@ -78,6 +81,7 @@ namespace SpellforceDataEditor
             panelElemManipulate.Visible = true;
         }
 
+        //what happens when you choose element from a list
         private void ElementSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ElementSelect.SelectedIndex == -1)
@@ -90,6 +94,7 @@ namespace SpellforceDataEditor
             ElementDisplay.show_element();
         }
 
+        //start loading all elements from a category
         public void ElementSelect_refresh(SFCategory ctg)
         {
             ElementSelect.Items.Clear();
@@ -101,6 +106,7 @@ namespace SpellforceDataEditor
             ElementSelect_RefreshTimer.Start();
         }
 
+        //add elements to element selector
         public void ElementSelect_add_elements(SFCategory ctg, List<int> indices)
         {
             for (int i = 0; i < indices.Count; i++)
@@ -114,17 +120,16 @@ namespace SpellforceDataEditor
             }
         }
 
-        private void findElementByValueToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            return;
-        }
-
+        //what happens when you click search button
         private void SearchButton_Click(object sender, EventArgs e)
         {
+            //determine if you can search for an item
             if (!ElementSelect.Enabled)
                 return;
             if (SearchQuery.Text == "")
                 return;
+
+            //prepare form for a search
             if (ElementSelect_RefreshTimer.Enabled)
             {
                 ElementSelect_RefreshTimer.Stop();
@@ -164,10 +169,15 @@ namespace SpellforceDataEditor
                     }
                 }
             }
+
+            //now that descriptions have been looked at, remove all elements from element selector
             ElementSelect.Items.Clear();
             current_indices.Clear();
+
+            //if any elements were found in previous phase, add them immediately
             ElementSelect_add_elements(ctg, query_result);
-            //search columns for value and append results to the list of results
+
+            //search columns for value and append results to element selector
             if (radioSearchNumeric.Checked)
             {
                 int val = Utility.TryParseInt32(SearchQuery.Text);
@@ -190,10 +200,13 @@ namespace SpellforceDataEditor
                     ElementSelect_add_elements(ctg, query_result);
                 }
             }
+
+            //finishing touch
             ElementDisplay.Visible = false;
             panelElemManipulate.Visible = false;
         }
 
+        //what happens when you add an element to a category
         private void ButtonElemInsert_Click(object sender, EventArgs e)
         {
             int current_elem = current_indices[ElementSelect.SelectedIndex];
@@ -210,6 +223,7 @@ namespace SpellforceDataEditor
             current_indices.Insert(current_elem+1, current_elem+1);
         }
 
+        //what happens when you remove element from category
         private void ButtonElemRemove_Click(object sender, EventArgs e)
         {
             int current_elem = current_indices[ElementSelect.SelectedIndex];
@@ -220,21 +234,24 @@ namespace SpellforceDataEditor
             elems.RemoveAt(current_elem);
         }
 
+        //switch column search on and off
         private void checkSearchByColumn_CheckedChanged(object sender, EventArgs e)
         {
             SearchColumnID.Enabled = checkSearchByColumn.Checked;
         }
 
+        //this is where elements are added if category is being refreshed
         private void ElementSelect_RefreshTimer_Tick(object sender, EventArgs e)
         {
             SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
-            //code for adding stuff
+
             int last = Math.Min(elementselect_next_index + elementselect_refresh_size, elementselect_last_index);
             for (int i = elementselect_next_index; i < last; i++)
             {
                 ElementSelect.Items.Add(ctg.get_element_string(manager, i));
                 current_indices.Add(i);
             }
+
             elementselect_next_index += elementselect_refresh_size;
             if(last != elementselect_last_index)
             {
@@ -247,6 +264,7 @@ namespace SpellforceDataEditor
             }
         }
 
+        //close gamedata.cff
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (CategorySelect.Enabled)
@@ -255,6 +273,7 @@ namespace SpellforceDataEditor
             }
         }
 
+        //actually clear all data and close gamedata.cff
         public void close_data()
         {
             if (ElementSelect_RefreshTimer.Enabled)
@@ -274,6 +293,7 @@ namespace SpellforceDataEditor
             GC.Collect();
         }
 
+        //exit application
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (CategorySelect.Enabled)

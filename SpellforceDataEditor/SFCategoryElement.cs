@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor
 {
+    //enmu describing type of data a variant possesses
     public enum TYPE { UByte, Byte, UShort, Short, UInt, Int, Float, String, Unknown };
 
     //this class can hold any type you can read from gamedata.cff file
@@ -14,11 +15,15 @@ namespace SpellforceDataEditor
         public Object value;
         public TYPE vtype;
         public static int[] TYPE_SIZE = { 1, 1, 2, 2, 4, 4, 4, 0, -1 };
+
+        //variant constructor
         public SFVariant()
         {
             vtype = TYPE.Unknown;
             return;
         }
+
+        //sets variant to a given object and handles its type
         public void set(Object obj)
         {
             value = obj;
@@ -65,6 +70,8 @@ namespace SpellforceDataEditor
             }
             vtype = TYPE.Unknown;
         }
+
+        //turns variant into an int (if possible)
         public int to_int()
         {
             switch(vtype)
@@ -92,10 +99,22 @@ namespace SpellforceDataEditor
     public class SFCategoryElement
     {
         protected List<SFVariant> properties;
+
+        //element constructor
         public SFCategoryElement()
         {
             properties = new List<SFVariant>();
         }
+
+        //adds a single variant (specified by an object) to the property list
+        public void add_single_variant(Object obj)
+        {
+            SFVariant v = new SFVariant();
+            v.set(obj);
+            properties.Add(v);
+        }
+
+        //adds variants from a list of objects
         public void set(Object[] objs)
         {
             for (int i = 0; i < objs.Length; i++)
@@ -106,21 +125,30 @@ namespace SpellforceDataEditor
             }
             return;
         }
+
+        //sets variant specified by an index
         public void set_single_variant(int index, Object obj)
         {
             properties[index] = new SFVariant();
             properties[index].set(obj);
         }
+
+        //returns property list
         public List<SFVariant> get()
         {
             return properties;
         }
+
+        //returns a single variant specified by an index
         public SFVariant get_single_variant(int index)
         {
             if (index >= properties.Count)
                 return null;
             return properties[index];
         }
+
+        //returns size (in bytes) of an element, depending of variant types
+        //unspecified behavior for TYPE.Unknown variant
         public int get_size()
         {
             int s = 0;
@@ -134,12 +162,6 @@ namespace SpellforceDataEditor
                     s += SFVariant.TYPE_SIZE[(int)v.vtype];
             }
             return s;
-        }
-        public void add_single_variant(Object obj)
-        {
-            SFVariant v = new SFVariant();
-            v.set(obj);
-            properties.Add(v);
         }
     }
 }

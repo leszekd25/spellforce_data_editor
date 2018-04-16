@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor
 {
+    //helper class providing with useful functions
     public class Utility
     {
         //functions which try to convert a string to the respective type
@@ -72,6 +73,8 @@ namespace SpellforceDataEditor
                 return def;
         }
 
+        //for when you don't know what data actually does
+        //turns a string of hexadecimal values (divided by ' ') into an array of bytes
         static public Byte[] TryParseByteArray(string s, int def_length = 1)
         {
             string[] array = s.Split(' ');
@@ -92,6 +95,7 @@ namespace SpellforceDataEditor
             return bytearray;
         }
 
+        //turns string into a char array of a given length
         static public Char[] FixedLengthString(string s, int length)
         {
             char[] charray = new char[length];
@@ -104,6 +108,7 @@ namespace SpellforceDataEditor
             return charray;
         }
 
+        //turns string variant into actual string (all zeros are truncated)
         static public string CleanString(SFVariant ch)
         {
             if (ch.vtype != TYPE.String)
@@ -111,6 +116,7 @@ namespace SpellforceDataEditor
             return (new string((char[])ch.value)).Replace("\0", string.Empty);
         }
 
+        //used for header manipulation, inserts unsigned int into a given array at a given index
         static public void CopyUInt32ToByteArray(UInt32 elem, ref Byte[] bytearray, int index)
         {
             bytearray[index] = (byte)(elem % 256);

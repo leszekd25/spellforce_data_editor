@@ -7,62 +7,38 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor
 {
-    //this class implements methods to read elements from gamedata.cff file (and write to it?)
+    //this class implements methods for all kinds of manipulation of its elements
+    //each category holds elements of single type
     public abstract class SFCategory
     {
-        protected string name;
-        protected uint id;
-        protected uint block_length;
-        protected List<SFCategoryElement> elements;
-        protected string elem_format;
-        protected string category_name;
-        protected int elem_size;
-        protected int[] string_size;   //if category element holds a string (one or more), a list of string lengths is required
-        protected int current_string;
-        protected Byte[] categoryHeader;
+        protected uint block_length;                    //size of all data that belongs to this category
+        protected List<SFCategoryElement> elements;     //list of all elements
+        protected string elem_format;                   //element format (see get_single_variant)
+        protected string category_name;   
+        protected int[] string_size;                    //if category element holds a string (one or more), a list of string lengths is required
+        protected int current_string;                   //helper variable to enable searching and manipulating string variants
+        protected Byte[] categoryHeader;                //each category starts with a header
 
-        //constructor (requires block size in bytes)
-        //each block has different size, and it determines how many elements belong to a given category
+        //constructor 
         public SFCategory()
         {
             categoryHeader = new Byte[12];
             string_size = new int[1] { 0 };
         }
 
-        //calculates size of element given a format, and calculates number of elements that belong to this category
+        //initialization, sets format for an element
         protected void initialize(string fm)
         {
             elem_format = fm;
-            calculate_element_size(elem_format);
         }
 
+        //returns category name
         public string get_name()
         {
             return category_name;
         }
 
-        //calculates size of element given a format
-        protected void calculate_element_size(string fm)
-        {
-            current_string = 0;
-            int s = 0;
-            foreach (char c in fm)
-            {
-                if (c == 'b' || c == 'B')
-                    s += 1;
-                else if (c == 'h' || c == 'H')
-                    s += 2;
-                else if (c == 's')
-                {
-                    s += string_size[current_string];
-                    current_string += 1;
-                }
-                else
-                    s += 4;
-            }
-            elem_size = s;
-        }
-
+        //returns an empty variant value, depending on a variant type
         public Object empty_variant(char t)
         {
             switch (t)
@@ -89,6 +65,7 @@ namespace SpellforceDataEditor
         }
 
         //retrieves next variant from a buffer, given a type (indicated by a character contained in a format)
+        //s_size refers to a string length (for if the variant holds a string)
         public Object get_single_variant(BinaryReader sr, char t, int s_size)
         {
             switch (t)
@@ -116,6 +93,7 @@ namespace SpellforceDataEditor
         }
 
         //puts a single variant to a buffer
+        //s_size refers to a string length (for if the variant holds a string)
         public void put_single_variant(BinaryWriter sw, SFVariant var, int s_size)
         {
             switch (var.vtype)
@@ -149,7 +127,7 @@ namespace SpellforceDataEditor
             }
         }
 
-        //retrieves next element from a buffer
+        //retrieves next element (sequence of variants as an array of objects) from a buffer
         public Object[] get_element(BinaryReader sr)
         {
             current_string = 0;
@@ -161,6 +139,7 @@ namespace SpellforceDataEditor
             return objs;
         }
 
+        //returns an element given element index, or null if it doesn't exist
         public SFCategoryElement get_element(int index)
         {
             if ((index >= 0) && (index < elements.Count))
@@ -168,11 +147,13 @@ namespace SpellforceDataEditor
             return null;
         }
 
+        //returns list of elements the category holds
         public List<SFCategoryElement> get_elements()
         {
             return elements;
         }
 
+        //returns a single variant provided element index and variant index
         public SFVariant get_element_variant(int elem_index, int var_index)
         {
             if (elem_index >= elements.Count)
@@ -180,6 +161,8 @@ namespace SpellforceDataEditor
             return elements[elem_index].get_single_variant(var_index);
         }
 
+        //searches for an element given column index and searched value and returns it if it exists
+        //else returns null
         public SFCategoryElement find_element<T>(int v_index, T value) where T : IComparable
         {
             for (int i = 0; i < elements.Count; i++)
@@ -190,6 +173,8 @@ namespace SpellforceDataEditor
             return null;
         }
 
+        //searches for an element given column index and searched value and returns its index if it exists
+        //else returns -1
         public int find_element_index<T>(int v_index, T value) where T : IComparable
         {
             for (int i = 0; i < elements.Count; i++)
@@ -200,7 +185,9 @@ namespace SpellforceDataEditor
             return -1;
         }
 
-        //binary search for an element, assumes elements are sorted by a given column index
+        //searches for an element given column index and searched value and returns it if it exists
+        //else returns null
+        //this is binary search variant, and it requires that elements are sorted by given column
         public SFCategoryElement find_binary_element<T>(int v_index, T value) where T : IComparable
         {
             int current_start = 0;
@@ -221,7 +208,9 @@ namespace SpellforceDataEditor
             return null;
         }
 
-        //binary search for an element, assumes elements are sorted by a given column index
+        //searches for an element given column index and searched value and returns its index if it exists
+        //else returns -1
+        //this is binary search variant, and it requires that elements are sorted by given column
         public int find_binary_element_index<T>(int v_index, T value) where T : IComparable
         {
             int current_start = 0;
@@ -243,13 +232,14 @@ namespace SpellforceDataEditor
             return -1;
         }
 
+        //sets a single variant given element index and variant index
         public void set_element_variant(int elem_index, int var_index, object obj)
         {
             if (elem_index < elements.Count)
                 elements[elem_index].get()[var_index].set(obj);
         }
 
-        //puts a new element to a buffer
+        //puts a new element (as a list of variants) to a buffer
         public void put_element(BinaryWriter sw, List<SFVariant> vars)
         {
             current_string = 0;
@@ -259,6 +249,7 @@ namespace SpellforceDataEditor
             }
         }
 
+        //returns size of all category elements (in bytes)
         public int get_size()
         {
             int s = 0;
@@ -290,6 +281,7 @@ namespace SpellforceDataEditor
             block_buffer = null;
         }
 
+        //inserts an element (given element index) into the buffer
         public void set_element(BinaryWriter sw, int elem_index)
         {
             current_string = 0;
@@ -302,6 +294,7 @@ namespace SpellforceDataEditor
             }
         }
 
+        //inserts all elements into the buffer
         public void write(BinaryWriter sw)
         {
             UInt32 new_block_size = (UInt32)get_size();
@@ -319,16 +312,19 @@ namespace SpellforceDataEditor
             return index.ToString();
         }
 
+        //returns element count
         public int get_element_count()
         {
             return elements.Count;
         }
 
+        //returns element format string
         public string get_element_format()
         {
             return elem_format;
         }
 
+        //removes all elements and resets category
         public void unload()
         {
             elements.Clear();
@@ -695,7 +691,7 @@ namespace SpellforceDataEditor
             UInt16 unit_id = (UInt16)get_element_variant(index, 0).value;
             UInt16 spell_id = (UInt16)get_element_variant(index, 2).value;
             string txt_unit = manager.get_unit_name(unit_id);
-            string txt_spell = manager.get_effect_name(spell_id);
+            string txt_spell = manager.get_effect_name(spell_id, true);
             return unit_id.ToString() + " " + txt_unit + " | " + txt_spell;
         }
     }
