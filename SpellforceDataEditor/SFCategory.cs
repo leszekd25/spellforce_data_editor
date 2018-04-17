@@ -383,6 +383,39 @@ namespace SpellforceDataEditor
     //spells/skills (1st category)
     public class SFCategory1 : SFCategory
     {
+        private string get_target_mode(Byte tm)
+        {
+            switch(tm)
+            {
+                case 1:
+                    return "Figure";
+                case 2:
+                    return "Building";
+                case 3:
+                    return "Object";
+                case 4:
+                    return "in World";
+                case 5:
+                    return "in Area";
+                default:
+                    return "<no name>";
+            }
+        }
+
+        private string get_target_type(Byte tm)
+        {
+            switch(tm)
+            {
+                case 1:
+                    return "Enemy";
+                case 2:
+                    return "Ally";
+                case 3:
+                    return "Other";
+                default:
+                    return "<no name>";
+            }
+        }
         public SFCategory1() : base()
         {
             initialize("HHBBBBBBBBBBBBHIIHHBBIIIIIIIIIIBBBB");
@@ -416,10 +449,12 @@ namespace SpellforceDataEditor
             for(int i = 0; i < reqs.Count; i++)
             {
                 req_str += reqs[i];
-                if (i != reqs.Count - 1)
-                    req_str += "\r\n";
+                req_str += "\r\n";
             }
-            return "Requirements:\r\n" + req_str;
+            string target = "";
+            target += get_target_type((Byte)get_element_variant(index, 19).value);
+            target += " " + get_target_mode((Byte)get_element_variant(index, 20).value);
+            return "Requirements:\r\n" + req_str + "Target: "+target;
         }
     }
 
@@ -532,7 +567,7 @@ namespace SpellforceDataEditor
     //item type/name ID/price (7th category)
     public class SFCategory7 : SFCategory
     {
-        static string[] item_types = { "Unknown", "Equipment", "Inventory rune", "Installed rune",
+        static public string[] item_types = { "Unknown", "Equipment", "Inventory rune", "Installed rune",
             "Spell scroll", "Equipped scroll", "Unit plan", "Building plan", "Equipped unit plan",
             "Equipped building plan", "Miscellaneous" };
 
@@ -794,7 +829,7 @@ namespace SpellforceDataEditor
                 return 0;
             int max_units = 500;
             int s = 0;
-            for(int i = 0; i < 500; i++)
+            for(int i = 0; i < max_units; i++)
             {
                 s += (int)Math.Floor((Single)xp_gain * ((Single)(xp_falloff) / (Single)(xp_falloff + i)));
             }
@@ -912,12 +947,20 @@ namespace SpellforceDataEditor
                     item_num++;
             }
             string total_string = "";
+            Single[] chances = new Single[3];
             for(int i = 0; i < item_num; i++)
             {
                 UInt16 item_id = (UInt16)get_element_variant(index, 2 + i * 2).value;
-                Byte item_chance = (i != 2?(Byte)get_element_variant(index, 3 + i * 2).value:(Byte)100);
+                SFVariant data_variant = get_element_variant(index, 3 + i * 2);
+                Byte data_chance = (data_variant != null?(Byte)data_variant.value:(Byte)0);
+                if (i == 0)
+                    chances[0] = (Single)(data_chance) / 100;
+                else if (i == 1)
+                    chances[1] = ((Single)(data_chance) / 100) * (1 - chances[0]);
+                else if (i == 2)
+                    chances[2] = 1 - chances[0] - chances[1];
                 string txt_item = manager.get_item_name(item_id);
-                total_string += "Item #" + (i + 1).ToString() + ": " + txt_item + " (" + item_chance.ToString() + "% chance)\r\n";
+                total_string += "Item #" + (i + 1).ToString() + ": " + txt_item + " (" + (chances[i]*100).ToString() + "% chance)\r\n";
             }
             return total_string;
         }
@@ -1124,6 +1167,16 @@ namespace SpellforceDataEditor
             string txt_merchant = manager.get_merchant_name(merchant_id);
             return merchant_id.ToString() + " " + txt_merchant;
         }
+
+        public override string get_element_description(SFCategoryManager manager, int index)
+        {
+            Byte item_type = (Byte)get_element_variant(index, 1).value;
+            UInt16 perc = (UInt16)get_element_variant(index, 2).value;
+            string item_text = "<no_name>";
+            if ((item_type > 0) && (item_type < SFCategory7.item_types.Length))
+                item_text = SFCategory7.item_types[item_type];
+            return "Price for " + item_text + " type items: " + perc.ToString() + "% of base price";
+        }
     }
 
     //sql_good' names (32nd category)
@@ -1248,12 +1301,20 @@ namespace SpellforceDataEditor
                     item_num++;
             }
             string total_string = "";
+            Single[] chances = new Single[3];
             for (int i = 0; i < item_num; i++)
             {
                 UInt16 item_id = (UInt16)get_element_variant(index, 2 + i * 2).value;
-                Byte item_chance = (i != 2 ? (Byte)get_element_variant(index, 3 + i * 2).value : (Byte)100);
+                SFVariant data_variant = get_element_variant(index, 3 + i * 2);
+                Byte data_chance = (data_variant != null ? (Byte)data_variant.value : (Byte)0);
+                if (i == 0)
+                    chances[0] = (Single)(data_chance) / 100;
+                else if (i == 1)
+                    chances[1] = ((Single)(data_chance) / 100) * (1 - chances[0]);
+                else if (i == 2)
+                    chances[2] = 1 - chances[0] - chances[1];
                 string txt_item = manager.get_item_name(item_id);
-                total_string += "Item #" + (i + 1).ToString() + ": " + txt_item + " (" + item_chance.ToString() + "% chance)\r\n";
+                total_string += "Item #" + (i + 1).ToString() + ": " + txt_item + " (" + (chances[i] * 100).ToString() + "% chance)\r\n";
             }
             return total_string;
         }

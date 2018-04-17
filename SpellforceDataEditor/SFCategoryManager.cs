@@ -782,6 +782,34 @@ namespace SpellforceDataEditor
             return txt;
         }
 
+        //used for determining skill name
+        private string get_resource_gather(Byte ind)
+        {
+            switch (ind)
+            {
+                case 1:
+                    return "Wood";
+                case 3:
+                    return "Stone";
+                case 8:
+                    return "Iron";
+                case 9:
+                    return "Human unique";
+                case 10:
+                    return "Elf unique";
+                case 11:
+                    return "Dwarf unique";
+                case 12:
+                    return "Orc unique";
+                case 13:
+                    return "Troll unique";
+                case 14:
+                    return "Dark elf unique";
+                default:
+                    return "<no name>";
+            }
+        }
+
         //returns a name of a given skill
         public string get_skill_name(Byte skill_major, Byte skill_minor, Byte skill_lvl)
         {
@@ -797,7 +825,12 @@ namespace SpellforceDataEditor
             SFCategoryElement txt_elem_major = find_element_text(text_id_major, 1);
             if (txt_elem_major != null)
                 txt_major = Utility.CleanString(txt_elem_major.get_single_variant(4));
-            if (skill_minor != 101)
+            if((skill_major == 0)&&(skill_minor != 0))
+            {
+                txt_major = "";
+                txt_minor = get_resource_gather(skill_minor) + " gathering";
+            }
+            else if (skill_minor != 101)
             {
                 int text_id_minor = (int)(UInt16)get_category(26).get_element_variant(total_index, 2).value;
                 if ((text_id_minor != 0) && (major_index != total_index))

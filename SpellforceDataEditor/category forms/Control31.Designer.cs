@@ -56,11 +56,11 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(46, 48);
+            this.label2.Location = new System.Drawing.Point(49, 48);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(53, 13);
+            this.label2.Size = new System.Drawing.Size(50, 13);
             this.label2.TabIndex = 7;
-            this.label2.Text = "Unknown";
+            this.label2.Text = "Item type";
             // 
             // textBox2
             // 
@@ -81,11 +81,11 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(46, 74);
+            this.label3.Location = new System.Drawing.Point(4, 74);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(53, 13);
+            this.label3.Size = new System.Drawing.Size(95, 13);
             this.label3.TabIndex = 9;
-            this.label3.Text = "Unknown";
+            this.label3.Text = "Price reduction (%)";
             // 
             // Control31
             // 
