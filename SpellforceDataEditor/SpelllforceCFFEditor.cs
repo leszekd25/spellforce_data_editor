@@ -89,11 +89,14 @@ namespace SpellforceDataEditor
             if (ElementSelect.SelectedIndex == -1)
             {
                 ElementDisplay.Visible = false;
+                labelDescription.Text = "";
                 return;
             }
             ElementDisplay.Visible = true;
             ElementDisplay.set_element(current_indices[ElementSelect.SelectedIndex]);
             ElementDisplay.show_element();
+            SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
+            labelDescription.Text = ctg.get_element_description(manager, current_indices[ElementSelect.SelectedIndex]);
         }
 
         //start loading all elements from a category
@@ -106,6 +109,7 @@ namespace SpellforceDataEditor
             }
             ElementSelect.Items.Clear();
             current_indices.Clear();
+            labelDescription.Text = "";
             ElementSelect_RefreshTimer.Enabled = true;
             elementselect_next_index = 0;
             elementselect_last_index = ctg.get_element_count();
@@ -195,6 +199,7 @@ namespace SpellforceDataEditor
             //now that descriptions have been looked at, remove all elements from element selector
             ElementSelect.Items.Clear();
             current_indices.Clear();
+            labelDescription.Text = "";
 
             //if any elements were found in previous phase, add them immediately
             ElementSelect_add_elements(ctg, query_result);

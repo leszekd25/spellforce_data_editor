@@ -33,6 +33,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadGameDatacffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CategorySelect = new System.Windows.Forms.ComboBox();
             this.ElementSelect = new System.Windows.Forms.ListBox();
@@ -53,7 +54,7 @@
             this.ButtonElemRemove = new System.Windows.Forms.Button();
             this.ButtonElemInsert = new System.Windows.Forms.Button();
             this.ElementSelect_RefreshTimer = new System.Windows.Forms.Timer(this.components);
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.labelDescription = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -95,10 +96,17 @@
             this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
+            // closeToolStripMenuItem
+            // 
+            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.closeToolStripMenuItem.Text = "Close";
+            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -280,18 +288,23 @@
             this.ElementSelect_RefreshTimer.Interval = 1000;
             this.ElementSelect_RefreshTimer.Tick += new System.EventHandler(this.ElementSelect_RefreshTimer_Tick);
             // 
-            // closeToolStripMenuItem
+            // labelDescription
             // 
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.closeToolStripMenuItem.Text = "Close";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            this.labelDescription.BackColor = System.Drawing.SystemColors.Control;
+            this.labelDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.labelDescription.Location = new System.Drawing.Point(395, 463);
+            this.labelDescription.Multiline = true;
+            this.labelDescription.Name = "labelDescription";
+            this.labelDescription.ReadOnly = true;
+            this.labelDescription.Size = new System.Drawing.Size(500, 126);
+            this.labelDescription.TabIndex = 12;
             // 
             // SpelllforceCFFEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(944, 601);
+            this.Controls.Add(this.labelDescription);
             this.Controls.Add(this.panelElemManipulate);
             this.Controls.Add(this.panelSearch);
             this.Controls.Add(this.SearchPanel);
@@ -340,5 +353,6 @@
         private System.Windows.Forms.CheckBox checkSearchDescription;
         private System.Windows.Forms.Timer ElementSelect_RefreshTimer;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+        private System.Windows.Forms.TextBox labelDescription;
     }
 }

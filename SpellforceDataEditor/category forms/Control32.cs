@@ -15,20 +15,24 @@ namespace SpellforceDataEditor.category_forms
         public Control32()
         {
             InitializeComponent();
-            column_dict.Add("Unknown", new int[3] { 0, 1, 2 });
+            column_dict.Add("Resource ID", new int[1] { 0 });
+            column_dict.Add("Text ID", new int[1] { 1 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(textBox1.Text, 3);
-            category.set_element_variant(current_element, 0, data_array[0]);
-            category.set_element_variant(current_element, 1, data_array[1]);
-            category.set_element_variant(current_element, 2, data_array[2]);
+            category.set_element_variant(current_element, 0, Utility.TryParseUInt8(textBox1.Text));
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 1, Utility.TryParseUInt16(textBox2.Text));
         }
 
         public override void show_element()
         {
-            textBox1.Text = bytearray_repr(0, 3);
+            textBox1.Text = variant_repr(0);
+            textBox2.Text = variant_repr(1);
         }
     }
 }

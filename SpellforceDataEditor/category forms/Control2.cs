@@ -23,8 +23,7 @@ namespace SpellforceDataEditor.category_forms
             column_dict.Add("Sorting 2", new int[1] { 5 });
             column_dict.Add("Sorting 3", new int[1] { 6 });
             column_dict.Add("Spell UI handle", new int[1] { 7 });
-            column_dict.Add("Unknown2 1", new int[1] { 8 });
-            column_dict.Add("Unknown2 2", new int[1] { 9 });
+            column_dict.Add("Description ID", new int[1] { 8 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -69,12 +68,7 @@ namespace SpellforceDataEditor.category_forms
 
         private void textBox9_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 8, Utility.TryParseUInt8(textBox9.Text));
-        }
-
-        private void textBox10_TextChanged(object sender, EventArgs e)
-        {
-            category.set_element_variant(current_element, 9, Utility.TryParseUInt8(textBox10.Text));
+            category.set_element_variant(current_element, 8, Utility.TryParseUInt16(textBox9.Text));
         }
 
         public override void show_element()
@@ -88,7 +82,6 @@ namespace SpellforceDataEditor.category_forms
             textBox6.Text = variant_repr(6);
             textBox8.Text = string_repr(7);
             textBox9.Text = variant_repr(8);
-            textBox10.Text = variant_repr(9);
         }
     }
 }

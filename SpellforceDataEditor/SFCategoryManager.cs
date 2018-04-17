@@ -15,6 +15,7 @@ namespace SpellforceDataEditor
         private SFCategory[] categories;      //array of categories
         private int categoryNumber;           //amount of categories (basically a constant)
         private Byte[] mainHeader;            //gamedata.cff has a main header which is held here
+        private SFCategoryRuneHeroes categorySpecial_RuneHeroes;
 
         //constructor, it creates categories
         public SFCategoryManager()
@@ -26,6 +27,7 @@ namespace SpellforceDataEditor
                 categories[i - 1] = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCategory" + i.ToString()) as SFCategory;
             }
             mainHeader = new Byte[20];
+            categorySpecial_RuneHeroes = new SFCategoryRuneHeroes();
         }
 
         //returns category, given its index
@@ -45,6 +47,7 @@ namespace SpellforceDataEditor
             {
                 get_category(i).read(br);
             }
+            categorySpecial_RuneHeroes.generate(this);
 
             br.Close();
             fs.Close();
@@ -151,8 +154,10 @@ namespace SpellforceDataEditor
             string txt_major = "";
             string txt_minor = "";
             int major_index = (int)(UInt16)get_category(26).find_element_index<Byte>(0, skill_major);
-            if (major_index == 0)
+            if (major_index == -1)
+            {
                 return "<unknown string>";
+            }
             int total_index = major_index + (int)skill_minor;
             int text_id_major = (int)(UInt16)get_category(26).get_element_variant(major_index, 2).value;
             SFCategoryElement txt_elem_major = find_element_text(text_id_major, 1);
@@ -169,6 +174,20 @@ namespace SpellforceDataEditor
                 }
             }
             return txt_major + " " + txt_minor + " " + skill_lvl.ToString();
+        }
+
+        //returns a name of a given race
+        public string get_race_name(Byte race_id)
+        {
+            SFCategoryElement race_elem = get_category(15).find_binary_element<Byte>(0, race_id);
+            if (race_elem == null)
+                return "<no name>";
+            int text_id = (int)(UInt16)race_elem.get_single_variant(7).value;
+            SFCategoryElement text_elem = find_element_text(text_id, 1);
+            if (text_elem == null)
+                return "<text missing>";
+            string txt = Utility.CleanString(text_elem.get_single_variant(4));
+            return txt;
         }
 
         //returns a name of a given item
@@ -236,6 +255,18 @@ namespace SpellforceDataEditor
             return txt;
         }
 
+        public string get_runehero_name(UInt16 stats_id)
+        {
+            SFCategoryElement rune_elem = categorySpecial_RuneHeroes.find_binary_element<UInt16>(0, stats_id);
+            if (rune_elem == null)
+                return "<no name>";
+            int text_id = (int)(UInt16)rune_elem.get_single_variant(1).value;
+            SFCategoryElement text_elem = find_element_text(text_id, 1);
+            if (text_elem == null)
+                return "<text missing>";
+            return Utility.CleanString(text_elem.get_single_variant(4));
+        }
+
         //returns a list of indices
         //these indices correspond with all elements which contain given value in a given column
         //value is numeric in this query
@@ -275,6 +306,7 @@ namespace SpellforceDataEditor
         {
             foreach (SFCategory cat in categories)
                 cat.unload();
+            categorySpecial_RuneHeroes.unload();
             mainHeader = new Byte[20];
         }
     }
