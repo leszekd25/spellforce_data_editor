@@ -259,6 +259,22 @@ namespace SpellforceDataEditor
             return -1;
         }
 
+        //finds text string given element and column index where the element holds text IDs
+        public string get_text_from_element(SFCategoryElement elem, int cat_index)
+        {
+            if (elem == null)
+                return "<no name>";
+            else
+            {
+                int text_id = (int)(UInt16)elem.get_single_variant(cat_index).value;
+                SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
+                if (txt_elem != null)
+                    return Utility.CleanString(txt_elem.get_single_variant(4));
+                else
+                    return "<text missing>";
+            }
+        }
+
         //sets a single variant given element index and variant index
         public void set_element_variant(int elem_index, int var_index, object obj)
         {
@@ -379,19 +395,9 @@ namespace SpellforceDataEditor
         {
             UInt16 type_id = (UInt16)get_element_variant(index, 1).value;
             SFCategoryElement stype_elem = manager.get_category(1).find_binary_element<UInt16>(0, type_id);
-            if(stype_elem == null)
-            {
-                return get_element_variant(index, 0).value.ToString();
-            }
-            UInt16 text_id = (UInt16)stype_elem.get_single_variant(1).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                Byte spell_level = (Byte)get_element_variant(index, 4).value;
-                string txt = Utility.CleanString(txt_elem.get_single_variant(4));
-                return get_element_variant(index, 0).value.ToString() + " " + txt + " level " + spell_level.ToString();
-            }
-            return get_element_variant(index, 0).value.ToString() + " <text missing>";
+            string stype_txt = get_text_from_element(stype_elem, 1);
+            Byte spell_level = (Byte)get_element_variant(index, 4).value;
+            return get_element_variant(index, 0).value.ToString() + " " + stype_txt + " level " + spell_level.ToString();
         }
 
         public override string get_element_description(SFCategoryManager manager, int index)
@@ -429,27 +435,14 @@ namespace SpellforceDataEditor
 
         public override string get_element_string(SFCategoryManager manager, int index)
         {
-            int text_id = (int)(UInt16)get_element_variant(index, 1).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt = Utility.CleanString(txt_elem.get_single_variant(4));
-                return get_element_variant(index, 0).value.ToString() + " " + txt;
-            }
-            return get_element_variant(index, 0).value.ToString() + " <text missing>";
+            string stype_txt = get_text_from_element(elements[index], 1);
+            return get_element_variant(index, 0).value.ToString() + " " + stype_txt;
         }
 
         public override string get_element_description(SFCategoryManager manager, int index)
         {
-            string spell_name = "";
-            string spell_desc = "";
-            int text_id = (int)(UInt16)get_element_variant(index, 1).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                spell_name = Utility.CleanString(txt_elem.get_single_variant(4));
-            }
-            spell_desc = manager.get_description_name((UInt16)get_element_variant(index, 8).value);
+            string spell_name = get_text_from_element(elements[index], 1);
+            string spell_desc = manager.get_description_name((UInt16)get_element_variant(index, 8).value);
             return spell_name + "\r\n" + spell_desc;
         }
     }
@@ -477,18 +470,8 @@ namespace SpellforceDataEditor
         {
             UInt16 stats_id = (UInt16)get_element_variant(index, 0).value;
             SFCategoryElement elem = manager.get_category(17).find_element<UInt16>(2, stats_id);
-            int text_id = -1;
-            if (elem == null)
-                return stats_id.ToString() + " " + manager.get_runehero_name(stats_id);
-            else
-                text_id = (int)(UInt16)manager.get_category(17).find_element<UInt16>(2, stats_id).get_single_variant(1).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt = Utility.CleanString(txt_elem.get_single_variant(4));
-                return stats_id.ToString() + " " + txt;
-            }
-            return stats_id.ToString() + " <text missing>";
+            string unit_txt = get_text_from_element(elem, 1);
+            return stats_id.ToString() + " " + unit_txt;
         }
 
         public override string get_element_description(SFCategoryManager manager, int index)
@@ -513,18 +496,10 @@ namespace SpellforceDataEditor
         {
             UInt16 stats_id = (UInt16)get_element_variant(index, 0).value;
             SFCategoryElement elem = manager.get_category(17).find_element<UInt16>(2, stats_id);
-            int text_id = -1;
-            if (elem == null)
-                return stats_id.ToString() + " " + manager.get_runehero_name(stats_id);
-            else
-                text_id = (int)(UInt16)manager.get_category(17).find_element<UInt16>(2, stats_id).get_single_variant(1).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt = Utility.CleanString(txt_elem.get_single_variant(4));
-                return stats_id.ToString() + " " + txt;
-            }
-            return stats_id.ToString() + " <text missing>";
+            string unit_txt = get_text_from_element(elem, 1);
+            if (unit_txt == "<no name>")
+                unit_txt = manager.get_runehero_name(stats_id);
+            return stats_id.ToString() + " " + unit_txt;
             
         }
 
@@ -569,14 +544,8 @@ namespace SpellforceDataEditor
 
         public override string get_element_string(SFCategoryManager manager, int index)
         {
-            int text_id = (int)(UInt16)get_element_variant(index, 3).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt = Utility.CleanString(txt_elem.get_single_variant(4));
-                return get_element_variant(index, 0).value.ToString() + " " + txt;
-            }
-            return get_element_variant(index, 0).value.ToString() + " <missing>";
+            string txt = get_text_from_element(elements[index], 3);
+            return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
 
         public override string get_element_description(SFCategoryManager manager, int index)
@@ -678,30 +647,12 @@ namespace SpellforceDataEditor
         public override string get_element_description(SFCategoryManager manager, int index)
         {
             UInt16 type_id = (UInt16)get_element_variant(index, 6).value;
-            UInt16 material_id = (UInt16)get_element_variant(index, 7).value;
-            string type_name = "<no name>";
-            string material_name = "<no name>";
+            UInt16 material_id = (UInt16)get_element_variant(index, 7).value;         
 
             SFCategoryElement type_elem = manager.get_category(43).find_binary_element<UInt16>(0, type_id);
-            if (type_elem != null)
-            {
-                UInt16 text_id = (UInt16)type_elem.get_single_variant(1).value;
-                SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-                if (txt_elem != null)
-                    type_name = Utility.CleanString(txt_elem.get_single_variant(4));
-                else
-                    type_name = "<text missing>";
-            }
+            string type_name = get_text_from_element(type_elem, 1);
             SFCategoryElement material_elem = manager.get_category(44).find_binary_element<UInt16>(0, material_id);
-            if (material_elem != null)
-            {
-                UInt16 text_id = (UInt16)material_elem.get_single_variant(1).value;
-                SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-                if (txt_elem != null)
-                    material_name = Utility.CleanString(txt_elem.get_single_variant(4));
-                else
-                    material_name = "<text missing>";
-            }
+            string material_name = get_text_from_element(material_elem, 1);
 
             return "Weapon type: " + type_name + "\r\nWeapon material: " + material_name;
         }
@@ -819,14 +770,8 @@ namespace SpellforceDataEditor
 
         public override string get_element_string(SFCategoryManager manager, int index)
         {
-            UInt16 text_id = (UInt16)get_element_variant(index, 7).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt = Utility.CleanString(txt_elem.get_single_variant(4));
-                return get_element_variant(index, 0).value.ToString() + " " + txt;
-            }
-            return get_element_variant(index, 0).value.ToString() + " <missing>";
+            string txt = get_text_from_element(elements[index], 7);
+            return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
     }
 
@@ -852,14 +797,8 @@ namespace SpellforceDataEditor
 
         public override string get_element_string(SFCategoryManager manager, int index)
         {
-            UInt16 text_id = (UInt16)get_element_variant(index, 1).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt = Utility.CleanString(txt_elem.get_single_variant(4));
-                return get_element_variant(index, 0).value.ToString() + " " + txt;
-            }
-            return get_element_variant(index, 0).value.ToString() + " <text missing>";
+            string txt = get_text_from_element(elements[index], 1);
+            return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
     }
 
@@ -921,19 +860,8 @@ namespace SpellforceDataEditor
         {
             Byte resource_amount = (Byte)get_element_variant(index, 2).value;
             Byte resource_id = (Byte)get_element_variant(index, 1).value;
-            string resource_name = "";
             SFCategoryElement elem = manager.get_category(31).find_element<Byte>(0, resource_id);
-            if (elem == null)
-                resource_name = "<no name>";
-            else
-            {
-                int text_id = (int)(UInt16)elem.get_single_variant(1).value;
-                SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-                if (txt_elem != null)
-                    resource_name = Utility.CleanString(txt_elem.get_single_variant(4));
-                else
-                    resource_name = "<text missing>";
-            }
+            string resource_name = get_text_from_element(elem, 1);
             return "Requirement: " + resource_amount.ToString() + " " + resource_name;
         }
     }
@@ -1005,14 +933,8 @@ namespace SpellforceDataEditor
 
         public override string get_element_string(SFCategoryManager manager, int index)
         {
-            int text_id = (int)(UInt16)get_element_variant(index, 5).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt = Utility.CleanString(txt_elem.get_single_variant(4));
-                return get_element_variant(index, 0).value.ToString() + " " + txt;
-            }
-            return get_element_variant(index, 0).value.ToString() + " <missing>";
+            string txt = get_text_from_element(elements[index], 5);
+            return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
 
         public override string get_element_description(SFCategoryManager manager, int index)
@@ -1090,19 +1012,8 @@ namespace SpellforceDataEditor
         {
             UInt16 resource_amount = (UInt16)get_element_variant(index, 2).value;
             Byte resource_id = (Byte)get_element_variant(index, 1).value;
-            string resource_name = "";
             SFCategoryElement elem = manager.get_category(31).find_element<Byte>(0, resource_id);
-            if (elem == null)
-                resource_name = "<no name>";
-            else
-            {
-                int text_id = (int)(UInt16)elem.get_single_variant(1).value;
-                SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-                if (txt_elem != null)
-                    resource_name = Utility.CleanString(txt_elem.get_single_variant(4));
-                else
-                    resource_name = "<text missing>";
-            }
+            string resource_name = get_text_from_element(elem, 1);
             return "Requirement: " + resource_amount.ToString() + " " + resource_name;
         }
     }
@@ -1118,14 +1029,8 @@ namespace SpellforceDataEditor
 
         public override string get_element_string(SFCategoryManager manager, int index)
         {
-            int text_id = (int)(UInt16)get_element_variant(index, 2).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt = Utility.CleanString(txt_elem.get_single_variant(4));
-                return get_element_variant(index, 0).value.ToString() + " " + txt;
-            }
-            return get_element_variant(index, 0).value.ToString() + " <text missing>";
+            string txt = get_text_from_element(elements[index], 2);
+            return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
     }
 
@@ -1212,14 +1117,8 @@ namespace SpellforceDataEditor
 
         public override string get_element_string(SFCategoryManager manager, int index)
         {
-            int text_id = (int)(UInt16)get_element_variant(index, 1).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt = Utility.CleanString(txt_elem.get_single_variant(4));
-                return get_element_variant(index, 0).value.ToString() + " " + txt;
-            }
-            return get_element_variant(index, 0).value.ToString() + " <text missing>";
+            string txt = get_text_from_element(elements[index], 1);
+            return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
     }
 
@@ -1252,15 +1151,9 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt16 object_id = (UInt16)get_element_variant(index, 0).value;
-            UInt16 text_id = (UInt16)get_element_variant(index, 1).value;
+            string txt = get_text_from_element(elements[index], 1);
             string object_handle = Utility.CleanString(get_element_variant(index, 5));
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt = Utility.CleanString(txt_elem.get_single_variant(4));
-                return object_id.ToString() + " " + object_handle + "/" + txt;
-            }
-            return object_id.ToString() + " " + object_handle + "/<text missing>";
+            return object_id.ToString() + " " + object_handle + "/" + txt;
         }
     }
 
@@ -1358,14 +1251,8 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt32 object_id = (UInt32)get_element_variant(index, 0).value;
-            UInt16 text_id = (UInt16)get_element_variant(index, 1).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt_unk = Utility.CleanString(txt_elem.get_single_variant(4));
-                return object_id.ToString() + " " + txt_unk;
-            }
-            return object_id.ToString() + " <text missing>";
+            string txt = get_text_from_element(elements[index], 1);
+            return object_id.ToString() + " " + txt;
         }
     }
 
@@ -1382,14 +1269,8 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt32 map_id = (UInt32)get_element_variant(index, 0).value;
-            UInt16 text_id = (UInt16)get_element_variant(index, 3).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt_map = Utility.CleanString(manager.find_element_text(text_id, 1).get_single_variant(4));
-                return map_id.ToString() + " " + txt_map;
-            }
-            return map_id.ToString() + " <name missing>";
+            string txt = get_text_from_element(elements[index], 3);
+            return map_id.ToString() + " " + txt;
         }
     }
 
@@ -1405,14 +1286,8 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt16 object_id = (UInt16)get_element_variant(index, 0).value;
-            UInt16 text_id = (UInt16)get_element_variant(index, 5).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt_map = Utility.CleanString(manager.find_element_text(text_id, 1).get_single_variant(4));
-                return object_id.ToString() + " " + txt_map;
-            }
-            return object_id.ToString() + " <name missing>";
+            string txt = get_text_from_element(elements[index], 5);
+            return object_id.ToString() + " " + txt;
         }
 
         public override string get_element_description(SFCategoryManager manager, int index)
@@ -1449,14 +1324,8 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt16 desc_id = (UInt16)get_element_variant(index, 0).value;
-            UInt16 text_id = (UInt16)get_element_variant(index, 1).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt_map = Utility.CleanString(manager.find_element_text(text_id, 1).get_single_variant(4));
-                return desc_id.ToString() + " " + txt_map;
-            }
-            return desc_id.ToString() + " <text missing>";
+            string txt = get_text_from_element(elements[index], 1);
+            return desc_id.ToString() + " " + txt;
         }
 
     }
@@ -1473,26 +1342,14 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt16 elem_id = (UInt16)get_element_variant(index, 0).value;
-            UInt16 desc_id = (UInt16)get_element_variant(index, 2).value;
-            SFCategoryElement txt_elem = manager.find_element_text(desc_id, 1);
-            if (txt_elem != null)
-            {
-                string txt_desc = Utility.CleanString(txt_elem.get_single_variant(4));
-                return elem_id.ToString() + " " + txt_desc;
-            }
-            return elem_id.ToString() + " <text missing>";
+            string txt = get_text_from_element(elements[index], 2);
+            return elem_id.ToString() + " " + txt;
         }
 
         public override string get_element_description(SFCategoryManager manager, int index)
         {
-            UInt16 text_id = (UInt16)get_element_variant(index, 1).value;
-            SFCategoryElement txt_elem = manager.find_element_text(text_id, 1);
-            if (txt_elem != null)
-            {
-                string txt_desc = Utility.CleanString(txt_elem.get_single_variant(4));
-                return "Text ID: "+ txt_desc;
-            }
-            return "Text ID: <text missing>";
+            string txt = get_text_from_element(elements[index], 1);
+            return "Text ID: " + txt;
         }
     }
 
@@ -1508,38 +1365,16 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt32 elem_id = (UInt32)get_element_variant(index, 0).value;
-            UInt16 desc_id = (UInt16)get_element_variant(index, 3).value;
-            SFCategoryElement txt_elem = manager.find_element_text(desc_id, 1);
-            if (txt_elem != null)
-            {
-                string txt_desc = Utility.CleanString(txt_elem.get_single_variant(4));
-                return elem_id.ToString() + " " + txt_desc;
-            }
-            return elem_id.ToString() + " <text missing>";
+            string txt = get_text_from_element(elements[index], 3);
+            return elem_id.ToString() + " " + txt;
         }
 
         public override string get_element_description(SFCategoryManager manager, int index)
         {
             UInt32 quest_id = (UInt32)get_element_variant(index, 1).value;
-            string quest_name = "<no name>";
-            UInt16 desc_id = (UInt16)get_element_variant(index, 4).value;
-            string desc_text = "<text missing>";
             SFCategoryElement quest_elem = find_binary_element<UInt32>(0, quest_id);
-            if(quest_elem != null)
-            {
-                SFCategoryElement txt_elem = manager.find_element_text((UInt16)quest_elem.get_single_variant(3).value, 1);
-                if (txt_elem != null)
-                {
-                    quest_name = Utility.CleanString(txt_elem.get_single_variant(4));
-                }
-                else
-                    quest_name = "<text missing>";
-            }
-            SFCategoryElement desc_elem = manager.find_element_text(desc_id, 1);
-            if (desc_elem != null)
-            {
-                desc_text = Utility.CleanString(desc_elem.get_single_variant(4));
-            }
+            string quest_name = get_text_from_element(quest_elem, 3);
+            string desc_text = get_text_from_element(elements[index], 4);
             return desc_text + "\r\n\r\nPart of quest " + quest_name;
         }
     }
@@ -1556,14 +1391,8 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt16 elem_id = (UInt16)get_element_variant(index, 0).value;
-            UInt16 desc_id = (UInt16)get_element_variant(index, 1).value;
-            SFCategoryElement txt_elem = manager.find_element_text(desc_id, 1);
-            if (txt_elem != null)
-            {
-                string txt_desc = Utility.CleanString(txt_elem.get_single_variant(4));
-                return elem_id.ToString() + " " + txt_desc;
-            }
-            return elem_id.ToString() + " <text missing>";
+            string txt = get_text_from_element(elements[index], 1);
+            return elem_id.ToString() + " " + txt;
         }
     }
 
@@ -1579,14 +1408,8 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt16 elem_id = (UInt16)get_element_variant(index, 0).value;
-            UInt16 desc_id = (UInt16)get_element_variant(index, 1).value;
-            SFCategoryElement txt_elem = manager.find_element_text(desc_id, 1);
-            if (txt_elem != null)
-            {
-                string txt_desc = Utility.CleanString(txt_elem.get_single_variant(4));
-                return elem_id.ToString() + " " + txt_desc;
-            }
-            return elem_id.ToString() + " <text missing>";
+            string txt = get_text_from_element(elements[index], 1);
+            return elem_id.ToString() + " " + txt;
         }
     }
 
@@ -1623,14 +1446,8 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt16 elem_id = (UInt16)get_element_variant(index, 0).value;
-            UInt16 desc_id = (UInt16)get_element_variant(index, 2).value;
-            SFCategoryElement txt_elem = manager.find_element_text(desc_id, 1);
-            if (txt_elem != null)
-            {
-                string txt_desc = Utility.CleanString(txt_elem.get_single_variant(4));
-                return elem_id.ToString() + " " + txt_desc;
-            }
-            return elem_id.ToString() + " <text missing>";
+            string txt = get_text_from_element(elements[index], 2);
+            return elem_id.ToString() + " " + txt;
         }
 
         public override string get_element_description(SFCategoryManager manager, int index)
@@ -1655,18 +1472,12 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             Byte elem_id = (Byte)get_element_variant(index, 0).value;
-            UInt16 desc_id = (UInt16)get_element_variant(index, 1).value;
-            SFCategoryElement txt_elem = manager.find_element_text(desc_id, 1);
-            if (txt_elem != null)
-            {
-                string txt_desc = Utility.CleanString(txt_elem.get_single_variant(4));
-                return elem_id.ToString() + " " + txt_desc;
-            }
-            return elem_id.ToString() + " <text missing>";
+            string txt = get_text_from_element(elements[index], 1);
+            return elem_id.ToString() + " " + txt;
         }
     }
 
-    //special category, is nor read/written to file, instead it's generated from loaded data
+    //special category, is not read/written to file, instead it's generated from loaded data
     public class SFCategoryRuneHeroes: SFCategory
     {
         public SFCategoryRuneHeroes(): base()
