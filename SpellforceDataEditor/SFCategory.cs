@@ -788,6 +788,19 @@ namespace SpellforceDataEditor
     //unit names (18th category)
     public class SFCategory18 : SFCategory
     {
+        private int calculate_total_xp(UInt32 xp_gain, UInt16 xp_falloff)
+        {
+            if ((xp_gain == 0) || (xp_falloff == 0))
+                return 0;
+            int max_units = 500;
+            int s = 0;
+            for(int i = 0; i < 500; i++)
+            {
+                s += (int)Math.Floor((Single)xp_gain * ((Single)(xp_falloff) / (Single)(xp_falloff + i)));
+            }
+            return s;
+        }
+
         public SFCategory18() : base()
         {
             string_size = new int[1] { 40 };
@@ -799,6 +812,13 @@ namespace SpellforceDataEditor
         {
             string txt = get_text_from_element(elements[index], 1);
             return get_element_variant(index, 0).value.ToString() + " " + txt;
+        }
+
+        public override string get_element_description(SFCategoryManager manager, int index)
+        {
+            UInt32 xp_gain = (UInt32)get_element_variant(index, 3).value;
+            UInt16 xp_falloff = (UInt16)get_element_variant(index, 4).value;
+            return "Max XP gained from this unit: " + calculate_total_xp(xp_gain, xp_falloff).ToString();
         }
     }
 
