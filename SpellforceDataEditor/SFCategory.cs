@@ -1088,7 +1088,7 @@ namespace SpellforceDataEditor
 
         public override string get_element_description(SFCategoryManager manager, int index)
         {
-            Byte resource_amount = (Byte)get_element_variant(index, 2).value;
+            UInt16 resource_amount = (UInt16)get_element_variant(index, 2).value;
             Byte resource_id = (Byte)get_element_variant(index, 1).value;
             string resource_name = "";
             SFCategoryElement elem = manager.get_category(31).find_element<Byte>(0, resource_id);
