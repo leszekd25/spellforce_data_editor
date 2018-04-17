@@ -57,7 +57,9 @@ namespace SpellforceDataEditor
                 return;
             if (SaveGameData.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
+                labelStatus.Text = "Saving...";
                 manager.save_cff(SaveGameData.FileName);
+                labelStatus.Text = "Saved";
             }
         }
 
