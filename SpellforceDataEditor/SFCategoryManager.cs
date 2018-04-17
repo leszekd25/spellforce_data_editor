@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
@@ -644,7 +645,7 @@ namespace SpellforceDataEditor
         private SFCategory[] categories;      //array of categories
         private int categoryNumber;           //amount of categories (basically a constant)
         private Byte[] mainHeader;            //gamedata.cff has a main header which is held here
-        private SFCategoryRuneHeroes categorySpecial_RuneHeroes;
+        private SFCategoryRuneHeroes categorySpecial_RuneHeroes;    //intermediary needed to find names of rune heroes
 
         //constructor, it creates categories
         public SFCategoryManager()
@@ -668,7 +669,8 @@ namespace SpellforceDataEditor
         }
 
         //loads gamedata.cff file
-        public void load_cff(string filename)
+        //bar has a maximum value of 10000
+        public void load_cff(string filename, ToolStripProgressBar bar)
         {
             FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
             BinaryReader br = new BinaryReader(fs, Encoding.Default);
@@ -677,6 +679,7 @@ namespace SpellforceDataEditor
             for (int i = 0; i < categoryNumber; i++)
             {
                 get_category(i).read(br);
+                bar.Value = (i * bar.Maximum) / categoryNumber;
             }
             categorySpecial_RuneHeroes.generate(this);
 

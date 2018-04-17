@@ -38,7 +38,11 @@ namespace SpellforceDataEditor
             {
                 if (CategorySelect.Enabled)
                     close_data();
-                manager.load_cff(OpenGameData.FileName);
+                labelStatus.Text = "Loading...";
+                ProgressBar_Main.Visible = true;
+                manager.load_cff(OpenGameData.FileName, ProgressBar_Main);
+                labelStatus.Text = "Ready";
+                ProgressBar_Main.Visible = false; ;
                 CategorySelect.Enabled = true;
                 for (int i = 0; i < manager.get_category_number(); i++)
                     CategorySelect.Items.Add(manager.get_category(i).get_name());
@@ -110,6 +114,9 @@ namespace SpellforceDataEditor
             ElementSelect.Items.Clear();
             current_indices.Clear();
             labelDescription.Text = "";
+            labelStatus.Text = "Loading...";
+            ProgressBar_Main.Visible = true;
+            ProgressBar_Main.Value = 0;
             ElementSelect_RefreshTimer.Enabled = true;
             elementselect_next_index = 0;
             elementselect_last_index = ctg.get_element_count();
@@ -150,6 +157,13 @@ namespace SpellforceDataEditor
             int elem_found = 0;
             SFCategory ctg = manager.get_category(selected_category_index);
             int columns = ctg.get_element_format().Length;
+            List<int> query_result = new List<int>();
+
+            //for progress bar
+            int data_searched = 0;
+            int currently_searched = 0;
+            if (checkSearchDescription.Checked)
+                data_searched++;
 
             //determine columns to search
             List<int> columns_searched = new List<int>();
@@ -165,9 +179,15 @@ namespace SpellforceDataEditor
                 for (int i = 0; i < columns; i++)
                     columns_searched.Add(i);
             }
+            data_searched += columns_searched.Count;
+
+            //set up progress bar
+            labelStatus.Text = "Searching...";
+            ProgressBar_Main.Visible = true;
+            ProgressBar_Main.Value = 0;
 
             //if searched, looks for string in element description
-            List<int> query_result = new List<int>();
+            
             if (checkSearchDescription.Checked)
             {
                 string val = SearchQuery.Text;
@@ -194,12 +214,16 @@ namespace SpellforceDataEditor
                         }
                     }
                 }
+                currently_searched++;
             }
 
             //now that descriptions have been looked at, remove all elements from element selector
             ElementSelect.Items.Clear();
             current_indices.Clear();
             labelDescription.Text = "";
+
+            //update progress bar
+            ProgressBar_Main.Value = (currently_searched * ProgressBar_Main.Maximum) / data_searched;
 
             //if any elements were found in previous phase, add them immediately
             ElementSelect_add_elements(ctg, query_result);
@@ -213,6 +237,8 @@ namespace SpellforceDataEditor
                     query_result = manager.query_by_column_numeric(CategorySelect.SelectedIndex, col, val);
                     elem_found += query_result.Count;
                     ElementSelect_add_elements(ctg, query_result);
+                    currently_searched++;
+                    ProgressBar_Main.Value = (currently_searched * ProgressBar_Main.Maximum) / data_searched;
                 }
             }
             else
@@ -225,12 +251,16 @@ namespace SpellforceDataEditor
                     query_result = manager.query_by_column_text(CategorySelect.SelectedIndex, col, val);
                     elem_found += query_result.Count;
                     ElementSelect_add_elements(ctg, query_result);
+                    currently_searched++;
+                    ProgressBar_Main.Value = (currently_searched * ProgressBar_Main.Maximum) / data_searched;
                 }
             }
 
             //finishing touch
             ElementDisplay.Visible = false;
             panelElemManipulate.Visible = false;
+            labelStatus.Text = "Ready";
+            ProgressBar_Main.Visible = false;
         }
 
         //what happens when you add an element to a category
@@ -277,6 +307,7 @@ namespace SpellforceDataEditor
                 ElementSelect.Items.Add(ctg.get_element_string(manager, i));
                 current_indices.Add(i);
             }
+            ProgressBar_Main.Value = (int)(((Single)last/(Single)elementselect_last_index)*ProgressBar_Main.Maximum);
 
             elementselect_next_index += elementselect_refresh_size;
             if(last != elementselect_last_index)
@@ -286,6 +317,8 @@ namespace SpellforceDataEditor
             }
             else
             {
+                ProgressBar_Main.Visible = false;
+                labelStatus.Text = "Ready";
                 ElementSelect_RefreshTimer.Enabled = false;
                 panelElemManipulate.Visible = true;
             }
@@ -318,6 +351,10 @@ namespace SpellforceDataEditor
             panelSearch.Visible = false;
             selected_category_index = -1;
             manager.unload_all();
+            labelStatus.Text = "";
+            ProgressBar_Main.Visible = false;
+            ProgressBar_Main.Value = 0;
+            labelDescription.Text = "";
             GC.Collect();
         }
 
