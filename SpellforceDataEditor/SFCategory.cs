@@ -18,12 +18,23 @@ namespace SpellforceDataEditor
         protected int[] string_size;                    //if category element holds a string (one or more), a list of string lengths is required
         protected int current_string;                   //helper variable to enable searching and manipulating string variants
         protected Byte[] categoryHeader;                //each category starts with a header
+        protected SFCategoryManager manager;
 
         //constructor 
         public SFCategory()
         {
             categoryHeader = new Byte[12];
             string_size = new int[1] { 0 };
+        }
+
+        public SFCategoryManager get_manager()
+        {
+            return manager;
+        }
+
+        public void set_manager(SFCategoryManager m)
+        {
+            manager = m;
         }
 
         //initialization, sets format for an element
@@ -285,7 +296,7 @@ namespace SpellforceDataEditor
             Byte[] block_buffer = new Byte[block_length];
             sr.Read(block_buffer, 0, (int)(block_length));
             MemoryStream ms = new MemoryStream(block_buffer);
-            BinaryReader mr = new BinaryReader(ms, Encoding.ASCII);
+            BinaryReader mr = new BinaryReader(ms, Encoding.Default);
             while (mr.PeekChar() != -1)
             {
                 SFCategoryElement elem = new SFCategoryElement();
@@ -358,7 +369,7 @@ namespace SpellforceDataEditor
     {
         public SFCategory1() : base()
         {
-            initialize("HHBBBBBBBBBBBBHIIHHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+            initialize("HHBBBBBBBBBBBBHIIHHBBIIIIIIIIIIBBBB");
             category_name = "Spells/skills";
         }
 
@@ -1034,7 +1045,7 @@ namespace SpellforceDataEditor
             sr.Read(block_buffer, 0, (int)(block_length));
             int fm_length = elem_format.Length;
             MemoryStream ms = new MemoryStream(block_buffer);
-            BinaryReader mr = new BinaryReader(ms, Encoding.ASCII);
+            BinaryReader mr = new BinaryReader(ms, Encoding.Default);
             while (mr.PeekChar() != -1)
             {
                 SFCategoryElement elem = new SFCategoryElement();
@@ -1274,7 +1285,7 @@ namespace SpellforceDataEditor
             sr.Read(block_buffer, 0, (int)(block_length));
             int fm_length = elem_format.Length;
             MemoryStream ms = new MemoryStream(block_buffer);
-            BinaryReader mr = new BinaryReader(ms, Encoding.ASCII);
+            BinaryReader mr = new BinaryReader(ms, Encoding.Default);
             while (mr.PeekChar() != -1)
             {
                 SFCategoryElement elem = new SFCategoryElement();

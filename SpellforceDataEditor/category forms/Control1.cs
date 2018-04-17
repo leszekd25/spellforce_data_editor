@@ -28,17 +28,17 @@ namespace SpellforceDataEditor.category_forms
             column_dict.Add("Maximum range", new int[1] { 18 });
             column_dict.Add("Casting type 1", new int[1] { 19 });
             column_dict.Add("Casting type 2", new int[1] { 20 });
-            column_dict.Add("Spell data 1", new int[4] { 21, 22, 23, 24 });
-            column_dict.Add("Spell data 2", new int[4] { 25, 26, 27, 28 });
-            column_dict.Add("Spell data 3", new int[4] { 29, 30, 31, 32 });
-            column_dict.Add("Spell data 4", new int[4] { 33, 34, 35, 36 });
-            column_dict.Add("Spell data 5", new int[4] { 37, 38, 39, 40 });
-            column_dict.Add("Spell data 6", new int[4] { 41, 42, 43, 44 });
-            column_dict.Add("Spell data 7", new int[4] { 45, 46, 47, 48 });
-            column_dict.Add("Spell data 8", new int[4] { 49, 50, 51, 52 });
-            column_dict.Add("Spell data 9", new int[4] { 53, 54, 55, 56 });
-            column_dict.Add("Spell data 10", new int[4] { 57, 58, 59, 60 });
-            column_dict.Add("Unknown", new int[4] { 61, 62, 63, 64 });
+            column_dict.Add("Spell data 1", new int[1] { 21 });
+            column_dict.Add("Spell data 2", new int[1] { 22 });
+            column_dict.Add("Spell data 3", new int[1] { 23 });
+            column_dict.Add("Spell data 4", new int[1] { 24 });
+            column_dict.Add("Spell data 5", new int[1] { 25 });
+            column_dict.Add("Spell data 6", new int[1] { 26 });
+            column_dict.Add("Spell data 7", new int[1] { 27 });
+            column_dict.Add("Spell data 8", new int[1] { 28 });
+            column_dict.Add("Spell data 9", new int[1] { 29 });
+            column_dict.Add("Spell data 10", new int[1] { 30 });
+            column_dict.Add("Unknown", new int[4] { 31, 32, 33, 34 });
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
@@ -148,101 +148,75 @@ namespace SpellforceDataEditor.category_forms
 
         private void tb_sd1_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(tb_sd1.Text, 4);
-            category.set_element_variant(current_element, 21, data_array[0]);
-            category.set_element_variant(current_element, 22, data_array[1]);
-            category.set_element_variant(current_element, 23, data_array[2]);
-            category.set_element_variant(current_element, 24, data_array[3]);
+            category.set_element_variant(current_element, 21, Utility.TryParseUInt32(tb_sd1.Text));
         }
 
         private void tb_sd2_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(tb_sd2.Text, 4);
-            category.set_element_variant(current_element, 25, data_array[0]);
-            category.set_element_variant(current_element, 26, data_array[1]);
-            category.set_element_variant(current_element, 27, data_array[2]);
-            category.set_element_variant(current_element, 28, data_array[3]);
+            category.set_element_variant(current_element, 22, Utility.TryParseUInt32(tb_sd2.Text));
         }
 
         private void tb_sd3_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(tb_sd3.Text, 4);
-            category.set_element_variant(current_element, 29, data_array[0]);
-            category.set_element_variant(current_element, 30, data_array[1]);
-            category.set_element_variant(current_element, 31, data_array[2]);
-            category.set_element_variant(current_element, 32, data_array[3]);
+            category.set_element_variant(current_element, 23, Utility.TryParseUInt32(tb_sd3.Text));
         }
 
         private void tb_sd4_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(tb_sd4.Text, 4);
-            category.set_element_variant(current_element, 33, data_array[0]);
-            category.set_element_variant(current_element, 34, data_array[1]);
-            category.set_element_variant(current_element, 35, data_array[2]);
-            category.set_element_variant(current_element, 36, data_array[3]);
+            category.set_element_variant(current_element, 24, Utility.TryParseUInt32(tb_sd4.Text));
         }
 
         private void tb_sd5_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(tb_sd5.Text, 4);
-            category.set_element_variant(current_element, 37, data_array[0]);
-            category.set_element_variant(current_element, 38, data_array[1]);
-            category.set_element_variant(current_element, 39, data_array[2]);
-            category.set_element_variant(current_element, 40, data_array[3]);
+            category.set_element_variant(current_element, 25, Utility.TryParseUInt32(tb_sd5.Text));
         }
 
         private void tb_sd6_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(tb_sd6.Text, 4);
-            category.set_element_variant(current_element, 41, data_array[0]);
-            category.set_element_variant(current_element, 42, data_array[1]);
-            category.set_element_variant(current_element, 43, data_array[2]);
-            category.set_element_variant(current_element, 44, data_array[3]);
+            category.set_element_variant(current_element, 26, Utility.TryParseUInt32(tb_sd6.Text));
         }
 
         private void tb_sd7_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(tb_sd7.Text, 4);
-            category.set_element_variant(current_element, 45, data_array[0]);
-            category.set_element_variant(current_element, 46, data_array[1]);
-            category.set_element_variant(current_element, 47, data_array[2]);
-            category.set_element_variant(current_element, 48, data_array[3]);
+            category.set_element_variant(current_element, 27, Utility.TryParseUInt32(tb_sd7.Text));
         }
 
         private void tb_sd8_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(tb_sd8.Text, 4);
-            category.set_element_variant(current_element, 49, data_array[0]);
-            category.set_element_variant(current_element, 50, data_array[1]);
-            category.set_element_variant(current_element, 51, data_array[2]);
-            category.set_element_variant(current_element, 52, data_array[3]);
+            category.set_element_variant(current_element, 28, Utility.TryParseUInt32(tb_sd8.Text));
         }
 
         private void tb_sd9_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(tb_sd9.Text, 4);
-            category.set_element_variant(current_element, 53, data_array[0]);
-            category.set_element_variant(current_element, 54, data_array[1]);
-            category.set_element_variant(current_element, 55, data_array[2]);
-            category.set_element_variant(current_element, 56, data_array[3]);
+            category.set_element_variant(current_element, 29, Utility.TryParseUInt32(tb_sd9.Text));
         }
 
         private void tb_sd10_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(tb_sd10.Text, 4);
-            category.set_element_variant(current_element, 57, data_array[0]);
-            category.set_element_variant(current_element, 58, data_array[1]);
-            category.set_element_variant(current_element, 59, data_array[2]);
-            category.set_element_variant(current_element, 60, data_array[3]);
+            category.set_element_variant(current_element, 30, Utility.TryParseUInt32(tb_sd10.Text));
         }
 
         private void tb_unk_TextChanged(object sender, EventArgs e)
         {
             Byte[] data_array = Utility.TryParseByteArray(tb_unk.Text, 4);
-            category.set_element_variant(current_element, 61, data_array[0]);
-            category.set_element_variant(current_element, 62, data_array[1]);
-            category.set_element_variant(current_element, 63, data_array[2]);
-            category.set_element_variant(current_element, 64, data_array[3]);
+            category.set_element_variant(current_element, 31, data_array[0]);
+            category.set_element_variant(current_element, 32, data_array[1]);
+            category.set_element_variant(current_element, 33, data_array[2]);
+            category.set_element_variant(current_element, 34, data_array[3]);
+        }
+
+        private void set_data_labels(string[] p)
+        {
+            lb_sd1.Text = p[0];
+            lb_sd2.Text = p[1];
+            lb_sd3.Text = p[2];
+            lb_sd4.Text = p[3];
+            lb_sd5.Text = p[4];
+            lb_sd6.Text = p[5];
+            lb_sd7.Text = p[6];
+            lb_sd8.Text = p[7];
+            lb_sd9.Text = p[8];
+            lb_sd10.Text = p[9];
         }
 
         public override void show_element()
@@ -268,17 +242,18 @@ namespace SpellforceDataEditor.category_forms
             tb_rng_max.Text = variant_repr(18);
             tb_ct1.Text = variant_repr(19);
             tb_ct2.Text = variant_repr(20);
-            tb_sd1.Text = bytearray_repr(21, 4);
-            tb_sd2.Text = bytearray_repr(25, 4);
-            tb_sd3.Text = bytearray_repr(29, 4);
-            tb_sd4.Text = bytearray_repr(33, 4);
-            tb_sd5.Text = bytearray_repr(37, 4);
-            tb_sd6.Text = bytearray_repr(41, 4);
-            tb_sd7.Text = bytearray_repr(45, 4);
-            tb_sd8.Text = bytearray_repr(49, 4);
-            tb_sd9.Text = bytearray_repr(53, 4);
-            tb_sd10.Text = bytearray_repr(57, 4);
-            tb_unk.Text = bytearray_repr(61, 4);
+            tb_sd1.Text = variant_repr(21);
+            tb_sd2.Text = variant_repr(22);
+            tb_sd3.Text = variant_repr(23);
+            tb_sd4.Text = variant_repr(24);
+            tb_sd5.Text = variant_repr(25);
+            tb_sd6.Text = variant_repr(26);
+            tb_sd7.Text = variant_repr(27);
+            tb_sd8.Text = variant_repr(28);
+            tb_sd9.Text = variant_repr(29);
+            tb_sd10.Text = variant_repr(30);
+            tb_unk.Text = bytearray_repr(31, 4);
+            set_data_labels(SFSpellDescriptor.get(Utility.TryParseUInt16(tb_typeID.Text)));
         }
     }
 }

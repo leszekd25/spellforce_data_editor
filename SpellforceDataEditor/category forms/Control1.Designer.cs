@@ -346,12 +346,13 @@
             // 
             // lb_sd1
             // 
-            this.lb_sd1.AutoSize = true;
-            this.lb_sd1.Location = new System.Drawing.Point(45, 152);
+            this.lb_sd1.Location = new System.Drawing.Point(-1, 152);
             this.lb_sd1.Name = "lb_sd1";
-            this.lb_sd1.Size = new System.Drawing.Size(54, 13);
+            this.lb_sd1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lb_sd1.Size = new System.Drawing.Size(100, 13);
             this.lb_sd1.TabIndex = 30;
             this.lb_sd1.Text = "Spell data";
+            this.lb_sd1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tb_sd1
             // 
@@ -371,12 +372,13 @@
             // 
             // lb_sd6
             // 
-            this.lb_sd6.AutoSize = true;
-            this.lb_sd6.Location = new System.Drawing.Point(299, 155);
+            this.lb_sd6.Location = new System.Drawing.Point(256, 155);
             this.lb_sd6.Name = "lb_sd6";
-            this.lb_sd6.Size = new System.Drawing.Size(54, 13);
+            this.lb_sd6.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lb_sd6.Size = new System.Drawing.Size(100, 13);
             this.lb_sd6.TabIndex = 32;
             this.lb_sd6.Text = "Spell data";
+            this.lb_sd6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tb_sd7
             // 
@@ -388,12 +390,13 @@
             // 
             // lb_sd7
             // 
-            this.lb_sd7.AutoSize = true;
-            this.lb_sd7.Location = new System.Drawing.Point(299, 181);
+            this.lb_sd7.Location = new System.Drawing.Point(256, 181);
             this.lb_sd7.Name = "lb_sd7";
-            this.lb_sd7.Size = new System.Drawing.Size(54, 13);
+            this.lb_sd7.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lb_sd7.Size = new System.Drawing.Size(100, 13);
             this.lb_sd7.TabIndex = 36;
             this.lb_sd7.Text = "Spell data";
+            this.lb_sd7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tb_sd2
             // 
@@ -405,12 +408,13 @@
             // 
             // lb_sd2
             // 
-            this.lb_sd2.AutoSize = true;
-            this.lb_sd2.Location = new System.Drawing.Point(45, 178);
+            this.lb_sd2.Location = new System.Drawing.Point(-1, 178);
             this.lb_sd2.Name = "lb_sd2";
-            this.lb_sd2.Size = new System.Drawing.Size(54, 13);
+            this.lb_sd2.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lb_sd2.Size = new System.Drawing.Size(100, 13);
             this.lb_sd2.TabIndex = 34;
             this.lb_sd2.Text = "Spell data";
+            this.lb_sd2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tb_sd8
             // 
@@ -422,12 +426,13 @@
             // 
             // lb_sd8
             // 
-            this.lb_sd8.AutoSize = true;
-            this.lb_sd8.Location = new System.Drawing.Point(299, 207);
+            this.lb_sd8.Location = new System.Drawing.Point(256, 207);
             this.lb_sd8.Name = "lb_sd8";
-            this.lb_sd8.Size = new System.Drawing.Size(54, 13);
+            this.lb_sd8.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lb_sd8.Size = new System.Drawing.Size(100, 13);
             this.lb_sd8.TabIndex = 40;
             this.lb_sd8.Text = "Spell data";
+            this.lb_sd8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tb_sd3
             // 
@@ -439,12 +444,13 @@
             // 
             // lb_sd3
             // 
-            this.lb_sd3.AutoSize = true;
-            this.lb_sd3.Location = new System.Drawing.Point(45, 204);
+            this.lb_sd3.Location = new System.Drawing.Point(-1, 204);
             this.lb_sd3.Name = "lb_sd3";
-            this.lb_sd3.Size = new System.Drawing.Size(54, 13);
+            this.lb_sd3.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lb_sd3.Size = new System.Drawing.Size(100, 13);
             this.lb_sd3.TabIndex = 38;
             this.lb_sd3.Text = "Spell data";
+            this.lb_sd3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tb_sd9
             // 
@@ -456,12 +462,13 @@
             // 
             // lb_sd9
             // 
-            this.lb_sd9.AutoSize = true;
-            this.lb_sd9.Location = new System.Drawing.Point(299, 233);
+            this.lb_sd9.Location = new System.Drawing.Point(256, 233);
             this.lb_sd9.Name = "lb_sd9";
-            this.lb_sd9.Size = new System.Drawing.Size(54, 13);
+            this.lb_sd9.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lb_sd9.Size = new System.Drawing.Size(100, 13);
             this.lb_sd9.TabIndex = 44;
             this.lb_sd9.Text = "Spell data";
+            this.lb_sd9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tb_sd4
             // 
@@ -473,12 +480,13 @@
             // 
             // lb_sd4
             // 
-            this.lb_sd4.AutoSize = true;
-            this.lb_sd4.Location = new System.Drawing.Point(45, 230);
+            this.lb_sd4.Location = new System.Drawing.Point(-1, 230);
             this.lb_sd4.Name = "lb_sd4";
-            this.lb_sd4.Size = new System.Drawing.Size(54, 13);
+            this.lb_sd4.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lb_sd4.Size = new System.Drawing.Size(100, 13);
             this.lb_sd4.TabIndex = 42;
             this.lb_sd4.Text = "Spell data";
+            this.lb_sd4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tb_sd10
             // 
@@ -490,12 +498,13 @@
             // 
             // lb_sd10
             // 
-            this.lb_sd10.AutoSize = true;
-            this.lb_sd10.Location = new System.Drawing.Point(299, 259);
+            this.lb_sd10.Location = new System.Drawing.Point(256, 259);
             this.lb_sd10.Name = "lb_sd10";
-            this.lb_sd10.Size = new System.Drawing.Size(54, 13);
+            this.lb_sd10.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lb_sd10.Size = new System.Drawing.Size(100, 13);
             this.lb_sd10.TabIndex = 48;
             this.lb_sd10.Text = "Spell data";
+            this.lb_sd10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tb_sd5
             // 
@@ -507,12 +516,13 @@
             // 
             // lb_sd5
             // 
-            this.lb_sd5.AutoSize = true;
-            this.lb_sd5.Location = new System.Drawing.Point(45, 256);
+            this.lb_sd5.Location = new System.Drawing.Point(-1, 256);
             this.lb_sd5.Name = "lb_sd5";
-            this.lb_sd5.Size = new System.Drawing.Size(54, 13);
+            this.lb_sd5.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lb_sd5.Size = new System.Drawing.Size(100, 13);
             this.lb_sd5.TabIndex = 46;
             this.lb_sd5.Text = "Spell data";
+            this.lb_sd5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tb_unk
             // 
