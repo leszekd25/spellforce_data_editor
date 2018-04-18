@@ -665,7 +665,9 @@ namespace SpellforceDataEditor
         //returns category, given its index
         public SFCategory get_category(int index)
         {
-            return categories[index];
+            if((index > -1)&&(index < categoryNumber))
+                return categories[index];
+            return null;
         }
 
         //loads gamedata.cff file

@@ -366,6 +366,7 @@
     <Compile Include="SFCategoryManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SFDiffTools.cs" />
     <Compile Include="SpelllforceCFFEditor.cs">
       <SubType>Form</SubType>
     </Compile>

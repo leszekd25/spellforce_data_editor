@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,7 +15,9 @@ namespace SpellforceDataEditor
     public partial class SpelllforceCFFEditor : Form
     {
         private SFCategoryManager manager;                      //category manager to control all data
-        private int selected_category_index;
+        private SFDiffTools diff;
+        private int selected_category_index = -1;
+        private int selected_element_index = -1;
         private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
         //these parameters control item loading behavior
         private int elementselect_next_index = 0;
@@ -22,12 +25,14 @@ namespace SpellforceDataEditor
         private int elementselect_refresh_size = 100;
         private int elementselect_refresh_rate = 50;
         protected List<int> current_indices;                    //list of indices corrsponding to all displayed elements
+        private SFCategoryElement diff_elem_copy;               //for use with diff tools
 
         //constructor
         public SpelllforceCFFEditor()
         {
             InitializeComponent();
             manager = new SFCategoryManager();
+            diff = new SFDiffTools();
             current_indices = new List<int>();
         }
 
@@ -47,6 +52,7 @@ namespace SpellforceDataEditor
                 for (int i = 0; i < manager.get_category_number(); i++)
                     CategorySelect.Items.Add(manager.get_category(i).get_name());
                 GC.Collect();
+                diff.connect_to(manager);
             }
         }
 
@@ -60,6 +66,7 @@ namespace SpellforceDataEditor
                 labelStatus.Text = "Saving...";
                 manager.save_cff(SaveGameData.FileName);
                 labelStatus.Text = "Saved";
+                diff.save_diff_data(Path.ChangeExtension(SaveGameData.FileName, ".dff"));
             }
         }
 
@@ -87,11 +94,22 @@ namespace SpellforceDataEditor
                 SearchColumnID.Items.Add(s);
             ElementDisplay.Visible = false;
             panelSearch.Visible = true;
+            diff_elem_copy = null;
         }
 
         //what happens when you choose element from a list
         private void ElementSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
+            SFCategory ctg = manager.get_category(selected_category_index);
+            if (diff_elem_copy != null)
+            {
+                SFCategoryElement previous_element = ctg.get_element(selected_element_index);
+                if(!previous_element.same_as(diff_elem_copy))
+                {
+                    diff.push_change(selected_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REPLACE, selected_element_index, previous_element.get_copy()));
+                }
+            }
+
             if (ElementSelect.SelectedIndex == -1)
             {
                 ElementDisplay.Visible = false;
@@ -101,13 +119,16 @@ namespace SpellforceDataEditor
             ElementDisplay.Visible = true;
             ElementDisplay.set_element(current_indices[ElementSelect.SelectedIndex]);
             ElementDisplay.show_element();
-            SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
+
+            selected_element_index = current_indices[ElementSelect.SelectedIndex];
+            diff_elem_copy = ctg.get_element(selected_element_index).get_copy();
             labelDescription.Text = ctg.get_element_description(manager, current_indices[ElementSelect.SelectedIndex]);
         }
 
         //start loading all elements from a category
         public void ElementSelect_refresh(SFCategory ctg)
         {
+            diff_elem_copy = null;
             if (ElementSelect_RefreshTimer.Enabled)
             {
                 ElementSelect_RefreshTimer.Stop();
@@ -220,6 +241,7 @@ namespace SpellforceDataEditor
             }
 
             //now that descriptions have been looked at, remove all elements from element selector
+            diff_elem_copy = null;
             ElementSelect.Items.Clear();
             current_indices.Clear();
             labelDescription.Text = "";
@@ -277,6 +299,8 @@ namespace SpellforceDataEditor
             for (int i = current_elem+1; i < current_indices.Count; i++)
                 current_indices[i] = current_indices[i] + 1;
             current_indices.Insert(current_elem+1, current_elem+1);
+            diff.push_change(selected_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, current_elem, elem.get_copy()));
+
         }
 
         //what happens when you remove element from category
@@ -290,6 +314,9 @@ namespace SpellforceDataEditor
             current_indices.RemoveAt(current_elem);
             ElementSelect.Items.RemoveAt(ElementSelect.SelectedIndex);
             elems.RemoveAt(current_elem);
+            diff.push_change(selected_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REMOVE, current_elem));
+            diff_elem_copy = null;
+            ElementDisplay.Visible = false;
         }
 
         //switch column search on and off
@@ -352,6 +379,7 @@ namespace SpellforceDataEditor
             panelElemManipulate.Visible = false;
             panelSearch.Visible = false;
             selected_category_index = -1;
+            diff.clear_data();
             manager.unload_all();
             labelStatus.Text = "";
             ProgressBar_Main.Visible = false;
@@ -368,6 +396,19 @@ namespace SpellforceDataEditor
                 close_data();
             }
             Application.Exit();
+        }
+
+        private void eXPERIMENTALLoadDiffFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!CategorySelect.Enabled)
+                return;
+            if (OpenDataDiff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                diff.load_diff_data(OpenDataDiff.FileName);
+                diff.merge_changes();
+                if(selected_category_index != -1)
+                    ElementSelect_refresh(manager.get_category(selected_category_index));
+            }
         }
     }
 }

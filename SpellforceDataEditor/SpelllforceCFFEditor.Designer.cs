@@ -58,6 +58,9 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.ProgressBar_Main = new System.Windows.Forms.ToolStripProgressBar();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.OpenDataDiff = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -68,7 +71,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.toolsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(944, 24);
@@ -326,6 +330,26 @@
             this.ProgressBar_Main.Size = new System.Drawing.Size(150, 16);
             this.ProgressBar_Main.Visible = false;
             // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.eXPERIMENTALLoadDiffFileToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // eXPERIMENTALLoadDiffFileToolStripMenuItem
+            // 
+            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Name = "eXPERIMENTALLoadDiffFileToolStripMenuItem";
+            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Text = "(EXPERIMENTAL) Load diff file...";
+            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Click += new System.EventHandler(this.eXPERIMENTALLoadDiffFileToolStripMenuItem_Click);
+            // 
+            // OpenDataDiff
+            // 
+            this.OpenDataDiff.FileName = "GameData.dff";
+            this.OpenDataDiff.Filter = "DFF file(*.dff)|*.dff";
+            // 
             // SpelllforceCFFEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -387,5 +411,8 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel labelStatus;
         private System.Windows.Forms.ToolStripProgressBar ProgressBar_Main;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eXPERIMENTALLoadDiffFileToolStripMenuItem;
+        private System.Windows.Forms.OpenFileDialog OpenDataDiff;
     }
 }

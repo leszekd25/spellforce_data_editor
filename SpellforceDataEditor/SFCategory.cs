@@ -155,7 +155,7 @@ namespace SpellforceDataEditor
         }
 
         //retrieves next element (sequence of variants as an array of objects) from a buffer
-        public Object[] get_element(BinaryReader sr)
+        public virtual Object[] get_element(BinaryReader sr)
         {
             current_string = 0;
             Object[] objs = new Object[elem_format.Length];
@@ -1019,30 +1019,24 @@ namespace SpellforceDataEditor
             category_name = "Building stats 2";
         }
 
-        //reads a buffer and retrieves all expected elements
-        //special override method for this category
-        public override void read(BinaryReader sr)
+        public override Object[] get_element(BinaryReader sr)
         {
-            categoryHeader = sr.ReadBytes(categoryHeader.Length);
-            block_length = BitConverter.ToUInt32(categoryHeader, 6);
-            elements = new List<SFCategoryElement>();
-            Byte[] block_buffer = new Byte[block_length];
-            sr.Read(block_buffer, 0, (int)(block_length));
-            int fm_length = elem_format.Length;
-            MemoryStream ms = new MemoryStream(block_buffer);
-            BinaryReader mr = new BinaryReader(ms, Encoding.Default);
-            while (mr.PeekChar() != -1)
+            current_string = 0;
+            Object[] objs = new Object[elem_format.Length];
+            for (int i = 0; i < elem_format.Length; i++)
             {
-                SFCategoryElement elem = new SFCategoryElement();
-                elem.set(get_element(mr));
-                int vertex_count = (int)(Byte)elem.get_single_variant(3).value;
-                for(int j = 0; j < vertex_count; j++)
-                {
-                    elem.add_single_variant(mr.ReadInt16());
-                    elem.add_single_variant(mr.ReadInt16());
-                }
-                elements.Add(elem);
+                objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
             }
+            int vertex_count = (int)((Byte)(objs[3]));
+            Object[] real_objs = new Object[elem_format.Length + vertex_count * 2];
+            for (int i = 0; i < elem_format.Length; i++)
+                real_objs[i] = objs[i];
+            for (int j = 0; j < vertex_count; j++)
+            {
+                real_objs[elem_format.Length + j * 2] = get_single_variant(sr, 'h', string_size[current_string]);
+                real_objs[elem_format.Length + j * 2 + 1] = get_single_variant(sr, 'h', string_size[current_string]);
+            }
+            return real_objs;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1239,31 +1233,24 @@ namespace SpellforceDataEditor
             category_name = "Interactive object stats";
         }
 
-        //reads a buffer and retrieves all expected elements
-        //special override method for this category
-        public override void read(BinaryReader sr)
+        public override Object[] get_element(BinaryReader sr)
         {
-            categoryHeader = sr.ReadBytes(categoryHeader.Length);
-            block_length = BitConverter.ToUInt32(categoryHeader, 6);
-            block_length = BitConverter.ToUInt32(categoryHeader, 6);
-            elements = new List<SFCategoryElement>();
-            Byte[] block_buffer = new Byte[block_length];
-            sr.Read(block_buffer, 0, (int)(block_length));
-            int fm_length = elem_format.Length;
-            MemoryStream ms = new MemoryStream(block_buffer);
-            BinaryReader mr = new BinaryReader(ms, Encoding.Default);
-            while (mr.PeekChar() != -1)
+            current_string = 0;
+            Object[] objs = new Object[elem_format.Length];
+            for (int i = 0; i < elem_format.Length; i++)
             {
-                SFCategoryElement elem = new SFCategoryElement();
-                elem.set(get_element(mr));
-                int vertex_count = (int)(Byte)elem.get_single_variant(3).value;
-                for (int j = 0; j < vertex_count; j++)
-                {
-                    elem.add_single_variant(mr.ReadInt16());
-                    elem.add_single_variant(mr.ReadInt16());
-                }
-                elements.Add(elem);
+                objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
             }
+            int vertex_count = (int)((Byte)(objs[3]));
+            Object[] real_objs = new Object[elem_format.Length + vertex_count * 2];
+            for (int i = 0; i < elem_format.Length; i++)
+                real_objs[i] = objs[i];
+            for (int j = 0; j < vertex_count; j++)
+            {
+                real_objs[elem_format.Length + j * 2] = get_single_variant(sr, 'h', string_size[current_string]);
+                real_objs[elem_format.Length + j * 2 + 1] = get_single_variant(sr, 'h', string_size[current_string]);
+            }
+            return real_objs;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)

@@ -92,6 +92,33 @@ namespace SpellforceDataEditor
                     return 0;
             }
         }
+
+        public bool same_as(SFVariant v)
+        {
+            if (vtype != v.vtype)
+                return false;
+            switch (vtype)
+            {
+                case TYPE.Byte:
+                    return (SByte)value == (SByte)v.value;
+                case TYPE.UByte:
+                    return (Byte)value == (Byte)v.value;
+                case TYPE.Short:
+                    return (Int16)value == (Int16)v.value;
+                case TYPE.UShort:
+                    return (UInt16)value == (UInt16)v.value;
+                case TYPE.Int:
+                    return (Int32)value == (Int32)v.value;
+                case TYPE.UInt:
+                    return (UInt32)value == (UInt32)v.value;
+                case TYPE.Float:
+                    return (Single)value == (Single)v.value;
+                case TYPE.String:
+                    return ((char[])value).SequenceEqual((char[])v.value);
+                default:
+                    return value.Equals(v.value);
+            }
+        }
     }
 
     //category element is a single entry from a category
@@ -162,6 +189,26 @@ namespace SpellforceDataEditor
                     s += SFVariant.TYPE_SIZE[(int)v.vtype];
             }
             return s;
+        }
+
+        public SFCategoryElement get_copy()
+        {
+            SFCategoryElement elem = new SFCategoryElement();
+            foreach (SFVariant v in properties)
+                elem.add_single_variant(v.value);
+            return elem;
+        }
+
+        public bool same_as(SFCategoryElement elem)
+        {
+            if (properties.Count != elem.get().Count)
+                return false;
+            for(int i = 0; i < properties.Count; i++)
+            {
+                if (!properties[i].same_as(elem.get_single_variant(i)))
+                    return false;
+            }
+            return true;
         }
     }
 }
