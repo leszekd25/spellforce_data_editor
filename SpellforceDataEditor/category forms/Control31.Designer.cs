@@ -81,11 +81,11 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(4, 74);
+            this.label3.Location = new System.Drawing.Point(8, 74);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(95, 13);
+            this.label3.Size = new System.Drawing.Size(91, 13);
             this.label3.TabIndex = 9;
-            this.label3.Text = "Price reduction (%)";
+            this.label3.Text = "Price multiplier (%)";
             // 
             // Control31
             // 

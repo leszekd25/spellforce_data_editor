@@ -1175,7 +1175,7 @@ namespace SpellforceDataEditor
             string item_text = "<no_name>";
             if ((item_type > 0) && (item_type < SFCategory7.item_types.Length))
                 item_text = SFCategory7.item_types[item_type];
-            return "Price for " + item_text + " type items: " + perc.ToString() + "% of base price";
+            return "Selling price for " + item_text + " type items: " + perc.ToString() + "% of base price\r\nBuying price: "+(200-perc).ToString()+"% of base price";
         }
     }
 
