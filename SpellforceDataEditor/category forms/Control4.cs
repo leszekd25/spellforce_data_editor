@@ -101,7 +101,7 @@ namespace SpellforceDataEditor.category_forms
 
         private void textBox19_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 11, Utility.TryParseUInt16(textBox19.Text));
+            category.set_element_variant(current_element, 11, Utility.TryParseUInt8(textBox19.Text));
         }
 
         private void textBox16_TextChanged(object sender, EventArgs e)

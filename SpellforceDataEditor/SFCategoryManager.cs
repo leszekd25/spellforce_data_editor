@@ -24,7 +24,7 @@ namespace SpellforceDataEditor
                     p[0] = "Initial damage";
                     p[1] = "Damage per tick";
                     p[2] = "Tick count";
-                    p[3] = "Tick duration (ms)";
+                    p[3] = "Time between ticks (ms)";
                     break;
                 case 2:   //healing
                 case 45:  //greater healing
@@ -90,15 +90,15 @@ namespace SpellforceDataEditor
                     p[2] = "Unknown";
                     break;
                 case 10:  //fog
-                    p[0] = "Unknown";
-                    p[1] = "Duration (ms)";
-                    p[2] = "Unknown";
+                    p[0] = "Maximum sight range";
+                    p[1] = "Time between ticks (ms)";
+                    p[2] = "Tick count";
                     p[3] = "Unknown";
                     break;
                 case 11:  //illuminate
-                    p[0] = "Unknown";
-                    p[1] = "Duration (ms)";
-                    p[2] = "Unknown";
+                    p[0] = "Tick count";
+                    p[1] = "Time between ticks (ms)";
+                    p[2] = "Minimum sight range";
                     break;
                 case 12:  //fireshield (cast)
                 case 15:  //iceshield (cast)
@@ -121,8 +121,8 @@ namespace SpellforceDataEditor
                     p[2] = "Freeze duration";
                     break;
                 case 16:  //decay
-                    p[0] = "Time between ticks (ms) (?)";
-                    p[1] = "Tick count (?)";
+                    p[0] = "Time between ticks (ms)";
+                    p[1] = "Tick count";
                     p[2] = "Armor reduction (%)";
                     break;
                 case 20:  //summon undead goblin
