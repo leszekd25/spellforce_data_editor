@@ -1217,7 +1217,7 @@ namespace SpellforceDataEditor
         public SFCategory34() : base()
         {
             string_size = new int[1] { 40 };
-            initialize("HHBBBsBBBBBBB");
+            initialize("HHBBBsBHHH");
             category_name = "Object stats/names";
         }
 
