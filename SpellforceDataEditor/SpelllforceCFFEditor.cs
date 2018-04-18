@@ -64,9 +64,9 @@ namespace SpellforceDataEditor
             if (SaveGameData.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 labelStatus.Text = "Saving...";
+                diff.save_diff_data(Path.ChangeExtension(SaveGameData.FileName, ".dff"));
                 manager.save_cff(SaveGameData.FileName);
                 labelStatus.Text = "Saved";
-                diff.save_diff_data(Path.ChangeExtension(SaveGameData.FileName, ".dff"));
             }
         }
 
@@ -404,10 +404,14 @@ namespace SpellforceDataEditor
                 return;
             if (OpenDataDiff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                diff.load_diff_data(OpenDataDiff.FileName);
-                diff.merge_changes();
-                if(selected_category_index != -1)
-                    ElementSelect_refresh(manager.get_category(selected_category_index));
+                if(diff.load_diff_data(OpenDataDiff.FileName))
+                {
+                    diff.merge_changes();
+                    if (selected_category_index != -1)
+                        ElementSelect_refresh(manager.get_category(selected_category_index));
+                }
+                else
+                    labelStatus.Text = "MD5 mismatch! Can't load DFF file for this gamedata";
             }
         }
     }

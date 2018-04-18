@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -646,6 +647,7 @@ namespace SpellforceDataEditor
         private int categoryNumber;           //amount of categories (basically a constant)
         private Byte[] mainHeader;            //gamedata.cff has a main header which is held here
         private SFCategoryRuneHeroes categorySpecial_RuneHeroes;    //intermediary needed to find names of rune heroes
+        private string gamedata_md5 = "";
 
         //constructor, it creates categories
         public SFCategoryManager()
@@ -670,11 +672,20 @@ namespace SpellforceDataEditor
             return null;
         }
 
+        public string get_data_md5()
+        {
+            return gamedata_md5;
+        }
+
         //loads gamedata.cff file
         //bar has a maximum value of 10000
         public void load_cff(string filename, ToolStripProgressBar bar)
         {
             FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
+            MD5 md5_gen = MD5.Create();
+            gamedata_md5 = BitConverter.ToString(md5_gen.ComputeHash(fs)).Replace("-", "").ToLower();
+            fs.Seek(0, SeekOrigin.Begin);
+
             BinaryReader br = new BinaryReader(fs, Encoding.Default);
 
             mainHeader = br.ReadBytes(mainHeader.Length);

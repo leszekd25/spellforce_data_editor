@@ -9,7 +9,7 @@ namespace SpellforceDataEditor
 {
     public struct SFDiffElement
     {
-        public enum DIFF_TYPE { UNKNOWN = 0, REPLACE, INSERT, REMOVE, CATEGORY, EOF };
+        public enum DIFF_TYPE { UNKNOWN = 0, REPLACE, INSERT, REMOVE, CATEGORY, EOF, MD5 };
 
         public DIFF_TYPE difference_type;
         public int difference_index;
@@ -24,8 +24,10 @@ namespace SpellforceDataEditor
 
     public class SFDiffTools
     {
-        SFCategoryManager manager;
-        List<SFDiffElement>[] diff_data;
+        protected SFCategoryManager manager;
+        protected List<SFDiffElement>[] diff_data;
+        string presumed_md5 = "";
+
 
         public void connect_to(SFCategoryManager man)
         {
@@ -46,6 +48,9 @@ namespace SpellforceDataEditor
             bw.Write((Byte)elem.difference_type);
             switch (elem.difference_type)
             {
+                case SFDiffElement.DIFF_TYPE.MD5:
+                    bw.Write(manager.get_data_md5().ToCharArray());
+                    break;
                 case SFDiffElement.DIFF_TYPE.REPLACE:
                 case SFDiffElement.DIFF_TYPE.INSERT:
                     bw.Write(elem.difference_index);
@@ -65,6 +70,9 @@ namespace SpellforceDataEditor
             elem.difference_type = (SFDiffElement.DIFF_TYPE)br.ReadByte();
             switch(elem.difference_type)
             {
+                case SFDiffElement.DIFF_TYPE.MD5:
+                    presumed_md5 = Utility.CleanString(br.ReadChars(32));
+                    break;
                 case SFDiffElement.DIFF_TYPE.REPLACE:
                 case SFDiffElement.DIFF_TYPE.INSERT:
                     elem.difference_index = br.ReadInt32();
@@ -85,6 +93,9 @@ namespace SpellforceDataEditor
             fs.SetLength(0);
             BinaryWriter bw = new BinaryWriter(fs, Encoding.Default);
 
+            bw.Write((Byte)SFDiffElement.DIFF_TYPE.MD5);
+            bw.Write(manager.get_data_md5().ToCharArray());
+
             for (int i = 0; i < manager.get_category_number(); i++)
             {
                 SFCategory cat = manager.get_category(i);
@@ -101,13 +112,14 @@ namespace SpellforceDataEditor
             fs.Close();
         }
 
-        public void load_diff_data(string fname)
+        public bool load_diff_data(string fname)
         {
             FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
             BinaryReader br = new BinaryReader(fs, Encoding.Default);
 
             int current_category = -1;
             SFDiffElement elem;
+            bool success = true;
 
             while (br.PeekChar() != -1)
             {
@@ -116,12 +128,22 @@ namespace SpellforceDataEditor
                     current_category = elem.difference_index;
                 else if (elem.difference_type == SFDiffElement.DIFF_TYPE.EOF)
                     break;
+                else if (elem.difference_type == SFDiffElement.DIFF_TYPE.MD5)   //should be right at the beginning of the file
+                {
+                    if(presumed_md5 != manager.get_data_md5())
+                    {
+                        clear_data();
+                        success = false;
+                        break;
+                    }
+                }
                 else
                     push_change(current_category, elem);
             }
 
             br.Close();
             fs.Close();
+            return success;
         }
 
         public void commit_change(SFCategory cat, SFDiffElement elem)
@@ -133,7 +155,7 @@ namespace SpellforceDataEditor
                     elem_list[elem.difference_index] = elem.elem;
                     break;
                 case SFDiffElement.DIFF_TYPE.INSERT:
-                    elem_list.Insert(elem.difference_index, elem.elem);
+                    elem_list.Insert(elem.difference_index+1, elem.elem);
                     break;
                 case SFDiffElement.DIFF_TYPE.REMOVE:
                     elem_list.RemoveAt(elem.difference_index);

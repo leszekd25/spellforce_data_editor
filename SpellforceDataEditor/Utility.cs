@@ -116,6 +116,11 @@ namespace SpellforceDataEditor
             return (new string((char[])ch.value)).Replace("\0", string.Empty);
         }
 
+        static public string CleanString(char[] ch)
+        {
+            return (new string(ch).Replace("\0", string.Empty));
+        }
+
         //used for header manipulation, inserts unsigned int into a given array at a given index
         static public void CopyUInt32ToByteArray(UInt32 elem, ref Byte[] bytearray, int index)
         {
