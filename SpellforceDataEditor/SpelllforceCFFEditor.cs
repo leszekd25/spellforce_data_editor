@@ -46,6 +46,7 @@ namespace SpellforceDataEditor
                 labelStatus.Text = "Loading...";
                 ProgressBar_Main.Visible = true;
                 manager.load_cff(OpenGameData.FileName, ProgressBar_Main);
+                this.Text = "SpellforceDataEditor - "+OpenGameData.FileName;
                 labelStatus.Text = "Ready";
                 ProgressBar_Main.Visible = false; ;
                 CategorySelect.Enabled = true;
@@ -385,6 +386,7 @@ namespace SpellforceDataEditor
             ProgressBar_Main.Visible = false;
             ProgressBar_Main.Value = 0;
             labelDescription.Text = "";
+            this.Text = "SpellforceDataEditor";
             GC.Collect();
         }
 
@@ -398,6 +400,7 @@ namespace SpellforceDataEditor
             Application.Exit();
         }
 
+        //loads gamedata diff and applies changes
         private void eXPERIMENTALLoadDiffFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!CategorySelect.Enabled)

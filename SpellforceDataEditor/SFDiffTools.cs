@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor
 {
+    //struct which holds data needed for diff tool class to operate properly
     public struct SFDiffElement
     {
         public enum DIFF_TYPE { UNKNOWN = 0, REPLACE, INSERT, REMOVE, CATEGORY, EOF, MD5 };
@@ -22,13 +23,15 @@ namespace SpellforceDataEditor
         }
     }
 
+    //this class is the backbone of editor's diff tool (and undo/redo?)
+    //it contains functions to deal with saving data manipulation order: replacement, insertion and removal of elements
     public class SFDiffTools
     {
         protected SFCategoryManager manager;
         protected List<SFDiffElement>[] diff_data;
         string presumed_md5 = "";
 
-
+        //connects diff tool to a manager it operates on
         public void connect_to(SFCategoryManager man)
         {
             manager = man;
@@ -37,12 +40,14 @@ namespace SpellforceDataEditor
                 diff_data[i] = new List<SFDiffElement>();
         }
 
+        //clear all diff datal usually called in tandem with manager.unload_all()
         public void clear_data()
         {
             for (int i = 0; i < manager.get_category_number(); i++)
                 diff_data[i].Clear();
         }
 
+        //puts a single diff piece into the buffer
         public void write_diff_element(BinaryWriter bw, SFCategory cat, SFDiffElement elem)
         {
             bw.Write((Byte)elem.difference_type);
@@ -64,6 +69,7 @@ namespace SpellforceDataEditor
             return;
         }
 
+        //reads a single diff piece from the buffer
         public SFDiffElement read_diff_element(BinaryReader br, SFCategory cat)
         {
             SFDiffElement elem = new SFDiffElement(SFDiffElement.DIFF_TYPE.EOF);
@@ -87,6 +93,7 @@ namespace SpellforceDataEditor
             return elem;
         }
 
+        //saves diff data in chronological order, and category order
         public void save_diff_data(string fname)
         {
             FileStream fs = new FileStream(fname, FileMode.OpenOrCreate, FileAccess.Write);
@@ -112,6 +119,8 @@ namespace SpellforceDataEditor
             fs.Close();
         }
 
+        //loads data from a diff file
+        //returns false if MD5 hashes of originally edited CFF and currently loaded CFF mismatch
         public bool load_diff_data(string fname)
         {
             FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
@@ -146,6 +155,7 @@ namespace SpellforceDataEditor
             return success;
         }
 
+        //this function modifies the category data depending on what needs to be done
         public void commit_change(SFCategory cat, SFDiffElement elem)
         {
             List<SFCategoryElement> elem_list = cat.get_elements();
@@ -163,12 +173,12 @@ namespace SpellforceDataEditor
             }
         }
 
-    public void merge_changes()
+        //modifies data from all categories at once according to diff data
+        public void merge_changes()
         {
             for(int i = 0; i < manager.get_category_number(); i++)
             {
                 SFCategory cat = manager.get_category(i);
-                List<SFCategoryElement> elem_list = cat.get_elements();
                 for(int j = 0; j < diff_data[i].Count; j++)
                 {
                     SFDiffElement elem = diff_data[i][j];
@@ -177,6 +187,8 @@ namespace SpellforceDataEditor
             }
         }
 
+        //adds diff piece to diff data
+        //doing this in chronological order guarantees (?) data integrity when modifying data based on diff data
         public void push_change(int cat_index, SFDiffElement elem)
         {
             diff_data[cat_index].Add(elem);

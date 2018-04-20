@@ -35,6 +35,8 @@
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CategorySelect = new System.Windows.Forms.ComboBox();
             this.ElementSelect = new System.Windows.Forms.ListBox();
             this.OpenGameData = new System.Windows.Forms.OpenFileDialog();
@@ -58,8 +60,6 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.ProgressBar_Main = new System.Windows.Forms.ToolStripProgressBar();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenDataDiff = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
@@ -93,30 +93,45 @@
             // loadGameDatacffToolStripMenuItem
             // 
             this.loadGameDatacffToolStripMenuItem.Name = "loadGameDatacffToolStripMenuItem";
-            this.loadGameDatacffToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadGameDatacffToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.loadGameDatacffToolStripMenuItem.Text = "Load GameData.cff";
             this.loadGameDatacffToolStripMenuItem.Click += new System.EventHandler(this.loadGameDatacffToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.eXPERIMENTALLoadDiffFileToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // eXPERIMENTALLoadDiffFileToolStripMenuItem
+            // 
+            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Name = "eXPERIMENTALLoadDiffFileToolStripMenuItem";
+            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Text = "(EXPERIMENTAL) Load diff file...";
+            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Click += new System.EventHandler(this.eXPERIMENTALLoadDiffFileToolStripMenuItem_Click);
             // 
             // CategorySelect
             // 
@@ -300,6 +315,7 @@
             // 
             this.labelDescription.BackColor = System.Drawing.SystemColors.Control;
             this.labelDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.labelDescription.Cursor = System.Windows.Forms.Cursors.No;
             this.labelDescription.Location = new System.Drawing.Point(395, 463);
             this.labelDescription.Multiline = true;
             this.labelDescription.Name = "labelDescription";
@@ -329,21 +345,6 @@
             this.ProgressBar_Main.Name = "ProgressBar_Main";
             this.ProgressBar_Main.Size = new System.Drawing.Size(150, 16);
             this.ProgressBar_Main.Visible = false;
-            // 
-            // toolsToolStripMenuItem
-            // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.eXPERIMENTALLoadDiffFileToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
-            this.toolsToolStripMenuItem.Text = "Tools";
-            // 
-            // eXPERIMENTALLoadDiffFileToolStripMenuItem
-            // 
-            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Name = "eXPERIMENTALLoadDiffFileToolStripMenuItem";
-            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
-            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Text = "(EXPERIMENTAL) Load diff file...";
-            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Click += new System.EventHandler(this.eXPERIMENTALLoadDiffFileToolStripMenuItem_Click);
             // 
             // OpenDataDiff
             // 

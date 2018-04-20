@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor
 {
+    //helper class which provides nice interface for retrieving spell parameter description
     public class SFSpellDescriptor
     {
         static public string[] get(UInt16 spell_id)
@@ -647,7 +648,7 @@ namespace SpellforceDataEditor
         private int categoryNumber;           //amount of categories (basically a constant)
         private Byte[] mainHeader;            //gamedata.cff has a main header which is held here
         private SFCategoryRuneHeroes categorySpecial_RuneHeroes;    //intermediary needed to find names of rune heroes
-        private string gamedata_md5 = "";
+        private string gamedata_md5 = "";     //currently loaded cff's MD5 hash (as string)
 
         //constructor, it creates categories
         public SFCategoryManager()
@@ -672,6 +673,7 @@ namespace SpellforceDataEditor
             return null;
         }
 
+        //returns string representation of file's MD5
         public string get_data_md5()
         {
             return gamedata_md5;
@@ -935,6 +937,8 @@ namespace SpellforceDataEditor
             return txt;
         }
 
+        //returns a rune hero/worker's name given its stats ID
+        //this connection is not found in gamedata.cff and instead has to be pre-processed
         public string get_runehero_name(UInt16 stats_id)
         {
             SFCategoryElement rune_elem = categorySpecial_RuneHeroes.find_binary_element<UInt16>(0, stats_id);

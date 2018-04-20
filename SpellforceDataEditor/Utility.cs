@@ -116,6 +116,7 @@ namespace SpellforceDataEditor
             return (new string((char[])ch.value)).Replace("\0", string.Empty);
         }
 
+        //turns char array into actual string (all zeros are truncated)
         static public string CleanString(char[] ch)
         {
             return (new string(ch).Replace("\0", string.Empty));

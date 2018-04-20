@@ -27,6 +27,7 @@ namespace SpellforceDataEditor
             string_size = new int[1] { 0 };
         }
 
+        //getter/setter for manager property
         public SFCategoryManager get_manager()
         {
             return manager;
@@ -380,6 +381,9 @@ namespace SpellforceDataEditor
         }
     }
 
+
+
+
     //spells/skills (1st category)
     public class SFCategory1 : SFCategory
     {
@@ -419,7 +423,7 @@ namespace SpellforceDataEditor
         public SFCategory1() : base()
         {
             initialize("HHBBBBBBBBBBBBHIIHHBBIIIIIIIIIIBBBB");
-            category_name = "Spells/skills";
+            category_name = "1. Spells/skills";
         }
 
         //surprisingly ugly due to converting values in this function...
@@ -465,7 +469,7 @@ namespace SpellforceDataEditor
         {
             string_size = new int[1] { 64 };   //must go before initialize
             initialize("HHBBBBBsH");
-            category_name = "Spell UI";
+            category_name = "2. Spell UI";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -488,7 +492,7 @@ namespace SpellforceDataEditor
         public SFCategory3() : base()
         {
             initialize("BBBBBB");
-            category_name = "Unknown (1)";
+            category_name = "3. Unknown (1)";
         }
     }
 
@@ -498,7 +502,7 @@ namespace SpellforceDataEditor
         public SFCategory4() : base()
         {
             initialize("HHBHHHHHHHBBHHHHHHHHBBIBHB");
-            category_name = "Unit/hero stats";
+            category_name = "4. Unit/hero stats";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -506,6 +510,8 @@ namespace SpellforceDataEditor
             UInt16 stats_id = (UInt16)get_element_variant(index, 0).value;
             SFCategoryElement elem = manager.get_category(17).find_element<UInt16>(2, stats_id);
             string unit_txt = get_text_from_element(elem, 1);
+            if (unit_txt == "<no name>")
+                unit_txt = manager.get_runehero_name(stats_id);
             return stats_id.ToString() + " " + unit_txt;
         }
 
@@ -524,7 +530,7 @@ namespace SpellforceDataEditor
         public SFCategory5() : base()
         {
             initialize("HBBB");
-            category_name = "Hero magic/combat arms and worker gathering";
+            category_name = "5. Hero magic/combat arms and worker gathering";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -553,7 +559,7 @@ namespace SpellforceDataEditor
         public SFCategory6() : base()
         {
             initialize("HBH");
-            category_name = "Hero skills/spells";
+            category_name = "6. Hero skills/spells";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -574,7 +580,7 @@ namespace SpellforceDataEditor
         public SFCategory7() : base()
         {
             initialize("HBBHHHHBIIB");
-            category_name = "Item type/name ID/price";
+            category_name = "7. Item type/name ID/price";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -631,7 +637,7 @@ namespace SpellforceDataEditor
         public SFCategory8() : base()
         {
             initialize("Hhhhhhhhhhhhhhhhhh");
-            category_name = "Armor class item stats";
+            category_name = "8. Armor class item stats";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -648,7 +654,7 @@ namespace SpellforceDataEditor
         public SFCategory9() : base()
         {
             initialize("HH");
-            category_name = "Scroll ID with spell ID/rune ID with rune in slot...";
+            category_name = "9. Scroll ID with spell ID/rune ID with rune in slot...";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -669,7 +675,7 @@ namespace SpellforceDataEditor
         public SFCategory10() : base()
         {
             initialize("HHHHHHHH");
-            category_name = "Weapon class item sets";
+            category_name = "10. Weapon class item sets";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -699,7 +705,7 @@ namespace SpellforceDataEditor
         public SFCategory11() : base()
         {
             initialize("HBBBB");
-            category_name = "Item requirements";
+            category_name = "11. Item requirements";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -726,7 +732,7 @@ namespace SpellforceDataEditor
         public SFCategory12() : base()
         {
             initialize("HBH");
-            category_name = "Item spell effects";
+            category_name = "12. Item spell effects";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -748,7 +754,7 @@ namespace SpellforceDataEditor
         {
             string_size = new int[1] { 64 };
             initialize("HBsH");
-            category_name = "Item UI";
+            category_name = "13. Item UI";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -765,7 +771,7 @@ namespace SpellforceDataEditor
         public SFCategory14() : base()
         {
             initialize("HH");
-            category_name = "Spell item ID with spell number";
+            category_name = "14. Spell item ID with spell number";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -785,7 +791,7 @@ namespace SpellforceDataEditor
         {
             string_size = new int[2] { 50, 512 };
             initialize("HBBss");
-            category_name = "Text ID";
+            category_name = "15. Text ID";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -800,7 +806,7 @@ namespace SpellforceDataEditor
         public SFCategory16() : base()
         {
             initialize("BBBBBBBHBBBBBBBBBBBBBBBBBB");
-            category_name = "Race stats";
+            category_name = "16. Race stats";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -816,7 +822,7 @@ namespace SpellforceDataEditor
         public SFCategory17() : base()
         {
             initialize("BBB");
-            category_name = "Head stats";
+            category_name = "17. Head stats";
         }
     }
 
@@ -840,7 +846,7 @@ namespace SpellforceDataEditor
         {
             string_size = new int[1] { 40 };
             initialize("HHHIHIHBHHsB");
-            category_name = "Unit names";
+            category_name = "18. Unit names";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -863,7 +869,7 @@ namespace SpellforceDataEditor
         public SFCategory19() : base()
         {
             initialize("HBH");
-            category_name = "Unit equipment";
+            category_name = "19. Unit equipment";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -882,7 +888,7 @@ namespace SpellforceDataEditor
         public SFCategory20() : base()
         {
             initialize("HBH");
-            category_name = "Unit spells/skills";
+            category_name = "20. Unit spells/skills";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -901,7 +907,7 @@ namespace SpellforceDataEditor
         public SFCategory21() : base()
         {
             initialize("HBB");
-            category_name = "Hero army unit resource rquirements and...";
+            category_name = "21. Hero army unit resource rquirements and...";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -927,7 +933,7 @@ namespace SpellforceDataEditor
         public SFCategory22() : base()
         {
             initialize("HBHBHBH");
-            category_name = "Unit corpse loot";
+            category_name = "22. Unit corpse loot";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -972,7 +978,7 @@ namespace SpellforceDataEditor
         public SFCategory23() : base()
         {
             initialize("HBH");
-            category_name = "Hero army unit building upgrade";
+            category_name = "23. Hero army unit building upgrade";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -991,7 +997,7 @@ namespace SpellforceDataEditor
         public SFCategory24() : base()
         {
             initialize("HBBBHHhhBHHHHB");
-            category_name = "Building stats";
+            category_name = "24. Building stats";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1016,7 +1022,7 @@ namespace SpellforceDataEditor
         public SFCategory25() : base()
         {
             initialize("HBBB");
-            category_name = "Building stats 2";
+            category_name = "25. Building stats 2";
         }
 
         public override Object[] get_element(BinaryReader sr)
@@ -1054,7 +1060,7 @@ namespace SpellforceDataEditor
         public SFCategory26() : base()
         {
             initialize("HBH");
-            category_name = "Building requirements";
+            category_name = "26. Building requirements";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1081,7 +1087,7 @@ namespace SpellforceDataEditor
         public SFCategory27() : base()
         {
             initialize("BBH");
-            category_name = "Combat arms/magic ID with name ID";
+            category_name = "27. Combat arms/magic ID with name ID";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1097,7 +1103,7 @@ namespace SpellforceDataEditor
         public SFCategory28() : base()
         {
             initialize("BBBBBBBBB");
-            category_name = "Skill requirements";
+            category_name = "28. Skill requirements";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1115,7 +1121,7 @@ namespace SpellforceDataEditor
         public SFCategory29() : base()
         {
             initialize("HH");
-            category_name = "Merchant ID with unit ID";
+            category_name = "29. Merchant ID with unit ID";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1133,7 +1139,7 @@ namespace SpellforceDataEditor
         public SFCategory30() : base()
         {
             initialize("HHH");
-            category_name = "Merchant's inventory";
+            category_name = "30. Merchant's inventory";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1152,7 +1158,7 @@ namespace SpellforceDataEditor
         public SFCategory31() : base()
         {
             initialize("HBH");
-            category_name = "Merchant's sell/buy rate";
+            category_name = "31. Merchant's sell/buy rate";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1179,7 +1185,7 @@ namespace SpellforceDataEditor
         public SFCategory32() : base()
         {
             initialize("BH");
-            category_name = "Resource names";
+            category_name = "32. Resource names";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1195,7 +1201,7 @@ namespace SpellforceDataEditor
         public SFCategory33() : base()
         {
             initialize("BHHIBBHH");
-            category_name = "Player level stats";
+            category_name = "33. Player level stats";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1212,7 +1218,7 @@ namespace SpellforceDataEditor
         {
             string_size = new int[1] { 40 };
             initialize("HHBBBsBHHH");
-            category_name = "Object stats/names";
+            category_name = "34. Object stats/names";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1230,7 +1236,7 @@ namespace SpellforceDataEditor
         public SFCategory35() : base()
         {
             initialize("HBBB");
-            category_name = "Interactive object stats";
+            category_name = "35. Interactive object stats";
         }
 
         public override Object[] get_element(BinaryReader sr)
@@ -1268,7 +1274,7 @@ namespace SpellforceDataEditor
         public SFCategory36() : base()
         {
             initialize("HBHBHBH");
-            category_name = "Chest/corpse loot";
+            category_name = "36. Chest/corpse loot";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1313,7 +1319,7 @@ namespace SpellforceDataEditor
         public SFCategory37() : base()
         {
             initialize("IH");
-            category_name = "NPC ID with names";
+            category_name = "37. NPC ID with names";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1331,7 +1337,7 @@ namespace SpellforceDataEditor
         {
             string_size = new int[1] { 64 };
             initialize("IBsH");
-            category_name = "Quest maps (?)";
+            category_name = "38. Quest maps (?)";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1348,7 +1354,7 @@ namespace SpellforceDataEditor
         public SFCategory39() : base()
         {
             initialize("HIHHBH");
-            category_name = "Portal locations";
+            category_name = "39. Portal locations";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1377,7 +1383,7 @@ namespace SpellforceDataEditor
         public SFCategory40() : base()
         {
             initialize("BBB");
-            category_name = "Unknown (from sql_lua?)";
+            category_name = "40. Unknown (from sql_lua?)";
         }
     }
 
@@ -1387,7 +1393,7 @@ namespace SpellforceDataEditor
         public SFCategory41() : base()
         {
             initialize("HH");
-            category_name = "Quest game menu";
+            category_name = "41. Quest game menu";
         }
         public override string get_element_string(SFCategoryManager manager, int index)
         {
@@ -1404,7 +1410,7 @@ namespace SpellforceDataEditor
         public SFCategory42() : base()
         {
             initialize("HHH");
-            category_name = "Game/button/menu description";
+            category_name = "42. Game/button/menu description";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1427,7 +1433,7 @@ namespace SpellforceDataEditor
         public SFCategory43() : base()
         {
             initialize("IIBHHI");
-            category_name = "Quest IDs";
+            category_name = "43. Quest IDs";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1453,7 +1459,7 @@ namespace SpellforceDataEditor
         public SFCategory44() : base()
         {
             initialize("HHB");
-            category_name = "Weapon type stats";
+            category_name = "44. Weapon type stats";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1470,7 +1476,7 @@ namespace SpellforceDataEditor
         public SFCategory45() : base()
         {
             initialize("HH");
-            category_name = "Weapon materials";
+            category_name = "45. Weapon materials";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1487,7 +1493,7 @@ namespace SpellforceDataEditor
         public SFCategory46() : base()
         {
             initialize("HBB");
-            category_name = "Unknown (3)";
+            category_name = "46. Unknown (3)";
         }
     }
 
@@ -1497,7 +1503,7 @@ namespace SpellforceDataEditor
         public SFCategory47() : base()
         {
             initialize("BB");
-            category_name = "Heads";
+            category_name = "47. Heads";
         }
     }
 
@@ -1508,7 +1514,7 @@ namespace SpellforceDataEditor
         {
             string_size = new int[1] { 64 };
             initialize("HHHHHHHHHHHsI");
-            category_name = "Button upgrade stats UI";
+            category_name = "48. Button upgrade stats UI";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1534,7 +1540,7 @@ namespace SpellforceDataEditor
         public SFCategory49() : base()
         {
             initialize("BHB");
-            category_name = "Item sets";
+            category_name = "49. Item sets";
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1551,7 +1557,7 @@ namespace SpellforceDataEditor
         public SFCategoryRuneHeroes(): base()
         {
             initialize("HH");
-            category_name = "Rune heroes (special)";
+            category_name = "X. Rune heroes (special)";
         }
 
         public void generate(SFCategoryManager manager)
