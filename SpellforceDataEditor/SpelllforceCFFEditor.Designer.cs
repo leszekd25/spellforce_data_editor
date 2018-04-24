@@ -61,6 +61,7 @@
             this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.ProgressBar_Main = new System.Windows.Forms.ToolStripProgressBar();
             this.OpenDataDiff = new System.Windows.Forms.OpenFileDialog();
+            this.radioSearchFlag = new System.Windows.Forms.RadioButton();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -196,7 +197,6 @@
             this.radioSearchNumeric.Name = "radioSearchNumeric";
             this.radioSearchNumeric.Size = new System.Drawing.Size(64, 17);
             this.radioSearchNumeric.TabIndex = 7;
-            this.radioSearchNumeric.TabStop = true;
             this.radioSearchNumeric.Text = "Numeric";
             this.radioSearchNumeric.UseVisualStyleBackColor = true;
             // 
@@ -207,13 +207,12 @@
             this.radioSearchText.Name = "radioSearchText";
             this.radioSearchText.Size = new System.Drawing.Size(46, 17);
             this.radioSearchText.TabIndex = 8;
-            this.radioSearchText.TabStop = true;
             this.radioSearchText.Text = "Text";
             this.radioSearchText.UseVisualStyleBackColor = true;
             // 
             // SearchButton
             // 
-            this.SearchButton.Location = new System.Drawing.Point(163, 47);
+            this.SearchButton.Location = new System.Drawing.Point(163, 57);
             this.SearchButton.Name = "SearchButton";
             this.SearchButton.Size = new System.Drawing.Size(131, 23);
             this.SearchButton.TabIndex = 9;
@@ -232,14 +231,14 @@
             this.panelSearch.Controls.Add(this.SearchQuery);
             this.panelSearch.Location = new System.Drawing.Point(12, 454);
             this.panelSearch.Name = "panelSearch";
-            this.panelSearch.Size = new System.Drawing.Size(297, 135);
+            this.panelSearch.Size = new System.Drawing.Size(297, 144);
             this.panelSearch.TabIndex = 10;
             this.panelSearch.Visible = false;
             // 
             // checkSearchDescription
             // 
             this.checkSearchDescription.AutoSize = true;
-            this.checkSearchDescription.Location = new System.Drawing.Point(8, 106);
+            this.checkSearchDescription.Location = new System.Drawing.Point(8, 124);
             this.checkSearchDescription.Name = "checkSearchDescription";
             this.checkSearchDescription.Size = new System.Drawing.Size(119, 17);
             this.checkSearchDescription.TabIndex = 16;
@@ -250,7 +249,7 @@
             // 
             this.SearchColumnID.Enabled = false;
             this.SearchColumnID.FormattingEnabled = true;
-            this.SearchColumnID.Location = new System.Drawing.Point(117, 79);
+            this.SearchColumnID.Location = new System.Drawing.Point(117, 97);
             this.SearchColumnID.Name = "SearchColumnID";
             this.SearchColumnID.Size = new System.Drawing.Size(177, 21);
             this.SearchColumnID.TabIndex = 15;
@@ -258,7 +257,7 @@
             // checkSearchByColumn
             // 
             this.checkSearchByColumn.AutoSize = true;
-            this.checkSearchByColumn.Location = new System.Drawing.Point(8, 81);
+            this.checkSearchByColumn.Location = new System.Drawing.Point(8, 99);
             this.checkSearchByColumn.Name = "checkSearchByColumn";
             this.checkSearchByColumn.Size = new System.Drawing.Size(111, 17);
             this.checkSearchByColumn.TabIndex = 12;
@@ -268,11 +267,12 @@
             // 
             // groupSearch
             // 
+            this.groupSearch.Controls.Add(this.radioSearchFlag);
             this.groupSearch.Controls.Add(this.radioSearchNumeric);
             this.groupSearch.Controls.Add(this.radioSearchText);
             this.groupSearch.Location = new System.Drawing.Point(2, 35);
             this.groupSearch.Name = "groupSearch";
-            this.groupSearch.Size = new System.Drawing.Size(155, 39);
+            this.groupSearch.Size = new System.Drawing.Size(155, 58);
             this.groupSearch.TabIndex = 11;
             this.groupSearch.TabStop = false;
             // 
@@ -351,6 +351,16 @@
             this.OpenDataDiff.FileName = "GameData.dff";
             this.OpenDataDiff.Filter = "DFF file(*.dff)|*.dff";
             // 
+            // radioSearchFlag
+            // 
+            this.radioSearchFlag.AutoSize = true;
+            this.radioSearchFlag.Location = new System.Drawing.Point(6, 33);
+            this.radioSearchFlag.Name = "radioSearchFlag";
+            this.radioSearchFlag.Size = new System.Drawing.Size(45, 17);
+            this.radioSearchFlag.TabIndex = 9;
+            this.radioSearchFlag.Text = "Flag";
+            this.radioSearchFlag.UseVisualStyleBackColor = true;
+            // 
             // SpelllforceCFFEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -415,5 +425,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem eXPERIMENTALLoadDiffFileToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog OpenDataDiff;
+        private System.Windows.Forms.RadioButton radioSearchFlag;
     }
 }

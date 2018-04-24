@@ -672,6 +672,13 @@ namespace SpellforceDataEditor
     //weapon class item sets (10th category)
     public class SFCategory10 : SFCategory
     {
+        private float get_dmg(int min_dmg, int max_dmg, int sp)
+        {
+            Single mean = ((Single)min_dmg+(Single)max_dmg)/ 2;
+            Single ratio = ((Single)sp) / 100;
+            return mean * ratio;
+        }
+
         public SFCategory10() : base()
         {
             initialize("HHHHHHHH");
@@ -695,7 +702,13 @@ namespace SpellforceDataEditor
             SFCategoryElement material_elem = manager.get_category(44).find_binary_element<UInt16>(0, material_id);
             string material_name = get_text_from_element(material_elem, 1);
 
-            return "Weapon type: " + type_name + "\r\nWeapon material: " + material_name;
+            UInt16 min_dmg = (UInt16)get_element_variant(index, 1).value;
+            UInt16 max_dmg = (UInt16)get_element_variant(index, 2).value;
+            UInt16 spd = (UInt16)get_element_variant(index, 5).value;
+
+            return "Weapon type: " + type_name
+                + "\r\nWeapon material: " + material_name
+                + "\r\nDamage per second: " + get_dmg((int)min_dmg, (int)max_dmg, (int)spd).ToString();
         }
     }
 

@@ -985,6 +985,24 @@ namespace SpellforceDataEditor
             return items;
         }
 
+        //returns a list of indices
+        //these indices correspond with all elements which contain given value in a given column
+        //value is a flag index in this query
+        public List<int> query_by_column_flag(int categoryindex, int columnindex, int value)
+        {
+            List<int> items = new List<int>();
+            int flag_value = 1 << (value - 1);
+            SFCategory cat = get_category(categoryindex);
+            for (int i = 0; i < cat.get_element_count(); i++)
+            {
+                SFVariant variant = cat.get_element_variant(i, columnindex);
+                int current_value = variant.to_int();
+                if ((current_value & flag_value) == flag_value)
+                    items.Add(i);
+            }
+            return items;
+        }
+
         //frees all data, only empty categories remain
         public void unload_all()
         {

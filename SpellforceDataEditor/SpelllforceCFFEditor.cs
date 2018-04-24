@@ -266,7 +266,7 @@ namespace SpellforceDataEditor
                     ProgressBar_Main.Value = (currently_searched * ProgressBar_Main.Maximum) / data_searched;
                 }
             }
-            else
+            else if (radioSearchText.Checked)
             {
                 string val = SearchQuery.Text;
                 foreach (int col in columns_searched)
@@ -274,6 +274,18 @@ namespace SpellforceDataEditor
                     if (ctg.get_element_format()[col] != 's')
                         continue;
                     query_result = manager.query_by_column_text(CategorySelect.SelectedIndex, col, val);
+                    elem_found += query_result.Count;
+                    ElementSelect_add_elements(ctg, query_result);
+                    currently_searched++;
+                    ProgressBar_Main.Value = (currently_searched * ProgressBar_Main.Maximum) / data_searched;
+                }
+            }
+            else if (radioSearchFlag.Checked)
+            {
+                UInt32 val = Utility.TryParseUInt32(SearchQuery.Text);
+                foreach (int col in columns_searched)
+                {
+                    query_result = manager.query_by_column_flag(CategorySelect.SelectedIndex, col, (int)val);
                     elem_found += query_result.Count;
                     ElementSelect_add_elements(ctg, query_result);
                     currently_searched++;
