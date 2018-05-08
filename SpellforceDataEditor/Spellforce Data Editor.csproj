@@ -361,6 +361,12 @@
     <Compile Include="category forms\SFControl.Designer.cs">
       <DependentUpon>SFControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="creators\ItemCreator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="creators\ItemCreator.Designer.cs">
+      <DependentUpon>ItemCreator.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFCategory.cs" />
     <Compile Include="SFCategoryElement.cs" />
     <Compile Include="SFCategoryManager.cs" />
@@ -529,6 +535,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="category forms\SFControl.resx">
       <DependentUpon>SFControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="creators\ItemCreator.resx">
+      <DependentUpon>ItemCreator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="creators\SFCreator.resx">
       <DependentUpon>SFCreator.cs</DependentUpon>

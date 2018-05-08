@@ -474,6 +474,11 @@ namespace SpellforceDataEditor
 
         public override string get_element_string(SFCategoryManager manager, int index)
         {
+            if(index == 0)
+            {
+                string stype2_txt = get_text_from_element(elements[index], 1);
+                Console.WriteLine(stype2_txt);
+            }
             string stype_txt = get_text_from_element(elements[index], 1);
             return get_element_variant(index, 0).value.ToString() + " " + stype_txt;
         }
@@ -807,9 +812,53 @@ namespace SpellforceDataEditor
             category_name = "15. Text ID";
         }
 
+        public override Object[] get_element(BinaryReader sr)
+        {
+            List<Object[]> elements_for_single_text = new List<object[]>();
+            int cur_text_id = -1;
+            while (true)
+            {
+                if (sr.PeekChar() == -1)
+                    break;
+                UInt16 next_text_id = sr.ReadUInt16();
+                sr.BaseStream.Seek(-2, SeekOrigin.Current);
+                if ((next_text_id == cur_text_id) || (cur_text_id == -1))
+                {
+                    cur_text_id = next_text_id;
+                    current_string = 0;
+                    Object[] objs = new Object[elem_format.Length];
+                    for (int i = 0; i < elem_format.Length; i++)
+                    {
+                        objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
+                    }
+
+                    elements_for_single_text.Add(objs);
+                }
+                else
+                    break;
+            }
+
+            Object[] real_objs = new Object[elem_format.Length * elements_for_single_text.Count];
+            for(int i = 0; i < elements_for_single_text.Count; i++)
+            {
+                for(int j = 0; j < elem_format.Length; j++)
+                {
+                    real_objs[i * elem_format.Length + j] = elements_for_single_text[i][j];
+                }
+            }
+            
+            return real_objs;
+        }
+
         public override string get_element_string(SFCategoryManager manager, int index)
         {
-            return get_element_variant(index, 0).value.ToString() + " " + Utility.CleanString(get_element_variant(index, 4));
+            string txt;
+            SFCategoryElement elem = manager.find_element_text((UInt16)(get_element_variant(index, 0).value), 1);
+            if (elem == null)
+                txt = "<no name>";
+            else
+                txt = Utility.CleanString(elem.get_single_variant(4));
+            return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
     }
 

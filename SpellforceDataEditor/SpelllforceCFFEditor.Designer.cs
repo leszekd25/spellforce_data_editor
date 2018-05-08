@@ -52,6 +52,7 @@
             this.SearchColumnID = new System.Windows.Forms.ComboBox();
             this.checkSearchByColumn = new System.Windows.Forms.CheckBox();
             this.groupSearch = new System.Windows.Forms.GroupBox();
+            this.radioSearchFlag = new System.Windows.Forms.RadioButton();
             this.panelElemManipulate = new System.Windows.Forms.Panel();
             this.ButtonElemRemove = new System.Windows.Forms.Button();
             this.ButtonElemInsert = new System.Windows.Forms.Button();
@@ -61,7 +62,6 @@
             this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.ProgressBar_Main = new System.Windows.Forms.ToolStripProgressBar();
             this.OpenDataDiff = new System.Windows.Forms.OpenFileDialog();
-            this.radioSearchFlag = new System.Windows.Forms.RadioButton();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -197,6 +197,7 @@
             this.radioSearchNumeric.Name = "radioSearchNumeric";
             this.radioSearchNumeric.Size = new System.Drawing.Size(64, 17);
             this.radioSearchNumeric.TabIndex = 7;
+            this.radioSearchNumeric.TabStop = true;
             this.radioSearchNumeric.Text = "Numeric";
             this.radioSearchNumeric.UseVisualStyleBackColor = true;
             // 
@@ -276,6 +277,16 @@
             this.groupSearch.TabIndex = 11;
             this.groupSearch.TabStop = false;
             // 
+            // radioSearchFlag
+            // 
+            this.radioSearchFlag.AutoSize = true;
+            this.radioSearchFlag.Location = new System.Drawing.Point(6, 33);
+            this.radioSearchFlag.Name = "radioSearchFlag";
+            this.radioSearchFlag.Size = new System.Drawing.Size(45, 17);
+            this.radioSearchFlag.TabIndex = 9;
+            this.radioSearchFlag.Text = "Flag";
+            this.radioSearchFlag.UseVisualStyleBackColor = true;
+            // 
             // panelElemManipulate
             // 
             this.panelElemManipulate.Controls.Add(this.ButtonElemRemove);
@@ -350,16 +361,6 @@
             // 
             this.OpenDataDiff.FileName = "GameData.dff";
             this.OpenDataDiff.Filter = "DFF file(*.dff)|*.dff";
-            // 
-            // radioSearchFlag
-            // 
-            this.radioSearchFlag.AutoSize = true;
-            this.radioSearchFlag.Location = new System.Drawing.Point(6, 33);
-            this.radioSearchFlag.Name = "radioSearchFlag";
-            this.radioSearchFlag.Size = new System.Drawing.Size(45, 17);
-            this.radioSearchFlag.TabIndex = 9;
-            this.radioSearchFlag.Text = "Flag";
-            this.radioSearchFlag.UseVisualStyleBackColor = true;
             // 
             // SpelllforceCFFEditor
             // 

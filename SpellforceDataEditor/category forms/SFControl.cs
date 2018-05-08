@@ -36,7 +36,7 @@ namespace SpellforceDataEditor.category_forms
         }
 
         //sets current element displayed
-        public void set_element(int index)
+        public virtual void set_element(int index)
         {
             current_element = index;
         }

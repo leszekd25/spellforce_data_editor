@@ -729,37 +729,35 @@ namespace SpellforceDataEditor
         //searches for a text with a given ID and in a given language
         public SFCategoryElement find_element_text(int t_index, int t_lang)
         {
-            int closest_index = categories[14].find_binary_element_index<UInt16>(0, (UInt16)t_index);
-            int cur_index = closest_index;
-            int backup_index = -1;
-            while (true)
+            int index = categories[14].find_binary_element_index<UInt16>(0, (UInt16)t_index);
+            if (index == -1)
+                return null;
+            int lang_index = -1;
+            int safe_index = -1;   //will fail if there's no language id 0
+            SFCategoryElement e = new SFCategoryElement();
+            SFCategoryElement e_found = categories[14].get_element(index);
+            int elem_num = e_found.get().Count / 5;
+            for(int i = 0; i < elem_num; i++)
             {
-                if (cur_index < 0)
+                if((Byte)e_found.get_single_variant(i*5+1).value == (Byte)t_lang)
+                {
+                    lang_index = i;
                     break;
-                if ((int)(UInt16)categories[14].get_element(cur_index).get_single_variant(0).value != t_index)
-                    break;
-                if ((int)(Byte)categories[14].get_element(cur_index).get_single_variant(1).value == t_lang)
-                    return categories[14].get_element(cur_index);
-                if (backup_index == -1)
-                    if ((int)(Byte)categories[14].get_element(cur_index).get_single_variant(1).value == 0)
-                        backup_index = cur_index;
-                cur_index--;
+                }
+                else if((Byte)e_found.get_single_variant(i*5+1).value == 0)
+                {
+                    safe_index = i;
+                }
             }
-            cur_index = closest_index + 1;
-            while (true)
-            {
-                if (cur_index >= categories[14].get_element_count())
-                    break;
-                if ((int)(UInt16)categories[14].get_element(cur_index).get_single_variant(0).value != t_index)
-                    break;
-                if ((int)(Byte)categories[14].get_element(cur_index).get_single_variant(1).value == t_lang)
-                    return categories[14].get_element(cur_index);
-                if (backup_index == -1)
-                    if ((int)(Byte)categories[14].get_element(cur_index).get_single_variant(1).value == 0)
-                        backup_index = cur_index;
-                cur_index++;
-            }
-            return categories[14].get_element(backup_index);
+            if (lang_index == -1)
+                lang_index = safe_index;
+            if (lang_index == -1)
+                return null;
+            Object[] vs = new Object[5];
+            for (int i = 0; i < 5; i++)
+                vs[i] = e_found.get_single_variant(lang_index * 5 + i).value;
+            e.set(vs);
+            return e;
         }
 
         //returns a name of a given effect

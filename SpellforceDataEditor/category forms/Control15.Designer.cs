@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
@@ -38,6 +37,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.DomainLanguages = new System.Windows.Forms.DomainUpDown();
+            this.ButtonAddLang = new System.Windows.Forms.Button();
+            this.ButtonRemoveLang = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBox1
@@ -48,17 +50,9 @@
             this.textBox1.TabIndex = 0;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(362, 19);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(126, 20);
-            this.textBox2.TabIndex = 1;
-            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
-            // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(362, 45);
+            this.textBox3.Location = new System.Drawing.Point(362, 70);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(126, 20);
             this.textBox3.TabIndex = 2;
@@ -104,7 +98,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(299, 48);
+            this.label3.Location = new System.Drawing.Point(299, 73);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(57, 13);
             this.label3.TabIndex = 7;
@@ -128,10 +122,42 @@
             this.label5.TabIndex = 9;
             this.label5.Text = "Text content";
             // 
+            // DomainLanguages
+            // 
+            this.DomainLanguages.Location = new System.Drawing.Point(362, 19);
+            this.DomainLanguages.Name = "DomainLanguages";
+            this.DomainLanguages.Size = new System.Drawing.Size(126, 20);
+            this.DomainLanguages.TabIndex = 10;
+            this.DomainLanguages.Text = "0";
+            this.DomainLanguages.SelectedItemChanged += new System.EventHandler(this.DomainLanguages_SelectedItemChanged);
+            // 
+            // ButtonAddLang
+            // 
+            this.ButtonAddLang.Location = new System.Drawing.Point(362, 41);
+            this.ButtonAddLang.Name = "ButtonAddLang";
+            this.ButtonAddLang.Size = new System.Drawing.Size(59, 23);
+            this.ButtonAddLang.TabIndex = 11;
+            this.ButtonAddLang.Text = "Add";
+            this.ButtonAddLang.UseVisualStyleBackColor = true;
+            this.ButtonAddLang.Click += new System.EventHandler(this.ButtonAddLang_Click);
+            // 
+            // ButtonRemoveLang
+            // 
+            this.ButtonRemoveLang.Location = new System.Drawing.Point(429, 41);
+            this.ButtonRemoveLang.Name = "ButtonRemoveLang";
+            this.ButtonRemoveLang.Size = new System.Drawing.Size(59, 23);
+            this.ButtonRemoveLang.TabIndex = 12;
+            this.ButtonRemoveLang.Text = "Remove";
+            this.ButtonRemoveLang.UseVisualStyleBackColor = true;
+            this.ButtonRemoveLang.Click += new System.EventHandler(this.ButtonRemoveLang_Click);
+            // 
             // Control15
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ButtonRemoveLang);
+            this.Controls.Add(this.ButtonAddLang);
+            this.Controls.Add(this.DomainLanguages);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -140,7 +166,6 @@
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
             this.Name = "Control15";
             this.ResumeLayout(false);
@@ -151,7 +176,6 @@
         #endregion
 
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.TextBox textBox5;
@@ -160,5 +184,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.DomainUpDown DomainLanguages;
+        private System.Windows.Forms.Button ButtonAddLang;
+        private System.Windows.Forms.Button ButtonRemoveLang;
     }
 }
