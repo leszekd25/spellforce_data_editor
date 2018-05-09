@@ -181,11 +181,11 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(303, 145);
+            this.label8.Location = new System.Drawing.Point(318, 145);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(53, 13);
+            this.label8.Size = new System.Drawing.Size(38, 13);
             this.label8.TabIndex = 14;
-            this.label8.Text = "Unknown";
+            this.label8.Text = "Option";
             // 
             // textBox9
             // 

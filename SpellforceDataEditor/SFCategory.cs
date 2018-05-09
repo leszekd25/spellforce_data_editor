@@ -582,6 +582,9 @@ namespace SpellforceDataEditor
             "Spell scroll", "Equipped scroll", "Unit plan", "Building plan", "Equipped unit plan",
             "Equipped building plan", "Miscellaneous" };
 
+        static public string[] equipment_types = { "Unknown", "Headpiece", "Chestpiece", "Legpiece", "Unknown", "Unknown", "Ring",
+            "1H Weapon", "2H Weapon", "Shield", "Robe", "ItemChestFake (monsters)", "Ranged Weapon", "ItemChestFake (playable)" };
+
         public SFCategory7() : base()
         {
             initialize("HBBHHHHBIIB");
@@ -600,6 +603,9 @@ namespace SpellforceDataEditor
             string item_type_text = "";
             Byte item_type = (Byte)get_element_variant(index, 1).value;
             Byte bonus_type = (Byte)get_element_variant(index, 2).value;
+            Byte special = (Byte)get_element_variant(index, 7).value;
+            Byte set_type = (Byte)get_element_variant(index, 10).value;
+
             if ((item_type > 0) && (item_type < item_types.Length))
                 item_type_text += item_types[item_type];
             /*switch (item_type)
@@ -625,6 +631,15 @@ namespace SpellforceDataEditor
                     contains_text = "";
                     break;
             }
+
+            if(item_type == 1)
+            {
+                string bonus_type_text = "Unknown";
+                if ((bonus_type > 0) && (bonus_type < (Byte)equipment_types.Length))
+                    bonus_type_text = equipment_types[(int)bonus_type];
+                item_type_text += " (" + bonus_type_text + ")";
+            }
+
             string total_text = item_type_text;
             if (contains_text != "")
             {
@@ -632,6 +647,31 @@ namespace SpellforceDataEditor
                 //SFCategoryElement race_elem = manager.get_category
                 total_text += "\r\nContains " + contains_text;
             }
+
+            if(set_type != 0)
+            {
+                Byte elem_id = set_type;
+                string txt;
+                SFCategoryElement set_elem = manager.get_category(48).find_binary_element<Byte>(0, elem_id);
+                if (set_elem == null)
+                    txt = "<no name>";
+                else
+                {
+                    SFCategoryElement txt_elem = manager.find_element_text((UInt16)(set_elem.get_single_variant(1).value), 1);
+                    if (txt_elem == null)
+                        txt = "<text missing>";
+                    else
+                        txt = Utility.CleanString(txt_elem.get_single_variant(4));
+                }
+                total_text += "\r\nPart of set: " + txt;
+            }
+
+            if (special == 4)
+                total_text += "\r\nQuest item (can not be sold)";
+            else if (special == 8)
+                total_text += "\r\nQuest item (can be sold)";
+            else if (special != 0)
+                total_text += "\r\nUnknown optional data";
             return total_text;
         }
     }
