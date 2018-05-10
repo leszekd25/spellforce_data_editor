@@ -1,6 +1,8 @@
 # spellforce_data_editor
 experimental project to get along with vcs
 
+/bin directory contains latest executable
+
 # how does it work
 you need Gamedata.cff file
 
