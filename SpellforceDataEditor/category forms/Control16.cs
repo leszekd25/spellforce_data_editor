@@ -23,11 +23,19 @@ namespace SpellforceDataEditor.category_forms
             column_dict.Add("Percentage 2", new int[1] { 5 });
             column_dict.Add("Percentage 3", new int[1] { 6 });
             column_dict.Add("Race text ID", new int[1] { 7 });
-            column_dict.Add("Unknown2", new int[7] { 8, 9, 10, 11 ,12, 13, 14 });
-            column_dict.Add("Lua 1", new int[1] { 15 });
-            column_dict.Add("Lua 2", new int[1] { 16 });
-            column_dict.Add("Lua 3", new int[1] { 17 });
-            column_dict.Add("Unknown3", new int[8] { 18, 19, 20, 21, 22, 23, 24, 25 });
+            column_dict.Add("Unknown2 1", new int[1] { 8 });
+            column_dict.Add("Unknown2 2", new int[1] { 9 });
+            column_dict.Add("Unknown2 3", new int[1] { 10 });
+            column_dict.Add("Unknown2 4", new int[1] { 11 });
+            column_dict.Add("Unknown2 5", new int[1] { 12 });
+            column_dict.Add("Lua 1", new int[1] { 13 });
+            column_dict.Add("Lua 2", new int[1] { 14 });
+            column_dict.Add("Lua 3", new int[1] { 15 });
+            column_dict.Add("Unknown3 1", new int[1] { 16 });
+            column_dict.Add("Unknown3 2", new int[1] { 17 });
+            column_dict.Add("Unknown3 3", new int[1] { 18 });
+            column_dict.Add("Unknown3 4", new int[1] { 19 });
+            column_dict.Add("Unknown3 5", new int[1] { 20 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -70,44 +78,69 @@ namespace SpellforceDataEditor.category_forms
             category.set_element_variant(current_element, 7, Utility.TryParseUInt16(textBox9.Text));
         }
 
-        private void textBox15_TextChanged(object sender, EventArgs e)
+        private void textBox11_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(textBox15.Text, 7);
-            category.set_element_variant(current_element, 8, data_array[0]);
-            category.set_element_variant(current_element, 9, data_array[1]);
-            category.set_element_variant(current_element, 10, data_array[2]);
-            category.set_element_variant(current_element, 11, data_array[3]);
-            category.set_element_variant(current_element, 12, data_array[4]);
-            category.set_element_variant(current_element, 13, data_array[5]);
-            category.set_element_variant(current_element, 14, data_array[6]);
+            category.set_element_variant(current_element, 8, Utility.TryParseUInt8(textBox11.Text));
+        }
+
+        private void textBox10_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 9, Utility.TryParseUInt16(textBox10.Text));
+        }
+
+        private void textBox8_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 10, Utility.TryParseUInt8(textBox8.Text));
+        }
+
+        private void textBox13_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 11, Utility.TryParseUInt8(textBox13.Text));
+        }
+
+        private void textBox12_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 12, Utility.TryParseUInt16(textBox12.Text));
         }
 
         private void textBox19_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 15, Utility.TryParseUInt8(textBox19.Text));
+            category.set_element_variant(current_element, 13, Utility.TryParseUInt8(textBox19.Text));
         }
 
         private void textBox18_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 16, Utility.TryParseUInt8(textBox18.Text));
+            category.set_element_variant(current_element, 14, Utility.TryParseUInt8(textBox18.Text));
         }
 
         private void textBox17_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 17, Utility.TryParseUInt8(textBox17.Text));
+            category.set_element_variant(current_element, 15, Utility.TryParseUInt8(textBox17.Text));
         }
 
-        private void textBox26_TextChanged(object sender, EventArgs e)
+        private void textBox22_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(textBox26.Text, 8);
-            category.set_element_variant(current_element, 18, data_array[0]);
-            category.set_element_variant(current_element, 19, data_array[1]);
-            category.set_element_variant(current_element, 20, data_array[2]);
-            category.set_element_variant(current_element, 21, data_array[3]);
-            category.set_element_variant(current_element, 22, data_array[4]);
-            category.set_element_variant(current_element, 23, data_array[5]);
-            category.set_element_variant(current_element, 24, data_array[6]);
-            category.set_element_variant(current_element, 25, data_array[7]);
+            category.set_element_variant(current_element, 16, Utility.TryParseUInt8(textBox22.Text));
+        }
+
+        private void textBox21_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 17, Utility.TryParseUInt16(textBox21.Text));
+        }
+
+        private void textBox20_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 18, Utility.TryParseUInt16(textBox20.Text));
+        }
+
+        private void textBox16_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 19, Utility.TryParseUInt16(textBox16.Text));
+        }
+
+        private void textBox14_TextChanged(object sender, EventArgs e)
+        {
+            category.set_element_variant(current_element, 20, Utility.TryParseUInt8(textBox14.Text));
         }
 
         public override void show_element()
@@ -120,11 +153,23 @@ namespace SpellforceDataEditor.category_forms
             textBox6.Text = variant_repr(5);
             textBox5.Text = variant_repr(6);
             textBox9.Text = variant_repr(7);
-            textBox15.Text = bytearray_repr(8, 7);
-            textBox19.Text = variant_repr(15);
-            textBox18.Text = variant_repr(16);
-            textBox17.Text = variant_repr(17);
-            textBox26.Text = bytearray_repr(18, 8);
+            textBox11.Text = variant_repr(8);
+            textBox10.Text = variant_repr(9);
+            textBox8.Text = variant_repr(10);
+            textBox13.Text = variant_repr(11);
+            textBox12.Text = variant_repr(12);
+            textBox19.Text = variant_repr(13);
+            textBox18.Text = variant_repr(14);
+            textBox17.Text = variant_repr(15);
+            textBox22.Text = variant_repr(16);
+            textBox21.Text = variant_repr(17);
+            textBox20.Text = variant_repr(18);
+            textBox16.Text = variant_repr(19);
+            textBox14.Text = variant_repr(20);
         }
+
+
+
+
     }
 }

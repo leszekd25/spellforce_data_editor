@@ -85,6 +85,8 @@ namespace SpellforceDataEditor
                 "SpellforceDataEditor.category_forms.Control" + (selected_category_index + 1).ToString())
                 as category_forms.SFControl;
             ElementDisplay.set_category(ctg);
+            ElementDisplay.BringToFront();
+            labelDescription.SendToBack();
             SearchPanel.Controls.Clear();
             SearchPanel.Controls.Add(ElementDisplay);
             SearchColumnID.Items.Clear();

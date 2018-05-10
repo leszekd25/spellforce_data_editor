@@ -184,7 +184,7 @@
             // 
             // SearchQuery
             // 
-            this.SearchQuery.Location = new System.Drawing.Point(95, 9);
+            this.SearchQuery.Location = new System.Drawing.Point(94, 9);
             this.SearchQuery.Name = "SearchQuery";
             this.SearchQuery.Size = new System.Drawing.Size(199, 20);
             this.SearchQuery.TabIndex = 6;
@@ -193,7 +193,7 @@
             // 
             this.radioSearchNumeric.AutoSize = true;
             this.radioSearchNumeric.Checked = true;
-            this.radioSearchNumeric.Location = new System.Drawing.Point(6, 10);
+            this.radioSearchNumeric.Location = new System.Drawing.Point(6, 0);
             this.radioSearchNumeric.Name = "radioSearchNumeric";
             this.radioSearchNumeric.Size = new System.Drawing.Size(64, 17);
             this.radioSearchNumeric.TabIndex = 7;
@@ -204,7 +204,7 @@
             // radioSearchText
             // 
             this.radioSearchText.AutoSize = true;
-            this.radioSearchText.Location = new System.Drawing.Point(76, 10);
+            this.radioSearchText.Location = new System.Drawing.Point(124, 0);
             this.radioSearchText.Name = "radioSearchText";
             this.radioSearchText.Size = new System.Drawing.Size(46, 17);
             this.radioSearchText.TabIndex = 8;
@@ -213,9 +213,9 @@
             // 
             // SearchButton
             // 
-            this.SearchButton.Location = new System.Drawing.Point(163, 57);
+            this.SearchButton.Location = new System.Drawing.Point(8, 87);
             this.SearchButton.Name = "SearchButton";
-            this.SearchButton.Size = new System.Drawing.Size(131, 23);
+            this.SearchButton.Size = new System.Drawing.Size(286, 23);
             this.SearchButton.TabIndex = 9;
             this.SearchButton.Text = "Search";
             this.SearchButton.UseVisualStyleBackColor = true;
@@ -232,14 +232,14 @@
             this.panelSearch.Controls.Add(this.SearchQuery);
             this.panelSearch.Location = new System.Drawing.Point(12, 454);
             this.panelSearch.Name = "panelSearch";
-            this.panelSearch.Size = new System.Drawing.Size(297, 144);
+            this.panelSearch.Size = new System.Drawing.Size(297, 114);
             this.panelSearch.TabIndex = 10;
             this.panelSearch.Visible = false;
             // 
             // checkSearchDescription
             // 
             this.checkSearchDescription.AutoSize = true;
-            this.checkSearchDescription.Location = new System.Drawing.Point(8, 124);
+            this.checkSearchDescription.Location = new System.Drawing.Point(175, 37);
             this.checkSearchDescription.Name = "checkSearchDescription";
             this.checkSearchDescription.Size = new System.Drawing.Size(119, 17);
             this.checkSearchDescription.TabIndex = 16;
@@ -250,15 +250,15 @@
             // 
             this.SearchColumnID.Enabled = false;
             this.SearchColumnID.FormattingEnabled = true;
-            this.SearchColumnID.Location = new System.Drawing.Point(117, 97);
+            this.SearchColumnID.Location = new System.Drawing.Point(125, 60);
             this.SearchColumnID.Name = "SearchColumnID";
-            this.SearchColumnID.Size = new System.Drawing.Size(177, 21);
+            this.SearchColumnID.Size = new System.Drawing.Size(168, 21);
             this.SearchColumnID.TabIndex = 15;
             // 
             // checkSearchByColumn
             // 
             this.checkSearchByColumn.AutoSize = true;
-            this.checkSearchByColumn.Location = new System.Drawing.Point(8, 99);
+            this.checkSearchByColumn.Location = new System.Drawing.Point(8, 62);
             this.checkSearchByColumn.Name = "checkSearchByColumn";
             this.checkSearchByColumn.Size = new System.Drawing.Size(111, 17);
             this.checkSearchByColumn.TabIndex = 12;
@@ -273,14 +273,14 @@
             this.groupSearch.Controls.Add(this.radioSearchText);
             this.groupSearch.Location = new System.Drawing.Point(2, 35);
             this.groupSearch.Name = "groupSearch";
-            this.groupSearch.Size = new System.Drawing.Size(155, 58);
+            this.groupSearch.Size = new System.Drawing.Size(169, 23);
             this.groupSearch.TabIndex = 11;
             this.groupSearch.TabStop = false;
             // 
             // radioSearchFlag
             // 
             this.radioSearchFlag.AutoSize = true;
-            this.radioSearchFlag.Location = new System.Drawing.Point(6, 33);
+            this.radioSearchFlag.Location = new System.Drawing.Point(76, 0);
             this.radioSearchFlag.Name = "radioSearchFlag";
             this.radioSearchFlag.Size = new System.Drawing.Size(45, 17);
             this.radioSearchFlag.TabIndex = 9;
@@ -327,7 +327,7 @@
             this.labelDescription.BackColor = System.Drawing.SystemColors.Control;
             this.labelDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.labelDescription.Cursor = System.Windows.Forms.Cursors.No;
-            this.labelDescription.Location = new System.Drawing.Point(395, 463);
+            this.labelDescription.Location = new System.Drawing.Point(395, 454);
             this.labelDescription.Multiline = true;
             this.labelDescription.Name = "labelDescription";
             this.labelDescription.ReadOnly = true;
@@ -367,8 +367,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(944, 623);
-            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.labelDescription);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.panelElemManipulate);
             this.Controls.Add(this.panelSearch);
             this.Controls.Add(this.SearchPanel);
