@@ -377,7 +377,8 @@ namespace SpellforceDataEditor
         public void unload()
         {
             elements.Clear();
-            categoryHeader = new Byte[12];
+            for (int i = 0; i < 12; i++)
+                categoryHeader[i] = 0;
         }
     }
 
@@ -538,6 +539,43 @@ namespace SpellforceDataEditor
             category_name = "5. Hero/worker skills";
         }
 
+        public override Object[] get_element(BinaryReader sr)
+        {
+            List<Object[]> elements_for_single_unit = new List<Object[]>();
+            int cur_unit_id = -1;
+            while (true)
+            {
+                if (sr.PeekChar() == -1)
+                    break;
+                UInt16 next_unit_id = sr.ReadUInt16();
+                sr.BaseStream.Seek(-2, SeekOrigin.Current);
+                if ((next_unit_id == cur_unit_id) || (cur_unit_id == -1))
+                {
+                    cur_unit_id = next_unit_id;
+                    Object[] objs = new Object[elem_format.Length];
+                    for (int i = 0; i < elem_format.Length; i++)
+                    {
+                        objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
+                    }
+
+                    elements_for_single_unit.Add(objs);
+                }
+                else
+                    break;
+            }
+
+            Object[] real_objs = new Object[elem_format.Length * elements_for_single_unit.Count];
+            for (int i = 0; i < elements_for_single_unit.Count; i++)
+            {
+                for (int j = 0; j < elem_format.Length; j++)
+                {
+                    real_objs[i * elem_format.Length + j] = elements_for_single_unit[i][j];
+                }
+            }
+
+            return real_objs;
+        }
+
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt16 stats_id = (UInt16)get_element_variant(index, 0).value;
@@ -565,6 +603,43 @@ namespace SpellforceDataEditor
         {
             initialize("HBH");
             category_name = "6. Hero spells";
+        }
+
+        public override Object[] get_element(BinaryReader sr)
+        {
+            List<Object[]> elements_for_single_unit = new List<Object[]>();
+            int cur_unit_id = -1;
+            while (true)
+            {
+                if (sr.PeekChar() == -1)
+                    break;
+                UInt16 next_unit_id = sr.ReadUInt16();
+                sr.BaseStream.Seek(-2, SeekOrigin.Current);
+                if ((next_unit_id == cur_unit_id) || (cur_unit_id == -1))
+                {
+                    cur_unit_id = next_unit_id;
+                    Object[] objs = new Object[elem_format.Length];
+                    for (int i = 0; i < elem_format.Length; i++)
+                    {
+                        objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
+                    }
+
+                    elements_for_single_unit.Add(objs);
+                }
+                else
+                    break;
+            }
+
+            Object[] real_objs = new Object[elem_format.Length * elements_for_single_unit.Count];
+            for (int i = 0; i < elements_for_single_unit.Count; i++)
+            {
+                for (int j = 0; j < elem_format.Length; j++)
+                {
+                    real_objs[i * elem_format.Length + j] = elements_for_single_unit[i][j];
+                }
+            }
+
+            return real_objs;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1048,6 +1123,43 @@ namespace SpellforceDataEditor
             category_name = "19. Unit equipment";
         }
 
+        public override Object[] get_element(BinaryReader sr)
+        {
+            List<Object[]> elements_for_single_unit = new List<Object[]>();
+            int cur_unit_id = -1;
+            while (true)
+            {
+                if (sr.PeekChar() == -1)
+                    break;
+                UInt16 next_unit_id = sr.ReadUInt16();
+                sr.BaseStream.Seek(-2, SeekOrigin.Current);
+                if ((next_unit_id == cur_unit_id) || (cur_unit_id == -1))
+                {
+                    cur_unit_id = next_unit_id;
+                    Object[] objs = new Object[elem_format.Length];
+                    for (int i = 0; i < elem_format.Length; i++)
+                    {
+                        objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
+                    }
+
+                    elements_for_single_unit.Add(objs);
+                }
+                else
+                    break;
+            }
+
+            Object[] real_objs = new Object[elem_format.Length * elements_for_single_unit.Count];
+            for (int i = 0; i < elements_for_single_unit.Count; i++)
+            {
+                for (int j = 0; j < elem_format.Length; j++)
+                {
+                    real_objs[i * elem_format.Length + j] = elements_for_single_unit[i][j];
+                }
+            }
+
+            return real_objs;
+        }
+
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt16 unit_id = (UInt16)get_element_variant(index, 0).value;
@@ -1321,10 +1433,45 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt16 merchant_id = (UInt16)get_element_variant(index, 0).value;
-            UInt16 item_id = (UInt16)get_element_variant(index, 1).value;
             string txt_merchant = manager.get_merchant_name(merchant_id);
-            string txt_item = manager.get_item_name(item_id);
-            return merchant_id.ToString() + " " + txt_merchant + " | " + txt_item;
+            return merchant_id.ToString() + " " + txt_merchant;
+        }
+
+        public override Object[] get_element(BinaryReader sr)
+        {
+            List<Object[]> elements_for_single_merchant = new List<Object[]>();
+            int cur_merchant_id = -1;
+            while (true)
+            {
+                if (sr.PeekChar() == -1)
+                    break;
+                UInt16 next_merchant_id = sr.ReadUInt16();
+                sr.BaseStream.Seek(-2, SeekOrigin.Current);
+                if ((next_merchant_id == cur_merchant_id) || (cur_merchant_id == -1))
+                {
+                    cur_merchant_id = next_merchant_id;
+                    Object[] objs = new Object[elem_format.Length];
+                    for (int i = 0; i < elem_format.Length; i++)
+                    {
+                        objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
+                    }
+
+                    elements_for_single_merchant.Add(objs);
+                }
+                else
+                    break;
+            }
+
+            Object[] real_objs = new Object[elem_format.Length * elements_for_single_merchant.Count];
+            for (int i = 0; i < elements_for_single_merchant.Count; i++)
+            {
+                for (int j = 0; j < elem_format.Length; j++)
+                {
+                    real_objs[i * elem_format.Length + j] = elements_for_single_merchant[i][j];
+                }
+            }
+
+            return real_objs;
         }
     }
 

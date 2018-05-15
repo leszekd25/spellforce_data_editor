@@ -62,13 +62,21 @@ namespace SpellforceDataEditor
         {
             if (!CategorySelect.Enabled)
                 return;
-            if (SaveGameData.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            save_data();
+        }
+
+        private bool save_data()
+        {
+            DialogResult result = SaveGameData.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
             {
                 labelStatus.Text = "Saving...";
                 diff.save_diff_data(Path.ChangeExtension(SaveGameData.FileName, ".dff"));
                 manager.save_cff(SaveGameData.FileName);
                 labelStatus.Text = "Saved";
+                return true;
             }
+            return false;
         }
 
         //what happens when you choose category from a list
@@ -305,6 +313,8 @@ namespace SpellforceDataEditor
         //what happens when you add an element to a category
         private void ButtonElemInsert_Click(object sender, EventArgs e)
         {
+            if (ElementSelect.SelectedIndex == -1)
+                return;
             int current_elem = current_indices[ElementSelect.SelectedIndex];
             SFCategory ctg = manager.get_category(selected_category_index);
             SFCategoryElement elem = ctg.generate_empty_element();
@@ -321,6 +331,8 @@ namespace SpellforceDataEditor
         //what happens when you remove element from category
         private void ButtonElemRemove_Click(object sender, EventArgs e)
         {
+            if (ElementSelect.SelectedIndex == -1)
+                return;
             int current_elem = current_indices[ElementSelect.SelectedIndex];
             SFCategory ctg = manager.get_category(selected_category_index);
             List<SFCategoryElement> elems = ctg.get_elements();
@@ -378,8 +390,23 @@ namespace SpellforceDataEditor
         }
 
         //actually clear all data and close gamedata.cff
-        public void close_data()
+        public DialogResult close_data()
         {
+            //ask first to close currend gamedata.cff, if user clicks Cancel, function return immediately
+            DialogResult result;
+            if (!CategorySelect.Enabled)
+               return DialogResult.No;
+            else
+                result = MessageBox.Show("Do you want to save before quitting?", "Save before quit?", MessageBoxButtons.YesNoCancel);
+            if (result == DialogResult.Yes)
+            {
+                if (!save_data())
+                    return DialogResult.Cancel;
+            }
+            else if (result == DialogResult.Cancel)
+                return result;
+
+            //close everything
             if (ElementSelect_RefreshTimer.Enabled)
             {
                 ElementSelect_RefreshTimer.Stop();
@@ -402,15 +429,13 @@ namespace SpellforceDataEditor
             labelDescription.Text = "";
             this.Text = "SpellforceDataEditor";
             GC.Collect();
+
+            return result;
         }
 
         //exit application
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (CategorySelect.Enabled)
-            {
-                close_data();
-            }
             Application.Exit();
         }
 
@@ -429,6 +454,16 @@ namespace SpellforceDataEditor
                 }
                 else
                     labelStatus.Text = "MD5 mismatch! Can't load DFF file for this gamedata";
+            }
+        }
+
+        private void AskBeforeExit(object sender, FormClosingEventArgs e)
+        {
+            if (CategorySelect.Enabled)
+            {
+                DialogResult result = close_data();
+                if (result == DialogResult.Cancel)
+                    e.Cancel = true;
             }
         }
     }
