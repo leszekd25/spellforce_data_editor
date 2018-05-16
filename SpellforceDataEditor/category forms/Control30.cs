@@ -23,7 +23,11 @@ namespace SpellforceDataEditor.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 0, Utility.TryParseUInt16(textBox1.Text));
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 3;
+
+            for (int i = 0; i < elem_count; i++)
+                category.set_element_variant(current_element, 0 + 3 * i, Utility.TryParseUInt16(textBox1.Text));
         }
 
         public override void set_element(int index)

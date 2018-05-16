@@ -421,6 +421,11 @@ namespace SpellforceDataEditor
                     return "<no name>";
             }
         }
+
+
+
+
+
         public SFCategory1() : base()
         {
             initialize("HHBBBBBBBBBBBBHIIHHBBIIIIIIIIIIBBBB");
@@ -514,11 +519,12 @@ namespace SpellforceDataEditor
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt16 stats_id = (UInt16)get_element_variant(index, 0).value;
+            UInt16 stats_level = (UInt16)get_element_variant(index, 1).value;
             SFCategoryElement elem = manager.get_category(17).find_element<UInt16>(2, stats_id);
             string unit_txt = get_text_from_element(elem, 1);
             if (unit_txt == "<no name>")
                 unit_txt = manager.get_runehero_name(stats_id);
-            return stats_id.ToString() + " " + unit_txt;
+            return stats_id.ToString() + " " + unit_txt + " (lvl " + stats_level.ToString() + ")";
         }
 
         public override string get_element_description(SFCategoryManager manager, int index)

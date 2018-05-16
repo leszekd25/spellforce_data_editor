@@ -33,8 +33,8 @@ namespace SpellforceDataEditor.category_forms
             SFCategoryElement elem = category.get_element(current_element);
             int elem_count = elem.get().Count / 3;
 
-            for(int i = 0; i < elem_count; i++)
-                category.set_element_variant(current_element, i*3, Utility.TryParseUInt16(textBox1.Text));
+            for (int i = 0; i < elem_count; i++)
+                category.set_element_variant(current_element, i * 3 + 0, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)

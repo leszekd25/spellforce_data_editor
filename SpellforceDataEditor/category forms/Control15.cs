@@ -54,17 +54,29 @@ namespace SpellforceDataEditor.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 0 + 5 * DomainLanguages.SelectedIndex, Utility.TryParseUInt16(textBox1.Text));
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 5;
+
+            for(int i = 0; i < elem_count; i++)
+                category.set_element_variant(current_element, 0 + 5 * i, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 2 + 5 * DomainLanguages.SelectedIndex, Utility.TryParseUInt8(textBox3.Text));
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 5;
+
+            for (int i = 0; i < elem_count; i++)
+                category.set_element_variant(current_element, 2 + 5 * i, Utility.TryParseUInt8(textBox3.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 3 + 5 * DomainLanguages.SelectedIndex, Utility.FixedLengthString(textBox4.Text, 50));
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 5;
+
+            for (int i = 0; i < elem_count; i++)
+                category.set_element_variant(current_element, 3 + 5 * i, Utility.FixedLengthString(textBox4.Text, 50));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
