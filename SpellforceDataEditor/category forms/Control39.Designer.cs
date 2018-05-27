@@ -62,6 +62,7 @@
             // 
             // textBox1
             // 
+            this.textBox1.BackColor = System.Drawing.Color.DarkOrange;
             this.textBox1.Location = new System.Drawing.Point(105, 45);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
@@ -107,6 +108,7 @@
             // 
             // tb_req4_1
             // 
+            this.tb_req4_1.BackColor = System.Drawing.Color.DarkOrange;
             this.tb_req4_1.Location = new System.Drawing.Point(105, 120);
             this.tb_req4_1.Name = "tb_req4_1";
             this.tb_req4_1.Size = new System.Drawing.Size(126, 20);

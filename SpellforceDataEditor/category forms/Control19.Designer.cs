@@ -71,6 +71,7 @@
             // 
             // textBox1
             // 
+            this.textBox1.BackColor = System.Drawing.Color.DarkOrange;
             this.textBox1.Location = new System.Drawing.Point(105, 19);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
@@ -98,6 +99,7 @@
             // 
             // HelmetID
             // 
+            this.HelmetID.BackColor = System.Drawing.Color.DarkOrange;
             this.HelmetID.Enabled = false;
             this.HelmetID.Location = new System.Drawing.Point(105, 45);
             this.HelmetID.Name = "HelmetID";
@@ -124,6 +126,7 @@
             // 
             // RightHandID
             // 
+            this.RightHandID.BackColor = System.Drawing.Color.DarkOrange;
             this.RightHandID.Enabled = false;
             this.RightHandID.Location = new System.Drawing.Point(105, 71);
             this.RightHandID.Name = "RightHandID";
@@ -161,6 +164,7 @@
             // 
             // ChestID
             // 
+            this.ChestID.BackColor = System.Drawing.Color.DarkOrange;
             this.ChestID.Enabled = false;
             this.ChestID.Location = new System.Drawing.Point(105, 97);
             this.ChestID.Name = "ChestID";
@@ -198,6 +202,7 @@
             // 
             // LeftHandID
             // 
+            this.LeftHandID.BackColor = System.Drawing.Color.DarkOrange;
             this.LeftHandID.Enabled = false;
             this.LeftHandID.Location = new System.Drawing.Point(105, 123);
             this.LeftHandID.Name = "LeftHandID";
@@ -235,6 +240,7 @@
             // 
             // RightRingID
             // 
+            this.RightRingID.BackColor = System.Drawing.Color.DarkOrange;
             this.RightRingID.Enabled = false;
             this.RightRingID.Location = new System.Drawing.Point(105, 149);
             this.RightRingID.Name = "RightRingID";
@@ -272,6 +278,7 @@
             // 
             // LegsID
             // 
+            this.LegsID.BackColor = System.Drawing.Color.DarkOrange;
             this.LegsID.Enabled = false;
             this.LegsID.Location = new System.Drawing.Point(105, 175);
             this.LegsID.Name = "LegsID";
@@ -309,6 +316,7 @@
             // 
             // LeftRingID
             // 
+            this.LeftRingID.BackColor = System.Drawing.Color.DarkOrange;
             this.LeftRingID.Enabled = false;
             this.LeftRingID.Location = new System.Drawing.Point(105, 201);
             this.LeftRingID.Name = "LeftRingID";

@@ -98,6 +98,7 @@
             // 
             // tb_effID
             // 
+            this.tb_effID.BackColor = System.Drawing.SystemColors.Window;
             this.tb_effID.Location = new System.Drawing.Point(105, 19);
             this.tb_effID.Name = "tb_effID";
             this.tb_effID.Size = new System.Drawing.Size(126, 20);
@@ -106,6 +107,7 @@
             // 
             // tb_typeID
             // 
+            this.tb_typeID.BackColor = System.Drawing.Color.DarkOrange;
             this.tb_typeID.Location = new System.Drawing.Point(362, 19);
             this.tb_typeID.Name = "tb_typeID";
             this.tb_typeID.Size = new System.Drawing.Size(126, 20);

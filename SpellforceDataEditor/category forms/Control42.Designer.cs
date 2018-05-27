@@ -38,6 +38,7 @@
             // 
             // sb_sd5
             // 
+            this.sb_sd5.BackColor = System.Drawing.Color.DarkOrange;
             this.sb_sd5.Location = new System.Drawing.Point(105, 71);
             this.sb_sd5.Name = "sb_sd5";
             this.sb_sd5.Size = new System.Drawing.Size(126, 20);
@@ -55,6 +56,7 @@
             // 
             // tb_sd4
             // 
+            this.tb_sd4.BackColor = System.Drawing.Color.DarkOrange;
             this.tb_sd4.Location = new System.Drawing.Point(105, 45);
             this.tb_sd4.Name = "tb_sd4";
             this.tb_sd4.Size = new System.Drawing.Size(126, 20);

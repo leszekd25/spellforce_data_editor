@@ -75,6 +75,7 @@
             // 
             // textBox9
             // 
+            this.textBox9.BackColor = System.Drawing.Color.DarkOrange;
             this.textBox9.Location = new System.Drawing.Point(362, 19);
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new System.Drawing.Size(126, 20);
@@ -226,6 +227,7 @@
             // 
             // textBox10
             // 
+            this.textBox10.BackColor = System.Drawing.Color.DarkOrange;
             this.textBox10.Location = new System.Drawing.Point(362, 71);
             this.textBox10.Name = "textBox10";
             this.textBox10.Size = new System.Drawing.Size(38, 20);

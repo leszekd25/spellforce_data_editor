@@ -160,6 +160,7 @@
             // 
             // tb_sd7
             // 
+            this.tb_sd7.BackColor = System.Drawing.Color.DarkOrange;
             this.tb_sd7.Location = new System.Drawing.Point(362, 45);
             this.tb_sd7.Name = "tb_sd7";
             this.tb_sd7.Size = new System.Drawing.Size(126, 20);
@@ -177,6 +178,7 @@
             // 
             // tb_sd2
             // 
+            this.tb_sd2.BackColor = System.Drawing.Color.DarkOrange;
             this.tb_sd2.Location = new System.Drawing.Point(105, 45);
             this.tb_sd2.Name = "tb_sd2";
             this.tb_sd2.Size = new System.Drawing.Size(126, 20);
@@ -194,6 +196,7 @@
             // 
             // tb_sd6
             // 
+            this.tb_sd6.BackColor = System.Drawing.Color.DarkOrange;
             this.tb_sd6.Location = new System.Drawing.Point(362, 19);
             this.tb_sd6.Name = "tb_sd6";
             this.tb_sd6.Size = new System.Drawing.Size(126, 20);
