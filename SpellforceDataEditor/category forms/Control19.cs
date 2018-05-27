@@ -81,7 +81,7 @@ namespace SpellforceDataEditor.category_forms
             //if it's the last checked flag, disallow unchecking it
             if (checkd == false)
             {
-                if ((item_flags & (0x1 << flag)) == 0)
+                if ((item_flags - (0x1 << flag)) == 0)
                 {
                     ch.Checked = true;
                     return;
@@ -142,7 +142,9 @@ namespace SpellforceDataEditor.category_forms
                     }
                 }
                 if (!found)
+                {
                     return;
+                }
 
                 //remove unchecked element
                 int offset = 0;
