@@ -82,5 +82,92 @@ namespace SpellforceDataEditor.category_forms
             textBox3.Text = "";
             textBox4.Text = "";
         }
+
+        private void buttonInsert_Click(object sender, EventArgs e)
+        {
+            int new_index;
+            if (listBox1.SelectedIndex == -1)
+                if (listBox1.Items.Count == 0)
+                    new_index = 0;
+                else
+                    return;
+            else
+                new_index = listBox1.SelectedIndex;
+
+            SFCategoryElement elem = category.get_element(current_element);
+            int len = elem.get().Count;
+            int poly_count = (elem.get().Count - 4) / 2;
+            SFCategoryElement new_elem = new SFCategoryElement();
+            Object[] obj_array = new Object[len+2];
+            
+            for(int i = 0; i < 3; i++)
+            {
+                obj_array[i] = elem.get_single_variant(i).value;
+            }
+            obj_array[3] = (Byte)(poly_count + 1);
+
+            int offset = 0;
+            for(int i = 0; i < poly_count; i++)
+            {
+                //Console.WriteLine(elem.get_single_variant((i + offset) * 2 + 0).value);
+                obj_array[4+(i + offset) * 2 + 0] = elem.get_single_variant(4+(i * 2) + 0).value;
+                obj_array[4+(i + offset) * 2 + 1] = elem.get_single_variant(4+(i * 2) + 1).value;
+                if(i == new_index)
+                {
+                    offset = 1;
+                    //Console.WriteLine("cur ind: " + i.ToString());
+                    obj_array[4+(i + offset) * 2 + 0] = (Int16)0;
+                    obj_array[4+(i + offset) * 2 + 1] = (Int16)0;
+                }
+            }
+
+            if(poly_count == 0)
+            {
+                obj_array[4] = (Int16)0;
+                obj_array[5] = (Int16)0;
+            }
+
+            new_elem.set(obj_array);
+            category.get_elements()[current_element] = new_elem;
+            listBox1_update();
+        }
+
+        private void buttonRemove_Click(object sender, EventArgs e)
+        {
+            int new_index;
+            if (listBox1.SelectedIndex == -1)
+                    return;
+            else
+                new_index = listBox1.SelectedIndex;
+
+            SFCategoryElement elem = category.get_element(current_element);
+            new_index = listBox1.SelectedIndex;
+            int len = elem.get().Count;
+            int poly_count = (elem.get().Count - 4) / 2;
+            SFCategoryElement new_elem = new SFCategoryElement();
+            Object[] obj_array = new Object[len - 2];
+
+            for (int i = 0; i < 3; i++)
+            {
+                obj_array[i] = elem.get_single_variant(i).value;
+            }
+            obj_array[3] = (Byte)(poly_count - 1);
+
+            int offset = 0;
+            for (int i = 0; i < poly_count-1; i++)
+            {
+                if (i == new_index)
+                {
+                    offset = 1;
+                }
+                //Console.WriteLine(elem.get_single_variant((i + offset) * 2 + 0).value);
+                obj_array[4 + i * 2 + 0] = elem.get_single_variant(4 + ((i+offset) * 2) + 0).value;
+                obj_array[4 + i * 2 + 1] = elem.get_single_variant(4 + ((i+offset) * 2) + 1).value;
+            }
+
+            new_elem.set(obj_array);
+            category.get_elements()[current_element] = new_elem;
+            listBox1_update();
+        }
     }
 }
