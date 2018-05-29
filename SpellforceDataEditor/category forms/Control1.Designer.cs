@@ -113,6 +113,7 @@
             this.tb_typeID.Size = new System.Drawing.Size(126, 20);
             this.tb_typeID.TabIndex = 3;
             this.tb_typeID.TextChanged += new System.EventHandler(this.tb_typeID_TextChanged);
+            this.tb_typeID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_typeID_MouseClick);
             // 
             // lb_typeID
             // 

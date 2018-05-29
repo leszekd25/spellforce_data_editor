@@ -44,6 +44,7 @@
             this.sb_sd5.Size = new System.Drawing.Size(126, 20);
             this.sb_sd5.TabIndex = 53;
             this.sb_sd5.TextChanged += new System.EventHandler(this.sb_sd5_TextChanged);
+            this.sb_sd5.MouseDown += new System.Windows.Forms.MouseEventHandler(this.sb_sd5_MouseDown);
             // 
             // lb_sd5
             // 
@@ -62,6 +63,7 @@
             this.tb_sd4.Size = new System.Drawing.Size(126, 20);
             this.tb_sd4.TabIndex = 51;
             this.tb_sd4.TextChanged += new System.EventHandler(this.tb_sd4_TextChanged);
+            this.tb_sd4.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd4_MouseDown);
             // 
             // lb_sd4
             // 

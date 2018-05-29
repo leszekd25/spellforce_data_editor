@@ -55,5 +55,11 @@ namespace SpellforceDataEditor.category_forms
             textBox5.Text = variant_repr(3);
             textBox4.Text = variant_repr(4);
         }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                step_into(textBox1, 6);
+        }
     }
 }

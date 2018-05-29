@@ -648,6 +648,7 @@ namespace SpellforceDataEditor
         private int categoryNumber;           //amount of categories (basically a constant)
         private Byte[] mainHeader;            //gamedata.cff has a main header which is held here
         private SFCategoryRuneHeroes categorySpecial_RuneHeroes;    //intermediary needed to find names of rune heroes
+        private SpelllforceCFFEditor application_form;
         private string gamedata_md5 = "";     //currently loaded cff's MD5 hash (as string)
 
         //constructor, it creates categories
@@ -663,6 +664,16 @@ namespace SpellforceDataEditor
             mainHeader = new Byte[20];
             categorySpecial_RuneHeroes = new SFCategoryRuneHeroes();
             categorySpecial_RuneHeroes.set_manager(this);
+        }
+
+        public void set_application_form(SpelllforceCFFEditor form)
+        {
+            application_form = form;
+        }
+
+        public SpelllforceCFFEditor get_application_form()
+        {
+            return application_form;
         }
 
         //returns category, given its index

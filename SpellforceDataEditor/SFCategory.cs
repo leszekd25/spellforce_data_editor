@@ -480,11 +480,6 @@ namespace SpellforceDataEditor
 
         public override string get_element_string(SFCategoryManager manager, int index)
         {
-            if(index == 0)
-            {
-                string stype2_txt = get_text_from_element(elements[index], 1);
-                Console.WriteLine(stype2_txt);
-            }
             string stype_txt = get_text_from_element(elements[index], 1);
             return get_element_variant(index, 0).value.ToString() + " " + stype_txt;
         }

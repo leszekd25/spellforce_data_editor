@@ -76,6 +76,7 @@
             this.textBox2.Size = new System.Drawing.Size(126, 20);
             this.textBox2.TabIndex = 3;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
             // 
             // label2
             // 
@@ -94,6 +95,7 @@
             this.textBox3.Size = new System.Drawing.Size(126, 20);
             this.textBox3.TabIndex = 5;
             this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
+            this.textBox3.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox3_MouseDown);
             // 
             // label3
             // 
@@ -112,6 +114,7 @@
             this.textBox4.Size = new System.Drawing.Size(126, 20);
             this.textBox4.TabIndex = 7;
             this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
+            this.textBox4.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox4_MouseDown);
             // 
             // label4
             // 
@@ -130,6 +133,7 @@
             this.textBox5.Size = new System.Drawing.Size(126, 20);
             this.textBox5.TabIndex = 9;
             this.textBox5.TextChanged += new System.EventHandler(this.textBox5_TextChanged);
+            this.textBox5.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox5_MouseDown);
             // 
             // label5
             // 
@@ -199,6 +203,7 @@
             this.textBox9.Size = new System.Drawing.Size(126, 20);
             this.textBox9.TabIndex = 17;
             this.textBox9.TextChanged += new System.EventHandler(this.textBox9_TextChanged);
+            this.textBox9.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox9_MouseDown);
             // 
             // label9
             // 

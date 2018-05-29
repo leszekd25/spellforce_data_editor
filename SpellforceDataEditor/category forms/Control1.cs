@@ -255,5 +255,11 @@ namespace SpellforceDataEditor.category_forms
             tb_unk.Text = bytearray_repr(31, 4);
             set_data_labels(SFSpellDescriptor.get(Utility.TryParseUInt16(tb_typeID.Text)));
         }
+
+        private void tb_typeID_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                step_into(tb_typeID, 1);
+        }
     }
 }

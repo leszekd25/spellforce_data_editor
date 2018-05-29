@@ -61,7 +61,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.ProgressBar_Main = new System.Windows.Forms.ToolStripProgressBar();
-            this.OpenDataDiff = new System.Windows.Forms.OpenFileDialog();
+            this.buttonTracerBack = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -94,45 +94,40 @@
             // loadGameDatacffToolStripMenuItem
             // 
             this.loadGameDatacffToolStripMenuItem.Name = "loadGameDatacffToolStripMenuItem";
-            this.loadGameDatacffToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadGameDatacffToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.loadGameDatacffToolStripMenuItem.Text = "Load GameData.cff";
             this.loadGameDatacffToolStripMenuItem.Click += new System.EventHandler(this.loadGameDatacffToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.eXPERIMENTALLoadDiffFileToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
-            this.toolsToolStripMenuItem.Text = "Tools";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(12, 20);
             // 
             // eXPERIMENTALLoadDiffFileToolStripMenuItem
             // 
             this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Name = "eXPERIMENTALLoadDiffFileToolStripMenuItem";
-            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
-            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Text = "(EXPERIMENTAL) Load diff file...";
-            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Click += new System.EventHandler(this.eXPERIMENTALLoadDiffFileToolStripMenuItem_Click);
+            this.eXPERIMENTALLoadDiffFileToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
             // 
             // CategorySelect
             // 
@@ -357,16 +352,24 @@
             this.ProgressBar_Main.Size = new System.Drawing.Size(150, 16);
             this.ProgressBar_Main.Visible = false;
             // 
-            // OpenDataDiff
+            // buttonTracerBack
             // 
-            this.OpenDataDiff.FileName = "GameData.dff";
-            this.OpenDataDiff.Filter = "DFF file(*.dff)|*.dff";
+            this.buttonTracerBack.BackColor = System.Drawing.Color.DarkOrange;
+            this.buttonTracerBack.Location = new System.Drawing.Point(898, 27);
+            this.buttonTracerBack.Name = "buttonTracerBack";
+            this.buttonTracerBack.Size = new System.Drawing.Size(42, 23);
+            this.buttonTracerBack.TabIndex = 14;
+            this.buttonTracerBack.Text = "Back";
+            this.buttonTracerBack.UseVisualStyleBackColor = false;
+            this.buttonTracerBack.Visible = false;
+            this.buttonTracerBack.Click += new System.EventHandler(this.buttonTracerBack_Click);
             // 
             // SpelllforceCFFEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(944, 623);
+            this.Controls.Add(this.buttonTracerBack);
             this.Controls.Add(this.labelDescription);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.panelElemManipulate);
@@ -426,7 +429,7 @@
         private System.Windows.Forms.ToolStripProgressBar ProgressBar_Main;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem eXPERIMENTALLoadDiffFileToolStripMenuItem;
-        private System.Windows.Forms.OpenFileDialog OpenDataDiff;
         private System.Windows.Forms.RadioButton radioSearchFlag;
+        private System.Windows.Forms.Button buttonTracerBack;
     }
 }

@@ -104,5 +104,29 @@ namespace SpellforceDataEditor.category_forms
             }
             return BitConverter.ToString(bytes).Replace('-', ' ');
         }
+
+        public void step_into(TextBox tb, int cat_i)
+        {
+            int elem_id = Utility.TryParseInt32(tb.Text);
+            step_into(cat_i, elem_id);
+        }
+
+        public void step_into(int cat_i, int elem_key)
+        {
+            int real_elem_id = -1;
+            SFCategory cat = category.get_manager().get_category(cat_i);
+            char format = cat.get_element_format()[0];
+            if (format == 'B')
+                real_elem_id = cat.find_element_index<Byte>(0, (Byte)elem_key);
+            else if (format == 'H')
+                real_elem_id = cat.find_element_index<UInt16>(0, (UInt16)elem_key);
+            else if (format == 'I')
+                real_elem_id = cat.find_element_index<UInt32>(0, (UInt32)elem_key);
+            else
+                return;
+            if (real_elem_id == -1)
+                return;
+            category.get_manager().get_application_form().Tracer_StepForward(cat_i, real_elem_id);
+        }
     }
 }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.MerchantGrid = new System.Windows.Forms.DataGridView();
@@ -58,6 +59,7 @@
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 46;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
             // 
             // MerchantGrid
             // 
@@ -76,9 +78,14 @@
             this.MerchantGrid.Size = new System.Drawing.Size(452, 307);
             this.MerchantGrid.TabIndex = 52;
             this.MerchantGrid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnCellValueChange);
+            this.MerchantGrid.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MerchantGrid_MouseDown);
             // 
             // ItemID
             // 
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
+            this.ItemID.DefaultCellStyle = dataGridViewCellStyle1;
             this.ItemID.HeaderText = "Item ID";
             this.ItemID.Name = "ItemID";
             this.ItemID.Width = 60;
@@ -113,6 +120,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(100, 20);
             this.textBox2.TabIndex = 54;
+            this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
             // 
             // label2
             // 
@@ -155,12 +163,12 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.DataGridView MerchantGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ItemID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ItemCount;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ItemName;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ItemID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ItemCount;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ItemName;
     }
 }

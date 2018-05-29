@@ -14,9 +14,11 @@ namespace SpellforceDataEditor
 {
     public partial class SpelllforceCFFEditor : Form
     {
+        enum MODE { DEFAULT = 0, FOLLOW = 1 }
+
         private SFCategoryManager manager;                      //category manager to control all data
-        private SFDiffTools diff;
         private int selected_category_index = -1;
+        private int real_category_index = -1;                   //tracer helper
         private int selected_element_index = -1;
         private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
         //these parameters control item loading behavior
@@ -25,14 +27,16 @@ namespace SpellforceDataEditor
         private int elementselect_refresh_size = 100;
         private int elementselect_refresh_rate = 50;
         protected List<int> current_indices;                    //list of indices corrsponding to all displayed elements
-        private SFCategoryElement diff_elem_copy;               //for use with diff tools
+        //diff tools postponed temporarily
+        private SFDataTracer tracer;
 
         //constructor
         public SpelllforceCFFEditor()
         {
             InitializeComponent();
             manager = new SFCategoryManager();
-            diff = new SFDiffTools();
+            manager.set_application_form(this);
+            tracer = new SFDataTracer();
             current_indices = new List<int>();
         }
 
@@ -53,7 +57,6 @@ namespace SpellforceDataEditor
                 for (int i = 0; i < manager.get_category_number(); i++)
                     CategorySelect.Items.Add(manager.get_category(i).get_name());
                 GC.Collect();
-                diff.connect_to(manager);
             }
         }
 
@@ -71,7 +74,6 @@ namespace SpellforceDataEditor
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 labelStatus.Text = "Saving...";
-                diff.save_diff_data(Path.ChangeExtension(SaveGameData.FileName, ".dff"));
                 manager.save_cff(SaveGameData.FileName);
                 labelStatus.Text = "Saved";
                 return true;
@@ -79,22 +81,42 @@ namespace SpellforceDataEditor
             return false;
         }
 
+        private void set_element_display(int ind_c)
+        {
+            if (ElementDisplay != null)
+                ElementDisplay.Dispose();
+            ElementDisplay = Assembly.GetExecutingAssembly().CreateInstance(
+                "SpellforceDataEditor.category_forms.Control" + (ind_c + 1).ToString())
+                as category_forms.SFControl;
+            ElementDisplay.set_category(manager.get_category(ind_c));
+            ElementDisplay.BringToFront();
+            labelDescription.SendToBack();
+            SearchPanel.Controls.Clear();
+            SearchPanel.Controls.Add(ElementDisplay);
+        }
+
+        private void resolve_category_index()
+        {
+            if (real_category_index != selected_category_index)
+            {
+                real_category_index = selected_category_index;
+                set_element_display(real_category_index);
+            }
+        }
+
         //what happens when you choose category from a list
         private void CategorySelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             panelElemManipulate.Visible = false;
             ElementSelect.Enabled = true;
+
             SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
             selected_category_index = CategorySelect.SelectedIndex;
+            real_category_index = selected_category_index;
 
             ElementSelect_refresh(ctg);
 
-            ElementDisplay = Assembly.GetExecutingAssembly().CreateInstance(
-                "SpellforceDataEditor.category_forms.Control" + (selected_category_index + 1).ToString())
-                as category_forms.SFControl;
-            ElementDisplay.set_category(ctg);
-            ElementDisplay.BringToFront();
-            labelDescription.SendToBack();
+            set_element_display(real_category_index);
             SearchPanel.Controls.Clear();
             SearchPanel.Controls.Add(ElementDisplay);
             SearchColumnID.Items.Clear();
@@ -105,21 +127,13 @@ namespace SpellforceDataEditor
                 SearchColumnID.Items.Add(s);
             ElementDisplay.Visible = false;
             panelSearch.Visible = true;
-            diff_elem_copy = null;
+            Tracer_Clear();
         }
 
         //what happens when you choose element from a list
         private void ElementSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             SFCategory ctg = manager.get_category(selected_category_index);
-            if (diff_elem_copy != null)
-            {
-                SFCategoryElement previous_element = ctg.get_element(selected_element_index);
-                if(!previous_element.same_as(diff_elem_copy))
-                {
-                    diff.push_change(selected_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REPLACE, selected_element_index, previous_element.get_copy()));
-                }
-            }
 
             if (ElementSelect.SelectedIndex == -1)
             {
@@ -127,19 +141,22 @@ namespace SpellforceDataEditor
                 labelDescription.Text = "";
                 return;
             }
+
+            resolve_category_index();
+
             ElementDisplay.Visible = true;
             ElementDisplay.set_element(current_indices[ElementSelect.SelectedIndex]);
             ElementDisplay.show_element();
 
             selected_element_index = current_indices[ElementSelect.SelectedIndex];
-            diff_elem_copy = ctg.get_element(selected_element_index).get_copy();
             labelDescription.Text = ctg.get_element_description(manager, current_indices[ElementSelect.SelectedIndex]);
+
+            Tracer_Clear();
         }
 
         //start loading all elements from a category
         public void ElementSelect_refresh(SFCategory ctg)
         {
-            diff_elem_copy = null;
             if (ElementSelect_RefreshTimer.Enabled)
             {
                 ElementSelect_RefreshTimer.Stop();
@@ -172,6 +189,55 @@ namespace SpellforceDataEditor
             }
         }
 
+        public void Tracer_Clear()
+        {
+            tracer.Clear();
+            buttonTracerBack.Visible = false;
+        }
+
+        //when you right-click orange field, you step into the linked element edit mode
+        public void Tracer_StepForward(int cat_i, int cat_e)
+        {
+            Console.WriteLine("step into category " + (cat_i + 1).ToString() + " elem " + cat_e.ToString());
+            Console.WriteLine("from category " + (real_category_index + 1).ToString() + " elem " + selected_element_index.ToString());
+            tracer.AddTrace(real_category_index, selected_element_index);
+            real_category_index = cat_i;
+            selected_element_index = cat_e;
+
+            set_element_display(cat_i);
+            ElementDisplay.Visible = true;
+            ElementDisplay.set_element(cat_e);
+            ElementDisplay.show_element();
+            labelDescription.Text = manager.get_category(cat_i).get_element_description(manager, cat_e);
+
+            buttonTracerBack.Visible = true;
+        }
+
+        public void Tracer_StepBack()
+        {
+            buttonTracerBack.Visible = false;
+            if (!tracer.CanGoBack())
+                return;
+            SFDataTraceElement trace = tracer.GoBack();
+
+            int cat_i = trace.category_index;
+            int cat_e = trace.category_element;
+
+            //not working, fix!
+
+            real_category_index = cat_i;
+            selected_element_index = cat_e;
+
+            set_element_display(cat_i);
+            ElementDisplay.Visible = true;
+            ElementDisplay.set_element(cat_e);
+            ElementDisplay.show_element();
+            labelDescription.Text = manager.get_category(cat_i).get_element_description(manager, cat_e);
+
+            if (tracer.CanGoBack())
+                buttonTracerBack.Visible = true;
+        }
+
         //what happens when you click search button
         private void SearchButton_Click(object sender, EventArgs e)
         {
@@ -181,6 +247,8 @@ namespace SpellforceDataEditor
             if (SearchQuery.Text == "")
                 return;
 
+            resolve_category_index();
+
             //prepare form for a search
             bool timer_was_enabled = ElementSelect_RefreshTimer.Enabled;
             if (ElementSelect_RefreshTimer.Enabled)
@@ -189,7 +257,7 @@ namespace SpellforceDataEditor
                 ElementSelect_RefreshTimer.Enabled = false;
             }
             int elem_found = 0;
-            SFCategory ctg = manager.get_category(selected_category_index);
+            SFCategory ctg = manager.get_category(real_category_index);
             int columns = ctg.get_element_format().Length;
             List<int> query_result = new List<int>();
 
@@ -252,7 +320,6 @@ namespace SpellforceDataEditor
             }
 
             //now that descriptions have been looked at, remove all elements from element selector
-            diff_elem_copy = null;
             ElementSelect.Items.Clear();
             current_indices.Clear();
             labelDescription.Text = "";
@@ -308,6 +375,8 @@ namespace SpellforceDataEditor
             panelElemManipulate.Visible = false;
             labelStatus.Text = "Ready";
             ProgressBar_Main.Visible = false;
+            Tracer_Clear();
+
         }
 
         //what happens when you add an element to a category
@@ -315,8 +384,11 @@ namespace SpellforceDataEditor
         {
             if (ElementSelect.SelectedIndex == -1)
                 return;
+
+            resolve_category_index();
+
             int current_elem = current_indices[ElementSelect.SelectedIndex];
-            SFCategory ctg = manager.get_category(selected_category_index);
+            SFCategory ctg = manager.get_category(real_category_index);
             SFCategoryElement elem = ctg.generate_empty_element();
             List<SFCategoryElement> elems = ctg.get_elements();
             elems.Insert(current_elem+1, elem);
@@ -324,8 +396,8 @@ namespace SpellforceDataEditor
             for (int i = current_elem+1; i < current_indices.Count; i++)
                 current_indices[i] = current_indices[i] + 1;
             current_indices.Insert(current_elem+1, current_elem+1);
-            diff.push_change(selected_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, current_elem, elem.get_copy()));
 
+            Tracer_Clear();
         }
 
         //what happens when you remove element from category
@@ -333,17 +405,20 @@ namespace SpellforceDataEditor
         {
             if (ElementSelect.SelectedIndex == -1)
                 return;
+
+            resolve_category_index();
+
             int current_elem = current_indices[ElementSelect.SelectedIndex];
-            SFCategory ctg = manager.get_category(selected_category_index);
+            SFCategory ctg = manager.get_category(real_category_index);
             List<SFCategoryElement> elems = ctg.get_elements();
             for (int i = current_elem; i < current_indices.Count; i++)
                 current_indices[i] = current_indices[i] - 1;
             current_indices.RemoveAt(current_elem);
             ElementSelect.Items.RemoveAt(ElementSelect.SelectedIndex);
             elems.RemoveAt(current_elem);
-            diff.push_change(selected_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REMOVE, current_elem));
-            diff_elem_copy = null;
             ElementDisplay.Visible = false;
+
+            Tracer_Clear();
         }
 
         //switch column search on and off
@@ -421,11 +496,12 @@ namespace SpellforceDataEditor
             panelElemManipulate.Visible = false;
             panelSearch.Visible = false;
             selected_category_index = -1;
-            diff.clear_data();
+            real_category_index = -1;
             manager.unload_all();
             labelStatus.Text = "";
             ProgressBar_Main.Visible = false;
             ProgressBar_Main.Value = 0;
+            Tracer_Clear();
             labelDescription.Text = "";
             this.Text = "SpellforceDataEditor";
             GC.Collect();
@@ -439,24 +515,6 @@ namespace SpellforceDataEditor
             Application.Exit();
         }
 
-        //loads gamedata diff and applies changes
-        private void eXPERIMENTALLoadDiffFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!CategorySelect.Enabled)
-                return;
-            if (OpenDataDiff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                if(diff.load_diff_data(OpenDataDiff.FileName))
-                {
-                    diff.merge_changes();
-                    if (selected_category_index != -1)
-                        ElementSelect_refresh(manager.get_category(selected_category_index));
-                }
-                else
-                    labelStatus.Text = "MD5 mismatch! Can't load DFF file for this gamedata";
-            }
-        }
-
         private void AskBeforeExit(object sender, FormClosingEventArgs e)
         {
             if (CategorySelect.Enabled)
@@ -465,6 +523,11 @@ namespace SpellforceDataEditor
                 if (result == DialogResult.Cancel)
                     e.Cancel = true;
             }
+        }
+
+        private void buttonTracerBack_Click(object sender, EventArgs e)
+        {
+            Tracer_StepBack();
         }
     }
 }

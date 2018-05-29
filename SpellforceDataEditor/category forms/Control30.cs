@@ -169,5 +169,34 @@ namespace SpellforceDataEditor.category_forms
             category.get_elements()[current_element] = new_elem;
             set_element(current_element);
         }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                step_into(textBox1, 28);
+        }
+
+        private void textBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                step_into(textBox2, 17);
+        }
+
+        private void MerchantGrid_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                int CurrentColumnMouseOver = MerchantGrid.HitTest(e.X, e.Y).ColumnIndex;
+                if (CurrentColumnMouseOver != 0)
+                    return;
+
+                int CurrentRowMouseOver = MerchantGrid.HitTest(e.X, e.Y).RowIndex;
+
+                DataGridViewCell cell = MerchantGrid[CurrentColumnMouseOver, CurrentRowMouseOver];
+                int item_id = Utility.TryParseInt32(cell.Value.ToString());
+
+                step_into(6, item_id);
+            }
+        }
     }
 }

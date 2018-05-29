@@ -48,5 +48,11 @@ namespace SpellforceDataEditor.category_forms
             textBox4.Text = string_repr(2);
             checkBox1.Checked = ((UInt16)category.get_element_variant(current_element, 3).value == 1 ? true : false);
         }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                step_into(textBox1, 6);
+        }
     }
 }

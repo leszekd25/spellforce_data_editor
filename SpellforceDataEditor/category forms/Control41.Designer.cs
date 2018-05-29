@@ -42,6 +42,7 @@
             this.tb_sd2.Size = new System.Drawing.Size(126, 20);
             this.tb_sd2.TabIndex = 39;
             this.tb_sd2.TextChanged += new System.EventHandler(this.tb_sd2_TextChanged);
+            this.tb_sd2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd2_MouseDown);
             // 
             // lb_sd2
             // 

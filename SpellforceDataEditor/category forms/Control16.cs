@@ -168,8 +168,16 @@ namespace SpellforceDataEditor.category_forms
             textBox14.Text = variant_repr(20);
         }
 
+        private void textBox9_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                step_into(textBox9, 14);
+        }
 
-
-
+        private void textBox10_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                step_into(textBox10, 16);
+        }
     }
 }

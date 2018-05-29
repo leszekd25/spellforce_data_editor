@@ -81,6 +81,7 @@
             this.textBox9.Size = new System.Drawing.Size(126, 20);
             this.textBox9.TabIndex = 8;
             this.textBox9.TextChanged += new System.EventHandler(this.textBox9_TextChanged);
+            this.textBox9.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox9_MouseDown);
             // 
             // textBox17
             // 
@@ -233,6 +234,7 @@
             this.textBox10.Size = new System.Drawing.Size(38, 20);
             this.textBox10.TabIndex = 42;
             this.textBox10.TextChanged += new System.EventHandler(this.textBox10_TextChanged);
+            this.textBox10.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox10_MouseDown);
             // 
             // textBox11
             // 

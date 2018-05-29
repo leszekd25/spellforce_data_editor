@@ -378,6 +378,7 @@
     <Compile Include="creators\SFCreator.Designer.cs">
       <DependentUpon>SFCreator.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFDataTracer.cs" />
     <Compile Include="SFDiffTools.cs" />
     <Compile Include="SpelllforceCFFEditor.cs">
       <SubType>Form</SubType>

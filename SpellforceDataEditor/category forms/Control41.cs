@@ -34,5 +34,11 @@ namespace SpellforceDataEditor.category_forms
             tb_sd1.Text = variant_repr(0);
             tb_sd2.Text = variant_repr(1);
         }
+
+        private void tb_sd2_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                step_into(tb_sd2, 14);
+        }
     }
 }

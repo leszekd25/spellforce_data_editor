@@ -169,5 +169,11 @@ namespace SpellforceDataEditor.category_forms
             category.get_elements()[current_element] = new_elem;
             listBox1_update();
         }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                step_into(textBox1, 23);
+        }
     }
 }
