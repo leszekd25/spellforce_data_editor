@@ -18,6 +18,7 @@ namespace SpellforceDataEditor
         protected int[] string_size;                    //if category element holds a string (one or more), a list of string lengths is required
         protected int current_string;                   //helper variable to enable searching and manipulating string variants
         protected Byte[] categoryHeader;                //each category starts with a header
+        protected uint category_id;                      //each category has a unique id the game looks for when reading data
         protected SFCategoryManager manager;
 
         //constructor 
@@ -305,13 +306,23 @@ namespace SpellforceDataEditor
         }
 
         //reads a buffer and retrieves all expected elements
-        public virtual void read(BinaryReader sr)
+        public int read(BinaryReader sr)
         {
             categoryHeader = sr.ReadBytes(categoryHeader.Length);
+
+            bool bad_header = false;
+            uint read_id = BitConverter.ToUInt32(categoryHeader, 0);
+            if (read_id != category_id)
+                bad_header = true;
+
             block_length = BitConverter.ToUInt32(categoryHeader, 6);
             elements = new List<SFCategoryElement>();
             Byte[] block_buffer = new Byte[block_length];
             sr.Read(block_buffer, 0, (int)(block_length));
+            /*string s = "";
+            for (int i = 0; i < categoryHeader.Length; i++)
+                s += categoryHeader[i].ToString() + " ";
+            Console.WriteLine(category_name + " " + s);*/
             MemoryStream ms = new MemoryStream(block_buffer);
             BinaryReader mr = new BinaryReader(ms, Encoding.Default);
             while (mr.PeekChar() != -1)
@@ -323,6 +334,9 @@ namespace SpellforceDataEditor
             mr.Dispose();
             ms.Dispose();
             block_buffer = null;
+            if (bad_header)
+                return -1;
+            return 0;
         }
 
         //inserts an element (given element index) into the buffer
@@ -342,6 +356,9 @@ namespace SpellforceDataEditor
         public void write(BinaryWriter sw)
         {
             UInt32 new_block_size = (UInt32)get_size();
+            Utility.CopyUInt32ToByteArray(category_id, ref categoryHeader, 0);
+            categoryHeader[4] = 0;
+            categoryHeader[5] = 0;
             Utility.CopyUInt32ToByteArray(new_block_size, ref categoryHeader, 6);
             sw.Write(categoryHeader);
             for(int i = 0; i < get_element_count(); i++)
@@ -430,6 +447,7 @@ namespace SpellforceDataEditor
         {
             initialize("HHBBBBBBBBBBBBHIIHHBBIIIIIIIIIIBBBB");
             category_name = "1. Spell data";
+            category_id = 2002;
         }
 
         //surprisingly ugly due to converting values in this function...
@@ -476,6 +494,7 @@ namespace SpellforceDataEditor
             string_size = new int[1] { 64 };   //must go before initialize
             initialize("HHBBBBBsH");
             category_name = "2. Spell type data";
+            category_id = 2054;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -499,6 +518,7 @@ namespace SpellforceDataEditor
         {
             initialize("BBBBBB");
             category_name = "3. Unknown (1)";
+            category_id = 2056;
         }
     }
 
@@ -509,6 +529,7 @@ namespace SpellforceDataEditor
         {
             initialize("HHBHHHHHHHBBHHHHHHHHBBIBHB");
             category_name = "4. Unit/hero stats";
+            category_id = 2005;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -538,6 +559,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBBB");
             category_name = "5. Hero/worker skills";
+            category_id = 2006;
         }
 
         public override Object[] get_element(BinaryReader sr)
@@ -604,6 +626,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBH");
             category_name = "6. Hero spells";
+            category_id = 2067;
         }
 
         public override Object[] get_element(BinaryReader sr)
@@ -665,6 +688,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBBHHHHBIIB");
             category_name = "7. Item general info";
+            category_id = 2003;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -759,6 +783,7 @@ namespace SpellforceDataEditor
         {
             initialize("Hhhhhhhhhhhhhhhhhh");
             category_name = "8. Item armor data";
+            category_id = 2004;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -776,6 +801,7 @@ namespace SpellforceDataEditor
         {
             initialize("HH");
             category_name = "9. Inventory spell scroll link with installed spell scroll";
+            category_id = 2013;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -804,6 +830,7 @@ namespace SpellforceDataEditor
         {
             initialize("HHHHHHHH");
             category_name = "10. Item weapon data";
+            category_id = 2015;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -840,6 +867,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBBBB");
             category_name = "11. Item skill requirements";
+            category_id = 2017;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -867,6 +895,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBH");
             category_name = "12. Item weapon effects/inventory scroll link with spell";
+            category_id = 2014;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -889,6 +918,7 @@ namespace SpellforceDataEditor
             string_size = new int[1] { 64 };
             initialize("HBsH");
             category_name = "13. Item UI data";
+            category_id = 2012;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -906,6 +936,7 @@ namespace SpellforceDataEditor
         {
             initialize("HH");
             category_name = "14. Item installed spell scroll link with spell";
+            category_id = 2018;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -926,6 +957,7 @@ namespace SpellforceDataEditor
             string_size = new int[2] { 50, 512 };
             initialize("HBBss");
             category_name = "15. Text data";
+            category_id = 2016;
         }
 
         public override Object[] get_element(BinaryReader sr)
@@ -987,6 +1019,7 @@ namespace SpellforceDataEditor
         {
             initialize("BBBBBBBHBHBBHBBBBHHHB");
             category_name = "16. Race stats";
+            category_id = 2022;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1032,6 +1065,7 @@ namespace SpellforceDataEditor
         {
             initialize("BBB");
             category_name = "17. Clan relations";
+            category_id = 2023;
         }
 
         public override Object[] get_element(BinaryReader sr)
@@ -1099,6 +1133,7 @@ namespace SpellforceDataEditor
             string_size = new int[1] { 40 };
             initialize("HHHIHIHBHHsB");
             category_name = "18. Unit general data/link with unit stats";
+            category_id = 2024;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1122,6 +1157,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBH");
             category_name = "19. Unit equipment";
+            category_id = 2025;
         }
 
         public override Object[] get_element(BinaryReader sr)
@@ -1178,6 +1214,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBH");
             category_name = "20. Unit spells";
+            category_id = 2026;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1197,6 +1234,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBB");
             category_name = "21. Army unit resource requirements";
+            category_id = 2028;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1223,6 +1261,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBHBHBH");
             category_name = "22. Corpse loot";
+            category_id = 2040;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1268,6 +1307,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBH");
             category_name = "23. Army unit building requirements";
+            category_id = 2001;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1287,6 +1327,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBBBHHhhBHHHHB");
             category_name = "24. Building data";
+            category_id = 2029;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1312,6 +1353,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBBB");
             category_name = "25. Building collision data";
+            category_id = 2030;
         }
 
         public override Object[] get_element(BinaryReader sr)
@@ -1350,6 +1392,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBH");
             category_name = "26. Building resource requirements";
+            category_id = 2031;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1377,6 +1420,7 @@ namespace SpellforceDataEditor
         {
             initialize("BBH");
             category_name = "27. Skills link with text data";
+            category_id = 2039;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1393,6 +1437,7 @@ namespace SpellforceDataEditor
         {
             initialize("BBBBBBBBB");
             category_name = "28. Skill point requirements";
+            category_id = 2062;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1411,6 +1456,7 @@ namespace SpellforceDataEditor
         {
             initialize("HH");
             category_name = "29. Merchants link with unit general data";
+            category_id = 2041;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1429,6 +1475,7 @@ namespace SpellforceDataEditor
         {
             initialize("HHH");
             category_name = "30. Merchant inventory";
+            category_id = 2042;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1483,6 +1530,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBH");
             category_name = "31. Merchant sell/buy rate";
+            category_id = 2047;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1510,6 +1558,7 @@ namespace SpellforceDataEditor
         {
             initialize("BH");
             category_name = "32. Resources link with data";
+            category_id = 2044;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1526,6 +1575,7 @@ namespace SpellforceDataEditor
         {
             initialize("BHHIBBHH");
             category_name = "33. Player level scaling";
+            category_id = 2048;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1543,6 +1593,7 @@ namespace SpellforceDataEditor
             string_size = new int[1] { 40 };
             initialize("HHBBBsBHHH");
             category_name = "34. Environment objects data";
+            category_id = 2050;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1561,6 +1612,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBBB");
             category_name = "35. Interactive objects collision data";
+            category_id = 2057;
         }
 
         public override Object[] get_element(BinaryReader sr)
@@ -1599,6 +1651,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBHBHBH");
             category_name = "36. Environment object loot";
+            category_id = 2065;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1644,6 +1697,7 @@ namespace SpellforceDataEditor
         {
             initialize("IH");
             category_name = "37. NPC link with text data";
+            category_id = 2051;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1662,6 +1716,7 @@ namespace SpellforceDataEditor
             string_size = new int[1] { 64 };
             initialize("IBsH");
             category_name = "38. Map data";
+            category_id = 2052;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1679,6 +1734,7 @@ namespace SpellforceDataEditor
         {
             initialize("HIHHBH");
             category_name = "39. Portal locations";
+            category_id = 2053;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1708,6 +1764,7 @@ namespace SpellforceDataEditor
         {
             initialize("BBB");
             category_name = "40. Unknown (from sql_lua?)";
+            category_id = 2055;
         }
     }
 
@@ -1718,6 +1775,7 @@ namespace SpellforceDataEditor
         {
             initialize("HH");
             category_name = "41. Description link with txt data";
+            category_id = 2058;
         }
         public override string get_element_string(SFCategoryManager manager, int index)
         {
@@ -1735,6 +1793,7 @@ namespace SpellforceDataEditor
         {
             initialize("HHH");
             category_name = "42. Extended description data";
+            category_id = 2059;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1758,6 +1817,7 @@ namespace SpellforceDataEditor
         {
             initialize("IIBHHI");
             category_name = "43. Quest hierarchy/description data";
+            category_id = 2061;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1784,6 +1844,7 @@ namespace SpellforceDataEditor
         {
             initialize("HHB");
             category_name = "44. Weapon types";
+            category_id = 2063;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1801,6 +1862,7 @@ namespace SpellforceDataEditor
         {
             initialize("HH");
             category_name = "45. Weapon materials";
+            category_id = 2064;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1818,6 +1880,7 @@ namespace SpellforceDataEditor
         {
             initialize("HBB");
             category_name = "46. Unknown (3)";
+            category_id = 2032;
         }
     }
 
@@ -1828,6 +1891,7 @@ namespace SpellforceDataEditor
         {
             initialize("BB");
             category_name = "47. Heads";
+            category_id = 2049;
         }
     }
 
@@ -1839,6 +1903,7 @@ namespace SpellforceDataEditor
             string_size = new int[1] { 64 };
             initialize("HHHHHHHHHHHsI");
             category_name = "48. Unit upgrade data";
+            category_id = 2036;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1865,6 +1930,7 @@ namespace SpellforceDataEditor
         {
             initialize("BHB");
             category_name = "49. Item sets";
+            category_id = 2072;
         }
 
         public override string get_element_string(SFCategoryManager manager, int index)
@@ -1882,6 +1948,7 @@ namespace SpellforceDataEditor
         {
             initialize("HH");
             category_name = "X. Rune heroes (special)";
+            category_id = 0;
         }
 
         public void generate(SFCategoryManager manager)

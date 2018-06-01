@@ -704,7 +704,11 @@ namespace SpellforceDataEditor
             mainHeader = br.ReadBytes(mainHeader.Length);
             for (int i = 0; i < categoryNumber; i++)
             {
-                get_category(i).read(br);
+                int cat_status = get_category(i).read(br);
+                if(cat_status == -1)
+                {
+                    MessageBox.Show("Category '" + get_category(i).get_name() + "' has corrupted header, but it will fix itself upon the next data save.");
+                }
                 bar.Value = (i * bar.Maximum) / categoryNumber;
             }
             categorySpecial_RuneHeroes.generate(this);
