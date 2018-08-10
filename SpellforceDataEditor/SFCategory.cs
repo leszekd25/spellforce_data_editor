@@ -368,12 +368,12 @@ namespace SpellforceDataEditor
         }
 
         //manager is required to communicate with other categories to construct a short description
-        public virtual string get_element_string(SFCategoryManager manager, int index)
+        public virtual string get_element_string(int index)
         {
             return index.ToString();
         }
 
-        public virtual string get_element_description(SFCategoryManager manager, int index)
+        public virtual string get_element_description(int index)
         {
             return "";
         }
@@ -452,7 +452,7 @@ namespace SpellforceDataEditor
 
         //surprisingly ugly due to converting values in this function...
         //can this be done better?
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 type_id = (UInt16)get_element_variant(index, 1).value;
             SFCategoryElement stype_elem = manager.get_category(1).find_binary_element<UInt16>(0, type_id);
@@ -461,7 +461,7 @@ namespace SpellforceDataEditor
             return get_element_variant(index, 0).value.ToString() + " " + stype_txt + " level " + spell_level.ToString();
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             List<string> reqs = new List<string>();
             for (int i = 0; i < 4; i++)
@@ -497,13 +497,13 @@ namespace SpellforceDataEditor
             category_id = 2054;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             string stype_txt = get_text_from_element(elements[index], 1);
             return get_element_variant(index, 0).value.ToString() + " " + stype_txt;
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             string spell_name = get_text_from_element(elements[index], 1);
             string spell_desc = manager.get_description_name((UInt16)get_element_variant(index, 8).value);
@@ -532,7 +532,7 @@ namespace SpellforceDataEditor
             category_id = 2005;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 stats_id = (UInt16)get_element_variant(index, 0).value;
             UInt16 stats_level = (UInt16)get_element_variant(index, 1).value;
@@ -543,7 +543,7 @@ namespace SpellforceDataEditor
             return stats_id.ToString() + " " + unit_txt + " (lvl " + stats_level.ToString() + ")";
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             string race_name = "";
             int hp = (int)(UInt16)get_element_variant(index, 7).value;
@@ -613,7 +613,7 @@ namespace SpellforceDataEditor
             return real_objs;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 stats_id = (UInt16)get_element_variant(index, 0).value;
             SFCategoryElement elem = manager.get_category(17).find_element<UInt16>(2, stats_id);
@@ -624,7 +624,7 @@ namespace SpellforceDataEditor
             
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             Byte skill_major = (Byte)get_element_variant(index, 1).value;
             Byte skill_minor = (Byte)get_element_variant(index, 2).value;
@@ -680,7 +680,7 @@ namespace SpellforceDataEditor
             return real_objs;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 hero_id = (UInt16)get_element_variant(index, 0).value;
             string txt = manager.get_runehero_name(hero_id);
@@ -705,13 +705,13 @@ namespace SpellforceDataEditor
             category_id = 2003;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             string txt = get_text_from_element(elements[index], 3);
             return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             string contains_text;
             string item_type_text = "";
@@ -800,7 +800,7 @@ namespace SpellforceDataEditor
             category_id = 2004;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 item_id = (UInt16)get_element_variant(index, 0).value;
             string txt = manager.get_item_name(item_id);
@@ -818,7 +818,7 @@ namespace SpellforceDataEditor
             category_id = 2013;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 item_id1 = (UInt16)get_element_variant(index, 0).value;
             string txt1 = manager.get_item_name(item_id1);
@@ -847,14 +847,14 @@ namespace SpellforceDataEditor
             category_id = 2015;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 item_id = (UInt16)get_element_variant(index, 0).value;
             string txt = manager.get_item_name(item_id);
             return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             UInt16 type_id = (UInt16)get_element_variant(index, 6).value;
             UInt16 material_id = (UInt16)get_element_variant(index, 7).value;         
@@ -884,14 +884,14 @@ namespace SpellforceDataEditor
             category_id = 2017;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 item_id = (UInt16)get_element_variant(index, 0).value;
             string txt = manager.get_item_name(item_id);
             return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             Byte skill_major = (Byte)get_element_variant(index, 2).value;
             Byte skill_minor = (Byte)get_element_variant(index, 3).value;
@@ -912,7 +912,7 @@ namespace SpellforceDataEditor
             category_id = 2014;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 item_id = (UInt16)get_element_variant(index, 0).value;
             string txt_item = manager.get_item_name(item_id);
@@ -935,7 +935,7 @@ namespace SpellforceDataEditor
             category_id = 2012;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 item_id = (UInt16)get_element_variant(index, 0).value;
             string txt_item = manager.get_item_name(item_id);
@@ -953,7 +953,7 @@ namespace SpellforceDataEditor
             category_id = 2018;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 item_id = (UInt16)get_element_variant(index, 0).value;
             string txt_item = manager.get_item_name(item_id);
@@ -1012,7 +1012,7 @@ namespace SpellforceDataEditor
             return real_objs;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             string txt;
             SFCategoryElement elem = manager.find_element_text((UInt16)(get_element_variant(index, 0).value), 1);
@@ -1036,13 +1036,13 @@ namespace SpellforceDataEditor
             category_id = 2022;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             string txt = get_text_from_element(elements[index], 7);
             return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             Byte flags = (Byte)get_element_variant(index, 8).value;
             string flag_text = "Race flags: ";
@@ -1119,7 +1119,7 @@ namespace SpellforceDataEditor
             return real_objs;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             string txt = clan_names[(int)(Byte)(get_element_variant(index, 0).value)-1];
             return get_element_variant(index, 0).value.ToString() + " " + txt;
@@ -1150,13 +1150,13 @@ namespace SpellforceDataEditor
             category_id = 2024;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             string txt = get_text_from_element(elements[index], 1);
             return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             UInt32 xp_gain = (UInt32)get_element_variant(index, 3).value;
             UInt16 xp_falloff = (UInt16)get_element_variant(index, 4).value;
@@ -1211,7 +1211,7 @@ namespace SpellforceDataEditor
             return real_objs;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 unit_id = (UInt16)get_element_variant(index, 0).value;
             UInt16 item_id = (UInt16)get_element_variant(index, 2).value;
@@ -1268,7 +1268,7 @@ namespace SpellforceDataEditor
             return real_objs;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 unit_id = (UInt16)get_element_variant(index, 0).value;
             string txt_unit = manager.get_unit_name(unit_id);
@@ -1286,14 +1286,14 @@ namespace SpellforceDataEditor
             category_id = 2028;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 unit_id = (UInt16)get_element_variant(index, 0).value;
             string txt_unit = manager.get_unit_name(unit_id);
             return unit_id.ToString() + " " + txt_unit;
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             Byte resource_amount = (Byte)get_element_variant(index, 2).value;
             Byte resource_id = (Byte)get_element_variant(index, 1).value;
@@ -1313,7 +1313,7 @@ namespace SpellforceDataEditor
             category_id = 2040;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 unit_id = (UInt16)get_element_variant(index, 0).value;
             Byte slot_id = (Byte)get_element_variant(index, 1).value;
@@ -1321,7 +1321,7 @@ namespace SpellforceDataEditor
             return unit_id.ToString() + " " + txt_unit + " (" + slot_id.ToString() + ")";
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             int item_num = 0;
             for(int i = 0; i<3; i++)
@@ -1359,7 +1359,7 @@ namespace SpellforceDataEditor
             category_id = 2001;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 unit_id = (UInt16)get_element_variant(index, 0).value;
             UInt16 building_id = (UInt16)get_element_variant(index, 2).value;
@@ -1379,13 +1379,13 @@ namespace SpellforceDataEditor
             category_id = 2029;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             string txt = get_text_from_element(elements[index], 5);
             return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             Byte race_id = (Byte)get_element_variant(index, 1).value;
             string race_name = manager.get_race_name(race_id);
@@ -1425,7 +1425,7 @@ namespace SpellforceDataEditor
             return real_objs;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 building_id = (UInt16)get_element_variant(index, 0).value;
             Byte b_index = (Byte)get_element_variant(index, 1).value;
@@ -1444,7 +1444,7 @@ namespace SpellforceDataEditor
             category_id = 2031;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 building_id = (UInt16)get_element_variant(index, 0).value;
             Byte b_index = (Byte)get_element_variant(index, 1).value;
@@ -1452,7 +1452,7 @@ namespace SpellforceDataEditor
             return building_id.ToString() + " " + txt_building + " [" + b_index.ToString() + "]";
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             UInt16 resource_amount = (UInt16)get_element_variant(index, 2).value;
             Byte resource_id = (Byte)get_element_variant(index, 1).value;
@@ -1472,7 +1472,7 @@ namespace SpellforceDataEditor
             category_id = 2039;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             string txt = get_text_from_element(elements[index], 2);
             return get_element_variant(index, 0).value.ToString() + " " + txt;
@@ -1489,7 +1489,7 @@ namespace SpellforceDataEditor
             category_id = 2062;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             Byte skill_major = (Byte)get_element_variant(index, 0).value;
             Byte skill_level = (Byte)get_element_variant(index, 1).value;
@@ -1508,7 +1508,7 @@ namespace SpellforceDataEditor
             category_id = 2041;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 merchant_id = (UInt16)get_element_variant(index, 0).value;
             UInt16 unit_id = (UInt16)get_element_variant(index, 1).value;
@@ -1527,7 +1527,7 @@ namespace SpellforceDataEditor
             category_id = 2042;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 merchant_id = (UInt16)get_element_variant(index, 0).value;
             string txt_merchant = manager.get_merchant_name(merchant_id);
@@ -1582,14 +1582,14 @@ namespace SpellforceDataEditor
             category_id = 2047;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 merchant_id = (UInt16)get_element_variant(index, 0).value;
             string txt_merchant = manager.get_merchant_name(merchant_id);
             return merchant_id.ToString() + " " + txt_merchant;
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             Byte item_type = (Byte)get_element_variant(index, 1).value;
             UInt16 perc = (UInt16)get_element_variant(index, 2).value;
@@ -1610,7 +1610,7 @@ namespace SpellforceDataEditor
             category_id = 2044;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             string txt = get_text_from_element(elements[index], 1);
             return get_element_variant(index, 0).value.ToString() + " " + txt;
@@ -1627,7 +1627,7 @@ namespace SpellforceDataEditor
             category_id = 2048;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             Byte level = (Byte)get_element_variant(index, 0).value;
             return "Level "+level.ToString();
@@ -1645,7 +1645,7 @@ namespace SpellforceDataEditor
             category_id = 2050;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 object_id = (UInt16)get_element_variant(index, 0).value;
             string txt = get_text_from_element(elements[index], 1);
@@ -1684,7 +1684,7 @@ namespace SpellforceDataEditor
             return real_objs;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 object_id = (UInt16)get_element_variant(index, 0).value;
             Byte b_index = (Byte)get_element_variant(index, 1).value;
@@ -1703,7 +1703,7 @@ namespace SpellforceDataEditor
             category_id = 2065;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 object_id = (UInt16)get_element_variant(index, 0).value;
             Byte slot_id = (Byte)get_element_variant(index, 1).value;
@@ -1711,7 +1711,7 @@ namespace SpellforceDataEditor
             return object_id.ToString() + " " + txt_unit + " (" + slot_id.ToString() + ")";
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             int item_num = 0;
             for (int i = 0; i < 3; i++)
@@ -1749,7 +1749,7 @@ namespace SpellforceDataEditor
             category_id = 2051;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt32 object_id = (UInt32)get_element_variant(index, 0).value;
             string txt = get_text_from_element(elements[index], 1);
@@ -1768,7 +1768,7 @@ namespace SpellforceDataEditor
             category_id = 2052;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt32 map_id = (UInt32)get_element_variant(index, 0).value;
             string txt = get_text_from_element(elements[index], 3);
@@ -1786,14 +1786,14 @@ namespace SpellforceDataEditor
             category_id = 2053;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 object_id = (UInt16)get_element_variant(index, 0).value;
             string txt = get_text_from_element(elements[index], 5);
             return object_id.ToString() + " " + txt;
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             string map_handle = "";
             UInt32 map_id = (UInt32)get_element_variant(index, 1).value;
@@ -1826,7 +1826,7 @@ namespace SpellforceDataEditor
             category_name = "41. Description link with txt data";
             category_id = 2058;
         }
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 desc_id = (UInt16)get_element_variant(index, 0).value;
             string txt = get_text_from_element(elements[index], 1);
@@ -1845,14 +1845,14 @@ namespace SpellforceDataEditor
             category_id = 2059;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 elem_id = (UInt16)get_element_variant(index, 0).value;
             string txt = get_text_from_element(elements[index], 2);
             return elem_id.ToString() + " " + txt;
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             string txt = get_text_from_element(elements[index], 1);
             return "Text ID: " + txt;
@@ -1869,14 +1869,14 @@ namespace SpellforceDataEditor
             category_id = 2061;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt32 elem_id = (UInt32)get_element_variant(index, 0).value;
             string txt = get_text_from_element(elements[index], 3);
             return elem_id.ToString() + " " + txt;
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             UInt32 quest_id = (UInt32)get_element_variant(index, 1).value;
             SFCategoryElement quest_elem = find_binary_element<UInt32>(0, quest_id);
@@ -1896,7 +1896,7 @@ namespace SpellforceDataEditor
             category_id = 2063;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 elem_id = (UInt16)get_element_variant(index, 0).value;
             string txt = get_text_from_element(elements[index], 1);
@@ -1914,7 +1914,7 @@ namespace SpellforceDataEditor
             category_id = 2064;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 elem_id = (UInt16)get_element_variant(index, 0).value;
             string txt = get_text_from_element(elements[index], 1);
@@ -1955,14 +1955,14 @@ namespace SpellforceDataEditor
             category_id = 2036;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             UInt16 elem_id = (UInt16)get_element_variant(index, 0).value;
             string txt = get_text_from_element(elements[index], 2);
             return elem_id.ToString() + " " + txt;
         }
 
-        public override string get_element_description(SFCategoryManager manager, int index)
+        public override string get_element_description(int index)
         {
             UInt16 elem_id = (UInt16)get_element_variant(index, 1).value;
             string building_name = manager.get_building_name(elem_id);
@@ -1982,7 +1982,7 @@ namespace SpellforceDataEditor
             category_id = 2072;
         }
 
-        public override string get_element_string(SFCategoryManager manager, int index)
+        public override string get_element_string(int index)
         {
             Byte elem_id = (Byte)get_element_variant(index, 0).value;
             string txt = get_text_from_element(elements[index], 1);

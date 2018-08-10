@@ -23,19 +23,19 @@ namespace SpellforceDataEditor.category_forms
             column_dict.Add("Percentage 2", new int[1] { 5 });
             column_dict.Add("Percentage 3", new int[1] { 6 });
             column_dict.Add("Race text ID", new int[1] { 7 });
-            column_dict.Add("Unknown2 1", new int[1] { 8 });
-            column_dict.Add("Unknown2 2", new int[1] { 9 });
-            column_dict.Add("Unknown2 3", new int[1] { 10 });
-            column_dict.Add("Unknown2 4", new int[1] { 11 });
-            column_dict.Add("Unknown2 5", new int[1] { 12 });
+            column_dict.Add("Race flags", new int[1] { 8 });
+            column_dict.Add("Clan ID", new int[1] { 9 });
+            column_dict.Add("Damage taken (melee)", new int[1] { 10 });
+            column_dict.Add("Damage taken (ranged)", new int[1] { 11 });
+            column_dict.Add("Unknown2", new int[1] { 12 });
             column_dict.Add("Lua 1", new int[1] { 13 });
             column_dict.Add("Lua 2", new int[1] { 14 });
             column_dict.Add("Lua 3", new int[1] { 15 });
             column_dict.Add("Unknown3 1", new int[1] { 16 });
             column_dict.Add("Unknown3 2", new int[1] { 17 });
-            column_dict.Add("Unknown3 3", new int[1] { 18 });
-            column_dict.Add("Unknown3 4", new int[1] { 19 });
-            column_dict.Add("Unknown3 5", new int[1] { 20 });
+            column_dict.Add("Retreat chance 1", new int[1] { 18 });
+            column_dict.Add("Retreat chance 2", new int[1] { 19 });
+            column_dict.Add("Attack time factor", new int[1] { 20 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

@@ -48,7 +48,7 @@
             this.radioSearchText = new System.Windows.Forms.RadioButton();
             this.SearchButton = new System.Windows.Forms.Button();
             this.panelSearch = new System.Windows.Forms.Panel();
-            this.checkSearchDescription = new System.Windows.Forms.CheckBox();
+            this.ContinueSearchButton = new System.Windows.Forms.Button();
             this.SearchColumnID = new System.Windows.Forms.ComboBox();
             this.checkSearchByColumn = new System.Windows.Forms.CheckBox();
             this.groupSearch = new System.Windows.Forms.GroupBox();
@@ -172,24 +172,24 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(5, 12);
+            this.label1.Location = new System.Drawing.Point(5, 35);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(85, 13);
+            this.label1.Size = new System.Drawing.Size(37, 13);
             this.label1.TabIndex = 5;
-            this.label1.Text = "Search for value";
+            this.label1.Text = "Value:";
             // 
             // SearchQuery
             // 
-            this.SearchQuery.Location = new System.Drawing.Point(94, 9);
+            this.SearchQuery.Location = new System.Drawing.Point(48, 32);
             this.SearchQuery.Name = "SearchQuery";
-            this.SearchQuery.Size = new System.Drawing.Size(199, 20);
+            this.SearchQuery.Size = new System.Drawing.Size(246, 20);
             this.SearchQuery.TabIndex = 6;
             // 
             // radioSearchNumeric
             // 
             this.radioSearchNumeric.AutoSize = true;
             this.radioSearchNumeric.Checked = true;
-            this.radioSearchNumeric.Location = new System.Drawing.Point(6, 0);
+            this.radioSearchNumeric.Location = new System.Drawing.Point(6, 13);
             this.radioSearchNumeric.Name = "radioSearchNumeric";
             this.radioSearchNumeric.Size = new System.Drawing.Size(64, 17);
             this.radioSearchNumeric.TabIndex = 7;
@@ -200,7 +200,7 @@
             // radioSearchText
             // 
             this.radioSearchText.AutoSize = true;
-            this.radioSearchText.Location = new System.Drawing.Point(124, 0);
+            this.radioSearchText.Location = new System.Drawing.Point(6, 36);
             this.radioSearchText.Name = "radioSearchText";
             this.radioSearchText.Size = new System.Drawing.Size(46, 17);
             this.radioSearchText.TabIndex = 8;
@@ -209,17 +209,17 @@
             // 
             // SearchButton
             // 
-            this.SearchButton.Location = new System.Drawing.Point(8, 87);
+            this.SearchButton.Location = new System.Drawing.Point(3, 3);
             this.SearchButton.Name = "SearchButton";
-            this.SearchButton.Size = new System.Drawing.Size(286, 23);
+            this.SearchButton.Size = new System.Drawing.Size(142, 23);
             this.SearchButton.TabIndex = 9;
-            this.SearchButton.Text = "Search";
+            this.SearchButton.Text = "New search";
             this.SearchButton.UseVisualStyleBackColor = true;
             this.SearchButton.Click += new System.EventHandler(this.SearchButton_Click);
             // 
             // panelSearch
             // 
-            this.panelSearch.Controls.Add(this.checkSearchDescription);
+            this.panelSearch.Controls.Add(this.ContinueSearchButton);
             this.panelSearch.Controls.Add(this.SearchColumnID);
             this.panelSearch.Controls.Add(this.checkSearchByColumn);
             this.panelSearch.Controls.Add(this.groupSearch);
@@ -228,33 +228,34 @@
             this.panelSearch.Controls.Add(this.SearchQuery);
             this.panelSearch.Location = new System.Drawing.Point(12, 480);
             this.panelSearch.Name = "panelSearch";
-            this.panelSearch.Size = new System.Drawing.Size(297, 114);
+            this.panelSearch.Size = new System.Drawing.Size(297, 136);
             this.panelSearch.TabIndex = 10;
             this.panelSearch.Visible = false;
             // 
-            // checkSearchDescription
+            // ContinueSearchButton
             // 
-            this.checkSearchDescription.AutoSize = true;
-            this.checkSearchDescription.Location = new System.Drawing.Point(175, 37);
-            this.checkSearchDescription.Name = "checkSearchDescription";
-            this.checkSearchDescription.Size = new System.Drawing.Size(119, 17);
-            this.checkSearchDescription.TabIndex = 16;
-            this.checkSearchDescription.Text = "Search descriptions";
-            this.checkSearchDescription.UseVisualStyleBackColor = true;
+            this.ContinueSearchButton.Enabled = false;
+            this.ContinueSearchButton.Location = new System.Drawing.Point(151, 3);
+            this.ContinueSearchButton.Name = "ContinueSearchButton";
+            this.ContinueSearchButton.Size = new System.Drawing.Size(143, 23);
+            this.ContinueSearchButton.TabIndex = 17;
+            this.ContinueSearchButton.Text = "Continue search";
+            this.ContinueSearchButton.UseVisualStyleBackColor = true;
+            this.ContinueSearchButton.Click += new System.EventHandler(this.ContinueSearchButton_Click);
             // 
             // SearchColumnID
             // 
             this.SearchColumnID.Enabled = false;
             this.SearchColumnID.FormattingEnabled = true;
-            this.SearchColumnID.Location = new System.Drawing.Point(125, 60);
+            this.SearchColumnID.Location = new System.Drawing.Point(151, 88);
             this.SearchColumnID.Name = "SearchColumnID";
-            this.SearchColumnID.Size = new System.Drawing.Size(168, 21);
+            this.SearchColumnID.Size = new System.Drawing.Size(144, 21);
             this.SearchColumnID.TabIndex = 15;
             // 
             // checkSearchByColumn
             // 
             this.checkSearchByColumn.AutoSize = true;
-            this.checkSearchByColumn.Location = new System.Drawing.Point(8, 62);
+            this.checkSearchByColumn.Location = new System.Drawing.Point(151, 65);
             this.checkSearchByColumn.Name = "checkSearchByColumn";
             this.checkSearchByColumn.Size = new System.Drawing.Size(111, 17);
             this.checkSearchByColumn.TabIndex = 12;
@@ -264,23 +265,23 @@
             // 
             // groupSearch
             // 
+            this.groupSearch.Controls.Add(this.radioSearchText);
             this.groupSearch.Controls.Add(this.radioSearchFlag);
             this.groupSearch.Controls.Add(this.radioSearchNumeric);
-            this.groupSearch.Controls.Add(this.radioSearchText);
-            this.groupSearch.Location = new System.Drawing.Point(2, 35);
+            this.groupSearch.Location = new System.Drawing.Point(2, 52);
             this.groupSearch.Name = "groupSearch";
-            this.groupSearch.Size = new System.Drawing.Size(169, 23);
+            this.groupSearch.Size = new System.Drawing.Size(84, 81);
             this.groupSearch.TabIndex = 11;
             this.groupSearch.TabStop = false;
             // 
             // radioSearchFlag
             // 
             this.radioSearchFlag.AutoSize = true;
-            this.radioSearchFlag.Location = new System.Drawing.Point(76, 0);
+            this.radioSearchFlag.Location = new System.Drawing.Point(6, 59);
             this.radioSearchFlag.Name = "radioSearchFlag";
-            this.radioSearchFlag.Size = new System.Drawing.Size(45, 17);
+            this.radioSearchFlag.Size = new System.Drawing.Size(56, 17);
             this.radioSearchFlag.TabIndex = 9;
-            this.radioSearchFlag.Text = "Flag";
+            this.radioSearchFlag.Text = "Bitfield";
             this.radioSearchFlag.UseVisualStyleBackColor = true;
             // 
             // panelElemManipulate
@@ -430,7 +431,6 @@
         private System.Windows.Forms.Button ButtonElemInsert;
         private System.Windows.Forms.CheckBox checkSearchByColumn;
         private System.Windows.Forms.ComboBox SearchColumnID;
-        private System.Windows.Forms.CheckBox checkSearchDescription;
         private System.Windows.Forms.Timer ElementSelect_RefreshTimer;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.TextBox labelDescription;
@@ -442,5 +442,6 @@
         private System.Windows.Forms.RadioButton radioSearchFlag;
         private System.Windows.Forms.Button buttonTracerBack;
         private System.Windows.Forms.Label label_tracedesc;
+        private System.Windows.Forms.Button ContinueSearchButton;
     }
 }

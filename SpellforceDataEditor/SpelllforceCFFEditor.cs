@@ -22,10 +22,9 @@ namespace SpellforceDataEditor
         private int selected_element_index = -1;
         private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
         //these parameters control item loading behavior
-        private int elementselect_next_index = 0;
-        private int elementselect_last_index = 0;
         private int elementselect_refresh_size = 100;
         private int elementselect_refresh_rate = 50;
+        private int loaded_count = 0;
         protected List<int> current_indices;                    //list of indices corrsponding to all displayed elements
         //diff tools postponed temporarily
         private SFDataTracer tracer;
@@ -114,7 +113,7 @@ namespace SpellforceDataEditor
             selected_category_index = CategorySelect.SelectedIndex;
             real_category_index = selected_category_index;
 
-            ElementSelect_refresh(ctg);
+            ElementSelect_refresh(ctg);       //clear all elements and start loading new elements
 
             set_element_display(real_category_index);
             SearchPanel.Controls.Clear();
@@ -127,6 +126,7 @@ namespace SpellforceDataEditor
                 SearchColumnID.Items.Add(s);
             ElementDisplay.Visible = false;
             panelSearch.Visible = true;
+            ContinueSearchButton.Enabled = false;
             Tracer_Clear();
         }
 
@@ -149,7 +149,7 @@ namespace SpellforceDataEditor
             ElementDisplay.show_element();
 
             selected_element_index = current_indices[ElementSelect.SelectedIndex];
-            labelDescription.Text = ctg.get_element_description(manager, current_indices[ElementSelect.SelectedIndex]);
+            labelDescription.Text = ctg.get_element_description(current_indices[ElementSelect.SelectedIndex]);
 
             Tracer_Clear();
         }
@@ -157,22 +157,14 @@ namespace SpellforceDataEditor
         //start loading all elements from a category
         public void ElementSelect_refresh(SFCategory ctg)
         {
-            if (ElementSelect_RefreshTimer.Enabled)
-            {
-                ElementSelect_RefreshTimer.Stop();
-                ElementSelect_RefreshTimer.Enabled = false;
-            }
             ElementSelect.Items.Clear();
             current_indices.Clear();
+            for (int i = 0; i < ctg.get_element_count(); i++)
+                current_indices.Add(i);
+            loaded_count = 0;
             labelDescription.Text = "";
             labelStatus.Text = "Loading...";
-            ProgressBar_Main.Visible = true;
-            ProgressBar_Main.Value = 0;
-            ElementSelect_RefreshTimer.Enabled = true;
-            elementselect_next_index = 0;
-            elementselect_last_index = ctg.get_element_count();
-            ElementSelect_RefreshTimer.Interval = 10;
-            ElementSelect_RefreshTimer.Start();
+            RestartTimer();
         }
 
         //add elements to element selector
@@ -183,7 +175,7 @@ namespace SpellforceDataEditor
                 int index = indices[i];
                 if (!current_indices.Contains(index))
                 {
-                    ElementSelect.Items.Add(ctg.get_element_string(manager, indices[i]));
+                    ElementSelect.Items.Add(ctg.get_element_string(indices[i]));
                     current_indices.Add(indices[i]);
                 }
             }
@@ -209,8 +201,8 @@ namespace SpellforceDataEditor
             ElementDisplay.Visible = true;
             ElementDisplay.set_element(cat_e);
             ElementDisplay.show_element();
-            labelDescription.Text = manager.get_category(cat_i).get_element_description(manager, cat_e);
-            label_tracedesc.Text = "Category " + (cat_i + 1).ToString() + " | " + manager.get_category(cat_i).get_element_string(manager, cat_e);
+            labelDescription.Text = manager.get_category(cat_i).get_element_description(cat_e);
+            label_tracedesc.Text = "Category " + (cat_i + 1).ToString() + " | " + manager.get_category(cat_i).get_element_string(cat_e);
 
             buttonTracerBack.Visible = true;
         }
@@ -234,8 +226,8 @@ namespace SpellforceDataEditor
             ElementDisplay.Visible = true;
             ElementDisplay.set_element(cat_e);
             ElementDisplay.show_element();
-            labelDescription.Text = manager.get_category(cat_i).get_element_description(manager, cat_e);
-            label_tracedesc.Text = "Category " + (cat_i + 1).ToString() + " | " + manager.get_category(cat_i).get_element_string(manager, cat_e);
+            labelDescription.Text = manager.get_category(cat_i).get_element_description(cat_e);
+            label_tracedesc.Text = "Category " + (cat_i + 1).ToString() + " | " + manager.get_category(cat_i).get_element_string(cat_e);
 
             if (tracer.CanGoBack())
                 buttonTracerBack.Visible = true;
@@ -246,142 +238,57 @@ namespace SpellforceDataEditor
         //what happens when you click search button
         private void SearchButton_Click(object sender, EventArgs e)
         {
-            //determine if you can search for an item
-            if (!ElementSelect.Enabled)
+            SFCategory cat = manager.get_category(selected_category_index);
+            if (cat == null)
                 return;
-            if (SearchQuery.Text == "")
-                return;
-
-            resolve_category_index();
-
-            //prepare form for a search
-            bool timer_was_enabled = ElementSelect_RefreshTimer.Enabled;
-            if (ElementSelect_RefreshTimer.Enabled)
-            {
-                ElementSelect_RefreshTimer.Stop();
-                ElementSelect_RefreshTimer.Enabled = false;
-            }
-            int elem_found = 0;
-            SFCategory ctg = manager.get_category(real_category_index);
-            int columns = ctg.get_element_format().Length;
-            List<int> query_result = new List<int>();
-
-            //for progress bar
-            int data_searched = 0;
-            int currently_searched = 0;
-            if (checkSearchDescription.Checked)
-                data_searched++;
-
-            //determine columns to search
-            List<int> columns_searched = new List<int>();
-
-            if ((checkSearchByColumn.Checked) && (SearchColumnID.Text != ""))
-            {
-                int[] query_columns = ElementDisplay.get_column_index(SearchColumnID.Text);
-                foreach(int i in query_columns)
-                    columns_searched.Add(i);
-            }
-            else
-            {
-                for (int i = 0; i < columns; i++)
-                    columns_searched.Add(i);
-            }
-            data_searched += columns_searched.Count;
-
-            //set up progress bar
-            labelStatus.Text = "Searching...";
-            ProgressBar_Main.Visible = true;
-            ProgressBar_Main.Value = 0;
-
-            //if searched, looks for string in element description
-            
-            if (checkSearchDescription.Checked)
-            {
-                string val = SearchQuery.Text;
-                //all elements already displayed
-                for(int i = 0; i < ElementSelect.Items.Count; i++)
-                {
-                    string elem_str = (string)ElementSelect.Items[i];
-                    if (elem_str.Contains(val))
-                    {
-                        elem_found += 1;
-                        query_result.Add(current_indices[i]);
-                    }
-                }
-                //elements yet to be displayed
-                if (timer_was_enabled)
-                {
-                    for (int i = ElementSelect.Items.Count; i < ctg.get_element_count(); i++)
-                    {
-                        string elem_str = ctg.get_element_string(manager, i);
-                        if (elem_str.Contains(val))
-                        {
-                            elem_found += 1;
-                            query_result.Add(i);
-                        }
-                    }
-                }
-                currently_searched++;
-            }
-
-            //now that descriptions have been looked at, remove all elements from element selector
-            ElementSelect.Items.Clear();
-            current_indices.Clear();
-            labelDescription.Text = "";
-
-            //update progress bar
-            ProgressBar_Main.Value = (currently_searched * ProgressBar_Main.Maximum) / data_searched;
-
-            //if any elements were found in previous phase, add them immediately
-            ElementSelect_add_elements(ctg, query_result);
-
-            //search columns for value and append results to element selector
+            string query = SearchQuery.Text;
+            SearchType stype;
             if (radioSearchNumeric.Checked)
-            {
-                int val = Utility.TryParseInt32(SearchQuery.Text);
-                foreach(int col in columns_searched)
-                {
-                    query_result = manager.query_by_column_numeric(CategorySelect.SelectedIndex, col, val);
-                    elem_found += query_result.Count;
-                    ElementSelect_add_elements(ctg, query_result);
-                    currently_searched++;
-                    ProgressBar_Main.Value = (currently_searched * ProgressBar_Main.Maximum) / data_searched;
-                }
-            }
+                stype = SearchType.TYPE_NUMBER;
             else if (radioSearchText.Checked)
-            {
-                string val = SearchQuery.Text;
-                foreach (int col in columns_searched)
-                {
-                    if (ctg.get_element_format()[col] != 's')
-                        continue;
-                    query_result = manager.query_by_column_text(CategorySelect.SelectedIndex, col, val);
-                    elem_found += query_result.Count;
-                    ElementSelect_add_elements(ctg, query_result);
-                    currently_searched++;
-                    ProgressBar_Main.Value = (currently_searched * ProgressBar_Main.Maximum) / data_searched;
-                }
-            }
-            else if (radioSearchFlag.Checked)
-            {
-                UInt32 val = Utility.TryParseUInt32(SearchQuery.Text);
-                foreach (int col in columns_searched)
-                {
-                    query_result = manager.query_by_column_flag(CategorySelect.SelectedIndex, col, (int)val);
-                    elem_found += query_result.Count;
-                    ElementSelect_add_elements(ctg, query_result);
-                    currently_searched++;
-                    ProgressBar_Main.Value = (currently_searched * ProgressBar_Main.Maximum) / data_searched;
-                }
-            }
-
-            //finishing touch
-            ElementDisplay.Visible = false;
-            panelElemManipulate.Visible = false;
-            labelStatus.Text = "Ready";
-            ProgressBar_Main.Visible = false;
+                stype = SearchType.TYPE_STRING;
+            else
+                stype = SearchType.TYPE_BITFIELD;
+            int col = SearchColumnID.SelectedIndex;
+            if (!checkSearchByColumn.Checked)
+                col = -1;
+            current_indices.Clear();
+            for (int i = 0; i < cat.get_element_count(); i++)
+                current_indices.Add(i);
+            labelStatus.Text = "Searching...";
+            current_indices = SFSearchModule.Search(cat, current_indices, query, stype, col);
+            //update the selection box
+            ElementSelect.Items.Clear();
+            loaded_count = 0;
+            ContinueSearchButton.Enabled = true;
+            RestartTimer();
             Tracer_Clear();
+        }
 
+        private void ContinueSearchButton_Click(object sender, EventArgs e)
+        {
+            SFCategory cat = manager.get_category(selected_category_index);
+            if (cat == null)
+                return;
+            string query = SearchQuery.Text;
+            SearchType stype;
+            if (radioSearchNumeric.Checked)
+                stype = SearchType.TYPE_NUMBER;
+            else if (radioSearchText.Checked)
+                stype = SearchType.TYPE_STRING;
+            else
+                stype = SearchType.TYPE_BITFIELD;
+            int col = SearchColumnID.SelectedIndex;
+            if (!checkSearchByColumn.Checked)
+                col = -1;
+            labelStatus.Text = "Searching...";
+            current_indices = SFSearchModule.Search(cat, current_indices, query, stype, col);
+            //update the selection box
+            ElementSelect.Items.Clear();
+            loaded_count = 0;
+            ContinueSearchButton.Enabled = true;
+            RestartTimer();
+            Tracer_Clear();
         }
 
         //what happens when you add an element to a category
@@ -397,7 +304,7 @@ namespace SpellforceDataEditor
             SFCategoryElement elem = ctg.generate_empty_element();
             List<SFCategoryElement> elems = ctg.get_elements();
             elems.Insert(current_elem+1, elem);
-            ElementSelect.Items.Insert(current_elem+1, ctg.get_element_string(manager, current_elem+1));
+            ElementSelect.Items.Insert(current_elem+1, ctg.get_element_string(current_elem+1));
             for (int i = current_elem+1; i < current_indices.Count; i++)
                 current_indices[i] = current_indices[i] + 1;
             current_indices.Insert(current_elem+1, current_elem+1);
@@ -437,16 +344,18 @@ namespace SpellforceDataEditor
         {
             SFCategory ctg = manager.get_category(selected_category_index);
 
-            int last = Math.Min(elementselect_next_index + elementselect_refresh_size, elementselect_last_index);
-            for (int i = elementselect_next_index; i < last; i++)
-            {
-                ElementSelect.Items.Add(ctg.get_element_string(manager, i));
-                current_indices.Add(i);
-            }
-            ProgressBar_Main.Value = (int)(((Single)last/(Single)elementselect_last_index)*ProgressBar_Main.Maximum);
+            int max_items = current_indices.Count;
 
-            elementselect_next_index += elementselect_refresh_size;
-            if(last != elementselect_last_index)
+            int last = Math.Min(max_items, loaded_count+elementselect_refresh_size);
+
+            for (;loaded_count <last;loaded_count++)
+                ElementSelect.Items.Add(ctg.get_element_string(current_indices[loaded_count]));
+            if (max_items == 0)
+                ProgressBar_Main.Value = 0;
+            else
+                ProgressBar_Main.Value = (int)(((Single)last/(Single)max_items)*ProgressBar_Main.Maximum);
+
+            if(last != max_items)
             {
                 ElementSelect_RefreshTimer.Interval = elementselect_refresh_rate;
                 ElementSelect_RefreshTimer.Start();
@@ -458,6 +367,16 @@ namespace SpellforceDataEditor
                 ElementSelect_RefreshTimer.Enabled = false;
                 panelElemManipulate.Visible = true;
             }
+        }
+
+        private void RestartTimer()
+        {
+            ElementSelect_RefreshTimer.Enabled = true;
+            ElementSelect_RefreshTimer.Interval = elementselect_refresh_rate;
+            ElementSelect_RefreshTimer.Start();
+            panelElemManipulate.Visible = false;
+            ProgressBar_Main.Visible = true;
+            ProgressBar_Main.Value = 0;
         }
 
         //close gamedata.cff
@@ -500,12 +419,15 @@ namespace SpellforceDataEditor
             CategorySelect.Enabled = false;
             panelElemManipulate.Visible = false;
             panelSearch.Visible = false;
+            ContinueSearchButton.Enabled = false;
             selected_category_index = -1;
             real_category_index = -1;
             manager.unload_all();
             labelStatus.Text = "";
             ProgressBar_Main.Visible = false;
             ProgressBar_Main.Value = 0;
+            loaded_count = 0;
+            current_indices.Clear();
             Tracer_Clear();
             labelDescription.Text = "";
             this.Text = "SpellforceDataEditor";
@@ -534,5 +456,6 @@ namespace SpellforceDataEditor
         {
             Tracer_StepBack();
         }
+
     }
 }

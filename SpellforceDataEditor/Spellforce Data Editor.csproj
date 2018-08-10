@@ -380,6 +380,7 @@
     </Compile>
     <Compile Include="SFDataTracer.cs" />
     <Compile Include="SFDiffTools.cs" />
+    <Compile Include="SFSearchModule.cs" />
     <Compile Include="SpelllforceCFFEditor.cs">
       <SubType>Form</SubType>
     </Compile>
