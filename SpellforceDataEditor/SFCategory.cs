@@ -546,9 +546,23 @@ namespace SpellforceDataEditor
         public override string get_element_description(SFCategoryManager manager, int index)
         {
             string race_name = "";
+            int hp = (int)(UInt16)get_element_variant(index, 7).value;
+            int mana = (int)(UInt16)get_element_variant(index, 9).value;
+            int lvl = ((int)(UInt16)get_element_variant(index, 1).value)-1;
+            string stat_txt = "";
+            SFCategoryElement lvl_elem = manager.get_category(32).get_element(lvl);
+            if (lvl_elem != null)
+            {
+                hp *= (int)(UInt16)lvl_elem.get_single_variant(1).value;
+                System.Diagnostics.Debug.WriteLine(hp);
+                mana *= (int)(UInt16)lvl_elem.get_single_variant(2).value;
+                hp /= 100;
+                mana /= 100;
+                stat_txt = "\r\nHealth: " + hp.ToString() + "\r\nMana: " + mana.ToString();
+            }
             Byte race_id = (Byte)get_element_variant(index, 2).value;
             race_name = manager.get_race_name(race_id);
-            return "This unit race: " + race_name;
+            return "This unit race: " + race_name + stat_txt; ;
         }
     }
 
@@ -668,8 +682,8 @@ namespace SpellforceDataEditor
 
         public override string get_element_string(SFCategoryManager manager, int index)
         {
-            UInt16 spell_id = (UInt16)get_element_variant(index, 2).value;
-            string txt = manager.get_effect_name(spell_id, true);
+            UInt16 hero_id = (UInt16)get_element_variant(index, 0).value;
+            string txt = manager.get_runehero_name(hero_id);
             return get_element_variant(index, 0).value.ToString() + " " + txt;
         }
     }
@@ -1217,13 +1231,48 @@ namespace SpellforceDataEditor
             category_id = 2026;
         }
 
+        public override Object[] get_element(BinaryReader sr)
+        {
+            List<Object[]> elements_for_single_unit = new List<Object[]>();
+            int cur_unit_id = -1;
+            while (true)
+            {
+                if (sr.PeekChar() == -1)
+                    break;
+                UInt16 next_unit_id = sr.ReadUInt16();
+                sr.BaseStream.Seek(-2, SeekOrigin.Current);
+                if ((next_unit_id == cur_unit_id) || (cur_unit_id == -1))
+                {
+                    cur_unit_id = next_unit_id;
+                    Object[] objs = new Object[elem_format.Length];
+                    for (int i = 0; i < elem_format.Length; i++)
+                    {
+                        objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
+                    }
+
+                    elements_for_single_unit.Add(objs);
+                }
+                else
+                    break;
+            }
+
+            Object[] real_objs = new Object[elem_format.Length * elements_for_single_unit.Count];
+            for (int i = 0; i < elements_for_single_unit.Count; i++)
+            {
+                for (int j = 0; j < elem_format.Length; j++)
+                {
+                    real_objs[i * elem_format.Length + j] = elements_for_single_unit[i][j];
+                }
+            }
+
+            return real_objs;
+        }
+
         public override string get_element_string(SFCategoryManager manager, int index)
         {
             UInt16 unit_id = (UInt16)get_element_variant(index, 0).value;
-            UInt16 spell_id = (UInt16)get_element_variant(index, 2).value;
             string txt_unit = manager.get_unit_name(unit_id);
-            string txt_spell = manager.get_effect_name(spell_id, true);
-            return unit_id.ToString() + " " + txt_unit + " | " + txt_spell;
+            return unit_id.ToString() + " " + txt_unit;
         }
     }
 

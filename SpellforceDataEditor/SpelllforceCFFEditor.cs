@@ -193,6 +193,7 @@ namespace SpellforceDataEditor
         {
             tracer.Clear();
             buttonTracerBack.Visible = false;
+            label_tracedesc.Text = "";
         }
 
         //when you right-click orange field, you step into the linked element edit mode
@@ -209,6 +210,7 @@ namespace SpellforceDataEditor
             ElementDisplay.set_element(cat_e);
             ElementDisplay.show_element();
             labelDescription.Text = manager.get_category(cat_i).get_element_description(manager, cat_e);
+            label_tracedesc.Text = "Category " + (cat_i + 1).ToString() + " | " + manager.get_category(cat_i).get_element_string(manager, cat_e);
 
             buttonTracerBack.Visible = true;
         }
@@ -233,9 +235,12 @@ namespace SpellforceDataEditor
             ElementDisplay.set_element(cat_e);
             ElementDisplay.show_element();
             labelDescription.Text = manager.get_category(cat_i).get_element_description(manager, cat_e);
+            label_tracedesc.Text = "Category " + (cat_i + 1).ToString() + " | " + manager.get_category(cat_i).get_element_string(manager, cat_e);
 
             if (tracer.CanGoBack())
                 buttonTracerBack.Visible = true;
+            else
+                label_tracedesc.Text = "";
         }
 
         //what happens when you click search button

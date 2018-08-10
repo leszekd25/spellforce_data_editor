@@ -62,6 +62,7 @@
             this.labelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.ProgressBar_Main = new System.Windows.Forms.ToolStripProgressBar();
             this.buttonTracerBack = new System.Windows.Forms.Button();
+            this.label_tracedesc = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -145,9 +146,9 @@
             this.ElementSelect.FormattingEnabled = true;
             this.ElementSelect.HorizontalScrollbar = true;
             this.ElementSelect.Location = new System.Drawing.Point(12, 54);
-            this.ElementSelect.MaximumSize = new System.Drawing.Size(295, 400);
+            this.ElementSelect.MaximumSize = new System.Drawing.Size(295, 421);
             this.ElementSelect.Name = "ElementSelect";
-            this.ElementSelect.Size = new System.Drawing.Size(295, 394);
+            this.ElementSelect.Size = new System.Drawing.Size(295, 420);
             this.ElementSelect.TabIndex = 2;
             this.ElementSelect.SelectedIndexChanged += new System.EventHandler(this.ElementSelect_SelectedIndexChanged);
             // 
@@ -158,9 +159,9 @@
             // 
             // SearchPanel
             // 
-            this.SearchPanel.Location = new System.Drawing.Point(395, 27);
+            this.SearchPanel.Location = new System.Drawing.Point(395, 54);
             this.SearchPanel.Name = "SearchPanel";
-            this.SearchPanel.Size = new System.Drawing.Size(500, 421);
+            this.SearchPanel.Size = new System.Drawing.Size(500, 420);
             this.SearchPanel.TabIndex = 4;
             // 
             // SaveGameData
@@ -225,7 +226,7 @@
             this.panelSearch.Controls.Add(this.label1);
             this.panelSearch.Controls.Add(this.SearchButton);
             this.panelSearch.Controls.Add(this.SearchQuery);
-            this.panelSearch.Location = new System.Drawing.Point(12, 454);
+            this.panelSearch.Location = new System.Drawing.Point(12, 480);
             this.panelSearch.Name = "panelSearch";
             this.panelSearch.Size = new System.Drawing.Size(297, 114);
             this.panelSearch.TabIndex = 10;
@@ -322,7 +323,7 @@
             this.labelDescription.BackColor = System.Drawing.SystemColors.Control;
             this.labelDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.labelDescription.Cursor = System.Windows.Forms.Cursors.No;
-            this.labelDescription.Location = new System.Drawing.Point(395, 454);
+            this.labelDescription.Location = new System.Drawing.Point(395, 480);
             this.labelDescription.Multiline = true;
             this.labelDescription.Name = "labelDescription";
             this.labelDescription.ReadOnly = true;
@@ -334,7 +335,7 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.labelStatus,
             this.ProgressBar_Main});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 601);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 619);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(944, 22);
             this.statusStrip1.TabIndex = 13;
@@ -364,11 +365,19 @@
             this.buttonTracerBack.Visible = false;
             this.buttonTracerBack.Click += new System.EventHandler(this.buttonTracerBack_Click);
             // 
+            // label_tracedesc
+            // 
+            this.label_tracedesc.AutoSize = true;
+            this.label_tracedesc.Location = new System.Drawing.Point(398, 32);
+            this.label_tracedesc.Name = "label_tracedesc";
+            this.label_tracedesc.Size = new System.Drawing.Size(0, 13);
+            this.label_tracedesc.TabIndex = 0;
+            // 
             // SpelllforceCFFEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(944, 623);
+            this.ClientSize = new System.Drawing.Size(944, 641);
             this.Controls.Add(this.buttonTracerBack);
             this.Controls.Add(this.labelDescription);
             this.Controls.Add(this.statusStrip1);
@@ -378,6 +387,7 @@
             this.Controls.Add(this.ElementSelect);
             this.Controls.Add(this.CategorySelect);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.label_tracedesc);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "SpelllforceCFFEditor";
             this.Text = "SpellforceDataEditor";
@@ -431,5 +441,6 @@
         private System.Windows.Forms.ToolStripMenuItem eXPERIMENTALLoadDiffFileToolStripMenuItem;
         private System.Windows.Forms.RadioButton radioSearchFlag;
         private System.Windows.Forms.Button buttonTracerBack;
+        private System.Windows.Forms.Label label_tracedesc;
     }
 }

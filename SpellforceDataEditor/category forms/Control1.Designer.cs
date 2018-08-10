@@ -176,6 +176,7 @@
             // 
             // tb_mnc
             // 
+            this.tb_mnc.BackColor = System.Drawing.SystemColors.Window;
             this.tb_mnc.Location = new System.Drawing.Point(362, 45);
             this.tb_mnc.Name = "tb_mnc";
             this.tb_mnc.Size = new System.Drawing.Size(126, 20);
@@ -364,6 +365,7 @@
             this.tb_sd1.Size = new System.Drawing.Size(126, 20);
             this.tb_sd1.TabIndex = 31;
             this.tb_sd1.TextChanged += new System.EventHandler(this.tb_sd1_TextChanged);
+            this.tb_sd1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd1_MouseDown);
             // 
             // tb_sd6
             // 
@@ -372,6 +374,7 @@
             this.tb_sd6.Size = new System.Drawing.Size(126, 20);
             this.tb_sd6.TabIndex = 33;
             this.tb_sd6.TextChanged += new System.EventHandler(this.tb_sd6_TextChanged);
+            this.tb_sd6.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd6_MouseDown);
             // 
             // lb_sd6
             // 
@@ -390,6 +393,7 @@
             this.tb_sd7.Size = new System.Drawing.Size(126, 20);
             this.tb_sd7.TabIndex = 37;
             this.tb_sd7.TextChanged += new System.EventHandler(this.tb_sd7_TextChanged);
+            this.tb_sd7.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd7_MouseDown);
             // 
             // lb_sd7
             // 
@@ -408,6 +412,7 @@
             this.tb_sd2.Size = new System.Drawing.Size(126, 20);
             this.tb_sd2.TabIndex = 35;
             this.tb_sd2.TextChanged += new System.EventHandler(this.tb_sd2_TextChanged);
+            this.tb_sd2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd2_MouseDown);
             // 
             // lb_sd2
             // 
@@ -426,6 +431,7 @@
             this.tb_sd8.Size = new System.Drawing.Size(126, 20);
             this.tb_sd8.TabIndex = 41;
             this.tb_sd8.TextChanged += new System.EventHandler(this.tb_sd8_TextChanged);
+            this.tb_sd8.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd8_MouseDown);
             // 
             // lb_sd8
             // 
@@ -444,6 +450,7 @@
             this.tb_sd3.Size = new System.Drawing.Size(126, 20);
             this.tb_sd3.TabIndex = 39;
             this.tb_sd3.TextChanged += new System.EventHandler(this.tb_sd3_TextChanged);
+            this.tb_sd3.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd3_MouseDown);
             // 
             // lb_sd3
             // 
@@ -462,6 +469,7 @@
             this.tb_sd9.Size = new System.Drawing.Size(126, 20);
             this.tb_sd9.TabIndex = 45;
             this.tb_sd9.TextChanged += new System.EventHandler(this.tb_sd9_TextChanged);
+            this.tb_sd9.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd9_MouseDown);
             // 
             // lb_sd9
             // 
@@ -480,6 +488,7 @@
             this.tb_sd4.Size = new System.Drawing.Size(126, 20);
             this.tb_sd4.TabIndex = 43;
             this.tb_sd4.TextChanged += new System.EventHandler(this.tb_sd4_TextChanged);
+            this.tb_sd4.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd4_MouseDown);
             // 
             // lb_sd4
             // 
@@ -498,6 +507,7 @@
             this.tb_sd10.Size = new System.Drawing.Size(126, 20);
             this.tb_sd10.TabIndex = 49;
             this.tb_sd10.TextChanged += new System.EventHandler(this.tb_sd10_TextChanged);
+            this.tb_sd10.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd10_MouseDown);
             // 
             // lb_sd10
             // 
@@ -516,6 +526,7 @@
             this.tb_sd5.Size = new System.Drawing.Size(126, 20);
             this.tb_sd5.TabIndex = 47;
             this.tb_sd5.TextChanged += new System.EventHandler(this.tb_sd5_TextChanged);
+            this.tb_sd5.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd5_MouseDown);
             // 
             // lb_sd5
             // 

@@ -12,9 +12,13 @@ namespace SpellforceDataEditor.category_forms
 {
     public partial class Control1 : SpellforceDataEditor.category_forms.SFControl
     {
+        static int[] tracetable;
         public Control1()
         {
             InitializeComponent();
+            tracetable = new int[10];
+            for (int i = 0; i < 10; i++)
+                tracetable[i] = 0;
             column_dict.Add("Spell effect ID", new int[1] { 0 });
             column_dict.Add("Spell type ID", new int[1] { 1 });
             column_dict.Add("Requirement 1 1", new int[1] { 2 }); column_dict.Add("Requirement 1 2", new int[1] { 3 }); column_dict.Add("Requirement 1 3", new int[1] { 4 });
@@ -217,6 +221,24 @@ namespace SpellforceDataEditor.category_forms
             lb_sd8.Text = p[7];
             lb_sd9.Text = p[8];
             lb_sd10.Text = p[9];
+            for(int i = 0; i < 10; i++)
+            {
+                TextBox t = this.Controls.Find("tb_sd" + (i+1).ToString(), true)[0] as TextBox;
+                char c = p[10][i];
+                if (c == '0')
+                {
+                    t.BackColor = SystemColors.Window;
+                    tracetable[i] = -1;
+                }
+                else
+                {
+                    t.BackColor = Color.DarkOrange;
+                    if (c == '1')
+                        tracetable[i] = 0;
+                    else
+                        tracetable[i] = 17;
+                }
+            }
         }
 
         public override void show_element()
@@ -260,6 +282,65 @@ namespace SpellforceDataEditor.category_forms
         {
             if (e.Button == MouseButtons.Right)
                 step_into(tb_typeID, 1);
+        }
+
+        private void tb_sd1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if ((e.Button == MouseButtons.Right) && (tracetable[0] != -1))
+                step_into(tb_sd1, tracetable[0]);
+        }
+
+        private void tb_sd2_MouseDown(object sender, MouseEventArgs e)
+        {
+            if ((e.Button == MouseButtons.Right) && (tracetable[1] != -1))
+                step_into(tb_sd2, tracetable[1]);
+        }
+
+        private void tb_sd3_MouseDown(object sender, MouseEventArgs e)
+        {
+            if ((e.Button == MouseButtons.Right) && (tracetable[2] != -1))
+                step_into(tb_sd3, tracetable[2]);
+        }
+
+        private void tb_sd4_MouseDown(object sender, MouseEventArgs e)
+        {
+            if ((e.Button == MouseButtons.Right) && (tracetable[3] != -1))
+                step_into(tb_sd4, tracetable[3]);
+        }
+
+        private void tb_sd5_MouseDown(object sender, MouseEventArgs e)
+        {
+            if ((e.Button == MouseButtons.Right) && (tracetable[4] != -1))
+                step_into(tb_sd5, tracetable[4]);
+        }
+
+        private void tb_sd6_MouseDown(object sender, MouseEventArgs e)
+        {
+            if ((e.Button == MouseButtons.Right) && (tracetable[5] != -1))
+                step_into(tb_sd6, tracetable[5]);
+        }
+
+        private void tb_sd7_MouseDown(object sender, MouseEventArgs e)
+        {
+            if ((e.Button == MouseButtons.Right) && (tracetable[6] != -1))
+                step_into(tb_sd7, tracetable[6]);
+        }
+
+        private void tb_sd8_MouseDown(object sender, MouseEventArgs e)
+        {
+            if ((e.Button == MouseButtons.Right) && (tracetable[7] != -1))
+                step_into(tb_sd8, tracetable[7]);
+        }
+
+        private void tb_sd9_MouseDown(object sender, MouseEventArgs e)
+        {
+            if ((e.Button == MouseButtons.Right) && (tracetable[8] != -1))
+                step_into(tb_sd9, tracetable[8]);
+        }
+        private void tb_sd10_MouseDown(object sender, MouseEventArgs e)
+        {
+            if ((e.Button == MouseButtons.Right) && (tracetable[9] != -1))
+                step_into(tb_sd10, tracetable[9]);
         }
     }
 }

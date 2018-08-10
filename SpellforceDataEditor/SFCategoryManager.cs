@@ -15,7 +15,7 @@ namespace SpellforceDataEditor
     {
         static public string[] get(UInt16 spell_id)
         {
-            string[] p = { "", "", "", "", "", "", "", "", "", "" };
+            string[] p = { "", "", "", "", "", "", "", "", "", "", "0000000000" };  //p[10] is for data tracing
             switch(spell_id)
             {
                 case 1:   //fireburst
@@ -107,6 +107,7 @@ namespace SpellforceDataEditor
                 case 47:  //thornshield
                     p[0] = "Duration (ms)";
                     p[1] = "Sub-effect ID";
+                    p[10] = "0100000000";
                     break;
                 case 13:  //fireball (cast)
                     p[0] = "Initial damage";
@@ -114,6 +115,7 @@ namespace SpellforceDataEditor
                     p[2] = "Tick count";
                     p[3] = "Tick duration (ms)";
                     p[4] = "Sub-effect ID";
+                    p[10] = "0000100000";
                     break;
                 case 14:  //icestrike
                 case 145: //icestrike (wave)
@@ -143,6 +145,7 @@ namespace SpellforceDataEditor
                     p[0] = "Time between ticks (ms)";
                     p[1] = "Mana per tick";
                     p[2] = "Unit ID";
+                    p[10] = "0020000000";
                     break;
                 case 21:  //hypnotize
                 case 161: //hypnotize (aura effect)
@@ -292,6 +295,7 @@ namespace SpellforceDataEditor
                     p[2] = "Unknown";
                     p[3] = "Unknown";
                     p[4] = "Sub-effect ID";
+                    p[10] = "0000100000";
                     break;
                 case 75:  //acid cloud
                     p[0] = "Area radius";
@@ -354,6 +358,7 @@ namespace SpellforceDataEditor
                     p[6] = "Sub-effect ID";
                     p[7] = "Unknown";
                     p[8] = "Mana per tick";
+                    p[10] = "0000001000";
                     break;
                 case 90:  //suicide death
                     p[0] = "Damage inflicted";
@@ -407,6 +412,7 @@ namespace SpellforceDataEditor
                     p[2] = "2nd bonus projectile chance";
                     p[3] = "Sub-effect ID";
                     p[4] = "Wave range (?)";
+                    p[10] = "0001000000";
                     break;
                 case 140: //conservation
                     p[0] = "Damage shielded";
@@ -489,10 +495,12 @@ namespace SpellforceDataEditor
                     p[2] = "Dexterity gain (%)";
                     p[3] = "Fight speed increase (%)";
                     p[4] = "Duration";
+                    p[10] = "0100000000";
                     break;
                 case 176: //elemental essence
                 case 180: //elemental almightness
                     p[0] = "Effect ID";
+                    p[10] = "1000000000";
                     break;
                 case 177: //mental essence
                 case 181: //mental almightness
@@ -549,6 +557,7 @@ namespace SpellforceDataEditor
                     p[2] = "Target type";
                     p[3] = "Sub-effect ID";
                     p[4] = "Max bounces";
+                    p[10] = "0001000000";
                     break;
                 case 191: //reinforcement
                     p[0] = "Area radius";

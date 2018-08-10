@@ -12,6 +12,8 @@ namespace SpellforceDataEditor.category_forms
 {
     public partial class Control18 : SpellforceDataEditor.category_forms.SFControl
     {
+        int spelltrace_id;
+
         public Control18()
         {
             InitializeComponent();
@@ -27,6 +29,7 @@ namespace SpellforceDataEditor.category_forms
             column_dict.Add("Armor", new int[1] { 9 });
             column_dict.Add("Unit handle", new int[1] { 10 });
             column_dict.Add("Unknown2", new int[1] { 11 });
+            spelltrace_id = -1;
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -103,6 +106,18 @@ namespace SpellforceDataEditor.category_forms
             textBox12.Text = variant_repr(9);
             textBox13.Text = string_repr(10);
             textBox10.Text = variant_repr(11);
+            spelltrace_id = category.get_manager().get_category(19).find_element_index<UInt16>(0, Utility.TryParseUInt16(textBox1.Text));
+            if (spelltrace_id == -1)
+            {
+                label_SpellTrace.Visible = false;
+                button_Trace.Visible = false;
+            }
+            else
+            {
+                label_SpellTrace.Visible = true;
+                button_Trace.Visible = true;
+            }
+            System.Diagnostics.Debug.Write(spelltrace_id);
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
@@ -115,6 +130,11 @@ namespace SpellforceDataEditor.category_forms
         {
             if (e.Button == MouseButtons.Right)
                 step_into(textBox2, 14);
+        }
+
+        private void button_Trace_Click(object sender, EventArgs e)
+        {
+            step_into(textBox1, 19);
         }
     }
 }

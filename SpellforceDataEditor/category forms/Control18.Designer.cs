@@ -50,6 +50,8 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.textBox10 = new System.Windows.Forms.TextBox();
+            this.button_Trace = new System.Windows.Forms.Button();
+            this.label_SpellTrace = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label3
@@ -243,10 +245,34 @@
             this.textBox10.TabIndex = 40;
             this.textBox10.TextChanged += new System.EventHandler(this.textBox10_TextChanged);
             // 
+            // button_Trace
+            // 
+            this.button_Trace.BackColor = System.Drawing.Color.DarkOrange;
+            this.button_Trace.Location = new System.Drawing.Point(413, 173);
+            this.button_Trace.Name = "button_Trace";
+            this.button_Trace.Size = new System.Drawing.Size(75, 23);
+            this.button_Trace.TabIndex = 42;
+            this.button_Trace.Text = "Go";
+            this.button_Trace.UseVisualStyleBackColor = false;
+            this.button_Trace.Visible = false;
+            this.button_Trace.Click += new System.EventHandler(this.button_Trace_Click);
+            // 
+            // label_SpellTrace
+            // 
+            this.label_SpellTrace.AutoSize = true;
+            this.label_SpellTrace.Location = new System.Drawing.Point(303, 178);
+            this.label_SpellTrace.Name = "label_SpellTrace";
+            this.label_SpellTrace.Size = new System.Drawing.Size(104, 13);
+            this.label_SpellTrace.TabIndex = 41;
+            this.label_SpellTrace.Text = "This unit casts spells";
+            this.label_SpellTrace.Visible = false;
+            // 
             // Control18
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.button_Trace);
+            this.Controls.Add(this.label_SpellTrace);
             this.Controls.Add(this.textBox10);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label9);
@@ -299,5 +325,7 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox textBox10;
+        private System.Windows.Forms.Button button_Trace;
+        private System.Windows.Forms.Label label_SpellTrace;
     }
 }

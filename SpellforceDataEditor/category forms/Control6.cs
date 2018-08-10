@@ -160,5 +160,11 @@ namespace SpellforceDataEditor.category_forms
             if (e.Button == MouseButtons.Right)
                 step_into(textBox3, 0);
         }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                step_into(textBox1, 3);
+        }
     }
 }
