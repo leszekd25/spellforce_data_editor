@@ -50,7 +50,7 @@ namespace SpellforceDataEditor.category_forms
                 MerchantGrid.Rows[i].Cells[0].Value = item_id;
                 MerchantGrid.Rows[i].Cells[1].Value = item_count;
 
-                SFCategoryElement item_elem = category.get_manager().get_category(6).get_element(item_id);
+                SFCategoryElement item_elem = category.get_manager().get_category(6).find_binary_element<UInt16>(0, item_id);
                 if (item_elem == null)
                 {
                     MerchantGrid.Rows[i].Cells[2].Value = "<no name>";
