@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor
 {
+    //struct saves currently viewed element
     public struct SFDataTraceElement
     {
         public int category_index;
@@ -18,6 +19,8 @@ namespace SpellforceDataEditor
         }
     }
 
+    //list of previously viewed elements
+    //user can go back to a previous element whenever he wants
     public class SFDataTracer
     {
         private Stack<SFDataTraceElement> stack;

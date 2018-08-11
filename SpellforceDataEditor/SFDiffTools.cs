@@ -10,16 +10,26 @@ namespace SpellforceDataEditor
     //struct which holds data needed for diff tool class to operate properly
     public struct SFDiffElement
     {
-        public enum DIFF_TYPE { UNKNOWN = 0, REPLACE, INSERT, REMOVE, CATEGORY, EOF, MD5 };
+        //unknown type: nobody knows
+        //replace: element was changed
+        //insert: a new element was added
+        //remove: an element was removed
+        //category: denotes start of category changes
+        //eof: denotes end of file
+        //md5: denotes cff file nd5 hash (needed for file comparison)
+        //lastindex: denotes the last change index that is in effect in data
+        public enum DIFF_TYPE { UNKNOWN = 0, REPLACE, INSERT, REMOVE, CATEGORY, EOF, MD5, LASTINDEX };
 
         public DIFF_TYPE difference_type;
         public int difference_index;
-        public SFCategoryElement elem;
-        public SFDiffElement(DIFF_TYPE d, int i = -1, SFCategoryElement e = null)
+        public SFCategoryElement elem_old;
+        public SFCategoryElement elem_new;
+        public SFDiffElement(DIFF_TYPE d, int i = -1, SFCategoryElement e1 = null, SFCategoryElement e2 = null)
         {
             difference_type = d;
             difference_index = i;
-            elem = e;
+            elem_old = e1;
+            elem_new = e2;
         }
     }
 
@@ -28,7 +38,8 @@ namespace SpellforceDataEditor
     public class SFDiffTools
     {
         protected SFCategoryManager manager;
-        protected List<SFDiffElement>[] diff_data;
+        protected List<SFDiffElement>[] diff_data;    //list of differences between original and modified in each category
+        protected int[] diff_current_index;           //list of the highest index in diff list that is in effect in data; -1 is minimum value, diff_data[].Count-1 is max value
         string presumed_md5 = "";
 
         //connects diff tool to a manager it operates on
@@ -36,15 +47,22 @@ namespace SpellforceDataEditor
         {
             manager = man;
             diff_data = new List<SFDiffElement>[man.get_category_number()];
+            diff_current_index = new int[man.get_category_number()];
             for (int i = 0; i < man.get_category_number(); i++)
+            {
+                diff_current_index[i] = -1;
                 diff_data[i] = new List<SFDiffElement>();
+            }
         }
 
         //clear all diff datal usually called in tandem with manager.unload_all()
         public void clear_data()
         {
             for (int i = 0; i < manager.get_category_number(); i++)
+            {
                 diff_data[i].Clear();
+                diff_current_index[i] = -1;
+            }
         }
 
         //puts a single diff piece into the buffer
@@ -57,13 +75,23 @@ namespace SpellforceDataEditor
                     bw.Write(manager.get_data_md5().ToCharArray());
                     break;
                 case SFDiffElement.DIFF_TYPE.REPLACE:
+                    bw.Write(elem.difference_index);
+                    cat.put_element(bw, elem.elem_old.get());
+                    cat.put_element(bw, elem.elem_new.get());
+                    break;
                 case SFDiffElement.DIFF_TYPE.INSERT:
                     bw.Write(elem.difference_index);
-                    cat.put_element(bw, elem.elem.get());
+                    cat.put_element(bw, elem.elem_new.get());
                     break;
                 case SFDiffElement.DIFF_TYPE.REMOVE:
-                case SFDiffElement.DIFF_TYPE.CATEGORY:
                     bw.Write(elem.difference_index);
+                    cat.put_element(bw, elem.elem_old.get());
+                    break;
+                case SFDiffElement.DIFF_TYPE.CATEGORY:
+                case SFDiffElement.DIFF_TYPE.LASTINDEX:
+                    bw.Write(elem.difference_index);
+                    break;
+                default:
                     break;
             }
             return;
@@ -80,14 +108,27 @@ namespace SpellforceDataEditor
                     presumed_md5 = Utility.CleanString(br.ReadChars(32));
                     break;
                 case SFDiffElement.DIFF_TYPE.REPLACE:
+                    elem.difference_index = br.ReadInt32();
+                    elem.elem_old = new SFCategoryElement();
+                    elem.elem_new = new SFCategoryElement();
+                    elem.elem_old.set(cat.get_element(br));
+                    elem.elem_new.set(cat.get_element(br));
+                    break;
                 case SFDiffElement.DIFF_TYPE.INSERT:
                     elem.difference_index = br.ReadInt32();
-                    elem.elem = new SFCategoryElement();
-                    elem.elem.set(cat.get_element(br));
+                    elem.elem_new = new SFCategoryElement();
+                    elem.elem_new.set(cat.get_element(br));
                     break;
                 case SFDiffElement.DIFF_TYPE.REMOVE:
-                case SFDiffElement.DIFF_TYPE.CATEGORY:
                     elem.difference_index = br.ReadInt32();
+                    elem.elem_old = new SFCategoryElement();
+                    elem.elem_old.set(cat.get_element(br));
+                    break;
+                case SFDiffElement.DIFF_TYPE.CATEGORY:
+                case SFDiffElement.DIFF_TYPE.LASTINDEX:
+                    elem.difference_index = br.ReadInt32();
+                    break;
+                default:
                     break;
             }
             return elem;
@@ -111,6 +152,7 @@ namespace SpellforceDataEditor
                 {
                     write_diff_element(bw, cat, diff_data[i][j]);
                 }
+                write_diff_element(bw, null, new SFDiffElement(SFDiffElement.DIFF_TYPE.LASTINDEX, diff_current_index[i]));
             }
 
             write_diff_element(bw, null, new SFDiffElement(SFDiffElement.DIFF_TYPE.EOF));
@@ -123,7 +165,20 @@ namespace SpellforceDataEditor
         //returns false if MD5 hashes of originally edited CFF and currently loaded CFF mismatch
         public bool load_diff_data(string fname)
         {
-            FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
+            System.Diagnostics.Debug.WriteLine(fname);
+            FileStream fs;
+            try
+            {
+                fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
+            }
+            catch(FileNotFoundException e)
+            {
+                return false;
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
             BinaryReader br = new BinaryReader(fs, Encoding.Default);
 
             int current_category = -1;
@@ -135,11 +190,13 @@ namespace SpellforceDataEditor
                 elem = read_diff_element(br, manager.get_category(current_category));
                 if (elem.difference_type == SFDiffElement.DIFF_TYPE.CATEGORY)
                     current_category = elem.difference_index;
+                else if (elem.difference_type == SFDiffElement.DIFF_TYPE.LASTINDEX)
+                    diff_current_index[current_category] = elem.difference_index;
                 else if (elem.difference_type == SFDiffElement.DIFF_TYPE.EOF)
                     break;
                 else if (elem.difference_type == SFDiffElement.DIFF_TYPE.MD5)   //should be right at the beginning of the file
                 {
-                    if(presumed_md5 != manager.get_data_md5())
+                    if (presumed_md5 != manager.get_data_md5())
                     {
                         clear_data();
                         success = false;
@@ -162,13 +219,31 @@ namespace SpellforceDataEditor
             switch (elem.difference_type)
             {
                 case SFDiffElement.DIFF_TYPE.REPLACE:
-                    elem_list[elem.difference_index] = elem.elem;
+                    elem_list[elem.difference_index] = elem.elem_new;
                     break;
                 case SFDiffElement.DIFF_TYPE.INSERT:
-                    elem_list.Insert(elem.difference_index+1, elem.elem);
+                    elem_list.Insert(elem.difference_index+1, elem.elem_new);
                     break;
                 case SFDiffElement.DIFF_TYPE.REMOVE:
                     elem_list.RemoveAt(elem.difference_index);
+                    break;
+            }
+        }
+
+        //reverted commit_change
+        public void revert_change(SFCategory cat, SFDiffElement elem)
+        {
+            List<SFCategoryElement> elem_list = cat.get_elements();
+            switch (elem.difference_type)
+            {
+                case SFDiffElement.DIFF_TYPE.REPLACE:
+                    elem_list[elem.difference_index] = elem.elem_old;
+                    break;
+                case SFDiffElement.DIFF_TYPE.REMOVE:
+                    elem_list.Insert(elem.difference_index, elem.elem_old);
+                    break;
+                case SFDiffElement.DIFF_TYPE.INSERT:
+                    elem_list.RemoveAt(elem.difference_index+1);
                     break;
             }
         }
@@ -179,7 +254,7 @@ namespace SpellforceDataEditor
             for(int i = 0; i < manager.get_category_number(); i++)
             {
                 SFCategory cat = manager.get_category(i);
-                for(int j = 0; j < diff_data[i].Count; j++)
+                for(int j = 0; j <= diff_current_index[i]; j++)
                 {
                     SFDiffElement elem = diff_data[i][j];
                     commit_change(cat, elem);
@@ -189,10 +264,64 @@ namespace SpellforceDataEditor
 
         //adds diff piece to diff data
         //doing this in chronological order guarantees (?) data integrity when modifying data based on diff data
+        //if there are changes in category which have index higher than diff_current_index, they're discarded, then a new change is made
         public void push_change(int cat_index, SFDiffElement elem)
         {
+            int last_change = diff_data[cat_index].Count-1;
+            int change_difference = last_change - diff_current_index[cat_index];
+            if(change_difference > 0)
+            {
+                for (int i = 0; i < change_difference; i++)
+                    diff_data[cat_index].RemoveAt(last_change - i);
+            }
             diff_data[cat_index].Add(elem);
-            Console.WriteLine("NEW CHANGE: " + elem.difference_type.ToString());
+            diff_current_index[cat_index]++;
+        }
+
+        //undos a change previously commited
+        //undone changes can be lost when another change is pushed
+        public void undo_change(int cat_index)
+        {
+            int current_change = diff_current_index[cat_index];
+            if (current_change < 0)
+                return;
+            SFCategory cat = manager.get_category(cat_index);
+            revert_change(cat, diff_data[cat_index][current_change]);
+            diff_current_index[cat_index]--;
+        }
+
+        //redos a change previously undone
+        //the only way to restore undone changes
+        public void redo_change(int cat_index)
+        {
+            int current_change = diff_current_index[cat_index];
+            if (current_change >= diff_data[cat_index].Count-1)
+                return;
+            SFCategory cat = manager.get_category(cat_index);
+            commit_change(cat, diff_data[cat_index][current_change+1]);
+            diff_current_index[cat_index]++;
+        }
+
+        //returns whether there are changes that can be undone
+        public bool can_undo_changes(int cat_index)
+        {
+            return (diff_current_index[cat_index] >= 0);
+        }
+
+        //returns whether there are changes that can be redone
+        public bool can_redo_changes(int cat_index)
+        {
+            return (diff_current_index[cat_index] < diff_data[cat_index].Count-1);
+        }
+
+        public SFDiffElement get_next_undo_change(int cat_index)
+        {
+            return diff_data[cat_index][diff_current_index[cat_index]];
+        }
+
+        public SFDiffElement get_next_redo_change(int cat_index)
+        {
+            return diff_data[cat_index][diff_current_index[cat_index]+1];
         }
     }
 }

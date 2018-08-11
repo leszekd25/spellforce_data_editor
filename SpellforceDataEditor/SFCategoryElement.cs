@@ -93,6 +93,7 @@ namespace SpellforceDataEditor
             }
         }
 
+        //returns whether two variants are identical
         public bool same_as(SFVariant v)
         {
             if (vtype != v.vtype)
@@ -191,6 +192,7 @@ namespace SpellforceDataEditor
             return s;
         }
 
+        //creates a new element with identical contents as the original
         public SFCategoryElement get_copy()
         {
             SFCategoryElement elem = new SFCategoryElement();
@@ -199,6 +201,7 @@ namespace SpellforceDataEditor
             return elem;
         }
 
+        //returns whether the contents in compared elements are identical
         public bool same_as(SFCategoryElement elem)
         {
             if (properties.Count != elem.get().Count)

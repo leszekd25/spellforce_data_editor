@@ -35,7 +35,9 @@
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.undoCtrlZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redoCtrlYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CategorySelect = new System.Windows.Forms.ComboBox();
             this.ElementSelect = new System.Windows.Forms.ListBox();
@@ -74,7 +76,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.toolsToolStripMenuItem});
+            this.editToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(944, 24);
@@ -120,10 +122,30 @@
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
-            // toolsToolStripMenuItem
+            // editToolStripMenuItem
             // 
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(12, 20);
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.undoCtrlZToolStripMenuItem,
+            this.redoCtrlYToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // undoCtrlZToolStripMenuItem
+            // 
+            this.undoCtrlZToolStripMenuItem.Enabled = false;
+            this.undoCtrlZToolStripMenuItem.Name = "undoCtrlZToolStripMenuItem";
+            this.undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.undoCtrlZToolStripMenuItem.Text = "Undo (Ctrl+Z)";
+            this.undoCtrlZToolStripMenuItem.Click += new System.EventHandler(this.undoCtrlZToolStripMenuItem_Click);
+            // 
+            // redoCtrlYToolStripMenuItem
+            // 
+            this.redoCtrlYToolStripMenuItem.Enabled = false;
+            this.redoCtrlYToolStripMenuItem.Name = "redoCtrlYToolStripMenuItem";
+            this.redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.redoCtrlYToolStripMenuItem.Text = "Redo (Ctrl+Y)";
+            this.redoCtrlYToolStripMenuItem.Click += new System.EventHandler(this.redoCtrlYToolStripMenuItem_Click);
             // 
             // eXPERIMENTALLoadDiffFileToolStripMenuItem
             // 
@@ -389,10 +411,12 @@
             this.Controls.Add(this.CategorySelect);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.label_tracedesc);
+            this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "SpelllforceCFFEditor";
             this.Text = "SpellforceDataEditor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AskBeforeExit);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SpelllforceCFFEditor_KeyDown);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panelSearch.ResumeLayout(false);
@@ -437,11 +461,13 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel labelStatus;
         private System.Windows.Forms.ToolStripProgressBar ProgressBar_Main;
-        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem eXPERIMENTALLoadDiffFileToolStripMenuItem;
         private System.Windows.Forms.RadioButton radioSearchFlag;
         private System.Windows.Forms.Button buttonTracerBack;
         private System.Windows.Forms.Label label_tracedesc;
         private System.Windows.Forms.Button ContinueSearchButton;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem undoCtrlZToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem redoCtrlYToolStripMenuItem;
     }
 }

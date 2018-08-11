@@ -168,8 +168,8 @@ namespace SpellforceDataEditor
                     p[0] = "Unknown";
                     p[1] = "Unknown";
                     p[2] = "Unknown";
-                    p[3] = "Time between ticks (ms) (?)";
-                    p[4] = "Tick count (?)";
+                    p[3] = "Time between ticks (ms)";
+                    p[4] = "Tick count";
                     break;
                 case 28:  //area pain
                     p[0] = "Damage";
@@ -182,7 +182,7 @@ namespace SpellforceDataEditor
                     break;
                 case 32:  //death grasp
                     p[0] = "Unknown";
-                    p[1] = "Time between ticks (ms) (?)";
+                    p[1] = "Time between ticks (ms)";
                     p[2] = "Unknown";
                     break;
                 case 37:  //area slowness
@@ -209,7 +209,7 @@ namespace SpellforceDataEditor
                 case 46:  //charm animal
                 case 122: //charm
                 case 237: //charm (chain effect)
-                    p[0] = "Time between ticks (ms) (?)";
+                    p[0] = "Time between ticks (ms)";
                     p[1] = "1st tick check";
                     p[2] = "2nd tick check";
                     p[3] = "3rd tick check";
@@ -236,8 +236,8 @@ namespace SpellforceDataEditor
                     p[1] = "Unknown";
                     p[2] = "Unknown";
                     p[3] = "Unknown";
-                    p[4] = "Time between ticks (ms) (?)";
-                    p[5] = "Duration (ms) (?)";
+                    p[4] = "Time between ticks (ms)";
+                    p[5] = "Duration (ms)";
                     break;
                 case 62:  //forget
                     p[0] = "Unknown";
@@ -253,7 +253,7 @@ namespace SpellforceDataEditor
                     break;
                 case 64:  //retention
                     p[0] = "Unknown";
-                    p[1] = "Duration (ms) (?)";
+                    p[1] = "Duration (ms)";
                     break;
                 case 66:  //sacrifice mana
                 case 67:  //manatap
@@ -279,7 +279,7 @@ namespace SpellforceDataEditor
                     p[0] = "Unknown";
                     p[1] = "Unknown";
                     p[2] = "Unknown";
-                    p[3] = "Duration (ms) (?)";
+                    p[3] = "Duration (ms)";
                     break;
                 case 72:  //confuse
                 case 79:  //amok
@@ -306,7 +306,7 @@ namespace SpellforceDataEditor
                 case 77:  //wall of rocks
                 case 78:  //ring of rocks
                     p[0] = "Unknown";
-                    p[1] = "Duration (ms) (?)";
+                    p[1] = "Duration (ms))";
                     break;
                 case 80:  //extinct
                     p[0] = "Health threshold";
@@ -350,13 +350,13 @@ namespace SpellforceDataEditor
                 case 227: //aura siege troll
                 case 228: //aura siege darkelf
                     p[0] = "Time between ticks (ms)";
-                    p[1] = "Unknown";
+                    p[1] = "Unused";
                     p[2] = "Aura range";
-                    p[3] = "Unknown";
-                    p[4] = "Unknown";
+                    p[3] = "Unused";
+                    p[4] = "Unused";
                     p[5] = "Aura target type";
                     p[6] = "Sub-effect ID";
-                    p[7] = "Unknown";
+                    p[7] = "Unused";
                     p[8] = "Mana per tick";
                     p[10] = "0000001000";
                     break;
@@ -411,7 +411,7 @@ namespace SpellforceDataEditor
                     p[1] = "Bonus projectile chance";
                     p[2] = "2nd bonus projectile chance";
                     p[3] = "Sub-effect ID";
-                    p[4] = "Wave range (?)";
+                    p[4] = "Wave range";
                     p[10] = "0001000000";
                     break;
                 case 140: //conservation
@@ -741,6 +741,12 @@ namespace SpellforceDataEditor
 
             bw.Close();
             fs.Close();
+
+            //md5 calculation for data diff tool
+            FileStream fs2 = new FileStream(filename, FileMode.Open, FileAccess.Read);
+            MD5 md5_gen = MD5.Create();
+            gamedata_md5 = BitConverter.ToString(md5_gen.ComputeHash(fs2)).Replace("-", "").ToLower();
+            fs2.Close();
         }
 
         //returns category count
