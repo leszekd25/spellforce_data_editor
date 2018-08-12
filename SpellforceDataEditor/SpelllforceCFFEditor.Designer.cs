@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpelllforceCFFEditor));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadGameDatacffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -411,11 +412,13 @@
             this.Controls.Add(this.CategorySelect);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.label_tracedesc);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "SpelllforceCFFEditor";
             this.Text = "SpellforceDataEditor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AskBeforeExit);
+            this.Load += new System.EventHandler(this.SpelllforceCFFEditor_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SpelllforceCFFEditor_KeyDown);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

@@ -673,5 +673,10 @@ namespace SpellforceDataEditor
                     redo_change();
             }
         }
+
+        private void SpelllforceCFFEditor_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
