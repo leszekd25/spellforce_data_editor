@@ -328,7 +328,18 @@ namespace SpellforceDataEditor
             while (mr.PeekChar() != -1)
             {
                 SFCategoryElement elem = new SFCategoryElement();
-                elem.set(get_element(mr));
+                try
+                {
+                    elem.set(get_element(mr));
+                }
+                catch (EndOfStreamException e)
+                {
+                    return -2;
+                }
+                catch (Exception e)
+                {
+                    return -3;
+                }
                 elements.Add(elem);
             }
             mr.Dispose();

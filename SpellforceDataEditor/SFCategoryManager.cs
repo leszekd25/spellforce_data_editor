@@ -701,7 +701,7 @@ namespace SpellforceDataEditor
 
         //loads gamedata.cff file
         //bar has a maximum value of 10000
-        public void load_cff(string filename, ToolStripProgressBar bar)
+        public int load_cff(string filename, ToolStripProgressBar bar)
         {
             FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
             MD5 md5_gen = MD5.Create();
@@ -709,21 +709,35 @@ namespace SpellforceDataEditor
             fs.Seek(0, SeekOrigin.Begin);
 
             BinaryReader br = new BinaryReader(fs, Encoding.Default);
+            int result = 0;
 
             mainHeader = br.ReadBytes(mainHeader.Length);
             for (int i = 0; i < categoryNumber; i++)
             {
                 int cat_status = get_category(i).read(br);
-                if(cat_status == -1)
+                if (cat_status == -1)
                 {
                     MessageBox.Show("Category '" + get_category(i).get_name() + "' has corrupted header, but it will fix itself upon the next data save.");
                 }
+                else if (cat_status == -2)
+                {
+                    result = -1;
+                    break;
+                }
+                else if (cat_status == -3)
+                {
+                    result = -2;
+                    break;
+                }
                 bar.Value = (i * bar.Maximum) / categoryNumber;
             }
-            categorySpecial_RuneHeroes.generate(this);
+            if(result == 0)
+                categorySpecial_RuneHeroes.generate(this);
 
             br.Close();
             fs.Close();
+
+            return result;
         }
 
         //saves gamedata.cff file

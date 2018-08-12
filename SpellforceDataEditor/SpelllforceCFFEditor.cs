@@ -55,14 +55,25 @@ namespace SpellforceDataEditor
                     close_data();
                 labelStatus.Text = "Loading...";
                 ProgressBar_Main.Visible = true;
-                manager.load_cff(OpenGameData.FileName, ProgressBar_Main);
+                statusStrip1.Refresh();
+                int result = manager.load_cff(OpenGameData.FileName, ProgressBar_Main);
+                if(result != 0)
+                {
+                    close_data();
+                    if (result == -1)
+                        labelStatus.Text = "Failed to open file " + OpenGameData.FileName + ": Block size does not match data";
+                    else if (result == -2)
+                        labelStatus.Text = "Failed to open file " + OpenGameData.FileName + ": Invalid data";
+                    ProgressBar_Main.Visible = false;
+                    return;
+                }
                 string diff_filename = OpenGameData.FileName.Replace(".cff", ".dff");
                 bool diff_loaded = diff.load_diff_data(diff_filename);
                 this.Text = "SpellforceDataEditor - "+OpenGameData.FileName;
                 labelStatus.Text = "Ready";
                 if (!diff_loaded)
                     labelStatus.Text = "Ready (diff file not found)";
-                ProgressBar_Main.Visible = false; ;
+                ProgressBar_Main.Visible = false;
                 CategorySelect.Enabled = true;
                 for (int i = 0; i < manager.get_category_number(); i++)
                     CategorySelect.Items.Add(manager.get_category(i).get_name());
@@ -481,6 +492,8 @@ namespace SpellforceDataEditor
             diff_current_element = null;
             diff.clear_data();
             labelDescription.Text = "";
+            ProgressBar_Main.Visible = false;
+            statusStrip1.Update();
             undoCtrlZToolStripMenuItem.Enabled = false;
             redoCtrlYToolStripMenuItem.Enabled = false;
             this.Text = "SpellforceDataEditor";
