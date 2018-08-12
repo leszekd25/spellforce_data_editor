@@ -233,9 +233,12 @@ namespace SpellforceDataEditor
             diff_set_new_element();
 
             set_element_display(cat_i);
-            ElementDisplay.Visible = true;
-            ElementDisplay.set_element(cat_e);
-            ElementDisplay.show_element();
+            if (manager.get_category(cat_i).get_element(cat_e) != null)
+            {
+                ElementDisplay.Visible = true;
+                ElementDisplay.set_element(cat_e);
+                ElementDisplay.show_element();
+            }
 
             labelDescription.Text = manager.get_category(cat_i).get_element_description(cat_e);
             label_tracedesc.Text = "Category " + (cat_i + 1).ToString() + " | " + manager.get_category(cat_i).get_element_string(cat_e);
@@ -601,10 +604,11 @@ namespace SpellforceDataEditor
                         diff_current_element = null;
                     }
 
-                    ElementSelect.Items.Insert(elem_change.difference_index + 1, manager.get_category(selected_category_index).get_element_string(current_indices[elem_change.difference_index+1]));
+                    System.Diagnostics.Debug.WriteLine(elem_change.difference_index);
                     for (int i = elem_change.difference_index + 1; i < current_indices.Count; i++)
                         current_indices[i] = current_indices[i] + 1;
                     current_indices.Insert(elem_change.difference_index + 1, elem_change.difference_index + 1);
+                    ElementSelect.Items.Insert(elem_change.difference_index + 1, manager.get_category(selected_category_index).get_element_string(current_indices[elem_change.difference_index+1]));
 
                     if (selected_category_index == real_category_index)
                     {
