@@ -51,6 +51,7 @@
             this.radioSearchText = new System.Windows.Forms.RadioButton();
             this.SearchButton = new System.Windows.Forms.Button();
             this.panelSearch = new System.Windows.Forms.Panel();
+            this.ClearSearchButton = new System.Windows.Forms.Button();
             this.ContinueSearchButton = new System.Windows.Forms.Button();
             this.SearchColumnID = new System.Windows.Forms.ComboBox();
             this.checkSearchByColumn = new System.Windows.Forms.CheckBox();
@@ -69,7 +70,8 @@
             this.panelElemCopy = new System.Windows.Forms.Panel();
             this.ButtonElemClear = new System.Windows.Forms.Button();
             this.ButtonElemCopy = new System.Windows.Forms.Button();
-            this.ClearSearchButton = new System.Windows.Forms.Button();
+            this.specialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeDataLanguageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -82,7 +84,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.editToolStripMenuItem});
+            this.editToolStripMenuItem,
+            this.specialToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(944, 24);
@@ -261,6 +264,17 @@
             this.panelSearch.TabIndex = 10;
             this.panelSearch.Visible = false;
             // 
+            // ClearSearchButton
+            // 
+            this.ClearSearchButton.Enabled = false;
+            this.ClearSearchButton.Location = new System.Drawing.Point(151, 113);
+            this.ClearSearchButton.Name = "ClearSearchButton";
+            this.ClearSearchButton.Size = new System.Drawing.Size(143, 23);
+            this.ClearSearchButton.TabIndex = 18;
+            this.ClearSearchButton.Text = "Clear search";
+            this.ClearSearchButton.UseVisualStyleBackColor = true;
+            this.ClearSearchButton.Click += new System.EventHandler(this.ClearSearchButton_Click);
+            // 
             // ContinueSearchButton
             // 
             this.ContinueSearchButton.Enabled = false;
@@ -433,16 +447,21 @@
             this.ButtonElemCopy.UseVisualStyleBackColor = true;
             this.ButtonElemCopy.Click += new System.EventHandler(this.ButtonElemCopy_Click);
             // 
-            // ClearSearchButton
+            // specialToolStripMenuItem
             // 
-            this.ClearSearchButton.Enabled = false;
-            this.ClearSearchButton.Location = new System.Drawing.Point(151, 113);
-            this.ClearSearchButton.Name = "ClearSearchButton";
-            this.ClearSearchButton.Size = new System.Drawing.Size(143, 23);
-            this.ClearSearchButton.TabIndex = 18;
-            this.ClearSearchButton.Text = "Clear search";
-            this.ClearSearchButton.UseVisualStyleBackColor = true;
-            this.ClearSearchButton.Click += new System.EventHandler(this.ClearSearchButton_Click);
+            this.specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.changeDataLanguageToolStripMenuItem});
+            this.specialToolStripMenuItem.Name = "specialToolStripMenuItem";
+            this.specialToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
+            this.specialToolStripMenuItem.Text = "Special";
+            // 
+            // changeDataLanguageToolStripMenuItem
+            // 
+            this.changeDataLanguageToolStripMenuItem.Enabled = false;
+            this.changeDataLanguageToolStripMenuItem.Name = "changeDataLanguageToolStripMenuItem";
+            this.changeDataLanguageToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.changeDataLanguageToolStripMenuItem.Text = "Change data language...";
+            this.changeDataLanguageToolStripMenuItem.Click += new System.EventHandler(this.changeDataLanguageToolStripMenuItem_Click);
             // 
             // SpelllforceCFFEditor
             // 
@@ -524,5 +543,7 @@
         private System.Windows.Forms.Button ButtonElemClear;
         private System.Windows.Forms.Button ButtonElemCopy;
         private System.Windows.Forms.Button ClearSearchButton;
+        private System.Windows.Forms.ToolStripMenuItem specialToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changeDataLanguageToolStripMenuItem;
     }
 }

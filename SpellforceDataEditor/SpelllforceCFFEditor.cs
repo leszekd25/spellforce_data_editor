@@ -76,6 +76,7 @@ namespace SpellforceDataEditor
                     labelStatus.Text = "Ready (diff file not found)";
                 ProgressBar_Main.Visible = false;
                 CategorySelect.Enabled = true;
+                changeDataLanguageToolStripMenuItem.Enabled = true;
                 for (int i = 0; i < manager.get_category_number(); i++)
                     CategorySelect.Items.Add(manager.get_category(i).get_name());
                 GC.Collect();
@@ -445,6 +446,7 @@ namespace SpellforceDataEditor
                     panelElemManipulate.Visible = true;
                 }
                 panelElemCopy.Visible = true;
+                changeDataLanguageToolStripMenuItem.Enabled = true;
             }
         }
 
@@ -457,6 +459,7 @@ namespace SpellforceDataEditor
             panelElemCopy.Visible = false;
             ProgressBar_Main.Visible = true;
             ProgressBar_Main.Value = 0;
+            changeDataLanguageToolStripMenuItem.Enabled = false;
         }
 
         //close gamedata.cff
@@ -519,6 +522,7 @@ namespace SpellforceDataEditor
             statusStrip1.Update();
             undoCtrlZToolStripMenuItem.Enabled = false;
             redoCtrlYToolStripMenuItem.Enabled = false;
+            changeDataLanguageToolStripMenuItem.Enabled = false;
             this.Text = "SpellforceDataEditor";
             GC.Collect();
 
@@ -720,6 +724,14 @@ namespace SpellforceDataEditor
             ContinueSearchButton.Enabled = false;
             ClearSearchButton.Enabled = false;
             ElementSelect_refresh(manager.get_category(selected_category_index));
+        }
+
+        private void changeDataLanguageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            special_forms.ChangeDataLangForm changelang_form = new special_forms.ChangeDataLangForm();
+            changelang_form.connect_to_data(manager);
+            changelang_form.ShowDialog();
+            labelStatus.Text = "Done";
         }
     }
 }

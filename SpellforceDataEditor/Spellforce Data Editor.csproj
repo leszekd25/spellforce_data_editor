@@ -372,6 +372,12 @@
     <Compile Include="SFDataTracer.cs" />
     <Compile Include="SFDiffTools.cs" />
     <Compile Include="SFSearchModule.cs" />
+    <Compile Include="special forms\ChangeDataLangForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\ChangeDataLangForm.Designer.cs">
+      <DependentUpon>ChangeDataLangForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SpelllforceCFFEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -538,6 +544,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="special forms\ChangeDataLangForm.resx">
+      <DependentUpon>ChangeDataLangForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SpelllforceCFFEditor.resx">
       <DependentUpon>SpelllforceCFFEditor.cs</DependentUpon>
     </EmbeddedResource>
