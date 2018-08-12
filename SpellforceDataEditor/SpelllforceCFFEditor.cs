@@ -28,6 +28,7 @@ namespace SpellforceDataEditor
         protected List<int> current_indices;                    //list of indices corrsponding to all displayed elements
         protected SFDiffTools diff;
         protected SFCategoryElement diff_current_element = null;//for checking if an element was modified before switching
+        protected SFCategoryElement insert_copy_element = null; //if there was an element copied, it's stored here
         //element can be switched by:
         //-selecting another element from the list
         //-resetting category
@@ -152,9 +153,15 @@ namespace SpellforceDataEditor
             diff_current_element = null;
 
             panelElemManipulate.Visible = false;
+            panelElemCopy.Visible = false;
             ElementSelect.Enabled = true;
 
             SFCategory ctg = manager.get_category(CategorySelect.SelectedIndex);
+            if (selected_category_index != CategorySelect.SelectedIndex)
+            {
+                ButtonElemInsert.BackColor = SystemColors.Control;
+                insert_copy_element = null;
+            }
             selected_category_index = CategorySelect.SelectedIndex;
             real_category_index = selected_category_index;
 
@@ -170,12 +177,14 @@ namespace SpellforceDataEditor
             Dictionary<string, int[]>.KeyCollection keys = ElementDisplay.get_column_descriptions();
             foreach (string s in keys)
                 SearchColumnID.Items.Add(s);
+            ButtonElemInsert.BackColor = SystemColors.Control;
 
             undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
             redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
 
             ElementDisplay.Visible = false;
             panelSearch.Visible = true;
+            ClearSearchButton.Enabled = false;
             ContinueSearchButton.Enabled = false;
             Tracer_Clear();
         }
@@ -313,6 +322,7 @@ namespace SpellforceDataEditor
             ElementSelect.Items.Clear();
             loaded_count = 0;
             ContinueSearchButton.Enabled = true;
+            ClearSearchButton.Enabled = true;
             RestartTimer();
             Tracer_Clear();
         }
@@ -353,7 +363,11 @@ namespace SpellforceDataEditor
 
             int current_elem = current_indices[ElementSelect.SelectedIndex];
             SFCategory ctg = manager.get_category(real_category_index);
-            SFCategoryElement elem = ctg.generate_empty_element();
+            SFCategoryElement elem;
+            if (insert_copy_element == null)
+                elem = ctg.generate_empty_element();
+            else
+                elem = insert_copy_element;
             List<SFCategoryElement> elems = ctg.get_elements();
             elems.Insert(current_elem+1, elem);
             ElementSelect.Items.Insert(current_elem+1, ctg.get_element_string(current_elem+1));
@@ -425,7 +439,12 @@ namespace SpellforceDataEditor
                 ProgressBar_Main.Visible = false;
                 labelStatus.Text = "Ready";
                 ElementSelect_RefreshTimer.Enabled = false;
-                panelElemManipulate.Visible = true;
+                //safeguard to be unable to insert/remove elements into search results
+                if (max_items == ctg.get_element_count())
+                {
+                    panelElemManipulate.Visible = true;
+                }
+                panelElemCopy.Visible = true;
             }
         }
 
@@ -435,6 +454,7 @@ namespace SpellforceDataEditor
             ElementSelect_RefreshTimer.Interval = elementselect_refresh_rate;
             ElementSelect_RefreshTimer.Start();
             panelElemManipulate.Visible = false;
+            panelElemCopy.Visible = false;
             ProgressBar_Main.Visible = true;
             ProgressBar_Main.Value = 0;
         }
@@ -478,6 +498,8 @@ namespace SpellforceDataEditor
             CategorySelect.Items.Clear();
             CategorySelect.Enabled = false;
             panelElemManipulate.Visible = false;
+            ButtonElemInsert.BackColor = SystemColors.Control;
+            panelElemCopy.Visible = false;
             panelSearch.Visible = false;
             ContinueSearchButton.Enabled = false;
             selected_category_index = -1;
@@ -489,6 +511,7 @@ namespace SpellforceDataEditor
             loaded_count = 0;
             current_indices.Clear();
             Tracer_Clear();
+            insert_copy_element = null;
             diff_current_element = null;
             diff.clear_data();
             labelDescription.Text = "";
@@ -674,9 +697,29 @@ namespace SpellforceDataEditor
             }
         }
 
-        private void SpelllforceCFFEditor_Load(object sender, EventArgs e)
+        private void ButtonElemCopy_Click(object sender, EventArgs e)
         {
+            if (ElementSelect.SelectedIndex == -1)
+                return;
 
+            insert_copy_element = manager.get_category(selected_category_index).get_element(selected_element_index).get_copy();
+            ButtonElemInsert.BackColor = Color.Yellow;
+        }
+
+        private void ButtonElemClear_Click(object sender, EventArgs e)
+        {
+            if (insert_copy_element == null)
+                return;
+
+            insert_copy_element = null;
+            ButtonElemInsert.BackColor = SystemColors.Control;
+        }
+
+        private void ClearSearchButton_Click(object sender, EventArgs e)
+        {
+            ContinueSearchButton.Enabled = false;
+            ClearSearchButton.Enabled = false;
+            ElementSelect_refresh(manager.get_category(selected_category_index));
         }
     }
 }

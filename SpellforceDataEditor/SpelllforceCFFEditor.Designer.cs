@@ -66,11 +66,16 @@
             this.ProgressBar_Main = new System.Windows.Forms.ToolStripProgressBar();
             this.buttonTracerBack = new System.Windows.Forms.Button();
             this.label_tracedesc = new System.Windows.Forms.Label();
+            this.panelElemCopy = new System.Windows.Forms.Panel();
+            this.ButtonElemClear = new System.Windows.Forms.Button();
+            this.ButtonElemCopy = new System.Windows.Forms.Button();
+            this.ClearSearchButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
             this.panelElemManipulate.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.panelElemCopy.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -242,6 +247,7 @@
             // 
             // panelSearch
             // 
+            this.panelSearch.Controls.Add(this.ClearSearchButton);
             this.panelSearch.Controls.Add(this.ContinueSearchButton);
             this.panelSearch.Controls.Add(this.SearchColumnID);
             this.panelSearch.Controls.Add(this.checkSearchByColumn);
@@ -313,7 +319,7 @@
             this.panelElemManipulate.Controls.Add(this.ButtonElemInsert);
             this.panelElemManipulate.Location = new System.Drawing.Point(313, 54);
             this.panelElemManipulate.Name = "panelElemManipulate";
-            this.panelElemManipulate.Size = new System.Drawing.Size(76, 115);
+            this.panelElemManipulate.Size = new System.Drawing.Size(76, 62);
             this.panelElemManipulate.TabIndex = 11;
             this.panelElemManipulate.Visible = false;
             // 
@@ -397,11 +403,53 @@
             this.label_tracedesc.Size = new System.Drawing.Size(0, 13);
             this.label_tracedesc.TabIndex = 0;
             // 
+            // panelElemCopy
+            // 
+            this.panelElemCopy.Controls.Add(this.ButtonElemClear);
+            this.panelElemCopy.Controls.Add(this.ButtonElemCopy);
+            this.panelElemCopy.Location = new System.Drawing.Point(313, 122);
+            this.panelElemCopy.Name = "panelElemCopy";
+            this.panelElemCopy.Size = new System.Drawing.Size(76, 62);
+            this.panelElemCopy.TabIndex = 12;
+            this.panelElemCopy.Visible = false;
+            // 
+            // ButtonElemClear
+            // 
+            this.ButtonElemClear.Location = new System.Drawing.Point(3, 33);
+            this.ButtonElemClear.Name = "ButtonElemClear";
+            this.ButtonElemClear.Size = new System.Drawing.Size(69, 23);
+            this.ButtonElemClear.TabIndex = 1;
+            this.ButtonElemClear.Text = "Clear";
+            this.ButtonElemClear.UseVisualStyleBackColor = true;
+            this.ButtonElemClear.Click += new System.EventHandler(this.ButtonElemClear_Click);
+            // 
+            // ButtonElemCopy
+            // 
+            this.ButtonElemCopy.Location = new System.Drawing.Point(4, 4);
+            this.ButtonElemCopy.Name = "ButtonElemCopy";
+            this.ButtonElemCopy.Size = new System.Drawing.Size(69, 23);
+            this.ButtonElemCopy.TabIndex = 0;
+            this.ButtonElemCopy.Text = "Copy";
+            this.ButtonElemCopy.UseVisualStyleBackColor = true;
+            this.ButtonElemCopy.Click += new System.EventHandler(this.ButtonElemCopy_Click);
+            // 
+            // ClearSearchButton
+            // 
+            this.ClearSearchButton.Enabled = false;
+            this.ClearSearchButton.Location = new System.Drawing.Point(151, 113);
+            this.ClearSearchButton.Name = "ClearSearchButton";
+            this.ClearSearchButton.Size = new System.Drawing.Size(143, 23);
+            this.ClearSearchButton.TabIndex = 18;
+            this.ClearSearchButton.Text = "Clear search";
+            this.ClearSearchButton.UseVisualStyleBackColor = true;
+            this.ClearSearchButton.Click += new System.EventHandler(this.ClearSearchButton_Click);
+            // 
             // SpelllforceCFFEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(944, 641);
+            this.Controls.Add(this.panelElemCopy);
             this.Controls.Add(this.buttonTracerBack);
             this.Controls.Add(this.labelDescription);
             this.Controls.Add(this.statusStrip1);
@@ -418,7 +466,6 @@
             this.Name = "SpelllforceCFFEditor";
             this.Text = "SpellforceDataEditor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AskBeforeExit);
-            this.Load += new System.EventHandler(this.SpelllforceCFFEditor_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SpelllforceCFFEditor_KeyDown);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -429,6 +476,7 @@
             this.panelElemManipulate.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.panelElemCopy.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -472,5 +520,9 @@
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem undoCtrlZToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redoCtrlYToolStripMenuItem;
+        private System.Windows.Forms.Panel panelElemCopy;
+        private System.Windows.Forms.Button ButtonElemClear;
+        private System.Windows.Forms.Button ButtonElemCopy;
+        private System.Windows.Forms.Button ClearSearchButton;
     }
 }
