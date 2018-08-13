@@ -663,7 +663,7 @@ namespace SpellforceDataEditor
         //constructor, it creates categories
         public SFCategoryManager()
         {
-            categoryNumber = 49;
+            categoryNumber = 48;
             categories = new SFCategory[categoryNumber];
             for (int i = 1; i <= categoryNumber; i++)
             {
@@ -714,6 +714,7 @@ namespace SpellforceDataEditor
             mainHeader = br.ReadBytes(mainHeader.Length);
             for (int i = 0; i < categoryNumber; i++)
             {
+                System.Diagnostics.Debug.WriteLine("Category " + (i + 1).ToString());
                 int cat_status = get_category(i).read(br);
                 if (cat_status == -1)
                 {

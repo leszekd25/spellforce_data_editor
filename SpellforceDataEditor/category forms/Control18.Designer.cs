@@ -46,10 +46,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.textBox13 = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.textBox10 = new System.Windows.Forms.TextBox();
             this.button_Trace = new System.Windows.Forms.Button();
             this.label_SpellTrace = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -210,45 +206,10 @@
             this.label8.TabIndex = 35;
             this.label8.Text = "Unknown1";
             // 
-            // textBox13
-            // 
-            this.textBox13.Location = new System.Drawing.Point(105, 149);
-            this.textBox13.MaxLength = 40;
-            this.textBox13.Name = "textBox13";
-            this.textBox13.Size = new System.Drawing.Size(383, 20);
-            this.textBox13.TabIndex = 36;
-            this.textBox13.TextChanged += new System.EventHandler(this.textBox13_TextChanged);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(40, 178);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(59, 13);
-            this.label9.TabIndex = 38;
-            this.label9.Text = "Unknown2";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(40, 152);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(61, 13);
-            this.label10.TabIndex = 39;
-            this.label10.Text = "Unit handle";
-            // 
-            // textBox10
-            // 
-            this.textBox10.Location = new System.Drawing.Point(105, 175);
-            this.textBox10.Name = "textBox10";
-            this.textBox10.Size = new System.Drawing.Size(38, 20);
-            this.textBox10.TabIndex = 40;
-            this.textBox10.TextChanged += new System.EventHandler(this.textBox10_TextChanged);
-            // 
             // button_Trace
             // 
             this.button_Trace.BackColor = System.Drawing.Color.DarkOrange;
-            this.button_Trace.Location = new System.Drawing.Point(413, 173);
+            this.button_Trace.Location = new System.Drawing.Point(413, 146);
             this.button_Trace.Name = "button_Trace";
             this.button_Trace.Size = new System.Drawing.Size(75, 23);
             this.button_Trace.TabIndex = 42;
@@ -260,7 +221,7 @@
             // label_SpellTrace
             // 
             this.label_SpellTrace.AutoSize = true;
-            this.label_SpellTrace.Location = new System.Drawing.Point(303, 178);
+            this.label_SpellTrace.Location = new System.Drawing.Point(303, 151);
             this.label_SpellTrace.Name = "label_SpellTrace";
             this.label_SpellTrace.Size = new System.Drawing.Size(104, 13);
             this.label_SpellTrace.TabIndex = 41;
@@ -273,10 +234,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.button_Trace);
             this.Controls.Add(this.label_SpellTrace);
-            this.Controls.Add(this.textBox10);
-            this.Controls.Add(this.label10);
-            this.Controls.Add(this.label9);
-            this.Controls.Add(this.textBox13);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
@@ -321,10 +278,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox textBox13;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox textBox10;
         private System.Windows.Forms.Button button_Trace;
         private System.Windows.Forms.Label label_SpellTrace;
     }

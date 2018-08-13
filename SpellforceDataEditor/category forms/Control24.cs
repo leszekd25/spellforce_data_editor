@@ -28,7 +28,6 @@ namespace SpellforceDataEditor.category_forms
             column_dict.Add("Required building ID", new int[1] { 10 });
             column_dict.Add("Initial angle", new int[1] { 11 });
             column_dict.Add("Unknown2 1", new int[1] { 12 });
-            column_dict.Add("Unknown2 2", new int[1] { 13 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -96,10 +95,6 @@ namespace SpellforceDataEditor.category_forms
             category.set_element_variant(current_element, 12, Utility.TryParseUInt16(textBox12.Text));
         }
 
-        private void textBox13_TextChanged(object sender, EventArgs e)
-        {
-            category.set_element_variant(current_element, 13, Utility.TryParseUInt8(textBox13.Text));
-        }
 
         public override void show_element()
         {
@@ -116,7 +111,6 @@ namespace SpellforceDataEditor.category_forms
             textBox11.Text = variant_repr(10);
             textBox8.Text = variant_repr(11);
             textBox12.Text = variant_repr(12);
-            textBox13.Text = variant_repr(13);
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)

@@ -53,8 +53,6 @@
             this.label11 = new System.Windows.Forms.Label();
             this.textBox12 = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
-            this.textBox13 = new System.Windows.Forms.TextBox();
-            this.label13 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -277,29 +275,10 @@
             this.label12.TabIndex = 24;
             this.label12.Text = "Unknown";
             // 
-            // textBox13
-            // 
-            this.textBox13.Location = new System.Drawing.Point(362, 149);
-            this.textBox13.Name = "textBox13";
-            this.textBox13.Size = new System.Drawing.Size(38, 20);
-            this.textBox13.TabIndex = 27;
-            this.textBox13.TextChanged += new System.EventHandler(this.textBox13_TextChanged);
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(303, 152);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(53, 13);
-            this.label13.TabIndex = 26;
-            this.label13.Text = "Unknown";
-            // 
             // Control24
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.textBox13);
-            this.Controls.Add(this.label13);
             this.Controls.Add(this.textBox12);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.textBox11);
@@ -358,7 +337,5 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox textBox12;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TextBox textBox13;
-        private System.Windows.Forms.Label label13;
     }
 }

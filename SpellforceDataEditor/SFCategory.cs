@@ -316,6 +316,7 @@ namespace SpellforceDataEditor
                 bad_header = true;
 
             block_length = BitConverter.ToUInt32(categoryHeader, 6);
+            System.Diagnostics.Debug.WriteLine("Block size: " + block_length.ToString());
             elements = new List<SFCategoryElement>();
             Byte[] block_buffer = new Byte[block_length];
             sr.Read(block_buffer, 0, (int)(block_length));
@@ -538,7 +539,7 @@ namespace SpellforceDataEditor
     {
         public SFCategory4() : base()
         {
-            initialize("HHBHHHHHHHBBHHHHHHHHBBIBHB");
+            initialize("HHBHHHHHHHBBHHHHHHHHBBIBH");
             category_name = "4. Unit/hero stats";
             category_id = 2005;
         }
@@ -711,7 +712,7 @@ namespace SpellforceDataEditor
 
         public SFCategory7() : base()
         {
-            initialize("HBBHHHHBIIB");
+            initialize("HBBHHHHBII");
             category_name = "7. Item general info";
             category_id = 2003;
         }
@@ -729,7 +730,6 @@ namespace SpellforceDataEditor
             Byte item_type = (Byte)get_element_variant(index, 1).value;
             Byte bonus_type = (Byte)get_element_variant(index, 2).value;
             Byte special = (Byte)get_element_variant(index, 7).value;
-            Byte set_type = (Byte)get_element_variant(index, 10).value;
 
             if ((item_type > 0) && (item_type < item_types.Length))
                 item_type_text += item_types[item_type];
@@ -773,30 +773,13 @@ namespace SpellforceDataEditor
                 total_text += "\r\nContains " + contains_text;
             }
 
-            if(set_type != 0)
-            {
-                Byte elem_id = set_type;
-                string txt;
-                SFCategoryElement set_elem = manager.get_category(48).find_binary_element<Byte>(0, elem_id);
-                if (set_elem == null)
-                    txt = "<no name>";
-                else
-                {
-                    SFCategoryElement txt_elem = manager.find_element_text((UInt16)(set_elem.get_single_variant(1).value), 1);
-                    if (txt_elem == null)
-                        txt = "<text missing>";
-                    else
-                        txt = Utility.CleanString(txt_elem.get_single_variant(4));
-                }
-                total_text += "\r\nPart of set: " + txt;
-            }
-
             if (special == 4)
                 total_text += "\r\nQuest item (can not be sold)";
             else if (special == 8)
                 total_text += "\r\nQuest item (can be sold)";
             else if (special != 0)
                 total_text += "\r\nUnknown optional data";
+
             return total_text;
         }
     }
@@ -1155,8 +1138,7 @@ namespace SpellforceDataEditor
 
         public SFCategory18() : base()
         {
-            string_size = new int[1] { 40 };
-            initialize("HHHIHIHBHHsB");
+            initialize("HHHIHIHBHH");
             category_name = "18. Unit general data/link with unit stats";
             category_id = 2024;
         }
@@ -1385,7 +1367,7 @@ namespace SpellforceDataEditor
     {
         public SFCategory24() : base()
         {
-            initialize("HBBBHHhhBHHHHB");
+            initialize("HBBBHHhhBHHHH");
             category_name = "24. Building data";
             category_id = 2029;
         }

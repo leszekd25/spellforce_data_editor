@@ -25,7 +25,6 @@ namespace SpellforceDataEditor.category_forms
             column_dict.Add("Unknown", new int[1] { 7 });
             column_dict.Add("Selling price", new int[1] { 8 });
             column_dict.Add("Buying price", new int[1] { 9 });
-            column_dict.Add("Item set ID", new int[1] { 10 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -78,11 +77,6 @@ namespace SpellforceDataEditor.category_forms
             category.set_element_variant(current_element, 9, Utility.TryParseUInt32(textBox7.Text));
         }
 
-        private void textBox9_TextChanged(object sender, EventArgs e)
-        {
-            category.set_element_variant(current_element, 10, Utility.TryParseUInt8(textBox9.Text));
-        }
-
         public override void show_element()
         {
             textBox1.Text = variant_repr(0);
@@ -95,19 +89,12 @@ namespace SpellforceDataEditor.category_forms
             textBox8.Text = variant_repr(7);
             textBox6.Text = variant_repr(8);
             textBox7.Text = variant_repr(9);
-            textBox9.Text = variant_repr(10);
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
                 step_into(textBox2, 14);
-        }
-
-        private void textBox9_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-                step_into(textBox9, 48);
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)

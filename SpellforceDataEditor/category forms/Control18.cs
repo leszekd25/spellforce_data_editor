@@ -27,8 +27,6 @@ namespace SpellforceDataEditor.category_forms
             column_dict.Add("Unknown 2", new int[1] { 7 });
             column_dict.Add("Unknown 3", new int[1] { 8 });
             column_dict.Add("Armor", new int[1] { 9 });
-            column_dict.Add("Unit handle", new int[1] { 10 });
-            column_dict.Add("Unknown2", new int[1] { 11 });
             spelltrace_id = -1;
         }
 
@@ -82,16 +80,6 @@ namespace SpellforceDataEditor.category_forms
             category.set_element_variant(current_element, 9, Utility.TryParseUInt16(textBox12.Text));
         }
 
-        private void textBox13_TextChanged(object sender, EventArgs e)
-        {
-            category.set_element_variant(current_element, 10, Utility.FixedLengthString(textBox13.Text, 40));
-        }
-
-        private void textBox10_TextChanged(object sender, EventArgs e)
-        {
-            category.set_element_variant(current_element, 11, Utility.TryParseUInt8(textBox10.Text));
-        }
-
         public override void show_element()
         {
             textBox1.Text = variant_repr(0);
@@ -104,8 +92,6 @@ namespace SpellforceDataEditor.category_forms
             textBox8.Text = variant_repr(7);
             textBox9.Text = variant_repr(8);
             textBox12.Text = variant_repr(9);
-            textBox13.Text = string_repr(10);
-            textBox10.Text = variant_repr(11);
             spelltrace_id = category.get_manager().get_category(19).find_element_index<UInt16>(0, Utility.TryParseUInt16(textBox1.Text));
             if (spelltrace_id == -1)
             {

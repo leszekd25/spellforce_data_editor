@@ -40,7 +40,6 @@ namespace SpellforceDataEditor.category_forms
             column_dict.Add("Spawn base time", new int[1] { 22 });
             column_dict.Add("Head gender", new int[1] { 23 });
             column_dict.Add("Head ID", new int[1] { 24 });
-            column_dict.Add("Equipment slots ID", new int[1] { 25 });
 
         }
 
@@ -169,11 +168,6 @@ namespace SpellforceDataEditor.category_forms
             category.set_element_variant(current_element, 24, Utility.TryParseUInt16(textBox21.Text));
         }
 
-        private void textBox24_TextChanged(object sender, EventArgs e)
-        {
-            category.set_element_variant(current_element, 25, Utility.TryParseUInt8(textBox24.Text));
-        }
-
         public override void show_element()
         {
             textBox1.Text = variant_repr(0);
@@ -201,7 +195,6 @@ namespace SpellforceDataEditor.category_forms
             textBox27.Text = variant_repr(22);
             textBox26.Text = variant_repr(23);
             textBox21.Text = variant_repr(24);
-            textBox24.Text = variant_repr(25);
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
