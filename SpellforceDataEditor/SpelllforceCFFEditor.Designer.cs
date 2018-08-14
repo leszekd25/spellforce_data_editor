@@ -39,6 +39,8 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.undoCtrlZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redoCtrlYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.specialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeDataLanguageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CategorySelect = new System.Windows.Forms.ComboBox();
             this.ElementSelect = new System.Windows.Forms.ListBox();
@@ -70,8 +72,6 @@
             this.panelElemCopy = new System.Windows.Forms.Panel();
             this.ButtonElemClear = new System.Windows.Forms.Button();
             this.ButtonElemCopy = new System.Windows.Forms.Button();
-            this.specialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.changeDataLanguageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -155,6 +155,22 @@
             this.redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.redoCtrlYToolStripMenuItem.Text = "Redo (Ctrl+Y)";
             this.redoCtrlYToolStripMenuItem.Click += new System.EventHandler(this.redoCtrlYToolStripMenuItem_Click);
+            // 
+            // specialToolStripMenuItem
+            // 
+            this.specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.changeDataLanguageToolStripMenuItem});
+            this.specialToolStripMenuItem.Name = "specialToolStripMenuItem";
+            this.specialToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
+            this.specialToolStripMenuItem.Text = "Special";
+            // 
+            // changeDataLanguageToolStripMenuItem
+            // 
+            this.changeDataLanguageToolStripMenuItem.Enabled = false;
+            this.changeDataLanguageToolStripMenuItem.Name = "changeDataLanguageToolStripMenuItem";
+            this.changeDataLanguageToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.changeDataLanguageToolStripMenuItem.Text = "Change data language...";
+            this.changeDataLanguageToolStripMenuItem.Click += new System.EventHandler(this.changeDataLanguageToolStripMenuItem_Click);
             // 
             // eXPERIMENTALLoadDiffFileToolStripMenuItem
             // 
@@ -395,6 +411,7 @@
             this.ProgressBar_Main.Maximum = 150;
             this.ProgressBar_Main.Name = "ProgressBar_Main";
             this.ProgressBar_Main.Size = new System.Drawing.Size(150, 16);
+            this.ProgressBar_Main.Step = 1;
             this.ProgressBar_Main.Visible = false;
             // 
             // buttonTracerBack
@@ -446,22 +463,6 @@
             this.ButtonElemCopy.Text = "Copy";
             this.ButtonElemCopy.UseVisualStyleBackColor = true;
             this.ButtonElemCopy.Click += new System.EventHandler(this.ButtonElemCopy_Click);
-            // 
-            // specialToolStripMenuItem
-            // 
-            this.specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.changeDataLanguageToolStripMenuItem});
-            this.specialToolStripMenuItem.Name = "specialToolStripMenuItem";
-            this.specialToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
-            this.specialToolStripMenuItem.Text = "Special";
-            // 
-            // changeDataLanguageToolStripMenuItem
-            // 
-            this.changeDataLanguageToolStripMenuItem.Enabled = false;
-            this.changeDataLanguageToolStripMenuItem.Name = "changeDataLanguageToolStripMenuItem";
-            this.changeDataLanguageToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.changeDataLanguageToolStripMenuItem.Text = "Change data language...";
-            this.changeDataLanguageToolStripMenuItem.Click += new System.EventHandler(this.changeDataLanguageToolStripMenuItem_Click);
             // 
             // SpelllforceCFFEditor
             // 

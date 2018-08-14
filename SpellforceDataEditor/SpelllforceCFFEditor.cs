@@ -26,7 +26,7 @@ namespace SpellforceDataEditor
         private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
 
         //these parameters control item loading behavior
-        private int elementselect_refresh_size = 100;
+        private int elementselect_refresh_size = 500;
         private int elementselect_refresh_rate = 50;
         private int loaded_count = 0;
 
@@ -333,6 +333,8 @@ namespace SpellforceDataEditor
             if (cat == null)
                 return;
 
+            ProgressBar_Main.Visible = true;
+
             string query = SearchQuery.Text;
             SearchType stype;
             if (radioSearchNumeric.Checked)
@@ -352,7 +354,9 @@ namespace SpellforceDataEditor
 
             labelStatus.Text = "Searching...";
 
-            current_indices = SFSearchModule.Search(cat, current_indices, query, stype, col);
+            statusStrip1.Refresh();
+
+            current_indices = SFSearchModule.Search(cat, current_indices, query, stype, col, ProgressBar_Main);
 
             ElementSelect.Items.Clear();
 
@@ -371,6 +375,8 @@ namespace SpellforceDataEditor
             if (cat == null)
                 return;
 
+            ProgressBar_Main.Visible = true;
+
             string query = SearchQuery.Text;
             SearchType stype;
             if (radioSearchNumeric.Checked)
@@ -386,7 +392,7 @@ namespace SpellforceDataEditor
 
             labelStatus.Text = "Searching...";
 
-            current_indices = SFSearchModule.Search(cat, current_indices, query, stype, col);
+            current_indices = SFSearchModule.Search(cat, current_indices, query, stype, col, ProgressBar_Main);
 
             ElementSelect.Items.Clear();
 
@@ -481,7 +487,9 @@ namespace SpellforceDataEditor
             if (max_items == 0)
                 ProgressBar_Main.Value = 0;
             else
-                ProgressBar_Main.Value = (int)(((Single)last/(Single)max_items)*ProgressBar_Main.Maximum);
+            {
+                ProgressBar_Main.Value = (int)(((Single)last / (Single)max_items) * ProgressBar_Main.Maximum);
+            }
 
             if(last != max_items)
             {

@@ -10,14 +10,24 @@ namespace SpellforceDataEditor
 
     public static class SFSearchModule
     {
-        public static List<int> Search(SFCategory category, List<int> source, string query, SearchType type, int column_i)
+        public static List<int> Search(SFCategory category, List<int> source, string query, SearchType type, int column_i, System.Windows.Forms.ToolStripProgressBar pbar)
         {
             string format = category.get_element_format();
             int elem_length = format.Length;
             List<int> target = new List<int>();
 
+            int counter = 0;
+
             foreach (int i in source)
             {
+                counter++;
+
+                if (counter % 500 == 0)
+                {
+                    pbar.Value = ((pbar.Maximum * counter) / source.Count);
+                    pbar.GetCurrentParent().Refresh();
+                }
+
                 SFCategoryElement elem = category.get_element(i);
                 if (elem == null)
                     continue;
