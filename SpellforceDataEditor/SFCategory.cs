@@ -274,6 +274,7 @@ namespace SpellforceDataEditor
         public void set_element_variant(int elem_index, int var_index, object obj)
         {
             elements[elem_index].get()[var_index].set(obj);
+            manager.get_application_form().external_set_element_select_string(this, elem_index);
         }
 
         //puts a new element (as a list of variants) to a buffer
@@ -545,7 +546,6 @@ namespace SpellforceDataEditor
             if (lvl_elem != null)
             {
                 hp *= (int)(UInt16)lvl_elem.get_single_variant(1).value;
-                System.Diagnostics.Debug.WriteLine(hp);
                 mana *= (int)(UInt16)lvl_elem.get_single_variant(2).value;
                 hp /= 100;
                 mana /= 100;

@@ -38,7 +38,7 @@
             this.tb_effID.Name = "tb_effID";
             this.tb_effID.Size = new System.Drawing.Size(126, 20);
             this.tb_effID.TabIndex = 13;
-            this.tb_effID.TextChanged += new System.EventHandler(this.tb_effID_TextChanged);
+            this.tb_effID.Validated += new System.EventHandler(this.tb_effID_TextChanged);
             // 
             // lb_effID
             // 

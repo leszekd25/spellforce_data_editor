@@ -71,7 +71,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 0;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // textBox9
             // 
@@ -80,7 +80,7 @@
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new System.Drawing.Size(126, 20);
             this.textBox9.TabIndex = 8;
-            this.textBox9.TextChanged += new System.EventHandler(this.textBox9_TextChanged);
+            this.textBox9.Validated += new System.EventHandler(this.textBox9_TextChanged);
             this.textBox9.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox9_MouseDown);
             // 
             // textBox17
@@ -89,7 +89,7 @@
             this.textBox17.Name = "textBox17";
             this.textBox17.Size = new System.Drawing.Size(38, 20);
             this.textBox17.TabIndex = 18;
-            this.textBox17.TextChanged += new System.EventHandler(this.textBox17_TextChanged);
+            this.textBox17.Validated += new System.EventHandler(this.textBox17_TextChanged);
             // 
             // textBox18
             // 
@@ -97,7 +97,7 @@
             this.textBox18.Name = "textBox18";
             this.textBox18.Size = new System.Drawing.Size(38, 20);
             this.textBox18.TabIndex = 17;
-            this.textBox18.TextChanged += new System.EventHandler(this.textBox18_TextChanged);
+            this.textBox18.Validated += new System.EventHandler(this.textBox18_TextChanged);
             // 
             // textBox19
             // 
@@ -105,7 +105,7 @@
             this.textBox19.Name = "textBox19";
             this.textBox19.Size = new System.Drawing.Size(38, 20);
             this.textBox19.TabIndex = 16;
-            this.textBox19.TextChanged += new System.EventHandler(this.textBox19_TextChanged);
+            this.textBox19.Validated += new System.EventHandler(this.textBox19_TextChanged);
             // 
             // label1
             // 
@@ -176,7 +176,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(38, 20);
             this.textBox2.TabIndex = 37;
-            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            this.textBox2.Validated += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // textBox3
             // 
@@ -184,7 +184,7 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(38, 20);
             this.textBox3.TabIndex = 36;
-            this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged_1);
+            this.textBox3.Validated += new System.EventHandler(this.textBox3_TextChanged_1);
             // 
             // textBox4
             // 
@@ -192,7 +192,7 @@
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(38, 20);
             this.textBox4.TabIndex = 35;
-            this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
+            this.textBox4.Validated += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // textBox5
             // 
@@ -200,7 +200,7 @@
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(38, 20);
             this.textBox5.TabIndex = 40;
-            this.textBox5.TextChanged += new System.EventHandler(this.textBox5_TextChanged);
+            this.textBox5.Validated += new System.EventHandler(this.textBox5_TextChanged);
             // 
             // textBox6
             // 
@@ -208,7 +208,7 @@
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(38, 20);
             this.textBox6.TabIndex = 39;
-            this.textBox6.TextChanged += new System.EventHandler(this.textBox6_TextChanged);
+            this.textBox6.Validated += new System.EventHandler(this.textBox6_TextChanged);
             // 
             // textBox7
             // 
@@ -216,7 +216,7 @@
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new System.Drawing.Size(38, 20);
             this.textBox7.TabIndex = 38;
-            this.textBox7.TextChanged += new System.EventHandler(this.textBox7_TextChanged);
+            this.textBox7.Validated += new System.EventHandler(this.textBox7_TextChanged);
             // 
             // textBox8
             // 
@@ -224,7 +224,7 @@
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new System.Drawing.Size(50, 20);
             this.textBox8.TabIndex = 43;
-            this.textBox8.TextChanged += new System.EventHandler(this.textBox8_TextChanged);
+            this.textBox8.Validated += new System.EventHandler(this.textBox8_TextChanged);
             // 
             // textBox10
             // 
@@ -233,7 +233,7 @@
             this.textBox10.Name = "textBox10";
             this.textBox10.Size = new System.Drawing.Size(38, 20);
             this.textBox10.TabIndex = 42;
-            this.textBox10.TextChanged += new System.EventHandler(this.textBox10_TextChanged);
+            this.textBox10.Validated += new System.EventHandler(this.textBox10_TextChanged);
             this.textBox10.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox10_MouseDown);
             // 
             // textBox11
@@ -242,7 +242,7 @@
             this.textBox11.Name = "textBox11";
             this.textBox11.Size = new System.Drawing.Size(38, 20);
             this.textBox11.TabIndex = 41;
-            this.textBox11.TextChanged += new System.EventHandler(this.textBox11_TextChanged);
+            this.textBox11.Validated += new System.EventHandler(this.textBox11_TextChanged);
             // 
             // textBox12
             // 
@@ -250,7 +250,7 @@
             this.textBox12.Name = "textBox12";
             this.textBox12.Size = new System.Drawing.Size(38, 20);
             this.textBox12.TabIndex = 45;
-            this.textBox12.TextChanged += new System.EventHandler(this.textBox12_TextChanged);
+            this.textBox12.Validated += new System.EventHandler(this.textBox12_TextChanged);
             // 
             // textBox13
             // 
@@ -258,7 +258,7 @@
             this.textBox13.Name = "textBox13";
             this.textBox13.Size = new System.Drawing.Size(50, 20);
             this.textBox13.TabIndex = 44;
-            this.textBox13.TextChanged += new System.EventHandler(this.textBox13_TextChanged);
+            this.textBox13.Validated += new System.EventHandler(this.textBox13_TextChanged);
             // 
             // textBox14
             // 
@@ -266,7 +266,7 @@
             this.textBox14.Name = "textBox14";
             this.textBox14.Size = new System.Drawing.Size(38, 20);
             this.textBox14.TabIndex = 50;
-            this.textBox14.TextChanged += new System.EventHandler(this.textBox14_TextChanged);
+            this.textBox14.Validated += new System.EventHandler(this.textBox14_TextChanged);
             // 
             // textBox16
             // 
@@ -274,7 +274,7 @@
             this.textBox16.Name = "textBox16";
             this.textBox16.Size = new System.Drawing.Size(50, 20);
             this.textBox16.TabIndex = 49;
-            this.textBox16.TextChanged += new System.EventHandler(this.textBox16_TextChanged);
+            this.textBox16.Validated += new System.EventHandler(this.textBox16_TextChanged);
             // 
             // textBox20
             // 
@@ -282,7 +282,7 @@
             this.textBox20.Name = "textBox20";
             this.textBox20.Size = new System.Drawing.Size(50, 20);
             this.textBox20.TabIndex = 48;
-            this.textBox20.TextChanged += new System.EventHandler(this.textBox20_TextChanged);
+            this.textBox20.Validated += new System.EventHandler(this.textBox20_TextChanged);
             // 
             // textBox21
             // 
@@ -290,7 +290,7 @@
             this.textBox21.Name = "textBox21";
             this.textBox21.Size = new System.Drawing.Size(38, 20);
             this.textBox21.TabIndex = 47;
-            this.textBox21.TextChanged += new System.EventHandler(this.textBox21_TextChanged);
+            this.textBox21.Validated += new System.EventHandler(this.textBox21_TextChanged);
             // 
             // textBox22
             // 
@@ -298,7 +298,7 @@
             this.textBox22.Name = "textBox22";
             this.textBox22.Size = new System.Drawing.Size(38, 20);
             this.textBox22.TabIndex = 46;
-            this.textBox22.TextChanged += new System.EventHandler(this.textBox22_TextChanged);
+            this.textBox22.Validated += new System.EventHandler(this.textBox22_TextChanged);
             // 
             // label8
             // 

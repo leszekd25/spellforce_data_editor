@@ -76,7 +76,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 16;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
             // 
             // label4
@@ -107,7 +107,7 @@
             this.HelmetID.Size = new System.Drawing.Size(126, 20);
             this.HelmetID.TabIndex = 24;
             this.HelmetID.Text = "0";
-            this.HelmetID.TextChanged += new System.EventHandler(this.HelmetID_TextChanged);
+            this.HelmetID.Validated += new System.EventHandler(this.HelmetID_TextChanged);
             this.HelmetID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.HelmetID_MouseDown);
             // 
             // HelmetName
@@ -135,7 +135,7 @@
             this.RightHandID.Size = new System.Drawing.Size(126, 20);
             this.RightHandID.TabIndex = 28;
             this.RightHandID.Text = "0";
-            this.RightHandID.TextChanged += new System.EventHandler(this.RightHandID_TextChanged);
+            this.RightHandID.Validated += new System.EventHandler(this.RightHandID_TextChanged);
             this.RightHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RightHandID_MouseDown);
             // 
             // CheckRightHand
@@ -174,7 +174,7 @@
             this.ChestID.Size = new System.Drawing.Size(126, 20);
             this.ChestID.TabIndex = 32;
             this.ChestID.Text = "0";
-            this.ChestID.TextChanged += new System.EventHandler(this.ChestID_TextChanged);
+            this.ChestID.Validated += new System.EventHandler(this.ChestID_TextChanged);
             this.ChestID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ChestID_MouseDown);
             // 
             // CheckChest
@@ -213,7 +213,7 @@
             this.LeftHandID.Size = new System.Drawing.Size(126, 20);
             this.LeftHandID.TabIndex = 36;
             this.LeftHandID.Text = "0";
-            this.LeftHandID.TextChanged += new System.EventHandler(this.LeftHandID_TextChanged);
+            this.LeftHandID.Validated += new System.EventHandler(this.LeftHandID_TextChanged);
             this.LeftHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.LeftHandID_MouseDown);
             // 
             // CheckLeftHand
@@ -252,7 +252,7 @@
             this.RightRingID.Size = new System.Drawing.Size(126, 20);
             this.RightRingID.TabIndex = 40;
             this.RightRingID.Text = "0";
-            this.RightRingID.TextChanged += new System.EventHandler(this.RightRingID_TextChanged);
+            this.RightRingID.Validated += new System.EventHandler(this.RightRingID_TextChanged);
             this.RightRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RightRingID_MouseDown);
             // 
             // CheckRightRing
@@ -291,7 +291,7 @@
             this.LegsID.Size = new System.Drawing.Size(126, 20);
             this.LegsID.TabIndex = 44;
             this.LegsID.Text = "0";
-            this.LegsID.TextChanged += new System.EventHandler(this.LegsID_TextChanged);
+            this.LegsID.Validated += new System.EventHandler(this.LegsID_TextChanged);
             this.LegsID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.LegsID_MouseDown);
             // 
             // CheckLegs
@@ -330,7 +330,7 @@
             this.LeftRingID.Size = new System.Drawing.Size(126, 20);
             this.LeftRingID.TabIndex = 48;
             this.LeftRingID.Text = "0";
-            this.LeftRingID.TextChanged += new System.EventHandler(this.LeftRingID_TextChanged);
+            this.LeftRingID.Validated += new System.EventHandler(this.LeftRingID_TextChanged);
             this.LeftRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.LeftRingID_MouseDown);
             // 
             // CheckLeftRing

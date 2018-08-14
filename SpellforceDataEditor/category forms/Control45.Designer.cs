@@ -41,7 +41,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 13;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
             // 
             // label1
@@ -61,7 +61,7 @@
             this.tb_effID.Name = "tb_effID";
             this.tb_effID.Size = new System.Drawing.Size(126, 20);
             this.tb_effID.TabIndex = 11;
-            this.tb_effID.TextChanged += new System.EventHandler(this.tb_effID_TextChanged);
+            this.tb_effID.Validated += new System.EventHandler(this.tb_effID_TextChanged);
             // 
             // lb_effID
             // 

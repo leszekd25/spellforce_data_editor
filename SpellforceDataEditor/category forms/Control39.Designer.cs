@@ -47,7 +47,7 @@
             this.tb_effID.Name = "tb_effID";
             this.tb_effID.Size = new System.Drawing.Size(126, 20);
             this.tb_effID.TabIndex = 3;
-            this.tb_effID.TextChanged += new System.EventHandler(this.tb_effID_TextChanged);
+            this.tb_effID.Validated += new System.EventHandler(this.tb_effID_TextChanged);
             // 
             // lb_effID
             // 
@@ -67,7 +67,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 5;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
             // 
             // label1
@@ -87,7 +87,7 @@
             this.tb_rng_max.Name = "tb_rng_max";
             this.tb_rng_max.Size = new System.Drawing.Size(50, 20);
             this.tb_rng_max.TabIndex = 16;
-            this.tb_rng_max.TextChanged += new System.EventHandler(this.tb_rng_max_TextChanged);
+            this.tb_rng_max.Validated += new System.EventHandler(this.tb_rng_max_TextChanged);
             // 
             // tb_rng_min
             // 
@@ -95,7 +95,7 @@
             this.tb_rng_min.Name = "tb_rng_min";
             this.tb_rng_min.Size = new System.Drawing.Size(50, 20);
             this.tb_rng_min.TabIndex = 15;
-            this.tb_rng_min.TextChanged += new System.EventHandler(this.tb_rng_min_TextChanged);
+            this.tb_rng_min.Validated += new System.EventHandler(this.tb_rng_min_TextChanged);
             // 
             // lb_rng
             // 
@@ -114,7 +114,7 @@
             this.tb_req4_1.Name = "tb_req4_1";
             this.tb_req4_1.Size = new System.Drawing.Size(126, 20);
             this.tb_req4_1.TabIndex = 31;
-            this.tb_req4_1.TextChanged += new System.EventHandler(this.tb_req4_1_TextChanged);
+            this.tb_req4_1.Validated += new System.EventHandler(this.tb_req4_1_TextChanged);
             this.tb_req4_1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_req4_1_MouseDown);
             // 
             // lb_req4

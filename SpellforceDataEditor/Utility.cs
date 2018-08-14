@@ -141,5 +141,25 @@ namespace SpellforceDataEditor
             bytearray[index+2] = (byte)(elem >> 16);
             bytearray[index+3] = (byte)(elem >> 24);
         }
+
+        static public int find_binary_index<T>(IList<T> list, T value) where T: IComparable
+        {
+            int current_start = 0;
+            int current_end = list.Count - 1;
+            int current_center;
+            T val;
+            while (current_start <= current_end)
+            {
+                current_center = (current_start + current_end) / 2;    //care about overflow
+                val = list[current_center];
+                if (val.CompareTo(value) == 0)
+                    return current_center;
+                if (val.CompareTo(value) < 0)
+                    current_start = current_center + 1;
+                else
+                    current_end = current_center - 1;
+            }
+            return -1;
+        }
     }
 }

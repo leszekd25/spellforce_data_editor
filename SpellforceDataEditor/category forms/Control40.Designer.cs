@@ -38,7 +38,7 @@
             this.tb_req4_1.Name = "tb_req4_1";
             this.tb_req4_1.Size = new System.Drawing.Size(126, 20);
             this.tb_req4_1.TabIndex = 31;
-            this.tb_req4_1.TextChanged += new System.EventHandler(this.tb_req4_1_TextChanged);
+            this.tb_req4_1.Validated += new System.EventHandler(this.tb_req4_1_TextChanged);
             // 
             // lb_req4
             // 

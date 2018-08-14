@@ -117,6 +117,7 @@ namespace SpellforceDataEditor
             if (!data_loaded)
                 return false; ;
 
+            CategorySelect.Focus();
             DialogResult result = SaveGameData.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
             {
@@ -183,6 +184,8 @@ namespace SpellforceDataEditor
         //what happens when you choose category from a list
         private void CategorySelect_SelectedIndexChanged(object sender, EventArgs e)
         {
+            Focus();
+
             diff_resolve_current_element();
             diff_current_element = null;
 
@@ -656,6 +659,8 @@ namespace SpellforceDataEditor
             if (panelElemManipulate.Visible)
                 diff_resolve_current_element();
 
+            validate_focused_control();
+
             SFDiffElement elem_change = diff.get_next_undo_change(selected_category_index);
             diff.undo_change(selected_category_index);
 
@@ -720,6 +725,8 @@ namespace SpellforceDataEditor
         {
             if (!diff.can_redo_changes(selected_category_index))
                 return;
+
+            validate_focused_control();
 
             SFDiffElement elem_change = diff.get_next_redo_change(selected_category_index);
             diff.redo_change(selected_category_index);
@@ -813,6 +820,42 @@ namespace SpellforceDataEditor
             changelang_form.ShowDialog();
 
             labelStatus.Text = "Done";
+        }
+
+        public int get_selected_category_index()
+        {
+            return selected_category_index;
+        }
+
+        public void external_set_element_select_string(SFCategory ctg, int elem_index)
+        {
+            if (selected_category_index != real_category_index)
+                return;
+            if (manager.get_category(selected_category_index) != ctg)
+                return;
+            int index = Utility.find_binary_index(current_indices, elem_index);
+            if (index != -1)
+            {
+                ElementSelect.SelectedIndexChanged -= new System.EventHandler(this.ElementSelect_SelectedIndexChanged);
+                ElementSelect.Items[index] = ctg.get_element_string(elem_index);
+                ElementSelect.SelectedIndexChanged += new System.EventHandler(this.ElementSelect_SelectedIndexChanged);
+            }
+        }
+
+        //used if you want to keep editing one element
+        private void validate_focused_control()
+        {
+            if (ElementDisplay == null)
+                return;
+
+            foreach(Control c in ElementDisplay.Controls)
+            {
+                if (c.Focused)
+                {
+                    ElementDisplay.Focus();
+                    c.Focus();
+                }
+            }
         }
     }
 }

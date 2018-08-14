@@ -29,7 +29,6 @@ namespace SpellforceDataEditor.special_forms
             for (int i = 0; i < elem_num; i++)
             {
                 string single_text = new string((char[])text7055.get_single_variant(i * 5 + 4).value);
-                System.Diagnostics.Debug.WriteLine(single_text);
                 int lang_id = (Byte)(text7055.get_single_variant(i * 5 + 1).value);
                 ListSample.Items.Add(lang_id.ToString() + " " + single_text);
             }
