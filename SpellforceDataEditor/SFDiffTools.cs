@@ -20,10 +20,10 @@ namespace SpellforceDataEditor
         //lastindex: denotes the last change index that is in effect in data
         public enum DIFF_TYPE { UNKNOWN = 0, REPLACE, INSERT, REMOVE, CATEGORY, EOF, MD5, LASTINDEX };
 
-        public DIFF_TYPE difference_type;
-        public int difference_index;
-        public SFCategoryElement elem_old;
-        public SFCategoryElement elem_new;
+        public DIFF_TYPE difference_type;         //action that is taken
+        public int difference_index;              //index in a category that the action refers to (or other data when applicable)
+        public SFCategoryElement elem_old;        //element before change
+        public SFCategoryElement elem_new;        //element after change
         public SFDiffElement(DIFF_TYPE d, int i = -1, SFCategoryElement e1 = null, SFCategoryElement e2 = null)
         {
             difference_type = d;
@@ -157,7 +157,7 @@ namespace SpellforceDataEditor
 
             write_diff_element(bw, null, new SFDiffElement(SFDiffElement.DIFF_TYPE.EOF));
 
-            bw.Close();
+            //bw.Close();
             fs.Close();
         }
 
@@ -207,7 +207,7 @@ namespace SpellforceDataEditor
                     push_change(current_category, elem);
             }
 
-            br.Close();
+            //br.Close();
             fs.Close();
             return success;
         }
@@ -320,11 +320,13 @@ namespace SpellforceDataEditor
             return (diff_current_index[cat_index] < diff_data[cat_index].Count-1);
         }
 
+        //returns the action that will be taken (in reverse) when undo action is made
         public SFDiffElement get_next_undo_change(int cat_index)
         {
             return diff_data[cat_index][diff_current_index[cat_index]];
         }
 
+        //returns the action that will be taken when redo action is made
         public SFDiffElement get_next_redo_change(int cat_index)
         {
             return diff_data[cat_index][diff_current_index[cat_index]+1];

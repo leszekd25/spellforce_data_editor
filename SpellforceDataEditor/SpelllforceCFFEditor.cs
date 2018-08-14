@@ -137,6 +137,7 @@ namespace SpellforceDataEditor
             return false;
         }
 
+        //if an element was changed between selecting it and this occuring, notify diff tool that a change occured
         private void diff_resolve_current_element()
         {
             if (diff_current_element == null)
@@ -146,15 +147,18 @@ namespace SpellforceDataEditor
             if (!diff_current_element.same_as(cat.get_element(selected_element_index)))
             {
                 diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REPLACE, selected_element_index, diff_current_element, cat.get_element(selected_element_index)));
+                diff_current_element = cat.get_element(selected_element_index).get_copy();
             }
         }
 
+        //sets a new element for comparison
         private void diff_set_new_element()
         {
             SFCategory cat = manager.get_category(real_category_index);
             diff_current_element = cat.get_element(selected_element_index).get_copy();
         }
 
+        //spawns a new control to display element data
         private void set_element_display(int ind_c)
         {
             if (ElementDisplay != null)
@@ -172,6 +176,7 @@ namespace SpellforceDataEditor
             SearchPanel.Controls.Add(ElementDisplay);
         }
 
+        //restores element display to show elements from currently selected category
         private void resolve_category_index()
         {
             if (real_category_index != selected_category_index)
@@ -307,6 +312,7 @@ namespace SpellforceDataEditor
             buttonTracerBack.Visible = true;
         }
 
+        //when you press Back, you step out and return to previously viewed element
         public void Tracer_StepBack()
         {
             diff_resolve_current_element();
@@ -338,7 +344,7 @@ namespace SpellforceDataEditor
                 label_tracedesc.Text = "";
         }
 
-        //what happens when you click search button
+        //searches elements within entire category
         private void SearchButton_Click(object sender, EventArgs e)
         {
             SFCategory cat = manager.get_category(selected_category_index);
@@ -381,6 +387,7 @@ namespace SpellforceDataEditor
             Tracer_Clear();
         }
 
+        //searches elements within elements on the list
         private void ContinueSearchButton_Click(object sender, EventArgs e)
         {
             SFCategory cat = manager.get_category(selected_category_index);
@@ -417,6 +424,7 @@ namespace SpellforceDataEditor
         }
 
         //what happens when you add an element to a category
+        //can copy stored elements
         private void ButtonElemInsert_Click(object sender, EventArgs e)
         {
             if (ElementSelect.SelectedIndex == -1)
@@ -525,6 +533,7 @@ namespace SpellforceDataEditor
             }
         }
 
+        //timer can be restarted if elements are to be gradually filled into the list again
         private void RestartTimer()
         {
             ElementSelect_RefreshTimer.Enabled = true;
@@ -650,6 +659,7 @@ namespace SpellforceDataEditor
             redo_change();
         }
 
+        //undoes the last change within category
         private void undo_change()
         {
             if (!diff.can_undo_changes(selected_category_index))
@@ -721,6 +731,7 @@ namespace SpellforceDataEditor
             redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
         }
 
+        //redoes previously undone change within category
         private void redo_change()
         {
             if (!diff.can_redo_changes(selected_category_index))
@@ -787,6 +798,7 @@ namespace SpellforceDataEditor
             redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
         }
 
+        //stores copied element to be pasted elsewhere
         private void ButtonElemCopy_Click(object sender, EventArgs e)
         {
             if (ElementSelect.SelectedIndex == -1)
@@ -796,6 +808,7 @@ namespace SpellforceDataEditor
             ButtonElemInsert.BackColor = Color.Yellow;
         }
 
+        //clears stored copy
         private void ButtonElemClear_Click(object sender, EventArgs e)
         {
             if (insert_copy_element == null)
@@ -805,6 +818,7 @@ namespace SpellforceDataEditor
             ButtonElemInsert.BackColor = SystemColors.Control;
         }
 
+        //if there were elements searched, restores list to display whole category data
         private void ClearSearchButton_Click(object sender, EventArgs e)
         {
             ContinueSearchButton.Enabled = false;
@@ -812,6 +826,7 @@ namespace SpellforceDataEditor
             ElementSelect_refresh(manager.get_category(selected_category_index));
         }
 
+        //special option to change game language
         private void changeDataLanguageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             special_forms.ChangeDataLangForm changelang_form = new special_forms.ChangeDataLangForm();
@@ -822,11 +837,13 @@ namespace SpellforceDataEditor
             labelStatus.Text = "Done";
         }
 
+        //external
         public int get_selected_category_index()
         {
             return selected_category_index;
         }
 
+        //called from the outside, updates element name on the list
         public void external_set_element_select_string(SFCategory ctg, int elem_index)
         {
             if (selected_category_index != real_category_index)

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SpellforceDataEditor
 {
     //this class implements methods for all kinds of manipulation of its elements
-    //each category holds elements of single type
+    //each category holds elements of single type (and multiples of it)
     public abstract class SFCategory
     {
         protected uint block_length;                    //size of all data that belongs to this category
@@ -165,6 +165,42 @@ namespace SpellforceDataEditor
             return objs;
         }
 
+        //an overload for the standard get_element, which allows loading elements until the first variant matches that of a previous element's
+        public Object[] get_element_multiple(BinaryReader sr, char char_load)
+        {
+            List<Object> elements_loaded = new List<Object>();
+            int cur_id = -1;
+            while (true)
+            {
+                if (sr.PeekChar() == -1)
+                    break;
+                int next_id = -1;
+                if (char_load == 'B')
+                {
+                    next_id = sr.ReadByte();
+                    sr.BaseStream.Seek(-1, SeekOrigin.Current);
+                }
+                else if (char_load == 'H')
+                {
+                    next_id = sr.ReadUInt16();
+                    sr.BaseStream.Seek(-2, SeekOrigin.Current);
+                }
+                if (next_id == -1)
+                    break;
+                current_string = 0;
+                if ((next_id == cur_id) || (cur_id == -1))
+                {
+                    cur_id = next_id;
+                    for (int i = 0; i < elem_format.Length; i++)
+                        elements_loaded.Add(get_single_variant(sr, elem_format[i], string_size[current_string]));
+                }
+                else
+                    break;
+            }
+
+            return elements_loaded.ToArray();
+        }
+
         //returns an element given element index, or null if it doesn't exist
         public SFCategoryElement get_element(int index)
         {
@@ -271,6 +307,7 @@ namespace SpellforceDataEditor
         }
 
         //sets a single variant given element index and variant index
+        //also updates the element in the application's listbox
         public void set_element_variant(int elem_index, int var_index, object obj)
         {
             elements[elem_index].get()[var_index].set(obj);
@@ -312,10 +349,7 @@ namespace SpellforceDataEditor
             elements.Clear();
             Byte[] block_buffer = new Byte[block_length];
             sr.Read(block_buffer, 0, (int)(block_length));
-            /*string s = "";
-            for (int i = 0; i < categoryHeader.Length; i++)
-                s += categoryHeader[i].ToString() + " ";
-            Console.WriteLine(category_name + " " + s);*/
+            
             MemoryStream ms = new MemoryStream(block_buffer);
             BinaryReader mr = new BinaryReader(ms, Encoding.Default);
             while (mr.PeekChar() != -1)
@@ -335,7 +369,7 @@ namespace SpellforceDataEditor
                 }
                 elements.Add(elem);
             }
-            mr.Dispose();
+            //mr.Dispose();
             ms.Dispose();
             block_buffer = null;
             if (bad_header)
@@ -358,11 +392,13 @@ namespace SpellforceDataEditor
             }
         }
 
+        //returns element's name that will be displayed on the list
         public virtual string get_element_string(int index)
         {
             return index.ToString();
         }
 
+        //returns element's description that will be displayed in the description box
         public virtual string get_element_description(int index)
         {
             return "";
@@ -430,10 +466,6 @@ namespace SpellforceDataEditor
                     return Utility.S_NONAME;
             }
         }
-
-
-
-
 
         public SFCategory1() : base()
         {
@@ -569,39 +601,7 @@ namespace SpellforceDataEditor
 
         public override Object[] get_element(BinaryReader sr)
         {
-            List<Object[]> elements_for_single_unit = new List<Object[]>();
-            int cur_unit_id = -1;
-            while (true)
-            {
-                if (sr.PeekChar() == -1)
-                    break;
-                UInt16 next_unit_id = sr.ReadUInt16();
-                sr.BaseStream.Seek(-2, SeekOrigin.Current);
-                if ((next_unit_id == cur_unit_id) || (cur_unit_id == -1))
-                {
-                    cur_unit_id = next_unit_id;
-                    Object[] objs = new Object[elem_format.Length];
-                    for (int i = 0; i < elem_format.Length; i++)
-                    {
-                        objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
-                    }
-
-                    elements_for_single_unit.Add(objs);
-                }
-                else
-                    break;
-            }
-
-            Object[] real_objs = new Object[elem_format.Length * elements_for_single_unit.Count];
-            for (int i = 0; i < elements_for_single_unit.Count; i++)
-            {
-                for (int j = 0; j < elem_format.Length; j++)
-                {
-                    real_objs[i * elem_format.Length + j] = elements_for_single_unit[i][j];
-                }
-            }
-
-            return real_objs;
+            return get_element_multiple(sr, 'H');
         }
 
         public override string get_element_string(int index)
@@ -636,39 +636,7 @@ namespace SpellforceDataEditor
 
         public override Object[] get_element(BinaryReader sr)
         {
-            List<Object[]> elements_for_single_unit = new List<Object[]>();
-            int cur_unit_id = -1;
-            while (true)
-            {
-                if (sr.PeekChar() == -1)
-                    break;
-                UInt16 next_unit_id = sr.ReadUInt16();
-                sr.BaseStream.Seek(-2, SeekOrigin.Current);
-                if ((next_unit_id == cur_unit_id) || (cur_unit_id == -1))
-                {
-                    cur_unit_id = next_unit_id;
-                    Object[] objs = new Object[elem_format.Length];
-                    for (int i = 0; i < elem_format.Length; i++)
-                    {
-                        objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
-                    }
-
-                    elements_for_single_unit.Add(objs);
-                }
-                else
-                    break;
-            }
-
-            Object[] real_objs = new Object[elem_format.Length * elements_for_single_unit.Count];
-            for (int i = 0; i < elements_for_single_unit.Count; i++)
-            {
-                for (int j = 0; j < elem_format.Length; j++)
-                {
-                    real_objs[i * elem_format.Length + j] = elements_for_single_unit[i][j];
-                }
-            }
-
-            return real_objs;
+            return get_element_multiple(sr, 'H');
         }
 
         public override string get_element_string(int index)
@@ -967,40 +935,7 @@ namespace SpellforceDataEditor
 
         public override Object[] get_element(BinaryReader sr)
         {
-            List<Object[]> elements_for_single_text = new List<object[]>();
-            int cur_text_id = -1;
-            while (true)
-            {
-                if (sr.PeekChar() == -1)
-                    break;
-                UInt16 next_text_id = sr.ReadUInt16();
-                sr.BaseStream.Seek(-2, SeekOrigin.Current);
-                if ((next_text_id == cur_text_id) || (cur_text_id == -1))
-                {
-                    cur_text_id = next_text_id;
-                    current_string = 0;
-                    Object[] objs = new Object[elem_format.Length];
-                    for (int i = 0; i < elem_format.Length; i++)
-                    {
-                        objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
-                    }
-
-                    elements_for_single_text.Add(objs);
-                }
-                else
-                    break;
-            }
-
-            Object[] real_objs = new Object[elem_format.Length * elements_for_single_text.Count];
-            for(int i = 0; i < elements_for_single_text.Count; i++)
-            {
-                for(int j = 0; j < elem_format.Length; j++)
-                {
-                    real_objs[i * elem_format.Length + j] = elements_for_single_text[i][j];
-                }
-            }
-            
-            return real_objs;
+            return get_element_multiple(sr, 'H');
         }
 
         public override string get_element_string(int index)
@@ -1075,39 +1010,7 @@ namespace SpellforceDataEditor
 
         public override Object[] get_element(BinaryReader sr)
         {
-            List<Byte[]> elements_for_single_clan = new List<Byte[]>();
-            int cur_clan_id = -1;
-            while (true)
-            {
-                if (sr.PeekChar() == -1)
-                    break;
-                Byte next_clan_id = sr.ReadByte();
-                sr.BaseStream.Seek(-1, SeekOrigin.Current);
-                if ((next_clan_id == cur_clan_id) || (cur_clan_id == -1))
-                {
-                    cur_clan_id = next_clan_id;
-                    Byte[] objs = new Byte[elem_format.Length];
-                    for (int i = 0; i < elem_format.Length; i++)
-                    {
-                        objs[i] = sr.ReadByte();
-                    }
-
-                    elements_for_single_clan.Add(objs);
-                }
-                else
-                    break;
-            }
-
-            Object[] real_objs = new Object[elem_format.Length * elements_for_single_clan.Count];
-            for (int i = 0; i < elements_for_single_clan.Count; i++)
-            {
-                for (int j = 0; j < elem_format.Length; j++)
-                {
-                    real_objs[i * elem_format.Length + j] = elements_for_single_clan[i][j];
-                }
-            }
-
-            return real_objs;
+            return get_element_multiple(sr, 'B');
         }
 
         public override string get_element_string(int index)
@@ -1167,39 +1070,7 @@ namespace SpellforceDataEditor
 
         public override Object[] get_element(BinaryReader sr)
         {
-            List<Object[]> elements_for_single_unit = new List<Object[]>();
-            int cur_unit_id = -1;
-            while (true)
-            {
-                if (sr.PeekChar() == -1)
-                    break;
-                UInt16 next_unit_id = sr.ReadUInt16();
-                sr.BaseStream.Seek(-2, SeekOrigin.Current);
-                if ((next_unit_id == cur_unit_id) || (cur_unit_id == -1))
-                {
-                    cur_unit_id = next_unit_id;
-                    Object[] objs = new Object[elem_format.Length];
-                    for (int i = 0; i < elem_format.Length; i++)
-                    {
-                        objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
-                    }
-
-                    elements_for_single_unit.Add(objs);
-                }
-                else
-                    break;
-            }
-
-            Object[] real_objs = new Object[elem_format.Length * elements_for_single_unit.Count];
-            for (int i = 0; i < elements_for_single_unit.Count; i++)
-            {
-                for (int j = 0; j < elem_format.Length; j++)
-                {
-                    real_objs[i * elem_format.Length + j] = elements_for_single_unit[i][j];
-                }
-            }
-
-            return real_objs;
+            return get_element_multiple(sr, 'H');
         }
 
         public override string get_element_string(int index)
@@ -1224,39 +1095,7 @@ namespace SpellforceDataEditor
 
         public override Object[] get_element(BinaryReader sr)
         {
-            List<Object[]> elements_for_single_unit = new List<Object[]>();
-            int cur_unit_id = -1;
-            while (true)
-            {
-                if (sr.PeekChar() == -1)
-                    break;
-                UInt16 next_unit_id = sr.ReadUInt16();
-                sr.BaseStream.Seek(-2, SeekOrigin.Current);
-                if ((next_unit_id == cur_unit_id) || (cur_unit_id == -1))
-                {
-                    cur_unit_id = next_unit_id;
-                    Object[] objs = new Object[elem_format.Length];
-                    for (int i = 0; i < elem_format.Length; i++)
-                    {
-                        objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
-                    }
-
-                    elements_for_single_unit.Add(objs);
-                }
-                else
-                    break;
-            }
-
-            Object[] real_objs = new Object[elem_format.Length * elements_for_single_unit.Count];
-            for (int i = 0; i < elements_for_single_unit.Count; i++)
-            {
-                for (int j = 0; j < elem_format.Length; j++)
-                {
-                    real_objs[i * elem_format.Length + j] = elements_for_single_unit[i][j];
-                }
-            }
-
-            return real_objs;
+            return get_element_multiple(sr, 'H');
         }
 
         public override string get_element_string(int index)
@@ -1527,39 +1366,7 @@ namespace SpellforceDataEditor
 
         public override Object[] get_element(BinaryReader sr)
         {
-            List<Object[]> elements_for_single_merchant = new List<Object[]>();
-            int cur_merchant_id = -1;
-            while (true)
-            {
-                if (sr.PeekChar() == -1)
-                    break;
-                UInt16 next_merchant_id = sr.ReadUInt16();
-                sr.BaseStream.Seek(-2, SeekOrigin.Current);
-                if ((next_merchant_id == cur_merchant_id) || (cur_merchant_id == -1))
-                {
-                    cur_merchant_id = next_merchant_id;
-                    Object[] objs = new Object[elem_format.Length];
-                    for (int i = 0; i < elem_format.Length; i++)
-                    {
-                        objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
-                    }
-
-                    elements_for_single_merchant.Add(objs);
-                }
-                else
-                    break;
-            }
-
-            Object[] real_objs = new Object[elem_format.Length * elements_for_single_merchant.Count];
-            for (int i = 0; i < elements_for_single_merchant.Count; i++)
-            {
-                for (int j = 0; j < elem_format.Length; j++)
-                {
-                    real_objs[i * elem_format.Length + j] = elements_for_single_merchant[i][j];
-                }
-            }
-
-            return real_objs;
+            return get_element_multiple(sr, 'H');
         }
     }
 

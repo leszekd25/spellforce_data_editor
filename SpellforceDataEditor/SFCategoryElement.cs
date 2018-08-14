@@ -12,10 +12,10 @@ namespace SpellforceDataEditor
     //this class can hold any type you can read from gamedata.cff file
     public class SFVariant
     {
+        public static int[] TYPE_SIZE = { 1, 1, 2, 2, 4, 4, 0, -1 };
         Type[] types = { typeof(Byte), typeof(SByte), typeof(UInt16), typeof(Int16), typeof(UInt32), typeof(Int32), typeof(char[]) };
         public Object value;
         public TYPE vtype;
-        public static int[] TYPE_SIZE = { 1, 1, 2, 2, 4, 4, 0, -1 };
 
         //variant constructor
         public SFVariant()
@@ -41,7 +41,7 @@ namespace SpellforceDataEditor
             vtype = TYPE.Unknown;
         }
 
-        //turns variant into an int (if possible)
+        //returns int value of a variant (or 0 if can't represent it as an integer)
         public int to_int()
         {
             switch(vtype)

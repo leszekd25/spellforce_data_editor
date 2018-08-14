@@ -704,7 +704,6 @@ namespace SpellforceDataEditor
         }
 
         //loads gamedata.cff file
-        //bar has a maximum value of 10000
         public int load_cff(string filename, ToolStripProgressBar bar)
         {
             FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
@@ -742,7 +741,7 @@ namespace SpellforceDataEditor
             if(result == 0)
                 categorySpecial_RuneHeroes.generate(this);
 
-            br.Close();
+            //br.Close();
             fs.Close();
 
             return result;
@@ -763,7 +762,7 @@ namespace SpellforceDataEditor
                 get_category(i).write(bw);
             }
 
-            bw.Close();
+            //bw.Close();
             fs.Close();
 
             //md5 calculation for data diff tool
