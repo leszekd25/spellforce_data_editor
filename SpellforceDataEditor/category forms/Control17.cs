@@ -49,13 +49,6 @@ namespace SpellforceDataEditor.category_forms
             {
                 Byte clan_id = (Byte)(elem.get_single_variant(i * 3 + 1)).value;
                 Byte relation = (Byte)(elem.get_single_variant(i * 3 + 2)).value;
-                int cmb_index = -1;
-                /*if (relation == 0)
-                    cmb_index = 0;
-                else if (relation == 100)
-                    cmb_index = 1;
-                else if (relation == 156)
-                    cmb_index = 2;*/
 
                 string txt = "<MISSING!>";
                 if ((clan_id >= 1) && (clan_id <= (Byte)SFCategory17.clan_names.Length))

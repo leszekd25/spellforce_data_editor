@@ -9,6 +9,11 @@ namespace SpellforceDataEditor
     //helper class providing with useful functions
     public class Utility
     {
+        public const string S_NONAME = "<no name>";
+        public const string S_MISSING = "<missing>";
+        public const string S_UNKNOWN = "<unknown>";
+        public const string S_NONE = "<none>";
+
         //functions which try to convert a string to the respective type
         static public SByte TryParseInt8(string s, SByte def = 0)
         {
@@ -85,13 +90,16 @@ namespace SpellforceDataEditor
                     errarray[j] = 0;
                 return errarray;
             }
+
             Byte[] bytearray = new Byte[def_length];
+
             int i = 0;
             foreach(string hex in array)
             {
                 bytearray[i] = Convert.ToByte(hex, 16);
                 i++;
             }
+
             return bytearray;
         }
 
@@ -100,11 +108,13 @@ namespace SpellforceDataEditor
         {
             char[] charray = new char[length];
             char[] text_array = s.ToCharArray();
+
             for (int i = 0; i < length; i++)
                 if (i < text_array.Length)
                     charray[i] = text_array[i];
                 else
                     charray[i] = '\0';
+
             return charray;
         }
 
@@ -113,6 +123,7 @@ namespace SpellforceDataEditor
         {
             if (ch.vtype != TYPE.String)
                 return "";
+
             return (new string((char[])ch.value)).Replace("\0", string.Empty);
         }
 

@@ -7,66 +7,36 @@ using System.Threading.Tasks;
 namespace SpellforceDataEditor
 {
     //enmu describing type of data a variant possesses
-    public enum TYPE { UByte, Byte, UShort, Short, UInt, Int, Float, String, Unknown };
+    public enum TYPE { UByte, Byte, UShort, Short, UInt, Int, String, Unknown };
 
     //this class can hold any type you can read from gamedata.cff file
     public class SFVariant
     {
+        Type[] types = { typeof(Byte), typeof(SByte), typeof(UInt16), typeof(Int16), typeof(UInt32), typeof(Int32), typeof(char[]) };
         public Object value;
         public TYPE vtype;
-        public static int[] TYPE_SIZE = { 1, 1, 2, 2, 4, 4, 4, 0, -1 };
+        public static int[] TYPE_SIZE = { 1, 1, 2, 2, 4, 4, 0, -1 };
 
         //variant constructor
         public SFVariant()
         {
             vtype = TYPE.Unknown;
-            return;
+            value = null;
         }
 
         //sets variant to a given object and handles its type
+        //couldn't find a better way to do this : /
         public void set(Object obj)
         {
             value = obj;
             Type t = obj.GetType();
-            if (t.Equals(typeof(Byte)))
+            for (int i = 0; i < types.Length; i++)
             {
-                vtype = TYPE.UByte;
-                return;
-            }
-            if (t.Equals(typeof(SByte)))
-            {
-                vtype = TYPE.Byte;
-                return;
-            }
-            if (t.Equals(typeof(Int16)))
-            {
-                vtype = TYPE.Short;
-                return;
-            }
-            if (t.Equals(typeof(UInt16)))
-            {
-                vtype = TYPE.UShort;
-                return;
-            }
-            if (t.Equals(typeof(Int32)))
-            {
-                vtype = TYPE.Int;
-                return;
-            }
-            if (t.Equals(typeof(UInt32)))
-            {
-                vtype = TYPE.UInt;
-                return;
-            }
-            if (t.Equals(typeof(float)))
-            {
-                vtype = TYPE.Float;
-                return;
-            }
-            if (t.Equals(typeof(char[])))
-            {
-                vtype = TYPE.String;
-                return;
+                if (t.Equals(types[i]))
+                {
+                    vtype = (TYPE)i;
+                    return;
+                }
             }
             vtype = TYPE.Unknown;
         }
@@ -112,8 +82,6 @@ namespace SpellforceDataEditor
                     return (Int32)value == (Int32)v.value;
                 case TYPE.UInt:
                     return (UInt32)value == (UInt32)v.value;
-                case TYPE.Float:
-                    return (Single)value == (Single)v.value;
                 case TYPE.String:
                     return ((char[])value).SequenceEqual((char[])v.value);
                 default:
@@ -145,19 +113,13 @@ namespace SpellforceDataEditor
         //adds variants from a list of objects
         public void set(Object[] objs)
         {
-            for (int i = 0; i < objs.Length; i++)
-            {
-                SFVariant variant = new SFVariant();
-                variant.set(objs[i]);
-                properties.Add(variant);
-            }
-            return;
+            foreach (Object obj in objs)
+                add_single_variant(obj);
         }
 
         //sets variant specified by an index
         public void set_single_variant(int index, Object obj)
         {
-            properties[index] = new SFVariant();
             properties[index].set(obj);
         }
 
@@ -170,8 +132,6 @@ namespace SpellforceDataEditor
         //returns a single variant specified by an index
         public SFVariant get_single_variant(int index)
         {
-            if (index >= properties.Count)
-                return null;
             return properties[index];
         }
 
@@ -198,6 +158,7 @@ namespace SpellforceDataEditor
             SFCategoryElement elem = new SFCategoryElement();
             foreach (SFVariant v in properties)
                 elem.add_single_variant(v.value);
+
             return elem;
         }
 
@@ -206,11 +167,13 @@ namespace SpellforceDataEditor
         {
             if (properties.Count != elem.get().Count)
                 return false;
+
             for(int i = 0; i < properties.Count; i++)
             {
                 if (!properties[i].same_as(elem.get_single_variant(i)))
                     return false;
             }
+
             return true;
         }
     }

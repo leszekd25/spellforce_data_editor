@@ -654,11 +654,13 @@ namespace SpellforceDataEditor
     public class SFCategoryManager
     {
         private SFCategory[] categories;      //array of categories
-        private int categoryNumber;           //amount of categories (basically a constant)
-        private Byte[] mainHeader;            //gamedata.cff has a main header which is held here
         private SFCategoryRuneHeroes categorySpecial_RuneHeroes;    //intermediary needed to find names of rune heroes
-        private SpelllforceCFFEditor application_form;
+        private int categoryNumber;           //amount of categories (basically a constant)
+
+        private Byte[] mainHeader;            //gamedata.cff has a main header which is held here
         private string gamedata_md5 = "";     //currently loaded cff's MD5 hash (as string)
+
+        private SpelllforceCFFEditor application_form;
 
         //constructor, it creates categories
         public SFCategoryManager()
@@ -670,9 +672,11 @@ namespace SpellforceDataEditor
                 categories[i - 1] = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCategory" + i.ToString()) as SFCategory;
                 categories[i - 1].set_manager(this);
             }
-            mainHeader = new Byte[20];
+
             categorySpecial_RuneHeroes = new SFCategoryRuneHeroes();
             categorySpecial_RuneHeroes.set_manager(this);
+
+            mainHeader = new Byte[20];
         }
 
         public void set_application_form(SpelllforceCFFEditor form)
@@ -704,11 +708,14 @@ namespace SpellforceDataEditor
         public int load_cff(string filename, ToolStripProgressBar bar)
         {
             FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
+
             MD5 md5_gen = MD5.Create();
             gamedata_md5 = BitConverter.ToString(md5_gen.ComputeHash(fs)).Replace("-", "").ToLower();
+
             fs.Seek(0, SeekOrigin.Begin);
 
             BinaryReader br = new BinaryReader(fs, Encoding.Default);
+
             int result = 0;
 
             mainHeader = br.ReadBytes(mainHeader.Length);
@@ -731,6 +738,7 @@ namespace SpellforceDataEditor
                 }
                 bar.Value = (i * bar.Maximum) / categoryNumber;
             }
+
             if(result == 0)
                 categorySpecial_RuneHeroes.generate(this);
 
@@ -745,9 +753,11 @@ namespace SpellforceDataEditor
         {
             FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write);
             fs.SetLength(0);
+
             BinaryWriter bw = new BinaryWriter(fs, Encoding.Default);
 
             bw.Write(mainHeader);
+
             for (int i = 0; i < categoryNumber; i++)
             {
                 get_category(i).write(bw);
@@ -758,8 +768,10 @@ namespace SpellforceDataEditor
 
             //md5 calculation for data diff tool
             FileStream fs2 = new FileStream(filename, FileMode.Open, FileAccess.Read);
+
             MD5 md5_gen = MD5.Create();
             gamedata_md5 = BitConverter.ToString(md5_gen.ComputeHash(fs2)).Replace("-", "").ToLower();
+
             fs2.Close();
         }
 
@@ -771,16 +783,21 @@ namespace SpellforceDataEditor
 
         //using the fact that all text data is saved in category 15 (ind 14)
         //searches for a text with a given ID and in a given language
+        //returns a sub-element in a given language which contains text data looked for (or null if it doesnt exist)
+        //this is quite fast (O(log n))
         public SFCategoryElement find_element_text(int t_index, int t_lang)
         {
             int index = categories[14].find_binary_element_index<UInt16>(0, (UInt16)t_index);
             if (index == -1)
                 return null;
+
             int lang_index = -1;
             int safe_index = -1;   //will fail if there's no language id 0
+
             SFCategoryElement e = new SFCategoryElement();
             SFCategoryElement e_found = categories[14].get_element(index);
             int elem_num = e_found.get().Count / 5;
+
             for(int i = 0; i < elem_num; i++)
             {
                 if((Byte)e_found.get_single_variant(i*5+1).value == (Byte)t_lang)
@@ -793,35 +810,42 @@ namespace SpellforceDataEditor
                     safe_index = i;
                 }
             }
+
             if (lang_index == -1)
                 lang_index = safe_index;
             if (lang_index == -1)
                 return null;
+
             Object[] vs = new Object[5];
             for (int i = 0; i < 5; i++)
                 vs[i] = e_found.get_single_variant(lang_index * 5 + i).value;
             e.set(vs);
+
             return e;
         }
 
         //returns a name of a given effect
-        //it can also add the effect level
+        //optionally with effect level
         public string get_effect_name(UInt16 effect_id, bool effect_level = false)
         {
             SFCategoryElement effect_elem = get_category(0).find_binary_element<UInt16>(0, effect_id);
             if (effect_elem == null)
-                return "<no name>";
+                return Utility.S_NONAME;
+
             UInt16 spell_type = (UInt16)effect_elem.get_single_variant(1).value;
             SFCategoryElement spell_elem = get_category(1).find_binary_element<UInt16>(0, spell_type);
             if (spell_elem == null)
-                return "<no name>";
+                return Utility.S_NONAME;
+
             int text_id = (int)(UInt16)spell_elem.get_single_variant(1).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
             if (text_elem == null)
-                return "<text missing>";
+                return Utility.S_MISSING;
+
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
             if (effect_level)
                 txt += " level " + effect_elem.get_single_variant(4).value.ToString();
+
             return txt;
         }
 
@@ -830,12 +854,15 @@ namespace SpellforceDataEditor
         {
             SFCategoryElement unit_elem = get_category(17).find_binary_element<UInt16>(0, unit_id);
             if (unit_elem == null)
-                return "<no name>";
+                return Utility.S_NONAME; ;
+
             int text_id = (int)(UInt16)unit_elem.get_single_variant(1).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
             if (text_elem == null)
-                return "<text missing>";
+                return Utility.S_MISSING; ;
+
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
+
             return txt;
         }
 
@@ -872,16 +899,19 @@ namespace SpellforceDataEditor
         {
             string txt_major = "";
             string txt_minor = "";
+
             int major_index = (int)(UInt16)get_category(26).find_element_index<Byte>(0, skill_major);
             if (major_index == -1)
             {
-                return "<unknown string>";
+                return Utility.S_UNKNOWN;
             }
             int total_index = major_index + (int)skill_minor;
+
             int text_id_major = (int)(UInt16)get_category(26).get_element_variant(major_index, 2).value;
             SFCategoryElement txt_elem_major = find_element_text(text_id_major, 1);
             if (txt_elem_major != null)
                 txt_major = Utility.CleanString(txt_elem_major.get_single_variant(4));
+
             if((skill_major == 0)&&(skill_minor != 0))
             {
                 txt_major = "";
@@ -897,6 +927,7 @@ namespace SpellforceDataEditor
                         txt_minor = Utility.CleanString(txt_elem_minor.get_single_variant(4));
                 }
             }
+
             return txt_major + " " + txt_minor + " " + skill_lvl.ToString();
         }
 
@@ -905,12 +936,15 @@ namespace SpellforceDataEditor
         {
             SFCategoryElement race_elem = get_category(15).find_binary_element<Byte>(0, race_id);
             if (race_elem == null)
-                return "<no name>";
+                return Utility.S_NONAME;
+
             int text_id = (int)(UInt16)race_elem.get_single_variant(7).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
             if (text_elem == null)
-                return "<text missing>";
+                return Utility.S_MISSING;
+
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
+
             return txt;
         }
 
@@ -919,12 +953,15 @@ namespace SpellforceDataEditor
         {
             SFCategoryElement item_elem = get_category(6).find_binary_element<UInt16>(0, item_id);
             if (item_elem == null)
-                return "<no name>";
+                return Utility.S_NONAME;
+
             int text_id = (int)(UInt16)item_elem.get_single_variant(3).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
             if (text_elem == null)
-                return "<text missing>";
+                return Utility.S_MISSING;
+
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
+
             return txt;
         }
 
@@ -933,12 +970,15 @@ namespace SpellforceDataEditor
         {
             SFCategoryElement building_elem = get_category(23).find_binary_element<UInt16>(0, building_id);
             if (building_elem == null)
-                return "<no name>";
+                return Utility.S_NONAME;
+
             int text_id = (int)(UInt16)building_elem.get_single_variant(5).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
             if (text_elem == null)
-                return "<text missing>";
+                return Utility.S_MISSING;
+
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
+
             return txt;
         }
 
@@ -947,7 +987,8 @@ namespace SpellforceDataEditor
         {
             SFCategoryElement merchant_elem = get_category(28).find_binary_element<UInt16>(0, merchant_id);
             if (merchant_elem == null)
-                return "<no name>";
+                return Utility.S_NONAME;
+
             return get_unit_name((UInt16)merchant_elem.get_single_variant(1).value);
         }
 
@@ -956,12 +997,15 @@ namespace SpellforceDataEditor
         {
             SFCategoryElement object_elem = get_category(33).find_binary_element<UInt16>(0, object_id);
             if (object_elem == null)
-                return "<no name>";
+                return Utility.S_NONAME;
+
             int text_id = (int)(UInt16)object_elem.get_single_variant(1).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
             if (text_elem == null)
-                return "<text missing>";
+                return Utility.S_MISSING;
+
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
+
             return txt;
         }
 
@@ -970,12 +1014,15 @@ namespace SpellforceDataEditor
         {
             SFCategoryElement desc_elem = get_category(40).find_binary_element<UInt16>(0, desc_id);
             if (desc_elem == null)
-                return "<no name>";
+                return Utility.S_NONAME;
+
             int text_id = (int)(UInt16)desc_elem.get_single_variant(1).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
             if (text_elem == null)
-                return "<text missing>";
+                return Utility.S_MISSING;
+
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
+
             return txt;
         }
 
@@ -985,11 +1032,13 @@ namespace SpellforceDataEditor
         {
             SFCategoryElement rune_elem = categorySpecial_RuneHeroes.find_binary_element<UInt16>(0, stats_id);
             if (rune_elem == null)
-                return "<no name>";
+                return Utility.S_NONAME;
+
             int text_id = (int)(UInt16)rune_elem.get_single_variant(1).value;
             SFCategoryElement text_elem = find_element_text(text_id, 1);
             if (text_elem == null)
-                return "<text missing>";
+                return Utility.S_MISSING;
+
             return Utility.CleanString(text_elem.get_single_variant(4));
         }
 
@@ -999,7 +1048,9 @@ namespace SpellforceDataEditor
         public List<int> query_by_column_numeric(int categoryindex, int columnindex, int value)
         {
             List<int> items = new List<int>();
+
             SFCategory cat = get_category(categoryindex);
+
             for (int i = 0; i < cat.get_element_count(); i++)
             {
                 SFVariant variant = cat.get_element_variant(i, columnindex);
@@ -1016,7 +1067,9 @@ namespace SpellforceDataEditor
         public List<int> query_by_column_text(int categoryindex, int columnindex, string value)
         {
             List<int> items = new List<int>();
+
             SFCategory cat = get_category(categoryindex);
+
             for (int i = 0; i < cat.get_element_count(); i++)
             {
                 SFVariant variant = cat.get_element_variant(i, columnindex);
@@ -1033,8 +1086,11 @@ namespace SpellforceDataEditor
         public List<int> query_by_column_flag(int categoryindex, int columnindex, int value)
         {
             List<int> items = new List<int>();
+
             int flag_value = 1 << (value - 1);
+
             SFCategory cat = get_category(categoryindex);
+
             for (int i = 0; i < cat.get_element_count(); i++)
             {
                 SFVariant variant = cat.get_element_variant(i, columnindex);
@@ -1051,7 +1107,10 @@ namespace SpellforceDataEditor
             foreach (SFCategory cat in categories)
                 cat.unload();
             categorySpecial_RuneHeroes.unload();
+
             mainHeader = new Byte[20];
+            for (int i = 0; i < 20; i++)
+                mainHeader[i] = 0;
         }
     }
 }

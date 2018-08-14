@@ -165,20 +165,20 @@ namespace SpellforceDataEditor
         //returns false if MD5 hashes of originally edited CFF and currently loaded CFF mismatch
         public bool load_diff_data(string fname)
         {
-            System.Diagnostics.Debug.WriteLine(fname);
             FileStream fs;
             try
             {
                 fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
             }
-            catch(FileNotFoundException e)
+            catch(FileNotFoundException)
             {
                 return false;
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 return false;
             }
+
             BinaryReader br = new BinaryReader(fs, Encoding.Default);
 
             int current_category = -1;
@@ -267,6 +267,9 @@ namespace SpellforceDataEditor
         //if there are changes in category which have index higher than diff_current_index, they're discarded, then a new change is made
         public void push_change(int cat_index, SFDiffElement elem)
         {
+            if (elem.difference_type == SFDiffElement.DIFF_TYPE.UNKNOWN)
+                return;
+
             int last_change = diff_data[cat_index].Count-1;
             int change_difference = last_change - diff_current_index[cat_index];
             if(change_difference > 0)
@@ -274,6 +277,7 @@ namespace SpellforceDataEditor
                 for (int i = 0; i < change_difference; i++)
                     diff_data[cat_index].RemoveAt(last_change - i);
             }
+
             diff_data[cat_index].Add(elem);
             diff_current_index[cat_index]++;
         }
@@ -285,6 +289,7 @@ namespace SpellforceDataEditor
             int current_change = diff_current_index[cat_index];
             if (current_change < 0)
                 return;
+
             SFCategory cat = manager.get_category(cat_index);
             revert_change(cat, diff_data[cat_index][current_change]);
             diff_current_index[cat_index]--;
@@ -297,6 +302,7 @@ namespace SpellforceDataEditor
             int current_change = diff_current_index[cat_index];
             if (current_change >= diff_data[cat_index].Count-1)
                 return;
+
             SFCategory cat = manager.get_category(cat_index);
             commit_change(cat, diff_data[cat_index][current_change+1]);
             diff_current_index[cat_index]++;

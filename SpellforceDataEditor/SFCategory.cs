@@ -26,6 +26,7 @@ namespace SpellforceDataEditor
         {
             categoryHeader = new Byte[12];
             string_size = new int[1] { 0 };
+            elements = new List<SFCategoryElement>();
         }
 
         //getter/setter for manager property
@@ -78,9 +79,6 @@ namespace SpellforceDataEditor
                     case 'I':
                         elem.add_single_variant((UInt32)0);
                         break;
-                    case 'f':
-                        elem.add_single_variant((Single)0);
-                        break;
                     case 's':
                         elem.add_single_variant(new char[string_size[current_string]]);
                         current_string = Math.Min(string_size.Length - 1, current_string + 1);
@@ -95,6 +93,7 @@ namespace SpellforceDataEditor
 
         //retrieves next variant from a buffer, given a type (indicated by a character contained in a format)
         //s_size refers to a string length (for if the variant holds a string)
+        //variant is returned as a raw object
         public Object get_single_variant(BinaryReader sr, char t, int s_size)
         {
             switch (t)
@@ -111,8 +110,6 @@ namespace SpellforceDataEditor
                     return sr.ReadInt32();
                 case 'I':
                     return sr.ReadUInt32();
-                case 'f':
-                    return sr.ReadSingle();
                 case 's':
                     current_string = Math.Min(string_size.Length - 1, current_string + 1);
                     return sr.ReadChars(s_size);
@@ -145,9 +142,6 @@ namespace SpellforceDataEditor
                 case TYPE.UInt:
                     sw.Write((UInt32)var.value);
                     break;
-                case TYPE.Float:
-                    sw.Write((Single)var.value);
-                    break;
                 case TYPE.String:
                     sw.Write((char[])var.value);
                     break;
@@ -161,6 +155,9 @@ namespace SpellforceDataEditor
         {
             current_string = 0;
             Object[] objs = new Object[elem_format.Length];
+            if (sr.BaseStream.Position + elem_format.Length > sr.BaseStream.Length)
+                throw new EndOfStreamException();
+
             for (int i = 0; i < elem_format.Length; i++)
             {
                 objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
@@ -171,9 +168,7 @@ namespace SpellforceDataEditor
         //returns an element given element index, or null if it doesn't exist
         public SFCategoryElement get_element(int index)
         {
-            if ((index >= 0) && (index < elements.Count))
-                return elements[index];
-            return null;
+            return elements[index];
         }
 
         //returns list of elements the category holds
@@ -185,8 +180,6 @@ namespace SpellforceDataEditor
         //returns a single variant provided element index and variant index
         public SFVariant get_element_variant(int elem_index, int var_index)
         {
-            if (elem_index >= elements.Count)
-                return null;
             return elements[elem_index].get_single_variant(var_index);
         }
 
@@ -196,7 +189,7 @@ namespace SpellforceDataEditor
         {
             for (int i = 0; i < elements.Count; i++)
             {
-                if (((T)get_element(i).get_single_variant(v_index).value).CompareTo(value) == 0)
+                if (((T)elements[i].get_single_variant(v_index).value).CompareTo(value) == 0)
                     return get_element(i);
             }
             return null;
@@ -208,7 +201,7 @@ namespace SpellforceDataEditor
         {
             for (int i = 0; i < elements.Count; i++)
             {
-                if (((T)get_element(i).get_single_variant(v_index).value).CompareTo(value) == 0)
+                if (((T)elements[i].get_single_variant(v_index).value).CompareTo(value) == 0)
                     return i;
             }
             return -1;
@@ -226,7 +219,7 @@ namespace SpellforceDataEditor
             while (current_start <= current_end)
             {
                 current_center = (current_start + current_end) / 2;    //care about overflow
-                val = (T)get_element(current_center).get_single_variant(v_index).value;
+                val = (T)elements[current_center].get_single_variant(v_index).value;
                 if (val.CompareTo(value) == 0)
                     return get_element(current_center);
                 if (val.CompareTo(value) < 0)
@@ -250,7 +243,7 @@ namespace SpellforceDataEditor
             {
 
                 current_center = (current_start + current_end) / 2;    //care about overflow
-                val = (T)get_element(current_center).get_single_variant(v_index).value;
+                val = (T)elements[current_center].get_single_variant(v_index).value;
                 if (val.CompareTo(value) == 0)
                     return current_center;
                 if (val.CompareTo(value) < 0)
@@ -265,7 +258,7 @@ namespace SpellforceDataEditor
         public string get_text_from_element(SFCategoryElement elem, int cat_index)
         {
             if (elem == null)
-                return "<no name>";
+                return Utility.S_NONAME;
             else
             {
                 int text_id = (int)(UInt16)elem.get_single_variant(cat_index).value;
@@ -273,15 +266,14 @@ namespace SpellforceDataEditor
                 if (txt_elem != null)
                     return Utility.CleanString(txt_elem.get_single_variant(4));
                 else
-                    return "<text missing>";
+                    return Utility.S_MISSING;
             }
         }
 
         //sets a single variant given element index and variant index
         public void set_element_variant(int elem_index, int var_index, object obj)
         {
-            if (elem_index < elements.Count)
-                elements[elem_index].get()[var_index].set(obj);
+            elements[elem_index].get()[var_index].set(obj);
         }
 
         //puts a new element (as a list of variants) to a buffer
@@ -316,7 +308,7 @@ namespace SpellforceDataEditor
                 bad_header = true;
 
             block_length = BitConverter.ToUInt32(categoryHeader, 6);
-            elements = new List<SFCategoryElement>();
+            elements.Clear();
             Byte[] block_buffer = new Byte[block_length];
             sr.Read(block_buffer, 0, (int)(block_length));
             /*string s = "";
@@ -332,11 +324,11 @@ namespace SpellforceDataEditor
                 {
                     elem.set(get_element(mr));
                 }
-                catch (EndOfStreamException e)
+                catch (EndOfStreamException)
                 {
                     return -2;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     return -3;
                 }
@@ -348,19 +340,6 @@ namespace SpellforceDataEditor
             if (bad_header)
                 return -1;
             return 0;
-        }
-
-        //inserts an element (given element index) into the buffer
-        public void set_element(BinaryWriter sw, int elem_index)
-        {
-            current_string = 0;
-            List<SFVariant> vars = get_element(elem_index).get();
-            for (int i = 0; i < vars.Count; i++)
-            {
-                put_single_variant(sw, vars[i], string_size[current_string]);
-                if(vars[i].vtype == TYPE.String)
-                    current_string = Math.Min(string_size.Length - 1, current_string + 1);
-            }
         }
 
         //inserts all elements into the buffer
@@ -378,7 +357,6 @@ namespace SpellforceDataEditor
             }
         }
 
-        //manager is required to communicate with other categories to construct a short description
         public virtual string get_element_string(int index)
         {
             return index.ToString();
@@ -405,6 +383,8 @@ namespace SpellforceDataEditor
         public void unload()
         {
             elements.Clear();
+
+            categoryHeader = new byte[12];
             for (int i = 0; i < 12; i++)
                 categoryHeader[i] = 0;
         }
@@ -431,7 +411,7 @@ namespace SpellforceDataEditor
                 case 5:
                     return "in Area";
                 default:
-                    return "<no name>";
+                    return Utility.S_NONAME;
             }
         }
 
@@ -446,7 +426,7 @@ namespace SpellforceDataEditor
                 case 3:
                     return "Other";
                 default:
-                    return "<no name>";
+                    return Utility.S_NONAME;
             }
         }
 
@@ -549,7 +529,7 @@ namespace SpellforceDataEditor
             UInt16 stats_level = (UInt16)get_element_variant(index, 1).value;
             SFCategoryElement elem = manager.get_category(17).find_element<UInt16>(2, stats_id);
             string unit_txt = get_text_from_element(elem, 1);
-            if (unit_txt == "<no name>")
+            if (unit_txt == Utility.S_NONAME)
                 unit_txt = manager.get_runehero_name(stats_id);
             return stats_id.ToString() + " " + unit_txt + " (lvl " + stats_level.ToString() + ")";
         }
@@ -629,7 +609,7 @@ namespace SpellforceDataEditor
             UInt16 stats_id = (UInt16)get_element_variant(index, 0).value;
             SFCategoryElement elem = manager.get_category(17).find_element<UInt16>(2, stats_id);
             string unit_txt = get_text_from_element(elem, 1);
-            if (unit_txt == "<no name>")
+            if (unit_txt == Utility.S_NONAME)
                 unit_txt = manager.get_runehero_name(stats_id);
             return stats_id.ToString() + " " + unit_txt;
             
@@ -702,11 +682,11 @@ namespace SpellforceDataEditor
     //item type/name ID/price (7th category)
     public class SFCategory7 : SFCategory
     {
-        static public string[] item_types = { "Unknown", "Equipment", "Inventory rune", "Installed rune",
+        static public string[] item_types = { Utility.S_UNKNOWN, "Equipment", "Inventory rune", "Installed rune",
             "Spell scroll", "Equipped scroll", "Unit plan", "Building plan", "Equipped unit plan",
             "Equipped building plan", "Miscellaneous" };
 
-        static public string[] equipment_types = { "Unknown", "Headpiece", "Chestpiece", "Legpiece", "Unknown", "Unknown", "Ring",
+        static public string[] equipment_types = { Utility.S_UNKNOWN, "Headpiece", "Chestpiece", "Legpiece", "Unknown", "Unknown", "Ring",
             "1H Weapon", "2H Weapon", "Shield", "Robe", "ItemChestFake (monsters)", "Ranged Weapon", "ItemChestFake (playable)" };
 
         public SFCategory7() : base()
@@ -759,7 +739,7 @@ namespace SpellforceDataEditor
 
             if(item_type == 1)
             {
-                string bonus_type_text = "Unknown";
+                string bonus_type_text = String.Copy(Utility.S_UNKNOWN);
                 if ((bonus_type > 0) && (bonus_type < (Byte)equipment_types.Length))
                     bonus_type_text = equipment_types[(int)bonus_type];
                 item_type_text += " (" + bonus_type_text + ")";
@@ -779,12 +759,12 @@ namespace SpellforceDataEditor
                 string txt;
                 SFCategoryElement set_elem = manager.get_category(48).find_binary_element<Byte>(0, elem_id);
                 if (set_elem == null)
-                    txt = "<no name>";
+                    txt = Utility.S_NONAME;
                 else
                 {
                     SFCategoryElement txt_elem = manager.find_element_text((UInt16)(set_elem.get_single_variant(1).value), 1);
                     if (txt_elem == null)
-                        txt = "<text missing>";
+                        txt = Utility.S_MISSING;
                     else
                         txt = Utility.CleanString(txt_elem.get_single_variant(4));
                 }
@@ -1028,7 +1008,7 @@ namespace SpellforceDataEditor
             string txt;
             SFCategoryElement elem = manager.find_element_text((UInt16)(get_element_variant(index, 0).value), 1);
             if (elem == null)
-                txt = "<no name>";
+                txt = Utility.S_NONAME;
             else
                 txt = Utility.CleanString(elem.get_single_variant(4));
             return get_element_variant(index, 0).value.ToString() + " " + txt;
@@ -1082,9 +1062,9 @@ namespace SpellforceDataEditor
             "Hostile [Undead]", "Hostile [monsters/demons]", "Player", "Player Elves",
             "Player Humans", "Player Dwarves", "Player Orcs", "Player Trolls",
             "Player Darkelves", "Hostile [animals]", "KillAll", "Hostile [Beastmen]",
-            "Hostile [Gorge]", "<unknown>", "<none>", "Hostile [Blades]",
-            "<none>", "Hostile [Multiplayer enemies]", "Hostile [Ogres]", "Neutral [NPCs]",
-            "Hostile [Soulforger]", "Hostile [Bloodash]", "<unknown>", "Hostile [Dervish]"};
+            "Hostile [Gorge]", Utility.S_UNKNOWN, Utility.S_NONE, "Hostile [Blades]",
+            Utility.S_NONE, "Hostile [Multiplayer enemies]", "Hostile [Ogres]", "Neutral [NPCs]",
+            "Hostile [Soulforger]", "Hostile [Bloodash]", Utility.S_UNKNOWN, "Hostile [Dervish]"};
 
         public SFCategory17() : base()
         {
@@ -1604,7 +1584,7 @@ namespace SpellforceDataEditor
         {
             Byte item_type = (Byte)get_element_variant(index, 1).value;
             UInt16 perc = (UInt16)get_element_variant(index, 2).value;
-            string item_text = "<no_name>";
+            string item_text = Utility.S_NONAME;
             if ((item_type > 0) && (item_type < SFCategory7.item_types.Length))
                 item_text = SFCategory7.item_types[item_type];
             return "Selling price for " + item_text + " type items: " + perc.ToString() + "% of base price\r\nBuying price: "+(200-perc).ToString()+"% of base price";
@@ -1810,7 +1790,7 @@ namespace SpellforceDataEditor
             UInt32 map_id = (UInt32)get_element_variant(index, 1).value;
             SFCategoryElement map_elem = manager.get_category(37).find_binary_element<UInt32>(0, map_id);
             if (map_elem == null)
-                map_handle = "<no name>";
+                map_handle = Utility.S_NONAME;
             else
                 map_handle = Utility.CleanString(map_elem.get_single_variant(2));
             return "Map handle: " + map_handle;
