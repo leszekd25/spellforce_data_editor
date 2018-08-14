@@ -58,45 +58,52 @@ namespace SpellforceDataEditor
         //load game data
         private void loadGameDatacffToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(OpenGameData.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (OpenGameData.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                if(data_loaded)
-                    close_data();
-
-                labelStatus.Text = "Loading...";
-                ProgressBar_Main.Visible = true;
-                statusStrip1.Refresh();
-
-                int result = manager.load_cff(OpenGameData.FileName, ProgressBar_Main);
-                if(result != 0)
-                {
-                    manager.unload_all();
-                    if (result == -1)
-                        labelStatus.Text = "Failed to open file " + OpenGameData.FileName + ": Block size does not match data";
-                    else if (result == -2)
-                        labelStatus.Text = "Failed to open file " + OpenGameData.FileName + ": Invalid data";
-                    ProgressBar_Main.Visible = false;
-                    return;
-                }
-
-                string diff_filename = OpenGameData.FileName.Replace(".cff", ".dff");
-                bool diff_loaded = diff.load_diff_data(diff_filename);
-
-                this.Text = "SpellforceDataEditor - "+OpenGameData.FileName;
-                labelStatus.Text = "Ready";
-                if (!diff_loaded)
-                    labelStatus.Text = "Ready (diff file not found)";
-                ProgressBar_Main.Visible = false;
-
-                changeDataLanguageToolStripMenuItem.Enabled = true;
-                CategorySelect.Enabled = true;
-                for (int i = 0; i < manager.get_category_number(); i++)
-                    CategorySelect.Items.Add(manager.get_category(i).get_name());
-
-                data_loaded = true;
-
-                GC.Collect();
+                load_data();
             }
+        }
+
+        private bool load_data()
+        {
+            if (data_loaded)
+                close_data();
+
+            labelStatus.Text = "Loading...";
+            ProgressBar_Main.Visible = true;
+            statusStrip1.Refresh();
+
+            int result = manager.load_cff(OpenGameData.FileName, ProgressBar_Main);
+            if (result != 0)
+            {
+                manager.unload_all();
+                if (result == -1)
+                    labelStatus.Text = "Failed to open file " + OpenGameData.FileName + ": Block size does not match data";
+                else if (result == -2)
+                    labelStatus.Text = "Failed to open file " + OpenGameData.FileName + ": Invalid data";
+                ProgressBar_Main.Visible = false;
+                return false;
+            }
+
+            string diff_filename = OpenGameData.FileName.Replace(".cff", ".dff");
+            bool diff_loaded = diff.load_diff_data(diff_filename);
+
+            this.Text = "SpellforceDataEditor - " + OpenGameData.FileName;
+            labelStatus.Text = "Ready";
+            if (!diff_loaded)
+                labelStatus.Text = "Ready (diff file not found)";
+            ProgressBar_Main.Visible = false;
+
+            changeDataLanguageToolStripMenuItem.Enabled = true;
+            CategorySelect.Enabled = true;
+            for (int i = 0; i < manager.get_category_number(); i++)
+                CategorySelect.Items.Add(manager.get_category(i).get_name());
+
+            data_loaded = true;
+
+            GC.Collect();
+
+            return true;
         }
 
         //save game data
@@ -136,7 +143,9 @@ namespace SpellforceDataEditor
 
             SFCategory cat = manager.get_category(real_category_index);
             if (!diff_current_element.same_as(cat.get_element(selected_element_index)))
+            {
                 diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REPLACE, selected_element_index, diff_current_element, cat.get_element(selected_element_index)));
+            }
         }
 
         private void diff_set_new_element()
@@ -769,17 +778,6 @@ namespace SpellforceDataEditor
 
             undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
             redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
-        }
-
-        private void SpelllforceCFFEditor_KeyDown(object sender, KeyEventArgs e)
-        {
-            if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
-            {
-                if (e.KeyCode == Keys.Z)
-                    undo_change();
-                else if (e.KeyCode == Keys.Y)
-                    redo_change();
-            }
         }
 
         private void ButtonElemCopy_Click(object sender, EventArgs e)

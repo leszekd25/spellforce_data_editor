@@ -106,28 +106,31 @@
             // loadGameDatacffToolStripMenuItem
             // 
             this.loadGameDatacffToolStripMenuItem.Name = "loadGameDatacffToolStripMenuItem";
-            this.loadGameDatacffToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.loadGameDatacffToolStripMenuItem.Text = "Load GameData.cff";
+            this.loadGameDatacffToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.loadGameDatacffToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.loadGameDatacffToolStripMenuItem.Text = "Open GameData.cff";
             this.loadGameDatacffToolStripMenuItem.Click += new System.EventHandler(this.loadGameDatacffToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -144,16 +147,18 @@
             // 
             this.undoCtrlZToolStripMenuItem.Enabled = false;
             this.undoCtrlZToolStripMenuItem.Name = "undoCtrlZToolStripMenuItem";
-            this.undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.undoCtrlZToolStripMenuItem.Text = "Undo (Ctrl+Z)";
+            this.undoCtrlZToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.undoCtrlZToolStripMenuItem.Text = "Undo";
             this.undoCtrlZToolStripMenuItem.Click += new System.EventHandler(this.undoCtrlZToolStripMenuItem_Click);
             // 
             // redoCtrlYToolStripMenuItem
             // 
             this.redoCtrlYToolStripMenuItem.Enabled = false;
             this.redoCtrlYToolStripMenuItem.Name = "redoCtrlYToolStripMenuItem";
-            this.redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.redoCtrlYToolStripMenuItem.Text = "Redo (Ctrl+Y)";
+            this.redoCtrlYToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
+            this.redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.redoCtrlYToolStripMenuItem.Text = "Redo";
             this.redoCtrlYToolStripMenuItem.Click += new System.EventHandler(this.redoCtrlYToolStripMenuItem_Click);
             // 
             // specialToolStripMenuItem
@@ -486,7 +491,6 @@
             this.Name = "SpelllforceCFFEditor";
             this.Text = "SpellforceDataEditor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AskBeforeExit);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SpelllforceCFFEditor_KeyDown);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panelSearch.ResumeLayout(false);
