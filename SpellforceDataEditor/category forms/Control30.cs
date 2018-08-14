@@ -71,7 +71,7 @@ namespace SpellforceDataEditor.category_forms
 
         private void OnCellValueChange(object sender, DataGridViewCellEventArgs e)
         {
-            if (MerchantGrid.CurrentCell == null)
+           if (MerchantGrid.CurrentCell == null)
                 return;
 
             DataGridViewCell cell = (DataGridViewCell)MerchantGrid.CurrentCell;

@@ -65,7 +65,7 @@
             this.RelationGrid.Name = "RelationGrid";
             this.RelationGrid.Size = new System.Drawing.Size(360, 370);
             this.RelationGrid.TabIndex = 22;
-            this.RelationGrid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
+            this.RelationGrid.CellValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
             // 
             // ClanName
             // 

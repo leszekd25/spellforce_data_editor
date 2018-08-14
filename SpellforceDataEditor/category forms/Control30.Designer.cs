@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.MerchantGrid = new System.Windows.Forms.DataGridView();
@@ -58,8 +58,8 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 46;
-            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
+            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // MerchantGrid
             // 
@@ -77,15 +77,15 @@
             this.MerchantGrid.Name = "MerchantGrid";
             this.MerchantGrid.Size = new System.Drawing.Size(452, 307);
             this.MerchantGrid.TabIndex = 52;
-            this.MerchantGrid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnCellValueChange);
+            this.MerchantGrid.CellValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnCellValueChange);
             this.MerchantGrid.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MerchantGrid_MouseDown);
             // 
             // ItemID
             // 
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
-            this.ItemID.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.Black;
+            this.ItemID.DefaultCellStyle = dataGridViewCellStyle2;
             this.ItemID.HeaderText = "Item ID";
             this.ItemID.Name = "ItemID";
             this.ItemID.Width = 60;
