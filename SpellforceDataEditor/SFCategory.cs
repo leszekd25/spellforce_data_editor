@@ -172,7 +172,7 @@ namespace SpellforceDataEditor
             int cur_id = -1;
             while (true)
             {
-                if (sr.PeekChar() == -1)
+                if (sr.BaseStream.Position >= sr.BaseStream.Length)
                     break;
                 int next_id = -1;
                 if (char_load == 'B')
@@ -352,7 +352,7 @@ namespace SpellforceDataEditor
             
             MemoryStream ms = new MemoryStream(block_buffer);
             BinaryReader mr = new BinaryReader(ms, Encoding.Default);
-            while (mr.PeekChar() != -1)
+            while (mr.BaseStream.Position < mr.BaseStream.Length)
             {
                 SFCategoryElement elem = new SFCategoryElement();
                 try

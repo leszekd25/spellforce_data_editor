@@ -13,7 +13,7 @@ namespace SpellforceDataEditor
     public class SFVariant
     {
         public static int[] TYPE_SIZE = { 1, 1, 2, 2, 4, 4, 0, -1 };
-        Type[] types = { typeof(Byte), typeof(SByte), typeof(UInt16), typeof(Int16), typeof(UInt32), typeof(Int32), typeof(char[]) };
+        static Type[] types = { typeof(Byte), typeof(SByte), typeof(UInt16), typeof(Int16), typeof(UInt32), typeof(Int32), typeof(char[]) };
         public Object value;
         public TYPE vtype;
 
