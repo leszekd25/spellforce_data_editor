@@ -585,7 +585,17 @@ namespace SpellforceDataEditor
             }
             Byte race_id = (Byte)get_element_variant(index, 2).value;
             race_name = manager.get_race_name(race_id);
-            return "This unit race: " + race_name + stat_txt; ;
+            Byte flags = (Byte)get_element_variant(index, 23).value;
+            bool isMale = (flags & 1) == 0;
+            bool isUnkillable = (flags & 2) == 2;
+            string textFlags = "\r\nUnit gender: ";
+            if (isMale)
+                textFlags += "male";
+            else
+                textFlags += "female";
+            if (isUnkillable)
+                textFlags += "\r\nThis unit is unkillable";
+            return "This unit race: " + race_name + stat_txt + textFlags;
         }
     }
 

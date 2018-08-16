@@ -249,6 +249,7 @@ namespace SpellforceDataEditor
         }
 
         //modifies data from all categories at once according to diff data
+        //BROKEN! do not use for the time being
         public void merge_changes()
         {
             for(int i = 0; i < manager.get_category_number(); i++)
@@ -275,9 +276,12 @@ namespace SpellforceDataEditor
             if(change_difference > 0)
             {
                 for (int i = 0; i < change_difference; i++)
+                {
+                    System.Diagnostics.Debug.WriteLine((last_change - i).ToString() + " CHANGE REMOVED: " + diff_data[cat_index][last_change - i].difference_type.ToString() + " [" + diff_data[cat_index][last_change - i].difference_index.ToString() + "]");
                     diff_data[cat_index].RemoveAt(last_change - i);
+                }
             }
-
+            System.Diagnostics.Debug.WriteLine((last_change-change_difference+1).ToString() + " CHANGE ADDED: " + elem.difference_type.ToString() + " [" + elem.difference_index.ToString() + "]");
             diff_data[cat_index].Add(elem);
             diff_current_index[cat_index]++;
         }

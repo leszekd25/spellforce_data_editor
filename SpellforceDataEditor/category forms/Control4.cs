@@ -38,7 +38,7 @@ namespace SpellforceDataEditor.category_forms
             column_dict.Add("Unknown2 1", new int[1] { 20 });
             column_dict.Add("Unknown2 2", new int[1] { 21 });
             column_dict.Add("Spawn base time", new int[1] { 22 });
-            column_dict.Add("Head gender", new int[1] { 23 });
+            column_dict.Add("Unit flags", new int[1] { 23 });
             column_dict.Add("Head ID", new int[1] { 24 });
             column_dict.Add("Equipment slots ID", new int[1] { 25 });
 

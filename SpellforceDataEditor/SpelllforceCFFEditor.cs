@@ -1,13 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor
@@ -22,6 +16,8 @@ namespace SpellforceDataEditor
         private int selected_category_index = -1;
         private int real_category_index = -1;                   //tracer helper
         private int selected_element_index = -1;
+
+        private string version = "2018.08.18.1";
 
         private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
 
@@ -53,6 +49,8 @@ namespace SpellforceDataEditor
             tracer = new SFDataTracer();
 
             current_indices = new List<int>();
+
+            versionToolStripMenuItem.Text = "Version " + version;
         }
 
         //load game data
@@ -439,7 +437,7 @@ namespace SpellforceDataEditor
             if (insert_copy_element == null)
                 elem = ctg.generate_empty_element();
             else
-                elem = insert_copy_element;
+                elem = insert_copy_element.get_copy();
 
             List<SFCategoryElement> elems = ctg.get_elements();
             elems.Insert(current_elem+1, elem);
@@ -718,7 +716,7 @@ namespace SpellforceDataEditor
 
                     ElementSelect.Items[elem_change.difference_index] = manager.get_category(selected_category_index).get_element_string(elem_change.difference_index);
 
-                    if (selected_category_index == real_category_index)
+                    if ((selected_category_index == real_category_index)&&(selected_element_index != -1))
                     {
                         diff_current_element = manager.get_category(selected_category_index).get_element(selected_element_index).get_copy();
                         ElementDisplay.set_element(selected_element_index);
