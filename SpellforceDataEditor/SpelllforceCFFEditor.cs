@@ -17,7 +17,7 @@ namespace SpellforceDataEditor
         private int real_category_index = -1;                   //tracer helper
         private int selected_element_index = -1;
 
-        private string version = "2018.08.18.1";
+        private string version = "2018.08.17.1";
 
         private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
 
@@ -289,6 +289,8 @@ namespace SpellforceDataEditor
         //when you right-click orange field, you step into the linked element edit mode
         public void Tracer_StepForward(int cat_i, int cat_e)
         {
+            CategorySelect.Focus();
+
             diff_resolve_current_element();
 
             tracer.AddTrace(real_category_index, selected_element_index);
@@ -836,6 +838,12 @@ namespace SpellforceDataEditor
         }
 
         //external
+        public SFCategoryManager get_manager()
+        {
+            return manager;
+        }
+
+        //external
         public int get_selected_category_index()
         {
             return selected_category_index;
@@ -871,6 +879,16 @@ namespace SpellforceDataEditor
                     c.Focus();
                 }
             }
+        }
+
+        private void findAllReferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if((real_category_index == -1)||(selected_element_index == -1))
+                return;
+
+            special_forms.ReferencesForm refer = new special_forms.ReferencesForm();
+            refer.set_referenced_element(this, real_category_index, selected_element_index);
+            refer.Show();
         }
     }
 }

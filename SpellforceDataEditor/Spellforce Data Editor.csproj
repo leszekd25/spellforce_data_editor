@@ -378,6 +378,12 @@
     <Compile Include="special forms\ChangeDataLangForm.Designer.cs">
       <DependentUpon>ChangeDataLangForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="special forms\ReferencesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\ReferencesForm.Designer.cs">
+      <DependentUpon>ReferencesForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SpelllforceCFFEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -546,6 +552,9 @@
     </Compile>
     <EmbeddedResource Include="special forms\ChangeDataLangForm.resx">
       <DependentUpon>ChangeDataLangForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="special forms\ReferencesForm.resx">
+      <DependentUpon>ReferencesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SpelllforceCFFEditor.resx">
       <DependentUpon>SpelllforceCFFEditor.cs</DependentUpon>

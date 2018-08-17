@@ -41,6 +41,7 @@
             this.redoCtrlYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.specialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeDataLanguageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.versionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CategorySelect = new System.Windows.Forms.ComboBox();
             this.ElementSelect = new System.Windows.Forms.ListBox();
@@ -72,7 +73,7 @@
             this.panelElemCopy = new System.Windows.Forms.Panel();
             this.ButtonElemClear = new System.Windows.Forms.Button();
             this.ButtonElemCopy = new System.Windows.Forms.Button();
-            this.versionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findAllReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -166,6 +167,7 @@
             // 
             this.specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.changeDataLanguageToolStripMenuItem,
+            this.findAllReferencesToolStripMenuItem,
             this.versionToolStripMenuItem});
             this.specialToolStripMenuItem.Name = "specialToolStripMenuItem";
             this.specialToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
@@ -178,6 +180,12 @@
             this.changeDataLanguageToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.changeDataLanguageToolStripMenuItem.Text = "Change data language...";
             this.changeDataLanguageToolStripMenuItem.Click += new System.EventHandler(this.changeDataLanguageToolStripMenuItem_Click);
+            // 
+            // versionToolStripMenuItem
+            // 
+            this.versionToolStripMenuItem.Name = "versionToolStripMenuItem";
+            this.versionToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.versionToolStripMenuItem.Text = "Version";
             // 
             // eXPERIMENTALLoadDiffFileToolStripMenuItem
             // 
@@ -471,11 +479,12 @@
             this.ButtonElemCopy.UseVisualStyleBackColor = true;
             this.ButtonElemCopy.Click += new System.EventHandler(this.ButtonElemCopy_Click);
             // 
-            // versionToolStripMenuItem
+            // findAllReferencesToolStripMenuItem
             // 
-            this.versionToolStripMenuItem.Name = "versionToolStripMenuItem";
-            this.versionToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.versionToolStripMenuItem.Text = "Version";
+            this.findAllReferencesToolStripMenuItem.Name = "findAllReferencesToolStripMenuItem";
+            this.findAllReferencesToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.findAllReferencesToolStripMenuItem.Text = "Find all references...";
+            this.findAllReferencesToolStripMenuItem.Click += new System.EventHandler(this.findAllReferencesToolStripMenuItem_Click);
             // 
             // SpelllforceCFFEditor
             // 
@@ -559,5 +568,6 @@
         private System.Windows.Forms.ToolStripMenuItem specialToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeDataLanguageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem versionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem findAllReferencesToolStripMenuItem;
     }
 }

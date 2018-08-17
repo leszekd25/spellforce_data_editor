@@ -32,7 +32,7 @@ namespace SpellforceDataEditor
             {
                 counter++;
 
-                if (counter % 500 == 0)
+                if ((counter % 500 == 0)&&(pbar != null))
                 {
                     pbar.Value = ((pbar.Maximum * counter) / source.Count);
                     pbar.GetCurrentParent().Refresh();
