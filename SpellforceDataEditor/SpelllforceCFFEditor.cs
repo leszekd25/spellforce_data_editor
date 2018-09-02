@@ -17,7 +17,7 @@ namespace SpellforceDataEditor
         private int real_category_index = -1;                   //tracer helper
         private int selected_element_index = -1;
 
-        private string version = "2018.08.17.1";
+        private string version = "2018.09.02.1";
 
         private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
 
@@ -65,7 +65,8 @@ namespace SpellforceDataEditor
         private bool load_data()
         {
             if (data_loaded)
-                close_data();
+                if (close_data() == DialogResult.Cancel)
+                    return false;
 
             labelStatus.Text = "Loading...";
             ProgressBar_Main.Visible = true;
@@ -315,6 +316,8 @@ namespace SpellforceDataEditor
         //when you press Back, you step out and return to previously viewed element
         public void Tracer_StepBack()
         {
+            CategorySelect.Focus();
+
             diff_resolve_current_element();
 
             buttonTracerBack.Visible = false;

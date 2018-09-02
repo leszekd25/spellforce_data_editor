@@ -36,16 +36,16 @@ namespace SpellforceDataEditor.category_forms
 
         public override void set_element(int index)
         {
-            current_element = index;
-
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
-
             RelationGrid.Rows.Clear();
             RelationGrid.ClearSelection();
             RelationGrid.Refresh();
 
-            for(int i = 0; i < elem_count; i++)
+            current_element = index;
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 3;
+
+
+            for (int i = 0; i < elem_count; i++)
             {
                 Byte clan_id = (Byte)(elem.get_single_variant(i * 3 + 1)).value;
                 Byte relation = (Byte)(elem.get_single_variant(i * 3 + 2)).value;

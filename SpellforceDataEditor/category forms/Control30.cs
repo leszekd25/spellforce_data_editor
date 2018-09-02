@@ -32,14 +32,14 @@ namespace SpellforceDataEditor.category_forms
 
         public override void set_element(int index)
         {
+            MerchantGrid.Rows.Clear();
+            MerchantGrid.ClearSelection();
+            MerchantGrid.Refresh();
+
             current_element = index;
 
             SFCategoryElement elem = category.get_element(current_element);
             int elem_count = elem.get().Count / 3;
-
-            MerchantGrid.Rows.Clear();
-            MerchantGrid.ClearSelection();
-            MerchantGrid.Refresh();
 
             for (int i = 0; i < elem_count; i++)
             {
@@ -71,13 +71,14 @@ namespace SpellforceDataEditor.category_forms
 
         private void OnCellValueChange(object sender, DataGridViewCellEventArgs e)
         {
-           if (MerchantGrid.CurrentCell == null)
+            if (MerchantGrid.CurrentCell == null)
                 return;
 
             DataGridViewCell cell = (DataGridViewCell)MerchantGrid.CurrentCell;
 
             if (cell == null)
                 return;
+
 
             int i = cell.RowIndex;
             
@@ -100,6 +101,7 @@ namespace SpellforceDataEditor.category_forms
                 UInt16 item_count = Utility.TryParseUInt16(cell.Value.ToString());
                 category.set_element_variant(current_element, i * 3 + 2, item_count);
             }
+
         }
 
         private void button1_Click(object sender, EventArgs e)
