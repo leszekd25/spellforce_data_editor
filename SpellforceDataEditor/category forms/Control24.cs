@@ -27,7 +27,7 @@ namespace SpellforceDataEditor.category_forms
             column_dict.Add("Worker cycle time", new int[1] { 9 });
             column_dict.Add("Required building ID", new int[1] { 10 });
             column_dict.Add("Initial angle", new int[1] { 11 });
-            column_dict.Add("Unknown2 1", new int[1] { 12 });
+            column_dict.Add("Extended description ID", new int[1] { 12 });
             column_dict.Add("Unknown2 2", new int[1] { 13 });
         }
 
@@ -135,6 +135,12 @@ namespace SpellforceDataEditor.category_forms
         {
             if (e.Button == MouseButtons.Right)
                 step_into(textBox11, 23);
+        }
+
+        private void textBox12_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                step_into(textBox12, 41);
         }
     }
 }

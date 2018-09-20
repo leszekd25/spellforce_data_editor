@@ -223,11 +223,11 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(40, 204);
+            this.label9.Location = new System.Drawing.Point(321, 203);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(59, 13);
+            this.label9.Size = new System.Drawing.Size(123, 13);
             this.label9.TabIndex = 38;
-            this.label9.Text = "Unknown2";
+            this.label9.Text = "Placeable in map editor?";
             // 
             // label10
             // 
@@ -240,7 +240,7 @@
             // 
             // textBox10
             // 
-            this.textBox10.Location = new System.Drawing.Point(105, 201);
+            this.textBox10.Location = new System.Drawing.Point(450, 200);
             this.textBox10.Name = "textBox10";
             this.textBox10.Size = new System.Drawing.Size(38, 20);
             this.textBox10.TabIndex = 40;
@@ -249,7 +249,7 @@
             // button_Trace
             // 
             this.button_Trace.BackColor = System.Drawing.Color.DarkOrange;
-            this.button_Trace.Location = new System.Drawing.Point(413, 199);
+            this.button_Trace.Location = new System.Drawing.Point(413, 226);
             this.button_Trace.Name = "button_Trace";
             this.button_Trace.Size = new System.Drawing.Size(75, 23);
             this.button_Trace.TabIndex = 42;
@@ -261,7 +261,7 @@
             // label_SpellTrace
             // 
             this.label_SpellTrace.AutoSize = true;
-            this.label_SpellTrace.Location = new System.Drawing.Point(303, 204);
+            this.label_SpellTrace.Location = new System.Drawing.Point(303, 231);
             this.label_SpellTrace.Name = "label_SpellTrace";
             this.label_SpellTrace.Size = new System.Drawing.Size(104, 13);
             this.label_SpellTrace.TabIndex = 41;

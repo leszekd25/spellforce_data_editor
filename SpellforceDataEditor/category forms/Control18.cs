@@ -28,7 +28,7 @@ namespace SpellforceDataEditor.category_forms
             column_dict.Add("Unknown1 2", new int[1] { 8 });
             column_dict.Add("Armor", new int[1] { 9 });
             column_dict.Add("Unit handle", new int[1] { 10 });
-            column_dict.Add("Unknown2", new int[1] { 11 });
+            column_dict.Add("Placeable in map editor", new int[1] { 11 });
             spelltrace_id = -1;
         }
 

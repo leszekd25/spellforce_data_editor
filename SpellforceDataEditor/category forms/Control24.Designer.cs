@@ -81,8 +81,8 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(38, 20);
             this.textBox2.TabIndex = 2;
-            this.textBox2.Validated += new System.EventHandler(this.textBox2_TextChanged);
             this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
+            this.textBox2.Validated += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // label2
             // 
@@ -153,8 +153,8 @@
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(126, 20);
             this.textBox5.TabIndex = 11;
-            this.textBox5.Validated += new System.EventHandler(this.textBox5_TextChanged);
             this.textBox5.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox5_MouseDown);
+            this.textBox5.Validated += new System.EventHandler(this.textBox5_TextChanged);
             // 
             // label6
             // 
@@ -248,8 +248,8 @@
             this.textBox11.Name = "textBox11";
             this.textBox11.Size = new System.Drawing.Size(126, 20);
             this.textBox11.TabIndex = 23;
-            this.textBox11.Validated += new System.EventHandler(this.textBox11_TextChanged);
             this.textBox11.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox11_MouseDown);
+            this.textBox11.Validated += new System.EventHandler(this.textBox11_TextChanged);
             // 
             // label11
             // 
@@ -262,20 +262,22 @@
             // 
             // textBox12
             // 
+            this.textBox12.BackColor = System.Drawing.Color.DarkOrange;
             this.textBox12.Location = new System.Drawing.Point(105, 149);
             this.textBox12.Name = "textBox12";
             this.textBox12.Size = new System.Drawing.Size(126, 20);
             this.textBox12.TabIndex = 25;
+            this.textBox12.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox12_MouseDown);
             this.textBox12.Validated += new System.EventHandler(this.textBox12_TextChanged);
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(46, 152);
+            this.label12.Location = new System.Drawing.Point(7, 152);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(53, 13);
+            this.label12.Size = new System.Drawing.Size(95, 13);
             this.label12.TabIndex = 24;
-            this.label12.Text = "Unknown";
+            this.label12.Text = "Extended desc. ID";
             // 
             // textBox13
             // 
