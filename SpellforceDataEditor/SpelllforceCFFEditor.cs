@@ -17,7 +17,7 @@ namespace SpellforceDataEditor
         private int real_category_index = -1;                   //tracer helper
         private int selected_element_index = -1;
 
-        private string version = "2018.09.20.1";
+        private string version = "2018.09.23.1";
 
         private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
 

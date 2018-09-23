@@ -12,6 +12,8 @@ namespace SpellforceDataEditor.category_forms
 {
     public partial class Control30 : SpellforceDataEditor.category_forms.SFControl
     {
+        bool is_clearing_table = false;
+
         public Control30()
         {
             InitializeComponent();
@@ -32,9 +34,11 @@ namespace SpellforceDataEditor.category_forms
 
         public override void set_element(int index)
         {
+            is_clearing_table = true;
             MerchantGrid.Rows.Clear();
             MerchantGrid.ClearSelection();
             MerchantGrid.Refresh();
+            is_clearing_table = false;
 
             current_element = index;
 
@@ -71,6 +75,9 @@ namespace SpellforceDataEditor.category_forms
 
         private void OnCellValueChange(object sender, DataGridViewCellEventArgs e)
         {
+            if (is_clearing_table)
+                return;
+
             if (MerchantGrid.CurrentCell == null)
                 return;
 
@@ -85,7 +92,7 @@ namespace SpellforceDataEditor.category_forms
             if(cell.ColumnIndex == 0)
             {
                 UInt16 item_id = Utility.TryParseUInt16(cell.Value.ToString());
-                SFCategoryElement item_elem = category.get_manager().get_category(6).get_element(item_id);
+                SFCategoryElement item_elem = category.get_manager().get_category(6).find_binary_element(0, item_id);
                 if (item_elem == null)
                 {
                     cell.Value = variant_repr(i * 3 + 1);
