@@ -575,13 +575,17 @@ namespace SpellforceDataEditor
             int lvl = ((int)(UInt16)get_element_variant(index, 1).value)-1;
             string stat_txt = "";
             SFCategoryElement lvl_elem = manager.get_category(32).get_element(lvl);
-            if (lvl_elem != null)
+            if ((lvl >= 0) && (lvl < manager.get_category(32).get_element_count()))
             {
-                hp *= (int)(UInt16)lvl_elem.get_single_variant(1).value;
-                mana *= (int)(UInt16)lvl_elem.get_single_variant(2).value;
-                hp /= 100;
-                mana /= 100;
-                stat_txt = "\r\nHealth: " + hp.ToString() + "\r\nMana: " + mana.ToString();
+                SFCategoryElement lvl_elem = manager.get_category(32).get_element(lvl);
+                if (lvl_elem != null)
+                {
+                    hp *= (int)(UInt16)lvl_elem.get_single_variant(1).value;
+                    mana *= (int)(UInt16)lvl_elem.get_single_variant(2).value;
+                    hp /= 100;
+                    mana /= 100;
+                    stat_txt = "\r\nHealth: " + hp.ToString() + "\r\nMana: " + mana.ToString();
+                }
             }
             Byte race_id = (Byte)get_element_variant(index, 2).value;
             race_name = manager.get_race_name(race_id);
