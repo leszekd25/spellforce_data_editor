@@ -51,6 +51,12 @@
     <ApplicationIcon>382940043477778432.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.0.1\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.GLControl.3.0.1\lib\net20\OpenTK.GLControl.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -364,6 +370,15 @@
     <Compile Include="category forms\SFControl.Designer.cs">
       <DependentUpon>SFControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SF3D\Camera3D.cs" />
+    <Compile Include="SF3D\Object3D.cs" />
+    <Compile Include="SF3D\SFMaterial.cs" />
+    <Compile Include="SF3D\SFModel3D.cs" />
+    <Compile Include="SF3D\SFResource.cs" />
+    <Compile Include="SF3D\SFResourceContainer.cs" />
+    <Compile Include="SF3D\SFResourceManager.cs" />
+    <Compile Include="SF3D\SFTexture.cs" />
+    <Compile Include="SF3D\ShaderCompiler.cs" />
     <Compile Include="SFCategory.cs" />
     <Compile Include="SFCategoryElement.cs" />
     <Compile Include="SFCategoryManager.cs" />
@@ -372,6 +387,9 @@
     <Compile Include="SFDataTracer.cs" />
     <Compile Include="SFDiffTools.cs" />
     <Compile Include="SFSearchModule.cs" />
+    <Compile Include="SFUnPak\SFPakFileSystem.cs" />
+    <Compile Include="SFUnPak\SFPakMap.cs" />
+    <Compile Include="SFUnPak\SFUnPak.cs" />
     <Compile Include="special forms\ChangeDataLangForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -383,6 +401,12 @@
     </Compile>
     <Compile Include="special forms\ReferencesForm.Designer.cs">
       <DependentUpon>ReferencesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="special forms\SF3DManagerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\SF3DManagerForm.Designer.cs">
+      <DependentUpon>SF3DManagerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SpelllforceCFFEditor.cs">
       <SubType>Form</SubType>
@@ -549,6 +573,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="special forms\ChangeDataLangForm.resx">
       <DependentUpon>ChangeDataLangForm.cs</DependentUpon>
@@ -556,9 +581,14 @@
     <EmbeddedResource Include="special forms\ReferencesForm.resx">
       <DependentUpon>ReferencesForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="special forms\SF3DManagerForm.resx">
+      <DependentUpon>SF3DManagerForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SpelllforceCFFEditor.resx">
       <DependentUpon>SpelllforceCFFEditor.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -587,6 +617,7 @@
   <ItemGroup>
     <Content Include="382940043477778432.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

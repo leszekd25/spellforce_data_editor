@@ -893,5 +893,11 @@ namespace SpellforceDataEditor
             refer.set_referenced_element(this, real_category_index, selected_element_index);
             refer.Show();
         }
+
+        private void dViewerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            special_forms.SF3DManagerForm man = new special_forms.SF3DManagerForm();
+            man.Show();
+        }
     }
 }
