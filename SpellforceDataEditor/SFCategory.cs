@@ -574,9 +574,10 @@ namespace SpellforceDataEditor
             int mana = (int)(UInt16)get_element_variant(index, 9).value;
             int lvl = ((int)(UInt16)get_element_variant(index, 1).value)-1;
             string stat_txt = "";
-            SFCategoryElement lvl_elem = manager.get_category(32).get_element(lvl);
+
             if ((lvl >= 0) && (lvl < manager.get_category(32).get_element_count()))
             {
+                SFCategoryElement lvl_elem = manager.get_category(32).get_element(lvl);
                 if (lvl_elem != null)
                 {
                     hp *= (int)(UInt16)lvl_elem.get_single_variant(1).value;
