@@ -577,7 +577,6 @@ namespace SpellforceDataEditor
             SFCategoryElement lvl_elem = manager.get_category(32).get_element(lvl);
             if ((lvl >= 0) && (lvl < manager.get_category(32).get_element_count()))
             {
-                SFCategoryElement lvl_elem = manager.get_category(32).get_element(lvl);
                 if (lvl_elem != null)
                 {
                     hp *= (int)(UInt16)lvl_elem.get_single_variant(1).value;
