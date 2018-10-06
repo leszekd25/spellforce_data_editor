@@ -240,7 +240,8 @@ namespace SpellforceDataEditor.SFUnPak
         MemoryStream GetFileBuffer(int file_index, bool managed_open = false)
         {
             if(!managed_open)
-                Open();
+                if(Open() != 0)
+                    throw new FileLoadException("Could not open pak file "+pak_fname);
             SFPakEntryHeader head = file_headers[file_index];
             uint start = (uint)(data_offset + head.data_offset);
             int length = head.size;

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.glControl1 = new OpenTK.GLControl();
             this.ListEntries = new System.Windows.Forms.ListBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -38,6 +39,7 @@
             this.StatusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.ComboBrowseMode = new System.Windows.Forms.ComboBox();
             this.ListAnimations = new System.Windows.Forms.ListBox();
+            this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -125,6 +127,11 @@
             this.ListAnimations.Name = "ListAnimations";
             this.ListAnimations.Size = new System.Drawing.Size(353, 160);
             this.ListAnimations.TabIndex = 5;
+            this.ListAnimations.SelectedIndexChanged += new System.EventHandler(this.ListAnimations_SelectedIndexChanged);
+            // 
+            // TimerAnimation
+            // 
+            this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
             // 
             // SF3DManagerForm
             // 
@@ -163,5 +170,6 @@
         private System.Windows.Forms.ToolStripStatusLabel StatusText;
         private System.Windows.Forms.ComboBox ComboBrowseMode;
         private System.Windows.Forms.ListBox ListAnimations;
+        private System.Windows.Forms.Timer TimerAnimation;
     }
 }

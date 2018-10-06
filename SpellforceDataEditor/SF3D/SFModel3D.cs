@@ -179,6 +179,8 @@ namespace SpellforceDataEditor.SF3D
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
             GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, face_indices.Length * 4, face_indices, BufferUsageHint.StaticDraw);
+
+            GL.BindVertexArray(0);
             
         }
 

@@ -33,12 +33,16 @@ namespace SpellforceDataEditor.SF3D
             MemoryStream ms = manager.unpacker.LoadFileFind(prefix_path+"\\" + rname + suffix_extension);
             if (ms == null)
                 return -2;
+            string prev_res = manager.current_resource;
+            manager.current_resource = rname;
             T resource = new T();
             int res_code = resource.Load(ms, manager);
+            manager.current_resource = prev_res;
             if (res_code != 0)
                 return res_code;
             resource.Init();
             cont.Add(rname, resource);
+            System.Diagnostics.Debug.WriteLine("LOADED " + rname + suffix_extension);
             return 0;
         }
 
@@ -48,6 +52,7 @@ namespace SpellforceDataEditor.SF3D
                 return -1;
             cont[rname].Dispose();
             cont.Remove(rname);
+            System.Diagnostics.Debug.WriteLine("DISPOSED " + rname + suffix_extension);
             return 0;
         }
 

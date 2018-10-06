@@ -137,6 +137,22 @@ void main(){
   color = temp_c * fragmentColor;
 }</value>
   </data>
+  <data name="fshader_skel" xml:space="preserve">
+    <value>#version 330 core
+
+in vec2 UV;
+
+out vec4 color;
+
+uniform sampler2D myTextureSampler;
+
+void main(){
+  vec4 temp_c = texture(myTextureSampler, UV);
+  if (temp_c.a == 0.0)
+    discard;
+  color = temp_c;
+}</value>
+  </data>
   <data name="vshader" xml:space="preserve">
     <value>#version 330 core
 
@@ -156,6 +172,48 @@ void main(){
   gl_Position = MVP * vec4(vertexPosition_modelspace,1);
   UV = vertexUV;
   fragmentColor = vertexColor;
+}</value>
+  </data>
+  <data name="vshader_skel" xml:space="preserve">
+    <value>#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec2 vertexUV;
+layout(location = 2) in vec4 vertexBoneIndex;
+layout(location = 3) in vec4 vertexBoneWeight;
+
+out vec2 UV;
+
+// Values that stay constant for the whole mesh.
+uniform mat4 MVP;
+uniform mat4 boneTransforms[20];
+  
+void main(){
+  vec4 Vertex;
+  vec4 newVertex;
+  int index;
+
+  Vertex = vec4(vertexPosition_modelspace, 1.0);
+  newVertex = vec4(0.0, 0.0, 0.0, 1.0);
+
+  index = int(vertexBoneIndex.x);
+  if(index != -1)
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.x;
+  index = int(vertexBoneIndex.y);
+  if(index != -1)
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.y + newVertex;
+  index = int(vertexBoneIndex.z);
+  if(index != -1)
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.z + newVertex;
+  index = int(vertexBoneIndex.w);
+  if(index != -1)
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.w + newVertex;
+
+  
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position =  MVP * vec4(newVertex.xyz, 1.0);
+  UV = vertexUV;
 }</value>
   </data>
 </root>
