@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * SFBoneIndex is a resource which contains info for skin
+ * GPU is limited in that it has to know how much data it has to load - meaning you can't load dynamic arrays of matrices, for example
+ * Skeletons are just that - they're dynamic in size
+ * To overcome this issue, Spellforce splits its animated models into parts, each of which is animated by at most 20 bones
+ * SFBoneIndex contains info on which part is animated by which bones of supplied skeleton, and  in which order the bones are
+ * Technically, SFBoneIndex didn't have to be a resource, it's one purely for convenience
+ */
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;

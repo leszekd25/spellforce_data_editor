@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * SFSkeleton is a resource providing with skin transformation bone data
+ * It contains bone tree and constructs base and inverted matrices from given file
+ * It also contains helper method for applying parent transformations to given matrices
+ */
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;

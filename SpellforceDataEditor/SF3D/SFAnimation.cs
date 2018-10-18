@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * SFBoneAnimation contains info on how a single bone transform changes over time
+ * SFAnimation is a set of SFBoneAnimation objects corresponding to a supplied skeleton
+ */
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * SFUnPak is the main PAK manager
+ * It can query underlying SFPakMap object for any file, and it can also load files from disk
+ *      as long as the directory matches the specified file
+ */
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;

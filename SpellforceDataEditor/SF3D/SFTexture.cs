@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * SFTexture is a resource which contains texture image data
+ * It loads data from provided DDS file, and feeds it to the GPU
+ * It has to be disposed upon removal, to remove any data from the GPU
+ * */
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -136,7 +142,8 @@ namespace SpellforceDataEditor.SF3D
 
         new public string ToString()
         {
-            return "TEX SIZE "+width.ToString()+" "+height.ToString();
+            return "TEX SIZE#"+width.ToString()+" "+height.ToString()
+                +"\nTEX FORMAT#"+format.ToString();
         }
     }
 }

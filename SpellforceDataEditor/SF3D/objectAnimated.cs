@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * objectAnimated3D is an object which is displayed using underlying skin and skeleton
+ * Every time skeleton is updated according to its animation, skin bone matrices are manipulated to modify skin mesh (in shader)
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

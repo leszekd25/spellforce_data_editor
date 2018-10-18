@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+ * SFResourceContainer is a generic container for any type of SFResource
+ * It is managed by SFResourceManager, which provides it with data source (PAK files)
+ * This container retrieves data based on provided path and extension (at init)
+ * Manager manually disposes of all data in the containers
+ * */
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;

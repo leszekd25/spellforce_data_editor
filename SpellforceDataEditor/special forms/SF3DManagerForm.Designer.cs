@@ -56,6 +56,9 @@
             this.glControl1.VSync = false;
             this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             this.glControl1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.glControl1_KeyPress);
+            this.glControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseDown);
+            this.glControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseMove);
+            this.glControl1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseUp);
             // 
             // ListEntries
             // 
@@ -112,8 +115,7 @@
             this.ComboBrowseMode.FormattingEnabled = true;
             this.ComboBrowseMode.Items.AddRange(new object[] {
             "Meshes",
-            "Animations",
-            "Synchronize with editor"});
+            "Animations"});
             this.ComboBrowseMode.Location = new System.Drawing.Point(12, 27);
             this.ComboBrowseMode.Name = "ComboBrowseMode";
             this.ComboBrowseMode.Size = new System.Drawing.Size(174, 21);

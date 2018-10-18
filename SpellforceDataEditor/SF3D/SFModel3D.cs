@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * SFModel3D is a resource which contains geometry and texture info for a 3D model
+ * It also binds this info to a GPU buffer, and as such, it has to be disposed of manually
+ * */
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,25 +98,22 @@ namespace SpellforceDataEditor.SF3D
 
                 br.ReadUInt16();
 
-                int texID;
-                byte unused_uchar, uv_mode;
-                ushort unused_short2;
-                byte texRenderMode, texAlpha, matFlags, matDepthBias;
-                float texTiling;
+                
                 string matname;
 
-                texID = br.ReadInt32();
-                unused_uchar = br.ReadByte();
-                uv_mode = br.ReadByte();
-                unused_short2 = br.ReadUInt16();
-                texRenderMode = br.ReadByte();
-                texAlpha = br.ReadByte();
-                matFlags = br.ReadByte();
-                matDepthBias = br.ReadByte();
-                texTiling = br.ReadSingle();
+                mat._texID = br.ReadInt32();
+                mat.unused_uchar = br.ReadByte();
+                mat.uv_mode = br.ReadByte();
+                mat.unused_short2 = br.ReadUInt16();
+                mat.texRenderMode = br.ReadByte();
+                mat.texAlpha = br.ReadByte();
+                mat.matFlags = br.ReadByte();
+                mat.matDepthBias = br.ReadByte();
+                mat.texTiling = br.ReadSingle();
                 char[] chars = br.ReadChars(64);
                 matname = new string(chars);
                 matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
+                System.Diagnostics.Debug.WriteLine(matname + " " + mat.ToString());
 
                 SFTexture tex = rm.Textures.Get(matname);
                 if(tex == null)
@@ -122,6 +124,7 @@ namespace SpellforceDataEditor.SF3D
                     tex = rm.Textures.Get(matname);
                 }
                 mat.texture = tex;
+                System.Diagnostics.Debug.WriteLine(tex.ToString());
 
                 materials[i] = mat;
                 br.BaseStream.Position += 126;

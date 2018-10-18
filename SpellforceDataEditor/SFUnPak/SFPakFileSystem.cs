@@ -1,4 +1,14 @@
-﻿using System;
+﻿/*
+ * Elbereth's Main Driver - Spellforce Data Archive (.pak) port
+ * More at https://github.com/elbereth/DragonUnPACKer
+ * 
+ * SFPakHeader contains PAK file metadata, including number of entries, data start offset and file size
+ * SFPakEntryHeader contains data about file name, file directory and file data offset
+ * SFPakFileSystem contains methods to extract binary data from a file of choosing (if it exists),
+ *      and methods for listing data based on query
+ * */
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -104,7 +114,7 @@ namespace SpellforceDataEditor.SFUnPak
         }
     }
 
-    public class SFPakFileSystem
+    public class SFPakFileSystem: IDisposable
     {
         string pak_fname;
         FileStream pak_file;

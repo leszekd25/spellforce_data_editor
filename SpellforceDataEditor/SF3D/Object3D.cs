@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+ * Object3D exists in 3D space
+ * With such object, a transform matrix is associated, which defines its position, orientation and scale
+ * Every object that exists in 3D space must inherit from Object3D
+ * Every object may inherit from parent object, which modifies transform accordingly
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

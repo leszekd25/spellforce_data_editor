@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+    SFResourceManager is an abstraction which allows for easy retrieval of any type of resource from PAK files
+    It consists of several SFResourceContainer objects, each of different resource type
+ */
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;

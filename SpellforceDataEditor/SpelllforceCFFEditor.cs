@@ -17,7 +17,7 @@ namespace SpellforceDataEditor
         private int real_category_index = -1;                   //tracer helper
         private int selected_element_index = -1;
 
-        private string version = "2018.10.06.1_3D";
+        private string version = "2018.10.18.1_3D";
 
         private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
 
@@ -84,13 +84,14 @@ namespace SpellforceDataEditor
                 return false;
             }
 
-            string diff_filename = OpenGameData.FileName.Replace(".cff", ".dff");
-            bool diff_loaded = diff.load_diff_data(diff_filename);
+            //POSTPONED
+            //string diff_filename = OpenGameData.FileName.Replace(".cff", ".dff");
+            //bool diff_loaded = diff.load_diff_data(diff_filename);
 
             this.Text = "SpellforceDataEditor - " + OpenGameData.FileName;
             labelStatus.Text = "Ready";
-            if (!diff_loaded)
-                labelStatus.Text = "Ready (diff file not found)";
+            //if (!diff_loaded)
+            //    labelStatus.Text = "Ready (diff file not found)";
             ProgressBar_Main.Visible = false;
 
             changeDataLanguageToolStripMenuItem.Enabled = true;
@@ -126,8 +127,9 @@ namespace SpellforceDataEditor
 
                 manager.save_cff(SaveGameData.FileName);
 
-                string diff_filename = SaveGameData.FileName.Replace(".cff", ".dff");
-                diff.save_diff_data(diff_filename);
+                //POSTPONED
+                //string diff_filename = SaveGameData.FileName.Replace(".cff", ".dff");
+                //diff.save_diff_data(diff_filename);
 
                 labelStatus.Text = "Saved";
 
@@ -853,6 +855,7 @@ namespace SpellforceDataEditor
         }
 
         //called from the outside, updates element name on the list
+        //very ugly, due to lack of knowledge of windows' event handling...
         public void external_set_element_select_string(SFCategory ctg, int elem_index)
         {
             if (selected_category_index != real_category_index)

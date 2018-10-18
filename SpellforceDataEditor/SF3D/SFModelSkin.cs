@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+ * SFModelSkinChunk is a resource which contains info about a single animated part of a model
+ * This info is geometry data, texturing data and bone weight data per vertex
+ * It's unique in that it doesn't have a dedicated SFResourceContainer, instead it belongs to SFModelSkin object and is managed by it
+ * It has to be disposed of, since it loads data to GPU on init
+ * SFModelSkin is a resource which in reality is just a list of managed SFModelSkinChunk objects
+ */
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -125,22 +133,17 @@ namespace SpellforceDataEditor.SF3D
             br.ReadInt16();
             material = new SFMaterial();
 
-            int texID;
-            byte unused_uchar, uv_mode;
-            ushort unused_short2;
-            byte texRenderMode, texAlpha, matFlags, matDepthBias;
-            float texTiling;
             string matname;
 
-            texID = br.ReadInt32();
-            unused_uchar = br.ReadByte();
-            uv_mode = br.ReadByte();
-            unused_short2 = br.ReadUInt16();
-            texRenderMode = br.ReadByte();
-            texAlpha = br.ReadByte();
-            matFlags = br.ReadByte();
-            matDepthBias = br.ReadByte();
-            texTiling = br.ReadSingle();
+            material._texID = br.ReadInt32();
+            material.unused_uchar = br.ReadByte();
+            material.uv_mode = br.ReadByte();
+            material.unused_short2 = br.ReadUInt16();
+            material.texRenderMode = br.ReadByte();
+            material.texAlpha = br.ReadByte();
+            material.matFlags = br.ReadByte();
+            material.matDepthBias = br.ReadByte();
+            material.texTiling = br.ReadSingle();
             char[] chars = br.ReadChars(64);
             matname = new string(chars);
             matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));

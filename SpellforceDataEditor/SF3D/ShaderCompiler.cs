@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * Shader compiler helper class
+ * More at http://www.opengl-tutorial.org/beginners-tutorials/tutorial-2-the-first-triangle/
+ */
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +27,8 @@ namespace SpellforceDataEditor.SF3D
             //read fragment shader
             string FragmentShaderCode = fragment_shader;
 
-            int result = 0;
-            int InfoLogLength;
+            //int result = 0;
+            //int InfoLogLength;
 
             //System.Diagnostics.Debug.WriteLine("Compiling " + vertex_shader);
             GL.ShaderSource(VertexShaderID, VertexShaderCode);

@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+ * This form allows user to force language change of gamedata
+ * It works as follows: Form takes a text entry and displays all language variants
+ * When user selects language he wants, form changes language id of ALL text entries
+ * All entries which had lang ID 1, change it to lang ID of selected language, and vice versa
+ */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,10 +24,11 @@ namespace SpellforceDataEditor.special_forms
         public ChangeDataLangForm()
         {
             InitializeComponent();
-            LabelDescription.Text = "Chose a line on the right which is\r\nin language you want in Spellforce\r\nPress OK to change data language";
+            LabelDescription.Text = "Choose a line on the right which is\r\nin language you want in Spellforce\r\nPress OK to change data language";
 
         }
 
+        //lists languages to allow the user to choose language
         public void connect_to_data(SFCategoryManager man)
         {
             manager = man;
@@ -28,7 +36,7 @@ namespace SpellforceDataEditor.special_forms
             int elem_num = text7055.get_size() / 566;    //566 = sub-element's size
             for (int i = 0; i < elem_num; i++)
             {
-                string single_text = new string((char[])text7055.get_single_variant(i * 5 + 4).value);
+                string single_text = Utility.CleanString(text7055.get_single_variant(i * 5 + 4));
                 int lang_id = (Byte)(text7055.get_single_variant(i * 5 + 1).value);
                 ListSample.Items.Add(lang_id.ToString() + " " + single_text);
             }

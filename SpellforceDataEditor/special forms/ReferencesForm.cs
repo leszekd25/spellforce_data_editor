@@ -232,7 +232,12 @@ namespace SpellforceDataEditor.special_forms
                     break;
 
                 default:    //literally everything else
-                    results_intermediate = SFSearchModule.Search(manager.get_category(column_looked_at.category), preload_indices, manager.get_category(element_looked_for.category).get_element_variant(element_looked_for.element, 0).value.ToString(), SearchType.TYPE_NUMBER, column_looked_at.column, null);
+                    results_intermediate = SFSearchModule.Search(manager.get_category(column_looked_at.category), 
+                                                                 preload_indices, 
+                                                                 manager.get_category(element_looked_for.category).get_element_variant(element_looked_for.element, 0).value.ToString(), 
+                                                                 SearchType.TYPE_NUMBER, 
+                                                                 column_looked_at.column, 
+                                                                 null);
                     break;
             }
 
@@ -255,7 +260,6 @@ namespace SpellforceDataEditor.special_forms
             elements.Clear();
             int category = referenced.category;
 
-            System.Diagnostics.Debug.WriteLine("working...");
             foreach(CatColumn column in ReferenceCategoryTable[category])
                 add_entries(elements, referenced, column);
 

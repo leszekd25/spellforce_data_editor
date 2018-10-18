@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * SFPakMap contains a set of SFPakFileSystem objects, each bound to a unique PAK archive,
+ *      and methods for retrieving binary data of specified files from any PAK (or some of them) in that set
+ * For convenience, SFPakMap can preload data from directory for later use to speed up loading times
+ * */
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;

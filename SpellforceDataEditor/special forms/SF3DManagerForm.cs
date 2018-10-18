@@ -28,7 +28,8 @@ namespace SpellforceDataEditor.special_forms
         Camera3D camera = new Camera3D();
         Matrix4 proj_matrix;
         Matrix4 viewproj_matrix;
-        float ax, ay, az = 0f;
+        float axz = (3*3.1415926f)/2;
+        float axy = 0f;   //axz: (0, 2pi); axy: (-pi/2, pi/2)
 
         int programID;
         int programID_anim;
@@ -45,6 +46,8 @@ namespace SpellforceDataEditor.special_forms
         int current_frame = 0;
         System.Diagnostics.Stopwatch delta_timer = new System.Diagnostics.Stopwatch();
         float deltatime = 0f;
+        Point mouse_pos;
+        bool mouse_pressed = false;
 
         public SF3DManagerForm()
         {
@@ -63,7 +66,9 @@ namespace SpellforceDataEditor.special_forms
             viewproj_matrix = proj_matrix;
             
             GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.Blend);
             GL.DepthFunc(DepthFunction.Less);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             
             programID = ShaderCompiler.Compile(Properties.Resources.vshader, Properties.Resources.fshader);
@@ -178,15 +183,25 @@ namespace SpellforceDataEditor.special_forms
                 for (int i = 0; i < obj.Mesh.materials.Length; i++)
                 {
                     SFMaterial mat = obj.Mesh.materials[i];
-                    if (mat.texture != null)
+                    if ((mat.matFlags & 4) == 0)
+                        continue;
+                    mat.yet_to_be_drawn = false;
+                    GL.Uniform1(texture_usedID, 1);
+                    GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
+
+                    GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
+                }
+                for(int i = 0; i < obj.Mesh.materials.Length; i++)
+                {
+                    SFMaterial mat = obj.Mesh.materials[i];
+                    if(mat.yet_to_be_drawn)
                     {
                         GL.Uniform1(texture_usedID, 1);
                         GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
-                    }
-                    else
-                        GL.Uniform1(texture_usedID, 0);
 
-                    GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
+                        GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
+                    }
+                    mat.yet_to_be_drawn = true;
                 }
                 
             }
@@ -208,6 +223,7 @@ namespace SpellforceDataEditor.special_forms
                 Matrix4[] bones = new Matrix4[20];
                 for(int i = 0; i < obj.skin.submodels.Count; i++)
                 {
+
                     SFModelSkinChunk chunk = obj.skin.submodels[i];
                     for (int j = 0; j < chunk.bones.Length; j++)
                         bones[j] = obj.bone_transforms[chunk.bones[j]];
@@ -229,7 +245,7 @@ namespace SpellforceDataEditor.special_forms
             glControl1.SwapBuffers();
 
             current_frame++;
-            System.Diagnostics.Debug.WriteLine("FRAME " + current_frame.ToString() + " DELTATIME " + deltatime.ToString());
+            //System.Diagnostics.Debug.WriteLine("FRAME " + current_frame.ToString() + " DELTATIME " + deltatime.ToString());
             //angle += 0.5f;
         }
 
@@ -351,7 +367,23 @@ namespace SpellforceDataEditor.special_forms
         private void glControl1_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             base.OnKeyPress(e);
+
+            if (!mouse_pressed)
+                return;
+
+            float cam_speed = 6; //limited by framerate
+
+            //calculate movement vector
+            Vector3 cam_move = (((camera.lookat - camera.Position).Normalized())*cam_speed)/frames_per_second;
+
+            System.Diagnostics.Debug.WriteLine(e.KeyChar);
+
+            if (e.KeyChar == 'w')
+                camera.translate(cam_move);
+            else if (e.KeyChar == 's')
+                camera.translate(-cam_move);
         }
+
 
         private void ListAnimations_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -442,6 +474,52 @@ namespace SpellforceDataEditor.special_forms
             }
 
             return anims;
+        }
+
+        private void glControl1_MouseDown(object sender, MouseEventArgs e)
+        {
+            //check pressed flag
+            mouse_pressed = true;
+            EnableAnimation();
+            //set cursor position
+            Cursor.Position = new Point(this.Location.X + glControl1.Location.X + (glControl1.Size.Width / 2), this.Location.Y + glControl1.Location.Y + (glControl1.Size.Height / 2));
+            mouse_pos = Cursor.Position;
+        }
+
+        private void glControl1_MouseUp(object sender, MouseEventArgs e)
+        {
+            mouse_pressed = false;
+            if (ComboBrowseMode.SelectedIndex != 1)
+                DisableAnimation();
+        }
+
+        private void glControl1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!mouse_pressed)
+                return;
+
+            float mult_f = 0.003f;
+            //get mouse delta
+            float mx, my;
+            mx = Cursor.Position.X - mouse_pos.X; my = Cursor.Position.Y - mouse_pos.Y;
+
+            //produce angle difference
+            axz += mx * mult_f; axy -= my * mult_f;
+            if (axz < 0) axz += 3.1415926f * 2;
+            if (axz > 3.1415926f * 2) axz -= 3.1415926f * 2;
+            if (axy < -1.5f) axy = -1.5f;
+            if (axy > 1.5f) axy = 1.5f;
+
+            //rotate camera accordingly
+            //calculate rotation vector
+            Vector3 roffset = new Vector3((float)Math.Cos(axz) * (float)Math.Cos(axy), (float)Math.Sin(axy), (float)Math.Sin(axz) * (float)Math.Cos(axy));
+            camera.look_at(camera.Position + roffset);
+            System.Diagnostics.Debug.WriteLine(camera.lookat.ToString()+" / " + axz.ToString()+" / "+axy.ToString());
+
+            //set cursor position
+            Cursor.Position = new Point(this.Location.X + glControl1.Location.X + (glControl1.Size.Width / 2), this.Location.Y + glControl1.Location.Y + (glControl1.Size.Height / 2));
+
+            //glControl1.Invalidate();
         }
     }
 }

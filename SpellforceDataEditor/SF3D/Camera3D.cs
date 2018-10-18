@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * Camera3D inherits from Object3D, and is simply a view matrix and a few functions to manipulate openGL view
+ * It is used explicitly in render engine
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +14,7 @@ namespace SpellforceDataEditor.SF3D
 {
     public class Camera3D: Object3D
     {
-        Vector3 lookat = new Vector3(0, 0, 1);
+        public Vector3 lookat { get; private set; } = new Vector3(0, 0, 1);
 
         public Camera3D()
         {
@@ -19,7 +24,6 @@ namespace SpellforceDataEditor.SF3D
         new public void update_modelMatrix()
         {
             modelMatrix = Matrix4.LookAt(Position, lookat, new Vector3(0, 1, 0));
-            System.Diagnostics.Debug.WriteLine("LOOKAT"+lookat.X.ToString()+" "+lookat.Y.ToString()+" "+lookat.Z.ToString());
             modified = false;
         }
 

@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+ * IInterpolatedValue<T> is an interface for an InterpolatedValue class
+ * Classes implementing IInterpolatedValue must be able to add new entries at a given time, retrieve
+ *      interpolated values at a given time, and return maximum time available
+ * Currently this interface is implemented by InterpolatedVector3 and InterpolatedQuaternion
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

@@ -120,7 +120,7 @@ namespace SpellforceDataEditor
 
         //puts a single variant to a buffer
         //s_size refers to a string length (for if the variant holds a string)
-        public void put_single_variant(BinaryWriter sw, SFVariant var, int s_size)
+        public void put_single_variant(BinaryWriter sw, SFVariant var)
         {
             switch (var.vtype)
             {
@@ -307,7 +307,7 @@ namespace SpellforceDataEditor
         }
 
         //sets a single variant given element index and variant index
-        //also updates the element in the application's listbox
+        //also updates the element in the application's listbox (ugly hack)
         public void set_element_variant(int elem_index, int var_index, object obj)
         {
             elements[elem_index].get()[var_index].set(obj);
@@ -317,10 +317,9 @@ namespace SpellforceDataEditor
         //puts a new element (as a list of variants) to a buffer
         public void put_element(BinaryWriter sw, List<SFVariant> vars)
         {
-            current_string = 0;
             for (int i = 0; i < vars.Count; i++)
             {
-                put_single_variant(sw, vars[i], string_size[current_string]);
+                put_single_variant(sw, vars[i]);
             }
         }
 
