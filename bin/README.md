@@ -8,4 +8,4 @@ After running it for thee 1st time, you'll be asked to speecify game directory; 
 Every consecutive use will detect if you specified the directory previously, and will run much faster
 
 # Notes
-For now, only Meshes option works. This will change in the future.
+For now, only Meshes and Animations option works. This will change in the future.
