@@ -7,5 +7,4 @@ After running it for thee 1st time, you'll be asked to speecify game directory; 
 
 Every consecutive use will detect if you specified the directory previously, and will run much faster
 
-# Notes
-For now, only Meshes and Animations option works. This will change in the future.
+To move camera in 3D view, you must click and hold LMB on the 3D view. You can move camera by holding W or S, and you can change camera direction by moving cursor around.
