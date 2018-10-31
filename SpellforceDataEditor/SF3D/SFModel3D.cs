@@ -113,7 +113,7 @@ namespace SpellforceDataEditor.SF3D
                 char[] chars = br.ReadChars(64);
                 matname = new string(chars);
                 matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
-                System.Diagnostics.Debug.WriteLine(matname + " " + mat.ToString());
+                //System.Diagnostics.Debug.WriteLine(matname + " " + mat.ToString());
 
                 SFTexture tex = rm.Textures.Get(matname);
                 if(tex == null)
@@ -124,7 +124,7 @@ namespace SpellforceDataEditor.SF3D
                     tex = rm.Textures.Get(matname);
                 }
                 mat.texture = tex;
-                System.Diagnostics.Debug.WriteLine(tex.ToString());
+                //System.Diagnostics.Debug.WriteLine(tex.ToString());
 
                 materials[i] = mat;
                 br.BaseStream.Position += 126;

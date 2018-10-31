@@ -30,8 +30,8 @@ namespace SpellforceDataEditor.SF3D
         public Quaternion Rotation { get { return rotation; } set { rotation = value; modified = true; } }
         public Vector3 Scale { get { return scale; } set { scale = value; modified = true; } }
         public Matrix4 ModelMatrix { get { return modelMatrix; } }
-        public Object3D Parent { get { return parent; } }
-        public bool Modified { get { return modified; } }
+        public Object3D Parent { get { return parent; } set { parent = value; } }
+        public virtual bool Modified { get { return modified||(parent != null && parent.Modified); } }
         public bool Visible { get { return visible; } set { visible = value; } }
 
         public Object3D()
@@ -41,7 +41,7 @@ namespace SpellforceDataEditor.SF3D
             visible = true;
         }
 
-        public void update_modelMatrix()
+        public virtual void update_modelMatrix()
         {
             Matrix4 temp_matrix;
             Matrix4 translation_matrix = Matrix4.CreateTranslation(position);

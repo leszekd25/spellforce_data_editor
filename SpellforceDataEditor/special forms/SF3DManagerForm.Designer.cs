@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.glControl1 = new OpenTK.GLControl();
+            this.glControl1 = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 0, 8));
             this.ListEntries = new System.Windows.Forms.ListBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -115,7 +115,8 @@
             this.ComboBrowseMode.FormattingEnabled = true;
             this.ComboBrowseMode.Items.AddRange(new object[] {
             "Meshes",
-            "Animations"});
+            "Animations",
+            "Synchronize with editor"});
             this.ComboBrowseMode.Location = new System.Drawing.Point(12, 27);
             this.ComboBrowseMode.Name = "ComboBrowseMode";
             this.ComboBrowseMode.Size = new System.Drawing.Size(174, 21);

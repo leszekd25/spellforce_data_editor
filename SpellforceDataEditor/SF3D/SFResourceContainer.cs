@@ -49,7 +49,7 @@ namespace SpellforceDataEditor.SF3D
                 return res_code;
             resource.Init();
             cont.Add(rname, resource);
-            System.Diagnostics.Debug.WriteLine("LOADED " + rname + suffix_extension);
+            //System.Diagnostics.Debug.WriteLine("LOADED " + rname + suffix_extension);
             return 0;
         }
 
@@ -59,7 +59,7 @@ namespace SpellforceDataEditor.SF3D
                 return -1;
             cont[rname].Dispose();
             cont.Remove(rname);
-            System.Diagnostics.Debug.WriteLine("DISPOSED " + rname + suffix_extension);
+            //System.Diagnostics.Debug.WriteLine("DISPOSED " + rname + suffix_extension);
             return 0;
         }
 

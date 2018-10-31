@@ -368,8 +368,8 @@ namespace SpellforceDataEditor
                 }
                 elements.Add(elem);
             }
-            //mr.Dispose();
-            ms.Dispose();
+            mr.Close();
+            ms.Close();
             block_buffer = null;
             if (bad_header)
                 return -1;

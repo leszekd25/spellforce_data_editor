@@ -66,4 +66,48 @@ namespace SpellforceDataEditor.SF3D
         }
 
     }
+
+    //a bit broken probably, that's what you get for not implementing doubly linked tree :^)
+    public class ObjectBoneAnchor: objectAnimated
+    {
+        public objectAnimated parent_obj { get; private set; } = null;
+        public int bone_index { get; private set; } = -1;
+        public override bool Modified { get { return true; } }
+
+        public override void update_modelMatrix()
+        {
+            Matrix4 temp_matrix;
+            Matrix4 translation_matrix = Matrix4.CreateTranslation(position);
+            Matrix4 rotation_matrix = Matrix4.CreateFromQuaternion(rotation);
+            Matrix4 scale_matrix = Matrix4.CreateScale(scale);
+            temp_matrix = translation_matrix * rotation_matrix * scale_matrix;
+
+            if (parent_obj == null)
+                modelMatrix = temp_matrix;
+            else if (bone_index != -1)
+                modelMatrix = temp_matrix * parent_obj.skeleton.bone_reference_matrices[bone_index]
+                    * parent_obj.bone_transforms[bone_index] * parent_obj.ModelMatrix;
+
+                //children update matrices here
+        }
+
+        public void SetBone(objectAnimated obj, string name)
+        {
+            bone_index = -1;
+            parent_obj = null;
+            if (obj == null)
+                return;
+            if (obj.skeleton == null)
+                return;
+            parent_obj = obj;
+            for(int i = 0; i < obj.skeleton.bone_count; i++)
+            {
+                if(obj.skeleton.bone_names[i].Contains(name))
+                {
+                    bone_index = i;
+                    break;
+                }
+            }
+        }
+    }
 }

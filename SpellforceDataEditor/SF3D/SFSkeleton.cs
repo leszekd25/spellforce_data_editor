@@ -23,6 +23,7 @@ namespace SpellforceDataEditor.SF3D
         public Matrix4[] bone_reference_matrices { get; private set; } = null;
         public Matrix4[] bone_inverted_matrices { get; private set; } = null;
         public int[] bone_parents = null;
+        public string[] bone_names = null;
 
         public void Init()
         {
@@ -52,6 +53,7 @@ namespace SpellforceDataEditor.SF3D
             Vector3[] bone_pos = null;
             Quaternion[] bone_rot = null;
             int current_bone = -1;
+            string current_bone_name = "";
             int file_level = 0;
             float Rre = 0f;
             Vector3 Rim = new Vector3();
@@ -90,11 +92,17 @@ namespace SpellforceDataEditor.SF3D
                             bone_rot = new Quaternion[bc];
                             bone_reference_matrices = new Matrix4[bc];
                             bone_inverted_matrices = new Matrix4[bc];
+                            bone_names = new string[bc];
                         }
                         break;
                     case 2:
+                        if (line[0] == 'N')
+                            current_bone_name = line.Substring(4).Replace("\"", string.Empty);
                         if (line[0] == 'I')
+                        {
                             Int32.TryParse(line.Substring(5), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out current_bone);
+                            bone_names[current_bone] = current_bone_name;
+                        }
                         if (line[0] == 'F')
                             Int32.TryParse(line.Substring(4), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out bone_parents[current_bone]);
                         break;

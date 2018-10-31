@@ -35,6 +35,8 @@ namespace SpellforceDataEditor
 
         private SFDataTracer tracer;
 
+        private special_forms.SF3DManagerForm viewer = null;
+
         //constructor
         public SpelllforceCFFEditor()
         {
@@ -262,6 +264,9 @@ namespace SpellforceDataEditor
             labelDescription.Text = ctg.get_element_description(current_indices[ElementSelect.SelectedIndex]);
 
             Tracer_Clear();
+
+            if (viewer != null)
+                viewer.GenerateScene(real_category_index, selected_element_index);
         }
 
         //start loading all elements from a category
@@ -307,6 +312,8 @@ namespace SpellforceDataEditor
                 ElementDisplay.Visible = true;
                 ElementDisplay.set_element(cat_e);
                 ElementDisplay.show_element();
+                if (viewer != null)
+                    viewer.GenerateScene(cat_i, cat_e);
             }
 
             labelDescription.Text = manager.get_category(cat_i).get_element_description(cat_e);
@@ -333,6 +340,9 @@ namespace SpellforceDataEditor
 
             real_category_index = cat_i;
             selected_element_index = cat_e;
+            if (viewer != null)
+                viewer.GenerateScene(cat_i, cat_e);
+
             diff_set_new_element();
 
             set_element_display(cat_i);
@@ -899,8 +909,17 @@ namespace SpellforceDataEditor
 
         private void dViewerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            special_forms.SF3DManagerForm man = new special_forms.SF3DManagerForm();
-            man.Show();
+            if (viewer != null)
+                return;
+            viewer = new special_forms.SF3DManagerForm();
+            viewer.Show();
+            viewer.Link(this);
+        }
+
+        public void OnCloseViewer()
+        {
+            viewer = null;
+            GC.Collect();
         }
     }
 }

@@ -88,7 +88,7 @@ namespace SpellforceDataEditor
                                 if ((column_i != -1) && (column_i != k))
                                     continue;
                                 string val = Utility.CleanString(elem.get_single_variant(j * elem_length + k));
-                                if (val == query)
+                                if (val.Contains(query))
                                 {
                                     success = true;
                                     break;

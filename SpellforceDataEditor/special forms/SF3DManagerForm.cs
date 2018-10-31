@@ -18,12 +18,14 @@ namespace SpellforceDataEditor.special_forms
 {
     public partial class SF3DManagerForm : Form
     {
-        Dictionary<string, ObjectSimple3D> objects_static = new Dictionary<string, ObjectSimple3D>();
-        Dictionary<string, objectAnimated> objects_dynamic = new Dictionary<string, objectAnimated>();
+        SF3D.SceneSynchro.SFSceneLoader scene_manager = new SF3D.SceneSynchro.SFSceneLoader();
+        SF3D.SceneSynchro.SFSceneDescriptionMeta scene_meta = null;
+        SpelllforceCFFEditor main = null;
         SFResourceManager resources = new SFResourceManager();
         List<string> mesh_names = new List<string>();
         List<string> skeleton_names = new List<string>();
         List<string> animation_names = new List<string>();
+        bool synchronized = false;
 
         Camera3D camera = new Camera3D();
         Matrix4 proj_matrix;
@@ -142,6 +144,12 @@ namespace SpellforceDataEditor.special_forms
             glControl1.Invalidate();
         }
 
+        public void Link(SpelllforceCFFEditor _main)
+        {
+            main = _main;
+            scene_manager.Init(main.get_manager(), resources);
+        }
+
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             glControl1.MakeCurrent();
@@ -164,7 +172,7 @@ namespace SpellforceDataEditor.special_forms
 
             GL.UseProgram(programID);
 
-            foreach (ObjectSimple3D obj in objects_static.Values)
+            foreach (ObjectSimple3D obj in scene_manager.objects_static.Values)
             {
                 if (obj.Modified)
                     obj.update_modelMatrix();
@@ -207,7 +215,7 @@ namespace SpellforceDataEditor.special_forms
             }
             //animated objects
             GL.UseProgram(programID_anim);
-            foreach(objectAnimated obj in objects_dynamic.Values)
+            foreach(objectAnimated obj in scene_manager.objects_dynamic.Values)
             {
                 if (obj.Modified)
                     obj.update_modelMatrix();
@@ -251,8 +259,9 @@ namespace SpellforceDataEditor.special_forms
 
         private void SF3DManagerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            objects_static.Clear();
+            scene_manager.ClearScene();
             resources.DisposeAll();
+            main.OnCloseViewer();
         }
 
         private void ComboBrowseMode_SelectedIndexChanged(object sender, EventArgs e)
@@ -263,15 +272,15 @@ namespace SpellforceDataEditor.special_forms
             DisableAnimation();
             ListEntries.Items.Clear();
             ListAnimations.Items.Clear();
-            objects_static.Clear();
-            objects_dynamic.Clear();
+            scene_manager.ClearScene();
             resources.DisposeAll();
+            synchronized = false;
 
             if(ComboBrowseMode.SelectedIndex == 0)
             {
                 ObjectSimple3D obj_s1 = new ObjectSimple3D();
                 obj_s1.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-                objects_static.Add("simple_mesh", obj_s1);
+                scene_manager.objects_static.Add("simple_mesh", obj_s1);
 
                 foreach (string mesh_name in mesh_names)
                     ListEntries.Items.Add(mesh_name);
@@ -281,12 +290,16 @@ namespace SpellforceDataEditor.special_forms
             {
                 objectAnimated obj_d1 = new objectAnimated();
                 obj_d1.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-                objects_dynamic.Add("dynamic_mesh", obj_d1);
+                scene_manager.objects_dynamic.Add("dynamic_mesh", obj_d1);
 
                 foreach (string skel_name in skeleton_names)
                     ListEntries.Items.Add(skel_name);
             }
-            
+
+            if (ComboBrowseMode.SelectedIndex == 2)
+            {
+                synchronized = true;
+            }
         }
 
         private void ListEntries_SelectedIndexChanged(object sender, EventArgs e)
@@ -298,7 +311,7 @@ namespace SpellforceDataEditor.special_forms
 
             if (ComboBrowseMode.SelectedIndex == 0)
             {
-                ObjectSimple3D obj_s1 = objects_static["simple_mesh"];
+                ObjectSimple3D obj_s1 = scene_manager.objects_static["simple_mesh"];
                 obj_s1.Mesh = null;
                 
 
@@ -322,7 +335,7 @@ namespace SpellforceDataEditor.special_forms
                 ListAnimations.Items.Clear();
                 DisableAnimation();
 
-                objectAnimated obj_d1 = objects_dynamic["dynamic_mesh"];
+                objectAnimated obj_d1 = scene_manager.objects_dynamic["dynamic_mesh"];
                 SFModelSkin skin = null;
                 SFSkeleton skel = null;
 
@@ -376,8 +389,6 @@ namespace SpellforceDataEditor.special_forms
             //calculate movement vector
             Vector3 cam_move = (((camera.lookat - camera.Position).Normalized())*cam_speed)/frames_per_second;
 
-            System.Diagnostics.Debug.WriteLine(e.KeyChar);
-
             if (e.KeyChar == 'w')
                 camera.translate(cam_move);
             else if (e.KeyChar == 's')
@@ -389,7 +400,7 @@ namespace SpellforceDataEditor.special_forms
         {
             if (ComboBrowseMode.SelectedIndex == 1)
             {
-                objectAnimated obj_d1 = objects_dynamic["dynamic_mesh"];
+                objectAnimated obj_d1 = scene_manager.objects_dynamic["dynamic_mesh"];
 
                 if (ListAnimations.SelectedIndex != -1)
                 {
@@ -411,6 +422,39 @@ namespace SpellforceDataEditor.special_forms
                     }
 
                     obj_d1.SetAnimation(resources.Animations.Get(anim_name), true);
+                    StatusText.Text = "Loaded animation " + anim_name;
+                    statusStrip1.Refresh();
+
+                    EnableAnimation();
+                }
+            }
+
+            if (ComboBrowseMode.SelectedIndex == 2)
+            {
+                if (ListAnimations.SelectedIndex != -1)
+                {
+                    string anim_name = ListAnimations.SelectedItem.ToString();
+                    anim_name = anim_name.Substring(0, anim_name.Length - 4);
+                    int result = resources.Animations.Load(anim_name);
+                    if ((result != 0) && (result != -1))
+                    {
+
+                        StatusText.Text = "Failed to load animation " + anim_name + ", status code " + result.ToString();
+                        DisableAnimation();
+                        return;
+                    }
+
+                    foreach (KeyValuePair<string, string> kv in scene_meta.obj_to_anim)
+                    {
+                        if (resources.Animations.Get(anim_name).bone_count != scene_manager.objects_dynamic[kv.Key].skeleton.bone_count)
+                        {
+                            StatusText.Text = "Invalid animation " + anim_name;
+                            DisableAnimation();
+                            return;
+                        }
+                        scene_manager.objects_dynamic[kv.Key].SetAnimation(resources.Animations.Get(anim_name), true);
+                    }
+                    
                     StatusText.Text = "Loaded animation " + anim_name;
                     statusStrip1.Refresh();
 
@@ -491,6 +535,8 @@ namespace SpellforceDataEditor.special_forms
             mouse_pressed = false;
             if (ComboBrowseMode.SelectedIndex != 1)
                 DisableAnimation();
+            if ((ComboBrowseMode.SelectedIndex == 2)&& (scene_meta != null) && (scene_meta.is_animated))
+                EnableAnimation();
         }
 
         private void glControl1_MouseMove(object sender, MouseEventArgs e)
@@ -514,12 +560,41 @@ namespace SpellforceDataEditor.special_forms
             //calculate rotation vector
             Vector3 roffset = new Vector3((float)Math.Cos(axz) * (float)Math.Cos(axy), (float)Math.Sin(axy), (float)Math.Sin(axz) * (float)Math.Cos(axy));
             camera.look_at(camera.Position + roffset);
-            System.Diagnostics.Debug.WriteLine(camera.lookat.ToString()+" / " + axz.ToString()+" / "+axy.ToString());
+            //System.Diagnostics.Debug.WriteLine(camera.lookat.ToString()+" / " + axz.ToString()+" / "+axy.ToString());
 
             //set cursor position
             Cursor.Position = new Point(this.Location.X + glControl1.Location.X + (glControl1.Size.Width / 2), this.Location.Y + glControl1.Location.Y + (glControl1.Size.Height / 2));
 
             //glControl1.Invalidate();
+        }
+
+        public void GenerateScene(int cat, int elem)
+        {
+            if (!synchronized)
+                return;
+
+            DisableAnimation();
+            ListEntries.Items.Clear();
+            ListAnimations.Items.Clear();
+            scene_manager.ClearScene();
+            resources.DisposeAll();
+            GC.Collect(2, GCCollectionMode.Forced, false);
+
+            System.Diagnostics.Debug.WriteLine("GENERATING SCENE " + cat.ToString() + "|" + elem.ToString());
+            scene_meta = scene_manager.ParseSceneDescription(scene_manager.CatElemToScene(cat, elem));
+
+            if (scene_meta.is_animated)
+            {
+                if (scene_meta.obj_to_anim.ContainsKey("MAIN"))
+                {
+                    ListAnimations.Items.Clear();
+                    List<string> anims = GetAllSkeletonAnimations(scene_meta.obj_to_anim["MAIN"]);
+                    foreach (string n in anims)
+                        ListAnimations.Items.Add(n);
+                }
+            }
+
+            glControl1.Invalidate();
         }
     }
 }
