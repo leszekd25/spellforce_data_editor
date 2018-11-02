@@ -37,7 +37,7 @@ namespace SpellforceDataEditor.category_forms
             int elem_count = elem.get().Count / 4;
 
             for (int i = 0; i < elem_count; i++)
-                category.set_element_variant(current_element, i * 4 + 0, Utility.TryParseUInt16(textBox1.Text));
+                set_element_variant(current_element, i * 4 + 0, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -45,7 +45,7 @@ namespace SpellforceDataEditor.category_forms
             int cur_selected = ListSkills.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            category.set_element_variant(current_element, cur_selected*4+1, Utility.TryParseUInt8(textBox3.Text));
+            set_element_variant(current_element, cur_selected*4+1, Utility.TryParseUInt8(textBox3.Text));
             set_list_text(cur_selected);
         }
 
@@ -54,7 +54,7 @@ namespace SpellforceDataEditor.category_forms
             int cur_selected = ListSkills.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            category.set_element_variant(current_element, cur_selected*4+2, Utility.TryParseUInt8(textBox4.Text));
+            set_element_variant(current_element, cur_selected*4+2, Utility.TryParseUInt8(textBox4.Text));
             set_list_text(cur_selected);
         }
 
@@ -63,7 +63,7 @@ namespace SpellforceDataEditor.category_forms
             int cur_selected = ListSkills.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            category.set_element_variant(current_element, cur_selected*4+3, Utility.TryParseUInt8(textBox2.Text));
+            set_element_variant(current_element, cur_selected*4+3, Utility.TryParseUInt8(textBox2.Text));
             set_list_text(cur_selected);
         }
 

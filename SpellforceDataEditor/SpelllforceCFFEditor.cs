@@ -35,13 +35,15 @@ namespace SpellforceDataEditor
 
         private SFDataTracer tracer;
 
+        private special_forms.ChangeDataLangForm change_lang = null;
+        private special_forms.ReferencesForm refs = null;
+
         //constructor
         public SpelllforceCFFEditor()
         {
             InitializeComponent();
 
             manager = new SFCategoryManager();
-            manager.set_application_form(this);
 
             diff = new SFDiffTools();
             diff.connect_to(manager);
@@ -832,10 +834,12 @@ namespace SpellforceDataEditor
         //special option to change game language
         private void changeDataLanguageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            special_forms.ChangeDataLangForm changelang_form = new special_forms.ChangeDataLangForm();
-            changelang_form.connect_to_data(manager);
+            change_lang = new special_forms.ChangeDataLangForm();
+            change_lang.connect_to_data(manager);
 
-            changelang_form.ShowDialog();
+            change_lang.ShowDialog();
+
+            change_lang = null;
 
             labelStatus.Text = "Done";
         }
@@ -886,12 +890,24 @@ namespace SpellforceDataEditor
 
         private void findAllReferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if((real_category_index == -1)||(selected_element_index == -1))
+            if ((real_category_index == -1) || (selected_element_index == -1))
                 return;
 
-            special_forms.ReferencesForm refer = new special_forms.ReferencesForm();
-            refer.set_referenced_element(this, real_category_index, selected_element_index);
-            refer.Show();
+            if (refs == null)
+            {
+                refs = new special_forms.ReferencesForm();
+                refs.FormClosed += new FormClosedEventHandler(this.refs_FormClosed);
+                refs.Show();
+            }
+            else
+                refs.BringToFront();
+            refs.set_referenced_element(this, real_category_index, selected_element_index);
         }
+
+        private void refs_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            refs = null;
+        }
+
     }
 }

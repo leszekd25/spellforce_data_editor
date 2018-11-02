@@ -87,15 +87,15 @@ namespace SpellforceDataEditor
                     break;
                 case 7:   //cure poison
                 case 24:  //cure disease
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
                     break;
                 case 10:  //fog
                     p[0] = "Maximum sight range";
                     p[1] = "Time between ticks (ms)";
                     p[2] = "Tick count";
-                    p[3] = "Unknown";
+                    p[3] = Utility.S_UNKNOWN;
                     break;
                 case 11:  //illuminate
                     p[0] = "Tick count";
@@ -165,9 +165,9 @@ namespace SpellforceDataEditor
                     p[4] = "Max level affected";
                     break;
                 case 25:  //petrify
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
                     p[3] = "Time between ticks (ms)";
                     p[4] = "Tick count";
                     break;
@@ -176,14 +176,14 @@ namespace SpellforceDataEditor
                     p[1] = "Area radius";
                     break;
                 case 30:  //raise dead
-                    p[0] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
                     p[1] = "Area radius";
-                    p[2] = "Unknown";
+                    p[2] = Utility.S_UNKNOWN;
                     break;
                 case 32:  //death grasp
-                    p[0] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
                     p[1] = "Time between ticks (ms)";
-                    p[2] = "Unknown";
+                    p[2] = Utility.S_UNKNOWN;
                     break;
                 case 37:  //area slowness
                 case 38:  //area inflexibility
@@ -191,8 +191,8 @@ namespace SpellforceDataEditor
                 case 49:  //area quickness
                 case 51:  //area flexibility
                 case 53:  //area strength
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
                     p[2] = "Duration (ms)";
                     break;
                 case 43:  //area healing
@@ -214,17 +214,17 @@ namespace SpellforceDataEditor
                     p[2] = "2nd tick check";
                     p[3] = "3rd tick check";
                     p[4] = "Tick count";
-                    p[5] = "Unknown";
+                    p[5] = Utility.S_UNKNOWN;
                     p[6] = "Max level affected";
                     break;
                 case 54:  //guard (?)
-                    p[0] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
                     p[1] = "Duration";
                     break;
                 case 55:  //remove curse (?)
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
                     break;
                 case 56:  //regenerate
                     p[0] = "Heal amount";
@@ -232,27 +232,27 @@ namespace SpellforceDataEditor
                     p[2] = "Tick count";
                     break;
                 case 57: //holy might
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
                     p[4] = "Time between ticks (ms)";
                     p[5] = "Duration (ms)";
                     break;
                 case 62:  //forget
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
                     break;
                 case 63:  //self illusion
                     p[0] = "Illusions summoned";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
                     break;
                 case 64:  //retention
-                    p[0] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
                     p[1] = "Duration (ms)";
                     break;
                 case 66:  //sacrifice mana
@@ -264,21 +264,21 @@ namespace SpellforceDataEditor
                     break;
                 case 69:  //shock
                 case 238: //shock (chain efect)
-                    p[0] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
                     p[1] = "Damage";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
                     break;
                 case 70:  //disrupt
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
                     break;
                 case 71:  //fear
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
                     p[3] = "Duration (ms)";
                     break;
                 case 72:  //confuse
@@ -292,8 +292,8 @@ namespace SpellforceDataEditor
                 case 76:  //stone rain
                     p[0] = "Time between ticks";
                     p[1] = "Tick count";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
                     p[4] = "Sub-effect ID";
                     p[10] = "0000100000";
                     break;
@@ -305,12 +305,12 @@ namespace SpellforceDataEditor
                     break;
                 case 77:  //wall of rocks
                 case 78:  //ring of rocks
-                    p[0] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
                     p[1] = "Duration (ms))";
                     break;
                 case 80:  //extinct
                     p[0] = "Health threshold";
-                    p[1] = "Unknown";
+                    p[1] = Utility.S_UNKNOWN;
                     break;
                 case 82:  //detect metal
                 case 83:  //detect magic
@@ -319,10 +319,10 @@ namespace SpellforceDataEditor
                 case 86:  //invisibility
                     p[0] = "Time between ticks (ms)";
                     p[1] = "Tick count";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
-                    p[4] = "Unknown";
-                    p[5] = "Unknown";
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
+                    p[4] = Utility.S_UNKNOWN;
+                    p[5] = Utility.S_UNKNOWN;
                     break;
                 case 88:  //aura of weakness
                 case 89:  //aura of suffocation
@@ -365,17 +365,17 @@ namespace SpellforceDataEditor
                     p[1] = "Damage received";
                     break;
                 case 93:  //feign death
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
-                    p[4] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
+                    p[4] = Utility.S_UNKNOWN;
                     break;
                 case 96:  //dispel white aura
                 case 112: //dispel black aura
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
                     p[3] = "Dispel duration (ms)";
                     break;
                 case 105: //suicide heal
@@ -390,18 +390,18 @@ namespace SpellforceDataEditor
                     p[2] = "Max level affected";
                     break;
                 case 119: //distract
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
                     break;
                 case 123: //befriend
                 case 124: //disenchant
                     p[0] = "Max level affected";
                     break;
                 case 126: //shock
-                    p[0] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
                     p[1] = "Damage";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
                     p[4] = "Area radius";
                     break;
                 case 134: //wave of fire
@@ -461,11 +461,11 @@ namespace SpellforceDataEditor
                     p[2] = "Cone radius (degrees)";
                     break;
                 case 164: //cloak of nor
-                    p[0] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
                     p[1] = "Duration (ms)";
                     break;
                 case 165: //unknown?
-                    p[0] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
                     break;
                 case 168: //freeze (wind archer upgrade)
                 case 169: //freeze (hurler upgrade)
@@ -504,26 +504,26 @@ namespace SpellforceDataEditor
                     break;
                 case 177: //mental essence
                 case 181: //mental almightness
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
-                    p[4] = "Unknown";
-                    p[5] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
+                    p[4] = Utility.S_UNKNOWN;
+                    p[5] = Utility.S_UNKNOWN;
                     break;
                 case 182: //elemental almightness
                 case 183: //elemental essence
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
-                    p[4] = "Unknown";
-                    p[5] = "Unknown";
-                    p[6] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
+                    p[4] = Utility.S_UNKNOWN;
+                    p[5] = Utility.S_UNKNOWN;
+                    p[6] = Utility.S_UNKNOWN;
                     break;
                 case 184: //assistance
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
                     p[2] = "Duration (ms)";
                     break;
                 case 186: //revenge
@@ -536,10 +536,10 @@ namespace SpellforceDataEditor
                 case 189: //roots
                     p[0] = "Time between ticks (ms)";
                     p[1] = "Damage per tick";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
                     p[4] = "Max level affected";
-                    p[5] = "Unknown";
+                    p[5] = Utility.S_UNKNOWN;
                     break;
                 case 190: //chain hallow
                 case 193: //chain pain
@@ -569,8 +569,8 @@ namespace SpellforceDataEditor
                 case 199: //mutation
                 case 233: //mutation (chain effect)
                     p[0] = "Duration (ms)";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
                     break;
                 case 200: //area of darkness
                     p[0] = "Duration (ms)";
@@ -579,63 +579,63 @@ namespace SpellforceDataEditor
                     break;
                 case 207: //area freeze
                     p[0] = "Freeze duration (ms)";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
                     break;
                 case 210: //feet of clay
                     p[0] = "Time between ticks (ms)";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
-                    p[4] = "Unknown";
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
+                    p[4] = Utility.S_UNKNOWN;
                     break;
                 case 211: //mirage
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
                     break;
                 case 213: //feedback
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
                     break;
                 case 215: //area hypnotize
                     p[0] = "Time between ticks (ms)";
-                    p[1] = "Unknown";
+                    p[1] = Utility.S_UNKNOWN;
                     p[2] = "Max level affected";
-                    p[3] = "Unknown";
-                    p[4] = "Unknown";
+                    p[3] = Utility.S_UNKNOWN;
+                    p[4] = Utility.S_UNKNOWN;
                     break;
                 case 216: //area confuse
                     p[0] = "Duration";
                     p[1] = "Max level affected";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
                     break;
                 case 218: //manashield
-                    p[0] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
                     break;
                 case 219: //manashift
                     p[0] = "Area radius";
                     p[1] = "Mana per unit";
                     break;
                 case 220: //shift life
-                    p[0] = "Unknown";
-                    p[1] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
+                    p[1] = Utility.S_UNKNOWN;
                     break;
                 case 221: //riposte
-                    p[0] = "Unknown";
+                    p[0] = Utility.S_UNKNOWN;
                     p[1] = "Duration (ms)";
                     break;
                 case 222: //critical hits
                     p[0] = "Duration (ms)";
-                    p[1] = "Unknown";
-                    p[2] = "Unknown";
-                    p[3] = "Unknown";
-                    p[4] = "Unknown";
-                    p[5] = "Unknown";
-                    p[6] = "Unknown";
-                    p[7] = "Unknown";
-                    p[8] = "Unknown";
+                    p[1] = Utility.S_UNKNOWN;
+                    p[2] = Utility.S_UNKNOWN;
+                    p[3] = Utility.S_UNKNOWN;
+                    p[4] = Utility.S_UNKNOWN;
+                    p[5] = Utility.S_UNKNOWN;
+                    p[6] = Utility.S_UNKNOWN;
+                    p[7] = Utility.S_UNKNOWN;
+                    p[8] = Utility.S_UNKNOWN;
                     break;
                 case 229: //aura of eternity (aura effect)
                     p[0] = "Agility bonus (%)";
@@ -660,8 +660,6 @@ namespace SpellforceDataEditor
         private Byte[] mainHeader;            //gamedata.cff has a main header which is held here
         private string gamedata_md5 = "";     //currently loaded cff's MD5 hash (as string)
 
-        private SpelllforceCFFEditor application_form;
-
         //constructor, it creates categories
         public SFCategoryManager()
         {
@@ -677,16 +675,6 @@ namespace SpellforceDataEditor
             categorySpecial_RuneHeroes.set_manager(this);
 
             mainHeader = new Byte[20];
-        }
-
-        public void set_application_form(SpelllforceCFFEditor form)
-        {
-            application_form = form;
-        }
-
-        public SpelllforceCFFEditor get_application_form()
-        {
-            return application_form;
         }
 
         //returns category, given its index
@@ -708,8 +696,8 @@ namespace SpellforceDataEditor
         {
             FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
 
-            MD5 md5_gen = MD5.Create();
-            gamedata_md5 = BitConverter.ToString(md5_gen.ComputeHash(fs)).Replace("-", "").ToLower();
+            //MD5 md5_gen = MD5.Create();
+            //gamedata_md5 = BitConverter.ToString(md5_gen.ComputeHash(fs)).Replace("-", "").ToLower();
 
             fs.Seek(0, SeekOrigin.Begin);
 
@@ -766,12 +754,12 @@ namespace SpellforceDataEditor
             fs.Close();
 
             //md5 calculation for data diff tool
-            FileStream fs2 = new FileStream(filename, FileMode.Open, FileAccess.Read);
+            /*FileStream fs2 = new FileStream(filename, FileMode.Open, FileAccess.Read);
 
             MD5 md5_gen = MD5.Create();
             gamedata_md5 = BitConverter.ToString(md5_gen.ComputeHash(fs2)).Replace("-", "").ToLower();
 
-            fs2.Close();
+            fs2.Close();*/
         }
 
         //returns category count
@@ -889,7 +877,7 @@ namespace SpellforceDataEditor
                 case 14:
                     return "Dark elf unique";
                 default:
-                    return "<no name>";
+                    return Utility.S_NONAME;
             }
         }
 
@@ -1039,65 +1027,6 @@ namespace SpellforceDataEditor
                 return Utility.S_MISSING;
 
             return Utility.CleanString(text_elem.get_single_variant(4));
-        }
-
-        //returns a list of indices
-        //these indices correspond with all elements which contain given value in a given column
-        //value is numeric in this query
-        public List<int> query_by_column_numeric(int categoryindex, int columnindex, int value)
-        {
-            List<int> items = new List<int>();
-
-            SFCategory cat = get_category(categoryindex);
-
-            for (int i = 0; i < cat.get_element_count(); i++)
-            {
-                SFVariant variant = cat.get_element_variant(i, columnindex);
-                int current_value = variant.to_int();
-                if (current_value == value)
-                    items.Add(i);
-            }
-            return items;
-        }
-
-        //returns a list of indices
-        //these indices correspond with all elements which contain given value in a given column
-        //value is a text in this query
-        public List<int> query_by_column_text(int categoryindex, int columnindex, string value)
-        {
-            List<int> items = new List<int>();
-
-            SFCategory cat = get_category(categoryindex);
-
-            for (int i = 0; i < cat.get_element_count(); i++)
-            {
-                SFVariant variant = cat.get_element_variant(i, columnindex);
-                string current_value = Utility.CleanString(variant);
-                if (current_value.Contains(value))
-                    items.Add(i);
-            }
-            return items;
-        }
-
-        //returns a list of indices
-        //these indices correspond with all elements which contain given value in a given column
-        //value is a flag index in this query
-        public List<int> query_by_column_flag(int categoryindex, int columnindex, int value)
-        {
-            List<int> items = new List<int>();
-
-            int flag_value = 1 << (value - 1);
-
-            SFCategory cat = get_category(categoryindex);
-
-            for (int i = 0; i < cat.get_element_count(); i++)
-            {
-                SFVariant variant = cat.get_element_variant(i, columnindex);
-                int current_value = variant.to_int();
-                if ((current_value & flag_value) == flag_value)
-                    items.Add(i);
-            }
-            return items;
         }
 
         //frees all data, only empty categories remain

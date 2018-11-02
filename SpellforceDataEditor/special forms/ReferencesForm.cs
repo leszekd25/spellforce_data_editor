@@ -101,6 +101,8 @@ namespace SpellforceDataEditor.special_forms
             sf_form = form;
 
             labelRefElemName.Text = get_catelement_string(referenced);
+
+            find_all_references();
         }
 
         private string get_catelement_string(CatElem ce)
@@ -270,11 +272,6 @@ namespace SpellforceDataEditor.special_forms
             CatElem elem = elements[listBox1.SelectedIndex];
 
             sf_form.Tracer_StepForward(elem.category, elem.element);
-        }
-
-        private void ReferencesForm_Shown(object sender, EventArgs e)
-        {
-            find_all_references();
         }
     }
 }

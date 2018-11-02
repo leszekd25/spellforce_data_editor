@@ -23,22 +23,22 @@ namespace SpellforceDataEditor.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 0, Utility.TryParseUInt32(tb_effID.Text));
+            set_element_variant(current_element, 0, Utility.TryParseUInt32(tb_effID.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox3.Text));
+            set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox3.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 2, Utility.FixedLengthString(textBox4.Text, 64));
+            set_element_variant(current_element, 2, Utility.FixedLengthString(textBox4.Text, 64));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 3, Utility.TryParseUInt16(textBox2.Text));
+            set_element_variant(current_element, 3, Utility.TryParseUInt16(textBox2.Text));
         }
 
         public override void show_element()

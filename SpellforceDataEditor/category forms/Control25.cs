@@ -26,17 +26,17 @@ namespace SpellforceDataEditor.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 0, Utility.TryParseUInt16(textBox1.Text));
+            set_element_variant(current_element, 0, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox2.Text));
+            set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox2.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 2, Utility.TryParseUInt8(textBox5.Text));
+            set_element_variant(current_element, 2, Utility.TryParseUInt8(textBox5.Text));
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -62,14 +62,14 @@ namespace SpellforceDataEditor.category_forms
         {
             if (vertex_index == -1)
                 return;
-            category.set_element_variant(current_element, 4 + vertex_index * 2, Utility.TryParseInt16(textBox3.Text));
+            set_element_variant(current_element, 4 + vertex_index * 2, Utility.TryParseInt16(textBox3.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
             if (vertex_index == -1)
                 return;
-            category.set_element_variant(current_element, 4 + vertex_index * 2 + 1, Utility.TryParseInt16(textBox4.Text));
+            set_element_variant(current_element, 4 + vertex_index * 2 + 1, Utility.TryParseInt16(textBox4.Text));
         }
 
         public override void show_element()

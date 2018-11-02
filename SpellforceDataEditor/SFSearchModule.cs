@@ -24,9 +24,17 @@ namespace SpellforceDataEditor
         {
             string format = category.get_element_format();
             int elem_length = format.Length;
+            int query_val = Utility.TryParseInt32(query, int.MinValue);
             List<int> target = new List<int>();
 
             int counter = 0;
+
+            if (source == null)
+            {
+                source = new List<int>();
+                for (int i = 0; i < category.get_element_count(); i++)
+                    source.Add(i);
+            }
 
             foreach (int i in source)
             {
@@ -46,7 +54,6 @@ namespace SpellforceDataEditor
 
                 if (type == SearchType.TYPE_NUMBER)
                 {
-                    int query_val = Utility.TryParseInt32(query, int.MinValue);
                     bool success = false;
                     for (int j = 0; j < elem_count; j++)
                     {
@@ -105,7 +112,6 @@ namespace SpellforceDataEditor
 
                 else if(type == SearchType.TYPE_BITFIELD)
                 {
-                    UInt32 query_val = Utility.TryParseUInt32(query, UInt32.MaxValue);
                     bool success = false;
                     for (int j = 0; j < elem_count; j++)
                     {

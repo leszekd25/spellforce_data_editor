@@ -30,12 +30,12 @@ namespace SpellforceDataEditor.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 0, Utility.TryParseUInt16(textBox1.Text));
+            set_element_variant(current_element, 0, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, ListSpells.SelectedIndex * 3 + 2, Utility.TryParseUInt16(textBox3.Text));
+            set_element_variant(current_element, ListSpells.SelectedIndex * 3 + 2, Utility.TryParseUInt16(textBox3.Text));
         }
 
         public override void set_element(int index)

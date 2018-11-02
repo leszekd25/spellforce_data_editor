@@ -60,7 +60,6 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "ReferencesForm";
             this.Text = "References";
-            this.Shown += new System.EventHandler(this.ReferencesForm_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

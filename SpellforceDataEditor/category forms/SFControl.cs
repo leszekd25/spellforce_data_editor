@@ -59,6 +59,13 @@ namespace SpellforceDataEditor.category_forms
             return current_element;
         }
 
+        //updates data element and displayed description
+        public void set_element_variant(int elem_index, int var_index, object obj)
+        {
+            category.set_element_variant(elem_index, var_index, obj);
+            ((SpelllforceCFFEditor)ParentForm).external_set_element_select_string(category, elem_index);
+        }
+
         //this depends on actual control
         //each category has a corresponding control
         public virtual void show_element()
@@ -126,7 +133,8 @@ namespace SpellforceDataEditor.category_forms
                 return;
             if (real_elem_id == -1)
                 return;
-            category.get_manager().get_application_form().Tracer_StepForward(cat_i, real_elem_id);
+            //category.get_manager().get_application_form().Tracer_StepForward(cat_i, real_elem_id);
+            ((SpelllforceCFFEditor)ParentForm).Tracer_StepForward(cat_i, real_elem_id);
         }
     }
 }

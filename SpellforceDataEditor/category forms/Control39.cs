@@ -25,32 +25,32 @@ namespace SpellforceDataEditor.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 0, Utility.TryParseUInt16(tb_effID.Text));
+            set_element_variant(current_element, 0, Utility.TryParseUInt16(tb_effID.Text));
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 1, Utility.TryParseUInt32(textBox1.Text));
+            set_element_variant(current_element, 1, Utility.TryParseUInt32(textBox1.Text));
         }
 
         private void tb_rng_min_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 2, Utility.TryParseUInt16(tb_rng_min.Text));
+            set_element_variant(current_element, 2, Utility.TryParseUInt16(tb_rng_min.Text));
         }
 
         private void tb_rng_max_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 3, Utility.TryParseUInt16(tb_rng_max.Text));
+            set_element_variant(current_element, 3, Utility.TryParseUInt16(tb_rng_max.Text));
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 4, (Byte)(checkBox1.Checked ? 1 : 0));
+            set_element_variant(current_element, 4, (Byte)(checkBox1.Checked ? 1 : 0));
         }
 
         private void tb_req4_1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 5, Utility.TryParseUInt16(tb_req4_1.Text));
+            set_element_variant(current_element, 5, Utility.TryParseUInt16(tb_req4_1.Text));
         }
 
         public override void show_element()
