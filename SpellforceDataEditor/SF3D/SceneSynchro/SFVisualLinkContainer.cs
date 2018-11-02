@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * SFVisualLinkContainer is a manager for SFVisualLink objects
+ * It can differentiate between asset types and allows asset name extraction based on its type
+ */
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;

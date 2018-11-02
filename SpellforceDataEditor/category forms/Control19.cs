@@ -70,7 +70,7 @@ namespace SpellforceDataEditor.category_forms
             int elem_count = elem.get().Count / 3;
 
             for (int i = 0; i < elem_count; i++)
-                category.set_element_variant(current_element, 0 + 3 * i, Utility.TryParseUInt16(textBox1.Text));
+                set_element_variant(current_element, 0 + 3 * i, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void TryToFlip(CheckBox ch)

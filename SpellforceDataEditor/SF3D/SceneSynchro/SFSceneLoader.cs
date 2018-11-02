@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+ * SFSceneLoader is de facto a scene manager, it controls what is displayed in the window
+ * Main functions are ParseSceneDescription and CatElemToScene
+ * CatElemToScene generates scene description based on provided game data element
+ * ParseSceneDescription generates visual data displayed in window, based on provided description
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,22 +18,20 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 {
     public class SFSceneLoader
     {
-        public Dictionary<string, ObjectSimple3D> objects_static = new Dictionary<string, ObjectSimple3D>();
-        public Dictionary<string, objectAnimated> objects_dynamic = new Dictionary<string, objectAnimated>();
+        public SFSceneDescriptionMeta scene_meta { get; private set; } = null;
+        public Dictionary<string, ObjectSimple3D> objects_static { get; private set; } = new Dictionary<string, ObjectSimple3D>();
+        public Dictionary<string, objectAnimated> objects_dynamic { get; private set; } = new Dictionary<string, objectAnimated>();
 
-        SFVisualLinkContainer mesh_data = null;
-        SFCategoryManager game_data = null;
-        SFResourceManager resources = null;
+        SFVisualLinkContainer mesh_data = new SFVisualLinkContainer();
+        public SFCategoryManager game_data { get; private set; } = null;
+        public SFResourceManager resources { get; set; } = null;
 
-        public void Init(SFCategoryManager gd, SFResourceManager rm)
+        public void Init(SFCategoryManager gd)
         {
-            if(mesh_data == null)
-                mesh_data = new SFVisualLinkContainer();
             game_data = gd;
-            resources = rm;
         }
 
-        public SFSceneDescriptionMeta ParseSceneDescription(SFSceneDescription scene)
+        public void ParseSceneDescription(SFSceneDescription scene)
         {
             foreach(SFSceneDescriptionLine sl in scene.get_lines())
             {
@@ -51,7 +56,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         break;
                 }
             }
-            return scene.meta;
+            scene_meta = scene.meta;
         }
 
         private UInt16 GetItemID(SFCategoryElement el, Byte slot)
@@ -102,7 +107,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
 
             //add anim model to scene
-            sd.add_line(new SFSceneDescriptionLine(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { chest_name, "", "MAIN" }));
+            sd.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { chest_name, "", "MAIN" });
             sd.meta.obj_to_anim["MAIN"] = anim_name;
 
             //get legs item (5) (animated)
@@ -113,7 +118,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 string legs_name = mesh_data.GetItemMesh(legs_id, is_female);
                 if (legs_name != "")
                 {
-                    sd.add_line(new SFSceneDescriptionLine(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { legs_name, "", legs_name }));
+                    sd.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { legs_name, "", legs_name });
                     sd.meta.obj_to_anim[legs_name] = anim_name;
                 }
             }
@@ -125,7 +130,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 string head_name = mesh_data.GetHeadMesh(head_id, is_female);
                 if(head_name != "")
                 {
-                    sd.add_line(new SFSceneDescriptionLine(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { head_name, "", head_name }));
+                    sd.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { head_name, "", head_name });
                     sd.meta.obj_to_anim[head_name] = anim_name;
                 }
             }
@@ -139,8 +144,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 if (helmet_name != "")
                 {
                     //create bone attachment
-                    sd.add_line(new SFSceneDescriptionLine(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", "Head", "HEAD" }));
-                    sd.add_line(new SFSceneDescriptionLine(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { helmet_name, "HEAD", helmet_name }));
+                    sd.add_line(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", "Head", "HEAD" });
+                    sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { helmet_name, "HEAD", helmet_name });
                 }
             }
 
@@ -153,8 +158,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 if (rhand_name != "")
                 {
                     //create bone attachment
-                    sd.add_line(new SFSceneDescriptionLine(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", "R Hand weapon", "RHAND" }));
-                    sd.add_line(new SFSceneDescriptionLine(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { rhand_name, "RHAND", "I_RHAND" }));
+                    sd.add_line(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", "R Hand weapon", "RHAND" });
+                    sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { rhand_name, "RHAND", "I_RHAND" });
                 }
             }
 
@@ -175,12 +180,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         is_shield = item_type == 9;
                     }
                     //create bone attachment
-                    sd.add_line(new SFSceneDescriptionLine(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", (is_shield?"L Forearm shield":"L Hand weapon"), "LHAND" }));
-                    sd.add_line(new SFSceneDescriptionLine(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { lhand_name, "LHAND", "I_LHAND" }));
+                    sd.add_line(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", (is_shield?"L Forearm shield":"L Hand weapon"), "LHAND" });
+                    sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { lhand_name, "LHAND", "I_LHAND" });
                 }
             }
 
-            sd.add_line(new SFSceneDescriptionLine(SCENE_ITEM_TYPE.SCENE_ANIM, new string[] { "1" }));
+            sd.add_line(SCENE_ITEM_TYPE.SCENE_ANIM, new string[] { "1" });
         }
 
         public SFSceneDescription CatElemToScene(int category, int element)
@@ -208,7 +213,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         break;
 
                     //create scene
-                    sd.add_line(new SFSceneDescriptionLine(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { m_name, "", m_name }));
+                    sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { m_name, "", m_name });
 
                     break;
                 case 23:
@@ -227,7 +232,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
                     //create scene
                     foreach (string m in m_arr)
-                        sd.add_line(new SFSceneDescriptionLine(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { m, "", m}));
+                        sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { m, "", m});
 
                     break;
                 case 33:
@@ -246,7 +251,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
                     //create scene
                     foreach (string m in m_lst)
-                        sd.add_line(new SFSceneDescriptionLine(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { m, "", m }));
+                        sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { m, "", m });
 
                     break;
                 case 17:
@@ -273,6 +278,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             objects_static.Clear();
             objects_dynamic.Clear();
+            scene_meta = null;
         }
 
         public void AddObjectStatic(string mesh_name, string parent_name, string obj_name)

@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * SFSceneDescription consists of multiple SFSceneDescriptionLine structures and a SFSceneDescriptionMeta object
+ * Each SFSceneDescriptionLine is a command to be parsed
+ * SFSceneDescriptionMeta contains scene metadata, additonal info for scene
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor.SF3D.SceneSynchro
 {
-    public enum SCENE_ITEM_TYPE { OBJ_SIMPLE = 0, OBJ_ANIMATED, OBJ_BONE, OBJ_POSITION, SCENE_ANIM };
+    public enum SCENE_ITEM_TYPE { OBJ_SIMPLE = 0, OBJ_ANIMATED, OBJ_BONE, OBJ_POSITION, OBJ_ROTATION, SCENE_ANIM };
 
     public struct SFSceneDescriptionLine
     {
@@ -39,8 +45,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
     public class SFSceneDescriptionMeta
     {
-        public bool is_animated = false;
-        public Dictionary<string, string> obj_to_anim = new Dictionary<string, string>();
+        public bool is_animated = false;     //true if scene contains an animation
+        public Dictionary<string, string> obj_to_anim = new Dictionary<string, string>(); //list of all objects with corresponding animations
     }
 
     public class SFSceneDescription
@@ -51,6 +57,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public void add_line(SFSceneDescriptionLine sl)
         {
             lines.Add(sl);
+        }
+
+        public void add_line(SCENE_ITEM_TYPE t, string[] a)
+        {
+            lines.Add(new SFSceneDescriptionLine(t, a));
         }
 
         public List<SFSceneDescriptionLine> get_lines()

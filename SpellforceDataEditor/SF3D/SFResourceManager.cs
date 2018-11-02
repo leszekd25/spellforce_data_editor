@@ -22,6 +22,9 @@ namespace SpellforceDataEditor.SF3D
         public SFResourceContainer<SFModelSkin> Skins { get; private set; } = new SFResourceContainer<SFModelSkin>();
         public SFResourceContainer<SFSkeleton> Skeletons { get; private set; } = new SFResourceContainer<SFSkeleton>();
         public string current_resource = "";
+        public List<string> mesh_names { get; private set; } = new List<string>();
+        public List<string> skeleton_names { get; private set; } = new List<string>();
+        public List<string> animation_names { get; private set; } = new List<string>();
 
         public SFResourceManager()
         {
@@ -31,6 +34,21 @@ namespace SpellforceDataEditor.SF3D
             BSIs = new SFResourceContainer<SFBoneIndex>("skinning\\b20", ".bsi", this);
             Skins = new SFResourceContainer<SFModelSkin>("skinning\\b20", ".msb", this);
             Skeletons = new SFResourceContainer<SFSkeleton>("animation", ".bor", this);
+        }
+
+        //generate mesh names, for use in SF3DManager
+        public void FindAllMeshes()
+        {
+            string[] filter_mesh = { "sf8.pak", "sf22.pak", "sf32.pak" };
+            string[] filter_skel = { "sf4.pak", "sf22.pak", "sf32.pak" };
+            string[] filter_anim = { "sf5.pak", "sf22.pak", "sf32.pak" };
+            mesh_names = unpacker.ListAllWithExtension(".msb", filter_mesh);
+            skeleton_names = unpacker.ListAllWithExtension(".bor", filter_skel);
+            skeleton_names.RemoveAll(x => !(x.StartsWith("figure")));
+            animation_names = unpacker.ListAllWithExtension(".bob", filter_anim);
+            mesh_names.Sort();
+            skeleton_names.Sort();
+            animation_names.Sort();
         }
 
         public void DisposeAll()

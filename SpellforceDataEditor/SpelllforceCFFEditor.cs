@@ -8,16 +8,14 @@ namespace SpellforceDataEditor
 {
     public partial class SpelllforceCFFEditor : Form
     {
-        enum MODE { DEFAULT = 0, FOLLOW = 1 }
-
-        private SFCategoryManager manager;                      //category manager to control all data
+        private SFCategoryManager manager = new SFCategoryManager();  //category manager to control all data
         private bool data_loaded = false;
 
         private int selected_category_index = -1;
         private int real_category_index = -1;                   //tracer helper
         private int selected_element_index = -1;
 
-        private string version = "2018.10.31.1_3D";
+        private string version = "2018.11.02.1_3D";
 
         private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
 
@@ -26,15 +24,17 @@ namespace SpellforceDataEditor
         private int elementselect_refresh_rate = 50;
         private int loaded_count = 0;
 
-        protected List<int> current_indices;                    //list of indices corrsponding to all displayed elements
+        protected List<int> current_indices = new List<int>();  //list of indices corrsponding to all displayed elements
 
-        protected SFDiffTools diff;
+        protected SFDiffTools diff = new SFDiffTools();
         protected SFCategoryElement diff_current_element = null;//for checking if an element was modified before switching
 
         protected SFCategoryElement insert_copy_element = null; //if there was an element copied, it's stored here
 
-        private SFDataTracer tracer;
+        private SFDataTracer tracer = new SFDataTracer();
 
+        private special_forms.ReferencesForm refs = null;
+        private special_forms.ChangeDataLangForm change_lang = null;
         private special_forms.SF3DManagerForm viewer = null;
 
         //constructor
@@ -42,15 +42,7 @@ namespace SpellforceDataEditor
         {
             InitializeComponent();
 
-            manager = new SFCategoryManager();
-            manager.set_application_form(this);
-
-            diff = new SFDiffTools();
             diff.connect_to(manager);
-
-            tracer = new SFDataTracer();
-
-            current_indices = new List<int>();
 
             versionToolStripMenuItem.Text = "Version " + version;
         }
@@ -297,6 +289,12 @@ namespace SpellforceDataEditor
         //when you right-click orange field, you step into the linked element edit mode
         public void Tracer_StepForward(int cat_i, int cat_e)
         {
+            //check if element exists
+            if (manager.get_category(cat_i) == null)
+                return;
+            if ((cat_e >= manager.get_category(cat_i).get_element_count())||(cat_e < 0))
+                return;
+
             CategorySelect.Focus();
 
             diff_resolve_current_element();
@@ -844,10 +842,12 @@ namespace SpellforceDataEditor
         //special option to change game language
         private void changeDataLanguageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            special_forms.ChangeDataLangForm changelang_form = new special_forms.ChangeDataLangForm();
-            changelang_form.connect_to_data(manager);
+            change_lang = new special_forms.ChangeDataLangForm();
+            change_lang.connect_to_data(manager);
 
-            changelang_form.ShowDialog();
+            change_lang.ShowDialog();
+
+            change_lang = null;
 
             labelStatus.Text = "Done";
         }
@@ -902,21 +902,37 @@ namespace SpellforceDataEditor
             if((real_category_index == -1)||(selected_element_index == -1))
                 return;
 
-            special_forms.ReferencesForm refer = new special_forms.ReferencesForm();
-            refer.set_referenced_element(this, real_category_index, selected_element_index);
-            refer.Show();
+            if (refs == null)
+            {
+                refs = new special_forms.ReferencesForm();
+                refs.FormClosed += new FormClosedEventHandler(this.refs_FormClosed);
+                refs.Show();
+            }
+            else
+                refs.BringToFront();
+            refs.set_referenced_element(this, real_category_index, selected_element_index);
         }
+
+        private void refs_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            refs = null;
+        }
+
+
+
 
         private void dViewerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (viewer != null)
                 return;
             viewer = new special_forms.SF3DManagerForm();
+            viewer.FormClosed += new FormClosedEventHandler(this.dViewer_FormClosed);
+
             viewer.Show();
-            viewer.Link(this);
+            viewer.SetGameData(manager);
         }
 
-        public void OnCloseViewer()
+        private void dViewer_FormClosed(object sender, FormClosedEventArgs e)
         {
             viewer = null;
             GC.Collect();

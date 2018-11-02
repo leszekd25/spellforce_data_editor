@@ -25,32 +25,32 @@ namespace SpellforceDataEditor.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 0, Utility.TryParseUInt32(tb_effID.Text));
+            set_element_variant(current_element, 0, Utility.TryParseUInt32(tb_effID.Text));
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 1, Utility.TryParseUInt32(textBox1.Text));
+            set_element_variant(current_element, 1, Utility.TryParseUInt32(textBox1.Text));
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 2, (Byte)(checkBox1.Checked ? 1 : 0));
+            set_element_variant(current_element, 2, (Byte)(checkBox1.Checked ? 1 : 0));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 3, Utility.TryParseUInt16(textBox2.Text));
+            set_element_variant(current_element, 3, Utility.TryParseUInt16(textBox2.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 4, Utility.TryParseUInt16(textBox3.Text));
+            set_element_variant(current_element, 4, Utility.TryParseUInt16(textBox3.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 5, Utility.TryParseUInt32(textBox4.Text));
+            set_element_variant(current_element, 5, Utility.TryParseUInt32(textBox4.Text));
         }
 
         public override void show_element()

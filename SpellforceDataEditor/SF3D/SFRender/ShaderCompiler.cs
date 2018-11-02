@@ -13,7 +13,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
-namespace SpellforceDataEditor.SF3D
+namespace SpellforceDataEditor.SF3D.SFRender
 {
     static public class ShaderCompiler
     {

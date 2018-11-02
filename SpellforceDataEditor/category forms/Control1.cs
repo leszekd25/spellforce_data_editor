@@ -47,166 +47,166 @@ namespace SpellforceDataEditor.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 0, Utility.TryParseUInt16(tb_effID.Text));
+            set_element_variant(current_element, 0, Utility.TryParseUInt16(tb_effID.Text));
         }
 
         private void tb_typeID_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 1, Utility.TryParseUInt16(tb_typeID.Text));
+            set_element_variant(current_element, 1, Utility.TryParseUInt16(tb_typeID.Text));
         }
 
         private void tb_req1_1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 2, Utility.TryParseUInt8(tb_req1_1.Text));
+            set_element_variant(current_element, 2, Utility.TryParseUInt8(tb_req1_1.Text));
         }
 
         private void tb_req1_2_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 3, Utility.TryParseUInt8(tb_req1_2.Text));
+            set_element_variant(current_element, 3, Utility.TryParseUInt8(tb_req1_2.Text));
         }
 
         private void tb_req1_3_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 4, Utility.TryParseUInt8(tb_req1_3.Text));
+            set_element_variant(current_element, 4, Utility.TryParseUInt8(tb_req1_3.Text));
         }
 
         private void tb_req2_1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 5, Utility.TryParseUInt8(tb_req2_1.Text));
+            set_element_variant(current_element, 5, Utility.TryParseUInt8(tb_req2_1.Text));
         }
 
         private void tb_req2_2_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 6, Utility.TryParseUInt8(tb_req2_2.Text));
+            set_element_variant(current_element, 6, Utility.TryParseUInt8(tb_req2_2.Text));
         }
 
         private void tb_req2_3_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 7, Utility.TryParseUInt8(tb_req2_3.Text));
+            set_element_variant(current_element, 7, Utility.TryParseUInt8(tb_req2_3.Text));
         }
 
         private void tb_req3_1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 8, Utility.TryParseUInt8(tb_req3_1.Text));
+            set_element_variant(current_element, 8, Utility.TryParseUInt8(tb_req3_1.Text));
         }
 
         private void tb_req3_2_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 9, Utility.TryParseUInt8(tb_req3_2.Text));
+            set_element_variant(current_element, 9, Utility.TryParseUInt8(tb_req3_2.Text));
         }
 
         private void tb_req3_3_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 10, Utility.TryParseUInt8(tb_req3_3.Text));
+            set_element_variant(current_element, 10, Utility.TryParseUInt8(tb_req3_3.Text));
         }
 
         private void tb_req4_1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 11, Utility.TryParseUInt8(tb_req4_1.Text));
+            set_element_variant(current_element, 11, Utility.TryParseUInt8(tb_req4_1.Text));
         }
 
         private void tb_req4_2_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 12, Utility.TryParseUInt8(tb_req4_2.Text));
+            set_element_variant(current_element, 12, Utility.TryParseUInt8(tb_req4_2.Text));
         }
 
         private void tb_req4_3_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 13, Utility.TryParseUInt8(tb_req4_3.Text));
+            set_element_variant(current_element, 13, Utility.TryParseUInt8(tb_req4_3.Text));
         }
 
         private void tb_mnc_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 14, Utility.TryParseUInt16(tb_mnc.Text));
+            set_element_variant(current_element, 14, Utility.TryParseUInt16(tb_mnc.Text));
         }
 
         private void tb_ctm_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 15, Utility.TryParseUInt32(tb_ctm.Text));
+            set_element_variant(current_element, 15, Utility.TryParseUInt32(tb_ctm.Text));
         }
 
         private void tb_rtm_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 16, Utility.TryParseUInt32(tb_rtm.Text));
+            set_element_variant(current_element, 16, Utility.TryParseUInt32(tb_rtm.Text));
         }
 
         private void tb_rng_min_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 17, Utility.TryParseUInt16(tb_rng_min.Text));
+            set_element_variant(current_element, 17, Utility.TryParseUInt16(tb_rng_min.Text));
         }
 
         private void tb_rng_max_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 18, Utility.TryParseUInt16(tb_rng_max.Text));
+            set_element_variant(current_element, 18, Utility.TryParseUInt16(tb_rng_max.Text));
         }
 
         private void tb_ct1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 19, Utility.TryParseUInt8(tb_ct1.Text));
+            set_element_variant(current_element, 19, Utility.TryParseUInt8(tb_ct1.Text));
         }
 
         private void tb_ct2_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 20, Utility.TryParseUInt8(tb_ct2.Text));
+            set_element_variant(current_element, 20, Utility.TryParseUInt8(tb_ct2.Text));
         }
 
         private void tb_sd1_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 21, Utility.TryParseUInt32(tb_sd1.Text));
+            set_element_variant(current_element, 21, Utility.TryParseUInt32(tb_sd1.Text));
         }
 
         private void tb_sd2_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 22, Utility.TryParseUInt32(tb_sd2.Text));
+            set_element_variant(current_element, 22, Utility.TryParseUInt32(tb_sd2.Text));
         }
 
         private void tb_sd3_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 23, Utility.TryParseUInt32(tb_sd3.Text));
+            set_element_variant(current_element, 23, Utility.TryParseUInt32(tb_sd3.Text));
         }
 
         private void tb_sd4_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 24, Utility.TryParseUInt32(tb_sd4.Text));
+            set_element_variant(current_element, 24, Utility.TryParseUInt32(tb_sd4.Text));
         }
 
         private void tb_sd5_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 25, Utility.TryParseUInt32(tb_sd5.Text));
+            set_element_variant(current_element, 25, Utility.TryParseUInt32(tb_sd5.Text));
         }
 
         private void tb_sd6_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 26, Utility.TryParseUInt32(tb_sd6.Text));
+            set_element_variant(current_element, 26, Utility.TryParseUInt32(tb_sd6.Text));
         }
 
         private void tb_sd7_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 27, Utility.TryParseUInt32(tb_sd7.Text));
+            set_element_variant(current_element, 27, Utility.TryParseUInt32(tb_sd7.Text));
         }
 
         private void tb_sd8_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 28, Utility.TryParseUInt32(tb_sd8.Text));
+            set_element_variant(current_element, 28, Utility.TryParseUInt32(tb_sd8.Text));
         }
 
         private void tb_sd9_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 29, Utility.TryParseUInt32(tb_sd9.Text));
+            set_element_variant(current_element, 29, Utility.TryParseUInt32(tb_sd9.Text));
         }
 
         private void tb_sd10_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 30, Utility.TryParseUInt32(tb_sd10.Text));
+            set_element_variant(current_element, 30, Utility.TryParseUInt32(tb_sd10.Text));
         }
 
         private void tb_unk_TextChanged(object sender, EventArgs e)
         {
             Byte[] data_array = Utility.TryParseByteArray(tb_unk.Text, 4);
-            category.set_element_variant(current_element, 31, data_array[0]);
-            category.set_element_variant(current_element, 32, data_array[1]);
-            category.set_element_variant(current_element, 33, data_array[2]);
-            category.set_element_variant(current_element, 34, data_array[3]);
+            set_element_variant(current_element, 31, data_array[0]);
+            set_element_variant(current_element, 32, data_array[1]);
+            set_element_variant(current_element, 33, data_array[2]);
+            set_element_variant(current_element, 34, data_array[3]);
         }
 
         private void set_data_labels(string[] p)

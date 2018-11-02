@@ -383,12 +383,14 @@
     <Compile Include="SF3D\SFMaterial.cs" />
     <Compile Include="SF3D\SFModel3D.cs" />
     <Compile Include="SF3D\SFModelSkin.cs" />
+    <Compile Include="SF3D\SFRender\SFRenderEngine.cs" />
+    <Compile Include="SF3D\SFRender\SFShader.cs" />
     <Compile Include="SF3D\SFResource.cs" />
     <Compile Include="SF3D\SFResourceContainer.cs" />
     <Compile Include="SF3D\SFResourceManager.cs" />
     <Compile Include="SF3D\SFSkeleton.cs" />
     <Compile Include="SF3D\SFTexture.cs" />
-    <Compile Include="SF3D\ShaderCompiler.cs" />
+    <Compile Include="SF3D\SFRender\ShaderCompiler.cs" />
     <Compile Include="SFCategory.cs" />
     <Compile Include="SFCategoryElement.cs" />
     <Compile Include="SFCategoryManager.cs" />

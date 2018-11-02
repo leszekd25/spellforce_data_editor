@@ -20,7 +20,7 @@ namespace SpellforceDataEditor.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 0, Utility.TryParseUInt8(tb_effID.Text));
+            set_element_variant(current_element, 0, Utility.TryParseUInt8(tb_effID.Text));
         }
 
         public override void show_element()

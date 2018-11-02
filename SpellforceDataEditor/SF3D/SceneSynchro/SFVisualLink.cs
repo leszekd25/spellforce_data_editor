@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * SFVisualLink is a connection between game data element and its 3D representation in game
+ * SFVisualLink is a simple object, being just an entry's ID and a set of asset names
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

@@ -41,6 +41,8 @@ namespace SpellforceDataEditor.SF3D
             visible = true;
         }
 
+        //an object's 3D representation isn't updated until update_modelMatrix is called
+        //as seen later, matrix updating is only performed strictly before frame render
         public virtual void update_modelMatrix()
         {
             Matrix4 temp_matrix;

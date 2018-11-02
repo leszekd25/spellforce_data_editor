@@ -134,6 +134,7 @@ namespace SpellforceDataEditor
         }
 
         //used for header manipulation, inserts unsigned int into a given array at a given index
+        //prone to endianess errors...
         static public void CopyUInt32ToByteArray(UInt32 elem, ref Byte[] bytearray, int index)
         {
             bytearray[index] = (byte)(elem % 256);
@@ -142,6 +143,7 @@ namespace SpellforceDataEditor
             bytearray[index+3] = (byte)(elem >> 24);
         }
 
+        //general purpose binary serach
         static public int find_binary_index<T>(IList<T> list, T value) where T: IComparable
         {
             int current_start = 0;

@@ -87,7 +87,7 @@ namespace SpellforceDataEditor.category_forms
                 relation = 100;
             else if ((int)cell.Value == 2)
                 relation = 156;*/
-            category.set_element_variant(current_element, i * 3 + 2, relation);
+            set_element_variant(current_element, i * 3 + 2, relation);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -96,7 +96,7 @@ namespace SpellforceDataEditor.category_forms
             int elem_count = elem.get().Count / 3;
 
             for (int i = 0; i < elem_count; i++)
-                category.set_element_variant(current_element, 0 + 3 * i, Utility.TryParseUInt8(textBox1.Text));
+                set_element_variant(current_element, 0 + 3 * i, Utility.TryParseUInt8(textBox1.Text));
         }
     }
 }

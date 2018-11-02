@@ -29,7 +29,7 @@ namespace SpellforceDataEditor.category_forms
             int elem_count = elem.get().Count / 3;
 
             for (int i = 0; i < elem_count; i++)
-                category.set_element_variant(current_element, 0 + 3 * i, Utility.TryParseUInt16(textBox1.Text));
+                set_element_variant(current_element, 0 + 3 * i, Utility.TryParseUInt16(textBox1.Text));
         }
 
         public override void set_element(int index)
@@ -99,14 +99,14 @@ namespace SpellforceDataEditor.category_forms
                 }
                 else
                 {
-                    category.set_element_variant(current_element, i * 3 + 1, item_id);
+                    set_element_variant(current_element, i * 3 + 1, item_id);
                     MerchantGrid.Rows[i].Cells[2].Value = category.get_manager().get_item_name(item_id);
                 }
             }
             else if(cell.ColumnIndex == 1)
             {
                 UInt16 item_count = Utility.TryParseUInt16(cell.Value.ToString());
-                category.set_element_variant(current_element, i * 3 + 2, item_count);
+                set_element_variant(current_element, i * 3 + 2, item_count);
             }
 
         }

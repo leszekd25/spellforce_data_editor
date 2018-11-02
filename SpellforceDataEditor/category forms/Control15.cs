@@ -58,7 +58,7 @@ namespace SpellforceDataEditor.category_forms
             int elem_count = elem.get().Count / 5;
 
             for(int i = 0; i < elem_count; i++)
-                category.set_element_variant(current_element, 0 + 5 * i, Utility.TryParseUInt16(textBox1.Text));
+                set_element_variant(current_element, 0 + 5 * i, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -67,7 +67,7 @@ namespace SpellforceDataEditor.category_forms
             int elem_count = elem.get().Count / 5;
 
             for (int i = 0; i < elem_count; i++)
-                category.set_element_variant(current_element, 2 + 5 * i, Utility.TryParseUInt8(textBox3.Text));
+                set_element_variant(current_element, 2 + 5 * i, Utility.TryParseUInt8(textBox3.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
@@ -76,12 +76,12 @@ namespace SpellforceDataEditor.category_forms
             int elem_count = elem.get().Count / 5;
 
             for (int i = 0; i < elem_count; i++)
-                category.set_element_variant(current_element, 3 + 5 * i, Utility.FixedLengthString(textBox4.Text, 50));
+                set_element_variant(current_element, 3 + 5 * i, Utility.FixedLengthString(textBox4.Text, 50));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            category.set_element_variant(current_element, 4 + 5 * DomainLanguages.SelectedIndex, Utility.FixedLengthString(textBox5.Text, 512));
+            set_element_variant(current_element, 4 + 5 * DomainLanguages.SelectedIndex, Utility.FixedLengthString(textBox5.Text, 512));
         }
 
         public override void show_element()

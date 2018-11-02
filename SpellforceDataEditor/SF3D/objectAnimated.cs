@@ -1,6 +1,8 @@
 ﻿/*
  * objectAnimated3D is an object which is displayed using underlying skin and skeleton
  * Every time skeleton is updated according to its animation, skin bone matrices are manipulated to modify skin mesh (in shader)
+ * ObjectBoneAnchor is a special object which updates its matrix based on another model's bone matrix
+ * As such, it can be used as a parent for other objects that are bound to follow some bone movement
  */
 
 using System;

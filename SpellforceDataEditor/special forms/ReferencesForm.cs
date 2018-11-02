@@ -1,11 +1,10 @@
-﻿using System;
+﻿/*
+ * This form allows user to find all references to currently selected game data element
+ * References are displayed on a list, user can choose elements from that list to edit them
+ */
+
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor.special_forms
@@ -101,6 +100,8 @@ namespace SpellforceDataEditor.special_forms
             sf_form = form;
 
             labelRefElemName.Text = get_catelement_string(referenced);
+
+            find_all_references();
         }
 
         private string get_catelement_string(CatElem ce)
@@ -274,11 +275,6 @@ namespace SpellforceDataEditor.special_forms
             CatElem elem = elements[listBox1.SelectedIndex];
 
             sf_form.Tracer_StepForward(elem.category, elem.element);
-        }
-
-        private void ReferencesForm_Shown(object sender, EventArgs e)
-        {
-            find_all_references();
         }
     }
 }

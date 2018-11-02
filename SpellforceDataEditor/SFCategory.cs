@@ -307,11 +307,9 @@ namespace SpellforceDataEditor
         }
 
         //sets a single variant given element index and variant index
-        //also updates the element in the application's listbox (ugly hack)
         public void set_element_variant(int elem_index, int var_index, object obj)
         {
             elements[elem_index].get()[var_index].set(obj);
-            manager.get_application_form().external_set_element_select_string(this, elem_index);
         }
 
         //puts a new element (as a list of variants) to a buffer
@@ -426,8 +424,8 @@ namespace SpellforceDataEditor
         }
     }
 
-
-
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //spells/skills (1st category)
     public class SFCategory1 : SFCategory
@@ -1813,7 +1811,7 @@ namespace SpellforceDataEditor
         public void generate(SFCategoryManager manager)
         {
             elements = new List<SFCategoryElement>();
-            List<int> rune_indices = manager.query_by_column_numeric(6, 1, 3);
+            List<int> rune_indices = SFSearchModule.Search(manager.get_category(6), null, "3", SearchType.TYPE_NUMBER, 1, null);
             SortedDictionary<UInt16, UInt16> kv = new SortedDictionary<UInt16, UInt16>();
             for (int i = 0; i < rune_indices.Count; i++)
             {
