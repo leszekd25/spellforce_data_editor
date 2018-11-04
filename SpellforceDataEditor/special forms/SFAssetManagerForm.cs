@@ -13,20 +13,25 @@ using OpenTK.Graphics.OpenGL;
 using SpellforceDataEditor.SF3D;
 using SpellforceDataEditor.SF3D.SceneSynchro;
 using SpellforceDataEditor.SF3D.SFRender;
+using SpellforceDataEditor.SFSound;
 
 namespace SpellforceDataEditor.special_forms
 {
-    public partial class SF3DManagerForm : Form
+    public partial class SFAssetManagerForm : Form
     {
-        SFRenderEngine render_engine = new SFRenderEngine();
+        SFResources.SFResourceManager resources = new SFResources.SFResourceManager();
+        SFRenderEngine render_engine;
+        SFSoundEngine sound_engine;
 
         bool synchronized = false;
 
         Point mouse_pos;
         bool mouse_pressed = false;
 
-        public SF3DManagerForm()
+        public SFAssetManagerForm()
         {
+            render_engine = new SFRenderEngine(resources);
+            sound_engine = new SFSoundEngine(resources);
             InitializeComponent();
         }
 
@@ -55,7 +60,7 @@ namespace SpellforceDataEditor.special_forms
             int result = render_engine.SpecifyGameDirectory(dname);
             if(result == 0)
             {
-                render_engine.resources.FindAllMeshes();
+                resources.FindAllMeshes();
             }
             return result;
         }
@@ -84,7 +89,7 @@ namespace SpellforceDataEditor.special_forms
         //done by main form
         public void SetGameData(SFCategoryManager man)
         {
-            render_engine.scene_manager.resources = render_engine.resources;
+            render_engine.scene_manager.resources = resources;
             render_engine.scene_manager.Init(man);
         }
 
@@ -98,7 +103,17 @@ namespace SpellforceDataEditor.special_forms
         private void SF3DManagerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             render_engine.scene_manager.ClearScene();
-            render_engine.resources.DisposeAll();
+            resources.DisposeAll();
+            sound_engine.UnloadSound();
+        }
+
+        private void HideAllPanels()
+        {
+            ListEntries.Hide();
+            ListAnimations.Hide();
+            button1Extract.Hide();
+            button2Extract.Hide();
+            PanelSound.Hide();
         }
 
         private void ComboBrowseMode_SelectedIndexChanged(object sender, EventArgs e)
@@ -110,34 +125,56 @@ namespace SpellforceDataEditor.special_forms
             ListEntries.Items.Clear();
             ListAnimations.Items.Clear();
             render_engine.scene_manager.ClearScene();
-            render_engine.resources.DisposeAll();
+            sound_engine.UnloadSound();
+            TimerSoundDuration.Stop();
+            trackSoundDuration.Value = 0;
+            resources.DisposeAll();
+            HideAllPanels();
             synchronized = false;
 
             if(ComboBrowseMode.SelectedIndex == 0)
             {
+                ListEntries.Show();
+                button1Extract.Show();
                 //generate scene
                 SFSceneDescription scene = new SFSceneDescription();
                 scene.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { "", "", "simple_mesh" });
                 render_engine.scene_manager.ParseSceneDescription(scene);
 
-                foreach (string mesh_name in render_engine.resources.mesh_names)
+                foreach (string mesh_name in resources.mesh_names)
                     ListEntries.Items.Add(mesh_name);
             }
 
             if(ComboBrowseMode.SelectedIndex == 1)
             {
+                ListEntries.Show();
+                button1Extract.Show();
+                PanelSound.Show();
+                ListAnimations.Show();
+                button2Extract.Show();
                 //generate scene
                 SFSceneDescription scene = new SFSceneDescription();
                 scene.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { "", "", "dynamic_mesh" });
                 render_engine.scene_manager.ParseSceneDescription(scene);
 
-                foreach (string skel_name in render_engine.resources.skeleton_names)
+                foreach (string skel_name in resources.skeleton_names)
                     ListEntries.Items.Add(skel_name);
             }
 
             if (ComboBrowseMode.SelectedIndex == 2)
             {
+                PanelSound.Show();
+                ListAnimations.Show();
                 synchronized = true;
+            }
+
+            if(ComboBrowseMode.SelectedIndex == 3)
+            {
+                ListEntries.Show();
+                button1Extract.Show();
+                PanelSound.Show();
+                foreach (string musi_name in resources.music_names)
+                    ListEntries.Items.Add(musi_name);
             }
         }
 
@@ -146,9 +183,9 @@ namespace SpellforceDataEditor.special_forms
             if (!render_engine.ready_to_use)
                 return;
 
-            render_engine.resources.DisposeAll();
+            resources.DisposeAll();
 
-            SFSceneLoader scene = render_engine.scene_manager;
+            SFSceneManager scene = render_engine.scene_manager;
 
             if (ComboBrowseMode.SelectedIndex == 0)
             {
@@ -159,13 +196,13 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string model_name = ListEntries.SelectedItem.ToString();
                     model_name = model_name.Substring(0, model_name.Length - 4);
-                    int result = render_engine.resources.Models.Load(model_name);
+                    int result = resources.Models.Load(model_name);
                     if(result != 0)
                     {
                         StatusText.Text = "Failed to load model " + model_name;
                         return;
                     }
-                    obj_s1.Mesh = render_engine.resources.Models.Get(model_name);
+                    obj_s1.Mesh = resources.Models.Get(model_name);
                     StatusText.Text = "Loaded model " + model_name;
                 }
             }
@@ -183,26 +220,26 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string skin_name = ListEntries.SelectedItem.ToString();
                     skin_name = skin_name.Substring(0, skin_name.Length - 4);
-                    int result = render_engine.resources.Skins.Load(skin_name);
+                    int result = resources.Skins.Load(skin_name);
                     if (result != 0)
                     {
                         StatusText.Text = "Failed to load skin " + skin_name + ", status code "+result.ToString();
                         obj_d1.SetSkeletonSkin(null, null);
                         return;
                     }
-                    skin = render_engine.resources.Skins.Get(skin_name);
+                    skin = resources.Skins.Get(skin_name);
                     StatusText.Text = "Loaded skin " + skin_name;
                     statusStrip1.Refresh();
 
                     string skel_name = skin_name;
-                    result = render_engine.resources.Skeletons.Load(skel_name);
+                    result = resources.Skeletons.Load(skel_name);
                     if (result != 0)
                     {
                         StatusText.Text = "Failed to load skeleton " + skel_name;
                         obj_d1.SetSkeletonSkin(null, null);
                         return;
                     }
-                    skel = render_engine.resources.Skeletons.Get(skel_name);
+                    skel = resources.Skeletons.Get(skel_name);
                     StatusText.Text = "Loaded skeleton " + skel_name;
 
                     List<string> anims = GetAllSkeletonAnimations(skel_name);
@@ -212,6 +249,27 @@ namespace SpellforceDataEditor.special_forms
 
                 obj_d1.SetSkeletonSkin(skel, skin);
                 obj_d1.SetAnimation(null, false);
+            }
+
+            if (ComboBrowseMode.SelectedIndex == 3)
+            {
+                if (ListEntries.SelectedIndex != -1)
+                {
+                    string s_n = ListEntries.SelectedItem.ToString();
+                    s_n = s_n.Substring(0, s_n.Length - 4);
+
+                    int result = resources.Musics.Load(s_n);
+                    if (result != 0)
+                    {
+                        StatusText.Text = "Failed to load music " + s_n;
+                        return;
+                    }
+
+                    sound_engine.UnloadSound();
+
+                    sound_engine.LoadSoundMP3(resources.Musics.Get(s_n));
+                    StatusText.Text = "Loaded music " + s_n;
+                }
             }
 
             glControl1.Invalidate();
@@ -227,7 +285,7 @@ namespace SpellforceDataEditor.special_forms
             float cam_speed = 6; //limited by framerate
 
             //calculate movement vector
-            Vector3 cam_move = (((render_engine.camera.Lookat - render_engine.camera.Position).Normalized())*cam_speed)/render_engine.frames_per_second;
+            Vector3 cam_move = (((render_engine.camera.Lookat - render_engine.camera.Position).Normalized())*cam_speed)/render_engine.scene_manager.frames_per_second;
 
             if (e.KeyChar == 'w')
                 render_engine.camera.translate(cam_move);
@@ -238,7 +296,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void ListAnimations_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SFSceneLoader scene = render_engine.scene_manager;
+            SFSceneManager scene = render_engine.scene_manager;
 
             if (ComboBrowseMode.SelectedIndex == 1)
             {
@@ -248,7 +306,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string anim_name = ListAnimations.SelectedItem.ToString();
                     anim_name = anim_name.Substring(0, anim_name.Length - 4);
-                    int result = render_engine.resources.Animations.Load(anim_name);
+                    int result = resources.Animations.Load(anim_name);
                     if ((result != 0)&&(result != -1))
                     {
                         
@@ -256,14 +314,16 @@ namespace SpellforceDataEditor.special_forms
                         DisableAnimation();
                         return;
                     }
-                    if(render_engine.resources.Animations.Get(anim_name).bone_count != obj_d1.skeleton.bone_count)
+                    if(resources.Animations.Get(anim_name).bone_count != obj_d1.skeleton.bone_count)
                     {
                         StatusText.Text = "Invalid animation "+anim_name;
                         DisableAnimation();
                         return;
                     }
 
-                    obj_d1.SetAnimation(render_engine.resources.Animations.Get(anim_name), true);
+                    obj_d1.SetAnimation(resources.Animations.Get(anim_name), true);
+                    scene.SetSceneTime(0f);
+                    scene.scene_meta.duration = obj_d1.animation.max_time;
                     StatusText.Text = "Loaded animation " + anim_name;
                     statusStrip1.Refresh();
 
@@ -277,7 +337,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string anim_name = ListAnimations.SelectedItem.ToString();
                     anim_name = anim_name.Substring(0, anim_name.Length - 4);
-                    int result = render_engine.resources.Animations.Load(anim_name);
+                    int result = resources.Animations.Load(anim_name);
                     if ((result != 0) && (result != -1))
                     {
 
@@ -288,15 +348,17 @@ namespace SpellforceDataEditor.special_forms
 
                     foreach (KeyValuePair<string, string> kv in scene.scene_meta.obj_to_anim)
                     {
-                        if (render_engine.resources.Animations.Get(anim_name).bone_count != scene.objects_dynamic[kv.Key].skeleton.bone_count)
+                        if (resources.Animations.Get(anim_name).bone_count != scene.objects_dynamic[kv.Key].skeleton.bone_count)
                         {
                             StatusText.Text = "Invalid animation " + anim_name;
                             DisableAnimation();
                             return;
                         }
-                        scene.objects_dynamic[kv.Key].SetAnimation(render_engine.resources.Animations.Get(anim_name), true);
+                        scene.objects_dynamic[kv.Key].SetAnimation(resources.Animations.Get(anim_name), true);
+                        scene.scene_meta.duration = scene.objects_dynamic[kv.Key].animation.max_time;
                     }
-                    
+
+                    scene.SetSceneTime(0f);
                     StatusText.Text = "Loaded animation " + anim_name;
                     statusStrip1.Refresh();
 
@@ -310,19 +372,30 @@ namespace SpellforceDataEditor.special_forms
         private void EnableAnimation()
         {
             TimerAnimation.Enabled = true;
-            TimerAnimation.Interval = 1000/render_engine.frames_per_second;
+            TimerAnimation.Interval = 1000/render_engine.scene_manager.frames_per_second;
             TimerAnimation.Start();
+            render_engine.scene_manager.delta_timer.Restart();
         }
 
         private void DisableAnimation()
         {
             TimerAnimation.Stop();
             TimerAnimation.Enabled = false;
+            render_engine.scene_manager.delta_timer.Stop();
         }
 
         private void TimerAnimation_Tick(object sender, EventArgs e)
         {
+            //set slider
+
+            double ratio = render_engine.scene_manager.current_time / render_engine.scene_manager.scene_meta.duration; //sound_engine.GetSoundPosition() / sound_engine.GetSoundDuration();
+            trackSoundDuration.Value = Math.Max(0, Math.Min(trackSoundDuration.Maximum, (int)(trackSoundDuration.Maximum * ratio)));
+            TimeSpan cur = TimeSpan.FromSeconds(render_engine.scene_manager.current_time);
+            TimeSpan tot = TimeSpan.FromSeconds(render_engine.scene_manager.scene_meta.duration);
+            labelSoundDuration.Text = cur.ToString(@"m\:ss") + "/" + tot.ToString(@"m\:ss");
+
             TimerAnimation.Start();
+            render_engine.scene_manager.LogicStep();
             glControl1.Invalidate();
         }
 
@@ -336,7 +409,7 @@ namespace SpellforceDataEditor.special_forms
             //cut until there's at least one anim
             while((anims.Count == 0)&&(skel_name != ""))
             {
-                foreach(string anim_name in render_engine.resources.animation_names)
+                foreach(string anim_name in resources.animation_names)
                 {
                     if (anim_name.StartsWith(skel_name))
                         anims.Add(anim_name);
@@ -392,7 +465,7 @@ namespace SpellforceDataEditor.special_forms
             ListEntries.Items.Clear();
             ListAnimations.Items.Clear();
             render_engine.scene_manager.ClearScene();
-            render_engine.resources.DisposeAll();
+            resources.DisposeAll();
             GC.Collect(2, GCCollectionMode.Forced, false);
 
             System.Diagnostics.Debug.WriteLine("GENERATING SCENE " + cat.ToString() + "|" + elem.ToString());
@@ -410,6 +483,175 @@ namespace SpellforceDataEditor.special_forms
             }
 
             glControl1.Invalidate();
+        }
+
+        private void buttonSoundPlay_Click(object sender, EventArgs e)
+        {
+            if(ComboBrowseMode.SelectedIndex == 1)
+            {
+                EnableAnimation();
+            }
+            if(ComboBrowseMode.SelectedIndex == 2)
+            {
+                if (render_engine.scene_manager.scene_meta.is_animated)
+                    EnableAnimation();
+            }
+            if (ComboBrowseMode.SelectedIndex == 3)
+            {
+                if (!sound_engine.loaded)
+                    return;
+                sound_engine.PlaySound();
+                TimerSoundDuration.Start();
+            }
+        }
+
+        private void buttonSoundStop_Click(object sender, EventArgs e)
+        {
+            if (ComboBrowseMode.SelectedIndex == 1)
+            {
+                DisableAnimation();
+            }
+            if (ComboBrowseMode.SelectedIndex == 2)
+            {
+                if (render_engine.scene_manager.scene_meta.is_animated)
+                    DisableAnimation();
+            }
+            if (ComboBrowseMode.SelectedIndex == 3)
+            {
+                if (!sound_engine.loaded)
+                    return;
+                sound_engine.PauseSound();
+                TimerSoundDuration.Stop();
+            }
+        }
+
+        private void TimerSoundDuration_Tick(object sender, EventArgs e)
+        {
+            //set slider
+            double ratio = sound_engine.GetSoundPosition() / sound_engine.GetSoundDuration();
+            trackSoundDuration.Value = Math.Max(0, Math.Min(trackSoundDuration.Maximum, (int)(trackSoundDuration.Maximum * ratio)));
+            TimeSpan cur = TimeSpan.FromMilliseconds(sound_engine.GetSoundPosition());
+            TimeSpan tot = TimeSpan.FromMilliseconds(sound_engine.GetSoundDuration());
+            labelSoundDuration.Text = cur.ToString(@"m\:ss") + "/" + tot.ToString(@"m\:ss");
+
+            TimerSoundDuration.Start();
+        }
+
+        private void trackSoundDuration_Scroll(object sender, EventArgs e)
+        {
+            double ratio = trackSoundDuration.Value / (double)trackSoundDuration.Maximum;
+
+            if (ComboBrowseMode.SelectedIndex == 1)
+            {
+                render_engine.scene_manager.SetSceneTime((float)ratio * render_engine.scene_manager.scene_meta.duration);
+                render_engine.scene_manager.LogicStep(false);
+                glControl1.Invalidate();
+            }
+            if(ComboBrowseMode.SelectedIndex == 2)
+            {
+                if (!render_engine.scene_manager.scene_meta.is_animated)
+                    return;
+                render_engine.scene_manager.SetSceneTime((float)ratio * render_engine.scene_manager.scene_meta.duration);
+                render_engine.scene_manager.LogicStep(false);
+                glControl1.Invalidate();
+            }
+            if (ComboBrowseMode.SelectedIndex == 3)
+            {
+                if (!sound_engine.loaded)
+                    return;
+                sound_engine.SetSound(ratio * sound_engine.GetSoundDuration());
+                if (sound_engine.GetSoundStatus() == NAudio.Wave.PlaybackState.Playing)
+                    TimerSoundDuration.Start();
+            }
+        }
+
+        private void button1Extract_Click(object sender, EventArgs e)
+        {
+            if (ListEntries.SelectedItem == null)
+                return;
+            string item = ListEntries.SelectedItem.ToString();
+            if (item == "")
+                return;
+            item = item.Substring(0, item.Length - 4);
+
+            if(ComboBrowseMode.SelectedIndex == 0)
+            {
+                SFModel3D mod = resources.Models.Get(item);
+                if (mod == null)
+                    return;
+
+                resources.Models.Extract(item);
+                List<string> tx = resources.Textures.GetNames();
+                foreach (string t in tx)
+                    foreach (SFMaterial mat in mod.materials)
+                        if (mat.texture == resources.Textures.Get(t))
+                            resources.Textures.Extract(t);
+
+                StatusText.Text = "Extracted " + item;
+            }
+
+            if(ComboBrowseMode.SelectedIndex == 1)
+            {
+                SFModelSkin mod = resources.Skins.Get(item);
+                if (mod == null)
+                    return;
+
+                objectAnimated obj = render_engine.scene_manager.objects_dynamic["dynamic_mesh"];
+
+                resources.Skins.Extract(item);
+                List<string> skels = resources.Skeletons.GetNames();
+                foreach (string skel in skels)
+                    if(obj.skeleton == resources.Skeletons.Get(skel))
+                    {
+                        resources.Skeletons.Extract(skel);
+                        resources.BSIs.Extract(skel);
+                        resources.Skins.Extract(skel);
+                        
+                        List<string> tx = resources.Textures.GetNames();
+                        foreach (string t in tx)
+                            foreach (SFModelSkinChunk ch in obj.skin.submodels)
+                            {
+                                SFMaterial mat = ch.material;
+                                if (mat.texture == resources.Textures.Get(t))
+                                    resources.Textures.Extract(t);
+                            }
+
+                        break;
+                    }
+                StatusText.Text = "Extracted " + item;
+            }
+
+            if(ComboBrowseMode.SelectedIndex == 3)
+            {
+                SoundResource s = resources.Musics.Get(item);
+                if (s == null)
+                    return;
+
+                resources.Musics.Extract(item);
+
+                StatusText.Text = "Extracted " + item;
+            }
+        }
+
+        private void button2Extract_Click(object sender, EventArgs e)
+        {
+            if (ListAnimations.SelectedItem == null)
+                return;
+            string item = ListAnimations.SelectedItem.ToString();
+            if (item == "")
+                return;
+            item = item.Substring(0, item.Length - 4);
+
+            if((ComboBrowseMode.SelectedIndex == 1)||(ComboBrowseMode.SelectedIndex == 2))
+            {
+                SFAnimation anim = resources.Animations.Get(item);
+                if (anim == null)
+                    return;
+
+                resources.Animations.Extract(item);
+
+                StatusText.Text = "Extracted " + item;
+            }
         }
     }
 }

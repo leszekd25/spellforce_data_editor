@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpellforceDataEditor.SF3D
+namespace SpellforceDataEditor.SFResources
 {
     public interface SFResource
     {

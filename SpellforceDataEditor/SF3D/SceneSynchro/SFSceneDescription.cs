@@ -46,6 +46,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
     public class SFSceneDescriptionMeta
     {
         public bool is_animated = false;     //true if scene contains an animation
+        public float duration = 0f;
+        public bool animation_repeat = true;
         public Dictionary<string, string> obj_to_anim = new Dictionary<string, string>(); //list of all objects with corresponding animations
     }
 

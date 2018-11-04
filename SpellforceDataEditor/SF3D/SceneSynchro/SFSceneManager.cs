@@ -16,26 +16,34 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SpellforceDataEditor.SF3D.SceneSynchro
 {
-    public class SFSceneLoader
+    public class SFSceneManager
     {
         public SFSceneDescriptionMeta scene_meta { get; private set; } = null;
         public Dictionary<string, ObjectSimple3D> objects_static { get; private set; } = new Dictionary<string, ObjectSimple3D>();
         public Dictionary<string, objectAnimated> objects_dynamic { get; private set; } = new Dictionary<string, objectAnimated>();
 
+        private int frame_counter = 0;
+        public int frames_per_second { get; private set; } = 25;
+        public System.Diagnostics.Stopwatch delta_timer { get; private set; } = new System.Diagnostics.Stopwatch();
+        private float deltatime = 0f;
+        public float current_time { get; private set; } = 0f;
+
         SFVisualLinkContainer mesh_data = new SFVisualLinkContainer();
         public SFCategoryManager game_data { get; private set; } = null;
-        public SFResourceManager resources { get; set; } = null;
+        public SFResources.SFResourceManager resources { get; set; } = null;
 
         public void Init(SFCategoryManager gd)
         {
             game_data = gd;
+            delta_timer.Start();
         }
 
         public void ParseSceneDescription(SFSceneDescription scene)
         {
-            foreach(SFSceneDescriptionLine sl in scene.get_lines())
+            scene_meta = scene.meta;
+            foreach (SFSceneDescriptionLine sl in scene.get_lines())
             {
-                switch(sl.type)
+                switch (sl.type)
                 {
                     case SCENE_ITEM_TYPE.OBJ_SIMPLE:
                         AddObjectStatic(sl.args[0], sl.args[1], sl.args[2]);
@@ -56,13 +64,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         break;
                 }
             }
-            scene_meta = scene.meta;
         }
 
         private UInt16 GetItemID(SFCategoryElement el, Byte slot)
         {
             int el_size = el.get().Count / 3;
-            for(int i = 0; i < el_size; i++)
+            for (int i = 0; i < el_size; i++)
             {
                 if ((Byte)el.get_single_variant(i * 3 + 1).value == slot)
                     return (UInt16)el.get_single_variant(i * 3 + 2).value;
@@ -100,7 +107,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
             //special case: monument unit, needs to be considered separately
             string unit_handle = Utility.CleanString(unit_data.get_single_variant(10));
-            if((unit_handle.StartsWith("Unit"))&&(!unit_handle.Contains("Titan")))
+            if ((unit_handle.StartsWith("Unit")) && (!unit_handle.Contains("Titan")))
             {
                 chest_name += "_cold";
             }
@@ -123,12 +130,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 }
             }
             //special case: anim_name is of "figure_hero": need to also add human head (animated)
-            if((anim_name.Contains("figure_hero"))&&(unit_stats != null))
+            if ((anim_name.Contains("figure_hero")) && (unit_stats != null))
             {
-                
+
                 int head_id = (UInt16)unit_stats.get_single_variant(24).value;
                 string head_name = mesh_data.GetHeadMesh(head_id, is_female);
-                if(head_name != "")
+                if (head_name != "")
                 {
                     sd.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { head_name, "", head_name });
                     sd.meta.obj_to_anim[head_name] = anim_name;
@@ -174,13 +181,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     bool is_shield = false;
                     //check if it's a shield (type 9)
                     SFCategoryElement item_data = game_data.get_category(6).find_binary_element<UInt16>(0, lhand_id);
-                    if(item_data != null)
+                    if (item_data != null)
                     {
                         int item_type = (Byte)item_data.get_single_variant(2).value;
                         is_shield = item_type == 9;
                     }
                     //create bone attachment
-                    sd.add_line(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", (is_shield?"L Forearm shield":"L Hand weapon"), "LHAND" });
+                    sd.add_line(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", (is_shield ? "L Forearm shield" : "L Hand weapon"), "LHAND" });
                     sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { lhand_name, "LHAND", "I_LHAND" });
                 }
             }
@@ -191,7 +198,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public SFSceneDescription CatElemToScene(int category, int element)
         {
             SFSceneDescription sd = new SFSceneDescription();
-            switch(category)
+            switch (category)
             {
                 case 6:
                 case 7:
@@ -232,7 +239,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
                     //create scene
                     foreach (string m in m_arr)
-                        sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { m, "", m});
+                        sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { m, "", m });
 
                     break;
                 case 33:
@@ -295,10 +302,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 loaded = false;
 
             ObjectSimple3D obj_s1 = new ObjectSimple3D();
-            if(par == null)
+            if (par == null)
                 obj_s1.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
             obj_s1.Parent = par;
-            if(loaded)
+            if (loaded)
                 obj_s1.Mesh = resources.Models.Get(mesh_name);
             objects_static.Add(obj_name, obj_s1);
             obj_s1.update_modelMatrix();
@@ -321,10 +328,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 loaded = false;
 
             objectAnimated obj_d1 = new objectAnimated();
-            if(par == null)
+            if (par == null)
                 obj_d1.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
             obj_d1.Parent = par;
-            if(loaded)
+            if (loaded)
                 obj_d1.SetSkeletonSkin(resources.Skeletons.Get(skel_name), resources.Skins.Get(skel_name));
             objects_dynamic.Add(obj_name, obj_d1);
             obj_d1.update_modelMatrix();
@@ -341,6 +348,49 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             obj_b1.SetBone(par, skel_bone_name);
             objects_dynamic.Add(obj_name, obj_b1);
             obj_b1.update_modelMatrix();
+        }
+
+        public void SetSceneTime(float t)
+        {
+            if (t < 0)
+                t = 0;
+            if (t > scene_meta.duration)
+                t = scene_meta.duration;
+            current_time = t;
+        }
+
+        public void LogicStep(bool time_flow = true)
+        {
+            if (time_flow)
+            {
+                delta_timer.Stop();
+                deltatime = delta_timer.ElapsedMilliseconds / (float)1000;
+                delta_timer.Restart();
+            }
+            else
+                deltatime = 0f;
+
+            foreach (ObjectSimple3D obj in objects_static.Values)
+            {
+                if (obj.Modified)
+                    obj.update_modelMatrix();
+            }
+
+            foreach (objectAnimated obj in objects_dynamic.Values)
+            {
+                if (obj.Modified)
+                    obj.update_modelMatrix();
+                if (obj.skin == null)
+                    continue;
+                if (obj.anim_playing)
+                    obj.set_animation_time(current_time);
+            }
+
+            current_time += deltatime;
+            if (current_time > scene_meta.duration)
+                current_time -= scene_meta.duration;
+
+            frame_counter++;
         }
     }
 }

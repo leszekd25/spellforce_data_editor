@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
+using SpellforceDataEditor.SFResources;
 
 namespace SpellforceDataEditor.SF3D
 {

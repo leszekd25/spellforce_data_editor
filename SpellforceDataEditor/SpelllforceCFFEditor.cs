@@ -15,7 +15,7 @@ namespace SpellforceDataEditor
         private int real_category_index = -1;                   //tracer helper
         private int selected_element_index = -1;
 
-        private string version = "2018.11.02.1_3D";
+        private string version = "2018.11.04.1_3D";
 
         private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
 
@@ -35,7 +35,7 @@ namespace SpellforceDataEditor
 
         private special_forms.ReferencesForm refs = null;
         private special_forms.ChangeDataLangForm change_lang = null;
-        private special_forms.SF3DManagerForm viewer = null;
+        private special_forms.SFAssetManagerForm viewer = null;
 
         //constructor
         public SpelllforceCFFEditor()
@@ -925,7 +925,7 @@ namespace SpellforceDataEditor
         {
             if (viewer != null)
                 return;
-            viewer = new special_forms.SF3DManagerForm();
+            viewer = new special_forms.SFAssetManagerForm();
             viewer.FormClosed += new FormClosedEventHandler(this.dViewer_FormClosed);
 
             viewer.Show();

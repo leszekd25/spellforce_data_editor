@@ -73,6 +73,19 @@ namespace SpellforceDataEditor.SFUnPak
             if (ms == null)
                 return -1;
 
+            string dir = Path.GetDirectoryName(new_name);
+            if (!Directory.Exists(dir))
+            {
+                try
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                catch (Exception e)
+                {
+                    return -3;
+                }
+            }
+
             FileStream new_file;
             try
             {
@@ -105,6 +118,19 @@ namespace SpellforceDataEditor.SFUnPak
             MemoryStream ms = LoadFileFind(filename);
             if (ms == null)
                 return -1;
+
+            string dir = Path.GetDirectoryName(new_name);
+            if (!Directory.Exists(dir))
+            {
+                try
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                catch(Exception e)
+                {
+                    return -3;
+                }
+            }
 
             FileStream new_file;
             try

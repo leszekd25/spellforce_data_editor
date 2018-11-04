@@ -47,13 +47,13 @@ namespace SpellforceDataEditor.SF3D
                 update_transforms();
         }
 
-        public void step_animation(float dt)
+        public void set_animation_time(float t)
         {
-            anim_current_time += dt;
+            anim_current_time = t;
             if (animation == null)
                 return;
             if (anim_current_time >= animation.max_time)
-                anim_current_time -= animation.max_time;
+                anim_current_time = animation.max_time;
 
             update_transforms();
         }

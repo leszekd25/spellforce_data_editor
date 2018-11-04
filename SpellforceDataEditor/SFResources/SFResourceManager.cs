@@ -9,8 +9,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SpellforceDataEditor.SF3D;
+using SpellforceDataEditor.SFSound;
 
-namespace SpellforceDataEditor.SF3D
+namespace SpellforceDataEditor.SFResources
 {
     public class SFResourceManager
     {
@@ -21,10 +23,12 @@ namespace SpellforceDataEditor.SF3D
         public SFResourceContainer<SFBoneIndex> BSIs { get; private set; } = new SFResourceContainer<SFBoneIndex>();
         public SFResourceContainer<SFModelSkin> Skins { get; private set; } = new SFResourceContainer<SFModelSkin>();
         public SFResourceContainer<SFSkeleton> Skeletons { get; private set; } = new SFResourceContainer<SFSkeleton>();
+        public SFResourceContainer<SoundResource> Musics { get; private set; } = new SFResourceContainer<SoundResource>();
         public string current_resource = "";
         public List<string> mesh_names { get; private set; } = new List<string>();
         public List<string> skeleton_names { get; private set; } = new List<string>();
         public List<string> animation_names { get; private set; } = new List<string>();
+        public List<string> music_names { get; private set; } = new List<string>();
 
         public SFResourceManager()
         {
@@ -34,6 +38,7 @@ namespace SpellforceDataEditor.SF3D
             BSIs = new SFResourceContainer<SFBoneIndex>("skinning\\b20", ".bsi", this);
             Skins = new SFResourceContainer<SFModelSkin>("skinning\\b20", ".msb", this);
             Skeletons = new SFResourceContainer<SFSkeleton>("animation", ".bor", this);
+            Musics = new SFResourceContainer<SoundResource>("sound", ".mp3", this);
         }
 
         //generate mesh names, for use in SF3DManager
@@ -42,13 +47,16 @@ namespace SpellforceDataEditor.SF3D
             string[] filter_mesh = { "sf8.pak", "sf22.pak", "sf32.pak" };
             string[] filter_skel = { "sf4.pak", "sf22.pak", "sf32.pak" };
             string[] filter_anim = { "sf5.pak", "sf22.pak", "sf32.pak" };
+            string[] filter_musi = { "sf3.pak", "sf20.pak", "sf30.pak" };
             mesh_names = unpacker.ListAllWithExtension(".msb", filter_mesh);
             skeleton_names = unpacker.ListAllWithExtension(".bor", filter_skel);
             skeleton_names.RemoveAll(x => !(x.StartsWith("figure")));
             animation_names = unpacker.ListAllWithExtension(".bob", filter_anim);
+            music_names = unpacker.ListAllWithExtension(".mp3", filter_musi);
             mesh_names.Sort();
             skeleton_names.Sort();
             animation_names.Sort();
+            music_names.Sort();
         }
 
         public void DisposeAll()
@@ -59,6 +67,7 @@ namespace SpellforceDataEditor.SF3D
             BSIs.DisposeAll();
             Skins.DisposeAll();
             Skeletons.DisposeAll();
+            Musics.DisposeAll();
         }
     }
 }

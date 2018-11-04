@@ -14,19 +14,19 @@ namespace SpellforceDataEditor.SF3D.SFRender
 {
     public class SFRenderEngine
     {
-        public SFSceneLoader scene_manager { get; } = new SFSceneLoader();
-        public SFResourceManager resources { get; } = new SFResourceManager();
+        public SFSceneManager scene_manager { get; } = new SFSceneManager();
+        SFResources.SFResourceManager resources;
         public bool ready_to_use { get; private set; } = false;
-
-        public int frame_counter = 0;
-        public int frames_per_second = 25;
-        System.Diagnostics.Stopwatch delta_timer = new System.Diagnostics.Stopwatch();
-        public float deltatime = 0f;
 
         public Camera3D camera { get; } = new Camera3D();
 
         SFShader shader_simple = new SFShader();
         SFShader shader_animated = new SFShader();
+
+        public SFRenderEngine(SFResources.SFResourceManager res)
+        {
+            resources = res;
+        }
 
         //called only once!
         public void Initialize(Vector2 view_size)
@@ -50,8 +50,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_animated.AddParameter("MVP");
             shader_animated.AddParameter("texture_used");
             shader_animated.AddParameter("boneTransforms");
-
-            delta_timer.Start();
         }
 
         public int SpecifyGameDirectory(string dname)
@@ -63,10 +61,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         public void RenderFrame()
         {
-            delta_timer.Stop();
-            deltatime = delta_timer.ElapsedMilliseconds / (float)1000;
-            delta_timer.Restart();
-
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             if (camera.Modified)
                 camera.update_modelMatrix();
@@ -75,9 +69,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.UseProgram(shader_simple.ProgramID);
             foreach (ObjectSimple3D obj in scene_manager.objects_static.Values)
             {
-                if (obj.Modified)
-                    obj.update_modelMatrix();
-
                 if (!obj.Visible)
                     continue;
                 if (obj.Mesh == null)
@@ -91,9 +82,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 for (int i = 0; i < obj.Mesh.materials.Length; i++)
                 {
                     SFMaterial mat = obj.Mesh.materials[i];
+
                     if ((mat.matFlags & 4) == 0)
                         continue;
                     mat.yet_to_be_drawn = false;
+
                     GL.Uniform1(shader_simple["texture_used"], 1);
                     GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
 
@@ -119,13 +112,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.UseProgram(shader_animated.ProgramID);
             foreach (objectAnimated obj in scene_manager.objects_dynamic.Values)
             {
-                if (obj.Modified)
-                    obj.update_modelMatrix();
-                if (obj.skin == null)
-                    continue;
-                if (obj.anim_playing)
-                    obj.step_animation(deltatime);
                 if (!obj.Visible)
+                    continue;
+                if (obj.skin == null)
                     continue;
 
                 Matrix4 MVP_mat = obj.ModelMatrix * camera.ViewProjMatrix;
@@ -134,7 +123,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 Matrix4[] bones = new Matrix4[20];
                 for (int i = 0; i < obj.skin.submodels.Count; i++)
                 {
-
                     SFModelSkinChunk chunk = obj.skin.submodels[i];
                     for (int j = 0; j < chunk.bones.Length; j++)
                         bones[j] = obj.bone_transforms[chunk.bones[j]];
@@ -142,14 +130,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     GL.UniformMatrix4(shader_animated["boneTransforms"], 20, false, ref bones[0].Row0.X);
                     GL.BindTexture(TextureTarget.Texture2D, chunk.material.texture.tex_id);
                     GL.DrawElements(PrimitiveType.Triangles, chunk.face_indices.Length, DrawElementsType.UnsignedInt, 0);
-
                 }
             }
 
             GL.BindVertexArray(0);
             GL.UseProgram(0);
-
-            frame_counter++;
         }
     }
 }

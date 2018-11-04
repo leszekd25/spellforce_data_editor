@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpellforceDataEditor.SF3D
+namespace SpellforceDataEditor.SFResources
 {
     public class SFResourceContainer<T> where T: SFResource, new()
     {
@@ -68,6 +68,16 @@ namespace SpellforceDataEditor.SF3D
             if (cont.ContainsKey(rname))
                 return cont[rname];
             return default(T);   //should return null
+        }
+
+        public int Extract(string rname)
+        {
+            return manager.unpacker.ExtractFileFind(prefix_path + "\\" + rname + suffix_extension, prefix_path + "\\" + rname + suffix_extension);
+        }
+
+        public List<string> GetNames()
+        {
+            return cont.Keys.ToList();
         }
 
         public void DisposeAll()

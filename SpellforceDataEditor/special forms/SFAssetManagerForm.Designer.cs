@@ -1,6 +1,6 @@
 ﻿namespace SpellforceDataEditor.special_forms
 {
-    partial class SF3DManagerForm
+    partial class SFAssetManagerForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.glControl1 = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 0, 8));
+            this.glControl1 = new OpenTK.GLControl();
             this.ListEntries = new System.Windows.Forms.ListBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,8 +40,18 @@
             this.ComboBrowseMode = new System.Windows.Forms.ComboBox();
             this.ListAnimations = new System.Windows.Forms.ListBox();
             this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
+            this.PanelSound = new System.Windows.Forms.Panel();
+            this.labelSoundDuration = new System.Windows.Forms.Label();
+            this.trackSoundDuration = new System.Windows.Forms.TrackBar();
+            this.buttonSoundStop = new System.Windows.Forms.Button();
+            this.buttonSoundPlay = new System.Windows.Forms.Button();
+            this.TimerSoundDuration = new System.Windows.Forms.Timer(this.components);
+            this.button1Extract = new System.Windows.Forms.Button();
+            this.button2Extract = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.PanelSound.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackSoundDuration)).BeginInit();
             this.SuspendLayout();
             // 
             // glControl1
@@ -65,8 +75,9 @@
             this.ListEntries.FormattingEnabled = true;
             this.ListEntries.Location = new System.Drawing.Point(12, 54);
             this.ListEntries.Name = "ListEntries";
-            this.ListEntries.Size = new System.Drawing.Size(353, 199);
+            this.ListEntries.Size = new System.Drawing.Size(266, 147);
             this.ListEntries.TabIndex = 1;
+            this.ListEntries.Visible = false;
             this.ListEntries.SelectedIndexChanged += new System.EventHandler(this.ListEntries_SelectedIndexChanged);
             // 
             // menuStrip1
@@ -116,7 +127,8 @@
             this.ComboBrowseMode.Items.AddRange(new object[] {
             "Meshes",
             "Animations",
-            "Synchronize with editor"});
+            "Synchronize with editor",
+            "Music"});
             this.ComboBrowseMode.Location = new System.Drawing.Point(12, 27);
             this.ComboBrowseMode.Name = "ComboBrowseMode";
             this.ComboBrowseMode.Size = new System.Drawing.Size(174, 21);
@@ -126,21 +138,104 @@
             // ListAnimations
             // 
             this.ListAnimations.FormattingEnabled = true;
-            this.ListAnimations.Location = new System.Drawing.Point(12, 259);
+            this.ListAnimations.Location = new System.Drawing.Point(12, 271);
             this.ListAnimations.Name = "ListAnimations";
-            this.ListAnimations.Size = new System.Drawing.Size(353, 160);
+            this.ListAnimations.Size = new System.Drawing.Size(266, 147);
             this.ListAnimations.TabIndex = 5;
+            this.ListAnimations.Visible = false;
             this.ListAnimations.SelectedIndexChanged += new System.EventHandler(this.ListAnimations_SelectedIndexChanged);
             // 
             // TimerAnimation
             // 
             this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
             // 
-            // SF3DManagerForm
+            // PanelSound
+            // 
+            this.PanelSound.Controls.Add(this.labelSoundDuration);
+            this.PanelSound.Controls.Add(this.trackSoundDuration);
+            this.PanelSound.Controls.Add(this.buttonSoundStop);
+            this.PanelSound.Controls.Add(this.buttonSoundPlay);
+            this.PanelSound.Location = new System.Drawing.Point(12, 207);
+            this.PanelSound.Name = "PanelSound";
+            this.PanelSound.Size = new System.Drawing.Size(266, 58);
+            this.PanelSound.TabIndex = 6;
+            this.PanelSound.Visible = false;
+            // 
+            // labelSoundDuration
+            // 
+            this.labelSoundDuration.AutoSize = true;
+            this.labelSoundDuration.Location = new System.Drawing.Point(165, 35);
+            this.labelSoundDuration.Name = "labelSoundDuration";
+            this.labelSoundDuration.Size = new System.Drawing.Size(0, 13);
+            this.labelSoundDuration.TabIndex = 3;
+            // 
+            // trackSoundDuration
+            // 
+            this.trackSoundDuration.AutoSize = false;
+            this.trackSoundDuration.LargeChange = 0;
+            this.trackSoundDuration.Location = new System.Drawing.Point(3, 32);
+            this.trackSoundDuration.Maximum = 1000000;
+            this.trackSoundDuration.Name = "trackSoundDuration";
+            this.trackSoundDuration.Size = new System.Drawing.Size(156, 23);
+            this.trackSoundDuration.SmallChange = 50000;
+            this.trackSoundDuration.TabIndex = 2;
+            this.trackSoundDuration.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.trackSoundDuration.Scroll += new System.EventHandler(this.trackSoundDuration_Scroll);
+            // 
+            // buttonSoundStop
+            // 
+            this.buttonSoundStop.Location = new System.Drawing.Point(84, 3);
+            this.buttonSoundStop.Name = "buttonSoundStop";
+            this.buttonSoundStop.Size = new System.Drawing.Size(75, 23);
+            this.buttonSoundStop.TabIndex = 1;
+            this.buttonSoundStop.Text = "Stop";
+            this.buttonSoundStop.UseVisualStyleBackColor = true;
+            this.buttonSoundStop.Click += new System.EventHandler(this.buttonSoundStop_Click);
+            // 
+            // buttonSoundPlay
+            // 
+            this.buttonSoundPlay.Location = new System.Drawing.Point(3, 3);
+            this.buttonSoundPlay.Name = "buttonSoundPlay";
+            this.buttonSoundPlay.Size = new System.Drawing.Size(75, 23);
+            this.buttonSoundPlay.TabIndex = 0;
+            this.buttonSoundPlay.Text = "Play";
+            this.buttonSoundPlay.UseVisualStyleBackColor = true;
+            this.buttonSoundPlay.Click += new System.EventHandler(this.buttonSoundPlay_Click);
+            // 
+            // TimerSoundDuration
+            // 
+            this.TimerSoundDuration.Tick += new System.EventHandler(this.TimerSoundDuration_Tick);
+            // 
+            // button1Extract
+            // 
+            this.button1Extract.Location = new System.Drawing.Point(284, 54);
+            this.button1Extract.Name = "button1Extract";
+            this.button1Extract.Size = new System.Drawing.Size(81, 23);
+            this.button1Extract.TabIndex = 7;
+            this.button1Extract.Text = "Extract";
+            this.button1Extract.UseVisualStyleBackColor = true;
+            this.button1Extract.Visible = false;
+            this.button1Extract.Click += new System.EventHandler(this.button1Extract_Click);
+            // 
+            // button2Extract
+            // 
+            this.button2Extract.Location = new System.Drawing.Point(284, 271);
+            this.button2Extract.Name = "button2Extract";
+            this.button2Extract.Size = new System.Drawing.Size(81, 23);
+            this.button2Extract.TabIndex = 8;
+            this.button2Extract.Text = "Extract";
+            this.button2Extract.UseVisualStyleBackColor = true;
+            this.button2Extract.Visible = false;
+            this.button2Extract.Click += new System.EventHandler(this.button2Extract_Click);
+            // 
+            // SFAssetManagerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(771, 450);
+            this.Controls.Add(this.button2Extract);
+            this.Controls.Add(this.button1Extract);
+            this.Controls.Add(this.PanelSound);
             this.Controls.Add(this.ListAnimations);
             this.Controls.Add(this.ComboBrowseMode);
             this.Controls.Add(this.statusStrip1);
@@ -148,7 +243,7 @@
             this.Controls.Add(this.glControl1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "SF3DManagerForm";
+            this.Name = "SFAssetManagerForm";
             this.Text = "SF3DManagerForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SF3DManagerForm_FormClosing);
             this.Load += new System.EventHandler(this.SF3DManagerForm_Load);
@@ -156,6 +251,9 @@
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.PanelSound.ResumeLayout(false);
+            this.PanelSound.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackSoundDuration)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -174,5 +272,13 @@
         private System.Windows.Forms.ComboBox ComboBrowseMode;
         private System.Windows.Forms.ListBox ListAnimations;
         private System.Windows.Forms.Timer TimerAnimation;
+        private System.Windows.Forms.Panel PanelSound;
+        private System.Windows.Forms.Label labelSoundDuration;
+        private System.Windows.Forms.TrackBar trackSoundDuration;
+        private System.Windows.Forms.Button buttonSoundStop;
+        private System.Windows.Forms.Button buttonSoundPlay;
+        private System.Windows.Forms.Timer TimerSoundDuration;
+        private System.Windows.Forms.Button button1Extract;
+        private System.Windows.Forms.Button button2Extract;
     }
 }

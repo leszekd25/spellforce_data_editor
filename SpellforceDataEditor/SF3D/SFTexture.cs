@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using SpellforceDataEditor.SFResources;
 
 namespace SpellforceDataEditor.SF3D
 {
@@ -22,7 +23,6 @@ namespace SpellforceDataEditor.SF3D
         public int width { get; private set; }
         public int height { get; private set; }
         public int tex_id { get; private set; } = -1;
-        public string name { get; set; }
         public uint mipMapCount { get; private set; }
         InternalFormat format;
 

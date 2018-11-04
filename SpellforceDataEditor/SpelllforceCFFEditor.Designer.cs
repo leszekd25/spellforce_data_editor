@@ -42,6 +42,7 @@
             this.specialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeDataLanguageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findAllReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.versionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CategorySelect = new System.Windows.Forms.ComboBox();
@@ -74,7 +75,6 @@
             this.panelElemCopy = new System.Windows.Forms.Panel();
             this.ButtonElemClear = new System.Windows.Forms.Button();
             this.ButtonElemCopy = new System.Windows.Forms.Button();
-            this.dViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -151,7 +151,7 @@
             this.undoCtrlZToolStripMenuItem.Enabled = false;
             this.undoCtrlZToolStripMenuItem.Name = "undoCtrlZToolStripMenuItem";
             this.undoCtrlZToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.undoCtrlZToolStripMenuItem.Text = "Undo";
             this.undoCtrlZToolStripMenuItem.Click += new System.EventHandler(this.undoCtrlZToolStripMenuItem_Click);
             // 
@@ -160,7 +160,7 @@
             this.redoCtrlYToolStripMenuItem.Enabled = false;
             this.redoCtrlYToolStripMenuItem.Name = "redoCtrlYToolStripMenuItem";
             this.redoCtrlYToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.redoCtrlYToolStripMenuItem.Text = "Redo";
             this.redoCtrlYToolStripMenuItem.Click += new System.EventHandler(this.redoCtrlYToolStripMenuItem_Click);
             // 
@@ -186,9 +186,18 @@
             // findAllReferencesToolStripMenuItem
             // 
             this.findAllReferencesToolStripMenuItem.Name = "findAllReferencesToolStripMenuItem";
+            this.findAllReferencesToolStripMenuItem.ShortcutKeyDisplayString = "";
+            this.findAllReferencesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
             this.findAllReferencesToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.findAllReferencesToolStripMenuItem.Text = "Find all references...";
             this.findAllReferencesToolStripMenuItem.Click += new System.EventHandler(this.findAllReferencesToolStripMenuItem_Click);
+            // 
+            // dViewerToolStripMenuItem
+            // 
+            this.dViewerToolStripMenuItem.Name = "dViewerToolStripMenuItem";
+            this.dViewerToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.dViewerToolStripMenuItem.Text = "3D Viewer";
+            this.dViewerToolStripMenuItem.Click += new System.EventHandler(this.dViewerToolStripMenuItem_Click);
             // 
             // versionToolStripMenuItem
             // 
@@ -230,6 +239,7 @@
             // 
             // SearchPanel
             // 
+            this.SearchPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.SearchPanel.Location = new System.Drawing.Point(395, 54);
             this.SearchPanel.Name = "SearchPanel";
             this.SearchPanel.Size = new System.Drawing.Size(500, 420);
@@ -307,7 +317,7 @@
             // ClearSearchButton
             // 
             this.ClearSearchButton.Enabled = false;
-            this.ClearSearchButton.Location = new System.Drawing.Point(151, 113);
+            this.ClearSearchButton.Location = new System.Drawing.Point(151, 110);
             this.ClearSearchButton.Name = "ClearSearchButton";
             this.ClearSearchButton.Size = new System.Drawing.Size(143, 23);
             this.ClearSearchButton.TabIndex = 18;
@@ -330,15 +340,15 @@
             // 
             this.SearchColumnID.Enabled = false;
             this.SearchColumnID.FormattingEnabled = true;
-            this.SearchColumnID.Location = new System.Drawing.Point(151, 88);
+            this.SearchColumnID.Location = new System.Drawing.Point(151, 85);
             this.SearchColumnID.Name = "SearchColumnID";
-            this.SearchColumnID.Size = new System.Drawing.Size(144, 21);
+            this.SearchColumnID.Size = new System.Drawing.Size(143, 21);
             this.SearchColumnID.TabIndex = 15;
             // 
             // checkSearchByColumn
             // 
             this.checkSearchByColumn.AutoSize = true;
-            this.checkSearchByColumn.Location = new System.Drawing.Point(151, 65);
+            this.checkSearchByColumn.Location = new System.Drawing.Point(151, 62);
             this.checkSearchByColumn.Name = "checkSearchByColumn";
             this.checkSearchByColumn.Size = new System.Drawing.Size(111, 17);
             this.checkSearchByColumn.TabIndex = 12;
@@ -351,9 +361,9 @@
             this.groupSearch.Controls.Add(this.radioSearchText);
             this.groupSearch.Controls.Add(this.radioSearchFlag);
             this.groupSearch.Controls.Add(this.radioSearchNumeric);
-            this.groupSearch.Location = new System.Drawing.Point(2, 52);
+            this.groupSearch.Location = new System.Drawing.Point(3, 54);
             this.groupSearch.Name = "groupSearch";
-            this.groupSearch.Size = new System.Drawing.Size(84, 81);
+            this.groupSearch.Size = new System.Drawing.Size(84, 75);
             this.groupSearch.TabIndex = 11;
             this.groupSearch.TabStop = false;
             // 
@@ -405,13 +415,13 @@
             // labelDescription
             // 
             this.labelDescription.BackColor = System.Drawing.SystemColors.Control;
-            this.labelDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.labelDescription.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.labelDescription.Cursor = System.Windows.Forms.Cursors.No;
             this.labelDescription.Location = new System.Drawing.Point(395, 480);
             this.labelDescription.Multiline = true;
             this.labelDescription.Name = "labelDescription";
             this.labelDescription.ReadOnly = true;
-            this.labelDescription.Size = new System.Drawing.Size(500, 126);
+            this.labelDescription.Size = new System.Drawing.Size(500, 136);
             this.labelDescription.TabIndex = 12;
             // 
             // statusStrip1
@@ -487,13 +497,6 @@
             this.ButtonElemCopy.Text = "Copy";
             this.ButtonElemCopy.UseVisualStyleBackColor = true;
             this.ButtonElemCopy.Click += new System.EventHandler(this.ButtonElemCopy_Click);
-            // 
-            // dViewerToolStripMenuItem
-            // 
-            this.dViewerToolStripMenuItem.Name = "dViewerToolStripMenuItem";
-            this.dViewerToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.dViewerToolStripMenuItem.Text = "3D Viewer";
-            this.dViewerToolStripMenuItem.Click += new System.EventHandler(this.dViewerToolStripMenuItem_Click);
             // 
             // SpelllforceCFFEditor
             // 

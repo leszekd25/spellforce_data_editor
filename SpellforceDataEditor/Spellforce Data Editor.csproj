@@ -51,6 +51,9 @@
     <ApplicationIcon>382940043477778432.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NAudio, Version=1.8.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.8.5\lib\net35\NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.3.0.1\lib\net20\OpenTK.dll</HintPath>
     </Reference>
@@ -375,7 +378,7 @@
     <Compile Include="SF3D\InterpolatedValue.cs" />
     <Compile Include="SF3D\Object3D.cs" />
     <Compile Include="SF3D\objectAnimated.cs" />
-    <Compile Include="SF3D\SceneSynchro\SFSceneLoader.cs" />
+    <Compile Include="SF3D\SceneSynchro\SFSceneManager.cs" />
     <Compile Include="SF3D\SceneSynchro\SFVisualLink.cs" />
     <Compile Include="SF3D\SceneSynchro\SFVisualLinkContainer.cs" />
     <Compile Include="SF3D\SFAnimation.cs" />
@@ -385,12 +388,14 @@
     <Compile Include="SF3D\SFModelSkin.cs" />
     <Compile Include="SF3D\SFRender\SFRenderEngine.cs" />
     <Compile Include="SF3D\SFRender\SFShader.cs" />
-    <Compile Include="SF3D\SFResource.cs" />
-    <Compile Include="SF3D\SFResourceContainer.cs" />
-    <Compile Include="SF3D\SFResourceManager.cs" />
+    <Compile Include="SFResources\SFResource.cs" />
+    <Compile Include="SFResources\SFResourceContainer.cs" />
+    <Compile Include="SFResources\SFResourceManager.cs" />
     <Compile Include="SF3D\SFSkeleton.cs" />
+    <Compile Include="SFSound\SFSoundEngine.cs" />
     <Compile Include="SF3D\SFTexture.cs" />
     <Compile Include="SF3D\SFRender\ShaderCompiler.cs" />
+    <Compile Include="SFSound\SoundResource.cs" />
     <Compile Include="SFCategory.cs" />
     <Compile Include="SFCategoryElement.cs" />
     <Compile Include="SFCategoryManager.cs" />
@@ -415,11 +420,11 @@
     <Compile Include="special forms\ReferencesForm.Designer.cs">
       <DependentUpon>ReferencesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="special forms\SF3DManagerForm.cs">
+    <Compile Include="special forms\SFAssetManagerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="special forms\SF3DManagerForm.Designer.cs">
-      <DependentUpon>SF3DManagerForm.cs</DependentUpon>
+    <Compile Include="special forms\SFAssetManagerForm.Designer.cs">
+      <DependentUpon>SFAssetManagerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SpelllforceCFFEditor.cs">
       <SubType>Form</SubType>
@@ -594,8 +599,8 @@
     <EmbeddedResource Include="special forms\ReferencesForm.resx">
       <DependentUpon>ReferencesForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="special forms\SF3DManagerForm.resx">
-      <DependentUpon>SF3DManagerForm.cs</DependentUpon>
+    <EmbeddedResource Include="special forms\SFAssetManagerForm.resx">
+      <DependentUpon>SFAssetManagerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SpelllforceCFFEditor.resx">
       <DependentUpon>SpelllforceCFFEditor.cs</DependentUpon>
