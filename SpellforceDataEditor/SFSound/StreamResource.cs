@@ -8,7 +8,7 @@ using SpellforceDataEditor.SFResources;
 
 namespace SpellforceDataEditor.SFSound
 {
-    public class SoundResource: SFResource
+    public class StreamResource: SFResource
     {
         public Byte[] sound_data { get; private set; }
 

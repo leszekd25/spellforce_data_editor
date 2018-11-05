@@ -48,6 +48,7 @@
             this.TimerSoundDuration = new System.Windows.Forms.Timer(this.components);
             this.button1Extract = new System.Windows.Forms.Button();
             this.button2Extract = new System.Windows.Forms.Button();
+            this.comboMessages = new System.Windows.Forms.ComboBox();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelSound.SuspendLayout();
@@ -128,7 +129,9 @@
             "Meshes",
             "Animations",
             "Synchronize with editor",
-            "Music"});
+            "Music",
+            "Sounds",
+            "Messages"});
             this.ComboBrowseMode.Location = new System.Drawing.Point(12, 27);
             this.ComboBrowseMode.Name = "ComboBrowseMode";
             this.ComboBrowseMode.Size = new System.Drawing.Size(174, 21);
@@ -228,11 +231,28 @@
             this.button2Extract.Visible = false;
             this.button2Extract.Click += new System.EventHandler(this.button2Extract_Click);
             // 
+            // comboMessages
+            // 
+            this.comboMessages.FormattingEnabled = true;
+            this.comboMessages.Items.AddRange(new object[] {
+            "Male",
+            "Female",
+            "RTS Workers",
+            "RTS Battle",
+            "NPC"});
+            this.comboMessages.Location = new System.Drawing.Point(192, 27);
+            this.comboMessages.Name = "comboMessages";
+            this.comboMessages.Size = new System.Drawing.Size(86, 21);
+            this.comboMessages.TabIndex = 9;
+            this.comboMessages.Visible = false;
+            this.comboMessages.SelectedIndexChanged += new System.EventHandler(this.comboMessages_SelectedIndexChanged);
+            // 
             // SFAssetManagerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(771, 450);
+            this.Controls.Add(this.comboMessages);
             this.Controls.Add(this.button2Extract);
             this.Controls.Add(this.button1Extract);
             this.Controls.Add(this.PanelSound);
@@ -280,5 +300,6 @@
         private System.Windows.Forms.Timer TimerSoundDuration;
         private System.Windows.Forms.Button button1Extract;
         private System.Windows.Forms.Button button2Extract;
+        private System.Windows.Forms.ComboBox comboMessages;
     }
 }

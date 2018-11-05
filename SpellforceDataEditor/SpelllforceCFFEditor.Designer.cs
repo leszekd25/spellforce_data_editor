@@ -151,7 +151,7 @@
             this.undoCtrlZToolStripMenuItem.Enabled = false;
             this.undoCtrlZToolStripMenuItem.Name = "undoCtrlZToolStripMenuItem";
             this.undoCtrlZToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.undoCtrlZToolStripMenuItem.Text = "Undo";
             this.undoCtrlZToolStripMenuItem.Click += new System.EventHandler(this.undoCtrlZToolStripMenuItem_Click);
             // 
@@ -160,7 +160,7 @@
             this.redoCtrlYToolStripMenuItem.Enabled = false;
             this.redoCtrlYToolStripMenuItem.Name = "redoCtrlYToolStripMenuItem";
             this.redoCtrlYToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.redoCtrlYToolStripMenuItem.Text = "Redo";
             this.redoCtrlYToolStripMenuItem.Click += new System.EventHandler(this.redoCtrlYToolStripMenuItem_Click);
             // 
@@ -196,7 +196,7 @@
             // 
             this.dViewerToolStripMenuItem.Name = "dViewerToolStripMenuItem";
             this.dViewerToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.dViewerToolStripMenuItem.Text = "3D Viewer";
+            this.dViewerToolStripMenuItem.Text = "Asset Viewer";
             this.dViewerToolStripMenuItem.Click += new System.EventHandler(this.dViewerToolStripMenuItem_Click);
             // 
             // versionToolStripMenuItem

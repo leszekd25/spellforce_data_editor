@@ -23,7 +23,7 @@ namespace SpellforceDataEditor.SFSound
             resources = res;
         }
 
-        public int LoadSoundMP3(SoundResource sound)
+        public int LoadSoundMP3(StreamResource sound)
         {
             if (loaded)
                 UnloadSound();
@@ -38,7 +38,7 @@ namespace SpellforceDataEditor.SFSound
             return 0;
         }
 
-        public int LoadSoundWAV(SoundResource sound)
+        public int LoadSoundWAV(StreamResource sound)
         {
             if (loaded)
                 UnloadSound();
@@ -101,15 +101,23 @@ namespace SpellforceDataEditor.SFSound
         public int UnloadSound()
         {
             if (!loaded)
-                return 0;
+                return -1;
 
-            player.Stop();
-            player.Dispose();
-            sound_loader.Close();
-            sound_loader.Dispose();
-            sound_data.Close();
-            sound_data.Dispose();
-            loaded = false;
+            try
+            {
+                player.Stop();
+                player.Dispose();
+                sound_loader.Close();
+                sound_loader.Dispose();
+                sound_data.Close();
+                sound_data.Dispose();
+                loaded = false;
+            }
+            catch(Exception e)
+            {
+                return -2;
+            }
+
             GC.Collect(2, GCCollectionMode.Forced, false);
 
             return 0;

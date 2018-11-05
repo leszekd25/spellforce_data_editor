@@ -109,6 +109,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void HideAllPanels()
         {
+            comboMessages.Hide();
             ListEntries.Hide();
             ListAnimations.Hide();
             button1Extract.Hide();
@@ -168,13 +169,31 @@ namespace SpellforceDataEditor.special_forms
                 synchronized = true;
             }
 
-            if(ComboBrowseMode.SelectedIndex == 3)
+            if (ComboBrowseMode.SelectedIndex == 3)
             {
                 ListEntries.Show();
                 button1Extract.Show();
                 PanelSound.Show();
                 foreach (string musi_name in resources.music_names)
                     ListEntries.Items.Add(musi_name);
+            }
+
+            if (ComboBrowseMode.SelectedIndex == 4)
+            {
+                ListEntries.Show();
+                button1Extract.Show();
+                PanelSound.Show();
+                foreach (string snd_name in resources.sound_names)
+                    ListEntries.Items.Add(snd_name);
+            }
+
+            if (ComboBrowseMode.SelectedIndex == 5)
+            {
+                ListEntries.Show();
+                button1Extract.Show();
+                PanelSound.Show();
+                comboMessages.SelectedIndex = -1;
+                comboMessages.Show();
             }
         }
 
@@ -269,6 +288,57 @@ namespace SpellforceDataEditor.special_forms
 
                     sound_engine.LoadSoundMP3(resources.Musics.Get(s_n));
                     StatusText.Text = "Loaded music " + s_n;
+                }
+            }
+
+            if (ComboBrowseMode.SelectedIndex == 4)
+            {
+                if (ListEntries.SelectedIndex != -1)
+                {
+                    string s_n = ListEntries.SelectedItem.ToString();
+                    s_n = s_n.Substring(0, s_n.Length - 4);
+
+                    int result = resources.Sounds.Load(s_n);
+                    if (result != 0)
+                    {
+                        StatusText.Text = "Failed to load sound " + s_n;
+                        return;
+                    }
+
+                    sound_engine.UnloadSound();
+
+                    sound_engine.LoadSoundWAV(resources.Sounds.Get(s_n));
+                    StatusText.Text = "Loaded sound " + s_n;
+                }
+            }
+
+            if (ComboBrowseMode.SelectedIndex == 5)
+            {
+                if (ListEntries.SelectedIndex != -1)
+                {
+                    string s_n = ListEntries.SelectedItem.ToString();
+                    string type = s_n.Substring(s_n.Length - 4, 4);
+                    s_n = s_n.Substring(0, s_n.Length - 4);
+
+                    int result = resources.Messages.Load(s_n);
+                    if (result != 0)
+                    {
+                        StatusText.Text = "Failed to load message " + s_n;
+                        return;
+                    }
+                    
+                    sound_engine.UnloadSound();
+
+                    if (type == ".wav")
+                        sound_engine.LoadSoundWAV(resources.Messages.Get(s_n));
+                    else if (type == ".mp3")
+                        sound_engine.LoadSoundMP3(resources.Messages.Get(s_n));
+                    else
+                    {
+                        StatusText.Text = "Failed to load message " + s_n;
+                        return;
+                    }
+                    StatusText.Text = "Loaded message " + s_n;
                 }
             }
 
@@ -386,6 +456,8 @@ namespace SpellforceDataEditor.special_forms
 
         private void TimerAnimation_Tick(object sender, EventArgs e)
         {
+            if (render_engine.scene_manager.scene_meta == null)
+                return;
             //set slider
 
             double ratio = render_engine.scene_manager.current_time / render_engine.scene_manager.scene_meta.duration; //sound_engine.GetSoundPosition() / sound_engine.GetSoundDuration();
@@ -422,7 +494,6 @@ namespace SpellforceDataEditor.special_forms
 
         private void glControl1_MouseDown(object sender, MouseEventArgs e)
         {
-            //check pressed flag
             mouse_pressed = true;
             EnableAnimation();
             //set cursor position
@@ -496,7 +567,7 @@ namespace SpellforceDataEditor.special_forms
                 if (render_engine.scene_manager.scene_meta.is_animated)
                     EnableAnimation();
             }
-            if (ComboBrowseMode.SelectedIndex == 3)
+            if ((ComboBrowseMode.SelectedIndex == 3)||(ComboBrowseMode.SelectedIndex == 4)||(ComboBrowseMode.SelectedIndex == 5))
             {
                 if (!sound_engine.loaded)
                     return;
@@ -516,7 +587,7 @@ namespace SpellforceDataEditor.special_forms
                 if (render_engine.scene_manager.scene_meta.is_animated)
                     DisableAnimation();
             }
-            if (ComboBrowseMode.SelectedIndex == 3)
+            if ((ComboBrowseMode.SelectedIndex == 3) || (ComboBrowseMode.SelectedIndex == 4) || (ComboBrowseMode.SelectedIndex == 5))
             {
                 if (!sound_engine.loaded)
                     return;
@@ -555,7 +626,7 @@ namespace SpellforceDataEditor.special_forms
                 render_engine.scene_manager.LogicStep(false);
                 glControl1.Invalidate();
             }
-            if (ComboBrowseMode.SelectedIndex == 3)
+            if ((ComboBrowseMode.SelectedIndex == 3) || (ComboBrowseMode.SelectedIndex == 4) || (ComboBrowseMode.SelectedIndex == 5))
             {
                 if (!sound_engine.loaded)
                     return;
@@ -621,13 +692,35 @@ namespace SpellforceDataEditor.special_forms
                 StatusText.Text = "Extracted " + item;
             }
 
-            if(ComboBrowseMode.SelectedIndex == 3)
+            if (ComboBrowseMode.SelectedIndex == 3)
             {
-                SoundResource s = resources.Musics.Get(item);
+                StreamResource s = resources.Musics.Get(item);
                 if (s == null)
                     return;
 
                 resources.Musics.Extract(item);
+
+                StatusText.Text = "Extracted " + item;
+            }
+
+            if (ComboBrowseMode.SelectedIndex == 4)
+            {
+                StreamResource s = resources.Sounds.Get(item);
+                if (s == null)
+                    return;
+
+                resources.Sounds.Extract(item);
+
+                StatusText.Text = "Extracted " + item;
+            }
+
+            if (ComboBrowseMode.SelectedIndex == 5)
+            {
+                StreamResource s = resources.Messages.Get(item);
+                if (s == null)
+                    return;
+
+                resources.Messages.Extract(item);
 
                 StatusText.Text = "Extracted " + item;
             }
@@ -652,6 +745,40 @@ namespace SpellforceDataEditor.special_forms
 
                 StatusText.Text = "Extracted " + item;
             }
+        }
+
+        private void comboMessages_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ComboBrowseMode.SelectedIndex != 5)
+                return;
+
+            if(comboMessages.SelectedItem == null)
+                return;
+            string item = comboMessages.SelectedItem.ToString();
+            if (item == "")
+                return;
+
+            if (item == "RTS Battle")
+                resources.Messages.SetSuffixExtension(".wav");
+            else
+                resources.Messages.SetSuffixExtension(".mp3");
+
+            if (item == "RTS Battle")
+                resources.Messages.SetPrefixPath("sound\\speech\\battle");
+            else if (item == "Male")
+                resources.Messages.SetPrefixPath("sound\\speech\\male");
+            else if (item == "Female")
+                resources.Messages.SetPrefixPath("sound\\speech\\female");
+            else if (item == "RTS Workers")
+                resources.Messages.SetPrefixPath("sound\\speech\\messages");
+            else if (item == "NPC")
+                resources.Messages.SetPrefixPath("sound\\speech");
+            else
+                return;
+
+            ListEntries.Items.Clear();
+            foreach (string s in resources.message_names[item])
+                ListEntries.Items.Add(s);
         }
     }
 }

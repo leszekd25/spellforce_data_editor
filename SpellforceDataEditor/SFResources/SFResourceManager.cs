@@ -23,12 +23,16 @@ namespace SpellforceDataEditor.SFResources
         public SFResourceContainer<SFBoneIndex> BSIs { get; private set; } = new SFResourceContainer<SFBoneIndex>();
         public SFResourceContainer<SFModelSkin> Skins { get; private set; } = new SFResourceContainer<SFModelSkin>();
         public SFResourceContainer<SFSkeleton> Skeletons { get; private set; } = new SFResourceContainer<SFSkeleton>();
-        public SFResourceContainer<SoundResource> Musics { get; private set; } = new SFResourceContainer<SoundResource>();
+        public SFResourceContainer<StreamResource> Musics { get; private set; } = new SFResourceContainer<StreamResource>();
+        public SFResourceContainer<StreamResource> Sounds { get; private set; } = new SFResourceContainer<StreamResource>();
+        public SFResourceContainer<StreamResource> Messages { get; private set; } = new SFResourceContainer<StreamResource>();
         public string current_resource = "";
         public List<string> mesh_names { get; private set; } = new List<string>();
         public List<string> skeleton_names { get; private set; } = new List<string>();
         public List<string> animation_names { get; private set; } = new List<string>();
         public List<string> music_names { get; private set; } = new List<string>();
+        public List<string> sound_names { get; private set; } = new List<string>();
+        public Dictionary<string, List<string>> message_names { get; private set; } = new Dictionary<string, List<string>>();
 
         public SFResourceManager()
         {
@@ -38,7 +42,9 @@ namespace SpellforceDataEditor.SFResources
             BSIs = new SFResourceContainer<SFBoneIndex>("skinning\\b20", ".bsi", this);
             Skins = new SFResourceContainer<SFModelSkin>("skinning\\b20", ".msb", this);
             Skeletons = new SFResourceContainer<SFSkeleton>("animation", ".bor", this);
-            Musics = new SFResourceContainer<SoundResource>("sound", ".mp3", this);
+            Musics = new SFResourceContainer<StreamResource>("sound", ".mp3", this);
+            Sounds = new SFResourceContainer<StreamResource>("sound", ".wav", this);
+            Messages = new SFResourceContainer<StreamResource>("", "", this); //modified externally
         }
 
         //generate mesh names, for use in SF3DManager
@@ -48,15 +54,22 @@ namespace SpellforceDataEditor.SFResources
             string[] filter_skel = { "sf4.pak", "sf22.pak", "sf32.pak" };
             string[] filter_anim = { "sf5.pak", "sf22.pak", "sf32.pak" };
             string[] filter_musi = { "sf3.pak", "sf20.pak", "sf30.pak" };
-            mesh_names = unpacker.ListAllWithExtension(".msb", filter_mesh);
-            skeleton_names = unpacker.ListAllWithExtension(".bor", filter_skel);
+            string[] filter_snds = { "sf2.pak", "sf20.pak", "sf30.pak" };
+            string[] filter_mess_battle = { "sf2.pak", "sf23.pak", "sf33.pak" };
+            string[] filter_mess_other =  { "sf10.pak", "sf20.pak", "sf23.pak", "sf33.pak" };
+            string[] filter_mess_talk =   { "sf10.pak", "sf23.pak", "sf33.pak" };
+
+            mesh_names = unpacker.ListAllWithExtension("mesh", ".msb", filter_mesh);
+            skeleton_names = unpacker.ListAllWithExtension( "animation", ".bor", filter_skel);
             skeleton_names.RemoveAll(x => !(x.StartsWith("figure")));
-            animation_names = unpacker.ListAllWithExtension(".bob", filter_anim);
-            music_names = unpacker.ListAllWithExtension(".mp3", filter_musi);
-            mesh_names.Sort();
-            skeleton_names.Sort();
-            animation_names.Sort();
-            music_names.Sort();
+            animation_names = unpacker.ListAllWithExtension("animation", ".bob", filter_anim);
+            music_names = unpacker.ListAllWithExtension("sound", ".mp3", filter_musi);
+            sound_names = unpacker.ListAllWithExtension("sound", ".wav", filter_snds);
+            message_names["RTS Battle"] = unpacker.ListAllWithExtension("sound\\speech\\battle", ".wav", filter_mess_battle);
+            message_names["NPC"] = unpacker.ListAllWithExtension("sound\\speech", ".mp3", filter_mess_other);
+            message_names["Male"] = unpacker.ListAllWithExtension("sound\\speech\\male", ".mp3", filter_mess_talk);
+            message_names["Female"] = unpacker.ListAllWithExtension("sound\\speech\\female", ".mp3", filter_mess_talk);
+            message_names["RTS Workers"] = unpacker.ListAllWithExtension("sound\\speech\\messages", ".mp3", filter_mess_talk);
         }
 
         public void DisposeAll()
@@ -68,6 +81,8 @@ namespace SpellforceDataEditor.SFResources
             Skins.DisposeAll();
             Skeletons.DisposeAll();
             Musics.DisposeAll();
+            Sounds.DisposeAll();
+            Messages.DisposeAll();
         }
     }
 }

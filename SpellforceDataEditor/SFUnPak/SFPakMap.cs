@@ -87,7 +87,7 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
-        public List<String> ListAllWithExtension(string extname, string[] pak_filter)
+        public List<String> ListAllWithExtension(string path, string extname, string[] pak_filter)
         {
             List<String> names = new List<String>();
             if (pak_filter == null)
@@ -95,7 +95,7 @@ namespace SpellforceDataEditor.SFUnPak
             foreach(string pak in pak_filter)
             {
                 SFPakFileSystem fs = pak_map[pak];
-                names = names.Union(fs.ListAllWithExtension(extname)).ToList();
+                names = names.Union(fs.ListAllWithExtension(path, extname)).ToList();
             }
             return names;
         }

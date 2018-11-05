@@ -175,9 +175,11 @@ namespace SpellforceDataEditor.SFUnPak
             }
         }
 
-        public List<String> ListAllWithExtension(string extname, string[] pak_filter)
+        public List<String> ListAllWithExtension(string path, string extname, string[] pak_filter)
         {
-            return pak_map.ListAllWithExtension(extname, pak_filter);
+            List<String> result = pak_map.ListAllWithExtension(path, extname, pak_filter);
+            result.Sort();
+            return result;
         }
     }
 }

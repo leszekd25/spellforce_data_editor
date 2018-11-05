@@ -33,6 +33,16 @@ namespace SpellforceDataEditor.SFResources
             manager = _man;
         }
 
+        public void SetPrefixPath(string p)
+        {
+            prefix_path = p;
+        }
+
+        public void SetSuffixExtension(string e)
+        {
+            suffix_extension = e;
+        }
+
         public int Load(string rname)
         {
             if (cont.ContainsKey(rname))
