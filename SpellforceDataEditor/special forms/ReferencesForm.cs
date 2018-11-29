@@ -106,14 +106,13 @@ namespace SpellforceDataEditor.special_forms
 
         private string get_catelement_string(CatElem ce)
         {
-            return "Category " + (ce.category + 1).ToString() + " | " + sf_form.get_manager().get_category(ce.category).get_element_string(ce.element);
+            return "Category " + (ce.category + 1).ToString() + " | " + SFCategoryManager.get_category(ce.category).get_element_string(ce.element);
         }
 
         private void add_entries(List<CatElem> elements_so_far, CatElem element_looked_for, CatColumn column_looked_at)
         {
-            SFCategoryManager manager = sf_form.get_manager();
             List<int> preload_indices = new List<int>();
-            for (int i = 0; i < manager.get_category(column_looked_at.category).get_element_count(); i++)
+            for (int i = 0; i < SFCategoryManager.get_category(column_looked_at.category).get_element_count(); i++)
                 preload_indices.Add(i);
 
             List<int> results_intermediate = new List<int>();
@@ -121,8 +120,8 @@ namespace SpellforceDataEditor.special_forms
             {
                 case -1:    //spell id in category 1 (0)
                     //search for all spell references in category 0
-                    SFCategory ctg = manager.get_category(0);
-                    int id_looked_for = (int)((UInt16)manager.get_category(element_looked_for.category).get_element(element_looked_for.element).get_single_variant(0).value);
+                    SFCategory ctg = SFCategoryManager.get_category(0);
+                    int id_looked_for = (int)((UInt16)SFCategoryManager.get_category(element_looked_for.category).get_element(element_looked_for.element).get_single_variant(0).value);
                     for(int i = 0; i < ctg.get_element_count(); i++)
                     {
                         SFCategoryElement elem = ctg.get_element(i);
@@ -199,8 +198,8 @@ namespace SpellforceDataEditor.special_forms
 
                 case -2:    //unit id in category 1 (0)
                     //search for all spell references in category 0
-                    SFCategory ctg2 = manager.get_category(0);
-                    int id_looked_for2 = (int)((UInt16)manager.get_category(element_looked_for.category).get_element(element_looked_for.element).get_single_variant(0).value);
+                    SFCategory ctg2 = SFCategoryManager.get_category(0);
+                    int id_looked_for2 = (int)((UInt16)SFCategoryManager.get_category(element_looked_for.category).get_element(element_looked_for.element).get_single_variant(0).value);
                     for (int i = 0; i < ctg2.get_element_count(); i++)
                     {
                         SFCategoryElement elem = ctg2.get_element(i);
@@ -233,9 +232,9 @@ namespace SpellforceDataEditor.special_forms
                     break;
 
                 default:    //literally everything else
-                    results_intermediate = SFSearchModule.Search(manager.get_category(column_looked_at.category), 
+                    results_intermediate = SFSearchModule.Search(SFCategoryManager.get_category(column_looked_at.category), 
                                                                  preload_indices, 
-                                                                 manager.get_category(element_looked_for.category).get_element_variant(element_looked_for.element, 0).value.ToString(), 
+                                                                 SFCategoryManager.get_category(element_looked_for.category).get_element_variant(element_looked_for.element, 0).value.ToString(), 
                                                                  SearchType.TYPE_NUMBER, 
                                                                  column_looked_at.column, 
                                                                  null);

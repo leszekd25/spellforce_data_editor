@@ -35,7 +35,7 @@ namespace SpellforceDataEditor.SF3D
                     direction.Y = (float)Math.Atan2(lookat.Y - Position.Y, new Vector3(lookat.X - Position.X, -(lookat.Z - Position.Z), 0).Length);
                     direction.Y = (direction.Y > 1.5 ? 1.5f : (direction.Y < -1.5 ? -1.5f : direction.Y));
                 }
-                System.Diagnostics.Debug.WriteLine(direction.ToString());
+                //System.Diagnostics.Debug.WriteLine(direction.ToString());
                 modified = true;
             }
         }

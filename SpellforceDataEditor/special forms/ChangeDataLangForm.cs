@@ -19,20 +19,12 @@ namespace SpellforceDataEditor.special_forms
 {
     public partial class ChangeDataLangForm : Form
     {
-        SFCategoryManager manager = null;
-
         public ChangeDataLangForm()
         {
             InitializeComponent();
             LabelDescription.Text = "Choose a line on the right which is\r\nin language you want in Spellforce\r\nPress OK to change data language";
 
-        }
-
-        //lists languages to allow the user to choose language
-        public void connect_to_data(SFCategoryManager man)
-        {
-            manager = man;
-            SFCategoryElement text7055 = manager.get_category(14).find_binary_element<UInt16>(0, 7055).get_copy();
+            SFCategoryElement text7055 = SFCategoryManager.get_category(14).find_binary_element<UInt16>(0, 7055).get_copy();
             int elem_num = text7055.get_size() / 566;    //566 = sub-element's size
             for (int i = 0; i < elem_num; i++)
             {
@@ -55,7 +47,7 @@ namespace SpellforceDataEditor.special_forms
             int change_to = -1;
             if (ListSample.SelectedIndex != -1)
             {
-                SFCategoryElement text7055 = manager.get_category(14).find_binary_element<UInt16>(0, 7055).get_copy();
+                SFCategoryElement text7055 = SFCategoryManager.get_category(14).find_binary_element<UInt16>(0, 7055).get_copy();
                 change_to = (Byte)(text7055.get_single_variant(ListSample.SelectedIndex * 5 + 1).value);
             }
             change_data(1,change_to);
@@ -72,13 +64,13 @@ namespace SpellforceDataEditor.special_forms
             Byte Bfrom = (Byte)from;
             Byte Bto = (Byte)to;
 
-            int elem_count = manager.get_category(14).get_element_count();
+            int elem_count = SFCategoryManager.get_category(14).get_element_count();
             for(int i = 0; i < elem_count; i++)
             {
                 bool fromExists = false;
                 bool toExists = false;
 
-                SFCategoryElement elem = manager.get_category(14).get_element(i);
+                SFCategoryElement elem = SFCategoryManager.get_category(14).get_element(i);
                 int text_count = elem.get_size() / 566;
 
                 for (int j = 0; j < text_count; j++)

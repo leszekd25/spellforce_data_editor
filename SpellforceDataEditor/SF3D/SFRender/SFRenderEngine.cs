@@ -25,6 +25,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         public SFRenderEngine(SFResources.SFResourceManager res)
         {
+            scene_manager.resources = res;
             resources = res;
         }
 

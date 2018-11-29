@@ -24,7 +24,7 @@ namespace SpellforceDataEditor.category_forms
         {
             UInt16 spell_id = (UInt16)(category.get_element_variant(current_element, i * 3 + 2)).value;
 
-            string txt = category.get_manager().get_effect_name(spell_id, true);
+            string txt = SFCategoryManager.get_effect_name(spell_id, true);
             ListSpells.Items[i] = txt;
         }
 
@@ -60,7 +60,7 @@ namespace SpellforceDataEditor.category_forms
                 Byte spell_order = (Byte)(elem.get_single_variant(i * 3 + 1)).value;
                 UInt16 spell_id = (UInt16)(elem.get_single_variant(i * 3 + 2)).value;
 
-                string txt = category.get_manager().get_effect_name(spell_id, true);
+                string txt = SFCategoryManager.get_effect_name(spell_id, true);
 
                 ListSpells.Items.Add(txt);
             }

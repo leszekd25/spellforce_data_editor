@@ -160,7 +160,6 @@ namespace SpellforceDataEditor.SFUnPak
                 Byte[] data = br.ReadBytes((int)br.BaseStream.Length);
                 ms = new MemoryStream(data);
                 br.Close();
-                fs.Close();
                 return ms;
             }
             catch(Exception e)

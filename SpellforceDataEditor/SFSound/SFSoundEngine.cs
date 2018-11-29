@@ -10,7 +10,7 @@ using NAudio;
 
 namespace SpellforceDataEditor.SFSound
 {
-    public class SFSoundEngine
+    public class SFSoundEngine: IDisposable
     {
         private MemoryStream sound_data = null;
         private WaveOutEvent player = null;
@@ -121,6 +121,11 @@ namespace SpellforceDataEditor.SFSound
             GC.Collect(2, GCCollectionMode.Forced, false);
 
             return 0;
+        }
+
+        public void Dispose()
+        {
+            UnloadSound();
         }
     }
 }

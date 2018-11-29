@@ -86,13 +86,6 @@ namespace SpellforceDataEditor.special_forms
             glControl1.Invalidate();
         }
 
-        //done by main form
-        public void SetGameData(SFCategoryManager man)
-        {
-            render_engine.scene_manager.resources = resources;
-            render_engine.scene_manager.Init(man);
-        }
-
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             glControl1.MakeCurrent();

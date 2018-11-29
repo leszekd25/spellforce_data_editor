@@ -121,7 +121,7 @@ namespace SpellforceDataEditor.category_forms
         public void step_into(int cat_i, int elem_key)
         {
             int real_elem_id = -1;
-            SFCategory cat = category.get_manager().get_category(cat_i);
+            SFCategory cat = SFCategoryManager.get_category(cat_i);
             char format = cat.get_element_format()[0];
             if (format == 'B')
                 real_elem_id = cat.find_element_index<Byte>(0, (Byte)elem_key);

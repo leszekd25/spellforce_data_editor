@@ -51,6 +51,9 @@
     <ApplicationIcon>382940043477778432.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Gma.System.MouseKeyHook, Version=5.6.130.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MouseKeyHook.5.6.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
+    </Reference>
     <Reference Include="NAudio, Version=1.8.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NAudio.1.8.5\lib\net35\NAudio.dll</HintPath>
     </Reference>
@@ -388,6 +391,129 @@
     <Compile Include="SF3D\SFModelSkin.cs" />
     <Compile Include="SF3D\SFRender\SFRenderEngine.cs" />
     <Compile Include="SF3D\SFRender\SFShader.cs" />
+    <Compile Include="SFLua\LuaAction.cs" />
+    <Compile Include="SFLua\LuaCinematic.cs" />
+    <Compile Include="SFLua\LuaCondition.cs" />
+    <Compile Include="SFLua\LuaDialog.cs" />
+    <Compile Include="SFLua\LuaEvent.cs" />
+    <Compile Include="SFLua\LuaRtsSpawnSystem.cs" />
+    <Compile Include="SFLua\LuaUtility.cs" />
+    <Compile Include="SFLua\LuaValue.cs" />
+    <Compile Include="SFLua\LuaEnumDefines.cs" />
+    <Compile Include="SFLua\LuaParameter.cs" />
+    <Compile Include="SFLua\LuaVariable.cs" />
+    <Compile Include="SFLua\lua_controls\LuaValueBoolControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueBoolControl.Designer.cs">
+      <DependentUpon>LuaValueBoolControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueColorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueColorControl.Designer.cs">
+      <DependentUpon>LuaValueColorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueComplexControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueComplexControl.Designer.cs">
+      <DependentUpon>LuaValueComplexControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueControl.Designer.cs">
+      <DependentUpon>LuaValueControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueCustomControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueCustomControl.Designer.cs">
+      <DependentUpon>LuaValueCustomControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueGDControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueGDControl.Designer.cs">
+      <DependentUpon>LuaValueGDControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueParameterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueParameterControl.Designer.cs">
+      <DependentUpon>LuaValueParameterControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\_LuaValueHiddenParameterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\_LuaValueHiddenParameterControl.Designer.cs">
+      <DependentUpon>_LuaValueHiddenParameterControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_dialog\LuaDialogAnswerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_dialog\LuaDialogAnswerControl.Designer.cs">
+      <DependentUpon>LuaDialogAnswerControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_dialog\LuaDialogManager.cs" />
+    <Compile Include="SFLua\lua_dialog\LuaDialogControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_dialog\LuaDialogControl.Designer.cs">
+      <DependentUpon>LuaDialogControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_dialog\LuaDialogPhaseControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_dialog\LuaDialogPhaseControl.Designer.cs">
+      <DependentUpon>LuaDialogPhaseControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_dialog\LuaDialogSayControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_dialog\LuaDialogSayControl.Designer.cs">
+      <DependentUpon>LuaDialogSayControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="special forms\utility_forms\SelectLuaEnumForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\utility_forms\SelectLuaEnumForm.Designer.cs">
+      <DependentUpon>SelectLuaEnumForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="special forms\utility_forms\ShowCodeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\utility_forms\ShowCodeForm.Designer.cs">
+      <DependentUpon>ShowCodeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueDoubleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueDoubleControl.Designer.cs">
+      <DependentUpon>LuaValueDoubleControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueEnumControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueEnumControl.Designer.cs">
+      <DependentUpon>LuaValueEnumControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueIntControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueIntControl.Designer.cs">
+      <DependentUpon>LuaValueIntControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueStringControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaValueStringControl.Designer.cs">
+      <DependentUpon>LuaValueStringControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_filesystem\ScriptGenerator.cs" />
+    <Compile Include="SFLua\lua_filesystem\ScriptProject.cs" />
+    <Compile Include="SFLua\lua_filesystem\ScriptPlatform.cs" />
     <Compile Include="SFResources\SFResource.cs" />
     <Compile Include="SFResources\SFResourceContainer.cs" />
     <Compile Include="SFResources\SFResourceManager.cs" />
@@ -420,11 +546,23 @@
     <Compile Include="special forms\ReferencesForm.Designer.cs">
       <DependentUpon>ReferencesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="special forms\ScriptBuilderForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\ScriptBuilderForm.Designer.cs">
+      <DependentUpon>ScriptBuilderForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="special forms\SFAssetManagerForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="special forms\SFAssetManagerForm.Designer.cs">
       <DependentUpon>SFAssetManagerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="special forms\utility_forms\GetStringForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\utility_forms\GetStringForm.Designer.cs">
+      <DependentUpon>GetStringForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SpelllforceCFFEditor.cs">
       <SubType>Form</SubType>
@@ -593,14 +731,71 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SFLua\lua_controls\LuaValueBoolControl.resx">
+      <DependentUpon>LuaValueBoolControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_controls\LuaValueColorControl.resx">
+      <DependentUpon>LuaValueColorControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_controls\LuaValueComplexControl.resx">
+      <DependentUpon>LuaValueComplexControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_controls\LuaValueControl.resx">
+      <DependentUpon>LuaValueControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_controls\LuaValueCustomControl.resx">
+      <DependentUpon>LuaValueCustomControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_controls\LuaValueGDControl.resx">
+      <DependentUpon>LuaValueGDControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_controls\LuaValueParameterControl.resx">
+      <DependentUpon>LuaValueParameterControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_dialog\LuaDialogAnswerControl.resx">
+      <DependentUpon>LuaDialogAnswerControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_dialog\LuaDialogControl.resx">
+      <DependentUpon>LuaDialogControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_dialog\LuaDialogPhaseControl.resx">
+      <DependentUpon>LuaDialogPhaseControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_dialog\LuaDialogSayControl.resx">
+      <DependentUpon>LuaDialogSayControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="special forms\utility_forms\SelectLuaEnumForm.resx">
+      <DependentUpon>SelectLuaEnumForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="special forms\utility_forms\ShowCodeForm.resx">
+      <DependentUpon>ShowCodeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_controls\LuaValueDoubleControl.resx">
+      <DependentUpon>LuaValueDoubleControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_controls\LuaValueEnumControl.resx">
+      <DependentUpon>LuaValueEnumControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_controls\LuaValueIntControl.resx">
+      <DependentUpon>LuaValueIntControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_controls\LuaValueStringControl.resx">
+      <DependentUpon>LuaValueStringControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="special forms\ChangeDataLangForm.resx">
       <DependentUpon>ChangeDataLangForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\ReferencesForm.resx">
       <DependentUpon>ReferencesForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="special forms\ScriptBuilderForm.resx">
+      <DependentUpon>ScriptBuilderForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="special forms\SFAssetManagerForm.resx">
       <DependentUpon>SFAssetManagerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="special forms\utility_forms\GetStringForm.resx">
+      <DependentUpon>GetStringForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SpelllforceCFFEditor.resx">
       <DependentUpon>SpelllforceCFFEditor.cs</DependentUpon>

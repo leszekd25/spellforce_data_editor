@@ -57,7 +57,6 @@ namespace SpellforceDataEditor.SFUnPak
                 kv.Value.WriteToFile(bw);
             }
             bw.Close();
-            fs.Close();
             return 0;
         }
 
@@ -83,7 +82,6 @@ namespace SpellforceDataEditor.SFUnPak
                 pak_map.Add(key, value);
             }
             br.Close();
-            fs.Close();
             return 0;
         }
 

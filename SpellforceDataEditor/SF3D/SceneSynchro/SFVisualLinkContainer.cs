@@ -23,7 +23,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public SFVisualLinkContainer()
         {
             //read data from .sdb files
-            System.Diagnostics.Debug.WriteLine("LOADING DATA");
+            //System.Diagnostics.Debug.WriteLine("LOADING DATA");
             LoadSDB("buildings.sdb", buildings);
             LoadSDB("items.sdb", items);
             LoadSDB("objects.sdb", objects);
@@ -33,7 +33,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         private int LoadSDB(string fname, List<SFVisualLink> list)
         {
-            System.Diagnostics.Debug.WriteLine("FILE " + fname);
+            //System.Diagnostics.Debug.WriteLine("FILE " + fname);
             list.Clear();
             FileStream fs;
             try
@@ -52,10 +52,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 if (vl.Read(sr.ReadLine()))
                     list.Add(vl);
             }
-            System.Diagnostics.Debug.WriteLine("COUNT " + list.Count.ToString());
+            //System.Diagnostics.Debug.WriteLine("COUNT " + list.Count.ToString());
 
             sr.Close();
-            fs.Close();
             return 0;
         }
 

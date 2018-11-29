@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace SpellforceDataEditor
 {
@@ -73,6 +75,15 @@ namespace SpellforceDataEditor
         {
             Single val = 0;
             if (Single.TryParse(s, out val))
+                return val;
+            else
+                return def;
+        }
+
+        static public Double TryParseDouble(string s, Double def = 0)
+        {
+            Double val = 0;
+            if (Double.TryParse(s, out val))
                 return val;
             else
                 return def;
@@ -162,6 +173,29 @@ namespace SpellforceDataEditor
                     current_end = current_center - 1;
             }
             return -1;
+        }
+
+        //returns whether an object derives from given class
+        static public bool DerivedFrom<T>(T obj, Type type)
+        {
+            Type derived = typeof(T);
+            while(derived != typeof(object))
+            {
+                if (derived == type)
+                    return true;
+                derived = derived.BaseType;
+            }
+            return false;
+        }
+
+        static public string GetString(string  caption, string label)
+        {
+            special_forms.utility_forms.GetStringForm form = new special_forms.utility_forms.GetStringForm();
+            form.SetDescription(caption, label);
+            form.ShowDialog();
+            if (form.Result == DialogResult.Cancel)
+                return null;
+            return form.ResultString;
         }
     }
 }

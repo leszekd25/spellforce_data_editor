@@ -27,7 +27,7 @@ namespace SpellforceDataEditor.category_forms
             Byte skill_minor = (Byte)(category.get_element_variant(current_element, i * 4 + 2)).value;
             Byte skill_level = (Byte)(category.get_element_variant(current_element, i * 4 + 3)).value;
 
-            string txt = category.get_manager().get_skill_name(skill_major, skill_minor, skill_level);
+            string txt = SFCategoryManager.get_skill_name(skill_major, skill_minor, skill_level);
             ListSkills.Items[i] = txt;
         }
 
@@ -92,7 +92,7 @@ namespace SpellforceDataEditor.category_forms
                 Byte skill_minor = (Byte)(elem.get_single_variant(i * 4 + 2)).value;
                 Byte skill_level = (Byte)(elem.get_single_variant(i * 4 + 3)).value;
 
-                string txt = category.get_manager().get_skill_name(skill_major, skill_minor, skill_level);
+                string txt = SFCategoryManager.get_skill_name(skill_major, skill_minor, skill_level);
 
                 ListSkills.Items.Add(txt);
             }

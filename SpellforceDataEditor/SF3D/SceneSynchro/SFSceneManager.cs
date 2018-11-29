@@ -29,12 +29,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public float current_time { get; private set; } = 0f;
 
         SFVisualLinkContainer mesh_data = new SFVisualLinkContainer();
-        public SFCategoryManager game_data { get; private set; } = null;
         public SFResources.SFResourceManager resources { get; set; } = null;
 
-        public void Init(SFCategoryManager gd)
+        public void Init()
         {
-            game_data = gd;
             delta_timer.Start();
         }
 
@@ -80,16 +78,16 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         private void MakeUnitScene(int unit_id, SFSceneDescription sd)
         {
             //find unit data element (cat 18)
-            SFCategoryElement unit_data = game_data.get_category(17).find_binary_element<UInt16>(0, (UInt16)unit_id);
+            SFCategoryElement unit_data = SFCategoryManager.get_category(17).find_binary_element<UInt16>(0, (UInt16)unit_id);
             if (unit_data == null)
                 return;
             //find unit eq element (cat 19)
-            SFCategoryElement unit_eq = game_data.get_category(18).find_binary_element<UInt16>(0, (UInt16)unit_id);
+            SFCategoryElement unit_eq = SFCategoryManager.get_category(18).find_binary_element<UInt16>(0, (UInt16)unit_id);
             if (unit_eq == null)
                 return;
 
             //get unit gender
-            SFCategoryElement unit_stats = game_data.get_category(3).find_binary_element<UInt16>
+            SFCategoryElement unit_stats = SFCategoryManager.get_category(3).find_binary_element<UInt16>
                                                                      (0, (UInt16)unit_data.get_single_variant(2).value);
             bool is_female = false;
             if (unit_stats != null)
@@ -180,7 +178,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 {
                     bool is_shield = false;
                     //check if it's a shield (type 9)
-                    SFCategoryElement item_data = game_data.get_category(6).find_binary_element<UInt16>(0, lhand_id);
+                    SFCategoryElement item_data = SFCategoryManager.get_category(6).find_binary_element<UInt16>(0, lhand_id);
                     if (item_data != null)
                     {
                         int item_type = (Byte)item_data.get_single_variant(2).value;
@@ -209,7 +207,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 12:
                 case 13:
                     //get item id
-                    SFCategoryElement item = game_data.get_category(category).get_element(element);
+                    SFCategoryElement item = SFCategoryManager.get_category(category).get_element(element);
                     if (item == null)
                         break;
                     int item_id = (UInt16)item.get_single_variant(0).value;
@@ -227,7 +225,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 24:
                 case 25:
                     //get item id
-                    SFCategoryElement building = game_data.get_category(category).get_element(element);
+                    SFCategoryElement building = SFCategoryManager.get_category(category).get_element(element);
                     if (building == null)
                         break;
                     int building_id = (UInt16)building.get_single_variant(0).value;
@@ -246,7 +244,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 34:
                 case 35:
                     //get item id
-                    SFCategoryElement obj = game_data.get_category(category).get_element(element);
+                    SFCategoryElement obj = SFCategoryManager.get_category(category).get_element(element);
                     if (obj == null)
                         break;
                     int obj_id = (UInt16)obj.get_single_variant(0).value;
@@ -268,7 +266,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 21:
                 case 22:
                     //get unit id
-                    SFCategoryElement un = game_data.get_category(category).get_element(element);
+                    SFCategoryElement un = SFCategoryManager.get_category(category).get_element(element);
                     if (un == null)
                         break;
                     int un_id = (UInt16)un.get_single_variant(0).value;

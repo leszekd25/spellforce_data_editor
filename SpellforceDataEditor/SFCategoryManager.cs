@@ -653,34 +653,36 @@ namespace SpellforceDataEditor
 
     //this class is responsible for category management
     //it provides with general functions to perform on categories as a database
-    public class SFCategoryManager
+    public static class SFCategoryManager
     {
-        private SFCategory[] categories;      //array of categories
-        private SFCategoryRuneHeroes categorySpecial_RuneHeroes;    //intermediary needed to find names of rune heroes
-        private int categoryNumber;           //amount of categories (basically a constant)
+        private static SFCategory[] categories;      //array of categories
+        private static SFCategoryRuneHeroes categorySpecial_RuneHeroes;    //intermediary needed to find names of rune heroes
+        private static int categoryNumber;           //amount of categories (basically a constant)
 
-        private Byte[] mainHeader;            //gamedata.cff has a main header which is held here
-        private string gamedata_md5 = "";     //currently loaded cff's MD5 hash (as string)
+        private static Byte[] mainHeader;            //gamedata.cff has a main header which is held here
+        private static string gamedata_md5 = "";     //currently loaded cff's MD5 hash (as string)
+
+        public static bool ready { get; private set; } = false;
 
         //constructor, it creates categories
-        public SFCategoryManager()
+        public static void init()
         {
             categoryNumber = 49;
             categories = new SFCategory[categoryNumber];
             for (int i = 1; i <= categoryNumber; i++)
             {
                 categories[i - 1] = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCategory" + i.ToString()) as SFCategory;
-                categories[i - 1].set_manager(this);
+                //categories[i - 1].set_manager(this);
             }
 
             categorySpecial_RuneHeroes = new SFCategoryRuneHeroes();
-            categorySpecial_RuneHeroes.set_manager(this);
+            //categorySpecial_RuneHeroes.set_manager(this);
 
             mainHeader = new Byte[20];
         }
 
         //returns category, given its index
-        public SFCategory get_category(int index)
+        public static SFCategory get_category(int index)
         {
             if((index > -1)&&(index < categoryNumber))
                 return categories[index];
@@ -688,13 +690,13 @@ namespace SpellforceDataEditor
         }
 
         //returns string representation of file's MD5
-        public string get_data_md5()
+        public static string get_data_md5()
         {
             return gamedata_md5;
         }
 
         //loads gamedata.cff file
-        public int load_cff(string filename, ToolStripProgressBar bar)
+        public static int load_cff(string filename, ToolStripProgressBar bar)
         {
             FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
 
@@ -729,8 +731,11 @@ namespace SpellforceDataEditor
                 bar.Value = (i * bar.Maximum) / categoryNumber;
             }
 
-            if(result == 0)
-                categorySpecial_RuneHeroes.generate(this);
+            if (result == 0)
+            {
+                categorySpecial_RuneHeroes.generate();
+                ready = true;
+            }
 
             //br.Close();
             fs.Close();
@@ -739,7 +744,7 @@ namespace SpellforceDataEditor
         }
 
         //saves gamedata.cff file
-        public void save_cff(string filename)
+        public static void save_cff(string filename)
         {
             FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write);
             fs.SetLength(0);
@@ -766,7 +771,7 @@ namespace SpellforceDataEditor
         }
 
         //returns category count
-        public int get_category_number()
+        public static int get_category_number()
         {
             return categoryNumber;
         }
@@ -775,7 +780,7 @@ namespace SpellforceDataEditor
         //searches for a text with a given ID and in a given language
         //returns a sub-element in a given language which contains text data looked for (or null if it doesnt exist)
         //this is quite fast (O(log n))
-        public SFCategoryElement find_element_text(int t_index, int t_lang)
+        public static SFCategoryElement find_element_text(int t_index, int t_lang)
         {
             int index = categories[14].find_binary_element_index<UInt16>(0, (UInt16)t_index);
             if (index == -1)
@@ -816,7 +821,7 @@ namespace SpellforceDataEditor
 
         //returns a name of a given effect
         //optionally with effect level
-        public string get_effect_name(UInt16 effect_id, bool effect_level = false)
+        public static string get_effect_name(UInt16 effect_id, bool effect_level = false)
         {
             SFCategoryElement effect_elem = get_category(0).find_binary_element<UInt16>(0, effect_id);
             if (effect_elem == null)
@@ -840,7 +845,7 @@ namespace SpellforceDataEditor
         }
 
         //returns a name of a given unit
-        public string get_unit_name(UInt16 unit_id)
+        public static string get_unit_name(UInt16 unit_id)
         {
             SFCategoryElement unit_elem = get_category(17).find_binary_element<UInt16>(0, unit_id);
             if (unit_elem == null)
@@ -857,7 +862,7 @@ namespace SpellforceDataEditor
         }
 
         //used for determining skill name
-        private string get_resource_gather(Byte ind)
+        private static string get_resource_gather(Byte ind)
         {
             switch (ind)
             {
@@ -885,7 +890,7 @@ namespace SpellforceDataEditor
         }
 
         //returns a name of a given skill
-        public string get_skill_name(Byte skill_major, Byte skill_minor, Byte skill_lvl)
+        public static string get_skill_name(Byte skill_major, Byte skill_minor, Byte skill_lvl)
         {
             string txt_major = "";
             string txt_minor = "";
@@ -922,7 +927,7 @@ namespace SpellforceDataEditor
         }
 
         //returns a name of a given race
-        public string get_race_name(Byte race_id)
+        public static string get_race_name(Byte race_id)
         {
             SFCategoryElement race_elem = get_category(15).find_binary_element<Byte>(0, race_id);
             if (race_elem == null)
@@ -939,7 +944,7 @@ namespace SpellforceDataEditor
         }
 
         //returns a name of a given item
-        public string get_item_name(UInt16 item_id)
+        public static string get_item_name(UInt16 item_id)
         {
             SFCategoryElement item_elem = get_category(6).find_binary_element<UInt16>(0, item_id);
             if (item_elem == null)
@@ -956,7 +961,7 @@ namespace SpellforceDataEditor
         }
 
         //returns a name of a given building
-        public string get_building_name(UInt16 building_id)
+        public static string get_building_name(UInt16 building_id)
         {
             SFCategoryElement building_elem = get_category(23).find_binary_element<UInt16>(0, building_id);
             if (building_elem == null)
@@ -973,7 +978,7 @@ namespace SpellforceDataEditor
         }
 
         //returns a name of a given merchant
-        public string get_merchant_name(UInt16 merchant_id)
+        public static string get_merchant_name(UInt16 merchant_id)
         {
             SFCategoryElement merchant_elem = get_category(28).find_binary_element<UInt16>(0, merchant_id);
             if (merchant_elem == null)
@@ -983,7 +988,7 @@ namespace SpellforceDataEditor
         }
 
         //returns a name of a given object
-        public string get_object_name(UInt16 object_id)
+        public static string get_object_name(UInt16 object_id)
         {
             SFCategoryElement object_elem = get_category(33).find_binary_element<UInt16>(0, object_id);
             if (object_elem == null)
@@ -1000,7 +1005,7 @@ namespace SpellforceDataEditor
         }
 
         //returns a description given its id
-        public string get_description_name(UInt16 desc_id)
+        public static string get_description_name(UInt16 desc_id)
         {
             SFCategoryElement desc_elem = get_category(40).find_binary_element<UInt16>(0, desc_id);
             if (desc_elem == null)
@@ -1018,7 +1023,7 @@ namespace SpellforceDataEditor
 
         //returns a rune hero/worker's name given its stats ID
         //this connection is not found in gamedata.cff and instead has to be pre-processed
-        public string get_runehero_name(UInt16 stats_id)
+        public static string get_runehero_name(UInt16 stats_id)
         {
             SFCategoryElement rune_elem = categorySpecial_RuneHeroes.find_binary_element<UInt16>(0, stats_id);
             if (rune_elem == null)
@@ -1032,8 +1037,14 @@ namespace SpellforceDataEditor
             return Utility.CleanString(text_elem.get_single_variant(4));
         }
 
+        //returns data value given its address
+        public static object get_variant(int cat, int elem, int ind)
+        {
+            return get_category(cat).get_element_variant(elem, ind).value;
+        }
+
         //frees all data, only empty categories remain
-        public void unload_all()
+        public static void unload_all()
         {
             foreach (SFCategory cat in categories)
                 cat.unload();
@@ -1042,6 +1053,8 @@ namespace SpellforceDataEditor
             mainHeader = new Byte[20];
             for (int i = 0; i < 20; i++)
                 mainHeader[i] = 0;
+
+            ready = false;
         }
     }
 }

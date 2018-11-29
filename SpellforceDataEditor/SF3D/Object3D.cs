@@ -36,7 +36,6 @@ namespace SpellforceDataEditor.SF3D
 
         public Object3D()
         {
-            update_modelMatrix();
             parent = null;
             visible = true;
         }

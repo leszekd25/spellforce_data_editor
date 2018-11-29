@@ -41,28 +41,26 @@ namespace SpellforceDataEditor
     //it contains functions to deal with saving data manipulation order: replacement, insertion and removal of elements
     public class SFDiffTools
     {
-        protected SFCategoryManager manager;
         protected List<SFDiffElement>[] diff_data;    //list of differences between original and modified in each category
         protected int[] diff_current_index;           //list of the highest index in diff list that is in effect in data; -1 is minimum value, diff_data[].Count-1 is max value
         string presumed_md5 = "";
 
-        //connects diff tool to a manager it operates on
-        public void connect_to(SFCategoryManager man)
+        //connects diff tool to a SFCategoryManager it operates on
+        public void init()
         {
-            manager = man;
-            diff_data = new List<SFDiffElement>[man.get_category_number()];
-            diff_current_index = new int[man.get_category_number()];
-            for (int i = 0; i < man.get_category_number(); i++)
+            diff_data = new List<SFDiffElement>[SFCategoryManager.get_category_number()];
+            diff_current_index = new int[SFCategoryManager.get_category_number()];
+            for (int i = 0; i < SFCategoryManager.get_category_number(); i++)
             {
                 diff_current_index[i] = -1;
                 diff_data[i] = new List<SFDiffElement>();
             }
         }
 
-        //clear all diff datal usually called in tandem with manager.unload_all()
+        //clear all diff datal usually called in tandem with SFCategoryManager.unload_all()
         public void clear_data()
         {
-            for (int i = 0; i < manager.get_category_number(); i++)
+            for (int i = 0; i < SFCategoryManager.get_category_number(); i++)
             {
                 diff_data[i].Clear();
                 diff_current_index[i] = -1;
@@ -76,7 +74,7 @@ namespace SpellforceDataEditor
             switch (elem.difference_type)
             {
                 case SFDiffElement.DIFF_TYPE.MD5:
-                    bw.Write(manager.get_data_md5().ToCharArray());
+                    bw.Write(SFCategoryManager.get_data_md5().ToCharArray());
                     break;
                 case SFDiffElement.DIFF_TYPE.REPLACE:
                     bw.Write(elem.difference_index);
@@ -146,11 +144,11 @@ namespace SpellforceDataEditor
             BinaryWriter bw = new BinaryWriter(fs, Encoding.Default);
 
             bw.Write((Byte)SFDiffElement.DIFF_TYPE.MD5);
-            bw.Write(manager.get_data_md5().ToCharArray());
+            bw.Write(SFCategoryManager.get_data_md5().ToCharArray());
 
-            for (int i = 0; i < manager.get_category_number(); i++)
+            for (int i = 0; i < SFCategoryManager.get_category_number(); i++)
             {
-                SFCategory cat = manager.get_category(i);
+                SFCategory cat = SFCategoryManager.get_category(i);
                 write_diff_element(bw, null, new SFDiffElement(SFDiffElement.DIFF_TYPE.CATEGORY, i));
                 for (int j = 0; j < diff_data[i].Count; j++)
                 {
@@ -191,7 +189,7 @@ namespace SpellforceDataEditor
 
             while (br.PeekChar() != -1)
             {
-                elem = read_diff_element(br, manager.get_category(current_category));
+                elem = read_diff_element(br, SFCategoryManager.get_category(current_category));
                 if (elem.difference_type == SFDiffElement.DIFF_TYPE.CATEGORY)
                     current_category = elem.difference_index;
                 else if (elem.difference_type == SFDiffElement.DIFF_TYPE.LASTINDEX)
@@ -200,7 +198,7 @@ namespace SpellforceDataEditor
                     break;
                 else if (elem.difference_type == SFDiffElement.DIFF_TYPE.MD5)   //should be right at the beginning of the file
                 {
-                    if (presumed_md5 != manager.get_data_md5())
+                    if (presumed_md5 != SFCategoryManager.get_data_md5())
                     {
                         clear_data();
                         success = false;
@@ -256,9 +254,9 @@ namespace SpellforceDataEditor
         //BROKEN! do not use for the time being
         public void merge_changes()
         {
-            for(int i = 0; i < manager.get_category_number(); i++)
+            for(int i = 0; i < SFCategoryManager.get_category_number(); i++)
             {
-                SFCategory cat = manager.get_category(i);
+                SFCategory cat = SFCategoryManager.get_category(i);
                 for(int j = 0; j <= diff_current_index[i]; j++)
                 {
                     SFDiffElement elem = diff_data[i][j];
@@ -298,7 +296,7 @@ namespace SpellforceDataEditor
             if (current_change < 0)
                 return;
 
-            SFCategory cat = manager.get_category(cat_index);
+            SFCategory cat = SFCategoryManager.get_category(cat_index);
             revert_change(cat, diff_data[cat_index][current_change]);
             diff_current_index[cat_index]--;
         }
@@ -311,7 +309,7 @@ namespace SpellforceDataEditor
             if (current_change >= diff_data[cat_index].Count-1)
                 return;
 
-            SFCategory cat = manager.get_category(cat_index);
+            SFCategory cat = SFCategoryManager.get_category(cat_index);
             commit_change(cat, diff_data[cat_index][current_change+1]);
             diff_current_index[cat_index]++;
         }

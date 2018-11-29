@@ -54,14 +54,14 @@ namespace SpellforceDataEditor.category_forms
                 MerchantGrid.Rows[i].Cells[0].Value = item_id;
                 MerchantGrid.Rows[i].Cells[1].Value = item_count;
 
-                SFCategoryElement item_elem = category.get_manager().get_category(6).find_binary_element<UInt16>(0, item_id);
+                SFCategoryElement item_elem = SFCategoryManager.get_category(6).find_binary_element<UInt16>(0, item_id);
                 if (item_elem == null)
                 {
                     MerchantGrid.Rows[i].Cells[2].Value = "<no name>";
                 }
                 else
                 {
-                    MerchantGrid.Rows[i].Cells[2].Value = category.get_manager().get_item_name(item_id);
+                    MerchantGrid.Rows[i].Cells[2].Value = SFCategoryManager.get_item_name(item_id);
                 }
             }
 
@@ -92,7 +92,7 @@ namespace SpellforceDataEditor.category_forms
             if(cell.ColumnIndex == 0)
             {
                 UInt16 item_id = Utility.TryParseUInt16(cell.Value.ToString());
-                SFCategoryElement item_elem = category.get_manager().get_category(6).find_binary_element(0, item_id);
+                SFCategoryElement item_elem = SFCategoryManager.get_category(6).find_binary_element(0, item_id);
                 if (item_elem == null)
                 {
                     cell.Value = variant_repr(i * 3 + 1);
@@ -100,7 +100,7 @@ namespace SpellforceDataEditor.category_forms
                 else
                 {
                     set_element_variant(current_element, i * 3 + 1, item_id);
-                    MerchantGrid.Rows[i].Cells[2].Value = category.get_manager().get_item_name(item_id);
+                    MerchantGrid.Rows[i].Cells[2].Value = SFCategoryManager.get_item_name(item_id);
                 }
             }
             else if(cell.ColumnIndex == 1)

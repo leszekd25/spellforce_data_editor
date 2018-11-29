@@ -222,7 +222,7 @@ namespace SpellforceDataEditor.category_forms
                 {
                     UInt16 id = Utility.TryParseUInt16(item_id.Text);
                     elem.set_single_variant(i * 3 + 2, id);
-                    text_to_name[item_id].Text = category.get_manager().get_item_name(id);
+                    text_to_name[item_id].Text = SFCategoryManager.get_item_name(id);
                     return;
                 }
             }
@@ -306,7 +306,7 @@ namespace SpellforceDataEditor.category_forms
                 CheckBox ch = flag_to_check[(int)item_slot];
                 check_to_text[ch].Enabled = true;
                 check_to_text[ch].Text = item_id.ToString();
-                text_to_name[check_to_text[ch]].Text = category.get_manager().get_item_name(item_id);
+                text_to_name[check_to_text[ch]].Text = SFCategoryManager.get_item_name(item_id);
                 ch.Checked = true;
                 item_flags |= (uint)(0x1 << item_slot);
             }
