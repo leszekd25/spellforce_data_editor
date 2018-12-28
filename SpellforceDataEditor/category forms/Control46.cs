@@ -15,8 +15,9 @@ namespace SpellforceDataEditor.category_forms
         public Control46()
         {
             InitializeComponent();
-            column_dict.Add("Unknown ID", new int[1] { 0 });
-            column_dict.Add("Unknown data", new int[2] { 1, 2 });
+            column_dict.Add("Terrain ID", new int[1] { 0 });
+            column_dict.Add("Unknown", new int[1] { 1 });
+            column_dict.Add("Rendering flags", new int[1] { 2 });
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
@@ -26,15 +27,46 @@ namespace SpellforceDataEditor.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(textBox1.Text, 2);
-            set_element_variant(current_element, 1, data_array[0]);
-            set_element_variant(current_element, 2, data_array[1]);
+            set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox1.Text));
+        }
+
+        private void SetRenderFlag(int f, bool s)
+        {
+            int flags = (Byte)category.get_element_variant(current_element, 2).value;
+            if (s)
+                flags |= (1 << f);
+            else
+            {
+                if ((flags & (1 << f)) != 0)
+                    flags -= (1 << f);
+            }
+            set_element_variant(current_element, 2, (Byte)flags);
+        }
+
+        private void flagDepthWrite_CheckedChanged(object sender, EventArgs e)
+        {
+            SetRenderFlag(0, flagDepthWrite.Checked);
+        }
+
+        private void flagDepthReadOn_CheckedChanged(object sender, EventArgs e)
+        {
+            SetRenderFlag(1, flagDepthReadOn.Checked);
+        }
+
+        private void flagCulling_CheckedChanged(object sender, EventArgs e)
+        {
+            SetRenderFlag(2, flagCulling.Checked);
         }
 
         public override void show_element()
         {
             tb_effID.Text = variant_repr(0);
-            textBox1.Text = bytearray_repr(1, 2);
+            textBox1.Text = variant_repr(1);
+            int flags = (Byte)category.get_element_variant(current_element, 2).value;
+            flagDepthWrite.Checked = ((flags & 1) != 0);
+            flagDepthReadOn.Checked = ((flags & 2) != 0);
+            flagCulling.Checked = ((flags & 4) != 0);
         }
+
     }
 }
