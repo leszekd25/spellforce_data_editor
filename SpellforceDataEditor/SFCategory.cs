@@ -1739,7 +1739,7 @@ namespace SpellforceDataEditor
         public SFCategory46() : base()
         {
             initialize("HBB");
-            category_name = "46. Unknown (3)";
+            category_name = "46. Terrain material data";
             category_id = 2032;
         }
     }
