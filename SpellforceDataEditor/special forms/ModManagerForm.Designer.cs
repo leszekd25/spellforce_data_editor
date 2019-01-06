@@ -45,11 +45,12 @@
             this.StatusGameInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.PanelParameters = new System.Windows.Forms.Panel();
             this.PanelInfo = new System.Windows.Forms.Panel();
+            this.LabelModInfo = new System.Windows.Forms.Label();
             this.ButtonApplyMods = new System.Windows.Forms.Button();
             this.SelectOrigCFF = new System.Windows.Forms.OpenFileDialog();
             this.SelectGameDirectory = new System.Windows.Forms.FolderBrowserDialog();
             this.SelectOrigEXE = new System.Windows.Forms.OpenFileDialog();
-            this.LabelModInfo = new System.Windows.Forms.Label();
+            this.reloadModListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelInfo.SuspendLayout();
@@ -126,6 +127,7 @@
             // 
             this.modsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.restoreToOriginalToolStripMenuItem,
+            this.reloadModListToolStripMenuItem,
             this.makeYourOwnModToolStripMenuItem});
             this.modsToolStripMenuItem.Name = "modsToolStripMenuItem";
             this.modsToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
@@ -190,6 +192,14 @@
             this.PanelInfo.Size = new System.Drawing.Size(189, 216);
             this.PanelInfo.TabIndex = 5;
             // 
+            // LabelModInfo
+            // 
+            this.LabelModInfo.AutoSize = true;
+            this.LabelModInfo.Location = new System.Drawing.Point(3, 11);
+            this.LabelModInfo.Name = "LabelModInfo";
+            this.LabelModInfo.Size = new System.Drawing.Size(0, 13);
+            this.LabelModInfo.TabIndex = 0;
+            // 
             // ButtonApplyMods
             // 
             this.ButtonApplyMods.Location = new System.Drawing.Point(409, 425);
@@ -211,13 +221,12 @@
             this.SelectOrigEXE.FileName = "SpellForce.exe";
             this.SelectOrigEXE.Filter = "Executable files|*.exe";
             // 
-            // LabelModInfo
+            // reloadModListToolStripMenuItem
             // 
-            this.LabelModInfo.AutoSize = true;
-            this.LabelModInfo.Location = new System.Drawing.Point(3, 11);
-            this.LabelModInfo.Name = "LabelModInfo";
-            this.LabelModInfo.Size = new System.Drawing.Size(0, 13);
-            this.LabelModInfo.TabIndex = 0;
+            this.reloadModListToolStripMenuItem.Name = "reloadModListToolStripMenuItem";
+            this.reloadModListToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.reloadModListToolStripMenuItem.Text = "Reload mod list";
+            this.reloadModListToolStripMenuItem.Click += new System.EventHandler(this.reloadModListToolStripMenuItem_Click);
             // 
             // ModManagerForm
             // 
@@ -268,5 +277,6 @@
         private System.Windows.Forms.FolderBrowserDialog SelectGameDirectory;
         private System.Windows.Forms.OpenFileDialog SelectOrigEXE;
         private System.Windows.Forms.Label LabelModInfo;
+        private System.Windows.Forms.ToolStripMenuItem reloadModListToolStripMenuItem;
     }
 }

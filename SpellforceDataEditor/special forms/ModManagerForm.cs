@@ -278,6 +278,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void specifyGameDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            bool prev_ready = ready;
             if (SelectGameDirectory.ShowDialog() == DialogResult.OK)
             {
                 StatusText.Text = "Processing...";
@@ -293,6 +294,8 @@ namespace SpellforceDataEditor.special_forms
                     StatusText.Text = "Failed to specify directory";
                 }
             }
+            if((ready)&&(!prev_ready))
+                Prepare();
         }
 
         private void specifyOriginalGamedatacffToolStripMenuItem_Click(object sender, EventArgs e)
@@ -325,6 +328,11 @@ namespace SpellforceDataEditor.special_forms
                     StatusText.Text = "Could not choose this file!";
                 }
             }
+        }
+
+        private void reloadModListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RefreshModList();
         }
     }
 }
