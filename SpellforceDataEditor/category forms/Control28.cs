@@ -28,60 +28,119 @@ namespace SpellforceDataEditor.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, Utility.TryParseUInt8(textBox1.Text));
-        }
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 9;
 
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-            set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox2.Text));
+            for (int i = 0; i < elem_count; i++)
+                set_element_variant(current_element, i * 9 + 0, Utility.TryParseUInt8(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, Utility.TryParseUInt8(textBox3.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 2, Utility.TryParseUInt8(textBox3.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, Utility.TryParseUInt8(textBox5.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 3, Utility.TryParseUInt8(textBox5.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 4, Utility.TryParseUInt8(textBox4.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 4, Utility.TryParseUInt8(textBox4.Text));
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 5, Utility.TryParseUInt8(textBox7.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 5, Utility.TryParseUInt8(textBox7.Text));
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 6, Utility.TryParseUInt8(textBox6.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 6, Utility.TryParseUInt8(textBox6.Text));
         }
 
         private void textBox9_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 7, Utility.TryParseUInt8(textBox9.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 7, Utility.TryParseUInt8(textBox9.Text));
         }
 
         private void textBox8_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 8, Utility.TryParseUInt8(textBox8.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 8, Utility.TryParseUInt8(textBox8.Text));
+        }
+
+        public override void set_element(int index)
+        {
+            current_element = index;
+
+            ListLevels.Items.Clear();
+
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 9;
+
+            for(int i = 0; i < elem_count; i++)
+            {
+                ListLevels.Items.Add("Level " + (i + 1).ToString());
+            }
+
+            ListLevels.SelectedIndex = 0;
         }
 
         public override void show_element()
         {
             textBox1.Text = variant_repr(0);
-            textBox2.Text = variant_repr(1);
-            textBox3.Text = variant_repr(2);
-            textBox5.Text = variant_repr(3);
-            textBox4.Text = variant_repr(4);
-            textBox7.Text = variant_repr(5);
-            textBox6.Text = variant_repr(6);
-            textBox9.Text = variant_repr(7);
-            textBox8.Text = variant_repr(8);
+        }
+
+        private void ListLevels_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ListLevels.SelectedIndex == -1)
+                return;
+
+            int index = ListLevels.SelectedIndex;
+            textBox3.Text = variant_repr(index * 9 + 2);
+            textBox5.Text = variant_repr(index * 9 + 3);
+            textBox4.Text = variant_repr(index * 9 + 4);
+            textBox7.Text = variant_repr(index * 9 + 5);
+            textBox6.Text = variant_repr(index * 9 + 6);
+            textBox9.Text = variant_repr(index * 9 + 7);
+            textBox8.Text = variant_repr(index * 9 + 8);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 9;
+            int index = ListLevels.Items.Count;
+
+            object[] paste_data = new object[9];
+            paste_data[0] = (Byte)elem.get_single_variant(0).value;
+            paste_data[1] = (Byte)(index+1);
+            paste_data[2] = (Byte)0;
+            paste_data[3] = (Byte)0;
+            paste_data[4] = (Byte)0;
+            paste_data[5] = (Byte)0;
+            paste_data[6] = (Byte)0;
+            paste_data[7] = (Byte)0;
+            paste_data[8] = (Byte)0;
+
+            elem.paste_raw(paste_data, index * 9);
+            ListLevels.Items.Add("Level " + (index + 1).ToString());
+            ListLevels.SelectedIndex = index;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 9;
+            if (elem_count == 1)
+                return;
+
+            int index = ListLevels.Items.Count - 1;
+
+            elem.remove_raw(index * 9, 9);
+            ListLevels.Items.RemoveAt(index);
+            ListLevels.SelectedIndex = Math.Min(index, ListLevels.Items.Count - 1);
         }
     }
 }

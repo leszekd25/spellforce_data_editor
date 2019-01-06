@@ -13,35 +13,33 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor.SFUnPak
 {
-    public class SFUnPak
+    public static class SFUnPak
     {
-        string directory_name = "";
-        List<string> paks= new List<string>();
-        SFPakMap pak_map = new SFPakMap();
+        static public string game_directory_name = "";
+        static List<string> paks= new List<string>();
+        static SFPakMap pak_map = new SFPakMap();
 
-        public SFUnPak()
-        {
-
-        }
-
-        public int PakMap_SaveData(string fname)
+        static public int PakMap_SaveData(string fname)
         {
             return pak_map.SaveData(fname);
         }
 
-        public int PakMap_LoadData(string fname)
+        static public int PakMap_LoadData(string fname)
         {
             return pak_map.LoadData(fname);
         }
 
-        public int SpecifyGameDirectory(string dname)
+        static public int SpecifyGameDirectory(string dname)
         {
             if (!Directory.Exists(dname))
                 return -1;
             if (!Directory.Exists(dname + "\\pak"))
                 return -2;
 
-            directory_name = dname;
+            if (game_directory_name == dname)
+                return 0;
+
+            game_directory_name = dname;
 
             pak_map.Clear();
             paks.Clear();
@@ -67,7 +65,7 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
-        public int ExtractFileFrom(string pak_name, string filename, string new_name)
+        static public int ExtractFileFrom(string pak_name, string filename, string new_name)
         {
             MemoryStream ms = LoadFileFrom(pak_name, filename);
             if (ms == null)
@@ -103,7 +101,7 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
-        public MemoryStream LoadFileFrom(string pak_name, string filename)
+        static public MemoryStream LoadFileFrom(string pak_name, string filename)
         {
             SFPakFileSystem fs = pak_map.GetPak(pak_name);
 
@@ -113,7 +111,7 @@ namespace SpellforceDataEditor.SFUnPak
             return fs.GetFileBuffer(filename);
         }
 
-        public int ExtractFileFind(string filename, string new_name)
+        static public int ExtractFileFind(string filename, string new_name)
         {
             MemoryStream ms = LoadFileFind(filename);
             if (ms == null)
@@ -149,10 +147,10 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
-        public MemoryStream LoadFileFind(string filename)
+        static public MemoryStream LoadFileFind(string filename)
         {
             MemoryStream ms = null;
-            string real_path = directory_name + "\\" + filename;
+            string real_path = game_directory_name + "\\" + filename;
             try
             {
                 FileStream fs = new FileStream(real_path, FileMode.Open, FileAccess.Read);
@@ -174,7 +172,7 @@ namespace SpellforceDataEditor.SFUnPak
             }
         }
 
-        public List<String> ListAllWithExtension(string path, string extname, string[] pak_filter)
+        static public List<String> ListAllWithExtension(string path, string extname, string[] pak_filter)
         {
             List<String> result = pak_map.ListAllWithExtension(path, extname, pak_filter);
             result.Sort();

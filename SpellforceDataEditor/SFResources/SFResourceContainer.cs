@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SpellforceDataEditor.SFUnPak;
 
 namespace SpellforceDataEditor.SFResources
 {
@@ -47,14 +48,16 @@ namespace SpellforceDataEditor.SFResources
         {
             if (cont.ContainsKey(rname))
                 return -1;
-            MemoryStream ms = manager.unpacker.LoadFileFind(prefix_path+"\\" + rname + suffix_extension);
+            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFind(prefix_path+"\\" + rname + suffix_extension);
             if (ms == null)
                 return -2;
+            //resource loading stack
             string prev_res = manager.current_resource;
             manager.current_resource = rname;
             T resource = new T();
             int res_code = resource.Load(ms, manager);
             manager.current_resource = prev_res;
+            //end of stack
             if (res_code != 0)
                 return res_code;
             resource.Init();
@@ -82,7 +85,7 @@ namespace SpellforceDataEditor.SFResources
 
         public int Extract(string rname)
         {
-            return manager.unpacker.ExtractFileFind(prefix_path + "\\" + rname + suffix_extension, prefix_path + "\\" + rname + suffix_extension);
+            return SFUnPak.SFUnPak.ExtractFileFind(prefix_path + "\\" + rname + suffix_extension, prefix_path + "\\" + rname + suffix_extension);
         }
 
         public List<string> GetNames()

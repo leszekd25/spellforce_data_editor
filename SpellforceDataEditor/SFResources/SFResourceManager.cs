@@ -11,12 +11,12 @@ using System.Text;
 using System.Threading.Tasks;
 using SpellforceDataEditor.SF3D;
 using SpellforceDataEditor.SFSound;
+using SpellforceDataEditor.SFUnPak;
 
 namespace SpellforceDataEditor.SFResources
 {
     public class SFResourceManager
     {
-        public SFUnPak.SFUnPak unpacker { get; private set; } = new SFUnPak.SFUnPak();
         public SFResourceContainer<SFTexture> Textures { get; private set; } = new SFResourceContainer<SFTexture>();
         public SFResourceContainer<SFModel3D> Models { get; private set; } = new SFResourceContainer<SFModel3D>();
         public SFResourceContainer<SFAnimation> Animations { get; private set; } = new SFResourceContainer<SFAnimation>();
@@ -59,17 +59,17 @@ namespace SpellforceDataEditor.SFResources
             string[] filter_mess_other =  { "sf10.pak", "sf20.pak", "sf23.pak", "sf33.pak" };
             string[] filter_mess_talk =   { "sf10.pak", "sf23.pak", "sf33.pak" };
 
-            mesh_names = unpacker.ListAllWithExtension("mesh", ".msb", filter_mesh);
-            skeleton_names = unpacker.ListAllWithExtension( "animation", ".bor", filter_skel);
+            mesh_names = SFUnPak.SFUnPak.ListAllWithExtension("mesh", ".msb", filter_mesh);
+            skeleton_names = SFUnPak.SFUnPak.ListAllWithExtension( "animation", ".bor", filter_skel);
             skeleton_names.RemoveAll(x => !(x.StartsWith("figure")));
-            animation_names = unpacker.ListAllWithExtension("animation", ".bob", filter_anim);
-            music_names = unpacker.ListAllWithExtension("sound", ".mp3", filter_musi);
-            sound_names = unpacker.ListAllWithExtension("sound", ".wav", filter_snds);
-            message_names["RTS Battle"] = unpacker.ListAllWithExtension("sound\\speech\\battle", ".wav", filter_mess_battle);
-            message_names["NPC"] = unpacker.ListAllWithExtension("sound\\speech", ".mp3", filter_mess_other);
-            message_names["Male"] = unpacker.ListAllWithExtension("sound\\speech\\male", ".mp3", filter_mess_talk);
-            message_names["Female"] = unpacker.ListAllWithExtension("sound\\speech\\female", ".mp3", filter_mess_talk);
-            message_names["RTS Workers"] = unpacker.ListAllWithExtension("sound\\speech\\messages", ".mp3", filter_mess_talk);
+            animation_names = SFUnPak.SFUnPak.ListAllWithExtension("animation", ".bob", filter_anim);
+            music_names = SFUnPak.SFUnPak.ListAllWithExtension("sound", ".mp3", filter_musi);
+            sound_names = SFUnPak.SFUnPak.ListAllWithExtension("sound", ".wav", filter_snds);
+            message_names["RTS Battle"] = SFUnPak.SFUnPak.ListAllWithExtension("sound\\speech\\battle", ".wav", filter_mess_battle);
+            message_names["NPC"] = SFUnPak.SFUnPak.ListAllWithExtension("sound\\speech", ".mp3", filter_mess_other);
+            message_names["Male"] = SFUnPak.SFUnPak.ListAllWithExtension("sound\\speech\\male", ".mp3", filter_mess_talk);
+            message_names["Female"] = SFUnPak.SFUnPak.ListAllWithExtension("sound\\speech\\female", ".mp3", filter_mess_talk);
+            message_names["RTS Workers"] = SFUnPak.SFUnPak.ListAllWithExtension("sound\\speech\\messages", ".mp3", filter_mess_talk);
         }
 
         public void DisposeAll()

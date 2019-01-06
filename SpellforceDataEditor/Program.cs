@@ -16,7 +16,7 @@ namespace SpellforceDataEditor
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SpelllforceCFFEditor());
+            Application.Run(new MainForm());
         }
     }
 }

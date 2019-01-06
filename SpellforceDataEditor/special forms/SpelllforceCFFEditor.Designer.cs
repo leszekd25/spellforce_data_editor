@@ -1,4 +1,4 @@
-﻿namespace SpellforceDataEditor
+﻿namespace SpellforceDataEditor.special_forms
 {
     partial class SpelllforceCFFEditor
     {
@@ -42,7 +42,6 @@
             this.specialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeDataLanguageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findAllReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.dViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.versionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CategorySelect = new System.Windows.Forms.ComboBox();
@@ -75,7 +74,6 @@
             this.panelElemCopy = new System.Windows.Forms.Panel();
             this.ButtonElemClear = new System.Windows.Forms.Button();
             this.ButtonElemCopy = new System.Windows.Forms.Button();
-            this.scriptBuilderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -170,8 +168,6 @@
             this.specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.changeDataLanguageToolStripMenuItem,
             this.findAllReferencesToolStripMenuItem,
-            this.dViewerToolStripMenuItem,
-            this.scriptBuilderToolStripMenuItem,
             this.versionToolStripMenuItem});
             this.specialToolStripMenuItem.Name = "specialToolStripMenuItem";
             this.specialToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
@@ -193,13 +189,6 @@
             this.findAllReferencesToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.findAllReferencesToolStripMenuItem.Text = "Find all references...";
             this.findAllReferencesToolStripMenuItem.Click += new System.EventHandler(this.findAllReferencesToolStripMenuItem_Click);
-            // 
-            // dViewerToolStripMenuItem
-            // 
-            this.dViewerToolStripMenuItem.Name = "dViewerToolStripMenuItem";
-            this.dViewerToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.dViewerToolStripMenuItem.Text = "Asset Viewer";
-            this.dViewerToolStripMenuItem.Click += new System.EventHandler(this.dViewerToolStripMenuItem_Click);
             // 
             // versionToolStripMenuItem
             // 
@@ -500,13 +489,6 @@
             this.ButtonElemCopy.UseVisualStyleBackColor = true;
             this.ButtonElemCopy.Click += new System.EventHandler(this.ButtonElemCopy_Click);
             // 
-            // scriptBuilderToolStripMenuItem
-            // 
-            this.scriptBuilderToolStripMenuItem.Name = "scriptBuilderToolStripMenuItem";
-            this.scriptBuilderToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.scriptBuilderToolStripMenuItem.Text = "Script Builder";
-            this.scriptBuilderToolStripMenuItem.Click += new System.EventHandler(this.scriptBuilderToolStripMenuItem_Click);
-            // 
             // SpelllforceCFFEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -590,7 +572,5 @@
         private System.Windows.Forms.ToolStripMenuItem changeDataLanguageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem versionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findAllReferencesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem dViewerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem scriptBuilderToolStripMenuItem;
     }
 }

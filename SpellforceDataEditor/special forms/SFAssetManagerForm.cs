@@ -41,7 +41,7 @@ namespace SpellforceDataEditor.special_forms
             if (GameDirDialog.ShowDialog() == DialogResult.OK)
             {
                 int result = specify_game_directory(GameDirDialog.SelectedPath);
-                if(result == 0)
+                if (result == 0)
                 {
                     File.WriteAllText("game_directory.txt", GameDirDialog.SelectedPath);
                     StatusText.Text = "Successfully loaded PAK data";

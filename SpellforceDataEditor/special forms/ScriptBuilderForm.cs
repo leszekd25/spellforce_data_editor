@@ -23,7 +23,7 @@ namespace SpellforceDataEditor.special_forms
         
         LuaValueControl selected_lua_control = null;
         ScriptProject project = null;
-        public SpelllforceCFFEditor Editor { get; private set; } = null;
+        public special_forms.SpelllforceCFFEditor Editor { get; private set; } = null;
 
         public ScriptBuilderForm()
         {
@@ -39,7 +39,7 @@ namespace SpellforceDataEditor.special_forms
             SetStatus("Ready");
         }
 
-        public void Link(SpelllforceCFFEditor spf)
+        public void Link(special_forms.SpelllforceCFFEditor spf)
         {
             Editor = spf;
         }

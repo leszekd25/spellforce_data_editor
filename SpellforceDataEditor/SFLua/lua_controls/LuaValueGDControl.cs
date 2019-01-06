@@ -64,6 +64,8 @@ namespace SpellforceDataEditor.SFLua.lua_controls
         {
             if (e.Button == MouseButtons.Right)
             {
+                if (MainForm.data == null)
+                    return;
                 if (!SFCategoryManager.ready)
                     return;
                 LuaValue_GameDataStruct l = ((LuaValue_GameDataStruct)Value.Value);
@@ -81,7 +83,8 @@ namespace SpellforceDataEditor.SFLua.lua_controls
                     return;
                 if (real_elem_id == -1)
                     return;
-                ((special_forms.ScriptBuilderForm)ParentForm).Editor.Tracer_StepForward(l.category, real_elem_id, false);
+
+                MainForm.data.Tracer_StepForward(l.category, real_elem_id, false);
             }
         }
     }

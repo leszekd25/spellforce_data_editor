@@ -655,81 +655,41 @@ namespace SpellforceDataEditor
     //it provides with general functions to perform on categories as a database
     public static class SFCategoryManager
     {
-        private static SFCategory[] categories;      //array of categories
+        /*private static SFCategory[] categories;      //array of categories*/
+        private static SFGameData gamedata = new SFGameData() ;
         private static SFCategoryRuneHeroes categorySpecial_RuneHeroes;    //intermediary needed to find names of rune heroes
-        private static int categoryNumber;           //amount of categories (basically a constant)
+        /*private static int categoryNumber;           //amount of categories (basically a constant)
 
         private static Byte[] mainHeader;            //gamedata.cff has a main header which is held here
-        private static string gamedata_md5 = "";     //currently loaded cff's MD5 hash (as string)
+        private static string gamedata_md5 = "";*/     //currently loaded cff's MD5 hash (as string)
 
         public static bool ready { get; private set; } = false;
 
         //constructor, it creates categories
         public static void init()
         {
-            categoryNumber = 49;
-            categories = new SFCategory[categoryNumber];
-            for (int i = 1; i <= categoryNumber; i++)
-            {
-                categories[i - 1] = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCategory" + i.ToString()) as SFCategory;
-                //categories[i - 1].set_manager(this);
-            }
-
             categorySpecial_RuneHeroes = new SFCategoryRuneHeroes();
             //categorySpecial_RuneHeroes.set_manager(this);
-
-            mainHeader = new Byte[20];
         }
 
         //returns category, given its index
         public static SFCategory get_category(int index)
         {
-            if((index > -1)&&(index < categoryNumber))
-                return categories[index];
+            if((index > -1)&&(index < SFGameData.categoryNumber))
+                return gamedata.categories[index];
             return null;
         }
 
         //returns string representation of file's MD5
         public static string get_data_md5()
         {
-            return gamedata_md5;
+            return gamedata.gamedata_md5;
         }
 
         //loads gamedata.cff file
-        public static int load_cff(string filename, ToolStripProgressBar bar)
+        public static int load_cff(string filename)
         {
-            FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
-
-            //md5 calculation for data diff tool
-            //MD5 md5_gen = MD5.Create();
-            //gamedata_md5 = BitConverter.ToString(md5_gen.ComputeHash(fs)).Replace("-", "").ToLower();
-
-            fs.Seek(0, SeekOrigin.Begin);
-
-            BinaryReader br = new BinaryReader(fs, Encoding.Default);
-
-            int result = 0;
-
-            mainHeader = br.ReadBytes(mainHeader.Length);
-            for (int i = 0; i < categoryNumber; i++)
-            {
-                int cat_status = get_category(i).read(br);
-                if (cat_status == -1)
-                {
-                    MessageBox.Show("Category '" + get_category(i).get_name() + "' has corrupted header, but it will fix itself upon the next data save.");
-                }
-                else if (cat_status == -2)
-                {
-                    result = -1;
-                    break;
-                }
-                else if (cat_status == -3)
-                {
-                    result = -2;
-                    break;
-                }
-                bar.Value = (i * bar.Maximum) / categoryNumber;
-            }
+            int result = gamedata.Load(filename);
 
             if (result == 0)
             {
@@ -737,29 +697,13 @@ namespace SpellforceDataEditor
                 ready = true;
             }
 
-            //br.Close();
-            fs.Close();
-
             return result;
         }
 
         //saves gamedata.cff file
         public static void save_cff(string filename)
         {
-            FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write);
-            fs.SetLength(0);
-
-            BinaryWriter bw = new BinaryWriter(fs, Encoding.Default);
-
-            bw.Write(mainHeader);
-
-            for (int i = 0; i < categoryNumber; i++)
-            {
-                get_category(i).write(bw);
-            }
-
-            //bw.Close();
-            fs.Close();
+            gamedata.Save(filename);
 
             //md5 calculation for data diff tool
             //FileStream fs2 = new FileStream(filename, FileMode.Open, FileAccess.Read);
@@ -773,7 +717,7 @@ namespace SpellforceDataEditor
         //returns category count
         public static int get_category_number()
         {
-            return categoryNumber;
+            return SFGameData.categoryNumber;
         }
 
         //using the fact that all text data is saved in category 15 (ind 14)
@@ -782,7 +726,7 @@ namespace SpellforceDataEditor
         //this is quite fast (O(log n))
         public static SFCategoryElement find_element_text(int t_index, int t_lang)
         {
-            int index = categories[14].find_binary_element_index<UInt16>(0, (UInt16)t_index);
+            int index = gamedata.categories[14].find_binary_element_index<UInt16>(0, (UInt16)t_index);
             if (index == -1)
                 return null;
 
@@ -790,7 +734,7 @@ namespace SpellforceDataEditor
             int safe_index = -1;   //will fail if there's no language id 0
 
             SFCategoryElement e = new SFCategoryElement();
-            SFCategoryElement e_found = categories[14].get_element(index);
+            SFCategoryElement e_found = gamedata.categories[14].get_element(index);
             int elem_num = e_found.get().Count / 5;
 
             for(int i = 0; i < elem_num; i++)
@@ -894,31 +838,33 @@ namespace SpellforceDataEditor
         {
             string txt_major = "";
             string txt_minor = "";
-
-            int major_index = (int)(UInt16)get_category(26).find_element_index<Byte>(0, skill_major);
-            if (major_index == -1)
+            SFCategoryElement skill_elem;
+            try
+            {
+                skill_elem = get_category(26).get_element(skill_major);
+            }
+            catch(Exception)
             {
                 return Utility.S_UNKNOWN;
             }
-            int total_index = major_index + (int)skill_minor;
 
-            int text_id_major = (int)(UInt16)get_category(26).get_element_variant(major_index, 2).value;
+            int text_id_major = (int)(UInt16)skill_elem.get_single_variant(2).value;
             SFCategoryElement txt_elem_major = find_element_text(text_id_major, 1);
             if (txt_elem_major != null)
                 txt_major = Utility.CleanString(txt_elem_major.get_single_variant(4));
 
-            if((skill_major == 0)&&(skill_minor != 0))
+            if ((skill_major == 0) && (skill_minor != 0))
             {
                 txt_major = "";
                 txt_minor = get_resource_gather(skill_minor) + " gathering";
             }
             else if (skill_minor != 101)
             {
-                int text_id_minor = (int)(UInt16)get_category(26).get_element_variant(total_index, 2).value;
-                if ((text_id_minor != 0) && (major_index != total_index))
+                int text_id_minor = (int)(UInt16)skill_elem.get_single_variant(skill_minor*3+2).value;
+                if (text_id_minor != 0)
                 {
                     SFCategoryElement txt_elem_minor = find_element_text(text_id_minor, 1);
-                    if(txt_elem_minor != null)
+                    if (txt_elem_minor != null)
                         txt_minor = Utility.CleanString(txt_elem_minor.get_single_variant(4));
                 }
             }
@@ -1046,13 +992,8 @@ namespace SpellforceDataEditor
         //frees all data, only empty categories remain
         public static void unload_all()
         {
-            foreach (SFCategory cat in categories)
-                cat.unload();
+            gamedata.Unload();
             categorySpecial_RuneHeroes.unload();
-
-            mainHeader = new Byte[20];
-            for (int i = 0; i < 20; i++)
-                mainHeader[i] = 0;
 
             ready = false;
         }

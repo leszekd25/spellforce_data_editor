@@ -9,13 +9,13 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpellforceDataEditor.SF3D;
 using SpellforceDataEditor.SF3D.SceneSynchro;
+using SpellforceDataEditor.SFUnPak;
 
 namespace SpellforceDataEditor.SF3D.SFRender
 {
     public class SFRenderEngine
     {
         public SFSceneManager scene_manager { get; } = new SFSceneManager();
-        SFResources.SFResourceManager resources;
         public bool ready_to_use { get; private set; } = false;
 
         public Camera3D camera { get; } = new Camera3D();
@@ -26,7 +26,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
         public SFRenderEngine(SFResources.SFResourceManager res)
         {
             scene_manager.resources = res;
-            resources = res;
         }
 
         //called only once!
@@ -55,7 +54,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         public int SpecifyGameDirectory(string dname)
         {
-            int result = resources.unpacker.SpecifyGameDirectory(dname);
+            int result = SFUnPak.SFUnPak.SpecifyGameDirectory(dname);
             ready_to_use = (result == 0);
             return result;
         }

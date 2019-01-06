@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace SpellforceDataEditor
+namespace SpellforceDataEditor.special_forms
 {
     public partial class SpelllforceCFFEditor : Form
     {
@@ -34,14 +34,11 @@ namespace SpellforceDataEditor
 
         private special_forms.ReferencesForm refs = null;
         private special_forms.ChangeDataLangForm change_lang = null;
-        private special_forms.SFAssetManagerForm viewer = null;
 
         //constructor
         public SpelllforceCFFEditor()
         {
             InitializeComponent();
-
-            SFCategoryManager.init();
             diff.init();
 
             versionToolStripMenuItem.Text = "Version " + version;
@@ -63,10 +60,9 @@ namespace SpellforceDataEditor
                     return false;
 
             labelStatus.Text = "Loading...";
-            ProgressBar_Main.Visible = true;
             statusStrip1.Refresh();
 
-            int result = SFCategoryManager.load_cff(OpenGameData.FileName, ProgressBar_Main);
+            int result = SFCategoryManager.load_cff(OpenGameData.FileName);
             if (result != 0)
             {
                 SFCategoryManager.unload_all();
@@ -74,7 +70,6 @@ namespace SpellforceDataEditor
                     labelStatus.Text = "Failed to open file " + OpenGameData.FileName + ": Block size does not match data";
                 else if (result == -2)
                     labelStatus.Text = "Failed to open file " + OpenGameData.FileName + ": Invalid data";
-                ProgressBar_Main.Visible = false;
                 return false;
             }
 
@@ -86,7 +81,6 @@ namespace SpellforceDataEditor
             labelStatus.Text = "Ready";
             //if (!diff_loaded)
             //    labelStatus.Text = "Ready (diff file not found)";
-            ProgressBar_Main.Visible = false;
 
             changeDataLanguageToolStripMenuItem.Enabled = true;
             CategorySelect.Enabled = true;
@@ -259,8 +253,8 @@ namespace SpellforceDataEditor
 
             Tracer_Clear();
 
-            if (viewer != null)
-                viewer.GenerateScene(real_category_index, selected_element_index);
+            if (MainForm.viewer != null)
+                MainForm.viewer.GenerateScene(real_category_index, selected_element_index);
         }
 
         //start loading all elements from a category
@@ -316,8 +310,8 @@ namespace SpellforceDataEditor
                 ElementDisplay.Visible = true;
                 ElementDisplay.set_element(cat_e);
                 ElementDisplay.show_element();
-                if (viewer != null)
-                    viewer.GenerateScene(cat_i, cat_e);
+                if (MainForm.viewer != null)
+                    MainForm.viewer.GenerateScene(cat_i, cat_e);
             }
 
             labelDescription.Text = SFCategoryManager.get_category(cat_i).get_element_description(cat_e);
@@ -344,8 +338,8 @@ namespace SpellforceDataEditor
 
             real_category_index = cat_i;
             selected_element_index = cat_e;
-            if (viewer != null)
-                viewer.GenerateScene(cat_i, cat_e);
+            if (MainForm.viewer != null)
+                MainForm.viewer.GenerateScene(cat_i, cat_e);
 
             diff_set_new_element();
 
@@ -915,33 +909,6 @@ namespace SpellforceDataEditor
         private void refs_FormClosed(object sender, FormClosedEventArgs e)
         {
             refs = null;
-        }
-
-
-
-
-        private void dViewerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (viewer != null)
-                return;
-            viewer = new special_forms.SFAssetManagerForm();
-            viewer.FormClosed += new FormClosedEventHandler(this.dViewer_FormClosed);
-
-            viewer.Show();
-        }
-
-        private void dViewer_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            viewer = null;
-            GC.Collect();
-        }
-
-        private void scriptBuilderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            special_forms.ScriptBuilderForm scripter = new special_forms.ScriptBuilderForm();
-            scripter.Link(this);
-
-            scripter.Show();
         }
     }
 }

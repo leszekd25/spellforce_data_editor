@@ -376,6 +376,12 @@
     <Compile Include="category forms\SFControl.Designer.cs">
       <DependentUpon>SFControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SF3D\Camera3D.cs" />
     <Compile Include="SF3D\CompressedMatrix.cs" />
     <Compile Include="SF3D\InterpolatedValue.cs" />
@@ -475,6 +481,37 @@
     <Compile Include="SFLua\lua_dialog\LuaDialogSayControl.Designer.cs">
       <DependentUpon>LuaDialogSayControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFMod\mod_controls\ModInfoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFMod\mod_controls\ModInfoForm.Designer.cs">
+      <DependentUpon>ModInfoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMod\mod_controls\TemplateSelectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFMod\mod_controls\TemplateSelectForm.Designer.cs">
+      <DependentUpon>TemplateSelectForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMod\SFMod.cs" />
+    <Compile Include="SFMod\SFModAssetManager.cs" />
+    <Compile Include="SFMod\SFModBytePatchManager.cs" />
+    <Compile Include="SFMod\SFModCFFChanges.cs" />
+    <Compile Include="SFGameData.cs" />
+    <Compile Include="SFMod\SFModInfo.cs" />
+    <Compile Include="SFMod\SFModTemplate.cs" />
+    <Compile Include="special forms\ModCreatorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\ModCreatorForm.Designer.cs">
+      <DependentUpon>ModCreatorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="special forms\ModManagerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\ModManagerForm.Designer.cs">
+      <DependentUpon>ModManagerForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="special forms\utility_forms\SelectLuaEnumForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -564,10 +601,10 @@
     <Compile Include="special forms\utility_forms\GetStringForm.Designer.cs">
       <DependentUpon>GetStringForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SpelllforceCFFEditor.cs">
+    <Compile Include="special forms\SpelllforceCFFEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SpelllforceCFFEditor.Designer.cs">
+    <Compile Include="special forms\SpelllforceCFFEditor.Designer.cs">
       <DependentUpon>SpelllforceCFFEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Utility.cs" />
@@ -721,6 +758,9 @@
     <EmbeddedResource Include="category forms\SFControl.resx">
       <DependentUpon>SFControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -764,6 +804,18 @@
     <EmbeddedResource Include="SFLua\lua_dialog\LuaDialogSayControl.resx">
       <DependentUpon>LuaDialogSayControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SFMod\mod_controls\ModInfoForm.resx">
+      <DependentUpon>ModInfoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMod\mod_controls\TemplateSelectForm.resx">
+      <DependentUpon>TemplateSelectForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="special forms\ModCreatorForm.resx">
+      <DependentUpon>ModCreatorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="special forms\ModManagerForm.resx">
+      <DependentUpon>ModManagerForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="special forms\utility_forms\SelectLuaEnumForm.resx">
       <DependentUpon>SelectLuaEnumForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -797,7 +849,7 @@
     <EmbeddedResource Include="special forms\utility_forms\GetStringForm.resx">
       <DependentUpon>GetStringForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SpelllforceCFFEditor.resx">
+    <EmbeddedResource Include="special forms\SpelllforceCFFEditor.resx">
       <DependentUpon>SpelllforceCFFEditor.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="OpenTK.dll.config" />
@@ -830,7 +882,9 @@
   <ItemGroup>
     <Content Include="382940043477778432.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="SFMod\mod_patch_params\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -63,7 +63,7 @@ namespace SpellforceDataEditor.category_forms
         public void set_element_variant(int elem_index, int var_index, object obj)
         {
             category.set_element_variant(elem_index, var_index, obj);
-            ((SpelllforceCFFEditor)ParentForm).external_set_element_select_string(category, elem_index);
+            ((special_forms.SpelllforceCFFEditor)ParentForm).external_set_element_select_string(category, elem_index);
         }
 
         //this depends on actual control
@@ -134,7 +134,7 @@ namespace SpellforceDataEditor.category_forms
             if (real_elem_id == -1)
                 return;
             //category.get_manager().get_application_form().Tracer_StepForward(cat_i, real_elem_id);
-            ((SpelllforceCFFEditor)ParentForm).Tracer_StepForward(cat_i, real_elem_id);
+            ((special_forms.SpelllforceCFFEditor)ParentForm).Tracer_StepForward(cat_i, real_elem_id);
         }
     }
 }

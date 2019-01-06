@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+
 namespace SpellforceDataEditor.special_forms
 {
     public partial class ReferencesForm : Form
@@ -33,7 +34,7 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
-        SpelllforceCFFEditor sf_form;
+        special_forms.SpelllforceCFFEditor sf_form;
         CatElem referenced;
         private List<CatElem> elements = new List<CatElem>();
         private static CatColumn[][] ReferenceCategoryTable;
@@ -94,7 +95,7 @@ namespace SpellforceDataEditor.special_forms
             ReferenceCategoryTable[48] = new CatColumn[] { new CatColumn(6, 10) };
         }
 
-        public void set_referenced_element(SpelllforceCFFEditor form, int c, int e)
+        public void set_referenced_element(special_forms.SpelllforceCFFEditor form, int c, int e)
         {
             referenced = new CatElem(c, e);
             sf_form = form;
