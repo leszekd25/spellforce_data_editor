@@ -668,11 +668,11 @@ namespace SpellforceDataEditor
             for (int i = 1; i <= categoryNumber; i++)
             {
                 categories[i - 1] = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCategory" + i.ToString()) as SFCategory;
-                categories[i - 1].set_manager(this);
+                categories[i - 1].manager = this;
             }
 
             categorySpecial_RuneHeroes = new SFCategoryRuneHeroes();
-            categorySpecial_RuneHeroes.set_manager(this);
+            categorySpecial_RuneHeroes.manager = this;
 
             mainHeader = new Byte[20];
         }
@@ -727,7 +727,7 @@ namespace SpellforceDataEditor
             }
 
             if(result == 0)
-                categorySpecial_RuneHeroes.generate(this);
+                categorySpecial_RuneHeroes.generate();
 
             //br.Close();
             fs.Close();
@@ -886,31 +886,33 @@ namespace SpellforceDataEditor
         {
             string txt_major = "";
             string txt_minor = "";
-
-            int major_index = (int)(UInt16)get_category(26).find_element_index<Byte>(0, skill_major);
-            if (major_index == -1)
+            SFCategoryElement skill_elem;
+            try
+            {
+                skill_elem = get_category(26).get_element(skill_major);
+            }
+            catch (Exception)
             {
                 return Utility.S_UNKNOWN;
             }
-            int total_index = major_index + (int)skill_minor;
 
-            int text_id_major = (int)(UInt16)get_category(26).get_element_variant(major_index, 2).value;
+            int text_id_major = (int)(UInt16)skill_elem.get_single_variant(2).value;
             SFCategoryElement txt_elem_major = find_element_text(text_id_major, 1);
             if (txt_elem_major != null)
                 txt_major = Utility.CleanString(txt_elem_major.get_single_variant(4));
 
-            if((skill_major == 0)&&(skill_minor != 0))
+            if ((skill_major == 0) && (skill_minor != 0))
             {
                 txt_major = "";
                 txt_minor = get_resource_gather(skill_minor) + " gathering";
             }
             else if (skill_minor != 101)
             {
-                int text_id_minor = (int)(UInt16)get_category(26).get_element_variant(total_index, 2).value;
-                if ((text_id_minor != 0) && (major_index != total_index))
+                int text_id_minor = (int)(UInt16)skill_elem.get_single_variant(skill_minor * 3 + 2).value;
+                if (text_id_minor != 0)
                 {
                     SFCategoryElement txt_elem_minor = find_element_text(text_id_minor, 1);
-                    if(txt_elem_minor != null)
+                    if (txt_elem_minor != null)
                         txt_minor = Utility.CleanString(txt_elem_minor.get_single_variant(4));
                 }
             }
@@ -1027,6 +1029,12 @@ namespace SpellforceDataEditor
                 return Utility.S_MISSING;
 
             return Utility.CleanString(text_elem.get_single_variant(4));
+        }
+
+        //returns data value given its address
+        public object get_variant(int cat, int elem, int ind)
+        {
+            return get_category(cat).get_element_variant(elem, ind).value;
         }
 
         //frees all data, only empty categories remain

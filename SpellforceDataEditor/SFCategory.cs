@@ -19,7 +19,7 @@ namespace SpellforceDataEditor
         protected int current_string;                   //helper variable to enable searching and manipulating string variants
         protected Byte[] categoryHeader;                //each category starts with a header
         protected uint category_id;                      //each category has a unique id the game looks for when reading data
-        protected SFCategoryManager manager;
+        public SFCategoryManager manager;
 
         //constructor 
         public SFCategory()
@@ -29,21 +29,15 @@ namespace SpellforceDataEditor
             elements = new List<SFCategoryElement>();
         }
 
-        //getter/setter for manager property
-        public SFCategoryManager get_manager()
-        {
-            return manager;
-        }
-
-        public void set_manager(SFCategoryManager m)
-        {
-            manager = m;
-        }
-
         //initialization, sets format for an element
         protected void initialize(string fm)
         {
             elem_format = fm;
+        }
+
+        public SFCategoryManager get_manager()
+        {
+            return manager;
         }
 
         //returns category name
@@ -120,7 +114,7 @@ namespace SpellforceDataEditor
 
         //puts a single variant to a buffer
         //s_size refers to a string length (for if the variant holds a string)
-        public void put_single_variant(BinaryWriter sw, SFVariant var, int s_size)
+        public void put_single_variant(BinaryWriter sw, SFVariant var)
         {
             switch (var.vtype)
             {
@@ -307,7 +301,6 @@ namespace SpellforceDataEditor
         }
 
         //sets a single variant given element index and variant index
-        //also updates the element in the application's listbox
         public void set_element_variant(int elem_index, int var_index, object obj)
         {
             elements[elem_index].get()[var_index].set(obj);
@@ -316,10 +309,9 @@ namespace SpellforceDataEditor
         //puts a new element (as a list of variants) to a buffer
         public void put_element(BinaryWriter sw, List<SFVariant> vars)
         {
-            current_string = 0;
             for (int i = 0; i < vars.Count; i++)
             {
-                put_single_variant(sw, vars[i], string_size[current_string]);
+                put_single_variant(sw, vars[i]);
             }
         }
 
@@ -369,7 +361,6 @@ namespace SpellforceDataEditor
                 elements.Add(elem);
             }
             mr.Close();
-            ms.Close();
             block_buffer = null;
             if (bad_header)
                 return -1;
@@ -415,6 +406,64 @@ namespace SpellforceDataEditor
             return elem_format;
         }
 
+        public virtual int get_element_id(int index)
+        {
+            if (index >= elements.Count)
+                return -1;
+            if (index < 0)
+                return -1;
+            
+            switch(elem_format[0])
+            {
+                case 'B':
+                    return (int)(byte)elements[index].get_single_variant(0).value;
+                case 'H':
+                    return (int)(UInt16)elements[index].get_single_variant(0).value;
+                case 'I':
+                    return (int)(UInt32)elements[index].get_single_variant(0).value;
+                default:
+                    return -1;
+            }
+        }
+
+        public virtual int get_element_index(int id)
+        {
+            switch (elem_format[0])
+            {
+                case 'B':
+                    return find_binary_element_index(0, (Byte)id);
+                case 'H':
+                    return find_binary_element_index(0, (UInt16)id);
+                case 'I':
+                    return find_binary_element_index(0, (UInt32)id);
+                default:
+                    return -1;
+            }
+        }
+
+        // if an element of id X was to be inserted into a list, where should it be placed to preserve ascending order?
+        // this function ansvers the question above
+        public int get_new_element_index(int id)
+        {
+            int current_start = 0;
+            int current_end = elements.Count - 1;
+            int current_center;
+            int val;
+            while (current_start <= current_end)
+            {
+
+                current_center = (current_start + current_end) / 2;    //care about overflow (though its not happening in this case)
+                val = get_element_id(current_center);
+                if (val.CompareTo(id) == 0)
+                    return -1;
+                if (val.CompareTo(id) < 0)
+                    current_start = current_center + 1;
+                else
+                    current_end = current_center - 1;
+            }
+            return current_start;
+        }
+
         //removes all elements and resets category
         public void unload()
         {
@@ -426,8 +475,8 @@ namespace SpellforceDataEditor
         }
     }
 
-
-
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //spells/skills (1st category)
     public class SFCategory1 : SFCategory
@@ -543,6 +592,16 @@ namespace SpellforceDataEditor
             category_name = "3. Unknown (1)";
             category_id = 2056;
         }
+
+        public override int get_element_id(int index)
+        {
+            return (int)(Byte)get_element_variant(index, 3).value;
+        }
+
+        public override int get_element_index(int id)
+        {
+            return (int)find_binary_element_index(3, (Byte)id);
+        }
     }
 
     //unit/hero stats (4th category)
@@ -573,8 +632,7 @@ namespace SpellforceDataEditor
             int mana = (int)(UInt16)get_element_variant(index, 9).value;
             int lvl = ((int)(UInt16)get_element_variant(index, 1).value)-1;
             string stat_txt = "";
-
-            if ((lvl >= 0) && (lvl < manager.get_category(32).get_element_count()))
+            if ((lvl >= 0)&&(lvl < manager.get_category(32).get_element_count()))
             {
                 SFCategoryElement lvl_elem = manager.get_category(32).get_element(lvl);
                 if (lvl_elem != null)
@@ -1156,12 +1214,17 @@ namespace SpellforceDataEditor
             category_id = 2040;
         }
 
+        public override Object[] get_element(BinaryReader sr)
+        {
+            return get_element_multiple(sr, 'H');
+        }
+
         public override string get_element_string(int index)
         {
             UInt16 unit_id = (UInt16)get_element_variant(index, 0).value;
             Byte slot_id = (Byte)get_element_variant(index, 1).value;
             string txt_unit = manager.get_unit_name(unit_id);
-            return unit_id.ToString() + " " + txt_unit + " (" + slot_id.ToString() + ")";
+            return unit_id.ToString() + " " + txt_unit;// + " (" + slot_id.ToString() + ")";
         }
 
         public override string get_element_description(int index)
@@ -1178,7 +1241,7 @@ namespace SpellforceDataEditor
             {
                 UInt16 item_id = (UInt16)get_element_variant(index, 2 + i * 2).value;
                 SFVariant data_variant = get_element_variant(index, 3 + i * 2);
-                Byte data_chance = (data_variant != null?(Byte)data_variant.value:(Byte)0);
+                Byte data_chance = ((i != 2)?(Byte)data_variant.value:(Byte)0);
                 if (i == 0)
                     chances[0] = (Single)(data_chance) / 100;
                 else if (i == 1)
@@ -1200,6 +1263,11 @@ namespace SpellforceDataEditor
             initialize("HBH");
             category_name = "23. Army unit building requirements";
             category_id = 2001;
+        }
+
+        public override Object[] get_element(BinaryReader sr)
+        {
+            return get_element_multiple(sr, 'H');
         }
 
         public override string get_element_string(int index)
@@ -1287,6 +1355,11 @@ namespace SpellforceDataEditor
             category_id = 2031;
         }
 
+        public override Object[] get_element(BinaryReader sr)
+        {
+            return get_element_multiple(sr, 'H');
+        }
+
         public override string get_element_string(int index)
         {
             UInt16 building_id = (UInt16)get_element_variant(index, 0).value;
@@ -1315,6 +1388,11 @@ namespace SpellforceDataEditor
             category_id = 2039;
         }
 
+        public override Object[] get_element(BinaryReader sr)
+        {
+            return get_element_multiple(sr, 'B');
+        }
+
         public override string get_element_string(int index)
         {
             string txt = get_text_from_element(elements[index], 2);
@@ -1330,6 +1408,11 @@ namespace SpellforceDataEditor
             initialize("BBBBBBBBB");
             category_name = "28. Skill point requirements";
             category_id = 2062;
+        }
+
+        public override Object[] get_element(BinaryReader sr)
+        {
+            return get_element_multiple(sr, 'B');
         }
 
         public override string get_element_string(int index)
@@ -1391,6 +1474,11 @@ namespace SpellforceDataEditor
             initialize("HBH");
             category_name = "31. Merchant sell/buy rate";
             category_id = 2047;
+        }
+
+        public override Object[] get_element(BinaryReader sr)
+        {
+            return get_element_multiple(sr, 'H');
         }
 
         public override string get_element_string(int index)
@@ -1514,6 +1602,11 @@ namespace SpellforceDataEditor
             category_id = 2065;
         }
 
+        public override Object[] get_element(BinaryReader sr)
+        {
+            return get_element_multiple(sr, 'H');
+        }
+
         public override string get_element_string(int index)
         {
             UInt16 object_id = (UInt16)get_element_variant(index, 0).value;
@@ -1536,7 +1629,7 @@ namespace SpellforceDataEditor
             {
                 UInt16 item_id = (UInt16)get_element_variant(index, 2 + i * 2).value;
                 SFVariant data_variant = get_element_variant(index, 3 + i * 2);
-                Byte data_chance = (data_variant != null ? (Byte)data_variant.value : (Byte)0);
+                Byte data_chance = ((i != 2) ? (Byte)data_variant.value : (Byte)0);
                 if (i == 0)
                     chances[0] = (Single)(data_chance) / 100;
                 else if (i == 1)
@@ -1549,8 +1642,7 @@ namespace SpellforceDataEditor
             return total_string;
         }
     }
-
-    //unknown2 (37th category)
+    
     public class SFCategory37 : SFCategory
     {
         public SFCategory37() : base()
@@ -1811,7 +1903,7 @@ namespace SpellforceDataEditor
             category_id = 0;
         }
 
-        public void generate(SFCategoryManager manager)
+        public void generate()
         {
             elements = new List<SFCategoryElement>();
             List<int> rune_indices = SFSearchModule.Search(manager.get_category(6), null, "3", SearchType.TYPE_NUMBER, 1, null);

@@ -44,7 +44,7 @@ namespace SpellforceDataEditor
         //returns int value of a variant (or 0 if can't represent it as an integer)
         public int to_int()
         {
-            switch(vtype)
+            switch (vtype)
             {
                 case TYPE.Byte:
                     return (int)(SByte)value;
@@ -110,6 +110,14 @@ namespace SpellforceDataEditor
             properties.Add(v);
         }
 
+        //adds a single variant (specified by an object) to the property list
+        public void insert_single_variant(Object obj, int pos)
+        {
+            SFVariant v = new SFVariant();
+            v.set(obj);
+            properties.Insert(pos, v);
+        }
+
         //adds variants from a list of objects
         public void set(Object[] objs)
         {
@@ -142,7 +150,7 @@ namespace SpellforceDataEditor
         public int get_size()
         {
             int s = 0;
-            foreach(SFVariant v in properties)
+            foreach (SFVariant v in properties)
             {
                 if (v.vtype == TYPE.String)
                 {
@@ -170,13 +178,33 @@ namespace SpellforceDataEditor
             if (properties.Count != elem.get().Count)
                 return false;
 
-            for(int i = 0; i < properties.Count; i++)
+            for (int i = 0; i < properties.Count; i++)
             {
                 if (!properties[i].same_as(elem.get_single_variant(i)))
                     return false;
             }
 
             return true;
+        }
+
+        public object[] copy_raw(int index_start, int count)
+        {
+            object[] res = new object[count];
+            for (int i = 0; i < count; i++)
+                res[i] = properties[i + index_start].value;
+            return res;
+        }
+
+        public void remove_raw(int index_start, int count)
+        {
+            for (int i = 0; i < count; i++)
+                properties.RemoveAt(index_start);
+        }
+
+        public void paste_raw(object[] data, int index_start)
+        {
+            for (int i = 0; i < data.Length; i++)
+                insert_single_variant(data[i], index_start + i);
         }
     }
 }
