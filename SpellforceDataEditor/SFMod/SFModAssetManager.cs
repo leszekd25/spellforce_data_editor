@@ -1,11 +1,15 @@
-﻿using System;
+﻿/*
+ * SFModAssetElement is a description of a single asset
+ * SFModAssetManager is a container for those descriptions
+ * */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using System.IO;
-// IMPORTANT: LOAD BIG FILES IN 16 MB CHUNKS MAX! it's so the ram usage wont go through the roof
 
 namespace SpellforceDataEditor.SFMod
 {
@@ -15,6 +19,7 @@ namespace SpellforceDataEditor.SFMod
         public string dname;
         public long size;
 
+        // loads description from stream
         // returns file size in bytes
         public long Load(BinaryReader br)
         {
@@ -24,6 +29,7 @@ namespace SpellforceDataEditor.SFMod
             return size;
         }
 
+        // saves description to a stream
         public int Save(BinaryWriter bw)
         {
             bw.Write(fname);
@@ -32,12 +38,13 @@ namespace SpellforceDataEditor.SFMod
             return 0;
         }
 
+        // writes a file this asset is describing to a stream
+        // asset_dir is the root directory for the assets
         public int AppendFile(string asset_dir, BinaryWriter bw)
         {
             long ChunkMaxSize = 0x1000000; // 16 MB
-            // chunks of 16 MB
             long cur_filesize = size;
-            // open file
+
             BinaryReader abr = new BinaryReader(File.Open(asset_dir + "\\" + dname + "\\" + fname, FileMode.Open, FileAccess.Read));
             while(cur_filesize > 0)
             {
@@ -52,15 +59,15 @@ namespace SpellforceDataEditor.SFMod
             return 0;
         }
 
+        // reads file from the stream and saves it according to the description
         public int ExtractFile(BinaryReader br)
         {
             long ChunkMaxSize = 0x1000000; // 16 MB
-            // chunks of 16 MB
             long cur_filesize = size;
             // open file
             if(!Directory.Exists(SFUnPak.SFUnPak.game_directory_name + "\\" + dname))
                 Directory.CreateDirectory(SFUnPak.SFUnPak.game_directory_name + "\\" + dname);
-            StreamWriter abw = new StreamWriter(File.Open(SFUnPak.SFUnPak.game_directory_name + "\\" + dname + "\\" + fname, FileMode.OpenOrCreate, FileAccess.Write));
+            BinaryWriter abw = new BinaryWriter(File.Open(SFUnPak.SFUnPak.game_directory_name + "\\" + dname + "\\" + fname, FileMode.OpenOrCreate, FileAccess.Write));
             while (cur_filesize > 0)
             {
                 int loaded_chunk_size = (int)Math.Min(ChunkMaxSize, cur_filesize);
@@ -69,8 +76,8 @@ namespace SpellforceDataEditor.SFMod
                 byte[] chunk = br.ReadBytes(loaded_chunk_size);
                 abw.Write(chunk);
             }
-            abw.Flush();
             abw.Close();
+            GC.Collect(1);
 
             return 0;
         }
@@ -82,6 +89,7 @@ namespace SpellforceDataEditor.SFMod
         public string sfmd_filename;
         public List<SFModAssetElement> assets = new List<SFModAssetElement>();
 
+        // loads all asset descriptions from a file
         public int Load(BinaryReader br, string fname)
         {
             assets.Clear();
@@ -99,11 +107,13 @@ namespace SpellforceDataEditor.SFMod
             return 0;
         }
 
+        // frees memory*
         public void Unload()
         {
             assets.Clear();
         }
 
+        // saves all assets, including actual game files, to the mod file
         public int Save(BinaryWriter bw)
         {
             long init_pos = bw.BaseStream.Position;
@@ -123,6 +133,7 @@ namespace SpellforceDataEditor.SFMod
             return 0;
         }
 
+        // generates asset descriptions, given root directory for assets
         public int GenerateAssetInfo()
         {
             // get all files in directory
@@ -139,7 +150,7 @@ namespace SpellforceDataEditor.SFMod
             return 0;
         }
 
-        // it loads assets independently from the manager
+        // aplies assets to the game
         public int Apply()
         {
             if (!File.Exists(sfmd_filename))
@@ -164,6 +175,7 @@ namespace SpellforceDataEditor.SFMod
             return 0;
         }
 
+        // returns a list of asset filenames, not including the root path
         public List<string> GetFileNames()
         {
             List<string> fnames = new List<string>();

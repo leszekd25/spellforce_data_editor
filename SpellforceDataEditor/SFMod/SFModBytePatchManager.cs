@@ -75,38 +75,27 @@ namespace SpellforceDataEditor.SFMod
             {
                 case SFModBytePatchParameterBasicType.U8:
                     return br.ReadByte();
-                    break;
                 case SFModBytePatchParameterBasicType.U16:
                     return br.ReadUInt16();
-                    break;
                 case SFModBytePatchParameterBasicType.U32:
                     return br.ReadUInt32();
-                    break;
                 case SFModBytePatchParameterBasicType.U64:
                     return br.ReadUInt64();
-                    break;
                 case SFModBytePatchParameterBasicType.I8:
                     return br.ReadSByte();
-                    break;
                 case SFModBytePatchParameterBasicType.CHAR:
                     return br.ReadChar();
-                    break;
                 case SFModBytePatchParameterBasicType.I16:
                 case SFModBytePatchParameterBasicType.WCHAR:
                     return br.ReadInt16();
-                    break;
                 case SFModBytePatchParameterBasicType.I32:
                     return br.ReadInt32();
-                    break;
                 case SFModBytePatchParameterBasicType.I64:
                     return br.ReadInt64();
-                    break;
                 case SFModBytePatchParameterBasicType.FLOAT:
                     return br.ReadSingle();
-                    break;
                 case SFModBytePatchParameterBasicType.DOUBLE:
                     return br.ReadDouble();
-                    break;
                 default:
                     throw new InvalidDataException("SFModBytePatchParameterNode.WriteBasicValue: Invalid type!");
             }

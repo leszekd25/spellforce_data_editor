@@ -135,7 +135,8 @@ namespace SpellforceDataEditor.SFUnPak
             Close();
         }
 
-        //no last backslash
+        // returns oath directory, given path string
+        // no last backslash
         string GetPathDirectory(string path)
         {
             int index = path.LastIndexOf('\\');
@@ -144,6 +145,7 @@ namespace SpellforceDataEditor.SFUnPak
             return path.Substring(0, index);
         }
 
+        // returns path filename, given path string
         string GetPathFilename(string path)
         {
             int index = path.LastIndexOf('\\');
@@ -152,6 +154,7 @@ namespace SpellforceDataEditor.SFUnPak
             return path.Substring(index + 1);
         }
 
+        // returns path file extension, given path string
         //with dot
         string GetPathExtension(string path)
         {
@@ -161,6 +164,7 @@ namespace SpellforceDataEditor.SFUnPak
             return path.Substring(index);
         }
 
+        // initializes pak structure for use from memory
         public int Init(string path)
         {
             FileStream fs;
@@ -205,6 +209,7 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
+        // opens pak file for reading
         public int Open()
         {
             try
@@ -219,12 +224,14 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
+        // closes pak file
         public void Close()
         {
             pak_stream.Close();
             pak_file.Close();
         }
 
+        // returns filename of a file in pak, given by file index in pak
         string GetFileName(int index, bool is_directory = false)
         {
             SFPakEntryHeader head = file_headers[index];
@@ -233,13 +240,11 @@ namespace SpellforceDataEditor.SFUnPak
             pak_stream.BaseStream.Position = start;
             string fname_str = "";
             
-            //System.Diagnostics.Debug.WriteLine("GetFileName " + start.ToString());
             do
             {
                 fname_str += pak_stream.ReadChar();
             }
             while (pak_stream.PeekChar() != '\0');
-
             
             char[] charArray = fname_str.ToCharArray();
             Array.Reverse(charArray);
@@ -247,6 +252,8 @@ namespace SpellforceDataEditor.SFUnPak
             return fname_str;
         }
 
+        // returns a stream of bytes which constitute for a file given file index
+        // if managed_open, it will not try to open a pak, as it assumes the pak is already open
         MemoryStream GetFileBuffer(int file_index, bool managed_open = false)
         {
             if(!managed_open)
@@ -265,6 +272,8 @@ namespace SpellforceDataEditor.SFUnPak
             return ms;
         }
 
+        // returns a stream of bytes which constitute for a file given file name
+        // if managed_open, it will not try to open a pak, as it assumes the pak is already open
         public MemoryStream GetFileBuffer(string fname, bool managed_open = false)
         {
 	        string dir_name = GetPathDirectory(fname);
@@ -279,7 +288,8 @@ namespace SpellforceDataEditor.SFUnPak
 	        return null;
         }
 
-        //create lookup database
+        // writes all pak filedata to a file for later use
+        // main reason to do this: faster load times
         public int WriteToFile(BinaryWriter bw)
         {
             bw.Write(pak_fname);
@@ -291,7 +301,8 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
-        //load lookup database
+        // reads all pak filedata from a file
+        // main reason not to use pak files: faster read times
         public int ReadFromFile(BinaryReader br)
         {
             pak_fname = br.ReadString();
@@ -308,7 +319,7 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
-        //query functions
+        // returns all files in the given directory with a fitting extension
         public List<String> ListAllWithExtension(string path, string extname)
         {
             List<String> names = new List<string>();

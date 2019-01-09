@@ -21,7 +21,7 @@ namespace SpellforceDataEditor
         public MainForm()
         {
             InitializeComponent();
-            SFCategoryManager.init();
+            SFCFF.SFCategoryManager.init();
         }
 
         private void bGDEditor_Click(object sender, EventArgs e)

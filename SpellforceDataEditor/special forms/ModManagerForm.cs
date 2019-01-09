@@ -1,4 +1,8 @@
-﻿using System;
+﻿/*
+ * ModManagerForm is the form which allows for selecting mods to be loaded into the game, and loading them
+ * */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -56,6 +60,7 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
+        // prepares the manager for use
         private void Prepare()
         {
             // if no files in backup folder, add them from the game dir
@@ -104,6 +109,7 @@ namespace SpellforceDataEditor.special_forms
             SelectedModsRefresh();
         }
 
+        // reloads mod list
         private void RefreshModList()
         {
             ModList.Items.Clear();
@@ -122,6 +128,7 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
+        // refreshes mod status on the list
         private void SelectedModsRefresh()
         {
             for (int i = 0; i < ModList.Items.Count; i++)
@@ -132,6 +139,7 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
+        // tries to restore game files to original state
         private void RestoreGameFiles(bool ask_confirm)
         {
             if (ask_confirm)
@@ -176,6 +184,7 @@ namespace SpellforceDataEditor.special_forms
 
         }
 
+        // applies selected mods to a game
         private void ButtonApplyMods_Click(object sender, EventArgs e)
         {
             if (!ready)
@@ -188,7 +197,7 @@ namespace SpellforceDataEditor.special_forms
             StatusText.Text = "Applying changes...";
             RestoreGameFiles(false);
             // modify files according to selected mods and save template as last used
-            SFGameData gd_to_modify = new SFGameData();
+            SFCFF.SFGameData gd_to_modify = new SFCFF.SFGameData();
             gd_to_modify.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff");
             List<string> failed_mods = new List<string>();
             for(int i = 0; i < ModList.Items.Count; i++)

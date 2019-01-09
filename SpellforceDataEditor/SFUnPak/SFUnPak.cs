@@ -29,6 +29,8 @@ namespace SpellforceDataEditor.SFUnPak
             return pak_map.LoadData(fname);
         }
 
+        // generates pak data given game directory to retrieve pak files from
+        // returns if succeeded
         static public int SpecifyGameDirectory(string dname)
         {
             if (!Directory.Exists(dname))
@@ -65,6 +67,7 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
+        // extract file from pak to a given path
         static public int ExtractFileFrom(string pak_name, string filename, string new_name)
         {
             MemoryStream ms = LoadFileFrom(pak_name, filename);
@@ -101,6 +104,8 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
+        // loads file from pak to memory given its name
+        // returns stream of bytes which constitute for that file
         static public MemoryStream LoadFileFrom(string pak_name, string filename)
         {
             SFPakFileSystem fs = pak_map.GetPak(pak_name);
@@ -111,6 +116,8 @@ namespace SpellforceDataEditor.SFUnPak
             return fs.GetFileBuffer(filename);
         }
 
+        // searches for a file in paks and extracts it if founs
+        // returns if succeeded
         static public int ExtractFileFind(string filename, string new_name)
         {
             MemoryStream ms = LoadFileFind(filename);
@@ -146,7 +153,9 @@ namespace SpellforceDataEditor.SFUnPak
 
             return 0;
         }
-
+        
+        // searches for a file in paks and loads it to memory
+        // returns stream of bytes which constitute for that file
         static public MemoryStream LoadFileFind(string filename)
         {
             MemoryStream ms = null;

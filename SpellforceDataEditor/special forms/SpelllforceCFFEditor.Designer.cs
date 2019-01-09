@@ -43,6 +43,7 @@
             this.changeDataLanguageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findAllReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.versionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.calculatorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CategorySelect = new System.Windows.Forms.ComboBox();
             this.ElementSelect = new System.Windows.Forms.ListBox();
@@ -168,7 +169,8 @@
             this.specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.changeDataLanguageToolStripMenuItem,
             this.findAllReferencesToolStripMenuItem,
-            this.versionToolStripMenuItem});
+            this.versionToolStripMenuItem,
+            this.calculatorsToolStripMenuItem});
             this.specialToolStripMenuItem.Name = "specialToolStripMenuItem";
             this.specialToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.specialToolStripMenuItem.Text = "Special";
@@ -195,6 +197,13 @@
             this.versionToolStripMenuItem.Name = "versionToolStripMenuItem";
             this.versionToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.versionToolStripMenuItem.Text = "Version";
+            // 
+            // calculatorsToolStripMenuItem
+            // 
+            this.calculatorsToolStripMenuItem.Name = "calculatorsToolStripMenuItem";
+            this.calculatorsToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.calculatorsToolStripMenuItem.Text = "Calculators...";
+            this.calculatorsToolStripMenuItem.Click += new System.EventHandler(this.calculatorsToolStripMenuItem_Click);
             // 
             // eXPERIMENTALLoadDiffFileToolStripMenuItem
             // 
@@ -572,5 +581,6 @@
         private System.Windows.Forms.ToolStripMenuItem changeDataLanguageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem versionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findAllReferencesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem calculatorsToolStripMenuItem;
     }
 }

@@ -7,6 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+using SpellforceDataEditor.SFCFF;
+
+
 
 namespace SpellforceDataEditor.special_forms
 {

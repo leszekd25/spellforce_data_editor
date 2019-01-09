@@ -15,6 +15,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using SpellforceDataEditor.SFCFF;
+
 namespace SpellforceDataEditor.special_forms
 {
     public partial class ChangeDataLangForm : Form

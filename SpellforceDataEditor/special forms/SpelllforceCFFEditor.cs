@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
+using SpellforceDataEditor.SFCFF;
+
+
 namespace SpellforceDataEditor.special_forms
 {
     public partial class SpelllforceCFFEditor : Form
@@ -16,7 +19,7 @@ namespace SpellforceDataEditor.special_forms
 
         private string version = "2018.12.28.1_3D";
 
-        private category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
+        private SFCFF.category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
 
         //these parameters control item loading behavior
         private int elementselect_refresh_size = 500;
@@ -34,6 +37,7 @@ namespace SpellforceDataEditor.special_forms
 
         private special_forms.ReferencesForm refs = null;
         private special_forms.ChangeDataLangForm change_lang = null;
+        private special_forms.CalculatorsForm calc = null;
 
         //constructor
         public SpelllforceCFFEditor()
@@ -156,8 +160,8 @@ namespace SpellforceDataEditor.special_forms
                 ElementDisplay.Dispose();
 
             ElementDisplay = Assembly.GetExecutingAssembly().CreateInstance(
-                "SpellforceDataEditor.category_forms.Control" + (ind_c + 1).ToString())
-                as category_forms.SFControl;
+                "SpellforceDataEditor.SFCFF.category_forms.Control" + (ind_c + 1).ToString())
+                as SFCFF.category_forms.SFControl;
             ElementDisplay.set_category(SFCategoryManager.get_category(ind_c));
             ElementDisplay.BringToFront();
 
@@ -909,6 +913,23 @@ namespace SpellforceDataEditor.special_forms
         private void refs_FormClosed(object sender, FormClosedEventArgs e)
         {
             refs = null;
+        }
+
+        private void calculatorsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (calc == null)
+            {
+                calc = new special_forms.CalculatorsForm();
+                calc.FormClosed += new FormClosedEventHandler(this.calc_FormClosed);
+                calc.Show();
+            }
+            else
+                calc.BringToFront();
+        }
+
+        private void calc_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            calc = null;
         }
     }
 }

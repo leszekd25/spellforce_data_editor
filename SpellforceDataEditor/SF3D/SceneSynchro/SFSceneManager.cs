@@ -14,6 +14,8 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
+using SpellforceDataEditor.SFCFF;
+
 namespace SpellforceDataEditor.SF3D.SceneSynchro
 {
     public class SFSceneManager

@@ -66,12 +66,12 @@ namespace SpellforceDataEditor.SFLua.lua_controls
             {
                 if (MainForm.data == null)
                     return;
-                if (!SFCategoryManager.ready)
+                if (!SFCFF.SFCategoryManager.ready)
                     return;
                 LuaValue_GameDataStruct l = ((LuaValue_GameDataStruct)Value.Value);
                 int elem_key = (int)l.id;
                 int real_elem_id;
-                SFCategory cat = SFCategoryManager.get_category(l.category);
+                SFCFF.SFCategory cat = SFCFF.SFCategoryManager.get_category(l.category);
                 char format = cat.get_element_format()[0];
                 if (format == 'B')
                     real_elem_id = cat.find_element_index<Byte>(0, (Byte)elem_key);

@@ -1,4 +1,8 @@
-﻿using System;
+﻿/*
+ * SFModTemplate is a file which describes mods to be loaded into the game
+ * */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,7 +27,6 @@ namespace SpellforceDataEditor.SFMod
             while (!sr.EndOfStream)
                 mod_names.Add(sr.ReadLine());
             sr.Close();
-            fs.Close();
 
             name = tmpl_name;
         }
@@ -36,7 +39,6 @@ namespace SpellforceDataEditor.SFMod
             foreach (string s in mod_names)
                 sw.WriteLine(s);
             sw.Close();
-            fs.Close();
         }
 
         public void CopyFrom(SFModTemplate tmpl)

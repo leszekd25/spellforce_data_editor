@@ -130,9 +130,9 @@ namespace SpellforceDataEditor
         }
 
         //turns string variant into actual string (all zeros are truncated)
-        static public string CleanString(SFVariant ch)
+        static public string CleanString(SFCFF.SFVariant ch)
         {
-            if (ch.vtype != TYPE.String)
+            if (ch.vtype != SFCFF.SFVARIANT_TYPE.String)
                 return "";
 
             return (new string((char[])ch.value)).Replace("\0", string.Empty);

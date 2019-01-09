@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * SFMod is a structure which holds all mod data and loads/saves this data to a file
+ * ModManagerForm uses this data to modify the game as the data says, using the supplied Apply method
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +20,7 @@ namespace SpellforceDataEditor.SFMod
         public SFModAssetManager assets = new SFModAssetManager();
         public SFModBytePatchManager patches = new SFModBytePatchManager();
 
+        // loads mod data from a file, but only loads mod info
         public int LoadOnlyInfo(string fname)
         {
             FileStream fs = File.Open(fname, FileMode.Open, FileAccess.Read);
@@ -25,6 +31,7 @@ namespace SpellforceDataEditor.SFMod
             return 0;
         }
 
+        // loads all mod data from a file (excluding actual assets)
         public int Load(string fname)
         {
             FileStream fs = File.Open(fname, FileMode.Open, FileAccess.Read);
@@ -38,6 +45,7 @@ namespace SpellforceDataEditor.SFMod
             return 0;
         }
 
+        // unloads all mod data
         public void Unload()
         {
             info.Unload();
@@ -45,7 +53,8 @@ namespace SpellforceDataEditor.SFMod
             assets.Unload();
             //patches.Unload();
         }
-        // save to tmp first pls
+
+        // saves mod data, including assets, to a specified file
         public int Save(string fname)
         {
             FileStream fs = File.Open(fname+".tmp", FileMode.OpenOrCreate, FileAccess.Write);
@@ -70,7 +79,8 @@ namespace SpellforceDataEditor.SFMod
             return result;
         }
 
-        public int Apply(SFGameData gd)
+        // applies mod to the game directory
+        public int Apply(SFCFF.SFGameData gd)
         {
             data.Apply(gd);
             assets.Apply();

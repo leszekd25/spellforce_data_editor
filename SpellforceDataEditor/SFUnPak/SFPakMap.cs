@@ -22,6 +22,7 @@ namespace SpellforceDataEditor.SFUnPak
 
         }
 
+        // adds a new pak to the container, given pak filename
         public int AddPak(string pak_fname)
         {
             if (!File.Exists(pak_fname))
@@ -39,6 +40,7 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
+        // gets pak data from container, given pak name
         public SFPakFileSystem GetPak(string pak_name)
         {
             if (pak_map.ContainsKey(pak_name))
@@ -46,6 +48,8 @@ namespace SpellforceDataEditor.SFUnPak
             return null;
         }
 
+        // saves all pak data to a single file
+        // faster load times this way
         public int SaveData(string fname)
         {
             FileStream fs = new FileStream(fname, FileMode.OpenOrCreate, FileAccess.Write);
@@ -60,6 +64,7 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
+        // loads all pak data from a file
         public int LoadData(string fname)
         {
             FileStream fs;
@@ -85,6 +90,8 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
+        // lists all files in a given directory with a fitting expression
+        // pak_filter is a list of pak to search from
         public List<String> ListAllWithExtension(string path, string extname, string[] pak_filter)
         {
             List<String> names = new List<String>();
@@ -98,6 +105,7 @@ namespace SpellforceDataEditor.SFUnPak
             return names;
         }
 
+        // frees memory*
         public void Clear()
         {
             foreach (SFPakFileSystem sys in pak_map.Values)

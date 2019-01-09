@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * SFModInfo represents metadata, information block of mod data
+ * it plays no role in modification of game
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +21,7 @@ namespace SpellforceDataEditor.SFMod
         public string Description;
         //up to here is mod version 1
 
+        // load game info from a stream
         public int Load(BinaryReader br)
         {
             br.ReadInt64();
@@ -26,6 +32,7 @@ namespace SpellforceDataEditor.SFMod
             return 0;
         }
 
+        // save game info to a stream
         public int Save(BinaryWriter bw)
         {
             long init_pos = bw.BaseStream.Position;

@@ -76,304 +76,316 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="category forms\Control1.cs">
+    <Compile Include="SFCFF\calculator forms\CalcControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control1.Designer.cs">
+    <Compile Include="SFCFF\calculator forms\CalcControl.Designer.cs">
+      <DependentUpon>CalcControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFCFF\calculator forms\CalcHitChanceControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFCFF\calculator forms\CalcHitChanceControl.Designer.cs">
+      <DependentUpon>CalcHitChanceControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFCFF\category forms\Control1.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFCFF\category forms\Control1.Designer.cs">
       <DependentUpon>Control1.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control10.cs">
+    <Compile Include="SFCFF\category forms\Control10.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control10.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control10.Designer.cs">
       <DependentUpon>Control10.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control11.cs">
+    <Compile Include="SFCFF\category forms\Control11.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control11.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control11.Designer.cs">
       <DependentUpon>Control11.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control12.cs">
+    <Compile Include="SFCFF\category forms\Control12.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control12.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control12.Designer.cs">
       <DependentUpon>Control12.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control13.cs">
+    <Compile Include="SFCFF\category forms\Control13.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control13.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control13.Designer.cs">
       <DependentUpon>Control13.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control14.cs">
+    <Compile Include="SFCFF\category forms\Control14.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control14.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control14.Designer.cs">
       <DependentUpon>Control14.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control15.cs">
+    <Compile Include="SFCFF\category forms\Control15.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control15.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control15.Designer.cs">
       <DependentUpon>Control15.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control16.cs">
+    <Compile Include="SFCFF\category forms\Control16.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control16.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control16.Designer.cs">
       <DependentUpon>Control16.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control17.cs">
+    <Compile Include="SFCFF\category forms\Control17.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control17.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control17.Designer.cs">
       <DependentUpon>Control17.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control18.cs">
+    <Compile Include="SFCFF\category forms\Control18.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control18.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control18.Designer.cs">
       <DependentUpon>Control18.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control19.cs">
+    <Compile Include="SFCFF\category forms\Control19.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control19.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control19.Designer.cs">
       <DependentUpon>Control19.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control2.cs">
+    <Compile Include="SFCFF\category forms\Control2.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control2.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control2.Designer.cs">
       <DependentUpon>Control2.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control20.cs">
+    <Compile Include="SFCFF\category forms\Control20.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control20.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control20.Designer.cs">
       <DependentUpon>Control20.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control21.cs">
+    <Compile Include="SFCFF\category forms\Control21.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control21.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control21.Designer.cs">
       <DependentUpon>Control21.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control22.cs">
+    <Compile Include="SFCFF\category forms\Control22.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control22.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control22.Designer.cs">
       <DependentUpon>Control22.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control23.cs">
+    <Compile Include="SFCFF\category forms\Control23.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control23.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control23.Designer.cs">
       <DependentUpon>Control23.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control24.cs">
+    <Compile Include="SFCFF\category forms\Control24.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control24.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control24.Designer.cs">
       <DependentUpon>Control24.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control25.cs">
+    <Compile Include="SFCFF\category forms\Control25.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control25.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control25.Designer.cs">
       <DependentUpon>Control25.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control26.cs">
+    <Compile Include="SFCFF\category forms\Control26.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control26.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control26.Designer.cs">
       <DependentUpon>Control26.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control27.cs">
+    <Compile Include="SFCFF\category forms\Control27.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control27.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control27.Designer.cs">
       <DependentUpon>Control27.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control28.cs">
+    <Compile Include="SFCFF\category forms\Control28.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control28.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control28.Designer.cs">
       <DependentUpon>Control28.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control29.cs">
+    <Compile Include="SFCFF\category forms\Control29.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control29.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control29.Designer.cs">
       <DependentUpon>Control29.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control3.cs">
+    <Compile Include="SFCFF\category forms\Control3.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control3.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control3.Designer.cs">
       <DependentUpon>Control3.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control30.cs">
+    <Compile Include="SFCFF\category forms\Control30.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control30.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control30.Designer.cs">
       <DependentUpon>Control30.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control31.cs">
+    <Compile Include="SFCFF\category forms\Control31.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control31.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control31.Designer.cs">
       <DependentUpon>Control31.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control32.cs">
+    <Compile Include="SFCFF\category forms\Control32.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control32.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control32.Designer.cs">
       <DependentUpon>Control32.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control33.cs">
+    <Compile Include="SFCFF\category forms\Control33.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control33.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control33.Designer.cs">
       <DependentUpon>Control33.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control34.cs">
+    <Compile Include="SFCFF\category forms\Control34.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control34.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control34.Designer.cs">
       <DependentUpon>Control34.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control35.cs">
+    <Compile Include="SFCFF\category forms\Control35.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control35.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control35.Designer.cs">
       <DependentUpon>Control35.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control36.cs">
+    <Compile Include="SFCFF\category forms\Control36.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control36.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control36.Designer.cs">
       <DependentUpon>Control36.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control38.cs">
+    <Compile Include="SFCFF\category forms\Control38.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control38.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control38.Designer.cs">
       <DependentUpon>Control38.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control39.cs">
+    <Compile Include="SFCFF\category forms\Control39.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control39.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control39.Designer.cs">
       <DependentUpon>Control39.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control4.cs">
+    <Compile Include="SFCFF\category forms\Control4.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control4.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control4.Designer.cs">
       <DependentUpon>Control4.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control40.cs">
+    <Compile Include="SFCFF\category forms\Control40.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control40.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control40.Designer.cs">
       <DependentUpon>Control40.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control41.cs">
+    <Compile Include="SFCFF\category forms\Control41.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control41.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control41.Designer.cs">
       <DependentUpon>Control41.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control42.cs">
+    <Compile Include="SFCFF\category forms\Control42.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control42.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control42.Designer.cs">
       <DependentUpon>Control42.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control43.cs">
+    <Compile Include="SFCFF\category forms\Control43.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control43.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control43.Designer.cs">
       <DependentUpon>Control43.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control44.cs">
+    <Compile Include="SFCFF\category forms\Control44.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control44.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control44.Designer.cs">
       <DependentUpon>Control44.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control45.cs">
+    <Compile Include="SFCFF\category forms\Control45.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control45.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control45.Designer.cs">
       <DependentUpon>Control45.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control46.cs">
+    <Compile Include="SFCFF\category forms\Control46.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control46.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control46.Designer.cs">
       <DependentUpon>Control46.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control47.cs">
+    <Compile Include="SFCFF\category forms\Control47.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control47.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control47.Designer.cs">
       <DependentUpon>Control47.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control48.cs">
+    <Compile Include="SFCFF\category forms\Control48.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control48.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control48.Designer.cs">
       <DependentUpon>Control48.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control49.cs">
+    <Compile Include="SFCFF\category forms\Control49.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control49.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control49.Designer.cs">
       <DependentUpon>Control49.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control5.cs">
+    <Compile Include="SFCFF\category forms\Control5.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control5.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control5.Designer.cs">
       <DependentUpon>Control5.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control6.cs">
+    <Compile Include="SFCFF\category forms\Control6.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control6.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control6.Designer.cs">
       <DependentUpon>Control6.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control7.cs">
+    <Compile Include="SFCFF\category forms\Control7.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control7.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control7.Designer.cs">
       <DependentUpon>Control7.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control8.cs">
+    <Compile Include="SFCFF\category forms\Control8.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control8.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control8.Designer.cs">
       <DependentUpon>Control8.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control9.cs">
+    <Compile Include="SFCFF\category forms\Control9.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control9.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control9.Designer.cs">
       <DependentUpon>Control9.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\Control37.cs">
+    <Compile Include="SFCFF\category forms\Control37.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\Control37.Designer.cs">
+    <Compile Include="SFCFF\category forms\Control37.Designer.cs">
       <DependentUpon>Control37.cs</DependentUpon>
     </Compile>
-    <Compile Include="category forms\SFControl.cs">
+    <Compile Include="SFCFF\category forms\SFControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="category forms\SFControl.Designer.cs">
+    <Compile Include="SFCFF\category forms\SFControl.Designer.cs">
       <DependentUpon>SFControl.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
@@ -497,9 +509,15 @@
     <Compile Include="SFMod\SFModAssetManager.cs" />
     <Compile Include="SFMod\SFModBytePatchManager.cs" />
     <Compile Include="SFMod\SFModCFFChanges.cs" />
-    <Compile Include="SFGameData.cs" />
+    <Compile Include="SFCFF\SFGameData.cs" />
     <Compile Include="SFMod\SFModInfo.cs" />
     <Compile Include="SFMod\SFModTemplate.cs" />
+    <Compile Include="special forms\CalculatorsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\CalculatorsForm.Designer.cs">
+      <DependentUpon>CalculatorsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="special forms\ModCreatorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -559,15 +577,15 @@
     <Compile Include="SF3D\SFTexture.cs" />
     <Compile Include="SF3D\SFRender\ShaderCompiler.cs" />
     <Compile Include="SFSound\StreamResource.cs" />
-    <Compile Include="SFCategory.cs" />
-    <Compile Include="SFCategoryElement.cs" />
-    <Compile Include="SFCategoryManager.cs" />
+    <Compile Include="SFCFF\SFCategory.cs" />
+    <Compile Include="SFCFF\SFCategoryElement.cs" />
+    <Compile Include="SFCFF\SFCategoryManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SFDataTracer.cs" />
-    <Compile Include="SFDiffTools.cs" />
+    <Compile Include="SFCFF\SFDataTracer.cs" />
+    <Compile Include="SFCFF\SFDiffTools.cs" />
     <Compile Include="SF3D\SceneSynchro\SFSceneDescription.cs" />
-    <Compile Include="SFSearchModule.cs" />
+    <Compile Include="SFCFF\SFSearchModule.cs" />
     <Compile Include="SFUnPak\SFPakFileSystem.cs" />
     <Compile Include="SFUnPak\SFPakMap.cs" />
     <Compile Include="SFUnPak\SFUnPak.cs" />
@@ -608,154 +626,160 @@
       <DependentUpon>SpelllforceCFFEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Utility.cs" />
-    <EmbeddedResource Include="category forms\Control1.resx">
+    <EmbeddedResource Include="SFCFF\calculator forms\CalcControl.resx">
+      <DependentUpon>CalcControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFCFF\calculator forms\CalcHitChanceControl.resx">
+      <DependentUpon>CalcHitChanceControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFCFF\category forms\Control1.resx">
       <DependentUpon>Control1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control10.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control10.resx">
       <DependentUpon>Control10.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control11.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control11.resx">
       <DependentUpon>Control11.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control12.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control12.resx">
       <DependentUpon>Control12.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control13.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control13.resx">
       <DependentUpon>Control13.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control14.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control14.resx">
       <DependentUpon>Control14.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control15.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control15.resx">
       <DependentUpon>Control15.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control16.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control16.resx">
       <DependentUpon>Control16.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control17.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control17.resx">
       <DependentUpon>Control17.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control18.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control18.resx">
       <DependentUpon>Control18.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control19.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control19.resx">
       <DependentUpon>Control19.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control2.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control2.resx">
       <DependentUpon>Control2.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control20.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control20.resx">
       <DependentUpon>Control20.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control21.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control21.resx">
       <DependentUpon>Control21.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control22.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control22.resx">
       <DependentUpon>Control22.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control23.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control23.resx">
       <DependentUpon>Control23.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control24.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control24.resx">
       <DependentUpon>Control24.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control25.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control25.resx">
       <DependentUpon>Control25.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control26.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control26.resx">
       <DependentUpon>Control26.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control27.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control27.resx">
       <DependentUpon>Control27.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control28.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control28.resx">
       <DependentUpon>Control28.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control29.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control29.resx">
       <DependentUpon>Control29.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control3.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control3.resx">
       <DependentUpon>Control3.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control30.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control30.resx">
       <DependentUpon>Control30.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control31.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control31.resx">
       <DependentUpon>Control31.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control32.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control32.resx">
       <DependentUpon>Control32.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control33.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control33.resx">
       <DependentUpon>Control33.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control34.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control34.resx">
       <DependentUpon>Control34.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control35.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control35.resx">
       <DependentUpon>Control35.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control36.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control36.resx">
       <DependentUpon>Control36.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control37.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control37.resx">
       <DependentUpon>Control37.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control38.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control38.resx">
       <DependentUpon>Control38.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control39.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control39.resx">
       <DependentUpon>Control39.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control4.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control4.resx">
       <DependentUpon>Control4.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control40.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control40.resx">
       <DependentUpon>Control40.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control41.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control41.resx">
       <DependentUpon>Control41.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control42.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control42.resx">
       <DependentUpon>Control42.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control43.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control43.resx">
       <DependentUpon>Control43.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control44.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control44.resx">
       <DependentUpon>Control44.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control45.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control45.resx">
       <DependentUpon>Control45.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control46.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control46.resx">
       <DependentUpon>Control46.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control47.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control47.resx">
       <DependentUpon>Control47.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control48.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control48.resx">
       <DependentUpon>Control48.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control49.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control49.resx">
       <DependentUpon>Control49.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control5.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control5.resx">
       <DependentUpon>Control5.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control6.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control6.resx">
       <DependentUpon>Control6.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control7.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control7.resx">
       <DependentUpon>Control7.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control8.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control8.resx">
       <DependentUpon>Control8.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\Control9.resx">
+    <EmbeddedResource Include="SFCFF\category forms\Control9.resx">
       <DependentUpon>Control9.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="category forms\SFControl.resx">
+    <EmbeddedResource Include="SFCFF\category forms\SFControl.resx">
       <DependentUpon>SFControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
@@ -809,6 +833,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFMod\mod_controls\TemplateSelectForm.resx">
       <DependentUpon>TemplateSelectForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="special forms\CalculatorsForm.resx">
+      <DependentUpon>CalculatorsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\ModCreatorForm.resx">
       <DependentUpon>ModCreatorForm.cs</DependentUpon>

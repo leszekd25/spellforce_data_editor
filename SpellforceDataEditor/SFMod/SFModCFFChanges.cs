@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * SFModCFFChangeElement is a struct representing a single deviation between two gamedata blocks
+ * SFModCGGChanges is the container which holds these changes, and allows for generation of the changes bny specifying the two gamedata blocks
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +11,8 @@ using System.Threading.Tasks;
 
 using System.IO;
 using System.Reflection;
+using SpellforceDataEditor.SFCFF;
+
 
 namespace SpellforceDataEditor.SFMod
 {
@@ -21,6 +28,7 @@ namespace SpellforceDataEditor.SFMod
         public ushort element_index;
         public SFCategoryElement element;
 
+        // loads a single change from a stream
         static public SFModCFFChangeElement Load(BinaryReader br)
         {
             SFModCFFChangeElement celem = new SFModCFFChangeElement();
@@ -42,6 +50,7 @@ namespace SpellforceDataEditor.SFMod
             return celem;
         }
 
+        // saves a change to a stream
         public int Save(BinaryWriter bw)
         {
             bw.Write((Int16)type);
@@ -60,6 +69,7 @@ namespace SpellforceDataEditor.SFMod
     {
         public List<SFModCFFChangeElement> changes { get; private set; } = new List<SFModCFFChangeElement>();
 
+        // loads list of changes from a stream
         public int Load(BinaryReader br)
         {
             changes.Clear();
@@ -79,11 +89,13 @@ namespace SpellforceDataEditor.SFMod
             return 0;
         }
 
+        // frees memory*
         public void Unload()
         {
             changes.Clear();
         }
 
+        // saves the changes to a stream
         public int Save(BinaryWriter bw)
         {
             long init_pos = bw.BaseStream.Position;
@@ -103,12 +115,9 @@ namespace SpellforceDataEditor.SFMod
             return 0;
         }
 
-        public void SortChanges()
-        {
-
-        }
-
         // called from ModCreator upon selecting a file
+        // generates a list of changes given two data files
+        // returns whether succeeded
         public int GenerateDiff(string orig_fname, string new_fname)
         {
             changes.Clear();
@@ -186,7 +195,6 @@ namespace SpellforceDataEditor.SFMod
                                 is_change = true;
                                 change_type = SFModCFFChangeType.REPLACE;
                                 // change!
-                                // this is ok
                             }
                         }
                         else if (orig_id > new_id)
@@ -220,9 +228,6 @@ namespace SpellforceDataEditor.SFMod
                         else
                             change_elem.element_index = (UInt16)(orig_id);
                         changes.Add(change_elem);
-                        //System.Diagnostics.Debug.WriteLine("NEW CHANGE! TYPE = "+change_type.ToString()
-                        //                                 + ", ORIG_ID = " + orig_id.ToString() + ", NEW_ID = " + new_id.ToString()
-                        //                                 + ", ORIG_I = " + orig_i.ToString() + ", NEW_I = " + new_i.ToString());
                     }
 
                     if (orig_i < orig_data.get_element_count())
@@ -233,13 +238,14 @@ namespace SpellforceDataEditor.SFMod
                 orig_data.unload();
                 new_data.unload();
                 GC.Collect();
-                //System.Diagnostics.Debug.WriteLine("CATEGORY "+i.ToString()+" READ SUCCESSFULLY");
             }
             br_orig.Close();
             br_new.Close();
             return 0;
         }
 
+        // applies the change to the gamedata stored in the memory
+        // this stored gamedata will ultimately replace the one in spellforce directory
         public int Apply(SFGameData gd)
         {
             for(int i = 0; i < changes.Count; i++)
