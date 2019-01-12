@@ -13,6 +13,7 @@ An experimental visual creator of LUA scripts. Supports all available commands i
 # Mod Manager
 This feature is currently in development. It allows creating and managing mods in an intuitive way.
 
+# How to use
 To use the application, simply unzip it wherever you feel like.
 
 Latest version: 12.01.2019.1
