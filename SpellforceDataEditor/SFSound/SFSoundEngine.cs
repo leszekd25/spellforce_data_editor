@@ -15,13 +15,7 @@ namespace SpellforceDataEditor.SFSound
         private MemoryStream sound_data = null;
         private WaveOutEvent player = null;
         private WaveStream sound_loader = null;
-        SFResourceManager resources;
         public bool loaded { get; private set; } = false;
-
-        public SFSoundEngine(SFResourceManager res)
-        {
-            resources = res;
-        }
 
         public int LoadSoundMP3(StreamResource sound)
         {

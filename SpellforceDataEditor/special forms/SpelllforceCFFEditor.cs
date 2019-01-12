@@ -17,8 +17,6 @@ namespace SpellforceDataEditor.special_forms
         private int real_category_index = -1;                   //tracer helper
         private int selected_element_index = -1;
 
-        private string version = "2018.12.28.1_3D";
-
         private SFCFF.category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
 
         //these parameters control item loading behavior
@@ -44,8 +42,6 @@ namespace SpellforceDataEditor.special_forms
         {
             InitializeComponent();
             diff.init();
-
-            versionToolStripMenuItem.Text = "Version " + version;
         }
 
         //load game data

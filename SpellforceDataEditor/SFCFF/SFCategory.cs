@@ -421,7 +421,7 @@ namespace SpellforceDataEditor.SFCFF
             }
         }
 
-        // retyrbs index of an element with specified id (or -1, if it doesnt exist)
+        // returns index of an element with specified id (or -1, if it doesnt exist)
         public virtual int get_element_index(int id)
         {
             switch (elem_format[0])
@@ -910,6 +910,11 @@ namespace SpellforceDataEditor.SFCFF
             category_id = 2017;
         }
 
+        public override Object[] get_element(BinaryReader sr)
+        {
+            return get_element_multiple(sr, 'H');
+        }
+
         public override string get_element_string(int index)
         {
             UInt16 item_id = (UInt16)get_element_variant(index, 0).value;
@@ -938,6 +943,11 @@ namespace SpellforceDataEditor.SFCFF
             category_id = 2014;
         }
 
+        public override Object[] get_element(BinaryReader sr)
+        {
+            return get_element_multiple(sr, 'H');
+        }
+
         public override string get_element_string(int index)
         {
             UInt16 item_id = (UInt16)get_element_variant(index, 0).value;
@@ -959,6 +969,11 @@ namespace SpellforceDataEditor.SFCFF
             initialize("HBsH");
             category_name = "13. Item UI data";
             category_id = 2012;
+        }
+
+        public override Object[] get_element(BinaryReader sr)
+        {
+            return get_element_multiple(sr, 'H');
         }
 
         public override string get_element_string(int index)
@@ -1183,6 +1198,11 @@ namespace SpellforceDataEditor.SFCFF
             category_id = 2028;
         }
 
+        public override Object[] get_element(BinaryReader sr)
+        {
+            return get_element_multiple(sr, 'H');
+        }
+
         public override string get_element_string(int index)
         {
             UInt16 unit_id = (UInt16)get_element_variant(index, 0).value;
@@ -1314,22 +1334,33 @@ namespace SpellforceDataEditor.SFCFF
 
         public override Object[] get_element(BinaryReader sr)
         {
-            current_string = 0;
-            Object[] objs = new Object[elem_format.Length];
-            for (int i = 0; i < elem_format.Length; i++)
+            List<Object> elements_loaded = new List<Object>();
+            int cur_id = -1;
+            while (true)
             {
-                objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
+                if (sr.BaseStream.Position >= sr.BaseStream.Length)
+                    break;
+                int next_id = -1;
+                next_id = sr.ReadUInt16();
+                sr.BaseStream.Seek(-2, SeekOrigin.Current);
+                if (next_id == -1)
+                    break;
+                current_string = 0;
+                if ((next_id == cur_id) || (cur_id == -1))
+                {
+                    cur_id = next_id;
+                    for (int i = 0; i < elem_format.Length; i++)
+                        elements_loaded.Add(get_single_variant(sr, elem_format[i], string_size[current_string]));
+                    Byte vcount = (Byte)elements_loaded[elements_loaded.Count - 1];
+                    System.Diagnostics.Debug.WriteLine(vcount);
+                    for (int i = 0; i < vcount*2; i++)
+                        elements_loaded.Add(get_single_variant(sr, 'h', string_size[current_string]));
+                }
+                else
+                    break;
             }
-            int vertex_count = (int)((Byte)(objs[3]));
-            Object[] real_objs = new Object[elem_format.Length + vertex_count * 2];
-            for (int i = 0; i < elem_format.Length; i++)
-                real_objs[i] = objs[i];
-            for (int j = 0; j < vertex_count; j++)
-            {
-                real_objs[elem_format.Length + j * 2] = get_single_variant(sr, 'h', string_size[current_string]);
-                real_objs[elem_format.Length + j * 2 + 1] = get_single_variant(sr, 'h', string_size[current_string]);
-            }
-            return real_objs;
+
+            return elements_loaded.ToArray();
         }
 
         public override string get_element_string(int index)
@@ -1561,22 +1592,33 @@ namespace SpellforceDataEditor.SFCFF
 
         public override Object[] get_element(BinaryReader sr)
         {
-            current_string = 0;
-            Object[] objs = new Object[elem_format.Length];
-            for (int i = 0; i < elem_format.Length; i++)
+            List<Object> elements_loaded = new List<Object>();
+            int cur_id = -1;
+            while (true)
             {
-                objs[i] = get_single_variant(sr, elem_format[i], string_size[current_string]);
+                if (sr.BaseStream.Position >= sr.BaseStream.Length)
+                    break;
+                int next_id = -1;
+                next_id = sr.ReadUInt16();
+                sr.BaseStream.Seek(-2, SeekOrigin.Current);
+                if (next_id == -1)
+                    break;
+                current_string = 0;
+                if ((next_id == cur_id) || (cur_id == -1))
+                {
+                    cur_id = next_id;
+                    for (int i = 0; i < elem_format.Length; i++)
+                        elements_loaded.Add(get_single_variant(sr, elem_format[i], string_size[current_string]));
+                    Byte vcount = (Byte)elements_loaded[elements_loaded.Count - 1];
+                    System.Diagnostics.Debug.WriteLine(vcount);
+                    for (int i = 0; i < vcount * 2; i++)
+                        elements_loaded.Add(get_single_variant(sr, 'h', string_size[current_string]));
+                }
+                else
+                    break;
             }
-            int vertex_count = (int)((Byte)(objs[3]));
-            Object[] real_objs = new Object[elem_format.Length + vertex_count * 2];
-            for (int i = 0; i < elem_format.Length; i++)
-                real_objs[i] = objs[i];
-            for (int j = 0; j < vertex_count; j++)
-            {
-                real_objs[elem_format.Length + j * 2] = get_single_variant(sr, 'h', string_size[current_string]);
-                real_objs[elem_format.Length + j * 2 + 1] = get_single_variant(sr, 'h', string_size[current_string]);
-            }
-            return real_objs;
+
+            return elements_loaded.ToArray();
         }
 
         public override string get_element_string(int index)

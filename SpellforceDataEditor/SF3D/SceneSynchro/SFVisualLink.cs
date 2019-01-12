@@ -21,10 +21,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         }
 
-        //assumes correct data
+        // transforms a string into an item ID and item parameters
+        // returns whether succeeded
         public bool Read(string data)
         {
             String[] arr = data.Split(' ');
+            if (arr.Length == 0)
+                return false;
             int tmp_id;    //ugh...
             bool success = int.TryParse(arr[0], out tmp_id);
             if (!success)

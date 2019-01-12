@@ -115,28 +115,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 new_index = ListSkills.SelectedIndex;
 
             SFCategoryElement elem = category.get_element(current_element);
-            int cur_elem_count = elem.get().Count / 4;
 
-            int offset = 0;
-            SFCategoryElement new_elem = new SFCategoryElement();
-            Object[] obj_array = new Object[(cur_elem_count + 1) * 4];
-            for (int i = 0; i < cur_elem_count; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    obj_array[(i + offset) * 4 + j] = elem.get_single_variant(i * 4 + j).value;
-                }
-                if (i == new_index)
-                {
-                    offset = 1;
-                    obj_array[(i + offset) * 4 + 0] = (UInt16)elem.get_single_variant(0).value;
-                    obj_array[(i + offset) * 4 + 1] = (Byte)0;
-                    obj_array[(i + offset) * 4 + 2] = (Byte)0;
-                    obj_array[(i + offset) * 4 + 3] = (Byte)0;
-                }
-            }
-            new_elem.set(obj_array);
-            category.get_elements()[current_element] = new_elem;
+            object[] paste_data = new object[4];
+            paste_data[0] = (UInt16)elem.get_single_variant(0).value;
+            paste_data[1] = (Byte)0;
+            paste_data[2] = (Byte)0;
+            paste_data[3] = (Byte)0;
+
+            elem.paste_raw(paste_data, new_index * 4);
             set_element(current_element);
         }
 
@@ -149,25 +135,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int new_index = ListSkills.SelectedIndex;
 
             SFCategoryElement elem = category.get_element(current_element);
-            int cur_elem_count = elem.get().Count / 4;
+            elem.remove_raw(new_index * 4, 4);
 
-            int offset = 0;
-            SFCategoryElement new_elem = new SFCategoryElement();
-            Object[] obj_array = new Object[(cur_elem_count - 1) * 4];
-            for (int i = 0; i < cur_elem_count; i++)
-            {
-                if (i == new_index)
-                {
-                    offset = 1;
-                    continue;
-                }
-                for (int j = 0; j < 4; j++)
-                {
-                    obj_array[(i - offset) * 4 + j] = elem.get_single_variant(i * 4 + j).value;
-                }
-            }
-            new_elem.set(obj_array);
-            category.get_elements()[current_element] = new_elem;
             set_element(current_element);
         }
     }

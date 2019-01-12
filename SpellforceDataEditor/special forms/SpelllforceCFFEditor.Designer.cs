@@ -42,7 +42,6 @@
             this.specialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeDataLanguageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findAllReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.versionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.calculatorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CategorySelect = new System.Windows.Forms.ComboBox();
@@ -169,7 +168,6 @@
             this.specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.changeDataLanguageToolStripMenuItem,
             this.findAllReferencesToolStripMenuItem,
-            this.versionToolStripMenuItem,
             this.calculatorsToolStripMenuItem});
             this.specialToolStripMenuItem.Name = "specialToolStripMenuItem";
             this.specialToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
@@ -191,12 +189,6 @@
             this.findAllReferencesToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.findAllReferencesToolStripMenuItem.Text = "Find all references...";
             this.findAllReferencesToolStripMenuItem.Click += new System.EventHandler(this.findAllReferencesToolStripMenuItem_Click);
-            // 
-            // versionToolStripMenuItem
-            // 
-            this.versionToolStripMenuItem.Name = "versionToolStripMenuItem";
-            this.versionToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.versionToolStripMenuItem.Text = "Version";
             // 
             // calculatorsToolStripMenuItem
             // 
@@ -579,7 +571,6 @@
         private System.Windows.Forms.Button ClearSearchButton;
         private System.Windows.Forms.ToolStripMenuItem specialToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeDataLanguageToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem versionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findAllReferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem calculatorsToolStripMenuItem;
     }

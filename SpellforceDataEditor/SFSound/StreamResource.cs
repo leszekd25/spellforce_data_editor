@@ -17,7 +17,7 @@ namespace SpellforceDataEditor.SFSound
 
         }
 
-        public int Load(MemoryStream ms, SFResourceManager man)
+        public int Load(MemoryStream ms)
         {
             long data_length = ms.Length;
             sound_data = new byte[data_length];

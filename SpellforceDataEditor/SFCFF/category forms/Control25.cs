@@ -24,36 +24,67 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             vertex_index = -1;
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        public List<int> GetOffsets()
         {
-            set_element_variant(current_element, 0, Utility.TryParseUInt16(textBox1.Text));
+            List<int> offsets = new List<int>();
+            int cur_variant = 0;
+            SFCategoryElement elem = category.get_element(current_element);
+            while(cur_variant < elem.get().Count)
+            {
+                offsets.Add(cur_variant);
+                cur_variant += 4;
+                Byte vcount = (Byte)elem.get_single_variant(cur_variant - 1).value;
+                cur_variant += (vcount * 2);
+            }
+            return offsets;
         }
 
-        private void textBox2_TextChanged(object sender, EventArgs e)
+        public int GetVertexCount(int p_index)
         {
-            set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox2.Text));
+            if (p_index == -1)
+                return 0;
+            List<int> offsets = GetOffsets();
+            
+            if (p_index == ListPolygons.Items.Count - 1)
+                return ((category.get_element(current_element).get().Count - offsets[ListPolygons.Items.Count - 1]) - 4) / 2;
+            else
+               return ((offsets[p_index + 1] - offsets[p_index] - 4) / 2);
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            foreach(int off in GetOffsets())
+                set_element_variant(current_element, off, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, Utility.TryParseUInt8(textBox5.Text));
+            if (ListPolygons.SelectedIndex == -1)
+                return;
+            set_element_variant(current_element, GetOffsets()[ListPolygons.SelectedIndex]+2, Utility.TryParseUInt8(textBox5.Text));
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             vertex_index = listBox1.SelectedIndex;
-            textBox3.Text = variant_repr(4 + vertex_index * 2);
-            textBox4.Text = variant_repr(4 + vertex_index * 2 + 1);
+            if (vertex_index == -1)
+                return;
+            List<int> offsets = GetOffsets();
+            textBox3.Text = variant_repr(offsets[ListPolygons.SelectedIndex] + 4 + vertex_index * 2);
+            textBox4.Text = variant_repr(offsets[ListPolygons.SelectedIndex] + 4 + vertex_index * 2 + 1);
         }
 
         private void listBox1_update()
         {
             listBox1.Items.Clear();
-            int vertex_count = ((category.get_element(current_element).get().Count)-4)/2;
+            List<int> offsets = GetOffsets();
+
+            int vertex_count = GetVertexCount(ListPolygons.SelectedIndex);
+
             for(int i = 0; i < vertex_count; i++)
             {
-                Int16 x = (Int16)category.get_element_variant(current_element, 4 + i * 2).value;
-                Int16 y = (Int16)category.get_element_variant(current_element, 4 + i * 2 + 1).value;
+                Int16 x = (Int16)category.get_element_variant(current_element, offsets[ListPolygons.SelectedIndex] + 4 + i * 2).value;
+                Int16 y = (Int16)category.get_element_variant(current_element, offsets[ListPolygons.SelectedIndex] + 4 + i * 2 + 1).value;
                 listBox1.Items.Add(x.ToString() + " | " + y.ToString());
             }
         }
@@ -62,118 +93,153 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             if (vertex_index == -1)
                 return;
-            set_element_variant(current_element, 4 + vertex_index * 2, Utility.TryParseInt16(textBox3.Text));
+            set_element_variant(current_element, GetOffsets()[ListPolygons.SelectedIndex] + 4 + vertex_index * 2, Utility.TryParseInt16(textBox3.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
             if (vertex_index == -1)
                 return;
-            set_element_variant(current_element, 4 + vertex_index * 2 + 1, Utility.TryParseInt16(textBox4.Text));
+            set_element_variant(current_element, GetOffsets()[ListPolygons.SelectedIndex] + 4 + vertex_index * 2 + 1, Utility.TryParseInt16(textBox4.Text));
+        }
+
+        public override void set_element(int index)
+        {
+            current_element = index;
+
+            ListPolygons_update();
+
+            show_element();
         }
 
         public override void show_element()
         {
             textBox1.Text = variant_repr(0);
-            textBox2.Text = variant_repr(1);
-            textBox5.Text = variant_repr(2);
             vertex_index = -1;
             listBox1_update();
-            textBox3.Text = "";
-            textBox4.Text = "";
         }
 
         private void buttonInsert_Click(object sender, EventArgs e)
         {
-            int new_index;
-            if (listBox1.SelectedIndex == -1)
-                if (listBox1.Items.Count == 0)
-                    new_index = 0;
-                else
-                    return;
-            else
-                new_index = listBox1.SelectedIndex;
+            int p_index = ListPolygons.SelectedIndex;
+            if (p_index == -1)
+                return;
+            int v_index = vertex_index;
+            if (v_index == -1)
+                v_index = listBox1.Items.Count;
 
             SFCategoryElement elem = category.get_element(current_element);
-            int len = elem.get().Count;
-            int poly_count = (elem.get().Count - 4) / 2;
-            SFCategoryElement new_elem = new SFCategoryElement();
-            Object[] obj_array = new Object[len+2];
-            
-            for(int i = 0; i < 3; i++)
-            {
-                obj_array[i] = elem.get_single_variant(i).value;
-            }
-            obj_array[3] = (Byte)(poly_count + 1);
 
-            int offset = 0;
-            for(int i = 0; i < poly_count; i++)
-            {
-                //Console.WriteLine(elem.get_single_variant((i + offset) * 2 + 0).value);
-                obj_array[4+(i + offset) * 2 + 0] = elem.get_single_variant(4+(i * 2) + 0).value;
-                obj_array[4+(i + offset) * 2 + 1] = elem.get_single_variant(4+(i * 2) + 1).value;
-                if(i == new_index)
-                {
-                    offset = 1;
-                    //Console.WriteLine("cur ind: " + i.ToString());
-                    obj_array[4+(i + offset) * 2 + 0] = (Int16)0;
-                    obj_array[4+(i + offset) * 2 + 1] = (Int16)0;
-                }
-            }
+            object[] paste_data = new object[2];
+            paste_data[0] = (Int16)0;
+            paste_data[1] = (Int16)0;
 
-            if(poly_count == 0)
-            {
-                obj_array[4] = (Int16)0;
-                obj_array[5] = (Int16)0;
-            }
+            int vc_offset = GetOffsets()[p_index] + 3;
+            Byte vcount = (Byte)elem.get_single_variant(vc_offset).value;
 
-            new_elem.set(obj_array);
-            category.get_elements()[current_element] = new_elem;
+            elem.paste_raw(paste_data, GetOffsets()[p_index] + 4 + v_index * 2);
+
+            elem.set_single_variant(vc_offset, (Byte)(vcount + 1));
+
             listBox1_update();
+            
         }
 
         private void buttonRemove_Click(object sender, EventArgs e)
         {
-            int new_index;
-            if (listBox1.SelectedIndex == -1)
-                    return;
-            else
-                new_index = listBox1.SelectedIndex;
+            int p_index = ListPolygons.SelectedIndex;
+            if (p_index == -1)
+                return;
+            int v_index = vertex_index;
+            if (v_index == -1)
+                return;
+            if (GetVertexCount(p_index) <= 1)
+                return;
 
             SFCategoryElement elem = category.get_element(current_element);
-            new_index = listBox1.SelectedIndex;
-            int len = elem.get().Count;
-            int poly_count = (elem.get().Count - 4) / 2;
-            SFCategoryElement new_elem = new SFCategoryElement();
-            Object[] obj_array = new Object[len - 2];
 
-            for (int i = 0; i < 3; i++)
-            {
-                obj_array[i] = elem.get_single_variant(i).value;
-            }
-            obj_array[3] = (Byte)(poly_count - 1);
+            int vc_offset = GetOffsets()[p_index] + 3;
+            Byte vcount = (Byte)elem.get_single_variant(vc_offset).value;
 
-            int offset = 0;
-            for (int i = 0; i < poly_count-1; i++)
-            {
-                if (i == new_index)
-                {
-                    offset = 1;
-                }
-                //Console.WriteLine(elem.get_single_variant((i + offset) * 2 + 0).value);
-                obj_array[4 + i * 2 + 0] = elem.get_single_variant(4 + ((i+offset) * 2) + 0).value;
-                obj_array[4 + i * 2 + 1] = elem.get_single_variant(4 + ((i+offset) * 2) + 1).value;
-            }
+            elem.remove_raw(GetOffsets()[p_index] + 4 + v_index * 2, 2);
 
-            new_elem.set(obj_array);
-            category.get_elements()[current_element] = new_elem;
+            elem.set_single_variant(vc_offset, (Byte)(vcount - 1));
+
             listBox1_update();
+            
         }
 
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
                 step_into(textBox1, 23);
+        }
+
+        private void ListPolygons_update()
+        {
+            SFCategoryElement elem = category.get_element(current_element);
+
+            ListPolygons.Items.Clear();
+
+            foreach (int o in GetOffsets())
+            {
+                Byte p_index = (Byte)elem.get_single_variant(o + 1).value;
+                ListPolygons.Items.Add(p_index.ToString());
+            }
+        }
+
+        private void ListPolygons_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ListPolygons.SelectedIndex == -1)
+                return;
+
+            listBox1_update();
+            textBox5.Text = variant_repr(GetOffsets()[ListPolygons.SelectedIndex] + 2);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            int p_index = ListPolygons.SelectedIndex;
+            if (p_index == -1)
+                p_index = ListPolygons.Items.Count;
+
+            SFCategoryElement elem = category.get_element(current_element);
+
+            Byte max_index = 0;
+            foreach(int o in GetOffsets())
+            {
+                max_index = Math.Max(max_index, (Byte)(elem.get_single_variant(o + 1).value));
+            }
+            max_index = (Byte)(max_index + 1);
+
+            object[] paste_data = new object[6];
+            paste_data[0] = (UInt16)elem.get_single_variant(0).value;
+            paste_data[1] = (Byte)max_index;
+            paste_data[2] = (Byte)1;
+            paste_data[3] = (Byte)1;
+            paste_data[4] = (Int16)0;
+            paste_data[5] = (Int16)0;
+
+            elem.paste_raw(paste_data, GetOffsets()[p_index]);
+
+            set_element(current_element);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            int p_index = ListPolygons.SelectedIndex;
+            if (p_index == -1)
+                return;
+            if (ListPolygons.Items.Count <= 1)
+                return;
+
+            SFCategoryElement elem = category.get_element(current_element);
+
+            int count = 4 + (GetVertexCount(p_index)*2);
+
+            elem.remove_raw(GetOffsets()[p_index], count);
+
+            set_element(current_element);
         }
     }
 }

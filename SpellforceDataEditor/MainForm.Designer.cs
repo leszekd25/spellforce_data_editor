@@ -34,6 +34,8 @@
             this.bScripting = new System.Windows.Forms.Button();
             this.bMods = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
+            this.labelVersion = new System.Windows.Forms.Label();
+            this.linkEditor = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // label1
@@ -95,11 +97,36 @@
             this.label2.TabIndex = 5;
             this.label2.Text = "Select tools to run! Closing this window will close all running tools.";
             // 
+            // labelVersion
+            // 
+            this.labelVersion.AutoSize = true;
+            this.labelVersion.Location = new System.Drawing.Point(12, 83);
+            this.labelVersion.Name = "labelVersion";
+            this.labelVersion.Size = new System.Drawing.Size(108, 13);
+            this.labelVersion.TabIndex = 6;
+            this.labelVersion.Text = "Version 12.01.2019.1";
+            // 
+            // linkEditor
+            // 
+            this.linkEditor.AutoSize = true;
+            this.linkEditor.LinkBehavior = System.Windows.Forms.LinkBehavior.AlwaysUnderline;
+            this.linkEditor.LinkColor = System.Drawing.Color.Blue;
+            this.linkEditor.Location = new System.Drawing.Point(12, 96);
+            this.linkEditor.Name = "linkEditor";
+            this.linkEditor.Size = new System.Drawing.Size(111, 13);
+            this.linkEditor.TabIndex = 7;
+            this.linkEditor.TabStop = true;
+            this.linkEditor.Text = "New version available";
+            this.linkEditor.VisitedLinkColor = System.Drawing.Color.Blue;
+            this.linkEditor.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEditor_LinkClicked);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(258, 117);
+            this.Controls.Add(this.linkEditor);
+            this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.bMods);
             this.Controls.Add(this.bScripting);
@@ -121,5 +148,7 @@
         private System.Windows.Forms.Button bScripting;
         private System.Windows.Forms.Button bMods;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelVersion;
+        private System.Windows.Forms.LinkLabel linkEditor;
     }
 }

@@ -21,32 +21,121 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             column_dict.Add("Scaled down?", new int[1] { 3 });
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void set_list_text(int i)
         {
-            set_element_variant(current_element, 0, Utility.TryParseUInt16(textBox1.Text));
+            Byte ui_index = (Byte)(category.get_element_variant(current_element, i * 4 + 1)).value;
+
+            ListUI.Items[i] = ui_index.ToString();
         }
 
-        private void textBox2_TextChanged(object sender, EventArgs e)
+        private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox2.Text));
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 4;
+
+            for (int i = 0; i < elem_count; i++)
+                set_element_variant(current_element, i * 4 + 0, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, Utility.FixedLengthString(textBox4.Text, 64));
+            int cur_selected = ListUI.SelectedIndex;
+            if (cur_selected < 0)
+                return;
+            set_element_variant(current_element, cur_selected * 4 + 2, Utility.FixedLengthString(textBox4.Text, 64));
+            set_list_text(cur_selected);
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, (checkBox1.Checked?(UInt16)1:(UInt16)0));
+            int cur_selected = ListUI.SelectedIndex;
+            if (cur_selected < 0)
+                return;
+            set_element_variant(current_element, cur_selected * 4 + 3, (checkBox1.Checked?(UInt16)1:(UInt16)0));
+            set_list_text(cur_selected);
+        }
+
+        public override void set_element(int index)
+        {
+            current_element = index;
+
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 4;
+
+            ListUI.Items.Clear();
+
+            for (int i = 0; i < elem_count; i++)
+            {
+                ListUI.Items.Add("");
+                set_list_text(i);
+            }
+
+            show_element();
         }
 
         public override void show_element()
         {
             textBox1.Text = variant_repr(0);
-            textBox2.Text = variant_repr(1);
-            textBox4.Text = string_repr(2);
-            checkBox1.Checked = ((UInt16)category.get_element_variant(current_element, 3).value == 1 ? true : false);
+
+        }
+
+        private void ListUI_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int cur_selected = ListUI.SelectedIndex;
+            if (cur_selected < 0)
+                return;
+            textBox4.Text = string_repr(cur_selected * 4 + 2);
+            checkBox1.Checked = ((UInt16)(category.get_element_variant(current_element, cur_selected * 4 + 3)).value) == 1;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            int new_index;
+            if (ListUI.SelectedIndex == -1)
+                new_index = ListUI.Items.Count - 1;
+            else
+                new_index = ListUI.SelectedIndex;
+
+            SFCategoryElement elem = category.get_element(current_element);
+            int cur_elem_count = elem.get().Count / 4;
+
+            Byte max_index = 0;
+            for (int i = 0; i < cur_elem_count; i++)
+            {
+                max_index = Math.Max(max_index, (Byte)(elem.get_single_variant(i * 4 + 1).value));
+            }
+            max_index += 1;
+
+            object[] paste_data = new object[4];
+            paste_data[0] = (UInt16)elem.get_single_variant(0).value;
+            paste_data[1] = (Byte)max_index;
+            paste_data[2] = Utility.FixedLengthString("", 64);
+            paste_data[3] = (UInt16)0;
+
+            elem.paste_raw(paste_data, new_index * 4);
+
+            set_element(current_element);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (ListUI.SelectedIndex == -1)
+                return;
+            if (ListUI.Items.Count == 1)
+                return;
+            int new_index = ListUI.SelectedIndex;
+
+            SFCategoryElement elem = category.get_element(current_element);
+            Byte cur_spell_index = (Byte)(elem.get_single_variant(new_index * 4 + 1).value);
+
+            elem.remove_raw(new_index * 4, 4);
+
+            int cur_elem_count = elem.get().Count / 4;
+            for (int i = 0; i < cur_elem_count; i++)
+                if ((Byte)(elem.get_single_variant(i * 4 + 1).value) > cur_spell_index)
+                    elem.set_single_variant(i * 4 + 1, (Byte)((Byte)(elem.get_single_variant(i * 4 + 1).value) - (Byte)1));
+
+            set_element(current_element);
         }
 
         private void textBox1_MouseDown(object sender, MouseEventArgs e)

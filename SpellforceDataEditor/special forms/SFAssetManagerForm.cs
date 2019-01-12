@@ -14,12 +14,12 @@ using SpellforceDataEditor.SF3D;
 using SpellforceDataEditor.SF3D.SceneSynchro;
 using SpellforceDataEditor.SF3D.SFRender;
 using SpellforceDataEditor.SFSound;
+using SpellforceDataEditor.SFResources;
 
 namespace SpellforceDataEditor.special_forms
 {
     public partial class SFAssetManagerForm : Form
     {
-        SFResources.SFResourceManager resources = new SFResources.SFResourceManager();
         SFRenderEngine render_engine;
         SFSoundEngine sound_engine;
 
@@ -28,10 +28,12 @@ namespace SpellforceDataEditor.special_forms
         Point mouse_pos;
         bool mouse_pressed = false;
 
+        bool ready = false;
+
         public SFAssetManagerForm()
         {
-            render_engine = new SFRenderEngine(resources);
-            sound_engine = new SFSoundEngine(resources);
+            render_engine = new SFRenderEngine();
+            sound_engine = new SFSoundEngine();
             InitializeComponent();
         }
 
@@ -57,10 +59,11 @@ namespace SpellforceDataEditor.special_forms
         {
             StatusText.Text = "Loading...";
             statusStrip1.Refresh();
-            int result = render_engine.SpecifyGameDirectory(dname);
+            int result = SFUnPak.SFUnPak.SpecifyGameDirectory(dname); //render_engine.SpecifyGameDirectory(dname);
             if(result == 0)
             {
-                resources.FindAllMeshes();
+                ready = true;
+                SFResourceManager.FindAllMeshes();
             }
             return result;
         }
@@ -96,7 +99,7 @@ namespace SpellforceDataEditor.special_forms
         private void SF3DManagerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             render_engine.scene_manager.ClearScene();
-            resources.DisposeAll();
+            SFResourceManager.DisposeAll();
             sound_engine.UnloadSound();
         }
 
@@ -112,7 +115,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void ComboBrowseMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!render_engine.ready_to_use)
+            if (!ready)
                 return;
 
             DisableAnimation();
@@ -122,7 +125,7 @@ namespace SpellforceDataEditor.special_forms
             sound_engine.UnloadSound();
             TimerSoundDuration.Stop();
             trackSoundDuration.Value = 0;
-            resources.DisposeAll();
+            SFResourceManager.DisposeAll();
             HideAllPanels();
             synchronized = false;
 
@@ -135,7 +138,7 @@ namespace SpellforceDataEditor.special_forms
                 scene.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { "", "", "simple_mesh" });
                 render_engine.scene_manager.ParseSceneDescription(scene);
 
-                foreach (string mesh_name in resources.mesh_names)
+                foreach (string mesh_name in SFResourceManager.mesh_names)
                     ListEntries.Items.Add(mesh_name);
             }
 
@@ -151,7 +154,7 @@ namespace SpellforceDataEditor.special_forms
                 scene.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { "", "", "dynamic_mesh" });
                 render_engine.scene_manager.ParseSceneDescription(scene);
 
-                foreach (string skel_name in resources.skeleton_names)
+                foreach (string skel_name in SFResourceManager.skeleton_names)
                     ListEntries.Items.Add(skel_name);
             }
 
@@ -167,7 +170,7 @@ namespace SpellforceDataEditor.special_forms
                 ListEntries.Show();
                 button1Extract.Show();
                 PanelSound.Show();
-                foreach (string musi_name in resources.music_names)
+                foreach (string musi_name in SFResourceManager.music_names)
                     ListEntries.Items.Add(musi_name);
             }
 
@@ -176,7 +179,7 @@ namespace SpellforceDataEditor.special_forms
                 ListEntries.Show();
                 button1Extract.Show();
                 PanelSound.Show();
-                foreach (string snd_name in resources.sound_names)
+                foreach (string snd_name in SFResourceManager.sound_names)
                     ListEntries.Items.Add(snd_name);
             }
 
@@ -192,10 +195,10 @@ namespace SpellforceDataEditor.special_forms
 
         private void ListEntries_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!render_engine.ready_to_use)
+            if (!ready)
                 return;
 
-            resources.DisposeAll();
+            SFResourceManager.DisposeAll();
 
             SFSceneManager scene = render_engine.scene_manager;
 
@@ -208,13 +211,13 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string model_name = ListEntries.SelectedItem.ToString();
                     model_name = model_name.Substring(0, model_name.Length - 4);
-                    int result = resources.Models.Load(model_name);
+                    int result = SFResourceManager.Models.Load(model_name);
                     if(result != 0)
                     {
                         StatusText.Text = "Failed to load model " + model_name;
                         return;
                     }
-                    obj_s1.Mesh = resources.Models.Get(model_name);
+                    obj_s1.Mesh = SFResourceManager.Models.Get(model_name);
                     StatusText.Text = "Loaded model " + model_name;
                 }
             }
@@ -232,26 +235,26 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string skin_name = ListEntries.SelectedItem.ToString();
                     skin_name = skin_name.Substring(0, skin_name.Length - 4);
-                    int result = resources.Skins.Load(skin_name);
+                    int result = SFResourceManager.Skins.Load(skin_name);
                     if (result != 0)
                     {
                         StatusText.Text = "Failed to load skin " + skin_name + ", status code "+result.ToString();
                         obj_d1.SetSkeletonSkin(null, null);
                         return;
                     }
-                    skin = resources.Skins.Get(skin_name);
+                    skin = SFResourceManager.Skins.Get(skin_name);
                     StatusText.Text = "Loaded skin " + skin_name;
                     statusStrip1.Refresh();
 
                     string skel_name = skin_name;
-                    result = resources.Skeletons.Load(skel_name);
+                    result = SFResourceManager.Skeletons.Load(skel_name);
                     if (result != 0)
                     {
                         StatusText.Text = "Failed to load skeleton " + skel_name;
                         obj_d1.SetSkeletonSkin(null, null);
                         return;
                     }
-                    skel = resources.Skeletons.Get(skel_name);
+                    skel = SFResourceManager.Skeletons.Get(skel_name);
                     StatusText.Text = "Loaded skeleton " + skel_name;
 
                     List<string> anims = GetAllSkeletonAnimations(skel_name);
@@ -270,7 +273,7 @@ namespace SpellforceDataEditor.special_forms
                     string s_n = ListEntries.SelectedItem.ToString();
                     s_n = s_n.Substring(0, s_n.Length - 4);
 
-                    int result = resources.Musics.Load(s_n);
+                    int result = SFResourceManager.Musics.Load(s_n);
                     if (result != 0)
                     {
                         StatusText.Text = "Failed to load music " + s_n;
@@ -279,7 +282,7 @@ namespace SpellforceDataEditor.special_forms
 
                     sound_engine.UnloadSound();
 
-                    sound_engine.LoadSoundMP3(resources.Musics.Get(s_n));
+                    sound_engine.LoadSoundMP3(SFResourceManager.Musics.Get(s_n));
                     StatusText.Text = "Loaded music " + s_n;
                 }
             }
@@ -291,7 +294,7 @@ namespace SpellforceDataEditor.special_forms
                     string s_n = ListEntries.SelectedItem.ToString();
                     s_n = s_n.Substring(0, s_n.Length - 4);
 
-                    int result = resources.Sounds.Load(s_n);
+                    int result = SFResourceManager.Sounds.Load(s_n);
                     if (result != 0)
                     {
                         StatusText.Text = "Failed to load sound " + s_n;
@@ -300,7 +303,7 @@ namespace SpellforceDataEditor.special_forms
 
                     sound_engine.UnloadSound();
 
-                    sound_engine.LoadSoundWAV(resources.Sounds.Get(s_n));
+                    sound_engine.LoadSoundWAV(SFResourceManager.Sounds.Get(s_n));
                     StatusText.Text = "Loaded sound " + s_n;
                 }
             }
@@ -313,7 +316,7 @@ namespace SpellforceDataEditor.special_forms
                     string type = s_n.Substring(s_n.Length - 4, 4);
                     s_n = s_n.Substring(0, s_n.Length - 4);
 
-                    int result = resources.Messages.Load(s_n);
+                    int result = SFResourceManager.Messages.Load(s_n);
                     if (result != 0)
                     {
                         StatusText.Text = "Failed to load message " + s_n;
@@ -323,9 +326,9 @@ namespace SpellforceDataEditor.special_forms
                     sound_engine.UnloadSound();
 
                     if (type == ".wav")
-                        sound_engine.LoadSoundWAV(resources.Messages.Get(s_n));
+                        sound_engine.LoadSoundWAV(SFResourceManager.Messages.Get(s_n));
                     else if (type == ".mp3")
-                        sound_engine.LoadSoundMP3(resources.Messages.Get(s_n));
+                        sound_engine.LoadSoundMP3(SFResourceManager.Messages.Get(s_n));
                     else
                     {
                         StatusText.Text = "Failed to load message " + s_n;
@@ -369,7 +372,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string anim_name = ListAnimations.SelectedItem.ToString();
                     anim_name = anim_name.Substring(0, anim_name.Length - 4);
-                    int result = resources.Animations.Load(anim_name);
+                    int result = SFResourceManager.Animations.Load(anim_name);
                     if ((result != 0)&&(result != -1))
                     {
                         
@@ -377,14 +380,14 @@ namespace SpellforceDataEditor.special_forms
                         DisableAnimation();
                         return;
                     }
-                    if(resources.Animations.Get(anim_name).bone_count != obj_d1.skeleton.bone_count)
+                    if(SFResourceManager.Animations.Get(anim_name).bone_count != obj_d1.skeleton.bone_count)
                     {
                         StatusText.Text = "Invalid animation "+anim_name;
                         DisableAnimation();
                         return;
                     }
 
-                    obj_d1.SetAnimation(resources.Animations.Get(anim_name), true);
+                    obj_d1.SetAnimation(SFResourceManager.Animations.Get(anim_name), true);
                     scene.SetSceneTime(0f);
                     scene.scene_meta.duration = obj_d1.animation.max_time;
                     StatusText.Text = "Loaded animation " + anim_name;
@@ -400,7 +403,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string anim_name = ListAnimations.SelectedItem.ToString();
                     anim_name = anim_name.Substring(0, anim_name.Length - 4);
-                    int result = resources.Animations.Load(anim_name);
+                    int result = SFResourceManager.Animations.Load(anim_name);
                     if ((result != 0) && (result != -1))
                     {
 
@@ -411,13 +414,13 @@ namespace SpellforceDataEditor.special_forms
 
                     foreach (KeyValuePair<string, string> kv in scene.scene_meta.obj_to_anim)
                     {
-                        if (resources.Animations.Get(anim_name).bone_count != scene.objects_dynamic[kv.Key].skeleton.bone_count)
+                        if (SFResourceManager.Animations.Get(anim_name).bone_count != scene.objects_dynamic[kv.Key].skeleton.bone_count)
                         {
                             StatusText.Text = "Invalid animation " + anim_name;
                             DisableAnimation();
                             return;
                         }
-                        scene.objects_dynamic[kv.Key].SetAnimation(resources.Animations.Get(anim_name), true);
+                        scene.objects_dynamic[kv.Key].SetAnimation(SFResourceManager.Animations.Get(anim_name), true);
                         scene.scene_meta.duration = scene.objects_dynamic[kv.Key].animation.max_time;
                     }
 
@@ -474,7 +477,7 @@ namespace SpellforceDataEditor.special_forms
             //cut until there's at least one anim
             while((anims.Count == 0)&&(skel_name != ""))
             {
-                foreach(string anim_name in resources.animation_names)
+                foreach(string anim_name in SFResourceManager.animation_names)
                 {
                     if (anim_name.StartsWith(skel_name))
                         anims.Add(anim_name);
@@ -529,7 +532,7 @@ namespace SpellforceDataEditor.special_forms
             ListEntries.Items.Clear();
             ListAnimations.Items.Clear();
             render_engine.scene_manager.ClearScene();
-            resources.DisposeAll();
+            SFResourceManager.DisposeAll();
             GC.Collect(2, GCCollectionMode.Forced, false);
 
             System.Diagnostics.Debug.WriteLine("GENERATING SCENE " + cat.ToString() + "|" + elem.ToString());
@@ -640,44 +643,44 @@ namespace SpellforceDataEditor.special_forms
 
             if(ComboBrowseMode.SelectedIndex == 0)
             {
-                SFModel3D mod = resources.Models.Get(item);
+                SFModel3D mod = SFResourceManager.Models.Get(item);
                 if (mod == null)
                     return;
 
-                resources.Models.Extract(item);
-                List<string> tx = resources.Textures.GetNames();
+                SFResourceManager.Models.Extract(item);
+                List<string> tx = SFResourceManager.Textures.GetNames();
                 foreach (string t in tx)
                     foreach (SFMaterial mat in mod.materials)
-                        if (mat.texture == resources.Textures.Get(t))
-                            resources.Textures.Extract(t);
+                        if (mat.texture == SFResourceManager.Textures.Get(t))
+                            SFResourceManager.Textures.Extract(t);
 
                 StatusText.Text = "Extracted " + item;
             }
 
             if(ComboBrowseMode.SelectedIndex == 1)
             {
-                SFModelSkin mod = resources.Skins.Get(item);
+                SFModelSkin mod = SFResourceManager.Skins.Get(item);
                 if (mod == null)
                     return;
 
                 objectAnimated obj = render_engine.scene_manager.objects_dynamic["dynamic_mesh"];
 
-                resources.Skins.Extract(item);
-                List<string> skels = resources.Skeletons.GetNames();
+                SFResourceManager.Skins.Extract(item);
+                List<string> skels = SFResourceManager.Skeletons.GetNames();
                 foreach (string skel in skels)
-                    if(obj.skeleton == resources.Skeletons.Get(skel))
+                    if(obj.skeleton == SFResourceManager.Skeletons.Get(skel))
                     {
-                        resources.Skeletons.Extract(skel);
-                        resources.BSIs.Extract(skel);
-                        resources.Skins.Extract(skel);
+                        SFResourceManager.Skeletons.Extract(skel);
+                        SFResourceManager.BSIs.Extract(skel);
+                        SFResourceManager.Skins.Extract(skel);
                         
-                        List<string> tx = resources.Textures.GetNames();
+                        List<string> tx = SFResourceManager.Textures.GetNames();
                         foreach (string t in tx)
                             foreach (SFModelSkinChunk ch in obj.skin.submodels)
                             {
                                 SFMaterial mat = ch.material;
-                                if (mat.texture == resources.Textures.Get(t))
-                                    resources.Textures.Extract(t);
+                                if (mat.texture == SFResourceManager.Textures.Get(t))
+                                    SFResourceManager.Textures.Extract(t);
                             }
 
                         break;
@@ -687,33 +690,33 @@ namespace SpellforceDataEditor.special_forms
 
             if (ComboBrowseMode.SelectedIndex == 3)
             {
-                StreamResource s = resources.Musics.Get(item);
+                StreamResource s = SFResourceManager.Musics.Get(item);
                 if (s == null)
                     return;
 
-                resources.Musics.Extract(item);
+                SFResourceManager.Musics.Extract(item);
 
                 StatusText.Text = "Extracted " + item;
             }
 
             if (ComboBrowseMode.SelectedIndex == 4)
             {
-                StreamResource s = resources.Sounds.Get(item);
+                StreamResource s = SFResourceManager.Sounds.Get(item);
                 if (s == null)
                     return;
 
-                resources.Sounds.Extract(item);
+                SFResourceManager.Sounds.Extract(item);
 
                 StatusText.Text = "Extracted " + item;
             }
 
             if (ComboBrowseMode.SelectedIndex == 5)
             {
-                StreamResource s = resources.Messages.Get(item);
+                StreamResource s = SFResourceManager.Messages.Get(item);
                 if (s == null)
                     return;
 
-                resources.Messages.Extract(item);
+                SFResourceManager.Messages.Extract(item);
 
                 StatusText.Text = "Extracted " + item;
             }
@@ -730,11 +733,11 @@ namespace SpellforceDataEditor.special_forms
 
             if((ComboBrowseMode.SelectedIndex == 1)||(ComboBrowseMode.SelectedIndex == 2))
             {
-                SFAnimation anim = resources.Animations.Get(item);
+                SFAnimation anim = SFResourceManager.Animations.Get(item);
                 if (anim == null)
                     return;
 
-                resources.Animations.Extract(item);
+                SFResourceManager.Animations.Extract(item);
 
                 StatusText.Text = "Extracted " + item;
             }
@@ -752,25 +755,25 @@ namespace SpellforceDataEditor.special_forms
                 return;
 
             if (item == "RTS Battle")
-                resources.Messages.SetSuffixExtension(".wav");
+                SFResourceManager.Messages.SetSuffixExtension(".wav");
             else
-                resources.Messages.SetSuffixExtension(".mp3");
+                SFResourceManager.Messages.SetSuffixExtension(".mp3");
 
             if (item == "RTS Battle")
-                resources.Messages.SetPrefixPath("sound\\speech\\battle");
+                SFResourceManager.Messages.SetPrefixPath("sound\\speech\\battle");
             else if (item == "Male")
-                resources.Messages.SetPrefixPath("sound\\speech\\male");
+                SFResourceManager.Messages.SetPrefixPath("sound\\speech\\male");
             else if (item == "Female")
-                resources.Messages.SetPrefixPath("sound\\speech\\female");
+                SFResourceManager.Messages.SetPrefixPath("sound\\speech\\female");
             else if (item == "RTS Workers")
-                resources.Messages.SetPrefixPath("sound\\speech\\messages");
+                SFResourceManager.Messages.SetPrefixPath("sound\\speech\\messages");
             else if (item == "NPC")
-                resources.Messages.SetPrefixPath("sound\\speech");
+                SFResourceManager.Messages.SetPrefixPath("sound\\speech");
             else
                 return;
 
             ListEntries.Items.Clear();
-            foreach (string s in resources.message_names[item])
+            foreach (string s in SFResourceManager.message_names[item])
                 ListEntries.Items.Add(s);
         }
     }

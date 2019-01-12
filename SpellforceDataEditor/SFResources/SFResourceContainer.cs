@@ -20,18 +20,16 @@ namespace SpellforceDataEditor.SFResources
         Dictionary<string, T> cont =new Dictionary<string, T>();
         string prefix_path = "";
         string suffix_extension = "";
-        SFResourceManager manager;
 
         public SFResourceContainer()
         {
         }
 
-        public SFResourceContainer(string p, string s, SFResourceManager _man)
+        public SFResourceContainer(string p, string s)
         {
             cont = new Dictionary<string, T>();
             prefix_path = p;
             suffix_extension = s;
-            manager = _man;
         }
 
         public void SetPrefixPath(string p)
@@ -52,11 +50,11 @@ namespace SpellforceDataEditor.SFResources
             if (ms == null)
                 return -2;
             //resource loading stack
-            string prev_res = manager.current_resource;
-            manager.current_resource = rname;
+            string prev_res = SFResourceManager.current_resource;
+            SFResourceManager.current_resource = rname;
             T resource = new T();
-            int res_code = resource.Load(ms, manager);
-            manager.current_resource = prev_res;
+            int res_code = resource.Load(ms);
+            SFResourceManager.current_resource = prev_res;
             //end of stack
             if (res_code != 0)
                 return res_code;

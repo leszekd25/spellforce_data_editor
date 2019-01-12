@@ -22,44 +22,140 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             column_dict.Add("Requirement 3", new int[1] { 4 });
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void set_list_text(int i)
         {
-            set_element_variant(current_element, 0, Utility.TryParseUInt16(textBox1.Text));
+            Byte skill_major = (Byte)(category.get_element_variant(current_element, i * 5 + 2)).value;
+            Byte skill_minor = (Byte)(category.get_element_variant(current_element, i * 5 + 3)).value;
+            Byte skill_level = (Byte)(category.get_element_variant(current_element, i * 5 + 4)).value;
+
+            string txt = SFCategoryManager.get_skill_name(skill_major, skill_minor, skill_level);
+            ListRequirements.Items[i] = txt;
         }
 
-        private void textBox2_TextChanged(object sender, EventArgs e)
+        private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox2.Text));
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 5;
+
+            for (int i = 0; i < elem_count; i++)
+                set_element_variant(current_element, i * 5 + 0, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, Utility.TryParseUInt8(textBox3.Text));
+            int cur_selected = ListRequirements.SelectedIndex;
+            if (cur_selected < 0)
+                return;
+            set_element_variant(current_element, cur_selected * 5 + 2, Utility.TryParseUInt8(textBox3.Text));
+            set_list_text(cur_selected);
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, Utility.TryParseUInt8(textBox5.Text));
+            int cur_selected = ListRequirements.SelectedIndex;
+            if (cur_selected < 0)
+                return;
+            set_element_variant(current_element, cur_selected * 5 + 3, Utility.TryParseUInt8(textBox5.Text));
+            set_list_text(cur_selected);
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 4, Utility.TryParseUInt8(textBox4.Text));
+            int cur_selected = ListRequirements.SelectedIndex;
+            if (cur_selected < 0)
+                return;
+            set_element_variant(current_element, cur_selected * 5 + 4, Utility.TryParseUInt8(textBox4.Text));
+            set_list_text(cur_selected);
+        }
+
+        public override void set_element(int index)
+        {
+            current_element = index;
+
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 5;
+
+            ListRequirements.Items.Clear();
+
+            for (int i = 0; i < elem_count; i++)
+            {
+                ListRequirements.Items.Add("");
+                set_list_text(i);
+            }
+
+            show_element();
         }
 
         public override void show_element()
         {
             textBox1.Text = variant_repr(0);
-            textBox2.Text = variant_repr(1);
-            textBox3.Text = variant_repr(2);
-            textBox5.Text = variant_repr(3);
-            textBox4.Text = variant_repr(4);
         }
 
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
                 step_into(textBox1, 6);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            int new_index;
+            if (ListRequirements.SelectedIndex == -1)
+                new_index = ListRequirements.Items.Count - 1;
+            else
+                new_index = ListRequirements.SelectedIndex;
+
+            SFCategoryElement elem = category.get_element(current_element);
+            int cur_elem_count = elem.get().Count / 5;
+
+            Byte max_index = 0;
+            for (int i = 0; i < cur_elem_count; i++)
+            {
+                max_index = Math.Max(max_index, (Byte)(elem.get_single_variant(i * 5 + 1).value));
+            }
+            max_index += 1;
+
+            object[] paste_data = new object[5];
+            paste_data[0] = (UInt16)elem.get_single_variant(0).value;
+            paste_data[1] = (Byte)max_index;
+            paste_data[2] = (Byte)0;
+            paste_data[3] = (Byte)0;
+            paste_data[4] = (Byte)0;
+
+            elem.paste_raw(paste_data, new_index * 5);
+
+            set_element(current_element);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (ListRequirements.SelectedIndex == -1)
+                return;
+            if (ListRequirements.Items.Count == 1)
+                return;
+            int new_index = ListRequirements.SelectedIndex;
+
+            SFCategoryElement elem = category.get_element(current_element);
+            Byte cur_spell_index = (Byte)(elem.get_single_variant(new_index * 5 + 1).value);
+
+            elem.remove_raw(new_index * 5, 5);
+
+            int cur_elem_count = elem.get().Count / 5;
+            for (int i = 0; i < cur_elem_count; i++)
+                if ((Byte)(elem.get_single_variant(i * 5 + 1).value) > cur_spell_index)
+                    elem.set_single_variant(i * 5 + 1, (Byte)((Byte)(elem.get_single_variant(i * 5 + 1).value) - (Byte)1));
+
+            set_element(current_element);
+        }
+
+        private void ListRequirements_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int cur_selected = ListRequirements.SelectedIndex;
+            if (cur_selected < 0)
+                return;
+            textBox3.Text = variant_repr(cur_selected * 5 + 2);
+            textBox5.Text = variant_repr(cur_selected * 5 + 3);
+            textBox4.Text = variant_repr(cur_selected * 5 + 4);
         }
     }
 }

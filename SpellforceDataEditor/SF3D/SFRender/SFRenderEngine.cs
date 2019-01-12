@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * SFRenderEngine takes care of displaying 3D graphics in a window
+ * It takes data from SFSceneManager and renders it using predefined shaders
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,17 +21,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
     public class SFRenderEngine
     {
         public SFSceneManager scene_manager { get; } = new SFSceneManager();
-        public bool ready_to_use { get; private set; } = false;
 
         public Camera3D camera { get; } = new Camera3D();
 
         SFShader shader_simple = new SFShader();
         SFShader shader_animated = new SFShader();
-
-        public SFRenderEngine(SFResources.SFResourceManager res)
-        {
-            scene_manager.resources = res;
-        }
 
         //called only once!
         public void Initialize(Vector2 view_size)
@@ -50,13 +49,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_animated.AddParameter("MVP");
             shader_animated.AddParameter("texture_used");
             shader_animated.AddParameter("boneTransforms");
-        }
-
-        public int SpecifyGameDirectory(string dname)
-        {
-            int result = SFUnPak.SFUnPak.SpecifyGameDirectory(dname);
-            ready_to_use = (result == 0);
-            return result;
         }
 
         public void RenderFrame()

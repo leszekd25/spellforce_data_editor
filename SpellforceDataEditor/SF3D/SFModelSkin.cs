@@ -80,7 +80,7 @@ namespace SpellforceDataEditor.SF3D
             GL.BindVertexArray(0);
         }
 
-        public int Load(MemoryStream ms, SFResourceManager rm)
+        public int Load(MemoryStream ms)
         {
             BinaryReader br = new BinaryReader(ms);
 
@@ -119,13 +119,13 @@ namespace SpellforceDataEditor.SF3D
                 br.ReadUInt16();
             }
             
-            SFBoneIndex bsi = rm.BSIs.Get(rm.current_resource);
+            SFBoneIndex bsi = SFResourceManager.BSIs.Get(SFResourceManager.current_resource);
             if(bsi == null)
             {
-                int bsi_code = rm.BSIs.Load(rm.current_resource);
+                int bsi_code = SFResourceManager.BSIs.Load(SFResourceManager.current_resource);
                 if (bsi_code != 0)
                     return bsi_code;
-                bsi = rm.BSIs.Get(rm.current_resource);
+                bsi = SFResourceManager.BSIs.Get(SFResourceManager.current_resource);
             }
             bones = new int[bsi.bone_index_remap[chunk_id].Length];
             bsi.bone_index_remap[chunk_id].CopyTo(bones, 0);
@@ -149,13 +149,13 @@ namespace SpellforceDataEditor.SF3D
             matname = new string(chars);
             matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
 
-            SFTexture tex = rm.Textures.Get(matname);
+            SFTexture tex = SFResourceManager.Textures.Get(matname);
             if (tex == null)
             {
-                int tex_code = rm.Textures.Load(matname);
+                int tex_code = SFResourceManager.Textures.Load(matname);
                 if (tex_code != 0)
                     return tex_code;
-                tex = rm.Textures.Get(matname);
+                tex = SFResourceManager.Textures.Get(matname);
             }
             material.texture = tex;
             material.indexStart = 0;
@@ -193,7 +193,7 @@ namespace SpellforceDataEditor.SF3D
                 submodel.Init();
         }
 
-        public int Load(MemoryStream ms, SFResourceManager rm)
+        public int Load(MemoryStream ms)
         {
             BinaryReader br = new BinaryReader(ms);
 
@@ -206,7 +206,7 @@ namespace SpellforceDataEditor.SF3D
                 SFModelSkinChunk chunk = new SFModelSkinChunk();
                 submodels.Add(chunk);
                 chunk.chunk_id = i;
-                int return_code = chunk.Load(ms, rm);
+                int return_code = chunk.Load(ms);
                 if (return_code != 0)
                     return return_code;
             }

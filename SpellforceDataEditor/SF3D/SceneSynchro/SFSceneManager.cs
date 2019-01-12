@@ -15,29 +15,30 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 using SpellforceDataEditor.SFCFF;
+using SpellforceDataEditor.SFResources;
 
 namespace SpellforceDataEditor.SF3D.SceneSynchro
 {
     public class SFSceneManager
     {
-        public SFSceneDescriptionMeta scene_meta { get; private set; } = null;
-        public Dictionary<string, ObjectSimple3D> objects_static { get; private set; } = new Dictionary<string, ObjectSimple3D>();
-        public Dictionary<string, objectAnimated> objects_dynamic { get; private set; } = new Dictionary<string, objectAnimated>();
+        public SFSceneDescriptionMeta scene_meta { get; private set; } = null;     // scene metadata
+        public Dictionary<string, ObjectSimple3D> objects_static { get; private set; } = new Dictionary<string, ObjectSimple3D>();   // static objects in the scene
+        public Dictionary<string, objectAnimated> objects_dynamic { get; private set; } = new Dictionary<string, objectAnimated>();  // animated objects in the scene
 
-        private int frame_counter = 0;
-        public int frames_per_second { get; private set; } = 25;
-        public System.Diagnostics.Stopwatch delta_timer { get; private set; } = new System.Diagnostics.Stopwatch();
-        private float deltatime = 0f;
-        public float current_time { get; private set; } = 0f;
+        private int frame_counter = 0;      // total frames rendered
+        public int frames_per_second { get; private set; } = 25;   // framerate
+        public System.Diagnostics.Stopwatch delta_timer { get; private set; } = new System.Diagnostics.Stopwatch();     // timer which manages delta time
+        private float deltatime = 0f;       // current delta time value in seconds
+        public float current_time { get; private set; } = 0f;        // current scene time in seconds
 
         SFVisualLinkContainer mesh_data = new SFVisualLinkContainer();
-        public SFResources.SFResourceManager resources { get; set; } = null;
 
         public void Init()
         {
             delta_timer.Start();
         }
 
+        // creates a scene given scene description, adding objects if necessary
         public void ParseSceneDescription(SFSceneDescription scene)
         {
             scene_meta = scene.meta;
@@ -66,6 +67,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
         }
 
+        // helper function, returns item id given a gamedata element from category 19 and item slot
         private UInt16 GetItemID(SFCategoryElement el, Byte slot)
         {
             int el_size = el.get().Count / 3;
@@ -77,6 +79,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return 0;
         }
 
+        // creates a scene description: game unit and its equipment
         private void MakeUnitScene(int unit_id, SFSceneDescription sd)
         {
             //find unit data element (cat 18)
@@ -195,6 +198,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             sd.add_line(SCENE_ITEM_TYPE.SCENE_ANIM, new string[] { "1" });
         }
 
+        // generates a scene description given gamedata element
         public SFSceneDescription CatElemToScene(int category, int element)
         {
             SFSceneDescription sd = new SFSceneDescription();
@@ -281,6 +285,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return sd;
         }
 
+        // removes objects from the scene and resets scene data
         public void ClearScene()
         {
             objects_static.Clear();
@@ -288,6 +293,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             scene_meta = null;
         }
 
+        // adds a static object to the scene given mesh name, and assigns it a name and parent object
         public void AddObjectStatic(string mesh_name, string parent_name, string obj_name)
         {
             Object3D par = null;
@@ -297,7 +303,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 par = objects_dynamic[parent_name];
 
             bool loaded = true;
-            int result = resources.Models.Load(mesh_name);
+            int result = SFResourceManager.Models.Load(mesh_name);
             if ((result != 0) && (result != -1))
                 loaded = false;
 
@@ -306,11 +312,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 obj_s1.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
             obj_s1.Parent = par;
             if (loaded)
-                obj_s1.Mesh = resources.Models.Get(mesh_name);
+                obj_s1.Mesh = SFResourceManager.Models.Get(mesh_name);
             objects_static.Add(obj_name, obj_s1);
             obj_s1.update_modelMatrix();
         }
 
+        // adds an animated object to the scene given mesh name, and assigns it a name and parent object
         public void AddObjectDynamic(string skel_name, string parent_name, string obj_name)
         {
             Object3D par = null;
@@ -320,10 +327,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 par = objects_dynamic[parent_name];
 
             bool loaded = true;
-            int result = resources.Skeletons.Load(skel_name);
+            int result = SFResourceManager.Skeletons.Load(skel_name);
             if ((result != 0) && (result != -1))
                 loaded = false;
-            result = resources.Skins.Load(skel_name);
+            result = SFResourceManager.Skins.Load(skel_name);
             if ((result != 0) && (result != -1))
                 loaded = false;
 
@@ -332,11 +339,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 obj_d1.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
             obj_d1.Parent = par;
             if (loaded)
-                obj_d1.SetSkeletonSkin(resources.Skeletons.Get(skel_name), resources.Skins.Get(skel_name));
+                obj_d1.SetSkeletonSkin(SFResourceManager.Skeletons.Get(skel_name), SFResourceManager.Skins.Get(skel_name));
             objects_dynamic.Add(obj_name, obj_d1);
             obj_d1.update_modelMatrix();
         }
 
+        // adds a bone anchor object to the scene given animated object name and the object's skeleton bone name, and assigns it a name
+        // bone anchor follows a bone on the scene
         public void AddObjectBoneanchor(string obj_anim_name, string skel_bone_name, string obj_name)
         {
             objectAnimated par = null;
@@ -350,6 +359,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             obj_b1.update_modelMatrix();
         }
 
+        // sets scene time
         public void SetSceneTime(float t)
         {
             if (t < 0)
@@ -359,6 +369,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             current_time = t;
         }
 
+        // updates scene
+        // if time_flow is true, updates delta time
         public void LogicStep(bool time_flow = true)
         {
             if (time_flow)

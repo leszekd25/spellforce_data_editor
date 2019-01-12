@@ -31,6 +31,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             is_ready = true;
         }
 
+        // loads SDB file to a given list
+        // SDB file consists of entries, each assigned a set of files, entries are sorted by entry ID
+        // returns whether succeeded
         private int LoadSDB(string fname, List<SFVisualLink> list)
         {
             //System.Diagnostics.Debug.WriteLine("FILE " + fname);
@@ -58,7 +61,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return 0;
         }
 
-        //binary search
+        // finds a visual link from a given list, given link id
+        // binary search
         private SFVisualLink FindVisualLink(List<SFVisualLink> list, int id)
         {
             int current_start = 0;
@@ -79,6 +83,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return null;
         }
 
+        // returns a list of mesh filenames for a given building
         public List<String> GetBuildingMeshes(int building_id)
         {
             SFVisualLink building = FindVisualLink(buildings, building_id);
@@ -99,6 +104,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return meshes;
         }
 
+        // returns a list of mesh filenames for a given object
         public List<String> GetObjectMeshes(int object_id)
         {
             SFVisualLink obj = FindVisualLink(objects, object_id);
@@ -108,6 +114,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return obj.lines;
         }
 
+        // returns a list of mesh filenames for a given item
+        // is_female allows choosing which version of an item to choose (if available)
         public String GetItemMesh(int item_id, bool is_female)
         {
             SFVisualLink item = FindVisualLink(items, item_id);
@@ -134,6 +142,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return "";
         }
 
+        // returns an animation set name for a given animated item (chest and legs)
+        // is_female allows choosing which version of an item to choose (if available)
         public String GetItemAnimation(int item_id, bool is_female)
         {
             SFVisualLink item = FindVisualLink(items, item_id);
@@ -154,6 +164,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return "";
         }
 
+        // returns a mesh filename for a given head
+        // is_female allows choosing which version of a head to choose (if available)
         public String GetHeadMesh(int head_id, bool is_female)
         {
             SFVisualLink head = FindVisualLink(heads, head_id);

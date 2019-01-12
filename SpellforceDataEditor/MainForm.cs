@@ -21,7 +21,30 @@ namespace SpellforceDataEditor
         public MainForm()
         {
             InitializeComponent();
+            linkEditor.Links.Add(0, linkEditor.Text.Length, "https://github.com/leszekd25/spellforce_data_editor/tree/with_viewer/bin");
+            linkEditor.Visible = false;
             SFCFF.SFCategoryManager.init();
+            CheckNewVersionAvailable();
+        }
+
+        void CheckNewVersionAvailable()
+        {
+            System.Net.WebClient wc = new System.Net.WebClient();
+            wc.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(getVersion_completed);
+
+            Uri dw_string = new Uri("https://raw.githubusercontent.com/leszekd25/spellforce_data_editor/with_viewer/bin/README.md");
+            wc.DownloadStringAsync(dw_string);
+        }
+
+        void getVersion_completed(object sender, System.Net.DownloadStringCompletedEventArgs e)
+        {
+            string str = e.Result;
+            int i = str.IndexOf("Latest version:");
+            if (i == -1)
+                return;
+            string newest_version = str.Substring(i + "Latest version:".Length).Trim();
+            if (labelVersion.Text.IndexOf(newest_version) == -1)
+                linkEditor.Visible = true;
         }
 
         private void bGDEditor_Click(object sender, EventArgs e)
@@ -83,6 +106,11 @@ namespace SpellforceDataEditor
         {
             modmanager = null;
             GC.Collect();
+        }
+
+        private void linkEditor_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.Link.LinkData.ToString());
         }
     }
 }

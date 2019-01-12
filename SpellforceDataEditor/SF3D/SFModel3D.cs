@@ -32,13 +32,13 @@ namespace SpellforceDataEditor.SF3D
 
         }
 
-        public SFModel3D(MemoryStream ms, SFResourceManager rm)
+        public SFModel3D(MemoryStream ms)
         {
-            Load(ms, rm);
+            Load(ms);
             Init();
         }
 
-        public int Load(MemoryStream ms, SFResourceManager rm)
+        public int Load(MemoryStream ms)
         {
             BinaryReader br = new BinaryReader(ms);
 
@@ -116,13 +116,13 @@ namespace SpellforceDataEditor.SF3D
                 matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
                 //System.Diagnostics.Debug.WriteLine(matname + " " + mat.ToString());
 
-                SFTexture tex = rm.Textures.Get(matname);
+                SFTexture tex = SFResourceManager.Textures.Get(matname);
                 if(tex == null)
                 {
-                    int tex_code = rm.Textures.Load(matname);
+                    int tex_code = SFResourceManager.Textures.Load(matname);
                     if (tex_code != 0)
                         return tex_code;
-                    tex = rm.Textures.Get(matname);
+                    tex = SFResourceManager.Textures.Get(matname);
                 }
                 mat.texture = tex;
                 //System.Diagnostics.Debug.WriteLine(tex.ToString());

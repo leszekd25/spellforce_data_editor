@@ -25,6 +25,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             args = a.ToList<String>();
         }
 
+        // returms whether the command is valid
         public bool is_valid()
         {
             if (args == null)
@@ -56,16 +57,19 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public SFSceneDescriptionMeta meta { get; } = new SFSceneDescriptionMeta();
         List<SFSceneDescriptionLine> lines = new List<SFSceneDescriptionLine>();
 
+        // adds new command to be parsed by scene manager
         public void add_line(SFSceneDescriptionLine sl)
         {
             lines.Add(sl);
         }
 
+        // adds new command to be parsed by scene manager
         public void add_line(SCENE_ITEM_TYPE t, string[] a)
         {
             lines.Add(new SFSceneDescriptionLine(t, a));
         }
 
+        // returns list of commands to be parsed
         public List<SFSceneDescriptionLine> get_lines()
         {
             return lines;

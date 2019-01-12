@@ -15,40 +15,27 @@ using SpellforceDataEditor.SFUnPak;
 
 namespace SpellforceDataEditor.SFResources
 {
-    public class SFResourceManager
+    public static class SFResourceManager
     {
-        public SFResourceContainer<SFTexture> Textures { get; private set; } = new SFResourceContainer<SFTexture>();
-        public SFResourceContainer<SFModel3D> Models { get; private set; } = new SFResourceContainer<SFModel3D>();
-        public SFResourceContainer<SFAnimation> Animations { get; private set; } = new SFResourceContainer<SFAnimation>();
-        public SFResourceContainer<SFBoneIndex> BSIs { get; private set; } = new SFResourceContainer<SFBoneIndex>();
-        public SFResourceContainer<SFModelSkin> Skins { get; private set; } = new SFResourceContainer<SFModelSkin>();
-        public SFResourceContainer<SFSkeleton> Skeletons { get; private set; } = new SFResourceContainer<SFSkeleton>();
-        public SFResourceContainer<StreamResource> Musics { get; private set; } = new SFResourceContainer<StreamResource>();
-        public SFResourceContainer<StreamResource> Sounds { get; private set; } = new SFResourceContainer<StreamResource>();
-        public SFResourceContainer<StreamResource> Messages { get; private set; } = new SFResourceContainer<StreamResource>();
-        public string current_resource = "";
-        public List<string> mesh_names { get; private set; } = new List<string>();
-        public List<string> skeleton_names { get; private set; } = new List<string>();
-        public List<string> animation_names { get; private set; } = new List<string>();
-        public List<string> music_names { get; private set; } = new List<string>();
-        public List<string> sound_names { get; private set; } = new List<string>();
-        public Dictionary<string, List<string>> message_names { get; private set; } = new Dictionary<string, List<string>>();
-
-        public SFResourceManager()
-        {
-            Textures = new SFResourceContainer<SFTexture>("texture", ".dds", this);
-            Models = new SFResourceContainer<SFModel3D>("mesh", ".msb", this);
-            Animations = new SFResourceContainer<SFAnimation>("animation", ".bob", this);
-            BSIs = new SFResourceContainer<SFBoneIndex>("skinning\\b20", ".bsi", this);
-            Skins = new SFResourceContainer<SFModelSkin>("skinning\\b20", ".msb", this);
-            Skeletons = new SFResourceContainer<SFSkeleton>("animation", ".bor", this);
-            Musics = new SFResourceContainer<StreamResource>("sound", ".mp3", this);
-            Sounds = new SFResourceContainer<StreamResource>("sound", ".wav", this);
-            Messages = new SFResourceContainer<StreamResource>("", "", this); //modified externally
-        }
+        public static SFResourceContainer<SFTexture> Textures { get; private set; } = new SFResourceContainer<SFTexture>("texture", ".dds");
+        public static SFResourceContainer<SFModel3D> Models { get; private set; } = new SFResourceContainer<SFModel3D>("mesh", ".msb");
+        public static SFResourceContainer<SFAnimation> Animations { get; private set; } = new SFResourceContainer<SFAnimation>("animation", ".bob");
+        public static SFResourceContainer<SFBoneIndex> BSIs { get; private set; } = new SFResourceContainer<SFBoneIndex>("skinning\\b20", ".bsi");
+        public static SFResourceContainer<SFModelSkin> Skins { get; private set; } = new SFResourceContainer<SFModelSkin>("skinning\\b20", ".msb");
+        public static SFResourceContainer<SFSkeleton> Skeletons { get; private set; } = new SFResourceContainer<SFSkeleton>("animation", ".bor");
+        public static SFResourceContainer<StreamResource> Musics { get; private set; } = new SFResourceContainer<StreamResource>("sound", ".mp3");
+        public static SFResourceContainer<StreamResource> Sounds { get; private set; } = new SFResourceContainer<StreamResource>("sound", ".wav");
+        public static SFResourceContainer<StreamResource> Messages { get; private set; } = new SFResourceContainer<StreamResource>("", ""); //modified externally
+        public static string current_resource = "";
+        public static List<string> mesh_names { get; private set; } = new List<string>();
+        public static List<string> skeleton_names { get; private set; } = new List<string>();
+        public static List<string> animation_names { get; private set; } = new List<string>();
+        public static List<string> music_names { get; private set; } = new List<string>();
+        public static List<string> sound_names { get; private set; } = new List<string>();
+        public static Dictionary<string, List<string>> message_names { get; private set; } = new Dictionary<string, List<string>>();
 
         //generate mesh names, for use in SF3DManager
-        public void FindAllMeshes()
+        public static void FindAllMeshes()
         {
             string[] filter_mesh = { "sf8.pak", "sf22.pak", "sf32.pak" };
             string[] filter_skel = { "sf4.pak", "sf22.pak", "sf32.pak" };
@@ -72,7 +59,7 @@ namespace SpellforceDataEditor.SFResources
             message_names["RTS Workers"] = SFUnPak.SFUnPak.ListAllWithExtension("sound\\speech\\messages", ".mp3", filter_mess_talk);
         }
 
-        public void DisposeAll()
+        public static void DisposeAll()
         {
             Textures.DisposeAll();
             Models.DisposeAll();

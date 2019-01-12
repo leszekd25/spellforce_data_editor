@@ -31,9 +31,9 @@ namespace SpellforceDataEditor.SF3D
             data = null;
         }
 
-        public SFTexture(MemoryStream ms, SFResourceManager rm)
+        public SFTexture(MemoryStream ms)
         {
-            Load(ms, rm);
+            Load(ms);
             Init();
         }
 
@@ -62,7 +62,7 @@ namespace SpellforceDataEditor.SF3D
             }
         }
 
-        public int Load(MemoryStream ms, SFResourceManager rm)
+        public int Load(MemoryStream ms)
         {
             BinaryReader br = new BinaryReader(ms);
 

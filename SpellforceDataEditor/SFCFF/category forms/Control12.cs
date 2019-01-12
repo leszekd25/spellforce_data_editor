@@ -20,38 +20,122 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             column_dict.Add("Effect ID", new int[1] { 2 });
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void set_list_text(int i)
         {
-            set_element_variant(current_element, 0, Utility.TryParseUInt16(textBox1.Text));
+            UInt16 effect_id = (UInt16)(category.get_element_variant(current_element, i * 3 + 2)).value;
+
+            string txt = SFCategoryManager.get_effect_name(effect_id, true);
+            ListEffects.Items[i] = txt;
         }
 
-        private void textBox2_TextChanged(object sender, EventArgs e)
+        private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox2.Text));
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 3;
+
+            for (int i = 0; i < elem_count; i++)
+                set_element_variant(current_element, i * 3 + 0, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, Utility.TryParseUInt16(textBox3.Text));
+            int cur_selected = ListEffects.SelectedIndex;
+            if (cur_selected < 0)
+                return;
+            set_element_variant(current_element, cur_selected * 3 + 2, Utility.TryParseUInt16(textBox3.Text));
+            set_list_text(cur_selected);
+        }
+
+        public override void set_element(int index)
+        {
+            current_element = index;
+
+            SFCategoryElement elem = category.get_element(current_element);
+            int elem_count = elem.get().Count / 3;
+
+            ListEffects.Items.Clear();
+
+            for (int i = 0; i < elem_count; i++)
+            {
+                ListEffects.Items.Add("");
+                set_list_text(i);
+            }
+
+            show_element();
         }
 
         public override void show_element()
         {
             textBox1.Text = variant_repr(0);
-            textBox2.Text = variant_repr(1);
-            textBox3.Text = variant_repr(2);
         }
 
-        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        private void ListEffects_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 6);
+            int cur_selected = ListEffects.SelectedIndex;
+            if (cur_selected < 0)
+                return;
+            textBox3.Text = variant_repr(cur_selected * 3 + 2);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            int new_index;
+            if (ListEffects.SelectedIndex == -1)
+                new_index = ListEffects.Items.Count - 1;
+            else
+                new_index = ListEffects.SelectedIndex;
+
+            SFCategoryElement elem = category.get_element(current_element);
+            int cur_elem_count = elem.get().Count / 3;
+
+            Byte max_index = 0;
+            for (int i = 0; i < cur_elem_count; i++)
+            {
+                max_index = Math.Max(max_index, (Byte)(elem.get_single_variant(i * 3 + 1).value));
+            }
+            max_index += 1;
+
+            object[] paste_data = new object[3];
+            paste_data[0] = (UInt16)elem.get_single_variant(0).value;
+            paste_data[1] = (Byte)max_index;
+            paste_data[2] = (UInt16)0;
+
+            elem.paste_raw(paste_data, new_index * 3);
+
+            set_element(current_element);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (ListEffects.SelectedIndex == -1)
+                return;
+            if (ListEffects.Items.Count == 1)
+                return;
+            int new_index = ListEffects.SelectedIndex;
+
+            SFCategoryElement elem = category.get_element(current_element);
+            Byte cur_spell_index = (Byte)(elem.get_single_variant(new_index * 3 + 1).value);
+
+            elem.remove_raw(new_index * 3, 3);
+
+            int cur_elem_count = elem.get().Count / 3;
+            for (int i = 0; i < cur_elem_count; i++)
+                if ((Byte)(elem.get_single_variant(i * 3 + 1).value) > cur_spell_index)
+                    elem.set_single_variant(i * 3 + 1, (Byte)((Byte)(elem.get_single_variant(i * 3 + 1).value) - (Byte)1));
+
+            set_element(current_element);
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
                 step_into(textBox3, 0);
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                step_into(textBox1, 6);
         }
     }
 }
