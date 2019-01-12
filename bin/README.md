@@ -3,4 +3,4 @@ is this branch's name before i added more features, like script builder or mod m
 
 To use the application, simply unzip it wherever you feel like.
 
-Latest version: 13.01.2019.1
+Latest version: 12.01.2019.1
