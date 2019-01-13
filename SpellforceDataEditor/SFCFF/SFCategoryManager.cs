@@ -89,15 +89,15 @@ namespace SpellforceDataEditor.SFCFF
                     break;
                 case 7:   //cure poison
                 case 24:  //cure disease
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
+                    p[0] = "Level #1 (100%)";
+                    p[1] = "Level #2 (70%)";
+                    p[2] = "Level #3 (90%)";
                     break;
                 case 10:  //fog
                     p[0] = "Maximum sight range";
                     p[1] = "Time between ticks (ms)";
                     p[2] = "Tick count";
-                    p[3] = Utility.S_UNKNOWN;
+                    p[3] = "Unused";
                     break;
                 case 11:  //illuminate
                     p[0] = "Tick count";
@@ -167,9 +167,9 @@ namespace SpellforceDataEditor.SFCFF
                     p[4] = "Max level affected";
                     break;
                 case 25:  //petrify
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
+                    p[0] = "Level #1 (100%)";
+                    p[1] = "Level #2 (50%)";
+                    p[2] = "Level #3 (25%)";
                     p[3] = "Time between ticks (ms)";
                     p[4] = "Tick count";
                     break;
@@ -178,14 +178,14 @@ namespace SpellforceDataEditor.SFCFF
                     p[1] = "Area radius";
                     break;
                 case 30:  //raise dead
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = "Area radius";
-                    p[2] = Utility.S_UNKNOWN;
+                    p[0] = "Spell strength (%)";
+                    p[1] = "Unused";
+                    p[2] = "Radius";   // radius
                     break;
                 case 32:  //death grasp
-                    p[0] = Utility.S_UNKNOWN;
+                    p[0] = "Duration (ticks)";
                     p[1] = "Time between ticks (ms)";
-                    p[2] = Utility.S_UNKNOWN;
+                    p[2] = "Chance of working (%)";
                     break;
                 case 37:  //area slowness
                 case 38:  //area inflexibility
@@ -193,8 +193,8 @@ namespace SpellforceDataEditor.SFCFF
                 case 49:  //area quickness
                 case 51:  //area flexibility
                 case 53:  //area strength
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
+                    p[0] = "Radius";
+                    p[1] = "Effect strength (%)";
                     p[2] = "Duration (ms)";
                     break;
                 case 43:  //area healing
@@ -212,21 +212,21 @@ namespace SpellforceDataEditor.SFCFF
                 case 122: //charm
                 case 237: //charm (chain effect)
                     p[0] = "Time between ticks (ms)";
-                    p[1] = "1st tick check";
-                    p[2] = "2nd tick check";
-                    p[3] = "3rd tick check";
-                    p[4] = "Tick count";
-                    p[5] = Utility.S_UNKNOWN;
+                    p[1] = "Lvl range #1 min";
+                    p[2] = "Lvl range #1 max";
+                    p[3] = "Lvl range #2 min";
+                    p[4] = "Lvl range #2 max";
+                    p[5] = "Mana per tick";
                     p[6] = "Max level affected";
                     break;
                 case 54:  //guard (?)
-                    p[0] = Utility.S_UNKNOWN;
+                    p[0] = "Armor bonus (%)";
                     p[1] = "Duration";
                     break;
                 case 55:  //remove curse (?)
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
+                    p[0] = "Level #1 (100%)";
+                    p[1] = "Level #2 (70%)";
+                    p[2] = "Level #3 (90%)";
                     break;
                 case 56:  //regenerate
                     p[0] = "Heal amount";
@@ -249,12 +249,12 @@ namespace SpellforceDataEditor.SFCFF
                     break;
                 case 63:  //self illusion
                     p[0] = "Illusions summoned";
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
-                    p[3] = Utility.S_UNKNOWN;
+                    p[1] = "Health factor (%)";
+                    p[2] = "Time between ticks (ms)";
+                    p[3] = "Mana per tick (bugged?)";
                     break;
                 case 64:  //retention
-                    p[0] = Utility.S_UNKNOWN;
+                    p[0] = "Wisdom bonus (%)";
                     p[1] = "Duration (ms)";
                     break;
                 case 66:  //sacrifice mana
@@ -266,16 +266,16 @@ namespace SpellforceDataEditor.SFCFF
                     break;
                 case 69:  //shock
                 case 238: //shock (chain efect)
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = "Damage";
-                    p[2] = Utility.S_UNKNOWN;
-                    p[3] = Utility.S_UNKNOWN;
+                    p[0] = "Max damage";
+                    p[1] = "Min damage";
+                    p[2] = "Max int threshold";
+                    p[3] = "Min int threshold";
                     break;
                 case 70:  //disrupt
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
-                    p[3] = Utility.S_UNKNOWN;
+                    p[0] = "Level #1 (100%)";
+                    p[1] = "Level #2 (75%)";
+                    p[2] = "Level #3 (50%)";
+                    p[3] = "Level #4 (25%)";
                     break;
                 case 71:  //fear
                     p[0] = Utility.S_UNKNOWN;
@@ -294,8 +294,8 @@ namespace SpellforceDataEditor.SFCFF
                 case 76:  //stone rain
                     p[0] = "Time between ticks";
                     p[1] = "Tick count";
-                    p[2] = Utility.S_UNKNOWN;
-                    p[3] = Utility.S_UNKNOWN;
+                    p[2] = "Radius (?)";
+                    p[3] = "Drops per tick (?)";
                     p[4] = "Sub-effect ID";
                     p[10] = "0000100000";
                     break;
@@ -310,9 +310,9 @@ namespace SpellforceDataEditor.SFCFF
                     p[0] = Utility.S_UNKNOWN;
                     p[1] = "Duration (ms))";
                     break;
-                case 80:  //extinct
+                case 81:  //extinct
                     p[0] = "Health threshold";
-                    p[1] = Utility.S_UNKNOWN;
+                    p[1] = "Radius";
                     break;
                 case 82:  //detect metal
                 case 83:  //detect magic
@@ -321,10 +321,10 @@ namespace SpellforceDataEditor.SFCFF
                 case 86:  //invisibility
                     p[0] = "Time between ticks (ms)";
                     p[1] = "Tick count";
-                    p[2] = Utility.S_UNKNOWN;
-                    p[3] = Utility.S_UNKNOWN;
-                    p[4] = Utility.S_UNKNOWN;
-                    p[5] = Utility.S_UNKNOWN;
+                    p[2] = "Level #1 (100%)";
+                    p[3] = "Level #2 (50%)";
+                    p[4] = "Level #3 (10%)";
+                    p[5] = "Level #4 (1%)";
                     break;
                 case 88:  //aura of weakness
                 case 89:  //aura of suffocation
@@ -358,7 +358,7 @@ namespace SpellforceDataEditor.SFCFF
                     p[4] = "Unused";
                     p[5] = "Aura target type";
                     p[6] = "Sub-effect ID";
-                    p[7] = "Unused";
+                    p[7] = Utility.S_UNKNOWN;
                     p[8] = "Mana per tick";
                     p[10] = "0000001000";
                     break;
@@ -367,17 +367,17 @@ namespace SpellforceDataEditor.SFCFF
                     p[1] = "Damage received";
                     break;
                 case 93:  //feign death
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
-                    p[3] = Utility.S_UNKNOWN;
-                    p[4] = Utility.S_UNKNOWN;
+                    p[0] = "Duration (ms)";
+                    p[1] = "Level #1 (100%)";
+                    p[2] = "Level #2 (90%)";
+                    p[3] = "Level #3 (70%)";
+                    p[4] = "Level #4 (30%)";
                     break;
                 case 96:  //dispel white aura
                 case 112: //dispel black aura
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
+                    p[0] = "Level #1 (100%)";
+                    p[1] = "Level #2 (70%)";
+                    p[2] = "Level #3 (90%)";
                     p[3] = "Dispel duration (ms)";
                     break;
                 case 105: //suicide heal
@@ -392,18 +392,18 @@ namespace SpellforceDataEditor.SFCFF
                     p[2] = "Max level affected";
                     break;
                 case 119: //distract
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
+                    p[0] = "Radius";
+                    p[1] = "Aggro drop strength (%)";
                     break;
                 case 123: //befriend
                 case 124: //disenchant
                     p[0] = "Max level affected";
                     break;
-                case 126: //shock
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = "Damage";
-                    p[2] = Utility.S_UNKNOWN;
-                    p[3] = Utility.S_UNKNOWN;
+                case 126: //shockwave
+                    p[0] = "Max damage";
+                    p[1] = "Min damage";
+                    p[2] = "Max int threshold";
+                    p[3] = "Min int threshold";
                     p[4] = "Area radius";
                     break;
                 case 134: //wave of fire
@@ -464,7 +464,7 @@ namespace SpellforceDataEditor.SFCFF
                     break;
                 case 164: //cloak of nor
                     p[0] = Utility.S_UNKNOWN;
-                    p[1] = "Duration (ms)";
+                    p[1] = Utility.S_UNKNOWN;
                     break;
                 case 165: //unknown?
                     p[0] = Utility.S_UNKNOWN;

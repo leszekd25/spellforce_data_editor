@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Text.RegularExpressions;
+
 namespace SpellforceDataEditor.SFCFF
 {
     //search mode
@@ -22,6 +24,12 @@ namespace SpellforceDataEditor.SFCFF
         //w reference to tool strip progress bar
         public static List<int> Search(SFCategory category, List<int> source, string query, SearchType type, int column_i, System.Windows.Forms.ToolStripProgressBar pbar)
         {
+            query = query.Trim();
+            if (type == SearchType.TYPE_STRING)
+                query = query.ToLower();
+            else
+                query = Regex.Replace(query, "[^0-9+-]", "");
+
             string format = category.get_element_format();
             int elem_length = format.Length;
             int query_val = Utility.TryParseInt32(query);
@@ -39,7 +47,6 @@ namespace SpellforceDataEditor.SFCFF
             foreach (int i in source)
             {
                 counter++;
-
                 if ((counter % 500 == 0)&&(pbar != null))
                 {
                     pbar.Value = ((pbar.Maximum * counter) / source.Count);
@@ -49,12 +56,12 @@ namespace SpellforceDataEditor.SFCFF
                 SFCategoryElement elem = category.get_element(i);
                 if (elem == null)
                     continue;
-
                 int elem_count = elem.get().Count / elem_length;
+
+                bool success = false;
 
                 if (type == SearchType.TYPE_NUMBER)
                 {
-                    bool success = false;
                     for (int j = 0; j < elem_count; j++)
                     {
                         for (int k = 0; k < elem_length; k++)
@@ -71,21 +78,17 @@ namespace SpellforceDataEditor.SFCFF
                             }
                         }
                         if (success)
-                        {
-                            target.Add(i);
                             break;
-                        }
                     }
                 }
 
                 else if (type == SearchType.TYPE_STRING)
                 {
-                    if(category.get_element_string(i).Contains(query))
+                    if(category.get_element_string(i).ToLower().Contains(query))
                     {
                         target.Add(i);
                         continue;
                     }
-                    bool success = false;
                     for (int j = 0; j < elem_count; j++)
                     {
                         for (int k = 0; k < elem_length; k++)
@@ -95,7 +98,7 @@ namespace SpellforceDataEditor.SFCFF
                                 if ((column_i != -1) && (column_i != k))
                                     continue;
                                 string val = Utility.CleanString(elem.get_single_variant(j * elem_length + k));
-                                if (val.Contains(query))
+                                if (val.ToLower().Contains(query))
                                 {
                                     success = true;
                                     break;
@@ -103,16 +106,12 @@ namespace SpellforceDataEditor.SFCFF
                             }
                         }
                         if (success)
-                        {
-                            target.Add(i);
                             break;
-                        }
                     }
                 }
 
                 else if(type == SearchType.TYPE_BITFIELD)
                 {
-                    bool success = false;
                     for (int j = 0; j < elem_count; j++)
                     {
                         for (int k = 0; k < elem_length; k++)
@@ -129,12 +128,12 @@ namespace SpellforceDataEditor.SFCFF
                             }
                         }
                         if (success)
-                        {
-                            target.Add(i);
                             break;
-                        }
                     }
                 }
+
+                if (success)
+                    target.Add(i);
             }
             return target;
         }

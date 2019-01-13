@@ -20,7 +20,7 @@ namespace SpellforceDataEditor.special_forms
         private SFCFF.category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
 
         //these parameters control item loading behavior
-        private int elementselect_refresh_size = 500;
+        private int elementselect_refresh_size = 1000;
         private int elementselect_refresh_rate = 50;
         private int loaded_count = 0;
 
@@ -509,6 +509,7 @@ namespace SpellforceDataEditor.special_forms
         //this is where elements are added if category is being refreshed
         private void ElementSelect_RefreshTimer_Tick(object sender, EventArgs e)
         {
+            ElementSelect.BeginUpdate();
             SFCategory ctg = SFCategoryManager.get_category(selected_category_index);
 
             int max_items = current_indices.Count;
@@ -544,6 +545,7 @@ namespace SpellforceDataEditor.special_forms
 
                 changeDataLanguageToolStripMenuItem.Enabled = true;
             }
+            ElementSelect.EndUpdate();
         }
 
         //timer can be restarted if elements are to be gradually filled into the list again
