@@ -85,6 +85,7 @@ namespace SpellforceDataEditor.special_forms
             render_engine.Initialize(new Vector2(glControl1.ClientSize.Width, glControl1.ClientSize.Height));
             render_engine.camera.Position = new Vector3(0, 1, 6);
             render_engine.camera.Lookat = new Vector3(0, 1, 0);
+            render_engine.scene_manager.gamedata = SFCFF.SFCategoryManager.gamedata;
 
             glControl1.Invalidate();
         }
@@ -775,6 +776,12 @@ namespace SpellforceDataEditor.special_forms
             ListEntries.Items.Clear();
             foreach (string s in SFResourceManager.message_names[item])
                 ListEntries.Items.Add(s);
+        }
+
+        // failsafe for the case map is unloaded and viewer is opened
+        public void ResetScene()
+        {
+            render_engine.scene_manager.ClearScene();
         }
     }
 }

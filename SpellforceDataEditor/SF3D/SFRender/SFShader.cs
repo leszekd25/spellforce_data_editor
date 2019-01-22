@@ -27,6 +27,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
         // compiles shader (typically only called once)
         public void CompileShader(string vshader, string fshader)
         {
+            parameters.Clear();
+            if (ProgramID != -1)
+                GL.DeleteShader(ProgramID);
             ProgramID = ShaderCompiler.Compile(vshader, fshader);
         }
 

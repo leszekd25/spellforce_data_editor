@@ -31,7 +31,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         private float deltatime = 0f;       // current delta time value in seconds
         public float current_time { get; private set; } = 0f;        // current scene time in seconds
 
-        SFVisualLinkContainer mesh_data = new SFVisualLinkContainer();
+        public SFVisualLinkContainer mesh_data { get; private set; } = new SFVisualLinkContainer();
+        public SFCFF.SFGameData gamedata = SFCFF.SFCategoryManager.gamedata;
 
         public void Init()
         {
@@ -83,16 +84,16 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         private void MakeUnitScene(int unit_id, SFSceneDescription sd)
         {
             //find unit data element (cat 18)
-            SFCategoryElement unit_data = SFCategoryManager.get_category(17).find_binary_element<UInt16>(0, (UInt16)unit_id);
+            SFCategoryElement unit_data = gamedata.categories[17].find_binary_element<UInt16>(0, (UInt16)unit_id);
             if (unit_data == null)
                 return;
             //find unit eq element (cat 19)
-            SFCategoryElement unit_eq = SFCategoryManager.get_category(18).find_binary_element<UInt16>(0, (UInt16)unit_id);
+            SFCategoryElement unit_eq = gamedata.categories[18].find_binary_element<UInt16>(0, (UInt16)unit_id);
             if (unit_eq == null)
                 return;
 
             //get unit gender
-            SFCategoryElement unit_stats = SFCategoryManager.get_category(3).find_binary_element<UInt16>
+            SFCategoryElement unit_stats = gamedata.categories[3].find_binary_element<UInt16>
                                                                      (0, (UInt16)unit_data.get_single_variant(2).value);
             bool is_female = false;
             if (unit_stats != null)
@@ -183,7 +184,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 {
                     bool is_shield = false;
                     //check if it's a shield (type 9)
-                    SFCategoryElement item_data = SFCategoryManager.get_category(6).find_binary_element<UInt16>(0, lhand_id);
+                    SFCategoryElement item_data = gamedata.categories[6].find_binary_element<UInt16>(0, lhand_id);
                     if (item_data != null)
                     {
                         int item_type = (Byte)item_data.get_single_variant(2).value;
@@ -213,7 +214,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 12:
                 case 13:
                     //get item id
-                    SFCategoryElement item = SFCategoryManager.get_category(category).get_element(element);
+                    SFCategoryElement item = gamedata.categories[category].get_element(element);
                     if (item == null)
                         break;
                     int item_id = (UInt16)item.get_single_variant(0).value;
@@ -231,7 +232,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 24:
                 case 25:
                     //get item id
-                    SFCategoryElement building = SFCategoryManager.get_category(category).get_element(element);
+                    SFCategoryElement building = gamedata.categories[category].get_element(element);
                     if (building == null)
                         break;
                     int building_id = (UInt16)building.get_single_variant(0).value;
@@ -250,7 +251,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 34:
                 case 35:
                     //get item id
-                    SFCategoryElement obj = SFCategoryManager.get_category(category).get_element(element);
+                    SFCategoryElement obj = gamedata.categories[category].get_element(element);
                     if (obj == null)
                         break;
                     int obj_id = (UInt16)obj.get_single_variant(0).value;
@@ -272,7 +273,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 21:
                 case 22:
                     //get unit id
-                    SFCategoryElement un = SFCategoryManager.get_category(category).get_element(element);
+                    SFCategoryElement un = gamedata.categories[category].get_element(element);
                     if (un == null)
                         break;
                     int un_id = (UInt16)un.get_single_variant(0).value;
@@ -303,8 +304,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 par = objects_dynamic[parent_name];
 
             bool loaded = true;
-            int result = SFResourceManager.Models.Load(mesh_name);
-            if ((result != 0) && (result != -1))
+            if (mesh_name != "")
+            {
+                int result = SFResourceManager.Models.Load(mesh_name);
+                if ((result != 0) && (result != -1))
+                    loaded = false;
+            }
+            else
                 loaded = false;
 
             ObjectSimple3D obj_s1 = new ObjectSimple3D();
@@ -359,6 +365,158 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             obj_b1.update_modelMatrix();
         }
 
+        // adds unit to a scene
+        public void AddObjectUnit(int unit_id, string object_name, bool animated = false)
+        {
+            if (!animated)
+            {
+                AddObjectStatic("", "", object_name);
+
+                //find unit data element (cat 18)
+                SFCategoryElement unit_data = gamedata.categories[17].find_binary_element<UInt16>(0, (UInt16)unit_id);
+                if (unit_data == null)
+                    return;
+                //find unit eq element (cat 19)
+                SFCategoryElement unit_eq = gamedata.categories[18].find_binary_element<UInt16>(0, (UInt16)unit_id);
+                if (unit_eq == null)
+                    return;
+
+                //get unit gender
+                SFCategoryElement unit_stats = gamedata.categories[3].find_binary_element<UInt16>
+                                                                         (0, (UInt16)unit_data.get_single_variant(2).value);
+                bool is_female = false;
+                if (unit_stats != null)
+                    is_female = ((Byte)unit_stats.get_single_variant(23).value % 2) == 1;
+
+                //get chest item (2) (animated)
+                UInt16 chest_id = GetItemID(unit_eq, 2);
+                if (chest_id == 0)
+                    return;
+                //find chest skin/animations
+                string chest_name = mesh_data.GetItemMesh(chest_id, is_female);
+                if (chest_name == "")
+                    return;
+                string anim_name = mesh_data.GetItemAnimation(chest_id, is_female);
+
+                //special case: monument unit, needs to be considered separately
+                string unit_handle = Utility.CleanString(unit_data.get_single_variant(10));
+                if ((unit_handle.StartsWith("Unit")) && (!unit_handle.Contains("Titan")))
+                {
+                    chest_name += "_cold";
+                }
+
+
+                //add anim model to scene
+                AddObjectDynamic(chest_name, object_name, object_name + "_CHEST");
+                //sd.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { chest_name, "", "MAIN" });
+                //sd.meta.obj_to_anim["MAIN"] = anim_name;
+
+                //get legs item (5) (animated)
+                UInt16 legs_id = GetItemID(unit_eq, 5);
+                if (chest_id != 0)
+                {
+                    //find chest skin/animations
+                    string legs_name = mesh_data.GetItemMesh(legs_id, is_female);
+                    if (legs_name != "")
+                    {
+                        AddObjectDynamic(legs_name, object_name, object_name + "_LEGS");
+                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { legs_name, "", legs_name });
+                        //sd.meta.obj_to_anim[legs_name] = anim_name;
+                    }
+                }
+                //special case: anim_name is of "figure_hero": need to also add human head (animated)
+                if ((anim_name.Contains("figure_hero")) && (unit_stats != null))
+                {
+
+                    int head_id = (UInt16)unit_stats.get_single_variant(24).value;
+                    string head_name = mesh_data.GetHeadMesh(head_id, is_female);
+                    if (head_name != "")
+                    {
+                        AddObjectDynamic(head_name, object_name, object_name + "_HEAD");
+                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { head_name, "", head_name });
+                        //sd.meta.obj_to_anim[head_name] = anim_name;
+                    }
+                }
+
+                //get helmet item (0) (boneanchor(Head), simple)
+                UInt16 helmet_id = GetItemID(unit_eq, 0);
+                if (helmet_id != 0)
+                {
+                    //find item mesh
+                    string helmet_name = mesh_data.GetItemMesh(helmet_id, is_female);
+                    if (helmet_name != "")
+                    {
+                        //create bone attachment
+                        AddObjectBoneanchor(object_name + "_CHEST", "Head", object_name + "_HEADBONE");
+                        AddObjectStatic(helmet_name, object_name + "_HEADBONE", object_name + "_HELMET");
+                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", "Head", "HEAD" });
+                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { helmet_name, "HEAD", helmet_name });
+                    }
+                }
+
+                //get right hand (1) (boneanchor(R Hand weapon), simple)
+                UInt16 rhand_id = GetItemID(unit_eq, 1);
+                if (rhand_id != 0)
+                {
+                    //find item mesh
+                    string rhand_name = mesh_data.GetItemMesh(rhand_id, is_female);
+                    if (rhand_name != "")
+                    {
+                        //create bone attachment
+                        AddObjectBoneanchor(object_name + "_CHEST", "R Hand weapon", object_name + "_RHANDBONE");
+                        AddObjectStatic(rhand_name, object_name + "RHANDBONE", object_name + "_RHAND");
+                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", "R Hand weapon", "RHAND" });
+                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { rhand_name, "RHAND", "I_RHAND" });
+                    }
+                }
+
+                //get left hand (3) (boneanchor(L Hand weapon OR Forearm shield), simple)
+                UInt16 lhand_id = GetItemID(unit_eq, 3);
+                if (lhand_id != 0)
+                {
+                    //find item mesh
+                    string lhand_name = mesh_data.GetItemMesh(lhand_id, is_female);
+                    if (lhand_name != "")
+                    {
+                        bool is_shield = false;
+                        //check if it's a shield (type 9)
+                        SFCategoryElement item_data = gamedata.categories[6].find_binary_element<UInt16>(0, lhand_id);
+                        if (item_data != null)
+                        {
+                            int item_type = (Byte)item_data.get_single_variant(2).value;
+                            is_shield = item_type == 9;
+                        }
+                        //create bone attachment
+                        AddObjectBoneanchor(object_name + "_CHEST", (is_shield ? "L Forearm shield" : "L Hand weapon"), object_name + "_LHANDBONE");
+                        AddObjectStatic(lhand_name, object_name + "LHANDBONE", object_name + "_LHAND");
+                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", (is_shield ? "L Forearm shield" : "L Hand weapon"), "LHAND" });
+                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { lhand_name, "LHAND", "I_LHAND" });
+                    }
+                }
+
+                //sd.add_line(SCENE_ITEM_TYPE.SCENE_ANIM, new string[] { "1" });
+            }
+        }
+
+        // adds game object to the scene
+        public void AddObjectObject(int object_id, string object_name)
+        {
+            List<string> m_lst = mesh_data.GetObjectMeshes(object_id);
+            if (m_lst == null)
+                return;
+
+            // create root
+            AddObjectStatic("", "", object_name);
+            
+            // add meshes
+            for(int i = 0; i < m_lst.Count; i++)
+            {
+                string m = m_lst[i];
+                AddObjectStatic(m, object_name, object_name + "_" + i.ToString());
+            }
+        }
+
+
         // sets scene time
         public void SetSceneTime(float t)
         {
@@ -382,16 +540,27 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             else
                 deltatime = 0f;
 
+            // 1st pass: gather modified objects
+            List<ObjectSimple3D> modified_static = new List<ObjectSimple3D>();
             foreach (ObjectSimple3D obj in objects_static.Values)
-            {
                 if (obj.Modified)
-                    obj.update_modelMatrix();
-            }
+                    modified_static.Add(obj);
 
+            List<objectAnimated> modified_dynamic = new List<objectAnimated>();
+            foreach (objectAnimated obj in objects_dynamic.Values)
+                if (obj.Modified)
+                    modified_dynamic.Add(obj);
+
+            // 2nd pass: update objects
+            foreach (ObjectSimple3D obj in modified_static)
+                obj.update_modelMatrix();
+
+            foreach (objectAnimated obj in modified_dynamic)
+                obj.update_modelMatrix();
+
+            // 3rd pass: update animations
             foreach (objectAnimated obj in objects_dynamic.Values)
             {
-                if (obj.Modified)
-                    obj.update_modelMatrix();
                 if (obj.skin == null)
                     continue;
                 if (obj.anim_playing)
@@ -399,8 +568,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
 
             current_time += deltatime;
-            if (current_time > scene_meta.duration)
-                current_time -= scene_meta.duration;
+            if(scene_meta != null)
+                if (current_time > scene_meta.duration)
+                    current_time -= scene_meta.duration;
 
             frame_counter++;
         }

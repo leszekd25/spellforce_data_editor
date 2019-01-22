@@ -323,10 +323,13 @@ namespace SpellforceDataEditor.SFCFF
         //reads a buffer and retrieves all expected elements
         public int read(BinaryReader sr)
         {
+            // 00-01 - chunk id
+            // 02-03 - chunk occurence index
+            // 06-09 - chunk data length
             categoryHeader = sr.ReadBytes(categoryHeader.Length);
 
             bool bad_header = false;
-            uint read_id = BitConverter.ToUInt32(categoryHeader, 0);
+            uint read_id = BitConverter.ToUInt16(categoryHeader, 0);
             if (read_id != category_id)
                 bad_header = true;
 

@@ -27,29 +27,29 @@ namespace SpellforceDataEditor.SF3D.SFRender
             //read fragment shader
             string FragmentShaderCode = fragment_shader;
 
-            //int result = 0;
-            //int InfoLogLength;
+            int result = 0;
+            int InfoLogLength;
 
-            //System.Diagnostics.Debug.WriteLine("Compiling " + vertex_shader);
+            System.Diagnostics.Debug.WriteLine("Compiling " + vertex_shader);
             GL.ShaderSource(VertexShaderID, VertexShaderCode);
             GL.CompileShader(VertexShaderID);
             string info = GL.GetShaderInfoLog(VertexShaderID);
-            //System.Diagnostics.Debug.WriteLine(info);
+            System.Diagnostics.Debug.WriteLine(info);
 
-            //System.Diagnostics.Debug.WriteLine("Compiling " + fragment_shader);
+            System.Diagnostics.Debug.WriteLine("Compiling " + fragment_shader);
             GL.ShaderSource(FragmentShaderID, FragmentShaderCode);
             GL.CompileShader(FragmentShaderID);
             info = GL.GetShaderInfoLog(FragmentShaderID);
-            //System.Diagnostics.Debug.WriteLine(info);
+            System.Diagnostics.Debug.WriteLine(info);
 
-            //System.Diagnostics.Debug.WriteLine("LINKING PROGRAM");
+            System.Diagnostics.Debug.WriteLine("LINKING PROGRAM");
             int programID = GL.CreateProgram();
             GL.AttachShader(programID, VertexShaderID);
             GL.AttachShader(programID, FragmentShaderID);
             GL.LinkProgram(programID);
 
             info = GL.GetProgramInfoLog(programID);
-           // System.Diagnostics.Debug.WriteLine(info);
+            System.Diagnostics.Debug.WriteLine(info);
 
             GL.DetachShader(programID, VertexShaderID);
             GL.DetachShader(programID, FragmentShaderID);

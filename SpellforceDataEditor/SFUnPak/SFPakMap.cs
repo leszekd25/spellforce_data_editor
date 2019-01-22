@@ -90,20 +90,36 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
-        // lists all files in a given directory with a fitting expression
+        // lists all files in a given directory with a fitting extension
         // pak_filter is a list of pak to search from
         public List<String> ListAllWithExtension(string path, string extname, string[] pak_filter)
         {
             List<String> names = new List<String>();
             if (pak_filter == null)
                 pak_filter = pak_map.Keys.ToArray();
-            foreach(string pak in pak_filter)
+            foreach (string pak in pak_filter)
             {
                 SFPakFileSystem fs = pak_map[pak];
                 names = names.Union(fs.ListAllWithExtension(path, extname)).ToList();
             }
             return names;
         }
+
+        // lists all files in a given directory with a fitting filename
+        // pak_filter is a list of pak to search from
+        public List<String> ListAllWithFilename(string path, string substr, string[] pak_filter)
+        {
+            List<String> names = new List<String>();
+            if (pak_filter == null)
+                pak_filter = pak_map.Keys.ToArray();
+            foreach (string pak in pak_filter)
+            {
+                SFPakFileSystem fs = pak_map[pak];
+                names = names.Union(fs.ListAllWithFilename(path, substr)).ToList();
+            }
+            return names;
+        }
+
 
         // frees memory*
         public void Clear()

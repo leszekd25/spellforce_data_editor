@@ -24,7 +24,7 @@ namespace SpellforceDataEditor.SF3D
         public int height { get; private set; }
         public int tex_id { get; private set; } = -1;
         public uint mipMapCount { get; private set; }
-        InternalFormat format;
+        public InternalFormat format { get; private set; }
 
         public SFTexture()
         {
@@ -43,23 +43,42 @@ namespace SpellforceDataEditor.SF3D
             GL.BindTexture(TextureTarget.Texture2D, tex_id);
 
             int blockSize = (format == InternalFormat.CompressedRgbaS3tcDxt1Ext) ? 8 : 16;
+
             int offset = 0;
             int w = width;
             int h = height;
-            
+
 
             /* load the mipmaps */
-            for (int level = 0; level < mipMapCount && (w!=0 || h!=0); ++level)
+            if (format != InternalFormat.Rgba)
             {
-                int size = ((w + 3) / 4) * ((h + 3) / 4) * blockSize;
-                byte[] mipMapData = data.Skip(offset).Take(size).ToArray();
-                GL.CompressedTexImage2D(TextureTarget.Texture2D, level, format, w, h,
-                    0, size, mipMapData);
+                for (int level = 0; level < mipMapCount && (w != 0 || h != 0); ++level)
+                {
+                    int size = ((w + 3) / 4) * ((h + 3) / 4) * blockSize;
+                    byte[] mipMapData = data.Skip(offset).Take(size).ToArray();
+                    GL.CompressedTexImage2D(TextureTarget.Texture2D, level, format, w, h,
+                        0, size, mipMapData);
 
-                offset += size;
-                w /= 2;
-                h /= 2;
+                    offset += size;
+                    w /= 2;
+                    h /= 2;
+                }
             }
+            else
+            {
+                for (int level = 0; level < mipMapCount && (w != 0 || h != 0); ++level)
+                {
+                    int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
+                    byte[] mipMapData = data.Skip(offset).Take(size).ToArray();
+                    GL.TexImage2D(TextureTarget.Texture2D, level, PixelInternalFormat.Rgba, w, h,
+                        0, PixelFormat.Rgba, PixelType.UnsignedByte, mipMapData);
+
+                    offset += size;
+                    w /= 2;
+                    h /= 2;
+                }
+            }
+            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
         public int Load(MemoryStream ms)
@@ -131,6 +150,41 @@ namespace SpellforceDataEditor.SF3D
             return 0;
         }
 
+        // uncompress utility (used in heightmap array texture to have all textures use the same uncompressed format
+        public void Uncompress()
+        {
+            if (format == InternalFormat.Rgba)
+                return;
+
+            // 1. Init
+            Init();
+
+            // 2. Get image
+            GL.BindTexture(TextureTarget.Texture2D, tex_id);
+            int blockSize = (format == InternalFormat.CompressedRgbaS3tcDxt1Ext) ? 8 : 16;
+            byte[] pixels = new byte[data.Length * 64 / blockSize];
+            int offset = 0;
+            int w = width;
+            int h = height;
+            for (int level = 0; level < mipMapCount && (w != 0 || h != 0); ++level)
+            {
+                int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
+
+                GL.GetTexImage(TextureTarget.Texture2D, level, PixelFormat.Rgba, PixelType.UnsignedByte, ref pixels[offset]);
+
+                offset += size;
+                w /= 2;
+                h /= 2;
+            }
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            // 3. Deinit
+            GL.DeleteTexture(tex_id);
+            tex_id = -1;
+            data = pixels;
+            format = InternalFormat.Rgba;
+        }
+
         public void Dispose()
         {
             if (tex_id != -1)
@@ -143,7 +197,8 @@ namespace SpellforceDataEditor.SF3D
         new public string ToString()
         {
             return "TEX SIZE#"+width.ToString()+" "+height.ToString()
-                +"\nTEX FORMAT#"+format.ToString();
+                + "\nTEX FORMAT#" + format.ToString()
+                +"\nTEX MIPMAPS#" + mipMapCount.ToString();
         }
     }
 }

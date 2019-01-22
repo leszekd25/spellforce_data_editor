@@ -330,5 +330,16 @@ namespace SpellforceDataEditor.SFUnPak
             }
             return names;
         }
+
+        public List<string> ListAllWithFilename(string path, string substr)
+        {
+            List<String> names = new List<string>();
+            foreach (SFPakEntryHeader eh in file_headers)
+            {
+                if ((eh.dir_name == path) && (eh.name.Contains(substr)))
+                    names.Add(eh.name);
+            }
+            return names;
+        }
     }
 }

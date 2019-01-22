@@ -215,7 +215,6 @@
             // ElementSelect
             // 
             this.ElementSelect.Enabled = false;
-            this.ElementSelect.FormattingEnabled = true;
             this.ElementSelect.HorizontalScrollbar = true;
             this.ElementSelect.Location = new System.Drawing.Point(12, 54);
             this.ElementSelect.MaximumSize = new System.Drawing.Size(295, 421);

@@ -46,6 +46,7 @@ namespace SpellforceDataEditor.SFResources
         {
             if (cont.ContainsKey(rname))
                 return -1;
+            System.Diagnostics.Debug.WriteLine("LOADING "+rname+suffix_extension);
             MemoryStream ms = SFUnPak.SFUnPak.LoadFileFind(prefix_path+"\\" + rname + suffix_extension);
             if (ms == null)
                 return -2;
@@ -60,6 +61,7 @@ namespace SpellforceDataEditor.SFResources
                 return res_code;
             resource.Init();
             cont.Add(rname, resource);
+            ms.Close();
             //System.Diagnostics.Debug.WriteLine("LOADED " + rname + suffix_extension);
             return 0;
         }

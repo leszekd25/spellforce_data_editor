@@ -24,6 +24,7 @@ namespace SpellforceDataEditor.SF3D
         public Vector3[] normals = null;
         public uint[] face_indices = null;
         public SFMaterial[] materials = null;
+        public Physics.BoundingBox aabb;
         public int vertex_array = -1;
         public int vertex_buffer, uv_buffer, color_buffer, normal_buffer, element_buffer;
 
@@ -128,7 +129,25 @@ namespace SpellforceDataEditor.SF3D
                 //System.Diagnostics.Debug.WriteLine(tex.ToString());
 
                 materials[i] = mat;
-                br.BaseStream.Position += 126;
+                // secondary material
+                br.BaseStream.Position += 80;
+                // colors
+                br.BaseStream.Position += 12;
+                // other unneeded data (chunk bbox)
+                br.BaseStream.Position += 32;
+                if(i != modelnum-1)
+                    br.BaseStream.Position += 2;
+                else
+                {
+                    float x1, x2, y1, y2, z1, z2;
+                    x1 = br.ReadSingle();
+                    y1 = br.ReadSingle();
+                    z1 = br.ReadSingle();
+                    x2 = br.ReadSingle();
+                    y2 = br.ReadSingle();
+                    z2 = br.ReadSingle();
+                    aabb = new Physics.BoundingBox(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2));
+                }
             }
             //join tables
             vertices = new Vector3[total_v]; normals = new Vector3[total_v]; colors = new Vector4[total_v]; uvs = new Vector2[total_v];
@@ -186,6 +205,27 @@ namespace SpellforceDataEditor.SF3D
 
             GL.BindVertexArray(0);
             
+        }
+
+        public void RecalculateBoundingBox()
+        {
+            float x1, x2, y1, y2, z1, z2;
+            x1 = 10000;
+            x2 = -10000;
+            y1 = 10000;
+            y2 = -10000;
+            z1 = 10000;
+            z2 = -10000;
+            foreach(Vector3 v in vertices)
+            {
+                x1 = Math.Min(x1, v.X);
+                x2 = Math.Max(x2, v.X);
+                y1 = Math.Min(y1, v.Y);
+                y2 = Math.Max(y2, v.Y);
+                z1 = Math.Min(z1, v.Z);
+                z2 = Math.Max(z2, v.Z);
+            }
+            aabb = new Physics.BoundingBox(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2));
         }
 
         public void Dispose()

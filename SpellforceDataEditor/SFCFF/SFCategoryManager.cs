@@ -656,7 +656,7 @@ namespace SpellforceDataEditor.SFCFF
     public static class SFCategoryManager
     {
         /*private static SFCategory[] categories;      //array of categories*/
-        private static SFGameData gamedata = new SFGameData() ;
+        public static SFGameData gamedata { get; private set; } = new SFGameData();
         private static SFCategoryRuneHeroes categorySpecial_RuneHeroes;    //intermediary needed to find names of rune heroes
         /*private static int categoryNumber;           //amount of categories (basically a constant)
 

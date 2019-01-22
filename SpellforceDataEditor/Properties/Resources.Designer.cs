@@ -72,9 +72,9 @@ namespace SpellforceDataEditor.Properties {
         ///uniform bool texture_used;
         ///
         ///void main(){
-        ///  vec4 temp_c = vec4(1.0, 1.0, 1.0, 1.0);
+        ///  vec4 temp_c = fragmentColor;
         ///  if(texture_used)
-        ///    temp_c = texture(myTextureSampler, UV);
+        ///    temp_c *= texture(myTextureSampler, UV);
         ///  if (temp_c.a == 0.0)
         ///    discard;
         ///  color = temp_c * fragmentColor;
@@ -83,6 +83,34 @@ namespace SpellforceDataEditor.Properties {
         internal static string fshader {
             get {
                 return ResourceManager.GetString("fshader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 330 core
+        ///
+        ///in vec4 fragmentColor;
+        ///in vec2 UV;
+        ///flat in vec3 textureID;
+        ///in vec3 textureWeight;
+        ///
+        ///out vec4 color;
+        ///
+        ///uniform sampler2DArray myTextureSampler;
+        ///uniform bool texture_used;
+        ///
+        ///void main(){
+        ///  vec4 temp_c = fragmentColor;
+        ///  if(texture_used)
+        ///  {
+        ///    vec4 col1 = texture(myTextureSampler, vec3(UV, textureID.x));
+        ///    vec4 col2 = texture(myTextureSampler, vec3(UV, textureID.y));
+        ///    vec4 col3 = texture(myTextureSampler, vec3(UV, textureID.z));
+        ///    temp_c = col1*textureWeight.x + col2 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string fshader_hmap {
+            get {
+                return ResourceManager.GetString("fshader_hmap", resourceCulture);
             }
         }
         
@@ -131,6 +159,33 @@ namespace SpellforceDataEditor.Properties {
         internal static string vshader {
             get {
                 return ResourceManager.GetString("vshader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 330 core
+        ///
+        ///// Input vertex data, different for all executions of this shader.
+        ///layout(location = 0) in vec3 vertexPosition_modelspace;
+        ///layout(location = 1) in vec4 vertexColor;
+        ///layout(location = 2) in vec2 vertexUV;
+        ///layout(location = 3) in vec3 texID;
+        ///layout(location = 4) in vec3 texWeight;
+        ///
+        ///out vec4 fragmentColor;
+        ///out vec2 UV;
+        ///flat out vec3 textureID;
+        ///out vec3 textureWeight;
+        ///
+        ///// Values that stay constant for the whole mesh.
+        ///uniform mat4 MVP;
+        ///  
+        ///void main(){
+        ///  // Output position of  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string vshader_hmap {
+            get {
+                return ResourceManager.GetString("vshader_hmap", resourceCulture);
             }
         }
         

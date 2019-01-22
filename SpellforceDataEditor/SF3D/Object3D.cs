@@ -48,7 +48,7 @@ namespace SpellforceDataEditor.SF3D
             Matrix4 translation_matrix = Matrix4.CreateTranslation(position);
             Matrix4 rotation_matrix = Matrix4.CreateFromQuaternion(rotation);
             Matrix4 scale_matrix = Matrix4.CreateScale(scale);
-            temp_matrix = translation_matrix * rotation_matrix * scale_matrix;
+            temp_matrix = scale_matrix * rotation_matrix * translation_matrix;
 
             if (parent == null)
                 modelMatrix = temp_matrix;
@@ -57,6 +57,23 @@ namespace SpellforceDataEditor.SF3D
             //children update matrices here
 
             modified = false;
+        }
+
+        public static float DegToRad(int deg)
+        {
+            return 3.141526f * deg / 180.0f;
+        }
+
+        public static int RadToDeg(float rad)
+        {
+            return (int)(rad * 180 / 3.141526f);
+        }
+
+        public void SetAnglePlane(int angle_deg)
+        {
+            if(parent == null)
+            Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2)   // only when has parent
+                     * Quaternion.FromAxisAngle(new Vector3(0, 0, 1), DegToRad(angle_deg));
         }
     }
 

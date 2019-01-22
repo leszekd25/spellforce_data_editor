@@ -76,6 +76,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SF3D\ColorUtility.cs" />
+    <Compile Include="SF3D\Physics\BoundingBox.cs" />
+    <Compile Include="SF3D\Physics\Plane.cs" />
+    <Compile Include="SF3D\Physics\Ray.cs" />
+    <Compile Include="SF3D\Physics\Triangle.cs" />
     <Compile Include="SFCFF\calculator forms\CalcControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -409,6 +414,8 @@
     <Compile Include="SF3D\SFModelSkin.cs" />
     <Compile Include="SF3D\SFRender\SFRenderEngine.cs" />
     <Compile Include="SF3D\SFRender\SFShader.cs" />
+    <Compile Include="SFChunkFile\SFChunkFile.cs" />
+    <Compile Include="SFChunkFile\SFChunkFileChunk.cs" />
     <Compile Include="SFLua\LuaAction.cs" />
     <Compile Include="SFLua\LuaCinematic.cs" />
     <Compile Include="SFLua\LuaCondition.cs" />
@@ -493,6 +500,12 @@
     <Compile Include="SFLua\lua_dialog\LuaDialogSayControl.Designer.cs">
       <DependentUpon>LuaDialogSayControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFMap\SFCoord.cs" />
+    <Compile Include="SFMap\SFMap.cs" />
+    <Compile Include="SFMap\SFMapHeightMap.cs" />
+    <Compile Include="SFMap\SFMapObjectManager.cs" />
+    <Compile Include="SFMap\SFMapTerrainTextureManager.cs" />
+    <Compile Include="SFMap\SFMapUnitManager.cs" />
     <Compile Include="SFMod\mod_controls\ModInfoForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -517,6 +530,12 @@
     </Compile>
     <Compile Include="special forms\CalculatorsForm.Designer.cs">
       <DependentUpon>CalculatorsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="special forms\MapEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\MapEditorForm.Designer.cs">
+      <DependentUpon>MapEditorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="special forms\ModCreatorForm.cs">
       <SubType>Form</SubType>
@@ -836,6 +855,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\CalculatorsForm.resx">
       <DependentUpon>CalculatorsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="special forms\MapEditorForm.resx">
+      <DependentUpon>MapEditorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\ModCreatorForm.resx">
       <DependentUpon>ModCreatorForm.cs</DependentUpon>

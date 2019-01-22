@@ -160,7 +160,7 @@ namespace SpellforceDataEditor.SFUnPak
         {
             MemoryStream ms = null;
             string real_path = game_directory_name + "\\" + filename;
-            try
+            if(File.Exists(real_path))
             {
                 FileStream fs = new FileStream(real_path, FileMode.Open, FileAccess.Read);
                 BinaryReader br = new BinaryReader(fs);
@@ -169,7 +169,7 @@ namespace SpellforceDataEditor.SFUnPak
                 br.Close();
                 return ms;
             }
-            catch(Exception e)
+            else
             {
                 foreach(string pak in paks)
                 {
@@ -184,6 +184,13 @@ namespace SpellforceDataEditor.SFUnPak
         static public List<String> ListAllWithExtension(string path, string extname, string[] pak_filter)
         {
             List<String> result = pak_map.ListAllWithExtension(path, extname, pak_filter);
+            result.Sort();
+            return result;
+        }
+
+        static public List<String> ListAllWithFilename(string path, string substr, string[] pak_filter)
+        {
+            List<String> result = pak_map.ListAllWithFilename(path, substr, pak_filter);
             result.Sort();
             return result;
         }

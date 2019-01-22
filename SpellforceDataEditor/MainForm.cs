@@ -17,6 +17,7 @@ namespace SpellforceDataEditor
         public static special_forms.SFAssetManagerForm viewer = null;
         public static special_forms.ModManagerForm modmanager = null;
         public static special_forms.ScriptBuilderForm scripts = null;
+        public static special_forms.MapEditorForm mapedittool = null;
 
         public MainForm()
         {
@@ -38,6 +39,10 @@ namespace SpellforceDataEditor
 
         void getVersion_completed(object sender, System.Net.DownloadStringCompletedEventArgs e)
         {
+            if (e.Cancelled)
+                return;
+            if (e.Error != null)
+                return;
             string str = e.Result;
             int i = str.IndexOf("Latest version:");
             if (i == -1)
@@ -111,6 +116,21 @@ namespace SpellforceDataEditor
         private void linkEditor_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start(e.Link.LinkData.ToString());
+        }
+
+        private void bMap_Click(object sender, EventArgs e)
+        {
+            if (mapedittool != null)
+                return;
+            mapedittool = new special_forms.MapEditorForm();
+            mapedittool.FormClosed += new FormClosedEventHandler(this.mapedittool_FormClosed);
+            mapedittool.Show();
+        }
+
+        private void mapedittool_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            mapedittool = null;
+            GC.Collect();
         }
     }
 }

@@ -36,6 +36,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.labelVersion = new System.Windows.Forms.Label();
             this.linkEditor = new System.Windows.Forms.LinkLabel();
+            this.bMap = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -68,6 +70,7 @@
             // 
             // bScripting
             // 
+            this.bScripting.ForeColor = System.Drawing.Color.Crimson;
             this.bScripting.Location = new System.Drawing.Point(131, 62);
             this.bScripting.Name = "bScripting";
             this.bScripting.Size = new System.Drawing.Size(115, 23);
@@ -78,6 +81,7 @@
             // 
             // bMods
             // 
+            this.bMods.ForeColor = System.Drawing.Color.Crimson;
             this.bMods.Location = new System.Drawing.Point(131, 91);
             this.bMods.Name = "bMods";
             this.bMods.Size = new System.Drawing.Size(115, 23);
@@ -100,18 +104,18 @@
             // labelVersion
             // 
             this.labelVersion.AutoSize = true;
-            this.labelVersion.Location = new System.Drawing.Point(12, 83);
+            this.labelVersion.Location = new System.Drawing.Point(12, 111);
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(108, 13);
             this.labelVersion.TabIndex = 6;
-            this.labelVersion.Text = "Version 13.01.2019.1";
+            this.labelVersion.Text = "Version 22.01.2019.1";
             // 
             // linkEditor
             // 
             this.linkEditor.AutoSize = true;
             this.linkEditor.LinkBehavior = System.Windows.Forms.LinkBehavior.AlwaysUnderline;
             this.linkEditor.LinkColor = System.Drawing.Color.Blue;
-            this.linkEditor.Location = new System.Drawing.Point(12, 96);
+            this.linkEditor.Location = new System.Drawing.Point(12, 125);
             this.linkEditor.Name = "linkEditor";
             this.linkEditor.Size = new System.Drawing.Size(111, 13);
             this.linkEditor.TabIndex = 7;
@@ -120,11 +124,33 @@
             this.linkEditor.VisitedLinkColor = System.Drawing.Color.Blue;
             this.linkEditor.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEditor_LinkClicked);
             // 
+            // bMap
+            // 
+            this.bMap.ForeColor = System.Drawing.Color.Crimson;
+            this.bMap.Location = new System.Drawing.Point(131, 120);
+            this.bMap.Name = "bMap";
+            this.bMap.Size = new System.Drawing.Size(115, 23);
+            this.bMap.TabIndex = 8;
+            this.bMap.Text = "Map Editor";
+            this.bMap.UseVisualStyleBackColor = true;
+            this.bMap.Click += new System.EventHandler(this.bMap_Click);
+            // 
+            // label3
+            // 
+            this.label3.ForeColor = System.Drawing.Color.Crimson;
+            this.label3.Location = new System.Drawing.Point(12, 67);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(108, 35);
+            this.label3.TabIndex = 9;
+            this.label3.Text = "Crimson features are in experimental stage";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(258, 117);
+            this.ClientSize = new System.Drawing.Size(258, 147);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.bMap);
             this.Controls.Add(this.linkEditor);
             this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.label2);
@@ -150,5 +176,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label labelVersion;
         private System.Windows.Forms.LinkLabel linkEditor;
+        private System.Windows.Forms.Button bMap;
+        private System.Windows.Forms.Label label3;
     }
 }

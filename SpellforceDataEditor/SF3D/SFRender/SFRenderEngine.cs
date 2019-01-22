@@ -15,26 +15,29 @@ using OpenTK.Graphics.OpenGL;
 using SpellforceDataEditor.SF3D;
 using SpellforceDataEditor.SF3D.SceneSynchro;
 using SpellforceDataEditor.SFUnPak;
+using SpellforceDataEditor.SFMap;
 
 namespace SpellforceDataEditor.SF3D.SFRender
 {
     public class SFRenderEngine
     {
         public SFSceneManager scene_manager { get; } = new SFSceneManager();
+        public SFMapHeightMap heightmap { get; private set; } = null;
 
         public Camera3D camera { get; } = new Camera3D();
 
-        SFShader shader_simple = new SFShader();
-        SFShader shader_animated = new SFShader();
+        static SFShader shader_simple = new SFShader();
+        static SFShader shader_animated = new SFShader();
+        static SFShader shader_heightmap = new SFShader();
 
         //called only once!
         public void Initialize(Vector2 view_size)
         {
-            GL.ClearColor(Color.MidnightBlue);
-            GL.Viewport(0, 0, (int)view_size.X, (int)view_size.Y);
-
             camera.ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
                 (float)Math.PI / 4, view_size.X / view_size.Y, 0.1f, 100f);
+            GL.Viewport(0, 0, (int)view_size.X, (int)view_size.Y);
+
+            GL.ClearColor(Color.MidnightBlue);
 
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
@@ -49,6 +52,44 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_animated.AddParameter("MVP");
             shader_animated.AddParameter("texture_used");
             shader_animated.AddParameter("boneTransforms");
+
+            shader_heightmap.CompileShader(Properties.Resources.vshader_hmap, Properties.Resources.fshader_hmap);
+            shader_heightmap.AddParameter("MVP");
+            shader_heightmap.AddParameter("texture_used");
+        }
+
+        public void AssignHeightMap(SFMapHeightMap hm)
+        {
+            // remove previous heightmap
+
+            // add new heightmap
+            heightmap = hm;
+        }
+
+        private void RenderHeightmap()
+        {
+            // special shader here...
+            GL.UseProgram(shader_heightmap.ProgramID);
+            foreach (SFMapHeightMapChunk chunk in heightmap.chunks)
+            {
+                // todo: precalculate chunk position and matrix in chunk generation
+
+                // get chunk position
+                Vector3 chunk_pos = new Vector3(chunk.ix * heightmap.chunk_size, 0, chunk.iy * heightmap.chunk_size);
+                // prune invisible chunks here...
+                Matrix4 chunk_matrix = Matrix4.CreateTranslation(chunk_pos);
+
+                Matrix4 MVP_mat = chunk_matrix * camera.ViewProjMatrix;
+
+                GL.UniformMatrix4(shader_heightmap["MVP"], false, ref MVP_mat);
+
+                GL.BindVertexArray(chunk.vertex_array);
+                GL.Uniform1(shader_heightmap["texture_used"], 1);
+                GL.BindTexture(TextureTarget.Texture2DArray, heightmap.texture_manager.terrain_texture);
+
+                GL.DrawArrays(PrimitiveType.Triangles, 0, chunk.vertices.Length);
+                GL.BindTexture(TextureTarget.Texture2DArray, 0);
+            }
         }
 
         public void RenderFrame()
@@ -56,6 +97,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             if (camera.Modified)
                 camera.update_modelMatrix();
+
+            // heightmap
+            if (heightmap != null)
+                RenderHeightmap();
 
             //static objects
             GL.UseProgram(shader_simple.ProgramID);
@@ -65,6 +110,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     continue;
                 if (obj.Mesh == null)
                     continue;
+                // heightmap pruning
 
                 Matrix4 MVP_mat = obj.ModelMatrix * camera.ViewProjMatrix;
                 GL.UniformMatrix4(shader_simple["MVP"], false, ref MVP_mat);
@@ -79,8 +125,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         continue;
                     mat.yet_to_be_drawn = false;
 
-                    GL.Uniform1(shader_simple["texture_used"], 1);
-                    GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
+                    GL.Uniform1(shader_simple["texture_used"], (mat.texture != null ? 1 : 0));
+                    if (mat.texture != null)
+                        GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
+                    else
+                        GL.BindTexture(TextureTarget.Texture2D, 0);
 
                     GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
                 }
@@ -91,8 +140,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     if (mat.yet_to_be_drawn)
                     {
                         //todo: triangle sorting
-                        GL.Uniform1(shader_simple["texture_used"], 1);
-                        GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
+                        GL.Uniform1(shader_simple["texture_used"], (mat.texture != null?1:0));
+                        if (mat.texture != null)
+                            GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
+                        else
+                            GL.BindTexture(TextureTarget.Texture2D, 0);
 
                         GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
                     }
@@ -108,6 +160,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     continue;
                 if (obj.skin == null)
                     continue;
+                // heightmap pruning
 
                 Matrix4 MVP_mat = obj.ModelMatrix * camera.ViewProjMatrix;
                 GL.UniformMatrix4(shader_animated["MVP"], false, ref MVP_mat);
