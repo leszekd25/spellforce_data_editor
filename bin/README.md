@@ -13,7 +13,24 @@ An experimental visual creator of LUA scripts. Supports all available commands i
 # Mod Manager
 This feature is currently in development. It allows creating and managing mods in an intuitive way.
 
+# Map Editor
+Initial support for map viewing implemented, many bugs though. Some known bugs:
+
+- Tile assignment is incorrect in some cases
+
+- Objects are scaled incorrectly (roughly 40% bigger than supposed to)
+
+- Camera occasionally sinks under the ground
+
+- Map rendering is very rough (no mipmaps currently)
+
+- Performance might be very poor on some maps
+
+- RAM usage might be very high on most maps
+
+- Lakes are not rendered
+
 # How to use
 To use the application, simply unzip it wherever you feel like.
 
-Latest version: 13.01.2019.1
+Latest version: 22.01.2019.1
