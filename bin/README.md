@@ -18,8 +18,6 @@ Initial support for map viewing implemented, many bugs though. Some known bugs:
 
 - Tile assignment is incorrect in some cases
 
-- Objects are scaled incorrectly (roughly 40% bigger than supposed to)
-
 - Camera occasionally sinks under the ground
 
 - RAM usage might be very high on most maps
