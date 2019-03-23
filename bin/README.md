@@ -22,15 +22,9 @@ Initial support for map viewing implemented, many bugs though. Some known bugs:
 
 - Camera occasionally sinks under the ground
 
-- Map rendering is very rough (no mipmaps currently)
-
-- Performance might be very poor on some maps
-
 - RAM usage might be very high on most maps
-
-- Lakes are not rendered
 
 # How to use
 To use the application, simply unzip it wherever you feel like.
 
-Latest version: 22.01.2019.1
+Latest version: 23.03.2019.1
