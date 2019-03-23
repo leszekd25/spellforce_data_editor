@@ -36,7 +36,9 @@
             this.RenderWindow = new OpenTK.GLControl();
             this.OpenMap = new System.Windows.Forms.OpenFileDialog();
             this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
+            this.StatusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -66,6 +68,8 @@
             // 
             // statusStrip1
             // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.StatusText});
             this.statusStrip1.Location = new System.Drawing.Point(0, 539);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(784, 22);
@@ -95,6 +99,11 @@
             // 
             this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
             // 
+            // StatusText
+            // 
+            this.StatusText.Name = "StatusText";
+            this.StatusText.Size = new System.Drawing.Size(0, 17);
+            // 
             // MapEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -110,6 +119,8 @@
             this.Shown += new System.EventHandler(this.MapEditorForm_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -124,5 +135,6 @@
         private OpenTK.GLControl RenderWindow;
         private System.Windows.Forms.OpenFileDialog OpenMap;
         private System.Windows.Forms.Timer TimerAnimation;
+        private System.Windows.Forms.ToolStripStatusLabel StatusText;
     }
 }

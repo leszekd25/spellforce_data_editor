@@ -90,7 +90,10 @@ namespace SpellforceDataEditor.SF3D
                 modelMatrix = temp_matrix * parent_obj.skeleton.bone_reference_matrices[bone_index]
                     * parent_obj.bone_transforms[bone_index] * parent_obj.ModelMatrix;
 
-                //children update matrices here
+            foreach (Object3D obj in children)
+                obj.update_modelMatrix();
+
+            //children update matrices here
         }
 
         public void SetBone(objectAnimated obj, string name)

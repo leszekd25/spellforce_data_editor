@@ -12,8 +12,10 @@ namespace SpellforceDataEditor.SFMap
 {
     public class SFMapHeightMapChunk
     {
+        public SFMapHeightMap hmap = null;
         public int width, height;
-        public int ix, iy;
+        public int id, ix, iy;
+        
         public byte[] material_id;
         public Vector3[] vertices;
         public Vector4[] colors;
@@ -21,9 +23,32 @@ namespace SpellforceDataEditor.SFMap
         public Vector3[] texture_id;
         public Vector3[] texture_weights;
 
-        public int vertex_array, position_buffer, color_buffer, uv_buffer, tex_id_buffer, tex_weight_buffer;
+        public SF3D.Physics.BoundingBox aabb;
+        public List<SFMapObject> objects = new List<SFMapObject>();
+        public List<SFMapUnit> units = new List<SFMapUnit>();
+        public List<SFMapDecoration> decorations = new List<SFMapDecoration>();
+        public List<bool> lakes_contained = new List<bool>();
+        private bool visible = false;              // if false, units and objects in the chunk are not rendered
+        public bool Visible
+        {
+            get
+            {
+                return visible;
+            }
+            set
+            {
+                visible = value;
+                SF3D.SceneSynchro.SFSceneManager scene = hmap.map.render_engine.scene_manager;
+                foreach (SFMapUnit u in units)
+                    scene.objects_static[u.GetObjectName()].Visible = value;
+                foreach (SFMapObject o in objects)
+                    scene.objects_static[o.GetObjectName()].Visible = value;
+                foreach (SFMapDecoration d in decorations)
+                    scene.objects_static[d.GetObjectName()].Visible = value;
+            }
+        }
 
-        // public BoundingBox aabb;
+        public int vertex_array, position_buffer, color_buffer, uv_buffer, tex_id_buffer, tex_weight_buffer;
 
         public void Generate(short[] data, byte[] tex_data, int map_size, int size, int x, int y)
         {
@@ -33,10 +58,11 @@ namespace SpellforceDataEditor.SFMap
             height = size;
             ix = x;
             iy = y;
+            id = y * (map_size / size) + x;
 
             int chunk_count = map_size / size;
 
-            int row_start = (chunk_count-y-1) * size;
+            int row_start = (chunk_count - y - 1) * size;
             int col_start = x * size;
 
             material_id = new byte[(size + 1) * (size + 1)];
@@ -59,12 +85,12 @@ namespace SpellforceDataEditor.SFMap
                         material_id[i * (size + 1) + j] = 0;
                 }
             }
-            
+
             // todo: roll into some nice loops (though is it really necessary?)
             // generate mesh data
             for (int i = 0; i < size; i++)
             {
-                for(int j = 0; j < size; j++)
+                for (int j = 0; j < size; j++)
                 {
                     int t = (i * size + j) * 6;
                     Vector3 triangle_mats;
@@ -74,10 +100,10 @@ namespace SpellforceDataEditor.SFMap
                     {
                         // left triangle
                         vertices[t + 0] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 1] = new Vector3((float)j+1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i+1) - 1);
-                        vertices[t + 2] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i+1) - 1);
+                        vertices[t + 1] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 2] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
-                        triangle_mats = new Vector3(material_id[i*(size+1)+j], material_id[(i+1)* (size + 1) + j+1], material_id[(i+1)* (size + 1) + j]);
+                        triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[(i + 1) * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
                         triangle_mats = SortV3(triangle_mats);
                         texture_id[t + 0] = triangle_mats;
                         texture_id[t + 1] = triangle_mats;
@@ -87,16 +113,16 @@ namespace SpellforceDataEditor.SFMap
                         triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + j])] = 1.0f;
                         texture_weights[t + 0] = triangle_ws;
                         triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i+1) * (size + 1) + (j+1)])] = 1.0f;
+                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + (j + 1)])] = 1.0f;
                         texture_weights[t + 1] = triangle_ws;
                         triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i+1) * (size + 1) + j])] = 1.0f;
+                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + j])] = 1.0f;
                         texture_weights[t + 2] = triangle_ws;
 
                         // right triangle
                         vertices[t + 3] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 4] = new Vector3((float)j+1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 5] = new Vector3((float)j+1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 5] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
                         triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j + 1]);
                         triangle_mats = SortV3(triangle_mats);
@@ -118,7 +144,7 @@ namespace SpellforceDataEditor.SFMap
                     {
                         // left triangle
                         vertices[t + 0] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 1] = new Vector3((float)j+1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 1] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
                         vertices[t + 2] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
                         triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
@@ -137,8 +163,8 @@ namespace SpellforceDataEditor.SFMap
                         triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + j])] = 1.0f;
                         texture_weights[t + 2] = triangle_ws;
                         // right triangle
-                        vertices[t + 3] = new Vector3((float)j+1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 4] = new Vector3((float)j+1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 3] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
                         vertices[t + 5] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
                         triangle_mats = new Vector3(material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
@@ -160,7 +186,8 @@ namespace SpellforceDataEditor.SFMap
                 }
             }
 
-            for(int i = 0; i < vertices.Length; i++)
+            float max_height = 0;
+            for (int i = 0; i < vertices.Length; i++)
             {
                 // color (debug heightmap)
                 float h = vertices[i].Y;
@@ -168,14 +195,17 @@ namespace SpellforceDataEditor.SFMap
                 float norm_color = (float)col / 255.0f;
                 colors[i] = new OpenTK.Vector4(norm_color, norm_color, norm_color, 1.0f);
                 uvs[i] = vertices[i].Xz / 4;
+                max_height = Math.Max(max_height, h);
             }
+
+            aabb = new SF3D.Physics.BoundingBox(new Vector3(x * size, 0, y * size), new Vector3((x + 1) * size, max_height, (y * size) + size));
         }
 
         public void TransformMaterialsToTextures(SFMapTerrainTextureManager man)
         {
             for (int i = 0; i < (width * width * 6); i++)
             {
-                for(int j = 0; j < 3; j++)
+                for (int j = 0; j < 3; j++)
                     texture_id[i][j] = (float)man.texture_reindex[(int)texture_id[i][j]].real_index;
             }
         }
@@ -234,7 +264,7 @@ namespace SpellforceDataEditor.SFMap
             int max_id = 0, min_id = 0, mid_id = 0;
 
             float t = r[0];
-            if(r[1] > t)
+            if (r[1] > t)
             {
                 t = r[1];
                 max_id = 1;
@@ -243,7 +273,7 @@ namespace SpellforceDataEditor.SFMap
                 max_id = 2;
 
             t = r[0];
-            if(r[1] < t)
+            if (r[1] < t)
             {
                 t = r[1];
                 min_id = 1;
@@ -279,20 +309,39 @@ namespace SpellforceDataEditor.SFMap
             GL.DeleteBuffer(tex_id_buffer);
             GL.DeleteBuffer(tex_weight_buffer);
             GL.DeleteVertexArray(vertex_array);
+            units.Clear();
+            objects.Clear();
+            decorations.Clear();
+        }
+
+        public void AddUnit(SFMapUnit u)
+        {
+            units.Add(u);
+        }
+
+        public void AddObject(SFMapObject o)
+        {
+            objects.Add(o);
+        }
+
+        public void AddDecoration(SFMapDecoration d)
+        {
+            decorations.Add(d);
         }
     }
 
     public class SFMapHeightMap
     {
+        public SFMap map = null;
         public SFMapTerrainTextureManager texture_manager { get; private set; } = new SFMapTerrainTextureManager();
         public int width, height;
         short[] height_data;
         byte[] tile_data;
-        Object3D[] units;
-        Object3D[] decorations;
+        bool[] temporary_mask;
 
         public int chunk_size { get; private set; }
         public SFMapHeightMapChunk[] chunks { get; private set; }
+        public List<SFMapHeightMapChunk> visible_chunks = new List<SFMapHeightMapChunk>();
 
         public SFMapHeightMap(int w, int h)
         {
@@ -300,18 +349,13 @@ namespace SpellforceDataEditor.SFMap
             height = h;
             height_data = new short[w * h];
             tile_data = new byte[w * h];
-            units = new Object3D[w * h];
-            decorations = new Object3D[w * h];
+            temporary_mask = new bool[w * h];
         }
 
-        public void SetUnit(int x, int y, Object3D u)
+        public SFMapHeightMapChunk GetChunk(SFCoord pos)
         {
-            units[y * width + x] = u;
-        }
-
-        public void SetDecoration(int x, int y, Object3D d)
-        {
-            decorations[y * width + x] = d;
+            int chunk_count_y = height / chunk_size;
+            return chunks[(chunk_count_y * ((height - pos.y - 1) / chunk_size) + (pos.x / chunk_size))];
         }
 
         public void SetRowRaw(int row, byte[] chunk_data)
@@ -335,6 +379,7 @@ namespace SpellforceDataEditor.SFMap
                 for (int j = 0; j < chunk_count_x; j++)
                 {
                     chunks[i * chunk_count_x + j] = new SFMapHeightMapChunk();
+                    chunks[i * chunk_count_x + j].hmap = this;
                     chunks[i * chunk_count_x + j].Generate(height_data, tile_data, width, chunk_size, j, i);   // assumes width = height, todo: remove this condition
                 }
             foreach (SFMapHeightMapChunk chunk in chunks)
@@ -364,6 +409,60 @@ namespace SpellforceDataEditor.SFMap
             if (ray.Intersect(chunks[cy * chunk_count_x + cx].vertices, new Vector3(cx * chunk_size, 0, width - (cy * chunk_size)), out result))
                 return result.Y;
             return 0;
+        }
+
+        public void ResetMask()
+        {
+            for (int i = 0; i < width * height; i++)
+                temporary_mask[i] = false;
+        }
+
+        // used in generation of lakes
+        // flood fill based on z difference and return result
+        public List<SFCoord> GetIslandByHeight(SFCoord start, short z_diff)
+        {
+            ResetMask();
+            List<SFCoord> island = new List<SFCoord>();
+            Queue<SFCoord> to_be_checked = new Queue<SFCoord>();
+            SFCoord cur_pos;
+            SFCoord next_pos;
+
+            short start_z = GetZ(start);
+            temporary_mask[start.y * width + start.x] = true;
+            to_be_checked.Enqueue(start);
+
+            while(to_be_checked.Count != 0)
+            {
+                cur_pos = to_be_checked.Dequeue();
+                island.Add(cur_pos);
+
+                next_pos = cur_pos; next_pos.x += 1;
+                if ((next_pos.x < width) && (temporary_mask[next_pos.y * width + next_pos.x] != true) && (GetZ(next_pos) - start_z < z_diff))
+                {
+                    to_be_checked.Enqueue(next_pos);
+                    temporary_mask[next_pos.y * width + next_pos.x] = true;
+                }
+                next_pos = cur_pos; next_pos.y += 1;
+                if ((next_pos.y < height) && (temporary_mask[next_pos.y * width + next_pos.x] != true) && (GetZ(next_pos) - start_z < z_diff))
+                {
+                    to_be_checked.Enqueue(next_pos);
+                    temporary_mask[next_pos.y * width + next_pos.x] = true;
+                }
+                next_pos = cur_pos; next_pos.x -= 1;
+                if ((next_pos.x >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] != true) && (GetZ(next_pos) - start_z < z_diff))
+                {
+                    to_be_checked.Enqueue(next_pos);
+                    temporary_mask[next_pos.y * width + next_pos.x] = true;
+                }
+                next_pos = cur_pos; next_pos.y -= 1;
+                if ((next_pos.y >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] != true) && (GetZ(next_pos) - start_z < z_diff))
+                {
+                    to_be_checked.Enqueue(next_pos);
+                    temporary_mask[next_pos.y * width + next_pos.x] = true;
+                }
+            }
+
+            return island;
         }
 
         public void Unload()

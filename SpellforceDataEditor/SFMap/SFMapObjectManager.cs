@@ -25,17 +25,17 @@ namespace SpellforceDataEditor.SFMap
             id = max_id;
             max_id += 1;
         }
+
+        public override string ToString()
+        {
+            return GetObjectName();
+        }
     }
 
     public class SFMapObjectManager
     {
         public List<SFMapObject> units { get; private set; } = new List<SFMapObject>();
-        public SF3D.SceneSynchro.SFSceneManager scene { get; private set; } = null;
-
-        public void AssignScene(SF3D.SceneSynchro.SFSceneManager s)
-        {
-            scene = s;
-        }
+        public SFMap map = null;
 
         public SFMapObject AddObject(int id, SFCoord position, int angle)
         {
@@ -45,7 +45,7 @@ namespace SpellforceDataEditor.SFMap
             obj.angle = angle;
 
             string obj_name = obj.GetObjectName();
-            scene.AddObjectObject(id, obj_name);
+            map.render_engine.scene_manager.AddObjectObject(id, obj_name);
             return obj;
         }
     }

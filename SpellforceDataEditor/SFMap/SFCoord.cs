@@ -53,5 +53,10 @@ namespace SpellforceDataEditor.SFMap
         {
             return ((x >= x1) && (x <= x2) && (y >= y1) && (y <= y2));
         }
+
+        public override string ToString()
+        {
+            return "(" + x.ToString() + ", " + y.ToString() + ")";
+        }
     }
 }

@@ -36,7 +36,8 @@ namespace SpellforceDataEditor.special_forms
                 if (gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
                     return;
                 map = new SFMap.SFMap();
-                map.Load(OpenMap.FileName, render_engine.scene_manager, gamedata);
+                if(map.Load(OpenMap.FileName, render_engine, gamedata, StatusText) != 0)
+                    StatusText.Text = "Failed to load map";
                 render_engine.AssignHeightMap(map.heightmap);
                 RenderWindow.Invalidate();
             }
@@ -124,10 +125,19 @@ namespace SpellforceDataEditor.special_forms
             else if (e.KeyChar == 'd')
                 render_engine.camera.translate(new Vector3(cam_speed / render_engine.scene_manager.frames_per_second, 0, 0));
 
+
+            if (e.KeyChar == 'c')
+            {
+                SFCoord cam_c = new SFCoord((short)render_engine.camera.Position.X, (short)render_engine.camera.Position.Z);
+                cam_c.y = map.height - cam_c.y - 1;
+                System.Diagnostics.Debug.WriteLine("CAMERA MAP XYZ: " + cam_c.ToString() + "|" + map.heightmap.GetZ(cam_c));
+                //map.heightmap.GetIslandByHeight(cam_c, 120);
+            }
+
             AdjustCameraZ();
-            System.Diagnostics.Debug.WriteLine(render_engine.camera.Position+", CHUNK "
+            /*System.Diagnostics.Debug.WriteLine(render_engine.camera.Position+", CHUNK "
                 + ((int)(render_engine.camera.Position.X/16)).ToString()+" "
-                + ((int)(render_engine.camera.Position.Z/16)).ToString());
+                + ((int)(render_engine.camera.Position.Z/16)).ToString());*/
         }
 
         private void EnableAnimation()

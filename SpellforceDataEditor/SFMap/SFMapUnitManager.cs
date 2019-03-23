@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SpellforceDataEditor.SF3D;
 
 namespace SpellforceDataEditor.SFMap
 {
@@ -24,17 +25,17 @@ namespace SpellforceDataEditor.SFMap
             id = max_id;
             max_id += 1;
         }
+
+        public override string ToString()
+        {
+            return GetObjectName();
+        }
     }
 
     public class SFMapUnitManager
     {
         public List<SFMapUnit> units { get; private set; } = new List<SFMapUnit>();
-        public SF3D.SceneSynchro.SFSceneManager scene { get; private set; } = null;
-
-        public void AssignScene(SF3D.SceneSynchro.SFSceneManager s)
-        {
-            scene = s;
-        }
+        public SFMap map = null;
 
         public SFMapUnit AddUnit(int id, SFCoord position)
         {
@@ -43,7 +44,7 @@ namespace SpellforceDataEditor.SFMap
             unit.game_id = id;
 
             string obj_name = unit.GetObjectName();
-            scene.AddObjectUnit(id, obj_name, false);
+            map.render_engine.scene_manager.AddObjectUnit(id, obj_name, false);
             return unit;
         }
     }

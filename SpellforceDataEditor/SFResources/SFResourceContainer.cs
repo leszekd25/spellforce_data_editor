@@ -42,6 +42,7 @@ namespace SpellforceDataEditor.SFResources
             suffix_extension = e;
         }
 
+        // name of the resource in the pak files
         public int Load(string rname)
         {
             if (cont.ContainsKey(rname))
@@ -63,6 +64,35 @@ namespace SpellforceDataEditor.SFResources
             cont.Add(rname, resource);
             ms.Close();
             //System.Diagnostics.Debug.WriteLine("LOADED " + rname + suffix_extension);
+            return 0;
+        }
+
+        // memorystream with data, name for the resource
+        public int LoadFromMemory(MemoryStream ms, string rname)
+        {
+            if (ms == null)
+                return -2;
+            //resource loading stack
+            string prev_res = SFResourceManager.current_resource;
+            SFResourceManager.current_resource = rname;
+            T resource = new T();
+            int res_code = resource.Load(ms);
+            SFResourceManager.current_resource = prev_res;
+            //end of stack
+            if (res_code != 0)
+                return res_code;
+            resource.Init();
+            cont.Add(rname, resource);
+            ms.Close();
+            //System.Diagnostics.Debug.WriteLine("LOADED " + rname + suffix_extension);
+            return 0;
+        }
+
+        // resource, name for the resource
+        public int AddManually(T res, string rname)
+        {
+            res.Init();
+            cont.Add(rname, res);
             return 0;
         }
 

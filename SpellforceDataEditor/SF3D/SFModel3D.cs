@@ -175,6 +175,38 @@ namespace SpellforceDataEditor.SF3D
             return 0;
         }
 
+        public int CreateRaw(Vector3[] _vertices, Vector2[] _uvs, Vector4[] _colors, Vector3[] _normals, uint[] _indices, string t_name)
+        {
+            vertices = _vertices;
+            uvs = _uvs;
+            colors = _colors;
+            normals = _normals;
+            face_indices = _indices;
+
+            // material
+            materials = new SFMaterial[1];
+            materials[0] = new SFMaterial();
+            materials[0].indexStart = 0;
+            materials[0].indexCount = (uint)face_indices.Length;
+            if (t_name != "")
+            {
+                SFTexture tex = SFResourceManager.Textures.Get(t_name);
+                if (tex == null)
+                {
+                    int tex_code = SFResourceManager.Textures.Load(t_name);
+                    if (tex_code != 0)
+                        return tex_code;
+                    tex = SFResourceManager.Textures.Get(t_name);
+                }
+                materials[0].texture = tex;
+            }
+
+            // aabb
+            RecalculateBoundingBox();
+
+            return 0;
+        }
+
         public void Init()
         {
             vertex_array = GL.GenVertexArray();

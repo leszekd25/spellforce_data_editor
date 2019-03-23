@@ -57,7 +57,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_heightmap.AddParameter("MVP");
             shader_heightmap.AddParameter("texture_used");
         }
-
+        
         public void AssignHeightMap(SFMapHeightMap hm)
         {
             // remove previous heightmap
@@ -66,17 +66,141 @@ namespace SpellforceDataEditor.SF3D.SFRender
             heightmap = hm;
         }
 
+        private void UpdateVisibleChunks()
+        {
+            // 1. find collection of visible chunks
+            List<SFMapHeightMapChunk> vis_chunks = new List<SFMapHeightMapChunk>();
+            // calculate frustrum points
+            Vector3[] frustrum_vertices = camera.get_frustrum_vertices();
+            // construct frustrum planes
+            Physics.Plane[] frustrum_planes = new Physics.Plane[6];
+            frustrum_planes[0] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[4], frustrum_vertices[1]));  // top plane
+            frustrum_planes[1] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[2], frustrum_vertices[3], frustrum_vertices[6]));  // bottom plane
+            frustrum_planes[2] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[2], frustrum_vertices[4]));  // left plane
+            frustrum_planes[3] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[1], frustrum_vertices[5], frustrum_vertices[3]));  // right plane
+            frustrum_planes[4] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[1], frustrum_vertices[2]));  // near plane
+            frustrum_planes[5] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[4], frustrum_vertices[6], frustrum_vertices[5]));  // far plane
+
+            /*// AABB TEST
+            SF3D.Physics.BoundingBox[] bboxes = new Physics.BoundingBox[16];
+            for(int i = 0; i < 64; i += 16)
+            {
+                for(int j = 0; j < 64; j += 16)
+                {
+                    bboxes[(i * 4 + j) / 16] = new Physics.BoundingBox(new Vector3(i, 0, j), new Vector3(i + 16, 16, j + 16));
+                    if (!bboxes[(i * 4 + j) / 16].IsOutsideOfConvexHull(frustrum_planes))
+                        System.Diagnostics.Debug.WriteLine("BOX #" + ((i * 4 + j) / 16).ToString() + " VISIBLE!");
+                }
+            }
+            // AABB TEST*/
+
+            // test visibility of each chunk
+            foreach(SFMapHeightMapChunk chunk in heightmap.chunks)
+            {
+                if (!chunk.aabb.IsOutsideOfConvexHull(frustrum_planes))
+                {
+                    vis_chunks.Add(chunk);
+                }
+            }
+            // NOTE: chunks are already sorted due to how lists operate
+            // 2. compare with existing collection of visible chunks: march two lists at once
+            // chunk ID is chunk.iy*map.width/16+chunk.ix
+            // any previously visible chunks which are now invisible turn off visibility of its objects
+            // vice versa
+            int next_list_id = 0, cur_list_id = 0;
+            int next_chunk_id, cur_chunk_id;
+            bool next_end = false, cur_end = false;
+            while(true)
+            {
+                if (cur_list_id == heightmap.visible_chunks.Count)
+                    cur_end = true;
+                if (next_list_id == vis_chunks.Count)
+                    next_end = true;
+                if (next_end && cur_end) 
+                    break;
+
+                if (cur_end)
+                {
+                    for (int i = next_list_id; i < vis_chunks.Count; i++)
+                    {
+                        vis_chunks[i].Visible = true;
+                        // add visible to the next chunk
+                    }
+                    break;
+                }
+                if(next_end)
+                {
+                    for (int i = cur_list_id; i < heightmap.visible_chunks.Count; i++)
+                    {
+                        heightmap.visible_chunks[i].Visible = false;
+                        // add invisible to the current chunk
+                    }
+                    break;
+                }
+
+                cur_chunk_id = heightmap.visible_chunks[cur_list_id].id;
+                next_chunk_id = vis_chunks[next_list_id].id;
+                // if next id > cur id, keep increasing cur id, while simultaneously turning chunks invisible
+                // otherwise keep increasing next_id, while simultaneuosly turning chunks visible
+                if (next_chunk_id > cur_chunk_id)
+                {
+                    while(next_chunk_id > cur_chunk_id)
+                    {
+                        heightmap.visible_chunks[cur_list_id].Visible = false;
+                        // turn chunk invisible
+
+                        cur_list_id += 1;
+                        if (cur_list_id == heightmap.visible_chunks.Count)
+                            break;
+                        cur_chunk_id = heightmap.visible_chunks[cur_list_id].id;
+                    }
+                }
+                else if (next_chunk_id < cur_chunk_id)
+                {
+                    while (next_chunk_id < cur_chunk_id)
+                    {
+                        vis_chunks[next_list_id].Visible = true;
+                        // turn chunk visible
+
+                        next_list_id += 1;
+                        if (next_list_id == vis_chunks.Count)
+                            break;
+                        next_chunk_id = vis_chunks[next_list_id].id;
+                    }
+                }
+                else
+                {
+                    next_list_id += 1;
+                    cur_list_id += 1;
+                }
+            }
+            heightmap.visible_chunks = vis_chunks;
+        }
+
+        private void UpdateVisibleLakes()
+        {
+            // reset visibility
+            SFMapLakeManager lake_manager = heightmap.map.lake_manager;
+            for (int i = 0; i < lake_manager.lake_visible.Count; i++)
+                lake_manager.lake_visible[i] = false;
+
+            // update visibility
+            foreach (SFMapHeightMapChunk chunk in heightmap.visible_chunks)
+                for (int i = 0; i < lake_manager.lake_visible.Count; i++)
+                    lake_manager.lake_visible[i] |= chunk.lakes_contained[i];
+        }
+
         private void RenderHeightmap()
         {
             // special shader here...
             GL.UseProgram(shader_heightmap.ProgramID);
             foreach (SFMapHeightMapChunk chunk in heightmap.chunks)
             {
-                // todo: precalculate chunk position and matrix in chunk generation
+                if (!chunk.Visible)
+                    continue;
 
                 // get chunk position
                 Vector3 chunk_pos = new Vector3(chunk.ix * heightmap.chunk_size, 0, chunk.iy * heightmap.chunk_size);
-                // prune invisible chunks here...
                 Matrix4 chunk_matrix = Matrix4.CreateTranslation(chunk_pos);
 
                 Matrix4 MVP_mat = chunk_matrix * camera.ViewProjMatrix;
@@ -92,6 +216,35 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
+        private void RenderLakes()
+        {
+            SFMapLakeManager lake_manager = heightmap.map.lake_manager;
+
+            GL.UseProgram(shader_simple.ProgramID);
+            for(int i = 0; i < lake_manager.lakes.Count; i++)
+            {
+                if(lake_manager.lake_visible[i])
+                {
+                    ObjectSimple3D obj = scene_manager.objects_static[lake_manager.lakes[i].GetObjectName()];
+                    if (obj.Mesh == null)
+                        continue;
+
+                    Matrix4 MVP_mat = camera.ViewProjMatrix;
+                    GL.UniformMatrix4(shader_simple["MVP"], false, ref MVP_mat);
+
+                    GL.BindVertexArray(obj.Mesh.vertex_array);
+                    SFMaterial mat = obj.Mesh.materials[0];
+                    GL.Uniform1(shader_simple["texture_used"], (mat.texture != null ? 1 : 0));
+                    if (mat.texture != null)
+                        GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
+                    else
+                        GL.BindTexture(TextureTarget.Texture2D, 0);
+
+                    GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
+                }
+            }
+        }
+
         public void RenderFrame()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -100,7 +253,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             // heightmap
             if (heightmap != null)
+            {
+                UpdateVisibleChunks();
                 RenderHeightmap();
+            }
 
             //static objects
             GL.UseProgram(shader_simple.ProgramID);
@@ -110,7 +266,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     continue;
                 if (obj.Mesh == null)
                     continue;
-                // heightmap pruning
 
                 Matrix4 MVP_mat = obj.ModelMatrix * camera.ViewProjMatrix;
                 GL.UniformMatrix4(shader_simple["MVP"], false, ref MVP_mat);
@@ -160,7 +315,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     continue;
                 if (obj.skin == null)
                     continue;
-                // heightmap pruning
 
                 Matrix4 MVP_mat = obj.ModelMatrix * camera.ViewProjMatrix;
                 GL.UniformMatrix4(shader_animated["MVP"], false, ref MVP_mat);
@@ -176,6 +330,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     GL.BindTexture(TextureTarget.Texture2D, chunk.material.texture.tex_id);
                     GL.DrawElements(PrimitiveType.Triangles, chunk.face_indices.Length, DrawElementsType.UnsignedInt, 0);
                 }
+            }
+
+            if(heightmap != null)
+            {
+                UpdateVisibleLakes();
+                RenderLakes();
             }
 
             GL.BindVertexArray(0);

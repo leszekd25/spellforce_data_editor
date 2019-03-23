@@ -114,15 +114,24 @@ namespace SpellforceDataEditor.SFMap
             // todo: add mipmaps : )
             terrain_texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
-            GL.TexStorage3D(TextureTarget3d.Texture2DArray, 1, SizedInternalFormat.Rgba8, 256, 256, 63);
-            int w = 256;
-            int h = 256;
+            GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8, SizedInternalFormat.Rgba8, 256, 256, 63);
             for (int i = 0; i < 63; i++)
             {
-                int blockSize = 64;
-                int size = ((w + 3) / 4) * ((h + 3) / 4) * blockSize;
+                int offset = 0;
 
-                GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, i, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, texture_array[i].tex.data);
+                int w = 256;
+                int h = 256;
+
+                for (int level = 0; level < 8 && (w != 0 || h != 0); ++level)
+                {
+                    int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
+
+                    GL.TexSubImage3D(TextureTarget.Texture2DArray, level, 0, 0, i, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[i].tex.data[offset]);
+
+                    offset += size;
+                    w /= 2;
+                    h /= 2;
+                }
 
                 while (true)
                 {

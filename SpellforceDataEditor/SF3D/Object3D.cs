@@ -23,6 +23,7 @@ namespace SpellforceDataEditor.SF3D
         protected Vector3 scale = new Vector3(1);
         protected Matrix4 modelMatrix = new Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
         protected Object3D parent = null;
+        protected List<Object3D> children = new List<Object3D>();
         protected bool modified = false;
         protected bool visible = true;
 
@@ -30,9 +31,23 @@ namespace SpellforceDataEditor.SF3D
         public Quaternion Rotation { get { return rotation; } set { rotation = value; modified = true; } }
         public Vector3 Scale { get { return scale; } set { scale = value; modified = true; } }
         public Matrix4 ModelMatrix { get { return modelMatrix; } }
-        public Object3D Parent { get { return parent; } set { parent = value; } }
+        public Object3D Parent { get { return parent; } set
+            {
+                if (parent != null)
+                    parent.Children.Remove(this);
+                parent = value;
+                if(parent != null)
+                    parent.Children.Add(this);
+            } }
+        public List<Object3D> Children { get { return children; } }
         public virtual bool Modified { get { return modified||(parent != null && parent.Modified); } }
-        public bool Visible { get { return visible; } set { visible = value; } }
+        public bool Visible { get { return visible; } set
+            {
+                visible = value;
+                foreach (Object3D obj in children)
+                    obj.Visible = value;
+            }
+        }
 
         public Object3D()
         {
@@ -54,7 +69,9 @@ namespace SpellforceDataEditor.SF3D
                 modelMatrix = temp_matrix;
             else
                 modelMatrix = temp_matrix * parent.modelMatrix;
-            //children update matrices here
+
+            foreach (Object3D obj in children)
+                obj.update_modelMatrix();
 
             modified = false;
         }

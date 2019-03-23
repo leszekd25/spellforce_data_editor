@@ -502,7 +502,9 @@
     </Compile>
     <Compile Include="SFMap\SFCoord.cs" />
     <Compile Include="SFMap\SFMap.cs" />
+    <Compile Include="SFMap\SFMapDecorationManager.cs" />
     <Compile Include="SFMap\SFMapHeightMap.cs" />
+    <Compile Include="SFMap\SFMapLakeManager.cs" />
     <Compile Include="SFMap\SFMapObjectManager.cs" />
     <Compile Include="SFMap\SFMapTerrainTextureManager.cs" />
     <Compile Include="SFMap\SFMapUnitManager.cs" />

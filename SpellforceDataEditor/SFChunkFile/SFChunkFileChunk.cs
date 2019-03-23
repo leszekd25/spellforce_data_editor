@@ -30,6 +30,11 @@ namespace SpellforceDataEditor.SFChunkFile
             return BitConverter.ToInt32(header, 6);
         }
 
+        public byte[] get_raw_data()
+        {
+            return data;
+        }
+
         public BinaryReader Open()
         {
             if (datastream != null)

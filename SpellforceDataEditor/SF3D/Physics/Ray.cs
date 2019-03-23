@@ -23,6 +23,25 @@ namespace SpellforceDataEditor.SF3D.Physics
             length = v.Length;
             nvector = v.Normalized();
         }
+
+        public bool Intersect(Plane pl, out Vector3 point)
+        {
+            float ln_prod = Vector3.Dot(vector, pl.normal);
+            if (ln_prod != 0)
+            {
+                // intersection of ray and plane the triangle belongs to
+                float ray_d = Vector3.Dot(pl.point - start, pl.normal) / ln_prod;
+                point = new Vector3(ray_d * vector + start);
+                if ((point - start).Length > length)
+                    return false;
+                return true;
+            }
+            else
+            {
+                point = new Vector3(0, 0, 0);
+                return false;
+            }
+        }
         
         public bool Intersect(Triangle tr, out Vector3 point)
         {

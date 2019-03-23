@@ -77,5 +77,32 @@ namespace SpellforceDataEditor.SF3D
             lookat += tr;
             modified = true;
         }
+
+        public Vector3[] get_frustrum_vertices()
+        {
+            // get forward, up, right direction
+            // mirrored in XZ plane...
+            Vector3 forward = modelMatrix.Row2.Xyz;
+            Vector3 up = modelMatrix.Row1.Xyz;
+            Vector3 right = modelMatrix.Row0.Xyz;
+
+            // 100f, Math.Pi/4 are magic for now.....
+            float deviation = (float)Math.Tan(Math.PI / 4)/2;
+            Vector3 center  = position + forward * 0.1f;
+            Vector3 center2 = position + forward * 100f;
+            Vector3[] points = new Vector3[8];
+            points[0] = center + (-right + up) * deviation * 0.1f;
+            points[1] = center + (right + up) * deviation * 0.1f;
+            points[2] = center + (-right - up) * deviation * 0.1f;
+            points[3] = center + (right - up) * deviation * 0.1f;
+            points[4] = center2 + (-right + up) * deviation * 100f;
+            points[5] = center2 + (right + up) * deviation * 100f;
+            points[6] = center2 + (-right - up) * deviation * 100f;
+            points[7] = center2 + (right - up) * deviation * 100f;
+            // reflection along XY plane at z = position.Z
+            for(int i = 0; i < 8; i++)
+                points[i].Z = 2 * position.Z - points[i].Z;
+            return points;
+        }
     }
 }
