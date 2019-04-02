@@ -25,9 +25,24 @@ namespace SpellforceDataEditor.SFChunkFile
             return BitConverter.ToInt16(header, 2);
         }
 
+        public short get_is_packed()
+        {
+            return BitConverter.ToInt16(header, 4);
+        }
+
         public int get_data_length()
         {
             return BitConverter.ToInt32(header, 6);
+        }
+
+        public short get_data_type()
+        {
+            return BitConverter.ToInt16(header, 10);
+        }
+
+        public int get_unpacked_data_length()
+        {
+            return BitConverter.ToInt32(header, 12);
         }
 
         public byte[] get_raw_data()
@@ -57,18 +72,38 @@ namespace SpellforceDataEditor.SFChunkFile
             datastream = null;
         }
 
-        public int Read(BinaryReader br, int chunk_mode)
+        public int Read(BinaryReader br)
         {
-            switch(chunk_mode)
+            if (get_is_packed() == 0)
             {
-                case 2:
-                    header = br.ReadBytes(12);
+                header = br.ReadBytes(12);
+                try
+                {
                     data = br.ReadBytes(get_data_length());
-                    return 0;
-                case 3:
-                    header = br.ReadBytes(16);
-                    br.ReadBytes(2);
-                    byte[] tmp_data = br.ReadBytes(get_data_length()-2);
+                }
+                catch (EndOfStreamException)
+                {
+                    return -4;
+                }
+                return 0;
+            }
+            else
+            {
+                header = br.ReadBytes(16);
+                br.ReadBytes(2);
+
+                byte[] tmp_data;
+                try
+                {
+                    tmp_data = br.ReadBytes(get_data_length() - 2);
+                }
+                catch (EndOfStreamException)
+                {
+                    return -4;
+                }
+
+                try
+                {
                     using (MemoryStream ms_dest = new MemoryStream())
                     {
                         using (MemoryStream ms_src = new MemoryStream(tmp_data))
@@ -80,29 +115,47 @@ namespace SpellforceDataEditor.SFChunkFile
                         }
                         data = ms_dest.ToArray();
                     }
-                    return 0;
-                default:
-                    return -1;
+                }
+                catch (Exception)
+                {
+                    return -2;
+                }
+
+                if (data.Length != get_unpacked_data_length())
+                    return -3;
+                return 0;
             }
         }
 
         public int ReadHeader(BinaryReader br, int chunk_mode, bool proceed_stream = false)
         {
-            switch (chunk_mode)
+            try
             {
-                case 2:
-                    header = br.ReadBytes(12);
-                    if(!proceed_stream)
-                        br.BaseStream.Position -= 12;
-                    return 0;
-                case 3:
-                    header = br.ReadBytes(16);
-                    if (!proceed_stream)
-                        br.BaseStream.Position -= 16;
-                    return 0;
-                default:
-                    return -1;
+                switch (chunk_mode)
+                {
+                    case 2:
+                        header = br.ReadBytes(12);
+                        if (!proceed_stream)
+                            br.BaseStream.Position -= 12;
+                        return 0;
+                    case 3:
+                        header = br.ReadBytes(16);
+                        if (!proceed_stream)
+                            br.BaseStream.Position -= 16;
+                        return 0;
+                    default:
+                        return -1;
+                }
             }
+            catch(EndOfStreamException)
+            {
+                return -2;
+            }
+        }
+
+        public void SetHeader(byte[] h)
+        {
+            header = h;
         }
     }
 }

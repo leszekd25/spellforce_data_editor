@@ -30,14 +30,23 @@ namespace SpellforceDataEditor.special_forms
 
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(OpenMap.ShowDialog() == DialogResult.OK)
+            if (OpenMap.ShowDialog() == DialogResult.OK)
             {
+                StatusText.Text = "Loading GameData.cff...";
+                StatusText.GetCurrentParent().Refresh();
                 gamedata.Unload();
                 if (gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
                     return;
                 map = new SFMap.SFMap();
-                if(map.Load(OpenMap.FileName, render_engine, gamedata, StatusText) != 0)
-                    StatusText.Text = "Failed to load map";
+                try
+                {
+                    if (map.Load(OpenMap.FileName, render_engine, gamedata, StatusText) != 0)
+                        StatusText.Text = "Failed to load map";
+                }
+                catch (InvalidDataException)
+                {
+                    StatusText.Text = "Map contains invalid data!";
+                }
                 render_engine.AssignHeightMap(map.heightmap);
                 RenderWindow.Invalidate();
             }
@@ -183,6 +192,18 @@ namespace SpellforceDataEditor.special_forms
                 if (MainForm.viewer != null)
                     MainForm.viewer.ResetScene();
                 SFResources.SFResourceManager.DisposeAll();
+            }
+        }
+
+        private void saveMapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SaveMap.ShowDialog() == DialogResult.OK)
+            {
+                StatusText.Text = "Saving the map...";
+                if (map.Save(SaveMap.FileName) != 0)
+                    StatusText.Text = "Failed to save map";
+                else
+                    StatusText.Text = SaveMap.FileName+ " saved successfully";
             }
         }
     }

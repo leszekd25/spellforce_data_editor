@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.IO;
 
 namespace SpellforceDataEditor
 {
@@ -202,6 +203,39 @@ namespace SpellforceDataEditor
         static public int Rand()
         {
             return r.Next();
+        }
+
+        static public string ReadSFString(BinaryReader br)
+        {
+            string s = "";
+            int size = br.ReadInt32();
+            for(int i = 0; i < size; i++)
+            {
+                s += (char)br.ReadByte();
+                br.ReadByte();
+            }
+            return s;
+        }
+
+        static public void WriteSFString(BinaryWriter bw, string s)
+        {
+            bw.Write(s.Length);
+            for (int i = 0; i < s.Length; i++)
+            {
+                bw.Write((char)s[i]);
+                bw.Write((byte)0);
+            }
+        }
+
+        static public uint CalculateAdler32Checksum(byte[] data)
+        {
+            uint a = 1, b = 0;
+            for(int i = 0; i < data.Length; i++)
+            {
+                a = (a + data[i]) % 65521;
+                b = (b + a) % 65521;
+            }
+            return (b << 16) | a;
         }
     }
 }

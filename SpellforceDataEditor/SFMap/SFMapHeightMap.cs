@@ -24,8 +24,11 @@ namespace SpellforceDataEditor.SFMap
         public Vector3[] texture_weights;
 
         public SF3D.Physics.BoundingBox aabb;
+        public List<SFMapBuilding> buildings = new List<SFMapBuilding>();
         public List<SFMapObject> objects = new List<SFMapObject>();
+        public List<SFMapInteractiveObject> int_objects = new List<SFMapInteractiveObject>();
         public List<SFMapUnit> units = new List<SFMapUnit>();
+        public List<SFMapPortal> portals = new List<SFMapPortal>();
         public List<SFMapDecoration> decorations = new List<SFMapDecoration>();
         public List<bool> lakes_contained = new List<bool>();
         private bool visible = false;              // if false, units and objects in the chunk are not rendered
@@ -43,8 +46,14 @@ namespace SpellforceDataEditor.SFMap
                     scene.objects_static[u.GetObjectName()].Visible = value;
                 foreach (SFMapObject o in objects)
                     scene.objects_static[o.GetObjectName()].Visible = value;
+                foreach (SFMapInteractiveObject io in int_objects)
+                    scene.objects_static[io.GetObjectName()].Visible = value;
                 foreach (SFMapDecoration d in decorations)
                     scene.objects_static[d.GetObjectName()].Visible = value;
+                foreach (SFMapBuilding b in buildings)
+                    scene.objects_static[b.GetObjectName()].Visible = value;
+                foreach (SFMapPortal p in portals)
+                    scene.objects_static[p.GetObjectName()].Visible = value;
             }
         }
 
@@ -324,9 +333,36 @@ namespace SpellforceDataEditor.SFMap
             objects.Add(o);
         }
 
+        public void AddInteractiveObject(SFMapInteractiveObject io)
+        {
+            int_objects.Add(io);
+        }
+
         public void AddDecoration(SFMapDecoration d)
         {
             decorations.Add(d);
+        }
+
+        public void AddBuilding(SFMapBuilding b)
+        {
+            buildings.Add(b);
+        }
+
+        public void AddPortal(SFMapPortal p)
+        {
+            portals.Add(p);
+        }
+    }
+
+    public struct SFMapChunk60Data
+    {
+        public byte unknown;
+        public SFCoord pos;
+
+        public SFMapChunk60Data(byte u, SFCoord p)
+        {
+            unknown = u;
+            pos = p;
         }
     }
 
@@ -335,9 +371,12 @@ namespace SpellforceDataEditor.SFMap
         public SFMap map = null;
         public SFMapTerrainTextureManager texture_manager { get; private set; } = new SFMapTerrainTextureManager();
         public int width, height;
-        short[] height_data;
-        byte[] tile_data;
-        bool[] temporary_mask;
+        public short[] height_data;
+        public byte[] tile_data;
+        public bool[] temporary_mask;
+        public List<SFCoord> chunk42_data = new List<SFCoord>();
+        public List<SFCoord> chunk56_data = new List<SFCoord>();
+        public List<SFMapChunk60Data> chunk60_data = new List<SFMapChunk60Data>();
 
         public int chunk_size { get; private set; }
         public SFMapHeightMapChunk[] chunks { get; private set; }
@@ -362,6 +401,12 @@ namespace SpellforceDataEditor.SFMap
         {
             for(int i = 0; i < width; i++)
                 height_data[row * width + i] = BitConverter.ToInt16(chunk_data, i * 2);
+        }
+
+        public void GetRowRaw(int row, ref short[] chunk_data)
+        {
+            for (int i = 0; i < width; i++)
+                chunk_data[i] = height_data[row * width + i];
         }
 
         public void SetTilesRaw(byte[] _tiles)

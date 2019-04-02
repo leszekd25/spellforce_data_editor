@@ -502,10 +502,14 @@
     </Compile>
     <Compile Include="SFMap\SFCoord.cs" />
     <Compile Include="SFMap\SFMap.cs" />
+    <Compile Include="SFMap\SFMapBuildingManager.cs" />
     <Compile Include="SFMap\SFMapDecorationManager.cs" />
     <Compile Include="SFMap\SFMapHeightMap.cs" />
+    <Compile Include="SFMap\SFMapInteractiveObjectManager.cs" />
     <Compile Include="SFMap\SFMapLakeManager.cs" />
+    <Compile Include="SFMap\SFMapMetaData.cs" />
     <Compile Include="SFMap\SFMapObjectManager.cs" />
+    <Compile Include="SFMap\SFMapPortalManager.cs" />
     <Compile Include="SFMap\SFMapTerrainTextureManager.cs" />
     <Compile Include="SFMap\SFMapUnitManager.cs" />
     <Compile Include="SFMod\mod_controls\ModInfoForm.cs">

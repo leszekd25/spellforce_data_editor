@@ -47,6 +47,15 @@ namespace SpellforceDataEditor.SFMap
         public int real_index;
     }
 
+    public struct SFMapTerrainTextureTileData
+    {
+        public byte ind1, ind2, ind3;
+        public byte weight1, weight2, weight3;
+        public byte reindex_data, reindex_index;
+        public byte material_property;
+        public bool blocks_movement, blocks_vision;
+    }
+
     public class SFMapTerrainTextureManager
     {
         const int MAX_TEXTURES = 63;
@@ -55,6 +64,7 @@ namespace SpellforceDataEditor.SFMap
 
         public SFMapTerrainTexture[] texture_array { get; private set; } = new SFMapTerrainTexture[MAX_TEXTURES];
         public SFMapTerrainTextureReindexer[] texture_reindex { get; private set; } = new SFMapTerrainTextureReindexer[MAX_REINDEX];
+        public SFMapTerrainTextureTileData[] texture_tiledata { get; private set; } = new SFMapTerrainTextureTileData[MAX_REINDEX];
         List<string> texture_filenames;
         public int terrain_texture { get; private set; } = -1;     //texture GL ID
 

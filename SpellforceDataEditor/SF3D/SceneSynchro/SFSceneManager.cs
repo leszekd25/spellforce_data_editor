@@ -516,6 +516,24 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
         }
 
+        // adds building to the scene
+        public void AddObjectBuilding(int building_id, string object_name)
+        {
+            List<string> m_lst = mesh_data.GetBuildingMeshes(building_id);
+            if (m_lst == null)
+                return;
+
+            // create root
+            AddObjectStatic("", "", object_name);
+
+            // add meshes
+            for (int i = 0; i < m_lst.Count; i++)
+            {
+                string m = m_lst[i];
+                AddObjectStatic(m, object_name, object_name + "_" + i.ToString());
+            }
+        }
+
 
         // sets scene time
         public void SetSceneTime(float t)

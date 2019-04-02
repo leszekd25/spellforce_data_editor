@@ -63,6 +63,7 @@ namespace SpellforceDataEditor.SFMap
             SFMapDecoration dec = new SFMapDecoration();
             dec.grid_position = position;
             dec.game_id = id;
+            decorations.Add(dec);
 
             string dec_name = dec.GetObjectName();
             map.render_engine.scene_manager.AddObjectObject(id, dec_name);

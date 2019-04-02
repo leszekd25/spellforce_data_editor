@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor.SFMap
 {
-    public class SFMapObject
+    public class SFMapInteractiveObject
     {
         static int max_id = 0;
 
@@ -14,14 +14,14 @@ namespace SpellforceDataEditor.SFMap
         public int id = -1;
         public int game_id = -1;
         public int angle = 0;
-        public int npc_id = 0;
+        public int unk_byte = 0;
 
         public string GetObjectName()
         {
-            return "OBJECT_" + id.ToString();
+            return "INT_OBJECT_" + id.ToString();
         }
 
-        public SFMapObject()
+        public SFMapInteractiveObject()
         {
             id = max_id;
             max_id += 1;
@@ -33,18 +33,19 @@ namespace SpellforceDataEditor.SFMap
         }
     }
 
-    public class SFMapObjectManager
+    public class SFMapInteractiveObjectManager
     {
-        public List<SFMapObject> objects { get; private set; } = new List<SFMapObject>();
+        public List<SFMapInteractiveObject> int_objects { get; private set; } = new List<SFMapInteractiveObject>();
         public SFMap map = null;
 
-        public SFMapObject AddObject(int id, SFCoord position, int angle)
+        public SFMapInteractiveObject AddInteractiveObject(int id, SFCoord position, int angle, int unk_byte)
         {
-            SFMapObject obj = new SFMapObject();
+            SFMapInteractiveObject obj = new SFMapInteractiveObject();
             obj.grid_position = position;
             obj.game_id = id;
             obj.angle = angle;
-            objects.Add(obj);
+            obj.unk_byte = unk_byte;
+            int_objects.Add(obj);
 
             string obj_name = obj.GetObjectName();
             map.render_engine.scene_manager.AddObjectObject(id, obj_name);

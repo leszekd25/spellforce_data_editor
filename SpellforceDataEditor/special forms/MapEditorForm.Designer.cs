@@ -33,10 +33,12 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.StatusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.RenderWindow = new OpenTK.GLControl();
             this.OpenMap = new System.Windows.Forms.OpenFileDialog();
             this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
-            this.StatusText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.saveMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaveMap = new System.Windows.Forms.SaveFileDialog();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -54,7 +56,8 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadToolStripMenuItem});
+            this.loadToolStripMenuItem,
+            this.saveMapToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -62,7 +65,7 @@
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadToolStripMenuItem.Text = "Load map";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
@@ -75,6 +78,11 @@
             this.statusStrip1.Size = new System.Drawing.Size(784, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
+            // 
+            // StatusText
+            // 
+            this.StatusText.Name = "StatusText";
+            this.StatusText.Size = new System.Drawing.Size(0, 17);
             // 
             // RenderWindow
             // 
@@ -99,10 +107,17 @@
             // 
             this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
             // 
-            // StatusText
+            // saveMapToolStripMenuItem
             // 
-            this.StatusText.Name = "StatusText";
-            this.StatusText.Size = new System.Drawing.Size(0, 17);
+            this.saveMapToolStripMenuItem.Name = "saveMapToolStripMenuItem";
+            this.saveMapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveMapToolStripMenuItem.Text = "Save map";
+            this.saveMapToolStripMenuItem.Click += new System.EventHandler(this.saveMapToolStripMenuItem_Click);
+            // 
+            // SaveMap
+            // 
+            this.SaveMap.DefaultExt = "map";
+            this.SaveMap.Filter = "Map file | *.map";
             // 
             // MapEditorForm
             // 
@@ -136,5 +151,7 @@
         private System.Windows.Forms.OpenFileDialog OpenMap;
         private System.Windows.Forms.Timer TimerAnimation;
         private System.Windows.Forms.ToolStripStatusLabel StatusText;
+        private System.Windows.Forms.ToolStripMenuItem saveMapToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog SaveMap;
     }
 }

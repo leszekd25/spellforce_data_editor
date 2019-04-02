@@ -8,7 +8,7 @@ using OpenTK;
 
 namespace SpellforceDataEditor.SFMap
 {
-    public struct SFCoord
+    public struct SFCoord: IComparable
     {
         public int x;
         public int y;
@@ -37,6 +37,36 @@ namespace SpellforceDataEditor.SFMap
         public static bool operator!=(SFCoord c1, SFCoord c2)
         {
             return !(c1 == c2);
+        }
+
+        public static bool operator <(SFCoord c1, SFCoord c2)
+        {
+            if (c1.x < c2.x)
+                return true;
+            else if (c1.x == c2.x)
+                return (c1.y < c2.y);
+            else
+                return false;
+        }
+
+        public static bool operator >(SFCoord c1, SFCoord c2)
+        {
+            if (c1.x > c2.x)
+                return true;
+            else if (c1.x == c2.x)
+                return (c1.y > c2.y);
+            else
+                return false;
+        }
+
+        public int CompareTo(object o)
+        {
+            SFCoord pos = (SFCoord)o;
+            if (this < pos)
+                return -1;
+            if (this == pos)
+                return 0;
+            return 1;
         }
 
         public static explicit operator SFCoord(Vector2 v)
