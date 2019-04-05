@@ -8,7 +8,7 @@ using OpenTK;
 
 namespace SpellforceDataEditor.SFMap
 {
-    public struct SFCoord: IComparable
+    public struct SFCoord : IComparable
     {
         public int x;
         public int y;
@@ -29,12 +29,12 @@ namespace SpellforceDataEditor.SFMap
             return new SFCoord(c1.x - c2.x, c1.y - c2.y);
         }
 
-        public static bool operator==(SFCoord c1, SFCoord c2)
+        public static bool operator ==(SFCoord c1, SFCoord c2)
         {
             return ((c1.x == c2.x) && (c1.y == c2.y));
         }
 
-        public static bool operator!=(SFCoord c1, SFCoord c2)
+        public static bool operator !=(SFCoord c1, SFCoord c2)
         {
             return !(c1 == c2);
         }
@@ -82,6 +82,26 @@ namespace SpellforceDataEditor.SFMap
         public bool InRect(int x1, int y1, int x2, int y2)
         {
             return ((x >= x1) && (x <= x2) && (y >= y1) && (y <= y2));
+        }
+
+        public static int DistanceManhattan(SFCoord p1, SFCoord p2)
+        {
+            return Math.Max(Math.Abs(p1.x - p2.x), Math.Abs(p1.y - p2.y));
+        }
+
+        public static int DistanceDiamond(SFCoord p1, SFCoord p2)
+        {
+            return Math.Abs(p1.x - p2.x) + Math.Abs(p1.y - p2.y);
+        }
+
+        public static float Distance(SFCoord p1, SFCoord p2)
+        {
+            return (float)Math.Sqrt(Math.Pow(p1.x - p2.x, 2) + Math.Pow(p1.y - p2.y, 2));
+        }
+
+        public static int DistanceSquared(SFCoord p1, SFCoord p2)
+        {
+            return ((p1.x - p2.x) * (p1.x - p2.x)) + ((p1.y - p2.y) * (p1.y * -p2.y));  
         }
 
         public override string ToString()

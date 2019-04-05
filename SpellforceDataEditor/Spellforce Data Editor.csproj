@@ -500,6 +500,25 @@
     <Compile Include="SFLua\lua_dialog\LuaDialogSayControl.Designer.cs">
       <DependentUpon>LuaDialogSayControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFMap\MapEdit\MapBrush.cs" />
+    <Compile Include="SFMap\map_controls\MapBrushControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapBrushControl.Designer.cs">
+      <DependentUpon>MapBrushControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorBaseControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorBaseControl.Designer.cs">
+      <DependentUpon>MapInspectorBaseControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorHeightMapControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorHeightMapControl.Designer.cs">
+      <DependentUpon>MapInspectorHeightMapControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFMap\SFCoord.cs" />
     <Compile Include="SFMap\SFMap.cs" />
     <Compile Include="SFMap\SFMapBuildingManager.cs" />
@@ -853,6 +872,15 @@
     <EmbeddedResource Include="SFLua\lua_dialog\LuaDialogSayControl.resx">
       <DependentUpon>LuaDialogSayControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_controls\MapBrushControl.resx">
+      <DependentUpon>MapBrushControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_controls\MapInspectorBaseControl.resx">
+      <DependentUpon>MapInspectorBaseControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_controls\MapInspectorHeightMapControl.resx">
+      <DependentUpon>MapInspectorHeightMapControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SFMod\mod_controls\ModInfoForm.resx">
       <DependentUpon>ModInfoForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -936,6 +964,28 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="382940043477778432.ico" />
+    <Content Include="building_icon.png" />
+    <Content Include="decoration_icon.png" />
+    <Content Include="enemycamp_icon.png" />
+    <Content Include="flag_icon.png" />
+    <Content Include="hmap_icon.png" />
+    <Content Include="lake_icon.png" />
+    <Content Include="metadata_icon.png" />
+    <Content Include="npc_icon.png" />
+    <Content Include="object_icon.png" />
+    <None Include="Resources\building_icon.png" />
+    <None Include="Resources\decoration_icon.png" />
+    <None Include="Resources\enemycamp_icon.png" />
+    <None Include="Resources\flag_icon.png" />
+    <None Include="Resources\hmap_icon.png" />
+    <None Include="Resources\lake_icon.png" />
+    <None Include="Resources\metadata_icon.png" />
+    <None Include="Resources\npc_icon.png" />
+    <None Include="Resources\object_icon.png" />
+    <None Include="Resources\texture_icon.png" />
+    <None Include="Resources\unit_icon.png" />
+    <Content Include="texture_icon.png" />
+    <Content Include="unit_icon.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SFMod\mod_patch_params\" />

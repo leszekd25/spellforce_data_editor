@@ -29,7 +29,7 @@ namespace SpellforceDataEditor.SFMap
         public SF3D.SFRender.SFRenderEngine render_engine { get; private set; } = null;
         public SFCFF.SFGameData gamedata { get; private set; } = null;
 
-        public int Load(string filename, SF3D.SFRender.SFRenderEngine re, SFCFF.SFGameData gd, ToolStripStatusLabel tx)
+        public int Load(string filename, SF3D.SFRender.SFRenderEngine re, SFCFF.SFGameData gd, ToolStripLabel tx)
         {
             tx.Text = "Loading...";
             tx.GetCurrentParent().Refresh();

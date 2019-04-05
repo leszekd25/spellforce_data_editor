@@ -231,27 +231,27 @@ namespace SpellforceDataEditor.SFMap
             GL.BindVertexArray(vertex_array);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.DynamicDraw);
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, color_buffer);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, colors.Length * 16, colors, BufferUsageHint.StaticDraw);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, colors.Length * 16, colors, BufferUsageHint.DynamicDraw);
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
-            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, uvs.Length * 8, uvs, BufferUsageHint.StaticDraw);
+            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, uvs.Length * 8, uvs, BufferUsageHint.DynamicDraw);
             GL.EnableVertexAttribArray(2);
             GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, tex_id_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, texture_id.Length * 12, texture_id, BufferUsageHint.StaticDraw);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, texture_id.Length * 12, texture_id, BufferUsageHint.DynamicDraw);
             GL.EnableVertexAttribArray(3);
             GL.VertexAttribPointer(3, 3, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, tex_weight_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, texture_weights.Length * 12, texture_weights, BufferUsageHint.StaticDraw);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, texture_weights.Length * 12, texture_weights, BufferUsageHint.DynamicDraw);
             GL.EnableVertexAttribArray(4);
             GL.VertexAttribPointer(4, 3, VertexAttribPointerType.Float, false, 0, 0);
 
@@ -308,6 +308,107 @@ namespace SpellforceDataEditor.SFMap
                 if ((int)v[i] == id)
                     return i;
             return -1;
+        }
+
+        public void RebuildGeometry(short[] data, int map_size)
+        {
+            float flatten_factor = 100;
+
+            int size = width;
+            int chunk_count = map_size / size;
+
+            int row_start = (chunk_count - iy - 1) * size;
+            int col_start = ix * size;
+
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    int t = (i * size + j) * 6;
+
+                    if ((i + j) % 2 == 0)
+                    {
+                        // left triangle
+                        vertices[t + 0] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 1] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 2] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+
+                        // right triangle
+                        vertices[t + 3] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 5] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+
+                    }
+                    else
+                    {
+                        // left triangle
+                        vertices[t + 0] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 1] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 2] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+
+                        // right triangle
+                        vertices[t + 3] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 5] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+
+                    }
+                }
+            }
+
+            float max_height = 0;
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                float h = vertices[i].Y;
+                max_height = Math.Max(max_height, h);
+            }
+
+            aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, 0, iy * size), new Vector3((ix + 1) * size, max_height, (iy * size) + size));
+
+            GL.DeleteBuffer(position_buffer);
+            position_buffer = GL.GenBuffer();
+
+            GL.BindVertexArray(vertex_array);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.DynamicDraw);
+            GL.EnableVertexAttribArray(0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindVertexArray(0);
+
+
+            // fix all object positions (without lakes for now...)
+            SF3D.SceneSynchro.SFSceneManager scene = hmap.map.render_engine.scene_manager;
+            foreach (SFMapUnit u in units)
+            {
+                SF3D.Object3D _obj = scene.objects_static[u.GetObjectName()];
+                _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(u.grid_position) / 100.0f, _obj.Position.Z);
+            }
+            foreach (SFMapObject o in objects)
+            {
+                SF3D.Object3D _obj = scene.objects_static[o.GetObjectName()];
+                _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(o.grid_position) / 100.0f, _obj.Position.Z);
+            }
+            foreach (SFMapInteractiveObject io in int_objects)
+            {
+                SF3D.Object3D _obj = scene.objects_static[io.GetObjectName()];
+                _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(io.grid_position) / 100.0f, _obj.Position.Z);
+            }
+            foreach (SFMapDecoration d in decorations)
+            {
+                SF3D.Object3D _obj = scene.objects_static[d.GetObjectName()];
+                _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(d.grid_position) / 100.0f, _obj.Position.Z);
+            }
+            foreach (SFMapBuilding b in buildings)
+            {
+                SF3D.Object3D _obj = scene.objects_static[b.GetObjectName()];
+                _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(b.grid_position) / 100.0f, _obj.Position.Z);
+            }
+            foreach (SFMapPortal p in portals)
+            {
+                SF3D.Object3D _obj = scene.objects_static[p.GetObjectName()];
+                _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(p.grid_position) / 100.0f, _obj.Position.Z);
+            }
         }
 
         public void Unload()
@@ -508,6 +609,25 @@ namespace SpellforceDataEditor.SFMap
             }
 
             return island;
+        }
+
+        public void RebuildGeometry(SFCoord topleft, SFCoord bottomright)
+        {
+            int chunk_size = 16;
+            int chunk_count_x = width / chunk_size;
+
+            int topchunkx = topleft.x / 16;
+            int topchunky = topleft.y / 16;
+            int botchunkx = bottomright.x / 16;
+            int botchunky = bottomright.y / 16;
+
+            for(int i = topchunkx; i <= botchunkx; i++)
+            {
+                for(int j = topchunky; j <= botchunky; j++)
+                {
+                    chunks[j * chunk_count_x + i].RebuildGeometry(height_data, width);  // room to optimize,
+                }
+            }
         }
 
         public void Unload()

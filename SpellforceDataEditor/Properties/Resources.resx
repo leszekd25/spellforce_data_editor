@@ -117,6 +117,27 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="vshader" xml:space="preserve">
+    <value>#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec4 vertexColor;
+layout(location = 2) in vec2 vertexUV;
+
+out vec4 fragmentColor;
+out vec2 UV;
+
+// Values that stay constant for the whole mesh.
+uniform mat4 MVP;
+  
+void main(){
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position = MVP * vec4(vertexPosition_modelspace,1);
+  UV = vertexUV;
+  fragmentColor = vertexColor;
+}</value>
+  </data>
   <data name="fshader" xml:space="preserve">
     <value>#version 330 core
 
@@ -135,6 +156,75 @@ void main(){
   if (temp_c.a == 0.0)
     discard;
   color = temp_c * fragmentColor;
+}</value>
+  </data>
+  <data name="vshader_skel" xml:space="preserve">
+    <value>#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec2 vertexUV;
+layout(location = 2) in vec4 vertexBoneIndex;
+layout(location = 3) in vec4 vertexBoneWeight;
+
+out vec2 UV;
+
+// Values that stay constant for the whole mesh.
+uniform mat4 MVP;
+uniform mat4 boneTransforms[20];
+  
+void main(){
+  vec4 Vertex;
+  vec4 newVertex;
+  int index;
+
+  Vertex = vec4(vertexPosition_modelspace, 1.0);
+  newVertex = vec4(0.0, 0.0, 0.0, 1.0);
+
+  index = int(vertexBoneIndex.x);
+  if(index != -1)
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.x;
+  index = int(vertexBoneIndex.y);
+  if(index != -1)
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.y + newVertex;
+  index = int(vertexBoneIndex.z);
+  if(index != -1)
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.z + newVertex;
+  index = int(vertexBoneIndex.w);
+  if(index != -1)
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.w + newVertex;
+
+  
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position =  MVP * vec4(newVertex.xyz, 1.0);
+  UV = vertexUV;
+}</value>
+  </data>
+  <data name="vshader_hmap" xml:space="preserve">
+    <value>#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec4 vertexColor;
+layout(location = 2) in vec2 vertexUV;
+layout(location = 3) in vec3 texID;
+layout(location = 4) in vec3 texWeight;
+
+out vec4 fragmentColor;
+out vec2 UV;
+flat out vec3 textureID;
+out vec3 textureWeight;
+
+// Values that stay constant for the whole mesh.
+uniform mat4 MVP;
+  
+void main(){
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position = MVP * vec4(vertexPosition_modelspace,1);
+  UV = vertexUV;
+  fragmentColor = vertexColor;
+  textureID = texID;
+  textureWeight = texWeight;
 }</value>
   </data>
   <data name="fshader_hmap" xml:space="preserve">
@@ -181,94 +271,38 @@ void main(){
   color = temp_c;
 }</value>
   </data>
-  <data name="vshader" xml:space="preserve">
-    <value>#version 330 core
-
-// Input vertex data, different for all executions of this shader.
-layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec4 vertexColor;
-layout(location = 2) in vec2 vertexUV;
-
-out vec4 fragmentColor;
-out vec2 UV;
-
-// Values that stay constant for the whole mesh.
-uniform mat4 MVP;
-  
-void main(){
-  // Output position of the vertex, in clip space : MVP * position
-  gl_Position = MVP * vec4(vertexPosition_modelspace,1);
-  UV = vertexUV;
-  fragmentColor = vertexColor;
-}</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="building_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\building_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="vshader_hmap" xml:space="preserve">
-    <value>#version 330 core
-
-// Input vertex data, different for all executions of this shader.
-layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec4 vertexColor;
-layout(location = 2) in vec2 vertexUV;
-layout(location = 3) in vec3 texID;
-layout(location = 4) in vec3 texWeight;
-
-out vec4 fragmentColor;
-out vec2 UV;
-flat out vec3 textureID;
-out vec3 textureWeight;
-
-// Values that stay constant for the whole mesh.
-uniform mat4 MVP;
-  
-void main(){
-  // Output position of the vertex, in clip space : MVP * position
-  gl_Position = MVP * vec4(vertexPosition_modelspace,1);
-  UV = vertexUV;
-  fragmentColor = vertexColor;
-  textureID = texID;
-  textureWeight = texWeight;
-}</value>
+  <data name="decoration_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\decoration_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="vshader_skel" xml:space="preserve">
-    <value>#version 330 core
-
-// Input vertex data, different for all executions of this shader.
-layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec2 vertexUV;
-layout(location = 2) in vec4 vertexBoneIndex;
-layout(location = 3) in vec4 vertexBoneWeight;
-
-out vec2 UV;
-
-// Values that stay constant for the whole mesh.
-uniform mat4 MVP;
-uniform mat4 boneTransforms[20];
-  
-void main(){
-  vec4 Vertex;
-  vec4 newVertex;
-  int index;
-
-  Vertex = vec4(vertexPosition_modelspace, 1.0);
-  newVertex = vec4(0.0, 0.0, 0.0, 1.0);
-
-  index = int(vertexBoneIndex.x);
-  if(index != -1)
-    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.x;
-  index = int(vertexBoneIndex.y);
-  if(index != -1)
-    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.y + newVertex;
-  index = int(vertexBoneIndex.z);
-  if(index != -1)
-    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.z + newVertex;
-  index = int(vertexBoneIndex.w);
-  if(index != -1)
-    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.w + newVertex;
-
-  
-  // Output position of the vertex, in clip space : MVP * position
-  gl_Position =  MVP * vec4(newVertex.xyz, 1.0);
-  UV = vertexUV;
-}</value>
+  <data name="enemycamp_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\enemycamp_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="flag_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\flag_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="hmap_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\hmap_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="lake_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\lake_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="metadata_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\metadata_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="npc_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\npc_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="object_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\object_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="texture_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\texture_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="unit_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\unit_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

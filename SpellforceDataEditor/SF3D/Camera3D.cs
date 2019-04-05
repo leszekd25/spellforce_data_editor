@@ -18,6 +18,9 @@ namespace SpellforceDataEditor.SF3D
         private Vector2 direction = new Vector2(0, 0);
         private Matrix4 proj_matrix = new Matrix4();
         private Matrix4 viewproj_matrix = new Matrix4();
+        private Vector3[] frustrum_vertices;// = camera.get_frustrum_vertices();
+        // construct frustrum planes
+        private Physics.Plane[] frustrum_planes;// = new Physics.Plane[6];
 
         public Vector3 Lookat
         {
@@ -58,9 +61,13 @@ namespace SpellforceDataEditor.SF3D
         }
         public Matrix4 ViewProjMatrix { get { return viewproj_matrix; } }
         public Matrix4 ProjMatrix { get { return proj_matrix; } set { proj_matrix = value; viewproj_matrix = proj_matrix; } }
+        public Physics.Plane[] FrustrumPlanes { get { return frustrum_planes; } }
+        public Vector3[] FrustrumVertices { get { return frustrum_vertices; } }
 
         public Camera3D()
         {
+            frustrum_vertices = new Vector3[8];
+            frustrum_planes = new Physics.Plane[6];
             update_modelMatrix();
         }
 
@@ -68,6 +75,16 @@ namespace SpellforceDataEditor.SF3D
         {
             modelMatrix = Matrix4.LookAt(Position, lookat, new Vector3(0, 1, 0));
             viewproj_matrix = ModelMatrix * ProjMatrix;
+
+            // calculate frustrum geometry
+            calculate_frustrum_vertices();
+            frustrum_planes[0] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[4], frustrum_vertices[1]));  // top plane
+            frustrum_planes[1] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[2], frustrum_vertices[3], frustrum_vertices[6]));  // bottom plane
+            frustrum_planes[2] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[2], frustrum_vertices[4]));  // left plane
+            frustrum_planes[3] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[1], frustrum_vertices[5], frustrum_vertices[3]));  // right plane
+            frustrum_planes[4] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[1], frustrum_vertices[2]));  // near plane
+            frustrum_planes[5] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[4], frustrum_vertices[6], frustrum_vertices[5]));  // far plane
+
             modified = false;
         }
 
@@ -78,7 +95,7 @@ namespace SpellforceDataEditor.SF3D
             modified = true;
         }
 
-        public Vector3[] get_frustrum_vertices()
+        private void calculate_frustrum_vertices()
         {
             // get forward, up, right direction
             // mirrored in XZ plane...
@@ -90,19 +107,17 @@ namespace SpellforceDataEditor.SF3D
             float deviation = (float)Math.Tan(Math.PI / 4)/2;
             Vector3 center  = position + forward * 0.1f;
             Vector3 center2 = position + forward * 100f;
-            Vector3[] points = new Vector3[8];
-            points[0] = center + (-right + up) * deviation * 0.1f;
-            points[1] = center + (right + up) * deviation * 0.1f;
-            points[2] = center + (-right - up) * deviation * 0.1f;
-            points[3] = center + (right - up) * deviation * 0.1f;
-            points[4] = center2 + (-right + up) * deviation * 100f;
-            points[5] = center2 + (right + up) * deviation * 100f;
-            points[6] = center2 + (-right - up) * deviation * 100f;
-            points[7] = center2 + (right - up) * deviation * 100f;
+            frustrum_vertices[0] = center + (-right + up) * deviation * 0.1f;
+            frustrum_vertices[1] = center + (right + up) * deviation * 0.1f;
+            frustrum_vertices[2] = center + (-right - up) * deviation * 0.1f;
+            frustrum_vertices[3] = center + (right - up) * deviation * 0.1f;
+            frustrum_vertices[4] = center2 + (-right + up) * deviation * 100f;
+            frustrum_vertices[5] = center2 + (right + up) * deviation * 100f;
+            frustrum_vertices[6] = center2 + (-right - up) * deviation * 100f;
+            frustrum_vertices[7] = center2 + (right - up) * deviation * 100f;
             // reflection along XY plane at z = position.Z
             for(int i = 0; i < 8; i++)
-                points[i].Z = 2 * position.Z - points[i].Z;
-            return points;
+                frustrum_vertices[i].Z = 2 * position.Z - frustrum_vertices[i].Z;
         }
     }
 }

@@ -33,9 +33,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         //called only once!
         public void Initialize(Vector2 view_size)
         {
-            camera.ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
-                (float)Math.PI / 4, view_size.X / view_size.Y, 0.1f, 100f);
-            GL.Viewport(0, 0, (int)view_size.X, (int)view_size.Y);
+            ResizeView(view_size);
 
             GL.ClearColor(Color.MidnightBlue);
 
@@ -57,6 +55,13 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_heightmap.AddParameter("MVP");
             shader_heightmap.AddParameter("texture_used");
         }
+
+        public void ResizeView(Vector2 view_size)
+        { 
+            camera.ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
+                (float)Math.PI / 4, view_size.X / view_size.Y, 0.1f, 100f);
+            GL.Viewport(0, 0, (int)view_size.X, (int)view_size.Y);
+        }
         
         public void AssignHeightMap(SFMapHeightMap hm)
         {
@@ -70,34 +75,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
         {
             // 1. find collection of visible chunks
             List<SFMapHeightMapChunk> vis_chunks = new List<SFMapHeightMapChunk>();
-            // calculate frustrum points
-            Vector3[] frustrum_vertices = camera.get_frustrum_vertices();
-            // construct frustrum planes
-            Physics.Plane[] frustrum_planes = new Physics.Plane[6];
-            frustrum_planes[0] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[4], frustrum_vertices[1]));  // top plane
-            frustrum_planes[1] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[2], frustrum_vertices[3], frustrum_vertices[6]));  // bottom plane
-            frustrum_planes[2] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[2], frustrum_vertices[4]));  // left plane
-            frustrum_planes[3] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[1], frustrum_vertices[5], frustrum_vertices[3]));  // right plane
-            frustrum_planes[4] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[1], frustrum_vertices[2]));  // near plane
-            frustrum_planes[5] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[4], frustrum_vertices[6], frustrum_vertices[5]));  // far plane
-
-            /*// AABB TEST
-            SF3D.Physics.BoundingBox[] bboxes = new Physics.BoundingBox[16];
-            for(int i = 0; i < 64; i += 16)
-            {
-                for(int j = 0; j < 64; j += 16)
-                {
-                    bboxes[(i * 4 + j) / 16] = new Physics.BoundingBox(new Vector3(i, 0, j), new Vector3(i + 16, 16, j + 16));
-                    if (!bboxes[(i * 4 + j) / 16].IsOutsideOfConvexHull(frustrum_planes))
-                        System.Diagnostics.Debug.WriteLine("BOX #" + ((i * 4 + j) / 16).ToString() + " VISIBLE!");
-                }
-            }
-            // AABB TEST*/
 
             // test visibility of each chunk
             foreach(SFMapHeightMapChunk chunk in heightmap.chunks)
             {
-                if (!chunk.aabb.IsOutsideOfConvexHull(frustrum_planes))
+                if (!chunk.aabb.IsOutsideOfConvexHull(camera.FrustrumPlanes))  // frustrum planes updated when camera is updated
                 {
                     vis_chunks.Add(chunk);
                 }
