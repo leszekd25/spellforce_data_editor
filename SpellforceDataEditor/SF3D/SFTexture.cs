@@ -200,5 +200,28 @@ namespace SpellforceDataEditor.SF3D
                 + "\nTEX FORMAT#" + format.ToString()
                 +"\nTEX MIPMAPS#" + mipMapCount.ToString();
         }
+
+        public static SFTexture MixUncompressed(SFTexture tex1, byte w1, SFTexture tex2, byte w2)
+        {
+            if ((tex1.width != tex2.width) || (tex1.height != tex2.height))
+                throw new Exception("SFTexture.MixUncompressed(): Texture dimensions do not match!");
+            if ((tex1.format != InternalFormat.Rgba) || (tex2.format != InternalFormat.Rgba))
+                throw new Exception("SFTexture.MixUncompressed(): Texture(s) are not uncompressed!");
+            if (w1 + w2 == 0)
+                throw new Exception("SFTexture.MixUncompressed(): Texture weights invalid!");
+
+            SFTexture new_tex = new SFTexture();
+            new_tex.width = tex1.width;
+            new_tex.height = tex1.height;
+            new_tex.mipMapCount = tex1.mipMapCount;
+            new_tex.format = tex1.format;
+            new_tex.data = new byte[tex1.data.Length];
+            for(int i = 0; i < tex1.data.Length; i++)
+            {
+                new_tex.data[i] = (byte)((w1 * tex1.data[i] + w2 * tex2.data[i])/255);
+            }
+
+            return new_tex;
+        }
     }
 }

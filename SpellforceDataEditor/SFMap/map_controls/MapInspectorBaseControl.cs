@@ -12,12 +12,14 @@ namespace SpellforceDataEditor.SFMap.map_controls
 {
     public partial class MapInspectorBaseControl : UserControl
     {
+        public SFMap map = null;
+
         public MapInspectorBaseControl()
         {
             InitializeComponent();
         }
 
-        public virtual void OnMouseDown(SFMap map, SFCoord clicked_pos)
+        public virtual void OnMouseDown(SFCoord clicked_pos)
         {
 
         }

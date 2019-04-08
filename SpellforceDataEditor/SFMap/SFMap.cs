@@ -72,7 +72,6 @@ namespace SpellforceDataEditor.SFMap
                 using (BinaryReader br = c3.Open())
                 {
                     byte[] data = br.ReadBytes((int)br.BaseStream.Length);
-                    heightmap.texture_manager.SetTextureReindexRaw(data);
                     MemoryStream ch3_ms = new MemoryStream(data);
                     using (BinaryReader ch3_br = new BinaryReader(ch3_ms))
                     {
@@ -90,8 +89,8 @@ namespace SpellforceDataEditor.SFMap
                             heightmap.texture_manager.texture_tiledata[i].material_property = ch3_br.ReadByte();
                             ch3_br.ReadByte();
                             byte b_m = ch3_br.ReadByte(); byte b_v = ch3_br.ReadByte();
-                            heightmap.texture_manager.texture_tiledata[i].blocks_movement = (b_m == 204 ? true : false);
-                            heightmap.texture_manager.texture_tiledata[i].blocks_vision = (b_v == 204 ? true : false);
+                            heightmap.texture_manager.texture_tiledata[i].blocks_movement = ((b_m % 2) == 1 ? true : false);
+                            heightmap.texture_manager.texture_tiledata[i].blocks_vision = ((b_v % 2) == 1? true : false);
                         }
                     }
                 }
@@ -611,8 +610,8 @@ namespace SpellforceDataEditor.SFMap
                 c3_data[i * 14 + 9] = 128;
                 c3_data[i * 14 + 10] = heightmap.texture_manager.texture_tiledata[i].material_property;
                 c3_data[i * 14 + 11] = 255;
-                c3_data[i * 14 + 12] = (byte)(heightmap.texture_manager.texture_tiledata[i].blocks_movement ? 204 : 205);
-                c3_data[i * 14 + 13] = (byte)(heightmap.texture_manager.texture_tiledata[i].blocks_vision ? 204 : 205);
+                c3_data[i * 14 + 12] = (byte)(heightmap.texture_manager.texture_tiledata[i].blocks_movement ? 1 : 0);
+                c3_data[i * 14 + 13] = (byte)(heightmap.texture_manager.texture_tiledata[i].blocks_vision ? 1 : 0);
             }
             f.AddChunk(3, 0, true, 3, c3_data);
 
@@ -620,7 +619,7 @@ namespace SpellforceDataEditor.SFMap
             byte[] c4_data = new byte[63];
             for(int i = 0; i < 63; i++)
             {
-                c4_data[i] = (byte)heightmap.texture_manager.texture_array[i].id;
+                c4_data[i] = (byte)heightmap.texture_manager.texture_id[i];
             }
             f.AddChunk(4, 0, true, 4, c4_data);
 

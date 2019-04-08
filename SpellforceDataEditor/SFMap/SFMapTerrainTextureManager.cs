@@ -12,7 +12,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SpellforceDataEditor.SFMap
 {
-    public struct SFMapTerrainTexture
+    /*public struct SFMapTerrainTexture
     {
         public int id;
         public string filename;
@@ -39,7 +39,7 @@ namespace SpellforceDataEditor.SFMap
             //System.Diagnostics.Debug.WriteLine(tex.ToString());
             ms.Close();
         }
-    }
+    }*/
 
     public struct SFMapTerrainTextureReindexer
     {
@@ -62,8 +62,9 @@ namespace SpellforceDataEditor.SFMap
         const int MAX_REINDEX = 255;
         const int TEXTURES_AVAILABLE = 119;
 
-        public SFMapTerrainTexture[] texture_array { get; private set; } = new SFMapTerrainTexture[MAX_TEXTURES];
-        public SFMapTerrainTextureReindexer[] texture_reindex { get; private set; } = new SFMapTerrainTextureReindexer[MAX_REINDEX];
+        public SFTexture[] base_texture_bank { get; private set; } = new SFTexture[MAX_TEXTURES];
+        public byte[] texture_id { get; private set; } = new byte[MAX_TEXTURES];
+        public SFTexture[] texture_array { get; private set; } = new SFTexture[MAX_REINDEX];
         public SFMapTerrainTextureTileData[] texture_tiledata { get; private set; } = new SFMapTerrainTextureTileData[MAX_REINDEX];
         List<string> texture_filenames;
         public int terrain_texture { get; private set; } = -1;     //texture GL ID
@@ -77,22 +78,10 @@ namespace SpellforceDataEditor.SFMap
             texture_filenames = SFUnPak.SFUnPak.ListAllWithFilename("texture", "landscape_island_", new string[] { "sf1.pak"});
         }
 
-        public void SetTextureReindexRaw(byte[] data)
-        {
-            // set first reindex to zeros
-            texture_reindex[0].index = 0;
-            texture_reindex[0].real_index = 0;
-            for(int i = 1; i < MAX_REINDEX; i++)
-            {
-                texture_reindex[i].real_index = data[i * 14 + 0];
-                texture_reindex[i].index = i;
-            }
-        }
-
         public void SetTextureIDsRaw(byte[] data)
         {
             for (int i = 0; i < MAX_TEXTURES; i++)
-                texture_array[i].id = data[i];
+                texture_id[i] = data[i];
         }
 
         public string GetTextureNameByID(int id)
@@ -112,20 +101,50 @@ namespace SpellforceDataEditor.SFMap
         // generate opengl array texture for heightmap
         public void Init()
         {
-
             LoadTextureNames();
+            // load base textures
             for (int i = 0; i < MAX_TEXTURES; i++)
             {
-                texture_array[i].filename = GetTextureNameByID(texture_array[i].id);
-                texture_array[i].LoadTexture();
-                texture_array[i].tex.Uncompress();
+                string filename = GetTextureNameByID(texture_id[i]);
+                base_texture_bank[i] = new SFTexture();
+
+                MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf1.pak", "texture\\" + filename);
+                if (ms == null)
+                    throw new Exception("SFMapTerrainTextureManager.Init(): Can't find texture!");
+                int res_code = base_texture_bank[i].Load(ms);
+                if (res_code != 0)
+                    throw new Exception("SFMapTerrainTextureManager.Init(): Can't load texture!");
+                ms.Close();
+
+                base_texture_bank[i].Uncompress();
+                base_texture_bank[i].Init();
+            }
+            // generate inbetween textures
+            for(int i = 0; i < 32; i++)
+            {
+                texture_array[i] = base_texture_bank[i];
+            }
+            for(int i = 224; i < 255; i++)
+            {
+                texture_array[i] = base_texture_bank[i - 192];
+            }
+            for(int i = 32; i < 224; i++)
+            {
+                if ((texture_tiledata[i].ind1 != 0) && (texture_tiledata[i].ind2 != 0))
+                {
+                    texture_array[i] = SFTexture.MixUncompressed(base_texture_bank[texture_tiledata[i].ind1], texture_tiledata[i].weight1,
+                                                                 base_texture_bank[texture_tiledata[i].ind2], texture_tiledata[i].weight2);
+                    texture_array[i].Init();
+                }
+                else
+                    texture_array[i] = base_texture_bank[0];
             }
 
             // todo: add mipmaps : )
             terrain_texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
-            GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8, SizedInternalFormat.Rgba8, 256, 256, 63);
-            for (int i = 0; i < 63; i++)
+            GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8, SizedInternalFormat.Rgba8, 256, 256, 255);
+            for (int i = 0; i < 255; i++)
             {
                 int offset = 0;
 
@@ -136,7 +155,7 @@ namespace SpellforceDataEditor.SFMap
                 {
                     int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
 
-                    GL.TexSubImage3D(TextureTarget.Texture2DArray, level, 0, 0, i, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[i].tex.data[offset]);
+                    GL.TexSubImage3D(TextureTarget.Texture2DArray, level, 0, 0, i, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[i].data[offset]);
 
                     offset += size;
                     w /= 2;
@@ -156,9 +175,120 @@ namespace SpellforceDataEditor.SFMap
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
         }
 
+        public bool SetBaseTexture(int base_index, int tex_id)
+        {
+            if ((tex_id <= 0) || (tex_id > 237))
+                return false;
+            texture_id[base_index] = (byte)tex_id;
+            // unload existing texture
+            base_texture_bank[base_index].Dispose();
+            // load new texture
+            string filename = GetTextureNameByID(tex_id);
+
+            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf1.pak", "texture\\" + filename);
+            if (ms == null)
+                throw new Exception("SFMapTerrainTextureManager.SetBaseTexture(): Can't find texture!");
+            int res_code = base_texture_bank[base_index].Load(ms);
+            if (res_code != 0)
+                throw new Exception("SFMapTerrainTextureManager.SetBaseTexture(): Can't load texture!");
+            ms.Close();
+
+            base_texture_bank[base_index].Uncompress();
+            base_texture_bank[base_index].Init();
+            // insert texture data to the atlas
+            int atlas_index = base_index;
+            if (base_index >= 32)
+                atlas_index = 192 + base_index;
+
+            GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
+
+            int offset = 0;
+
+            int w = 256;
+            int h = 256;
+
+            for (int level = 0; level < 8 && (w != 0 || h != 0); ++level)
+            {
+                int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
+
+                GL.TexSubImage3D(TextureTarget.Texture2DArray, level, 0, 0, atlas_index, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[atlas_index].data[offset]);
+
+                offset += size;
+                w /= 2;
+                h /= 2;
+            }
+
+            GL.BindTexture(TextureTarget.Texture2DArray, 0);
+            // mix all textures...
+            for(int i = 32; i < 224; i++)
+            {
+                if((texture_tiledata[i].ind1 == base_index)||(texture_tiledata[i].ind2 == base_index))
+                {
+                    texture_array[i].Dispose();
+                    texture_array[i] = SFTexture.MixUncompressed(base_texture_bank[texture_tiledata[i].ind1], texture_tiledata[i].weight1,
+                                                                 base_texture_bank[texture_tiledata[i].ind2], texture_tiledata[i].weight2);
+                    texture_array[i].Init();
+
+                    offset = 0;
+
+                    w = 256;
+                    h = 256;
+
+                    for (int level = 0; level < 8 && (w != 0 || h != 0); ++level)
+                    {
+                        int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
+
+                        GL.TexSubImage3D(TextureTarget.Texture2DArray, level, 0, 0, i, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[i].data[offset]);
+
+                        offset += size;
+                        w /= 2;
+                        h /= 2;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public void UpdateTileTexture(int tile_id)
+        {
+            // unload existing texture
+            texture_array[tile_id].Dispose();
+            // load new texture
+
+            texture_array[tile_id] = SFTexture.MixUncompressed(
+                base_texture_bank[texture_tiledata[tile_id].ind1], texture_tiledata[tile_id].weight1,
+                base_texture_bank[texture_tiledata[tile_id].ind2], texture_tiledata[tile_id].weight2);
+            texture_array[tile_id].Init();
+            // insert texture data to the atlas
+
+            GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
+
+            int offset = 0;
+
+            int w = 256;
+            int h = 256;
+
+            for (int level = 0; level < 8 && (w != 0 || h != 0); ++level)
+            {
+                int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
+
+                GL.TexSubImage3D(TextureTarget.Texture2DArray, level, 0, 0, tile_id, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[tile_id].data[offset]);
+
+                offset += size;
+                w /= 2;
+                h /= 2;
+            }
+
+            GL.BindTexture(TextureTarget.Texture2DArray, 0);
+        }
+
         public void Unload()
         {
             GL.DeleteTexture(terrain_texture);
+            for(int i = 0; i < MAX_REINDEX; i++)
+            {
+                texture_array[i].Dispose();
+            }
         }
     }
 }

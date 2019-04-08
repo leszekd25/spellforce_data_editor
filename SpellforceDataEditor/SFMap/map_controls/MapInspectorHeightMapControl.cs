@@ -15,7 +15,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             InitializeComponent();
         }
 
-        public override void OnMouseDown(SFMap map, SFCoord clicked_pos)
+        public override void OnMouseDown(SFCoord clicked_pos)
         {
             float strength = Utility.TryParseFloat(StrengthTextBox.Text, 0f);
             int size = (int)Math.Ceiling(BrushControl.brush.size);

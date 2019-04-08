@@ -210,15 +210,6 @@ namespace SpellforceDataEditor.SFMap
             aabb = new SF3D.Physics.BoundingBox(new Vector3(x * size, 0, y * size), new Vector3((x + 1) * size, max_height, (y * size) + size));
         }
 
-        public void TransformMaterialsToTextures(SFMapTerrainTextureManager man)
-        {
-            for (int i = 0; i < (width * width * 6); i++)
-            {
-                for (int j = 0; j < 3; j++)
-                    texture_id[i][j] = (float)man.texture_reindex[(int)texture_id[i][j]].real_index;
-            }
-        }
-
         public void Init()
         {
             vertex_array = GL.GenVertexArray();
@@ -364,9 +355,6 @@ namespace SpellforceDataEditor.SFMap
 
             aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, 0, iy * size), new Vector3((ix + 1) * size, max_height, (iy * size) + size));
 
-            GL.DeleteBuffer(position_buffer);
-            position_buffer = GL.GenBuffer();
-
             GL.BindVertexArray(vertex_array);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
@@ -409,6 +397,138 @@ namespace SpellforceDataEditor.SFMap
                 SF3D.Object3D _obj = scene.objects_static[p.GetObjectName()];
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(p.grid_position) / 100.0f, _obj.Position.Z);
             }
+        }
+
+        public void RebuildTerrainTexture(byte[] tex_data, int map_size)
+        {
+            int size = width;
+            int chunk_count = map_size / size;
+
+            int row_start = (chunk_count - iy - 1) * size;
+            int col_start = ix * size;
+
+            // precalculate material data
+            for (int i = 0; i <= size; i++)
+            {
+                for (int j = 0; j <= size; j++)
+                {
+                    SFCoord p = new SFCoord(col_start + j, row_start + i);
+                    if (p.InRect(0, 0, map_size - 1, map_size - 1))
+                        material_id[i * (size + 1) + j] = tex_data[(row_start + i) * map_size + col_start + j];
+                    else
+                        material_id[i * (size + 1) + j] = 0;
+                }
+            }
+
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    int t = (i * size + j) * 6;
+                    Vector3 triangle_mats;
+                    Vector3 triangle_ws;
+
+                    if ((i + j) % 2 == 0)
+                    {
+                        // left triangle
+                        triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[(i + 1) * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
+                        triangle_mats = SortV3(triangle_mats);
+                        texture_id[t + 0] = triangle_mats;
+                        texture_id[t + 1] = triangle_mats;
+                        texture_id[t + 2] = triangle_mats;
+
+                        triangle_ws = new Vector3(0.0f);
+                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + j])] = 1.0f;
+                        texture_weights[t + 0] = triangle_ws;
+                        triangle_ws = new Vector3(0.0f);
+                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + (j + 1)])] = 1.0f;
+                        texture_weights[t + 1] = triangle_ws;
+                        triangle_ws = new Vector3(0.0f);
+                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + j])] = 1.0f;
+                        texture_weights[t + 2] = triangle_ws;
+
+                        // right triangle
+                        triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j + 1]);
+                        triangle_mats = SortV3(triangle_mats);
+                        texture_id[t + 3] = triangle_mats;
+                        texture_id[t + 4] = triangle_mats;
+                        texture_id[t + 5] = triangle_mats;
+
+                        triangle_ws = new Vector3(0.0f);
+                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + j])] = 1.0f;
+                        texture_weights[t + 3] = triangle_ws;
+                        triangle_ws = new Vector3(0.0f);
+                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + (j + 1)])] = 1.0f;
+                        texture_weights[t + 4] = triangle_ws;
+                        triangle_ws = new Vector3(0.0f);
+                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + (j + 1)])] = 1.0f;
+                        texture_weights[t + 5] = triangle_ws;
+                    }
+                    else
+                    {
+                        // left triangle
+                        triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
+                        triangle_mats = SortV3(triangle_mats);
+                        texture_id[t + 0] = triangle_mats;
+                        texture_id[t + 1] = triangle_mats;
+                        texture_id[t + 2] = triangle_mats;
+
+                        triangle_ws = new Vector3(0.0f);
+                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + j])] = 1.0f;
+                        texture_weights[t + 0] = triangle_ws;
+                        triangle_ws = new Vector3(0.0f);
+                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + (j + 1)])] = 1.0f;
+                        texture_weights[t + 1] = triangle_ws;
+                        triangle_ws = new Vector3(0.0f);
+                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + j])] = 1.0f;
+                        texture_weights[t + 2] = triangle_ws;
+                        // right triangle
+                        triangle_mats = new Vector3(material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
+                        triangle_mats = SortV3(triangle_mats);
+                        texture_id[t + 3] = triangle_mats;
+                        texture_id[t + 4] = triangle_mats;
+                        texture_id[t + 5] = triangle_mats;
+
+                        triangle_ws = new Vector3(0.0f);
+                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + (j + 1)])] = 1.0f;
+                        texture_weights[t + 3] = triangle_ws;
+                        triangle_ws = new Vector3(0.0f);
+                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + (j + 1)])] = 1.0f;
+                        texture_weights[t + 4] = triangle_ws;
+                        triangle_ws = new Vector3(0.0f);
+                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + j])] = 1.0f;
+                        texture_weights[t + 5] = triangle_ws;
+                    }
+                }
+            }
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                // color (debug heightmap)
+                float h = vertices[i].Y;
+                byte col = (byte)(Math.Min(255, (int)(h * 8)));
+                float norm_color = (float)col / 255.0f;
+                colors[i] = new OpenTK.Vector4(norm_color, norm_color, norm_color, 1.0f);
+            }
+
+            GL.BindVertexArray(vertex_array);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, color_buffer);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, colors.Length * 16, colors, BufferUsageHint.DynamicDraw);
+            GL.EnableVertexAttribArray(1);
+            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, tex_id_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, texture_id.Length * 12, texture_id, BufferUsageHint.DynamicDraw);
+            GL.EnableVertexAttribArray(3);
+            GL.VertexAttribPointer(3, 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, tex_weight_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, texture_weights.Length * 12, texture_weights, BufferUsageHint.DynamicDraw);
+            GL.EnableVertexAttribArray(4);
+            GL.VertexAttribPointer(4, 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindVertexArray(0);
         }
 
         public void Unload()
@@ -530,7 +650,6 @@ namespace SpellforceDataEditor.SFMap
                 }
             foreach (SFMapHeightMapChunk chunk in chunks)
             {
-                chunk.TransformMaterialsToTextures(texture_manager);
                 chunk.Init();
             }
         }
@@ -621,11 +740,30 @@ namespace SpellforceDataEditor.SFMap
             int botchunkx = bottomright.x / 16;
             int botchunky = bottomright.y / 16;
 
-            for(int i = topchunkx; i <= botchunkx; i++)
+            for (int i = topchunkx; i <= botchunkx; i++)
             {
-                for(int j = topchunky; j <= botchunky; j++)
+                for (int j = topchunky; j <= botchunky; j++)
                 {
                     chunks[j * chunk_count_x + i].RebuildGeometry(height_data, width);  // room to optimize,
+                }
+            }
+        }
+
+        public void RebuildTerrainTexture(SFCoord topleft, SFCoord bottomright)
+        {
+            int chunk_size = 16;
+            int chunk_count_x = width / chunk_size;
+
+            int topchunkx = topleft.x / 16;
+            int topchunky = topleft.y / 16;
+            int botchunkx = bottomright.x / 16;
+            int botchunky = bottomright.y / 16;
+
+            for (int i = topchunkx; i <= botchunkx; i++)
+            {
+                for (int j = topchunky; j <= botchunky; j++)
+                {
+                    chunks[j * chunk_count_x + i].RebuildTerrainTexture(tile_data, width);  // room to optimize,
                 }
             }
         }

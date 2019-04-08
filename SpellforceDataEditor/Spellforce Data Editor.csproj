@@ -519,6 +519,12 @@
     <Compile Include="SFMap\map_controls\MapInspectorHeightMapControl.Designer.cs">
       <DependentUpon>MapInspectorHeightMapControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorTerrainTextureControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorTerrainTextureControl.Designer.cs">
+      <DependentUpon>MapInspectorTerrainTextureControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFMap\SFCoord.cs" />
     <Compile Include="SFMap\SFMap.cs" />
     <Compile Include="SFMap\SFMapBuildingManager.cs" />
@@ -880,6 +886,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapInspectorHeightMapControl.resx">
       <DependentUpon>MapInspectorHeightMapControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_controls\MapInspectorTerrainTextureControl.resx">
+      <DependentUpon>MapInspectorTerrainTextureControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMod\mod_controls\ModInfoForm.resx">
       <DependentUpon>ModInfoForm.cs</DependentUpon>

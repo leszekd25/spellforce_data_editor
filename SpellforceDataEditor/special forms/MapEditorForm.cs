@@ -25,9 +25,10 @@ namespace SpellforceDataEditor.special_forms
         bool dynamic_render = false;     // if true, window will redraw every frame at 25 fps
         bool mouse_pressed = false;      // if true, mouse is pressed and in render window
         bool mouse_on_view = false;      // if true, mouse is in render window
-        bool update_render = false;
+        public bool update_render = false;
         Vector2 scroll_movement = new Vector2(0, 0);   // how much is camera going to move this frame
         SFCoord cursor_coord = new SFCoord(0, 0);      // map coordinates at mouse cursor
+        int gc_timer = 0;
 
         MAPEDIT_MODE edit_mode = MAPEDIT_MODE.HMAP;
         SFMap.map_controls.MapInspectorBaseControl[] edit_controls = new SFMap.map_controls.MapInspectorBaseControl[(int)MAPEDIT_MODE.MAX];
@@ -44,10 +45,14 @@ namespace SpellforceDataEditor.special_forms
                 edit_controls[i] = null;
 
             edit_controls[0] = new SFMap.map_controls.MapInspectorHeightMapControl();
+            edit_controls[1] = new SFMap.map_controls.MapInspectorTerrainTextureControl();
 
             for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
                 if (edit_controls[i] != null)
+                {
                     InspectorPanel.Controls.Add(edit_controls[i]);
+                    edit_controls[i].map = map;
+                }
 
             for (int i = 0; i < InspectorPanel.Controls.Count; i++)
             { 
@@ -78,6 +83,17 @@ namespace SpellforceDataEditor.special_forms
                     StatusText.Text = "Map contains invalid data!";
                 }
                 render_engine.AssignHeightMap(map.heightmap);
+
+                for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
+                    if (edit_controls[i] != null)
+                    {
+                        InspectorPanel.Controls.Add(edit_controls[i]);
+                        edit_controls[i].map = map;
+                    }
+
+                ((SFMap.map_controls.MapInspectorTerrainTextureControl)(edit_controls[1])).GenerateBaseTexturePreviews();
+                ((SFMap.map_controls.MapInspectorTerrainTextureControl)(edit_controls[1])).GenerateTileListEntries();
+
                 RenderWindow.Invalidate();
             }
         }
@@ -209,7 +225,7 @@ namespace SpellforceDataEditor.special_forms
                     StatusText.Text = "MAP POS: " + cursor_coord.ToString();
 
                     // on click action
-                    edit_controls[(int)edit_mode].OnMouseDown(map, cursor_coord);
+                    edit_controls[(int)edit_mode].OnMouseDown(cursor_coord);
                     update_render = true;
                 }
             }
@@ -221,6 +237,13 @@ namespace SpellforceDataEditor.special_forms
                 render_engine.scene_manager.LogicStep();
                 RenderWindow.Invalidate();
                 update_render = false;
+            }
+
+            gc_timer += 1;
+            if (gc_timer == 200)
+            {
+                GC.Collect();
+                gc_timer = 0;
             }
 
             TimerAnimation.Start();
@@ -301,12 +324,16 @@ namespace SpellforceDataEditor.special_forms
             for (int i = 0; i < InspectorPanel.Controls.Count; i++)
                 InspectorPanel.Controls[i].Hide();
 
-            InspectorPanel.Controls[c_index].Show(); 
+            InspectorPanel.Controls[c_index].Show();
+            InspectorPanel.Controls[c_index].BringToFront();
 
             switch(mode)
             {
                 case MAPEDIT_MODE.HMAP:
                     LabelMode.Text = "Edit Heightmap";
+                    break;
+                case MAPEDIT_MODE.TEXTURE:
+                    LabelMode.Text = "Edit terrain textures";
                     break;
                 default:
                     break;
@@ -316,6 +343,11 @@ namespace SpellforceDataEditor.special_forms
         private void ButtonHeightmap_Click(object sender, EventArgs e)
         {
             SetEditMode(MAPEDIT_MODE.HMAP);
+        }
+
+        private void ButtonTerrainTexture_Click(object sender, EventArgs e)
+        {
+            SetEditMode(MAPEDIT_MODE.TEXTURE);
         }
     }
 }
