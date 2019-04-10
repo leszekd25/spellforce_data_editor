@@ -29,6 +29,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static SFShader shader_simple = new SFShader();
         static SFShader shader_animated = new SFShader();
         static SFShader shader_heightmap = new SFShader();
+        static SFShader shader_overlay = new SFShader();
 
         //called only once!
         public void Initialize(Vector2 view_size)
@@ -54,6 +55,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_heightmap.CompileShader(Properties.Resources.vshader_hmap, Properties.Resources.fshader_hmap);
             shader_heightmap.AddParameter("MVP");
             shader_heightmap.AddParameter("texture_used");
+
+            shader_overlay.CompileShader(Properties.Resources.vshader_overlay, Properties.Resources.fshader_overlay);
+            shader_overlay.AddParameter("MVP");
+            shader_overlay.AddParameter("Color");
         }
 
         public void ResizeView(Vector2 view_size)
@@ -227,6 +232,28 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
+        public void RenderOverlays()
+        {
+            GL.UseProgram(shader_overlay.ProgramID);
+            foreach (string o in heightmap.visible_overlays)
+            {
+                foreach (SFMapHeightMapChunk chunk in heightmap.visible_chunks)
+                {
+                    // get chunk position
+                    Vector3 chunk_pos = new Vector3(chunk.ix * heightmap.chunk_size, 0, chunk.iy * heightmap.chunk_size);
+                    Matrix4 chunk_matrix = Matrix4.CreateTranslation(chunk_pos);
+
+                    Matrix4 MVP_mat = chunk_matrix * camera.ViewProjMatrix;
+
+                    GL.UniformMatrix4(shader_overlay["MVP"], false, ref MVP_mat);
+                    GL.Uniform4(shader_overlay["Color"], chunk.overlays[o].color);
+
+                    GL.BindVertexArray(chunk.overlays[o].v_array);
+                    GL.DrawElements(PrimitiveType.Triangles, chunk.overlays[o].elements.Length, DrawElementsType.UnsignedInt, 0);
+                }
+            }
+        }
+
         public void RenderFrame()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -238,6 +265,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             {
                 UpdateVisibleChunks();
                 RenderHeightmap();
+                RenderOverlays();
             }
 
             //static objects

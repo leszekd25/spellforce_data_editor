@@ -291,7 +291,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].blocks_vision = VisionCheck.Checked;
         }
 
-        public override void OnMouseDown(SFCoord clicked_pos)
+        public override void OnMouseDown(SFCoord clicked_pos, MouseButtons button)
         {
             if (ListTiles.SelectedIndex == -1)
                 return;
@@ -308,12 +308,13 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 bottomright.x = map.width - 1;
             if (bottomright.y >= map.height)
                 bottomright.y = map.height - 1;
-
             
             for (int i = topleft.x; i <= bottomright.x; i++)
             {
                 for (int j = topleft.y; j <= bottomright.y; j++)
                 {
+                    if (BrushControl.brush.GetStrengthAt(new SFCoord(i, j)) == 0)
+                        continue;
                     int fixed_j = map.height - j - 1;
                     map.heightmap.tile_data[fixed_j * map.width + i] = (byte)(ListTiles.SelectedIndex);
                 }

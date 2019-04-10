@@ -24,6 +24,8 @@ namespace SpellforceDataEditor.special_forms
 
         bool dynamic_render = false;     // if true, window will redraw every frame at 25 fps
         bool mouse_pressed = false;      // if true, mouse is pressed and in render window
+        MouseButtons mouse_last_pressed = MouseButtons.Left;  // last mouse button pressed
+
         bool mouse_on_view = false;      // if true, mouse is in render window
         public bool update_render = false;
         Vector2 scroll_movement = new Vector2(0, 0);   // how much is camera going to move this frame
@@ -46,6 +48,7 @@ namespace SpellforceDataEditor.special_forms
 
             edit_controls[0] = new SFMap.map_controls.MapInspectorHeightMapControl();
             edit_controls[1] = new SFMap.map_controls.MapInspectorTerrainTextureControl();
+            edit_controls[2] = new SFMap.map_controls.MapInspectorFlagControl();
 
             for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
                 if (edit_controls[i] != null)
@@ -91,6 +94,7 @@ namespace SpellforceDataEditor.special_forms
                         edit_controls[i].map = map;
                     }
 
+                // ui initialization
                 ((SFMap.map_controls.MapInspectorTerrainTextureControl)(edit_controls[1])).GenerateBaseTexturePreviews();
                 ((SFMap.map_controls.MapInspectorTerrainTextureControl)(edit_controls[1])).GenerateTileListEntries();
 
@@ -132,6 +136,7 @@ namespace SpellforceDataEditor.special_forms
         private void RenderWindow_MouseDown(object sender, MouseEventArgs e)
         {
             mouse_pressed = true;
+            mouse_last_pressed = e.Button;
         }
 
         private void RenderWindow_MouseUp(object sender, MouseEventArgs e)
@@ -225,7 +230,7 @@ namespace SpellforceDataEditor.special_forms
                     StatusText.Text = "MAP POS: " + cursor_coord.ToString();
 
                     // on click action
-                    edit_controls[(int)edit_mode].OnMouseDown(cursor_coord);
+                    edit_controls[(int)edit_mode].OnMouseDown(cursor_coord, mouse_last_pressed);
                     update_render = true;
                 }
             }
@@ -348,6 +353,11 @@ namespace SpellforceDataEditor.special_forms
         private void ButtonTerrainTexture_Click(object sender, EventArgs e)
         {
             SetEditMode(MAPEDIT_MODE.TEXTURE);
+        }
+
+        private void ButtonFlag_Click(object sender, EventArgs e)
+        {
+            SetEditMode(MAPEDIT_MODE.FLAG);
         }
     }
 }

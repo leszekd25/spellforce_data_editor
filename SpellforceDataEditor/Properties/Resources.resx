@@ -305,4 +305,33 @@ void main(){
   <data name="unit_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\unit_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="fshader_overlay" xml:space="preserve">
+    <value>#version 330 core
+
+in vec4 fragmentColor;
+
+out vec4 color;
+
+void main(){
+  color = fragmentColor;
+}</value>
+  </data>
+  <data name="vshader_overlay" xml:space="preserve">
+    <value>#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+
+out vec4 fragmentColor;
+
+// Values that stay constant for the whole mesh.
+uniform mat4 MVP;
+uniform vec4 Color;
+  
+void main(){
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position = MVP * vec4(vertexPosition_modelspace,1);
+  fragmentColor = Color;
+}</value>
+  </data>
 </root>

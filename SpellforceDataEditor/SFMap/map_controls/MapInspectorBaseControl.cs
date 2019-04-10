@@ -19,7 +19,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             InitializeComponent();
         }
 
-        public virtual void OnMouseDown(SFCoord clicked_pos)
+        public virtual void OnMouseDown(SFCoord clicked_pos, MouseButtons button)
         {
 
         }

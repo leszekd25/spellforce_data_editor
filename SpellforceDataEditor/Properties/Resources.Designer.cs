@@ -157,6 +157,23 @@ namespace SpellforceDataEditor.Properties {
         /// <summary>
         ///   Looks up a localized string similar to #version 330 core
         ///
+        ///in vec4 fragmentColor;
+        ///
+        ///out vec4 color;
+        ///
+        ///void main(){
+        ///  color = fragmentColor;
+        ///}.
+        /// </summary>
+        internal static string fshader_overlay {
+            get {
+                return ResourceManager.GetString("fshader_overlay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 330 core
+        ///
         ///in vec2 UV;
         ///
         ///out vec4 color;
@@ -296,6 +313,30 @@ namespace SpellforceDataEditor.Properties {
         internal static string vshader_hmap {
             get {
                 return ResourceManager.GetString("vshader_hmap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 330 core
+        ///
+        ///// Input vertex data, different for all executions of this shader.
+        ///layout(location = 0) in vec3 vertexPosition_modelspace;
+        ///
+        ///out vec4 fragmentColor;
+        ///
+        ///// Values that stay constant for the whole mesh.
+        ///uniform mat4 MVP;
+        ///uniform vec4 Color;
+        ///  
+        ///void main(){
+        ///  // Output position of the vertex, in clip space : MVP * position
+        ///  gl_Position = MVP * vec4(vertexPosition_modelspace,1);
+        ///  fragmentColor = Color;
+        ///}.
+        /// </summary>
+        internal static string vshader_overlay {
+            get {
+                return ResourceManager.GetString("vshader_overlay", resourceCulture);
             }
         }
         

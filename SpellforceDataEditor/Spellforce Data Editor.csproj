@@ -501,6 +501,7 @@
       <DependentUpon>LuaDialogSayControl.cs</DependentUpon>
     </Compile>
     <Compile Include="SFMap\MapEdit\MapBrush.cs" />
+    <Compile Include="SFMap\MapEdit\MapOverlayChunk.cs" />
     <Compile Include="SFMap\map_controls\MapBrushControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -512,6 +513,12 @@
     </Compile>
     <Compile Include="SFMap\map_controls\MapInspectorBaseControl.Designer.cs">
       <DependentUpon>MapInspectorBaseControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorFlagControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorFlagControl.Designer.cs">
+      <DependentUpon>MapInspectorFlagControl.cs</DependentUpon>
     </Compile>
     <Compile Include="SFMap\map_controls\MapInspectorHeightMapControl.cs">
       <SubType>UserControl</SubType>
@@ -883,6 +890,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapInspectorBaseControl.resx">
       <DependentUpon>MapInspectorBaseControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_controls\MapInspectorFlagControl.resx">
+      <DependentUpon>MapInspectorFlagControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapInspectorHeightMapControl.resx">
       <DependentUpon>MapInspectorHeightMapControl.cs</DependentUpon>

@@ -16,12 +16,16 @@ namespace SpellforceDataEditor.SFMap
         public int width, height;
         public int id, ix, iy;
         
+        // heightmap
         public byte[] material_id;
         public Vector3[] vertices;
         public Vector4[] colors;
         public Vector2[] uvs;
         public Vector3[] texture_id;
         public Vector3[] texture_weights;
+
+        // overlays
+        public Dictionary<string, MapEdit.MapOverlayChunk> overlays { get; private set; } = new Dictionary<string, MapEdit.MapOverlayChunk>();
 
         public SF3D.Physics.BoundingBox aabb;
         public List<SFMapBuilding> buildings = new List<SFMapBuilding>();
@@ -397,6 +401,9 @@ namespace SpellforceDataEditor.SFMap
                 SF3D.Object3D _obj = scene.objects_static[p.GetObjectName()];
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(p.grid_position) / 100.0f, _obj.Position.Z);
             }
+
+            foreach (MapEdit.MapOverlayChunk o in overlays.Values)
+                o.Update(this);
         }
 
         public void RebuildTerrainTexture(byte[] tex_data, int map_size)
@@ -573,8 +580,14 @@ namespace SpellforceDataEditor.SFMap
         {
             portals.Add(p);
         }
+
+        public void OverlayUpdate(string o_name)
+        {
+            overlays[o_name].Update(this);
+        }
     }
 
+    // didnt know where to put it
     public struct SFMapChunk60Data
     {
         public byte unknown;
@@ -602,6 +615,8 @@ namespace SpellforceDataEditor.SFMap
         public int chunk_size { get; private set; }
         public SFMapHeightMapChunk[] chunks { get; private set; }
         public List<SFMapHeightMapChunk> visible_chunks = new List<SFMapHeightMapChunk>();
+
+        public List<string> visible_overlays { get; private set; } = new List<string>();
 
         public SFMapHeightMap(int w, int h)
         {
@@ -764,6 +779,59 @@ namespace SpellforceDataEditor.SFMap
                 for (int j = topchunky; j <= botchunky; j++)
                 {
                     chunks[j * chunk_count_x + i].RebuildTerrainTexture(tile_data, width);  // room to optimize,
+                }
+            }
+        }
+
+        public void OverlayCreate(string o_name, Vector4 col)
+        {
+            foreach(SFMapHeightMapChunk chunk in chunks)
+            {
+                chunk.overlays.Add(o_name, new MapEdit.MapOverlayChunk());
+                chunk.overlays[o_name].Init();
+                chunk.overlays[o_name].color = col;
+            }
+        }
+
+        public void OverlayAdd(string o_name, SFCoord pos)
+        {
+            SFMapHeightMapChunk chunk = GetChunk(pos);
+            chunk.overlays[o_name].points.Add(pos-new SFCoord(chunk.ix*chunk_size, ((width/chunk_size)-chunk.iy-1)*chunk_size));
+        }
+
+        public void OverlayRemove(string o_name, SFCoord pos)
+        {
+            SFMapHeightMapChunk chunk = GetChunk(pos);
+            chunk.overlays[o_name].points.Remove(pos - new SFCoord(chunk.ix * chunk_size, chunk.iy * chunk_size));
+        }
+
+        public void OverlaySetVisible(string o_name, bool visible)
+        {
+            if ((!visible_overlays.Contains(o_name)) && (visible))
+                visible_overlays.Add(o_name);
+            else if ((visible_overlays.Contains(o_name)) && (!visible))
+                visible_overlays.Remove(o_name);
+        }
+
+        public bool OverlayIsVisible(string o_name)
+        {
+            return visible_overlays.Contains(o_name);
+        }
+
+        public void RebuildOverlay(SFCoord topleft, SFCoord bottomright, string o_name)
+        {
+            int chunk_count_x = width / chunk_size;
+
+            int topchunkx = topleft.x / chunk_size;
+            int topchunky = topleft.y / chunk_size;
+            int botchunkx = bottomright.x / chunk_size;
+            int botchunky = bottomright.y / chunk_size;
+
+            for (int i = topchunkx; i <= botchunkx; i++)
+            {
+                for (int j = topchunky; j <= botchunky; j++)
+                {
+                    chunks[j * chunk_count_x + i].OverlayUpdate(o_name); 
                 }
             }
         }

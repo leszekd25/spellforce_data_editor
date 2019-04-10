@@ -215,6 +215,8 @@ namespace SpellforceDataEditor.SFMap
                             br.ReadBytes(6);
                         else if (c29.get_data_type() == 4)
                             br.ReadBytes(2);
+                        if ((object_id >= 65) && (object_id <= 67))   // editor only
+                            continue;
                         AddObject(object_id, pos, angle, npc_id);
                     }
                 }
@@ -511,6 +513,8 @@ namespace SpellforceDataEditor.SFMap
                                                 spawn_id, 
                                                 (spawn_certain > 0)));
                                         }
+                                        if ((object_id >= 65) && (object_id <= 67))    // editor only
+                                            obj_i--;
                                         obj_i++;
                                     }
                                 }
@@ -550,6 +554,29 @@ namespace SpellforceDataEditor.SFMap
                 }
                 c59.Close();
             }
+
+            // generate overlay data
+            heightmap.OverlayCreate("TileMovementBlock", new OpenTK.Vector4(0.5f, 0, 0, 0.7f));
+            for (int i = 0; i < height; i++)
+                for (int j = 0; j < width; j++)
+                    if (heightmap.texture_manager.texture_tiledata[heightmap.tile_data[i * width + j]].blocks_movement)
+                        heightmap.OverlayAdd("TileMovementBlock", new SFCoord(j, i));
+
+            heightmap.OverlayCreate("ManualMovementBlock", new OpenTK.Vector4(1, 0, 0, 0.7f));
+            foreach (SFCoord p in heightmap.chunk42_data)
+                heightmap.OverlayAdd("ManualMovementBlock", p);
+
+            heightmap.OverlayCreate("ManualVisionBlock", new OpenTK.Vector4(1, 1, 0, 0.7f));
+            foreach (SFCoord p in heightmap.chunk56_data)
+                heightmap.OverlayAdd("ManualVisionBlock", p);
+            
+            foreach (SFMapHeightMapChunk chunk in heightmap.chunks)
+            {
+                chunk.OverlayUpdate("TileMovementBlock");
+                chunk.OverlayUpdate("ManualMovementBlock");
+                chunk.OverlayUpdate("ManualVisionBlock");
+            }
+
 
             // done
 
@@ -911,7 +938,7 @@ namespace SpellforceDataEditor.SFMap
 
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.Object3D _obj = render_engine.scene_manager.objects_static[dec.GetObjectName()];
-            _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y));
+            _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
 
 
@@ -927,7 +954,7 @@ namespace SpellforceDataEditor.SFMap
 
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.Object3D _obj = render_engine.scene_manager.objects_static[obj.GetObjectName()];
-            _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y));
+            _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(angle);
 
@@ -943,7 +970,7 @@ namespace SpellforceDataEditor.SFMap
 
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.Object3D _obj = render_engine.scene_manager.objects_static[obj.GetObjectName()];
-            _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y));
+            _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(angle);
 
@@ -959,7 +986,7 @@ namespace SpellforceDataEditor.SFMap
 
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.Object3D _obj = render_engine.scene_manager.objects_static[bld.GetObjectName()];
-            _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y));
+            _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(angle);
 
@@ -975,7 +1002,7 @@ namespace SpellforceDataEditor.SFMap
 
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.Object3D _obj = render_engine.scene_manager.objects_static[ptl.GetObjectName()];
-            _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y));
+            _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(angle);
 
@@ -997,7 +1024,7 @@ namespace SpellforceDataEditor.SFMap
 
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.Object3D obj = render_engine.scene_manager.objects_static[unit.GetObjectName()];
-            obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y));
+            obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             obj.SetAnglePlane(angle);
             // find unit scale
             int unit_index = gamedata.categories[17].get_element_index(game_id);

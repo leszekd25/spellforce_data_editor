@@ -46,7 +46,7 @@
             this.button6 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.ButtonFlag = new System.Windows.Forms.Button();
             this.ButtonTerrainTexture = new System.Windows.Forms.Button();
             this.ButtonHeightmap = new System.Windows.Forms.Button();
             this.ToolbarStrip = new System.Windows.Forms.ToolStrip();
@@ -131,7 +131,7 @@
             this.PanelModes.Controls.Add(this.button6);
             this.PanelModes.Controls.Add(this.button5);
             this.PanelModes.Controls.Add(this.button4);
-            this.PanelModes.Controls.Add(this.button3);
+            this.PanelModes.Controls.Add(this.ButtonFlag);
             this.PanelModes.Controls.Add(this.ButtonTerrainTexture);
             this.PanelModes.Controls.Add(this.ButtonHeightmap);
             this.PanelModes.Location = new System.Drawing.Point(0, 52);
@@ -219,15 +219,16 @@
             this.button4.TabIndex = 10;
             this.button4.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // ButtonFlag
             // 
-            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button3.Image = global::SpellforceDataEditor.Properties.Resources.flag_icon;
-            this.button3.Location = new System.Drawing.Point(3, 111);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(48, 48);
-            this.button3.TabIndex = 9;
-            this.button3.UseVisualStyleBackColor = true;
+            this.ButtonFlag.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ButtonFlag.Image = global::SpellforceDataEditor.Properties.Resources.flag_icon;
+            this.ButtonFlag.Location = new System.Drawing.Point(3, 111);
+            this.ButtonFlag.Name = "ButtonFlag";
+            this.ButtonFlag.Size = new System.Drawing.Size(48, 48);
+            this.ButtonFlag.TabIndex = 9;
+            this.ButtonFlag.UseVisualStyleBackColor = true;
+            this.ButtonFlag.Click += new System.EventHandler(this.ButtonFlag_Click);
             // 
             // ButtonTerrainTexture
             // 
@@ -342,7 +343,7 @@
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button ButtonFlag;
         private System.Windows.Forms.Button ButtonTerrainTexture;
         private System.Windows.Forms.Panel InspectorPanel;
         private System.Windows.Forms.Label LabelMode;
