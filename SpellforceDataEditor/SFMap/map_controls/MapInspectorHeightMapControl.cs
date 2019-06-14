@@ -38,8 +38,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     {
                         for (int j = topleft.y; j <= bottomright.y; j++)
                         {
+
                             float cell_strength = BrushControl.brush.GetStrengthAt(new SFCoord(i, j));
                             int fixed_j = map.height - j - 1;
+                            if (map.heightmap.lake_data[fixed_j * map.width + i] != 0)
+                                continue;
                             map.heightmap.height_data[fixed_j * map.width + i] += (short)(strength * cell_strength);
                             if (map.heightmap.height_data[fixed_j * map.width + i] > 30000)
                                 map.heightmap.height_data[fixed_j * map.width + i] = 30000;
@@ -53,6 +56,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
                         {
                             float cell_strength = BrushControl.brush.GetStrengthAt(new SFCoord(i, j));
                             int fixed_j = map.height - j - 1;
+                            if (map.heightmap.lake_data[fixed_j * map.width + i] != 0)
+                                continue;
                             map.heightmap.height_data[fixed_j * map.width + i] -= (short)(strength * cell_strength);
                             if (map.heightmap.height_data[fixed_j * map.width + i] < 0)
                                 map.heightmap.height_data[fixed_j * map.width + i] = 0;
@@ -65,6 +70,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
                         for (int j = topleft.y; j <= bottomright.y; j++)
                         {
                             int fixed_j = map.height - j - 1;
+                            if (map.heightmap.lake_data[fixed_j * map.width + i] != 0)
+                                continue;
                             map.heightmap.height_data[fixed_j * map.width + i] = (short)(strength);
                         }
                     }

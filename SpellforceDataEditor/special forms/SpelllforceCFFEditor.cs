@@ -11,7 +11,9 @@ namespace SpellforceDataEditor.special_forms
 {
     public partial class SpelllforceCFFEditor : Form
     {
-        private bool data_loaded = false;
+        public bool data_loaded { get; private set; } = false;
+        public bool data_changed { get; private set; } = false;
+        public bool synchronized_with_mapeditor { get; private set; } = false;
 
         private int selected_category_index = -1;
         private int real_category_index = -1;                   //tracer helper
@@ -42,6 +44,12 @@ namespace SpellforceDataEditor.special_forms
         {
             InitializeComponent();
             diff.init();
+
+            if(MainForm.mapedittool != null)
+            {
+                mapeditor_set_gamedata(SFCFF.SFCategoryManager.gamedata);
+                MessageBox.Show("Gamedata editor is now synchronized with map editor! Any changes saved will permanently alter gamedata in your Spellforce directory.");
+            }
         }
 
         //load game data
@@ -53,7 +61,7 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
-        private bool load_data()
+        public bool load_data()
         {
             if (data_loaded)
                 if (close_data() == DialogResult.Cancel)
@@ -88,6 +96,8 @@ namespace SpellforceDataEditor.special_forms
                 CategorySelect.Items.Add(SFCategoryManager.get_category(i).get_name());
 
             data_loaded = true;
+            data_changed = false;
+            synchronized_with_mapeditor = false;
 
             CategorySelect.SelectedIndex = 0;
 
@@ -96,34 +106,74 @@ namespace SpellforceDataEditor.special_forms
             return true;
         }
 
+        public void mapeditor_set_gamedata(SFGameData gd)
+        {
+            SFCategoryManager.manual_set_gamedata(gd);
+
+            this.Text = "SpellforceDataEditor - synchronized with MapEditor";
+            labelStatus.Text = "Ready";
+            //if (!diff_loaded)
+            //    labelStatus.Text = "Ready (diff file not found)";
+
+            changeDataLanguageToolStripMenuItem.Enabled = true;
+            CategorySelect.Enabled = true;
+            for (int i = 0; i < SFCategoryManager.get_category_number(); i++)
+                CategorySelect.Items.Add(SFCategoryManager.get_category(i).get_name());
+
+            data_loaded = true;
+            data_changed = false;
+            synchronized_with_mapeditor = true;
+
+            CategorySelect.SelectedIndex = 0;
+        }
+
         //save game data
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             save_data();
         }
 
-        private bool save_data()
+        public bool save_data()
         {
             if (!data_loaded)
-                return false; ;
+                return false;
 
             CategorySelect.Focus();
-            DialogResult result = SaveGameData.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
+            if (synchronized_with_mapeditor)    // dont ask when synchronized
             {
                 diff_resolve_current_element();
 
                 labelStatus.Text = "Saving...";
 
-                SFCategoryManager.save_cff(SaveGameData.FileName);
-
-                //POSTPONED
-                //string diff_filename = SaveGameData.FileName.Replace(".cff", ".dff");
-                //diff.save_diff_data(diff_filename);
+                SFCategoryManager.save_cff(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff");
 
                 labelStatus.Text = "Saved";
+                
+                data_changed = false;
 
                 return true;
+            }
+            else
+            {
+                DialogResult result = SaveGameData.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    diff_resolve_current_element();
+
+                    labelStatus.Text = "Saving...";
+
+                    SFCategoryManager.save_cff(SaveGameData.FileName);
+
+                    //POSTPONED
+                    //string diff_filename = SaveGameData.FileName.Replace(".cff", ".dff");
+                    //diff.save_diff_data(diff_filename);
+
+                    labelStatus.Text = "Saved";
+
+                    data_changed = false;
+
+                    return true;
+                }
             }
             return false;
         }
@@ -137,6 +187,7 @@ namespace SpellforceDataEditor.special_forms
             SFCategory cat = SFCategoryManager.get_category(real_category_index);
             if (!diff_current_element.same_as(cat.get_element(selected_element_index)))
             {
+                data_changed = true;
                 diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REPLACE, selected_element_index, diff_current_element, cat.get_element(selected_element_index)));
                 diff_current_element = cat.get_element(selected_element_index).get_copy();
             }
@@ -577,9 +628,13 @@ namespace SpellforceDataEditor.special_forms
             //ask first to close currend gamedata.cff, if user clicks Cancel, function return immediately
             DialogResult result;
             if (!CategorySelect.Enabled)
-               return DialogResult.No;
+                return DialogResult.No;
+            else if (!data_changed)
+                result = DialogResult.No;
+            else if (synchronized_with_mapeditor)
+                result = DialogResult.Yes;
             else
-                result = MessageBox.Show("Do you want to save before quitting?", "Save before quit?", MessageBoxButtons.YesNoCancel);
+                result = MessageBox.Show("Do you want to save gamedata before quitting? (Recommended when synchronized with Map Editor)", "Save before quit?", MessageBoxButtons.YesNoCancel);
 
             if (result == DialogResult.Yes)
             {
@@ -635,6 +690,8 @@ namespace SpellforceDataEditor.special_forms
             Tracer_Clear();
 
             data_loaded = false;
+            data_changed = false;
+            synchronized_with_mapeditor = false;
 
             this.Text = "SpellforceDataEditor";
 
@@ -928,6 +985,16 @@ namespace SpellforceDataEditor.special_forms
         private void calc_FormClosed(object sender, FormClosedEventArgs e)
         {
             calc = null;
+        }
+
+        public void poke_data()
+        {
+            data_changed = true;
+        }
+
+        public void mapeditor_desynchronize()
+        {
+            synchronized_with_mapeditor = false;
         }
     }
 }

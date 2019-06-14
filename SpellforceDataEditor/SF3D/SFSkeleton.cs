@@ -25,6 +25,7 @@ namespace SpellforceDataEditor.SF3D
         public Matrix4[] bone_inverted_matrices { get; private set; } = null;
         public int[] bone_parents = null;
         public string[] bone_names = null;
+        string name = "";
 
         public void Init()
         {
@@ -152,6 +153,16 @@ namespace SpellforceDataEditor.SF3D
                 if (bone_parents[i] != -1)
                     dest_matrices[i] = src_matrices[i] * dest_matrices[bone_parents[i]];
             }
+        }
+
+        public void SetName(string s)
+        {
+            name = s;
+        }
+
+        public string GetName()
+        {
+            return name;
         }
 
         public void Dispose()

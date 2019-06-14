@@ -48,6 +48,7 @@ namespace SpellforceDataEditor.SF3D
                     obj.Visible = value;
             }
         }
+        public string Name { get; set; }
 
         public Object3D()
         {
@@ -92,6 +93,11 @@ namespace SpellforceDataEditor.SF3D
             Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2)   // only when has parent
                      * Quaternion.FromAxisAngle(new Vector3(0, 0, 1), DegToRad(angle_deg));
         }
+
+        public virtual void Dispose()
+        {
+
+        }
     }
 
     public class ObjectSimple3D: Object3D
@@ -99,5 +105,11 @@ namespace SpellforceDataEditor.SF3D
         protected SFModel3D mesh = null;
 
         public SFModel3D Mesh { get { return mesh; } set { mesh = value; } }
+
+        public override void Dispose()
+        {
+            if(Mesh != null)
+                SFResources.SFResourceManager.Models.Dispose(Mesh.GetName());
+        }
     }
 }

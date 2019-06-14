@@ -30,6 +30,7 @@ namespace SpellforceDataEditor.SF3D
         public int bone_count { get; private set; } = 0;
         public List<SFBoneAnimation> bone_animations { get; private set; } = new List<SFBoneAnimation>();
         public float max_time { get; private set; } = 0f;
+        string name = "";
 
         public void Init()
         {
@@ -84,6 +85,16 @@ namespace SpellforceDataEditor.SF3D
         public CompressedMatrix CalculateBoneMatrix(int bone_index, float t)
         {
             return bone_animations[bone_index].get_matrix(t);
+        }
+
+        public void SetName(string s)
+        {
+            name = s;
+        }
+
+        public string GetName()
+        {
+            return name;
         }
 
         public void Dispose()

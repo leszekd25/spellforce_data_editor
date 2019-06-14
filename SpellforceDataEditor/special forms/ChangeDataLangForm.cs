@@ -94,6 +94,7 @@ namespace SpellforceDataEditor.special_forms
                         elem.set_single_variant(j * 5 + 1, Bto);
                 }
             }
+            MainForm.data.poke_data();    // so the editor knows data has changed
         }
     }
 }

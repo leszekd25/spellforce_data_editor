@@ -239,6 +239,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             {
                 foreach (SFMapHeightMapChunk chunk in heightmap.visible_chunks)
                 {
+                    if (chunk.overlays[o].points.Count == 0)
+                        continue;
                     // get chunk position
                     Vector3 chunk_pos = new Vector3(chunk.ix * heightmap.chunk_size, 0, chunk.iy * heightmap.chunk_size);
                     Matrix4 chunk_matrix = Matrix4.CreateTranslation(chunk_pos);

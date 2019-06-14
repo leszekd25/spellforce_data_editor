@@ -556,6 +556,11 @@ namespace SpellforceDataEditor.SFMap
             units.Add(u);
         }
 
+        public void RemoveUnit(SFMapUnit u)
+        {
+            units.Remove(u);
+        }
+
         public void AddObject(SFMapObject o)
         {
             objects.Add(o);
@@ -607,7 +612,8 @@ namespace SpellforceDataEditor.SFMap
         public int width, height;
         public short[] height_data;
         public byte[] tile_data;
-        public bool[] temporary_mask;
+        public byte[] lake_data;    // 0 - no lake, 1-255 - lakes 0-254
+        public bool[] temporary_mask;   // for calculating islands by height
         public List<SFCoord> chunk42_data = new List<SFCoord>();
         public List<SFCoord> chunk56_data = new List<SFCoord>();
         public List<SFMapChunk60Data> chunk60_data = new List<SFMapChunk60Data>();
@@ -624,6 +630,7 @@ namespace SpellforceDataEditor.SFMap
             height = h;
             height_data = new short[w * h];
             tile_data = new byte[w * h];
+            lake_data = new byte[w * h];  lake_data.Initialize();
             temporary_mask = new bool[w * h];
         }
 
@@ -699,10 +706,10 @@ namespace SpellforceDataEditor.SFMap
 
         // used in generation of lakes
         // flood fill based on z difference and return result
-        public List<SFCoord> GetIslandByHeight(SFCoord start, short z_diff)
+        public HashSet<SFCoord> GetIslandByHeight(SFCoord start, short z_diff)
         {
             ResetMask();
-            List<SFCoord> island = new List<SFCoord>();
+            HashSet<SFCoord> island = new HashSet<SFCoord>();
             Queue<SFCoord> to_be_checked = new Queue<SFCoord>();
             SFCoord cur_pos;
             SFCoord next_pos;
@@ -805,6 +812,16 @@ namespace SpellforceDataEditor.SFMap
             chunk.overlays[o_name].points.Remove(pos - new SFCoord(chunk.ix * chunk_size, chunk.iy * chunk_size));
         }
 
+        public void OverlayClear(string o_name)
+        {
+            foreach (SFMapHeightMapChunk chunk in chunks)
+                if(chunk.overlays[o_name].points.Count != 0)
+                {
+                    chunk.overlays[o_name].points.Clear();
+                    chunk.overlays[o_name].Update(chunk);
+                }
+        }
+
         public void OverlaySetVisible(string o_name, bool visible)
         {
             if ((!visible_overlays.Contains(o_name)) && (visible))
@@ -834,6 +851,78 @@ namespace SpellforceDataEditor.SFMap
                     chunks[j * chunk_count_x + i].OverlayUpdate(o_name); 
                 }
             }
+        }
+
+        public List<HashSet<SFCoord>> GetSeparateIslands(HashSet<SFCoord> src)
+        {
+            HashSet<SFCoord> src_copy = new HashSet<SFCoord>();
+            foreach (SFCoord p in src)
+                src_copy.Add(p);
+            List<HashSet<SFCoord>> result = new List<HashSet<SFCoord>>();
+            while(src_copy.Count != 0)
+            {
+                SFCoord start = src_copy.First();
+                Queue<SFCoord> island_queue = new Queue<SFCoord>();
+                HashSet<SFCoord> island = new HashSet<SFCoord>();
+                island_queue.Enqueue(start);
+                src_copy.Remove(start);
+                while(island_queue.Count != 0)
+                {
+                    SFCoord next_pos = island_queue.Dequeue();
+                    SFCoord new_pos = next_pos;
+                    island.Add(next_pos);
+
+                    new_pos = next_pos + new SFCoord(1, 0);
+                    if (src_copy.Contains(new_pos))
+                    {
+                        island_queue.Enqueue(new_pos);
+                        src_copy.Remove(new_pos);
+                    }
+                    new_pos = next_pos + new SFCoord(-1, 0);
+                    if (src_copy.Contains(new_pos))
+                    {
+                        island_queue.Enqueue(new_pos);
+                        src_copy.Remove(new_pos);
+                    }
+                    new_pos = next_pos + new SFCoord(0, 1);
+                    if (src_copy.Contains(new_pos))
+                    {
+                        island_queue.Enqueue(new_pos);
+                        src_copy.Remove(new_pos);
+                    }
+                    new_pos = next_pos + new SFCoord(0, -1);
+                    if (src_copy.Contains(new_pos))
+                    {
+                        island_queue.Enqueue(new_pos);
+                        src_copy.Remove(new_pos);
+                    }
+                }
+                result.Add(island);
+            }
+            return result;
+        }
+
+        public bool CanMoveToPosition(SFCoord pos)
+        {
+            // check if tile is passable
+            byte tex_index = tile_data[pos.y * width + pos.x];
+            if (texture_manager.texture_tiledata[tex_index].blocks_movement)
+                return false;
+
+            SFMapHeightMapChunk chunk = GetChunk(pos);
+            // check if another unit is on position
+            foreach (SFMapUnit u in chunk.units)
+                if (u.grid_position == pos)
+                    return false;
+            // check if another object is on position
+            foreach (SFMapObject o in chunk.objects)
+                if (o.grid_position == pos)
+                    return false;
+            // check if lake is on position
+            if (lake_data[pos.y * width + pos.x] != 0)
+                return false;
+
+            return true;
         }
 
         public void Unload()

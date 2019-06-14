@@ -22,6 +22,7 @@ namespace SpellforceDataEditor.SF3D
         public int modelnum { get; private set; } = 0;
         public int[] bone_count { get; private set; } = null;
         public int[][] bone_index_remap { get; private set; } = null;
+        string name;
 
         public void Init()
         {
@@ -46,6 +47,16 @@ namespace SpellforceDataEditor.SF3D
             }
 
             return 0;
+        }
+
+        public void SetName(string s)
+        {
+            name = s;
+        }
+
+        public string GetName()
+        {
+            return name;
         }
 
         public void Dispose()

@@ -45,7 +45,7 @@
             this.button7 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.ButtonLake = new System.Windows.Forms.Button();
             this.ButtonFlag = new System.Windows.Forms.Button();
             this.ButtonTerrainTexture = new System.Windows.Forms.Button();
             this.ButtonHeightmap = new System.Windows.Forms.Button();
@@ -130,7 +130,7 @@
             this.PanelModes.Controls.Add(this.button7);
             this.PanelModes.Controls.Add(this.button6);
             this.PanelModes.Controls.Add(this.button5);
-            this.PanelModes.Controls.Add(this.button4);
+            this.PanelModes.Controls.Add(this.ButtonLake);
             this.PanelModes.Controls.Add(this.ButtonFlag);
             this.PanelModes.Controls.Add(this.ButtonTerrainTexture);
             this.PanelModes.Controls.Add(this.ButtonHeightmap);
@@ -208,16 +208,18 @@
             this.button5.Size = new System.Drawing.Size(48, 48);
             this.button5.TabIndex = 11;
             this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // button4
+            // ButtonLake
             // 
-            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button4.Image = global::SpellforceDataEditor.Properties.Resources.lake_icon;
-            this.button4.Location = new System.Drawing.Point(3, 165);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(48, 48);
-            this.button4.TabIndex = 10;
-            this.button4.UseVisualStyleBackColor = true;
+            this.ButtonLake.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ButtonLake.Image = global::SpellforceDataEditor.Properties.Resources.lake_icon;
+            this.ButtonLake.Location = new System.Drawing.Point(3, 165);
+            this.ButtonLake.Name = "ButtonLake";
+            this.ButtonLake.Size = new System.Drawing.Size(48, 48);
+            this.ButtonLake.TabIndex = 10;
+            this.ButtonLake.UseVisualStyleBackColor = true;
+            this.ButtonLake.Click += new System.EventHandler(this.ButtonLake_Click);
             // 
             // ButtonFlag
             // 
@@ -342,7 +344,7 @@
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button ButtonLake;
         private System.Windows.Forms.Button ButtonFlag;
         private System.Windows.Forms.Button ButtonTerrainTexture;
         private System.Windows.Forms.Panel InspectorPanel;

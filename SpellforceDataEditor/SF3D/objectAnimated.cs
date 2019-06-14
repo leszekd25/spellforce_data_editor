@@ -49,11 +49,12 @@ namespace SpellforceDataEditor.SF3D
 
         public void set_animation_time(float t)
         {
-            anim_current_time = t;
             if (animation == null)
                 return;
-            if (anim_current_time >= animation.max_time)
-                anim_current_time = animation.max_time;
+            if (t < animation.max_time)
+                anim_current_time = t;
+            else
+                anim_current_time = t - (int)(t / animation.max_time);
 
             update_transforms();
         }
@@ -67,6 +68,13 @@ namespace SpellforceDataEditor.SF3D
                 bone_transforms[i] = skeleton.bone_inverted_matrices[i] * bone_transforms[i];
         }
 
+        public override void Dispose()
+        {
+            if (skeleton != null)
+                SFResources.SFResourceManager.Skeletons.Dispose(skeleton.GetName());
+            if (skin != null)
+                SFResources.SFResourceManager.Skins.Dispose(skin.GetName());
+        }
     }
 
     //a bit broken probably, that's what you get for not implementing doubly linked tree :^)
@@ -96,18 +104,18 @@ namespace SpellforceDataEditor.SF3D
             //children update matrices here
         }
 
-        public void SetBone(objectAnimated obj, string name)
+        public void SetBone(string name)
         {
             bone_index = -1;
             parent_obj = null;
-            if (obj == null)
+            if (Parent == null)
                 return;
-            if (obj.skeleton == null)
+            if (((objectAnimated)Parent).skeleton == null)
                 return;
-            parent_obj = obj;
-            for(int i = 0; i < obj.skeleton.bone_count; i++)
+            parent_obj = ((objectAnimated)Parent);
+            for(int i = 0; i < parent_obj.skeleton.bone_count; i++)
             {
-                if(obj.skeleton.bone_names[i].Contains(name))
+                if(parent_obj.skeleton.bone_names[i].Contains(name))
                 {
                     bone_index = i;
                     break;

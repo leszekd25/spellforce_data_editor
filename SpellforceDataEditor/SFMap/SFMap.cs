@@ -26,6 +26,7 @@ namespace SpellforceDataEditor.SFMap
         public SFMapPortalManager portal_manager { get; private set; } = null;
         public SFMapLakeManager lake_manager { get; private set; } = null;
         public SFMapMetaData metadata { get; private set; } = null;
+        public SFMapSelectionHelper selection_helper { get; private set; } = new SFMapSelectionHelper();
         public SF3D.SFRender.SFRenderEngine render_engine { get; private set; } = null;
         public SFCFF.SFGameData gamedata { get; private set; } = null;
 
@@ -569,14 +570,28 @@ namespace SpellforceDataEditor.SFMap
             heightmap.OverlayCreate("ManualVisionBlock", new OpenTK.Vector4(1, 1, 0, 0.7f));
             foreach (SFCoord p in heightmap.chunk56_data)
                 heightmap.OverlayAdd("ManualVisionBlock", p);
+
+            heightmap.OverlayCreate("LakeTile", new OpenTK.Vector4(0.4f, 0.4f, 0.9f, 0.7f));
+            for (int i = 0; i < heightmap.lake_data.Length; i++)
+            {
+                SFCoord p = new SFCoord(i % width, i / width);
+                if(heightmap.lake_data[i] > 0)
+                    heightmap.OverlayAdd("LakeTile", p);
+            }
+
+            heightmap.OverlayCreate("ManualLakeTile", new OpenTK.Vector4(0.6f, 0.6f, 1.0f, 0.7f));
             
             foreach (SFMapHeightMapChunk chunk in heightmap.chunks)
             {
                 chunk.OverlayUpdate("TileMovementBlock");
                 chunk.OverlayUpdate("ManualMovementBlock");
                 chunk.OverlayUpdate("ManualVisionBlock");
+                chunk.OverlayUpdate("LakeTile");
+                chunk.OverlayUpdate("ManualLakeTile");
             }
 
+            // selection helper stuff
+            selection_helper.AssignToMap(this);
 
             // done
 
@@ -928,7 +943,8 @@ namespace SpellforceDataEditor.SFMap
         public void Unload()
         {
             heightmap.Unload();
-            metadata.Unload();     // minimap texture
+            metadata.Unload();             // minimap texture
+            selection_helper.Dispose();    // selection 3d mesh
         }
 
         public void AddDecoration(int game_id, SFCoord pos)
@@ -1037,11 +1053,72 @@ namespace SpellforceDataEditor.SFMap
             unit_data = gamedata.categories[3].get_element(unit_index);
             float unit_size = Math.Max(((ushort)unit_data.get_single_variant(19).value), (ushort)40) / 100.0f;
             obj.Scale = new OpenTK.Vector3(unit_size*100/128);
+        }
 
+        public int MoveUnit(int unit_map_index, SFCoord new_pos)
+        {
+            SFMapUnit unit = null;
+            if ((unit_manager.units.Count <= unit_map_index)||(unit_map_index < 0))
+                return -1;
+            unit = unit_manager.units[unit_map_index];
+            if (!heightmap.CanMoveToPosition(new_pos))
+                return -2;
 
-            // 3. add new unit in respective chunk
-            heightmap.GetChunk(pos).AddUnit(unit);
-            render_engine.scene_manager.objects_static[unit.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
+            // move unit and set chunk dependency
+            heightmap.GetChunk(unit.grid_position).units.Remove(unit);
+            unit.grid_position = new_pos;
+            heightmap.GetChunk(unit.grid_position).units.Add(unit);
+
+            // change visual transform
+            float z = heightmap.GetZ(new_pos) / 100.0f;
+            SF3D.Object3D obj = render_engine.scene_manager.objects_static[unit.GetObjectName()];
+            obj.Position = new OpenTK.Vector3((float)new_pos.x, (float)z, (float)(height - new_pos.y - 1));
+
+            return 0;
+        }
+
+        public int DeleteUnit(int unit_map_index)
+        {
+            SFMapUnit unit = null;
+            if ((unit_manager.units.Count <= unit_map_index) || (unit_map_index < 0))
+                return -1;
+            unit = unit_manager.units[unit_map_index];
+
+            unit_manager.RemoveUnit(unit);
+
+            return 0;
+        }
+
+        public int ReplaceUnit(int unit_map_index, ushort new_unit_id)
+        {
+            SFMapUnit unit = null;
+            if ((unit_manager.units.Count <= unit_map_index) || (unit_map_index < 0))
+                return -1;
+            unit = unit_manager.units[unit_map_index];
+
+            render_engine.scene_manager.DeleteObject(unit.GetObjectName());
+            render_engine.scene_manager.AddObjectUnit(new_unit_id, unit.GetObjectName(), false);
+
+            unit.game_id = new_unit_id;
+
+            // object transform
+            float z = heightmap.GetZ(unit.grid_position) / 100.0f;
+            SF3D.Object3D obj = render_engine.scene_manager.objects_static[unit.GetObjectName()];
+            obj.Position = new OpenTK.Vector3((float)unit.grid_position.x, (float)z, (float)(height - unit.grid_position.y - 1));
+            obj.SetAnglePlane(unit.angle);
+            // unit scale
+            int unit_index = gamedata.categories[17].get_element_index(unit.game_id);
+            if (unit_index == -1)
+                throw new InvalidDataException("SFMap.AddUnit(): Invalid unit ID!");
+            SFCFF.SFCategoryElement unit_data = gamedata.categories[17].get_element(unit_index);
+            unit_index = gamedata.categories[3].get_element_index((ushort)unit_data.get_single_variant(2).value);
+            if (unit_index == -1)
+                throw new InvalidDataException("SFMap.AddUnit(): Invalid unit data!");
+            unit_data = gamedata.categories[3].get_element(unit_index);
+            float unit_size = Math.Max(((ushort)unit_data.get_single_variant(19).value), (ushort)40) / 100.0f;
+            obj.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
+
+            return 0;
         }
     }
 }

@@ -52,7 +52,21 @@ namespace SpellforceDataEditor.SFMap
 
             string obj_name = unit.GetObjectName();
             map.render_engine.scene_manager.AddObjectUnit(id, obj_name, false);
+            
+            // 3. add new unit in respective chunk
+            map.heightmap.GetChunk(position).AddUnit(unit);
+            map.render_engine.scene_manager.objects_static[unit.GetObjectName()].Visible = map.heightmap.GetChunk(position).Visible;
+
             return unit;
+        }
+
+        public void RemoveUnit(SFMapUnit u)
+        {
+            units.Remove(u);
+
+            map.render_engine.scene_manager.DeleteObject(u.GetObjectName());
+
+            map.heightmap.GetChunk(u.grid_position).RemoveUnit(u);
         }
     }
 }

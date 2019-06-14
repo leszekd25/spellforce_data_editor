@@ -11,6 +11,7 @@ namespace SpellforceDataEditor.SFSound
     public class StreamResource: SFResource
     {
         public Byte[] sound_data { get; private set; }
+        string name = "";
 
         public void Init()
         {
@@ -23,6 +24,16 @@ namespace SpellforceDataEditor.SFSound
             sound_data = new byte[data_length];
             ms.Read(sound_data, 0, (int)data_length);
             return 0;
+        }
+
+        public void SetName(string s)
+        {
+            name = s;
+        }
+
+        public string GetName()
+        {
+            return name;
         }
 
         public void Dispose()

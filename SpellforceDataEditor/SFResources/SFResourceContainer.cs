@@ -18,6 +18,7 @@ namespace SpellforceDataEditor.SFResources
     public class SFResourceContainer<T> where T: SFResource, new()
     {
         Dictionary<string, T> cont =new Dictionary<string, T>();
+        Dictionary<string, int> reference_count = new Dictionary<string, int>();
         string prefix_path = "";
         string suffix_extension = "";
 
@@ -46,7 +47,10 @@ namespace SpellforceDataEditor.SFResources
         public int Load(string rname)
         {
             if (cont.ContainsKey(rname))
+            {
+                reference_count[rname] += 1;
                 return -1;
+            }
             System.Diagnostics.Debug.WriteLine("LOADING "+rname+suffix_extension);
             MemoryStream ms = SFUnPak.SFUnPak.LoadFileFind(prefix_path+"\\" + rname + suffix_extension);
             if (ms == null)
@@ -61,7 +65,9 @@ namespace SpellforceDataEditor.SFResources
             if (res_code != 0)
                 return res_code;
             resource.Init();
+            resource.SetName(rname);
             cont.Add(rname, resource);
+            reference_count.Add(rname, 1);
             ms.Close();
             //System.Diagnostics.Debug.WriteLine("LOADED " + rname + suffix_extension);
             return 0;
@@ -70,6 +76,8 @@ namespace SpellforceDataEditor.SFResources
         // memorystream with data, name for the resource
         public int LoadFromMemory(MemoryStream ms, string rname)
         {
+            if (cont.ContainsKey(rname))
+                throw new Exception("Can't load directly from memory: Resource already exists!");
             if (ms == null)
                 return -2;
             //resource loading stack
@@ -82,7 +90,9 @@ namespace SpellforceDataEditor.SFResources
             if (res_code != 0)
                 return res_code;
             resource.Init();
+            resource.SetName(rname);
             cont.Add(rname, resource);
+            reference_count.Add(rname, 1);
             ms.Close();
             //System.Diagnostics.Debug.WriteLine("LOADED " + rname + suffix_extension);
             return 0;
@@ -91,17 +101,27 @@ namespace SpellforceDataEditor.SFResources
         // resource, name for the resource
         public int AddManually(T res, string rname)
         {
+            if (cont.ContainsKey(rname))
+                throw new Exception("Can't load directly from memory: Resource already exists!");
             res.Init();
+            res.SetName(rname);
             cont.Add(rname, res);
+            reference_count.Add(rname, 1);
             return 0;
         }
 
+        // decrements reference counter, only removes resource when the counter reaches 0
         public int Dispose(string rname)
         {
             if (!cont.ContainsKey(rname))
                 return -1;
-            cont[rname].Dispose();
-            cont.Remove(rname);
+            reference_count[rname] -= 1;
+            if (reference_count[rname] == 0)
+            {
+                cont[rname].Dispose();
+                cont.Remove(rname);
+                reference_count.Remove(rname);
+            }
             //System.Diagnostics.Debug.WriteLine("DISPOSED " + rname + suffix_extension);
             return 0;
         }
@@ -123,11 +143,16 @@ namespace SpellforceDataEditor.SFResources
             return cont.Keys.ToList();
         }
 
+        // removes all resources no matter the reference counters
         public void DisposeAll()
         {
             string[] names = cont.Keys.ToArray();
             foreach (string rname in names)
-                Dispose(rname);
+            {
+                cont[rname].Dispose();
+                cont.Remove(rname);
+                reference_count.Remove(rname);
+            }
         }
     }
 }

@@ -27,6 +27,7 @@ namespace SpellforceDataEditor.SF3D
         public Physics.BoundingBox aabb;
         public int vertex_array = -1;
         public int vertex_buffer, uv_buffer, color_buffer, normal_buffer, element_buffer;
+        string name = "";
 
         public SFModel3D()
         {
@@ -177,6 +178,9 @@ namespace SpellforceDataEditor.SF3D
 
         public int CreateRaw(Vector3[] _vertices, Vector2[] _uvs, Vector4[] _colors, Vector3[] _normals, uint[] _indices, string t_name)
         {
+            // reset first
+            Dispose();
+
             vertices = _vertices;
             uvs = _uvs;
             colors = _colors;
@@ -260,6 +264,16 @@ namespace SpellforceDataEditor.SF3D
             aabb = new Physics.BoundingBox(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2));
         }
 
+        public void SetName(string s)
+        {
+            name = s;
+        }
+
+        public string GetName()
+        {
+            return name;
+        }
+
         public void Dispose()
         {
             if(vertex_array != -1)
@@ -272,6 +286,11 @@ namespace SpellforceDataEditor.SF3D
                 GL.DeleteVertexArray(vertex_array);
                 vertex_array = -1;
             }
+
+            if(materials != null)
+                foreach (SFMaterial mat in materials)
+                    if(mat.texture != null)
+                        SFResourceManager.Textures.Dispose(mat.texture.GetName());
         }
 
         new public string ToString()

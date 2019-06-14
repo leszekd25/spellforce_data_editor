@@ -526,11 +526,23 @@
     <Compile Include="SFMap\map_controls\MapInspectorHeightMapControl.Designer.cs">
       <DependentUpon>MapInspectorHeightMapControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorLakeControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorLakeControl.Designer.cs">
+      <DependentUpon>MapInspectorLakeControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFMap\map_controls\MapInspectorTerrainTextureControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="SFMap\map_controls\MapInspectorTerrainTextureControl.Designer.cs">
       <DependentUpon>MapInspectorTerrainTextureControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorUnitControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorUnitControl.Designer.cs">
+      <DependentUpon>MapInspectorUnitControl.cs</DependentUpon>
     </Compile>
     <Compile Include="SFMap\SFCoord.cs" />
     <Compile Include="SFMap\SFMap.cs" />
@@ -542,6 +554,7 @@
     <Compile Include="SFMap\SFMapMetaData.cs" />
     <Compile Include="SFMap\SFMapObjectManager.cs" />
     <Compile Include="SFMap\SFMapPortalManager.cs" />
+    <Compile Include="SFMap\SFMapSelectionHelper.cs" />
     <Compile Include="SFMap\SFMapTerrainTextureManager.cs" />
     <Compile Include="SFMap\SFMapUnitManager.cs" />
     <Compile Include="SFMod\mod_controls\ModInfoForm.cs">
@@ -897,8 +910,14 @@
     <EmbeddedResource Include="SFMap\map_controls\MapInspectorHeightMapControl.resx">
       <DependentUpon>MapInspectorHeightMapControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_controls\MapInspectorLakeControl.resx">
+      <DependentUpon>MapInspectorLakeControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapInspectorTerrainTextureControl.resx">
       <DependentUpon>MapInspectorTerrainTextureControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_controls\MapInspectorUnitControl.resx">
+      <DependentUpon>MapInspectorUnitControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMod\mod_controls\ModInfoForm.resx">
       <DependentUpon>ModInfoForm.cs</DependentUpon>

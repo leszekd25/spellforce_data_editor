@@ -22,8 +22,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (Visible == false)
             {
-                foreach (string o in map.heightmap.visible_overlays)
-                    map.heightmap.OverlaySetVisible(o, false);
+                map.heightmap.OverlaySetVisible("TileMovementBlock", false);
+                map.heightmap.OverlaySetVisible("ManualMovementBlock", false);
+                map.heightmap.OverlaySetVisible("ManualVisionBlock", false);
             }
             else
             {

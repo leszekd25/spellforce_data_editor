@@ -23,5 +23,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
 
         }
+
+        public virtual void OnMouseUp()
+        {
+
+        }
     }
 }

@@ -35,9 +35,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     distance = 0;
                     break;
             }
-            if (distance >= size)
+            if (distance > (size-1))
                 return 0;
-            float k = distance / size;
+            float k = distance / (size-1);
             switch (interpolation_mode)
             {
                 case BrushInterpolationMode.CONSTANT:

@@ -166,6 +166,16 @@ namespace SpellforceDataEditor.SF3D
             return 0;
         }
 
+        public void SetName(string s)
+        {
+            
+        }
+
+        public string GetName()
+        {
+            return Utility.S_NONAME;
+        }
+
         public void Dispose()
         {
 
@@ -180,12 +190,16 @@ namespace SpellforceDataEditor.SF3D
                 GL.DeleteVertexArray(vertex_array);
                 vertex_array = -1;
             }
+            if((material != null)&&(material.texture != null))
+                SFResourceManager.Textures.Dispose(material.texture.GetName());
+            SFResourceManager.BSIs.Dispose(GetName());
         }
     }
 
     public class SFModelSkin: SFResource
     {
         public List<SFModelSkinChunk> submodels { get; private set; } = new List<SFModelSkinChunk>();
+        string name = "";
 
         public void Init()
         {
@@ -211,6 +225,16 @@ namespace SpellforceDataEditor.SF3D
                     return return_code;
             }
             return 0;
+        }
+
+        public void SetName(string s)
+        {
+            name = s;
+        }
+
+        public string GetName()
+        {
+            return name;
         }
 
         public void Dispose()

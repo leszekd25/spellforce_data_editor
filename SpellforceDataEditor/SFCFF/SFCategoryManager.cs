@@ -655,13 +655,8 @@ namespace SpellforceDataEditor.SFCFF
     //it provides with general functions to perform on categories as a database
     public static class SFCategoryManager
     {
-        /*private static SFCategory[] categories;      //array of categories*/
         public static SFGameData gamedata { get; private set; } = new SFGameData();
-        private static SFCategoryRuneHeroes categorySpecial_RuneHeroes;    //intermediary needed to find names of rune heroes
-        /*private static int categoryNumber;           //amount of categories (basically a constant)
-
-        private static Byte[] mainHeader;            //gamedata.cff has a main header which is held here
-        private static string gamedata_md5 = "";*/     //currently loaded cff's MD5 hash (as string)
+        private static SFCategoryRuneHeroes categorySpecial_RuneHeroes;
 
         public static bool ready { get; private set; } = false;
 
@@ -684,6 +679,17 @@ namespace SpellforceDataEditor.SFCFF
         public static string get_data_md5()
         {
             return gamedata.gamedata_md5;
+        }
+
+        public static void manual_set_gamedata(SFGameData gd)
+        {
+            if (gamedata == gd)
+                return;
+            if (ready == true)
+                throw new InvalidOperationException("Gamedata is not closed!!!!!");
+            gamedata = gd;
+            categorySpecial_RuneHeroes.generate();
+            ready = true;
         }
 
         //loads gamedata.cff file
@@ -789,7 +795,7 @@ namespace SpellforceDataEditor.SFCFF
         }
 
         //returns a name of a given unit
-        public static string get_unit_name(UInt16 unit_id)
+        public static string get_unit_name(UInt16 unit_id, bool include_level = false)
         {
             SFCategoryElement unit_elem = get_category(17).find_binary_element<UInt16>(0, unit_id);
             if (unit_elem == null)
@@ -801,6 +807,19 @@ namespace SpellforceDataEditor.SFCFF
                 return Utility.S_MISSING; ;
 
             string txt = Utility.CleanString(text_elem.get_single_variant(4));
+
+            if(include_level)
+            {
+                ushort stats_id = (ushort)unit_elem.get_single_variant(2).value;
+                SFCategoryElement unit_stats_elem = get_category(3).find_binary_element<UInt16>(0, stats_id);
+                if (unit_stats_elem == null)
+                {
+                    txt += " (<MISSING_LVL>)";
+                    return txt;
+                }
+                ushort ustats_lvl = (ushort)unit_stats_elem.get_single_variant(1).value;
+                txt += " (level " + ustats_lvl.ToString() + ")";
+            }
 
             return txt;
         }

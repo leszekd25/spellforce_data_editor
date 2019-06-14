@@ -25,6 +25,7 @@ namespace SpellforceDataEditor.SF3D
         public int tex_id { get; private set; } = -1;
         public uint mipMapCount { get; private set; }
         public InternalFormat format { get; private set; }
+        string name = "";
 
         public SFTexture()
         {
@@ -183,6 +184,16 @@ namespace SpellforceDataEditor.SF3D
             tex_id = -1;
             data = pixels;
             format = InternalFormat.Rgba;
+        }
+
+        public void SetName(string s)
+        {
+            name = s;
+        }
+
+        public string GetName()
+        {
+            return name;
         }
 
         public void Dispose()

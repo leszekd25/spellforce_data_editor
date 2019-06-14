@@ -20,7 +20,7 @@ namespace SpellforceDataEditor.special_forms
     {
         SFMap.SFMap map = null;
         SF3D.SFRender.SFRenderEngine render_engine = new SF3D.SFRender.SFRenderEngine();
-        SFCFF.SFGameData gamedata = new SFCFF.SFGameData();
+        SFCFF.SFGameData gamedata = null;
 
         bool dynamic_render = false;     // if true, window will redraw every frame at 25 fps
         bool mouse_pressed = false;      // if true, mouse is pressed and in render window
@@ -49,6 +49,8 @@ namespace SpellforceDataEditor.special_forms
             edit_controls[0] = new SFMap.map_controls.MapInspectorHeightMapControl();
             edit_controls[1] = new SFMap.map_controls.MapInspectorTerrainTextureControl();
             edit_controls[2] = new SFMap.map_controls.MapInspectorFlagControl();
+            edit_controls[3] = new SFMap.map_controls.MapInspectorLakeControl();
+            edit_controls[4] = new SFMap.map_controls.MapInspectorUnitControl();
 
             for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
                 if (edit_controls[i] != null)
@@ -63,6 +65,8 @@ namespace SpellforceDataEditor.special_forms
                 InspectorPanel.Controls[i].Location = new Point(3, 3);
             }
 
+            gamedata = SFCFF.SFCategoryManager.gamedata;
+
             SetEditMode(MAPEDIT_MODE.HMAP);
         }
 
@@ -70,20 +74,50 @@ namespace SpellforceDataEditor.special_forms
         {
             if (OpenMap.ShowDialog() == DialogResult.OK)
             {
+                // check if gamedata is open in the editor and prompt to close it
+                if (MainForm.data != null)
+                {
+                    if (MainForm.data.data_loaded)
+                    {
+                        if (!MainForm.data.synchronized_with_mapeditor)
+                        {
+                            if (MainForm.data.close_data() == DialogResult.Cancel)
+                            {
+                                StatusText.Text = "Could not load game data: Another game data is already loaded, which will cause desync!";
+                                return;
+                            }
+                        }
+                    }
+                }
+                else if (SFCFF.SFCategoryManager.ready)
+                    SFCFF.SFCategoryManager.unload_all();
+
                 StatusText.Text = "Loading GameData.cff...";
                 StatusText.GetCurrentParent().Refresh();
-                gamedata.Unload();
                 if (gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
+                {
+                    StatusText.Text = "Failed to load gamedata";
                     return;
+                }
+
+                if(MainForm.data != null)
+                    MainForm.data.mapeditor_set_gamedata(gamedata);
+                else
+                    SFCFF.SFCategoryManager.manual_set_gamedata(gamedata);
+
                 map = new SFMap.SFMap();
                 try
                 {
                     if (map.Load(OpenMap.FileName, render_engine, gamedata, StatusText) != 0)
+                    {
                         StatusText.Text = "Failed to load map";
+                        return;
+                    }
                 }
                 catch (InvalidDataException)
                 {
                     StatusText.Text = "Map contains invalid data!";
+                    return;
                 }
                 render_engine.AssignHeightMap(map.heightmap);
 
@@ -99,6 +133,9 @@ namespace SpellforceDataEditor.special_forms
                 ((SFMap.map_controls.MapInspectorTerrainTextureControl)(edit_controls[1])).GenerateTileListEntries();
 
                 RenderWindow.Invalidate();
+
+                if(MainForm.data != null)
+                    MessageBox.Show("Note: Editor now operates on gamedata file in your Spellforce directory. Modifying in-editor gamedata and saving results will result in permanent change to your gamedata in your Spellforce directory.");
             }
         }
 
@@ -142,6 +179,8 @@ namespace SpellforceDataEditor.special_forms
         private void RenderWindow_MouseUp(object sender, MouseEventArgs e)
         {
             mouse_pressed = false;
+            edit_controls[(int)edit_mode].OnMouseUp();
+            update_render = true;
         }
 
         private void RenderWindow_MouseMove(object sender, MouseEventArgs e)
@@ -237,6 +276,7 @@ namespace SpellforceDataEditor.special_forms
 
             if ((dynamic_render)||(update_render))
             {
+                map.selection_helper.UpdateSelection();
                 render_engine.camera.translate(new Vector3(scroll_movement.X, 0, scroll_movement.Y));
                 AdjustCameraZ();
                 render_engine.scene_manager.LogicStep();
@@ -264,17 +304,33 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
+        public void SetCameraViewPoint(SFCoord pos)
+        {
+            Vector3 new_camera_pos = new Vector3(pos.x, 0, map.heightmap.height - pos.y - 1 + 12);
+            render_engine.camera.translate(new_camera_pos - render_engine.camera.Position);
+            AdjustCameraZ();
+            update_render = true;
+        }
+
         private void MapEditorForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (map != null)
             {
                 map.Unload();
-                gamedata.Unload();
+                if (MainForm.data != null)
+                {
+                    MainForm.data.close_data();
+                    MainForm.data.mapeditor_desynchronize();
+                }
+                else
+                    SFCFF.SFCategoryManager.unload_all();
                 render_engine.scene_manager.ClearScene();
                 render_engine.AssignHeightMap(null);
                 if (MainForm.viewer != null)
                     MainForm.viewer.ResetScene();
+                // for good measure (bad! bad!)
                 SFResources.SFResourceManager.DisposeAll();
+                GC.Collect();
             }
         }
 
@@ -287,6 +343,13 @@ namespace SpellforceDataEditor.special_forms
                     StatusText.Text = "Failed to save map";
                 else
                     StatusText.Text = SaveMap.FileName+ " saved successfully";
+                if(MainForm.data != null)
+                {
+                    if(MainForm.data.data_changed)
+                    {
+                        MainForm.data.save_data();
+                    }
+                }
             }
         }
 
@@ -340,6 +403,15 @@ namespace SpellforceDataEditor.special_forms
                 case MAPEDIT_MODE.TEXTURE:
                     LabelMode.Text = "Edit terrain textures";
                     break;
+                case MAPEDIT_MODE.FLAG:
+                    LabelMode.Text = "Edit terrain flags";
+                    break;
+                case MAPEDIT_MODE.LAKE:
+                    LabelMode.Text = "Edit lakes";
+                    break;
+                case MAPEDIT_MODE.UNIT:
+                    LabelMode.Text = "Edit units";
+                    break;
                 default:
                     break;
             }
@@ -358,6 +430,16 @@ namespace SpellforceDataEditor.special_forms
         private void ButtonFlag_Click(object sender, EventArgs e)
         {
             SetEditMode(MAPEDIT_MODE.FLAG);
+        }
+
+        private void ButtonLake_Click(object sender, EventArgs e)
+        {
+            SetEditMode(MAPEDIT_MODE.LAKE);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            SetEditMode(MAPEDIT_MODE.UNIT);
         }
     }
 }

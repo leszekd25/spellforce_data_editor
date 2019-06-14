@@ -21,6 +21,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 {
     public class SFSceneManager
     {
+        // TODO: multiple scenes (at least one for map editor and one for asset viewer
         public SFSceneDescriptionMeta scene_meta { get; private set; } = null;     // scene metadata
         public Dictionary<string, ObjectSimple3D> objects_static { get; private set; } = new Dictionary<string, ObjectSimple3D>();   // static objects in the scene
         public Dictionary<string, objectAnimated> objects_dynamic { get; private set; } = new Dictionary<string, objectAnimated>();  // animated objects in the scene
@@ -289,8 +290,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // removes objects from the scene and resets scene data
         public void ClearScene()
         {
-            objects_static.Clear();
-            objects_dynamic.Clear();
+            List<string> keys = objects_static.Keys.ToList();
+            foreach (string k in keys)
+                DeleteObject(k);
+            keys = objects_dynamic.Keys.ToList();
+            foreach (string k in keys)
+                DeleteObject(k);
             scene_meta = null;
         }
 
@@ -314,6 +319,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 loaded = false;
 
             ObjectSimple3D obj_s1 = new ObjectSimple3D();
+            obj_s1.Name = obj_name;
             if (par == null)
                 obj_s1.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
             obj_s1.Parent = par;
@@ -322,6 +328,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             objects_static.Add(obj_name, obj_s1);
             obj_s1.update_modelMatrix();
         }
+
 
         // adds an animated object to the scene given mesh name, and assigns it a name and parent object
         public void AddObjectDynamic(string skel_name, string parent_name, string obj_name)
@@ -341,6 +348,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 loaded = false;
 
             objectAnimated obj_d1 = new objectAnimated();
+            obj_d1.Name = obj_name;
             if (par == null)
                 obj_d1.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
             obj_d1.Parent = par;
@@ -359,10 +367,35 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 par = objects_dynamic[obj_anim_name];
 
             ObjectBoneAnchor obj_b1 = new ObjectBoneAnchor();
+            obj_b1.Name = obj_name;
             obj_b1.Visible = false;
-            obj_b1.SetBone(par, skel_bone_name);
+            obj_b1.Parent = par;
+            obj_b1.SetBone(skel_bone_name);
             objects_dynamic.Add(obj_name, obj_b1);
             obj_b1.update_modelMatrix();
+        }
+
+        public void DeleteObject(string obj_name)
+        {
+            Object3D obj_s = null;
+
+            if (objects_static.ContainsKey(obj_name))
+            {
+                obj_s = objects_static[obj_name];
+                objects_static.Remove(obj_name);
+            }
+            else if (objects_dynamic.ContainsKey(obj_name))
+            {
+                obj_s = objects_dynamic[obj_name];
+                objects_dynamic.Remove(obj_name);
+            }
+            else
+                return;
+            
+            obj_s.Dispose();
+
+            for (int i = 0; i < obj_s.Children.Count; i++)
+                DeleteObject(obj_s.Children[i].Name);
         }
 
         // adds unit to a scene
@@ -408,8 +441,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
                 //add anim model to scene
                 AddObjectDynamic(chest_name, object_name, object_name + "_CHEST");
-                //sd.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { chest_name, "", "MAIN" });
-                //sd.meta.obj_to_anim["MAIN"] = anim_name;
 
                 //get legs item (5) (animated)
                 UInt16 legs_id = GetItemID(unit_eq, 5);
@@ -420,8 +451,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     if (legs_name != "")
                     {
                         AddObjectDynamic(legs_name, object_name, object_name + "_LEGS");
-                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { legs_name, "", legs_name });
-                        //sd.meta.obj_to_anim[legs_name] = anim_name;
                     }
                 }
                 //special case: anim_name is of "figure_hero": need to also add human head (animated)
@@ -433,8 +462,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     if (head_name != "")
                     {
                         AddObjectDynamic(head_name, object_name, object_name + "_HEAD");
-                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { head_name, "", head_name });
-                        //sd.meta.obj_to_anim[head_name] = anim_name;
                     }
                 }
 
@@ -449,8 +476,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         //create bone attachment
                         AddObjectBoneanchor(object_name + "_CHEST", "Head", object_name + "_HEADBONE");
                         AddObjectStatic(helmet_name, object_name + "_HEADBONE", object_name + "_HELMET");
-                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", "Head", "HEAD" });
-                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { helmet_name, "HEAD", helmet_name });
                     }
                 }
 
@@ -464,9 +489,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     {
                         //create bone attachment
                         AddObjectBoneanchor(object_name + "_CHEST", "R Hand weapon", object_name + "_RHANDBONE");
-                        AddObjectStatic(rhand_name, object_name + "RHANDBONE", object_name + "_RHAND");
-                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", "R Hand weapon", "RHAND" });
-                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { rhand_name, "RHAND", "I_RHAND" });
+                        AddObjectStatic(rhand_name, object_name + "_RHANDBONE", object_name + "_RHAND");
                     }
                 }
 
@@ -488,13 +511,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         }
                         //create bone attachment
                         AddObjectBoneanchor(object_name + "_CHEST", (is_shield ? "L Forearm shield" : "L Hand weapon"), object_name + "_LHANDBONE");
-                        AddObjectStatic(lhand_name, object_name + "LHANDBONE", object_name + "_LHAND");
-                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_BONE, new string[] { "MAIN", (is_shield ? "L Forearm shield" : "L Hand weapon"), "LHAND" });
-                        //sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { lhand_name, "LHAND", "I_LHAND" });
+                        AddObjectStatic(lhand_name, object_name + "_LHANDBONE", object_name + "_LHAND");
                     }
                 }
-
-                //sd.add_line(SCENE_ITEM_TYPE.SCENE_ANIM, new string[] { "1" });
             }
         }
 

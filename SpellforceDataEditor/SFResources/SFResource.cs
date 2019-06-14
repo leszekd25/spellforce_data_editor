@@ -17,5 +17,7 @@ namespace SpellforceDataEditor.SFResources
         int Load(MemoryStream ms);
         void Init();
         void Dispose();
+        void SetName(string s);
+        string GetName();
     }
 }
