@@ -77,6 +77,7 @@
             this.UnitToPlaceID.TabIndex = 1;
             this.UnitToPlaceID.Text = "0";
             this.UnitToPlaceID.TextChanged += new System.EventHandler(this.UnitToPlaceID_TextChanged);
+            this.UnitToPlaceID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.UnitToPlaceID_MouseDown);
             // 
             // UnitToPlaceNameAndLevel
             // 

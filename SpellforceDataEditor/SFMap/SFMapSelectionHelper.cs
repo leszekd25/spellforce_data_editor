@@ -14,6 +14,7 @@ namespace SpellforceDataEditor.SFMap
         static SF3D.SFModel3D selection_mesh = new SF3D.SFModel3D();
         SFMap map = null;
         SF3D.ObjectSimple3D sel_obj = null;
+        Vector2 offset = new Vector2(0, 0);
 
         SFMapUnit selected_unit = null;
         SFMapBuilding selected_building = null;
@@ -61,7 +62,7 @@ namespace SpellforceDataEditor.SFMap
         public void SetSelectionPosition(SFCoord pos)
         {
             float z = map.heightmap.GetZ(pos) / 100.0f;
-            sel_obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(map.height - pos.y - 1));
+            sel_obj.Position = new OpenTK.Vector3((float)pos.x-offset.X, (float)z, (float)(map.height - pos.y - 1)+offset.Y);
         }
 
         public void SetSelectionVisibility(bool vis)
@@ -74,12 +75,18 @@ namespace SpellforceDataEditor.SFMap
             sel_obj.Scale = new Vector3(s, s, s);
         }
 
+        public void SetSelectionOffset(Vector2 off)
+        {
+            offset = off;
+        }
+
         public void CancelSelection()
         {
             selected_unit = null;
             selected_building = null;
             selected_object = null;
             selected_interactive_object = null;
+            offset = new Vector2(0, 0);
             selection_type = SelectionType.NONE;
         }
 
@@ -91,6 +98,22 @@ namespace SpellforceDataEditor.SFMap
             SetSelectionScale(1.0f);
         }
 
+        public void SelectBuilding(SFMapBuilding building)
+        {
+            CancelSelection();
+            selection_type = SelectionType.BUILDING;
+            selected_building = building;
+            SetSelectionScale(map.render_engine.scene_manager.mesh_data.GetBuildingSelectionSize(building.game_id));
+        }
+
+        public void SelectObject(SFMapObject obj)
+        {
+            CancelSelection();
+            selection_type = SelectionType.OBJECT;
+            selected_object = obj;
+            SetSelectionScale(map.render_engine.scene_manager.mesh_data.GetObjectSelectionSize(obj.game_id));
+        }
+
         // should be run once per render tick
         public void UpdateSelection()
         {
@@ -99,6 +122,34 @@ namespace SpellforceDataEditor.SFMap
             {
                 if (selected_unit != null)
                     SetSelectionPosition(selected_unit.grid_position);
+            }
+            else if (selection_type == SelectionType.BUILDING)
+            {
+                if (selected_building != null)
+                {
+                    Vector2 off = map.building_manager.building_collision[(ushort)selected_building.game_id].collision_mesh.origin;
+                    float angle = (float)(selected_building.angle * Math.PI / 180);
+                    Vector2 r_off = new Vector2(offset.X, offset.Y);
+                    r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
+                    r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
+
+                    SetSelectionOffset(r_off);
+                    SetSelectionPosition(selected_building.grid_position);
+                }
+            }
+            else if (selection_type == SelectionType.OBJECT)
+            {
+                if (selected_object != null)
+                {
+                    /*Vector2 off = map.building_manager.building_collision[(ushort)selected_building.game_id].collision_mesh.origin;
+                    float angle = (float)(selected_building.angle * Math.PI / 180);
+                    Vector2 r_off = new Vector2(offset.X, offset.Y);
+                    r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
+                    r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
+
+                    SetSelectionOffset(r_off);*/
+                    SetSelectionPosition(selected_object.grid_position);
+                }
             }
             // todo: add more selection types
         }

@@ -90,7 +90,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (building == null)
                 return null;
 
-            List<String> meshes = building.lines.ToList();
+            List<String> meshes = building.lines.Skip(1).ToList();     // ignore line with selection size
             for (int i = 0; i < meshes.Count; i++)
             {
                 string str = meshes[i];
@@ -104,6 +104,18 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return meshes;
         }
 
+        public float GetBuildingSelectionSize(int building_id)
+        {
+            SFVisualLink building = FindVisualLink(buildings, building_id);
+            if (building == null)
+                return 0.0f;
+
+            float ret = 0.0f;
+            float.TryParse(building.lines[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out ret);
+
+            return ret;
+        }
+
         // returns a list of mesh filenames for a given object
         public List<String> GetObjectMeshes(int object_id)
         {
@@ -111,7 +123,19 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (obj == null)
                 return null;
 
-            return obj.lines;
+            return obj.lines.Skip(1).ToList();
+        }
+
+        public float GetObjectSelectionSize(int object_id)
+        {
+            SFVisualLink obj = FindVisualLink(objects, object_id);
+            if (obj == null)
+                return 0.0f;
+
+            float ret = 0.0f;
+            float.TryParse(obj.lines[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out ret);
+
+            return ret;
         }
 
         // returns a list of mesh filenames for a given item

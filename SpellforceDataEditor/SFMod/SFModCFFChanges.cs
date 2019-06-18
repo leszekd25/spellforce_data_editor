@@ -132,8 +132,8 @@ namespace SpellforceDataEditor.SFMod
             byte[] mainHeader_new  = br_new.ReadBytes(20) ;
             for(int i = 1; i <= SFCategoryManager.get_category_number(); i++)
             {
-                orig_data = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCategory" + i.ToString()) as SFCategory;
-                new_data  = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCategory" + i.ToString()) as SFCategory;
+                orig_data = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCFF.SFCategory" + i.ToString()) as SFCategory;
+                new_data  = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCFF.SFCategory" + i.ToString()) as SFCategory;
                 if(orig_data.read(br_orig) != 0)
                 {
                     changes.Clear();

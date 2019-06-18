@@ -613,6 +613,7 @@ namespace SpellforceDataEditor.SFMap
         public short[] height_data;
         public byte[] tile_data;
         public byte[] lake_data;    // 0 - no lake, 1-255 - lakes 0-254
+        public ushort[] building_data;   // 0 - no building, 1-65535 - buildings 0-65534
         public bool[] temporary_mask;   // for calculating islands by height
         public List<SFCoord> chunk42_data = new List<SFCoord>();
         public List<SFCoord> chunk56_data = new List<SFCoord>();
@@ -631,6 +632,7 @@ namespace SpellforceDataEditor.SFMap
             height_data = new short[w * h];
             tile_data = new byte[w * h];
             lake_data = new byte[w * h];  lake_data.Initialize();
+            building_data = new ushort[w * h]; building_data.Initialize();
             temporary_mask = new bool[w * h];
         }
 
@@ -920,6 +922,9 @@ namespace SpellforceDataEditor.SFMap
                     return false;
             // check if lake is on position
             if (lake_data[pos.y * width + pos.x] != 0)
+                return false;
+            // check if building is on position
+            if (building_data[pos.y * width + pos.x] != 0)
                 return false;
 
             return true;

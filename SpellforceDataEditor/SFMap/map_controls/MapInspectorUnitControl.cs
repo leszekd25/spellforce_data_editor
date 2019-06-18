@@ -60,6 +60,21 @@ namespace SpellforceDataEditor.SFMap.map_controls
             UnitToPlaceNameAndLevel.Text = SFCFF.SFCategoryManager.get_unit_name(unit_id, true);
         }
 
+        private void UnitToPlaceID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                if (MainForm.data == null)
+                    return;
+                if (!SFCFF.SFCategoryManager.ready)
+                    return;
+
+                ushort unit_id = Utility.TryParseUInt16(UnitToPlaceID.Text);
+
+                MainForm.data.Tracer_StepForward(17, unit_id, false);
+            }
+        }
+
         public void SelectUnit(int unit_map_index, bool move_vision)
         {
             if (unit_map_index < 0)
@@ -132,7 +147,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     return;
 
                 ushort unit_id = Utility.TryParseUInt16(SelectedUnitID.Text);
-    
+
                 MainForm.data.Tracer_StepForward(17, unit_id, false);
             }
         }
@@ -145,11 +160,14 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SFMapUnit unit = map.unit_manager.units[selected_unit];
             SelectedUnitAngle.Text = SelectedUnitAngleTrackBar.Value.ToString();
             unit.angle = SelectedUnitAngleTrackBar.Value;
+            map.RotateUnit(selected_unit, unit.angle);
+
+            MainForm.mapedittool.update_render = true;
         }
 
         private void SelectedUnitAngle_Validated(object sender, EventArgs e)
         {
-            SelectedUnitAngleTrackBar.Value = Utility.TryParseUInt16(SelectedUnitAngle.Text);
+            SelectedUnitAngleTrackBar.Value = (int)(Math.Max((ushort)0, Math.Min((ushort)359, Utility.TryParseUInt16(SelectedUnitAngle.Text))));
         }
 
         private void SelectedUnitUnk1_Validated(object sender, EventArgs e)
@@ -214,6 +232,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
                         if (map.heightmap.CanMoveToPosition(fixed_pos))
                         {
                             ushort new_unit_id = Utility.TryParseUInt16(UnitToPlaceID.Text);
+                            if (map.gamedata.categories[17].get_element_index(new_unit_id) == -1)
+                                return;
                             // create new unit and drag it until mouse released
                             map.AddUnit(new_unit_id, fixed_pos, 0, 0, 0, 0, 0);
                             ListUnits.Items.Add(GetUnitString(map.unit_manager.units[map.unit_manager.units.Count - 1]));

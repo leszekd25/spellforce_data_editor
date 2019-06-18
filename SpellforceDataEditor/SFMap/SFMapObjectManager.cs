@@ -15,6 +15,7 @@ namespace SpellforceDataEditor.SFMap
         public int game_id = -1;
         public int angle = 0;
         public int npc_id = 0;
+        public int unknown1 = 0;
 
         public string GetObjectName()
         {
@@ -38,12 +39,13 @@ namespace SpellforceDataEditor.SFMap
         public List<SFMapObject> objects { get; private set; } = new List<SFMapObject>();
         public SFMap map = null;
 
-        public SFMapObject AddObject(int id, SFCoord position, int angle)
+        public SFMapObject AddObject(int id, SFCoord position, int angle, int unk1)
         {
             SFMapObject obj = new SFMapObject();
             obj.grid_position = position;
             obj.game_id = id;
             obj.angle = angle;
+            obj.unknown1 = unk1;
             objects.Add(obj);
 
             string obj_name = obj.GetObjectName();

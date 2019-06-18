@@ -45,6 +45,14 @@ namespace SpellforceDataEditor.SFChunkFile
             return BitConverter.ToInt32(header, 12);
         }
 
+        public int get_original_data_length()
+        {
+            if (get_is_packed() == 0)
+                return get_data_length();
+            else
+                return get_unpacked_data_length();
+        }
+
         public byte[] get_raw_data()
         {
             return data;

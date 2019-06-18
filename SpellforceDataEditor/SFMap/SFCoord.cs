@@ -29,6 +29,11 @@ namespace SpellforceDataEditor.SFMap
             return new SFCoord(c1.x - c2.x, c1.y - c2.y);
         }
 
+        public static SFCoord operator*(SFCoord c, int q)
+        {
+            return new SFCoord(c.x * q, c.y * q);
+        }
+
         public static bool operator ==(SFCoord c1, SFCoord c2)
         {
             return ((c1.x == c2.x) && (c1.y == c2.y));

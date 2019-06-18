@@ -51,6 +51,8 @@ namespace SpellforceDataEditor.special_forms
             edit_controls[2] = new SFMap.map_controls.MapInspectorFlagControl();
             edit_controls[3] = new SFMap.map_controls.MapInspectorLakeControl();
             edit_controls[4] = new SFMap.map_controls.MapInspectorUnitControl();
+            edit_controls[5] = new SFMap.map_controls.MapInspectorBuildingControl();
+            edit_controls[6] = new SFMap.map_controls.MapInspectorObjectControl();
 
             for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
                 if (edit_controls[i] != null)
@@ -412,6 +414,12 @@ namespace SpellforceDataEditor.special_forms
                 case MAPEDIT_MODE.UNIT:
                     LabelMode.Text = "Edit units";
                     break;
+                case MAPEDIT_MODE.BUILDING:
+                    LabelMode.Text = "Edit buildings";
+                    break;
+                case MAPEDIT_MODE.OBJECT:
+                    LabelMode.Text = "Edit objects";
+                    break;
                 default:
                     break;
             }
@@ -440,6 +448,16 @@ namespace SpellforceDataEditor.special_forms
         private void button5_Click(object sender, EventArgs e)
         {
             SetEditMode(MAPEDIT_MODE.UNIT);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            SetEditMode(MAPEDIT_MODE.BUILDING);
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            SetEditMode(MAPEDIT_MODE.OBJECT);
         }
     }
 }

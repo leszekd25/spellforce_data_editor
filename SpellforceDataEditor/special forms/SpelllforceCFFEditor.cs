@@ -595,6 +595,7 @@ namespace SpellforceDataEditor.special_forms
                 panelElemCopy.Visible = true;
 
                 changeDataLanguageToolStripMenuItem.Enabled = true;
+                System.Diagnostics.Debug.WriteLine("Elements: " + ElementSelect.Items.Count.ToString());
             }
             ElementSelect.EndUpdate();
         }

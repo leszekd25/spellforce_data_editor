@@ -188,6 +188,7 @@
             this.button7.Size = new System.Drawing.Size(48, 48);
             this.button7.TabIndex = 13;
             this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // button6
             // 
@@ -198,6 +199,7 @@
             this.button6.Size = new System.Drawing.Size(48, 48);
             this.button6.TabIndex = 12;
             this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // button5
             // 

@@ -232,7 +232,6 @@ namespace SpellforceDataEditor.SFChunkFile
             }
             else
                 bw.Write(raw_data);
-            System.Diagnostics.Debug.WriteLine("CURRENT POSITION: " + bw.BaseStream.Position);
         }
     }
 }
