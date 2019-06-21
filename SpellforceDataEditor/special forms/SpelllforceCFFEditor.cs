@@ -13,7 +13,7 @@ namespace SpellforceDataEditor.special_forms
     {
         public bool data_loaded { get; private set; } = false;
         public bool data_changed { get; private set; } = false;
-        public bool synchronized_with_mapeditor { get; private set; } = false;
+        public bool synchronized_with_mapeditor { get; private set; } = false;   // this blocks undo/redo if true
 
         private int selected_category_index = -1;
         private int real_category_index = -1;                   //tracer helper
@@ -98,6 +98,7 @@ namespace SpellforceDataEditor.special_forms
             data_loaded = true;
             data_changed = false;
             synchronized_with_mapeditor = false;
+            SetUndoRedoEnabled(true);
 
             CategorySelect.SelectedIndex = 0;
 
@@ -123,6 +124,7 @@ namespace SpellforceDataEditor.special_forms
             data_loaded = true;
             data_changed = false;
             synchronized_with_mapeditor = true;
+            SetUndoRedoEnabled(false);
 
             CategorySelect.SelectedIndex = 0;
         }
@@ -188,7 +190,8 @@ namespace SpellforceDataEditor.special_forms
             if (!diff_current_element.same_as(cat.get_element(selected_element_index)))
             {
                 data_changed = true;
-                diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REPLACE, selected_element_index, diff_current_element, cat.get_element(selected_element_index)));
+                if(!synchronized_with_mapeditor)
+                    diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REPLACE, selected_element_index, diff_current_element, cat.get_element(selected_element_index)));
                 diff_current_element = cat.get_element(selected_element_index).get_copy();
             }
         }
@@ -231,6 +234,9 @@ namespace SpellforceDataEditor.special_forms
         //what happens when you choose category from a list
         private void CategorySelect_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (CategorySelect.SelectedIndex == -1)
+                return;
+
             Focus();
 
             diff_resolve_current_element();
@@ -512,10 +518,13 @@ namespace SpellforceDataEditor.special_forms
                 current_indices[i] = current_indices[i] + 1;
             current_indices.Insert(current_elem+1, current_elem+1);
 
-            diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, current_elem, null, elem));
+            if (!synchronized_with_mapeditor)
+            {
+                diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, current_elem, null, elem));
 
-            undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
-            redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
+                undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
+                redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
+            }
 
             Tracer_Clear();
         }
@@ -543,10 +552,13 @@ namespace SpellforceDataEditor.special_forms
             ElementDisplay.Visible = false;
 
             diff_current_element = null;
-            diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REMOVE, current_elem, elem, null));
+            if (!synchronized_with_mapeditor)
+            {
+                diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REMOVE, current_elem, elem, null));
 
-            undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
-            redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
+                undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
+                redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
+            }
 
             Tracer_Clear();
         }
@@ -737,6 +749,8 @@ namespace SpellforceDataEditor.special_forms
         {
             if (!diff.can_undo_changes(selected_category_index))
                 return;
+            if (synchronized_with_mapeditor)
+                return;
 
             //if element is being edited and belongs to the category, make sure to push the change before doing anything else
             if (panelElemManipulate.Visible)
@@ -808,6 +822,8 @@ namespace SpellforceDataEditor.special_forms
         private void redo_change()
         {
             if (!diff.can_redo_changes(selected_category_index))
+                return;
+            if (synchronized_with_mapeditor)
                 return;
 
             validate_focused_control();
@@ -996,6 +1012,69 @@ namespace SpellforceDataEditor.special_forms
         public void mapeditor_desynchronize()
         {
             synchronized_with_mapeditor = false;
+            SetUndoRedoEnabled(true);
+        }
+
+        private void SetUndoRedoEnabled(bool enabled)
+        {
+            undoCtrlZToolStripMenuItem.Enabled = enabled;
+            redoCtrlYToolStripMenuItem.Enabled = enabled;
+            if(enabled)
+            {
+                undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
+                redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
+            }
+        }
+
+        // assumes arguments are valid... is valid
+        public void mapeditor_insert_npc(int new_npc_index, SFCategoryElement new_npc_data)
+        {
+            if (selected_category_index != 36)
+            {
+                SFCategoryManager.gamedata.categories[36].get_elements().Insert(new_npc_index, new_npc_data);
+                return;
+            }
+
+            resolve_category_index();
+
+            SFCategory ctg = SFCategoryManager.get_category(real_category_index);
+
+            List<SFCategoryElement> elems = ctg.get_elements();
+            elems.Insert(new_npc_index, new_npc_data);
+            ElementSelect.Items.Insert(new_npc_index, ctg.get_element_string(new_npc_index));
+            for (int i = new_npc_index; i < current_indices.Count; i++)
+                current_indices[i] = current_indices[i] + 1;
+            current_indices.Insert(new_npc_index, new_npc_index);
+
+            // NO DIFF CHANGE HERE, TODO!
+            Tracer_Clear();
+
+            // select item
+            ElementSelect.SelectedIndex = new_npc_index;
+        }
+
+        public void mapeditor_remove_npc(int npc_index)
+        {
+            if (selected_category_index != 36)
+            {
+                SFCategoryManager.gamedata.categories[36].get_elements().RemoveAt(npc_index);
+                return;
+            }
+
+            resolve_category_index();
+
+            SFCategory ctg = SFCategoryManager.get_category(real_category_index);
+
+            List<SFCategoryElement> elems = ctg.get_elements();
+            for (int i = npc_index; i < current_indices.Count; i++)
+                current_indices[i] = current_indices[i] - 1;
+            current_indices.RemoveAt(npc_index);
+            ElementSelect.Items.RemoveAt(npc_index);
+            elems.RemoveAt(npc_index);
+
+            ElementDisplay.Visible = false;
+
+            Tracer_Clear();
         }
     }
 }

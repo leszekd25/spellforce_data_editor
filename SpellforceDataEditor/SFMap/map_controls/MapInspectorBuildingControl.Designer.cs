@@ -187,12 +187,13 @@
             // 
             // SelectedBuildingNPCID
             // 
-            this.SelectedBuildingNPCID.BackColor = System.Drawing.SystemColors.Window;
-            this.SelectedBuildingNPCID.Enabled = false;
+            this.SelectedBuildingNPCID.BackColor = System.Drawing.Color.LightSteelBlue;
             this.SelectedBuildingNPCID.Location = new System.Drawing.Point(97, 33);
             this.SelectedBuildingNPCID.Name = "SelectedBuildingNPCID";
             this.SelectedBuildingNPCID.Size = new System.Drawing.Size(100, 20);
             this.SelectedBuildingNPCID.TabIndex = 13;
+            this.SelectedBuildingNPCID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SelectedBuildingNPCID_MouseDown);
+            this.SelectedBuildingNPCID.Validated += new System.EventHandler(this.SelectedBuildingNPCID_Validated);
             // 
             // SelectedBuildingID
             // 

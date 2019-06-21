@@ -576,6 +576,11 @@ namespace SpellforceDataEditor.SFMap
             decorations.Add(d);
         }
 
+        public void RemoveDecoration(SFMapDecoration d)
+        {
+            decorations.Remove(d);
+        }
+
         public void AddBuilding(SFMapBuilding b)
         {
             buildings.Add(b);

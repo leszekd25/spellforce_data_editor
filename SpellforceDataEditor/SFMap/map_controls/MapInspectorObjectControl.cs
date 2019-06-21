@@ -152,5 +152,32 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SFMapObject obj = map.object_manager.objects[selected_object];
             obj.unknown1 = Utility.TryParseUInt16(SelectedObjectUnk1.Text);
         }
+
+        private void SelectedObjectNPCID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (selected_object == -1)
+                return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                MapInspectorNPCControl npc_control = (MapInspectorNPCControl)(MainForm.mapedittool.GetEditorControl(8));
+                int npc_id = (int)Utility.TryParseUInt32(SelectedObjectNPCID.Text);
+                if (npc_id != 0)
+                {
+                    MainForm.mapedittool.SetEditMode(special_forms.MAPEDIT_MODE.NPC);
+                    int npc_index = npc_control.indices_to_keys.IndexOf(npc_id);
+                    npc_control.SelectNPC(npc_index, false);
+                    return;
+                }
+
+                npc_id = npc_control.FindLastUnusedNPCID();
+                if (npc_id == -1)
+                    return;
+
+                map.npc_manager.AddNPCRef(npc_id, map.object_manager.objects[selected_object]);
+                map.object_manager.objects[selected_object].npc_id = npc_id;
+                SelectedObjectNPCID.Text = npc_id.ToString();
+            }
+        }
     }
 }

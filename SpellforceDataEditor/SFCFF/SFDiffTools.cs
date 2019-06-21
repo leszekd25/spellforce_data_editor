@@ -317,12 +317,16 @@ namespace SpellforceDataEditor.SFCFF
         //returns whether there are changes that can be undone
         public bool can_undo_changes(int cat_index)
         {
+            if (cat_index == -1)
+                return false;
             return (diff_current_index[cat_index] >= 0);
         }
 
         //returns whether there are changes that can be redone
         public bool can_redo_changes(int cat_index)
         {
+            if (cat_index == -1)
+                return false;
             return (diff_current_index[cat_index] < diff_data[cat_index].Count-1);
         }
 

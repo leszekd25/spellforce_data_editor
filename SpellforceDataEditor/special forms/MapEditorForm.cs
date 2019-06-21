@@ -14,7 +14,7 @@ using SpellforceDataEditor.SFMap;
 
 namespace SpellforceDataEditor.special_forms
 {
-    enum MAPEDIT_MODE { HMAP = 0, TEXTURE, FLAG, LAKE, UNIT, BUILDING, OBJECT, DECAL, NPC, CAMP, META, MAX }
+    public enum MAPEDIT_MODE { HMAP = 0, TEXTURE, FLAG, LAKE, UNIT, BUILDING, OBJECT, DECAL, NPC, CAMP, META, MAX }
 
     public partial class MapEditorForm : Form
     {
@@ -53,6 +53,8 @@ namespace SpellforceDataEditor.special_forms
             edit_controls[4] = new SFMap.map_controls.MapInspectorUnitControl();
             edit_controls[5] = new SFMap.map_controls.MapInspectorBuildingControl();
             edit_controls[6] = new SFMap.map_controls.MapInspectorObjectControl();
+            edit_controls[7] = new SFMap.map_controls.MapInspectorDecorationControl();
+            edit_controls[8] = new SFMap.map_controls.MapInspectorNPCControl();
 
             for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
                 if (edit_controls[i] != null)
@@ -234,6 +236,9 @@ namespace SpellforceDataEditor.special_forms
 
         private void TimerAnimation_Tick(object sender, EventArgs e)
         {
+            if (map == null)
+                return;
+
             if(mouse_pressed)
             {
                 // generate ray
@@ -338,6 +343,9 @@ namespace SpellforceDataEditor.special_forms
 
         private void saveMapToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (map == null)
+                return;
+
             if (SaveMap.ShowDialog() == DialogResult.OK)
             {
                 StatusText.Text = "Saving the map...";
@@ -349,7 +357,12 @@ namespace SpellforceDataEditor.special_forms
                 {
                     if(MainForm.data.data_changed)
                     {
+                        // important: remove created NPC IDs that are not used
+                        foreach(int npc_id in ((SFMap.map_controls.MapInspectorNPCControl)edit_controls[8]).created_npc_ids)
+                            if (!map.npc_manager.npc_info.ContainsKey(npc_id))
+                                ((SFMap.map_controls.MapInspectorNPCControl)edit_controls[8]).RemoveNewNPCID(npc_id);
                         MainForm.data.save_data();
+                        ((SFMap.map_controls.MapInspectorNPCControl)edit_controls[8]).created_npc_ids.Clear();
                     }
                 }
             }
@@ -384,7 +397,7 @@ namespace SpellforceDataEditor.special_forms
             mouse_on_view = true;
         }
 
-        private void SetEditMode(MAPEDIT_MODE mode)
+        public void SetEditMode(MAPEDIT_MODE mode)
         {
             edit_mode = mode;
             int c_index = InspectorPanel.Controls.IndexOf(edit_controls[(int)mode]);
@@ -419,6 +432,12 @@ namespace SpellforceDataEditor.special_forms
                     break;
                 case MAPEDIT_MODE.OBJECT:
                     LabelMode.Text = "Edit objects";
+                    break;
+                case MAPEDIT_MODE.DECAL:
+                    LabelMode.Text = "Edit decorations";
+                    break;
+                case MAPEDIT_MODE.NPC:
+                    LabelMode.Text = "Edit NPCs";
                     break;
                 default:
                     break;
@@ -458,6 +477,42 @@ namespace SpellforceDataEditor.special_forms
         private void button7_Click(object sender, EventArgs e)
         {
             SetEditMode(MAPEDIT_MODE.OBJECT);
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            SetEditMode(MAPEDIT_MODE.DECAL);
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            SetEditMode(MAPEDIT_MODE.NPC);
+        }
+
+        public void GoToBuildingProperties(SFMapBuilding bld)
+        {
+            SFMap.map_controls.MapInspectorBuildingControl b_inspector = (SFMap.map_controls.MapInspectorBuildingControl)edit_controls[5];
+            SetEditMode(MAPEDIT_MODE.BUILDING);
+            b_inspector.SelectBuilding(map.building_manager.buildings.IndexOf(bld), true);
+        }
+
+        public void GoToObjectProperties(SFMapObject obj)
+        {
+            SFMap.map_controls.MapInspectorObjectControl o_inspector = (SFMap.map_controls.MapInspectorObjectControl)edit_controls[6];
+            SetEditMode(MAPEDIT_MODE.OBJECT);
+            o_inspector.SelectObject(map.object_manager.objects.IndexOf(obj), true);
+        }
+
+        public void GoToUnitProperties(SFMapUnit unit)
+        {
+            SFMap.map_controls.MapInspectorUnitControl u_inspector = (SFMap.map_controls.MapInspectorUnitControl)edit_controls[4];
+            SetEditMode(MAPEDIT_MODE.UNIT);
+            u_inspector.SelectUnit(map.unit_manager.units.IndexOf(unit), true);
+        }
+
+        public SFMap.map_controls.MapInspectorBaseControl GetEditorControl(int mode)
+        {
+            return edit_controls[mode];
         }
     }
 }

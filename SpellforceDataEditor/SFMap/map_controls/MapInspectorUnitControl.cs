@@ -284,5 +284,32 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             drag_enabled = false;
         }
+
+        private void SelectedUnitNPCID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (selected_unit == -1)
+                return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                MapInspectorNPCControl npc_control = (MapInspectorNPCControl)(MainForm.mapedittool.GetEditorControl(8));
+                int npc_id = (int)Utility.TryParseUInt32(SelectedUnitNPCID.Text);
+                if (npc_id != 0)
+                {
+                    MainForm.mapedittool.SetEditMode(special_forms.MAPEDIT_MODE.NPC);
+                    int npc_index = npc_control.indices_to_keys.IndexOf(npc_id);
+                    npc_control.SelectNPC(npc_index, false);
+                    return;
+                }
+
+                npc_id = npc_control.FindLastUnusedNPCID();
+                if (npc_id == -1)
+                    return;
+
+                map.npc_manager.AddNPCRef(npc_id, map.unit_manager.units[selected_unit]);
+                map.unit_manager.units[selected_unit].npc_id = npc_id;
+                SelectedUnitNPCID.Text = npc_id.ToString();
+            }
+        }
     }
 }

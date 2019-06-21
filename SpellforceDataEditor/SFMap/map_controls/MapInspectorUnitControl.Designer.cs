@@ -192,12 +192,12 @@
             // 
             // SelectedUnitNPCID
             // 
-            this.SelectedUnitNPCID.BackColor = System.Drawing.SystemColors.Window;
-            this.SelectedUnitNPCID.Enabled = false;
+            this.SelectedUnitNPCID.BackColor = System.Drawing.Color.LightSteelBlue;
             this.SelectedUnitNPCID.Location = new System.Drawing.Point(80, 33);
             this.SelectedUnitNPCID.Name = "SelectedUnitNPCID";
             this.SelectedUnitNPCID.Size = new System.Drawing.Size(100, 20);
             this.SelectedUnitNPCID.TabIndex = 13;
+            this.SelectedUnitNPCID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SelectedUnitNPCID_MouseDown);
             // 
             // SelectedUnitID
             // 

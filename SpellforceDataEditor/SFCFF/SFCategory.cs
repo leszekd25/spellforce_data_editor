@@ -279,6 +279,7 @@ namespace SpellforceDataEditor.SFCFF
         }
 
         //finds text string given element and column index where the element holds text IDs
+        // TODO: why is this in SFCategory?
         public string get_text_from_element(SFCategoryElement elem, int cat_index)
         {
             if (elem == null)
@@ -442,6 +443,7 @@ namespace SpellforceDataEditor.SFCFF
 
         // if an element of id X was to be inserted into a list, where should it be placed to preserve ascending order?
         // this function ansvers the question above
+        // returns -1 if such element ID already exists
         public int get_new_element_index(int id)
         {
             int current_start = 0;
@@ -1684,6 +1686,7 @@ namespace SpellforceDataEditor.SFCFF
         }
     }
     
+    // NPC ids
     public class SFCategory37 : SFCategory
     {
         public SFCategory37() : base()

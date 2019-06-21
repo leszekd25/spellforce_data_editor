@@ -136,6 +136,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void SelectedBuildingID_MouseDown(object sender, MouseEventArgs e)
         {
+            if (selected_building == -1)
+                return;
+
             if (e.Button == MouseButtons.Right)
             {
                 if (MainForm.data == null)
@@ -183,6 +186,66 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             SFMapBuilding building = map.building_manager.buildings[selected_building];
             building.race_id = Utility.TryParseUInt8(SelectedBuildingRace.Text);
+        }
+
+        private void SelectedBuildingNPCID_Validated(object sender, EventArgs e)
+        {
+            if (selected_building == -1)
+                return;
+
+            int current_npc_id = map.building_manager.buildings[selected_building].npc_id;
+            int new_npc_id = (int)Utility.TryParseUInt32(SelectedBuildingNPCID.Text);
+
+            if (current_npc_id == new_npc_id)
+                return;
+            
+            if(new_npc_id == 0)
+            {
+                map.npc_manager.RemoveNPCRef(current_npc_id);
+                map.building_manager.buildings[selected_building].npc_id = 0;
+            }
+            else
+            {
+                // if new id does not exist in gamedata, return
+                if (SFCFF.SFCategoryManager.gamedata.categories[36].get_element_index(new_npc_id) == -1)
+                {
+                    SelectedBuildingNPCID.Text = current_npc_id.ToString();
+                    return;
+                }
+                // if id is used, remove it
+                if(current_npc_id != 0)
+                    map.npc_manager.RemoveNPCRef(current_npc_id);
+                // add new id
+                map.npc_manager.AddNPCRef(new_npc_id, map.building_manager.buildings[selected_building]);
+                map.building_manager.buildings[selected_building].npc_id = new_npc_id;
+            }
+        }
+
+        private void SelectedBuildingNPCID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (selected_building == -1)
+                return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                MapInspectorNPCControl npc_control = (MapInspectorNPCControl)(MainForm.mapedittool.GetEditorControl(8));
+                int npc_id = (int)Utility.TryParseUInt32(SelectedBuildingNPCID.Text);
+                if (npc_id != 0)
+                {
+                    MainForm.mapedittool.SetEditMode(special_forms.MAPEDIT_MODE.NPC);
+                    int npc_index = npc_control.indices_to_keys.IndexOf(npc_id);
+                    npc_control.SelectNPC(npc_index, false);
+                    return;
+                }
+
+                npc_id = npc_control.FindLastUnusedNPCID();
+                if (npc_id == -1)
+                    return;
+
+                map.npc_manager.AddNPCRef(npc_id, map.building_manager.buildings[selected_building]);
+                map.building_manager.buildings[selected_building].npc_id = npc_id;
+                SelectedBuildingNPCID.Text = npc_id.ToString();
+            }
         }
     }
 }

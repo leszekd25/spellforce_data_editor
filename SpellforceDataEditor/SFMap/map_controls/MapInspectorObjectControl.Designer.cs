@@ -174,12 +174,12 @@
             // 
             // SelectedObjectNPCID
             // 
-            this.SelectedObjectNPCID.BackColor = System.Drawing.SystemColors.Window;
-            this.SelectedObjectNPCID.Enabled = false;
+            this.SelectedObjectNPCID.BackColor = System.Drawing.Color.LightSteelBlue;
             this.SelectedObjectNPCID.Location = new System.Drawing.Point(97, 33);
             this.SelectedObjectNPCID.Name = "SelectedObjectNPCID";
             this.SelectedObjectNPCID.Size = new System.Drawing.Size(100, 20);
             this.SelectedObjectNPCID.TabIndex = 13;
+            this.SelectedObjectNPCID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SelectedObjectNPCID_MouseDown);
             // 
             // SelectedObjectID
             // 

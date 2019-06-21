@@ -27,6 +27,7 @@ namespace SpellforceDataEditor.SFMap
         public SFMapLakeManager lake_manager { get; private set; } = null;
         public SFMapMetaData metadata { get; private set; } = null;
         public SFMapSelectionHelper selection_helper { get; private set; } = new SFMapSelectionHelper();
+        public SFMapNPCManager npc_manager { get; private set; } = new SFMapNPCManager();
         public SF3D.SFRender.SFRenderEngine render_engine { get; private set; } = null;
         public SFCFF.SFGameData gamedata { get; private set; } = null;
 
@@ -129,6 +130,9 @@ namespace SpellforceDataEditor.SFMap
 
             // generate heightmap models and reindex textures
             heightmap.Generate();
+
+            npc_manager = new SFMapNPCManager();
+            npc_manager.map = this;
 
             // load buildings
             tx.Text = "Loading buildings...";
@@ -243,7 +247,6 @@ namespace SpellforceDataEditor.SFMap
                         int y = br.ReadInt16();
                         SFCoord pos = new SFCoord(x, y);
                         int object_id = br.ReadInt16();
-                        System.Diagnostics.Debug.WriteLine("IOBJECT ID " + object_id.ToString());
                         int angle = br.ReadInt16();
                         int unk_byte = br.ReadByte();
                         AddInteractiveObject(object_id, pos, angle, unk_byte);
@@ -590,6 +593,8 @@ namespace SpellforceDataEditor.SFMap
                     if (heightmap.building_data[i*width+j] != 0)
                         heightmap.OverlayAdd("BuildingBlock", new SFCoord(j, i));
 
+            heightmap.OverlayCreate("DecorationTile", new OpenTK.Vector4(0.9f, 0.3f, 0.9f, 0.9f));
+
 
             foreach (SFMapHeightMapChunk chunk in heightmap.chunks)
             {
@@ -599,9 +604,10 @@ namespace SpellforceDataEditor.SFMap
                 chunk.OverlayUpdate("LakeTile");
                 chunk.OverlayUpdate("ManualLakeTile");
                 chunk.OverlayUpdate("BuildingBlock");
+                chunk.OverlayUpdate("DecorationTile");
             }
 
-            heightmap.OverlaySetVisible("BuildingBlock", true);
+            // heightmap.OverlaySetVisible("BuildingBlock", true);
 
             // selection helper stuff
             selection_helper.AssignToMap(this);
@@ -970,16 +976,14 @@ namespace SpellforceDataEditor.SFMap
             SF3D.Object3D _obj = render_engine.scene_manager.objects_static[dec.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
-
-
-            heightmap.GetChunk(pos).AddDecoration(dec);
-            render_engine.scene_manager.objects_static[dec.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
         }
 
         public void AddObject(int game_id, SFCoord pos, int angle, int npc_id, int unk1)
         {
             SFMapObject obj = object_manager.AddObject(game_id, pos, angle, unk1);
             obj.npc_id = npc_id;
+            if (npc_id != 0)
+                npc_manager.AddNPCRef(npc_id, obj);
 
 
             float z = heightmap.GetZ(pos) / 100.0f;
@@ -1048,6 +1052,8 @@ namespace SpellforceDataEditor.SFMap
         public void AddBuilding(int game_id, SFCoord pos, int angle, int npc_id, int lvl, int race_id)
         {
             SFMapBuilding bld = building_manager.AddBuilding(game_id, pos, angle, npc_id, lvl, race_id);
+            if (npc_id != 0)
+                npc_manager.AddNPCRef(npc_id, bld);
 
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.Object3D _obj = render_engine.scene_manager.objects_static[bld.GetObjectName()];
@@ -1145,6 +1151,8 @@ namespace SpellforceDataEditor.SFMap
             unit.unknown = unknown;
             unit.group = group;
             unit.unknown2 = unknown2;
+            if (npc_id != 0)
+                npc_manager.AddNPCRef(npc_id, unit);
 
             // 2. modify object transform and appearance
 
@@ -1208,6 +1216,9 @@ namespace SpellforceDataEditor.SFMap
             unit = unit_manager.units[unit_map_index];
 
             unit_manager.RemoveUnit(unit);
+
+            if (unit.npc_id != 0)
+                npc_manager.RemoveNPCRef(unit.npc_id);
 
             return 0;
         }

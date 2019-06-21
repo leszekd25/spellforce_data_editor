@@ -520,6 +520,12 @@
     <Compile Include="SFMap\map_controls\MapInspectorBuildingControl.Designer.cs">
       <DependentUpon>MapInspectorBuildingControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorDecorationControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorDecorationControl.Designer.cs">
+      <DependentUpon>MapInspectorDecorationControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFMap\map_controls\MapInspectorFlagControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -537,6 +543,12 @@
     </Compile>
     <Compile Include="SFMap\map_controls\MapInspectorLakeControl.Designer.cs">
       <DependentUpon>MapInspectorLakeControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorNPCControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapInspectorNPCControl.Designer.cs">
+      <DependentUpon>MapInspectorNPCControl.cs</DependentUpon>
     </Compile>
     <Compile Include="SFMap\map_controls\MapInspectorObjectControl.cs">
       <SubType>UserControl</SubType>
@@ -565,6 +577,7 @@
     <Compile Include="SFMap\SFMapInteractiveObjectManager.cs" />
     <Compile Include="SFMap\SFMapLakeManager.cs" />
     <Compile Include="SFMap\SFMapMetaData.cs" />
+    <Compile Include="SFMap\SFMapNPCManager.cs" />
     <Compile Include="SFMap\SFMapObjectManager.cs" />
     <Compile Include="SFMap\SFMapPortalManager.cs" />
     <Compile Include="SFMap\SFMapSelectionHelper.cs" />
@@ -920,6 +933,9 @@
     <EmbeddedResource Include="SFMap\map_controls\MapInspectorBuildingControl.resx">
       <DependentUpon>MapInspectorBuildingControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_controls\MapInspectorDecorationControl.resx">
+      <DependentUpon>MapInspectorDecorationControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapInspectorFlagControl.resx">
       <DependentUpon>MapInspectorFlagControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -928,6 +944,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapInspectorLakeControl.resx">
       <DependentUpon>MapInspectorLakeControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_controls\MapInspectorNPCControl.resx">
+      <DependentUpon>MapInspectorNPCControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapInspectorObjectControl.resx">
       <DependentUpon>MapInspectorObjectControl.cs</DependentUpon>
