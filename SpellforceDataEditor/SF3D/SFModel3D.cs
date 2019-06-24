@@ -125,6 +125,7 @@ namespace SpellforceDataEditor.SF3D
                     if (tex_code != 0)
                         return tex_code;
                     tex = SFResourceManager.Textures.Get(matname);
+                    tex.FreeMemory();
                 }
                 mat.texture = tex;
                 //System.Diagnostics.Debug.WriteLine(tex.ToString());

@@ -68,7 +68,7 @@ namespace SpellforceDataEditor.SFCFF
                         elem.add_single_variant((UInt32)0);
                         break;
                     case 's':
-                        elem.add_single_variant(new char[string_size[current_string]]);
+                        elem.add_single_variant(new byte[string_size[current_string]]);
                         current_string = Math.Min(string_size.Length - 1, current_string + 1);
                         break;
                     default:
@@ -100,7 +100,7 @@ namespace SpellforceDataEditor.SFCFF
                     return sr.ReadUInt32();
                 case 's':
                     current_string = Math.Min(string_size.Length - 1, current_string + 1);
-                    return sr.ReadChars(s_size);
+                    return sr.ReadBytes(s_size);
                 default:
                     return null;
             }
@@ -131,7 +131,7 @@ namespace SpellforceDataEditor.SFCFF
                     sw.Write((UInt32)var.value);
                     break;
                 case SFVARIANT_TYPE.String:
-                    sw.Write((char[])var.value);
+                    sw.Write((byte[])var.value);
                     break;
                 default:
                     break;

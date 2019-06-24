@@ -64,6 +64,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 ready = true;
                 SFResourceManager.FindAllMeshes();
+                SFLua.SFLuaEnvironment.Init();
             }
             return result;
         }

@@ -22,13 +22,35 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (Visible == false)
             {
+                map.heightmap.OverlayClear("TileMovementBlock");
                 map.heightmap.OverlaySetVisible("TileMovementBlock", false);
+
+                map.heightmap.OverlayClear("ManualMovementBlock");
                 map.heightmap.OverlaySetVisible("ManualMovementBlock", false);
+
+                map.heightmap.OverlayClear("ManualVisionBlock");
                 map.heightmap.OverlaySetVisible("ManualVisionBlock", false);
+                foreach (SFMapHeightMapChunk chunk in map.heightmap.chunks)
+                {
+                    chunk.OverlayUpdate("TileMovementBlock");
+                    chunk.OverlayUpdate("ManualMovementBlock");
+                    chunk.OverlayUpdate("ManualVisionBlock");
+                }
             }
             else
             {
-                if(CheckMovement.Checked)
+                for (int i = 0; i < map.height; i++)
+                    for (int j = 0; j < map.width; j++)
+                        if (map.heightmap.texture_manager.texture_tiledata[map.heightmap.tile_data[i * map.width + j]].blocks_movement)
+                            map.heightmap.OverlayAdd("TileMovementBlock", new SFCoord(j, i));
+
+                foreach (SFCoord p in map.heightmap.chunk42_data)
+                    map.heightmap.OverlayAdd("ManualMovementBlock", p);
+
+                foreach (SFCoord p in map.heightmap.chunk56_data)
+                    map.heightmap.OverlayAdd("ManualVisionBlock", p);
+
+                if (CheckMovement.Checked)
                 {
                     map.heightmap.OverlaySetVisible("TileMovementBlock", true);
                     map.heightmap.OverlaySetVisible("ManualMovementBlock", true);

@@ -13,7 +13,7 @@ namespace SpellforceDataEditor.SFCFF
     public class SFVariant
     {
         public static int[] TYPE_SIZE = { 1, 1, 2, 2, 4, 4, 0, -1 };
-        static Type[] types = { typeof(Byte), typeof(SByte), typeof(UInt16), typeof(Int16), typeof(UInt32), typeof(Int32), typeof(char[]) };
+        static Type[] types = { typeof(Byte), typeof(SByte), typeof(UInt16), typeof(Int16), typeof(UInt32), typeof(Int32), typeof(byte[]) };
         public Object value;
         public SFVARIANT_TYPE vtype;
 
@@ -83,7 +83,7 @@ namespace SpellforceDataEditor.SFCFF
                 case SFVARIANT_TYPE.UInt:
                     return (UInt32)value == (UInt32)v.value;
                 case SFVARIANT_TYPE.String:
-                    return ((char[])value).SequenceEqual((char[])v.value);
+                    return ((byte[])value).SequenceEqual((byte[])v.value);
                 default:
                     return value.Equals(v.value);
             }
@@ -154,7 +154,7 @@ namespace SpellforceDataEditor.SFCFF
             {
                 if (v.vtype == SFVARIANT_TYPE.String)
                 {
-                    s += ((char[])v.value).Length;
+                    s += ((byte[])v.value).Length;
                 }
                 else
                     s += SFVariant.TYPE_SIZE[(int)v.vtype];

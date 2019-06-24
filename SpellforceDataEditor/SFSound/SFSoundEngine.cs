@@ -107,7 +107,7 @@ namespace SpellforceDataEditor.SFSound
                 sound_data.Dispose();
                 loaded = false;
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 return -2;
             }

@@ -65,7 +65,7 @@ namespace SpellforceDataEditor.SFLua.lua_filesystem
             {
                 fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return -2;
             }
@@ -107,7 +107,7 @@ namespace SpellforceDataEditor.SFLua.lua_filesystem
             {
                 fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return -2;
             }

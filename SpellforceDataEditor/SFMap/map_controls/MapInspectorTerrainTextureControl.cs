@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -24,19 +24,28 @@ namespace SpellforceDataEditor.SFMap.map_controls
             InitializeComponent();
         }
 
+        // operates on a 64x64 mip map level ground texture, hardcoded for now...
         private Bitmap CreateBitmapFromTexture(SFTexture tex)
         {
             Bitmap b = new Bitmap(tex.width/4, tex.height/4);
-            int offset = (tex.width * tex.height * 4) + (tex.width * tex.height);
+            int ignored_level = 0;
+            while (!tex.IsValidMipMapLevel(ignored_level))
+                ignored_level += 1;
+
+            if (ignored_level > 2)
+                return b;
+
+            int offset = (tex.width * tex.height * 4) * (ignored_level > 0 ? 0 : 1) 
+                       + (tex.width * tex.height)     * (ignored_level > 1 ? 0 : 1);
 
 
-            for (int i = 0; i < tex.height / 4; i++)
-                for (int j = 0; j < tex.width / 4; j++)
+            for (int i = 0; i < 64; i++)
+                for (int j = 0; j < 64; j++)
                     b.SetPixel(i, j, Color.FromArgb(
-                        255,
-                        tex.data[offset + 4 * (i * tex.width / 4 + j) + 0],
-                        tex.data[offset + 4 * (i * tex.width / 4 + j) + 1],
-                        tex.data[offset + 4 * (i * tex.width / 4 + j) + 2]));
+                        255, 
+                        tex.data[offset+4*(i * 64 + j) + 0],
+                        tex.data[offset+4*(i * 64 + j) + 1],
+                        tex.data[offset+4*(i * 64 + j) + 2]));
             return b;
         }
 
@@ -159,6 +168,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                             }
                             map.heightmap.texture_manager.UpdateTileTexture(ListTiles.SelectedIndex);
                             TexPreview.Image = CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
+                            map.heightmap.texture_manager.FreeTileMemory(ListTiles.SelectedIndex);
                             TexPreview.Refresh();
                             MainForm.mapedittool.update_render = true;
                             focused_base_texture = cur_focused;
@@ -227,7 +237,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 Tex1Weight.Text = map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight1.ToString();
                 Tex2Weight.Text = map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight2.ToString();
                 Tex3Weight.Text = map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight3.ToString();
+                map.heightmap.texture_manager.UpdateTileTexture(ListTiles.SelectedIndex);
                 TexPreview.Image = CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
+                map.heightmap.texture_manager.FreeTileMemory(ListTiles.SelectedIndex);
             }
             else
             {
@@ -250,6 +262,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight1 = Utility.TryParseUInt8(Tex1Weight.Text);
             map.heightmap.texture_manager.UpdateTileTexture(ListTiles.SelectedIndex);
             TexPreview.Image = CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
+            map.heightmap.texture_manager.FreeTileMemory(ListTiles.SelectedIndex);
             TexPreview.Refresh();
             MainForm.mapedittool.update_render = true;
         }
@@ -262,6 +275,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight2 = Utility.TryParseUInt8(Tex2Weight.Text);
             map.heightmap.texture_manager.UpdateTileTexture(ListTiles.SelectedIndex);
             TexPreview.Image = CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
+            map.heightmap.texture_manager.FreeTileMemory(ListTiles.SelectedIndex);
             TexPreview.Refresh();
             MainForm.mapedittool.update_render = true;
         }
@@ -273,6 +287,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight3 = Utility.TryParseUInt8(Tex3Weight.Text);
             map.heightmap.texture_manager.UpdateTileTexture(ListTiles.SelectedIndex);
             TexPreview.Image = CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
+            map.heightmap.texture_manager.FreeTileMemory(ListTiles.SelectedIndex);
             TexPreview.Refresh();
             MainForm.mapedittool.update_render = true;
         }

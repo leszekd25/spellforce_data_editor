@@ -27,9 +27,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             //read fragment shader
             string FragmentShaderCode = fragment_shader;
 
-            int result = 0;
-            int InfoLogLength;
-
             System.Diagnostics.Debug.WriteLine("Compiling " + vertex_shader);
             GL.ShaderSource(VertexShaderID, VertexShaderCode);
             GL.CompileShader(VertexShaderID);

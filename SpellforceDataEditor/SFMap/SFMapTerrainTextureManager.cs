@@ -12,35 +12,6 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SpellforceDataEditor.SFMap
 {
-    /*public struct SFMapTerrainTexture
-    {
-        public int id;
-        public string filename;
-        public SFTexture tex;
-
-        public void LoadTexture()
-        {
-            tex = new SFTexture();
-
-            //System.Diagnostics.Debug.WriteLine("TEXTURE " + filename + "...");
-            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf1.pak", "texture\\" + filename);
-            if (ms == null)
-            {
-                tex = null;
-                return;
-            }
-            //resource loading stack
-            int res_code = tex.Load(ms);
-            if(res_code != 0)
-            {
-                tex = null;
-                return;
-            }
-            //System.Diagnostics.Debug.WriteLine(tex.ToString());
-            ms.Close();
-        }
-    }*/
-
     public struct SFMapTerrainTextureReindexer
     {
         public int index;
@@ -140,24 +111,40 @@ namespace SpellforceDataEditor.SFMap
                     texture_array[i] = base_texture_bank[0];
             }
 
+            int mipmap_divisor = 1;
+            int min_allowed_level = 0;
+            int _size = 256;
+            while(_size > SFTexture.MaximumAllowedTextureSize) { min_allowed_level += 1; _size /= 2; }
+
+            min_allowed_level = (min_allowed_level > SFTexture.IgnoredMipMapsCount ? min_allowed_level : SFTexture.IgnoredMipMapsCount);
+
+            for (int i = 0; i < min_allowed_level; i++)
+                mipmap_divisor *= 2;
+
             // todo: add mipmaps : )
             terrain_texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
-            GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8, SizedInternalFormat.Rgba8, 256, 256, 255);
+            GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8 - min_allowed_level, SizedInternalFormat.Rgba8, 256/mipmap_divisor, 256/mipmap_divisor, 255);
             for (int i = 0; i < 255; i++)
             {
                 int offset = 0;
 
                 int w = 256;
                 int h = 256;
+                min_allowed_level = 1000;
 
                 for (int level = 0; level < 8 && (w != 0 || h != 0); ++level)
                 {
                     int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
 
-                    GL.TexSubImage3D(TextureTarget.Texture2DArray, level, 0, 0, i, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[i].data[offset]);
+                    if (texture_array[i].IsValidMipMapLevel(level))
+                    {
+                        if (min_allowed_level > level) min_allowed_level = level;
 
-                    offset += size;
+                        GL.TexSubImage3D(TextureTarget.Texture2DArray, level - min_allowed_level, 0, 0, i, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[i].data[offset]);
+
+                        offset += size;
+                    }
                     w /= 2;
                     h /= 2;
                 }
@@ -173,6 +160,10 @@ namespace SpellforceDataEditor.SFMap
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int)All.Repeat);
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int)All.Repeat);
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
+
+            for (int i = 32; i < 224; i++)
+                if(!base_texture_bank.Contains(texture_array[i]))
+                    texture_array[i].FreeMemory();
         }
 
         public bool SetBaseTexture(int base_index, int tex_id)
@@ -206,14 +197,19 @@ namespace SpellforceDataEditor.SFMap
 
             int w = 256;
             int h = 256;
+            int min_allowed_level = 1000;
 
             for (int level = 0; level < 8 && (w != 0 || h != 0); ++level)
             {
                 int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
+                if (texture_array[atlas_index].IsValidMipMapLevel(level))
+                {
+                    if (min_allowed_level > level) min_allowed_level = level;
 
-                GL.TexSubImage3D(TextureTarget.Texture2DArray, level, 0, 0, atlas_index, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[atlas_index].data[offset]);
+                    GL.TexSubImage3D(TextureTarget.Texture2DArray, level - min_allowed_level, 0, 0, atlas_index, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[atlas_index].data[offset]);
 
-                offset += size;
+                    offset += size;
+                }
                 w /= 2;
                 h /= 2;
             }
@@ -233,17 +229,24 @@ namespace SpellforceDataEditor.SFMap
 
                     w = 256;
                     h = 256;
+                    min_allowed_level = 1000;
 
                     for (int level = 0; level < 8 && (w != 0 || h != 0); ++level)
                     {
                         int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
+                        if (texture_array[i].IsValidMipMapLevel(level))
+                        {
+                            if (min_allowed_level > level) min_allowed_level = level;
 
-                        GL.TexSubImage3D(TextureTarget.Texture2DArray, level, 0, 0, i, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[i].data[offset]);
+                            GL.TexSubImage3D(TextureTarget.Texture2DArray, level - min_allowed_level, 0, 0, i, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[i].data[offset]);
 
-                        offset += size;
+                            offset += size;
+                        }
                         w /= 2;
                         h /= 2;
                     }
+
+                    texture_array[i].FreeMemory();
                 }
             }
             return true;
@@ -267,19 +270,30 @@ namespace SpellforceDataEditor.SFMap
 
             int w = 256;
             int h = 256;
+            int min_allowed_level = 1000;
 
             for (int level = 0; level < 8 && (w != 0 || h != 0); ++level)
             {
                 int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
+                if (texture_array[tile_id].IsValidMipMapLevel(level))
+                {
+                    if (min_allowed_level > level) min_allowed_level = level;
 
-                GL.TexSubImage3D(TextureTarget.Texture2DArray, level, 0, 0, tile_id, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[tile_id].data[offset]);
+                    GL.TexSubImage3D(TextureTarget.Texture2DArray, level - min_allowed_level, 0, 0, tile_id, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref texture_array[tile_id].data[offset]);
 
-                offset += size;
+                    offset += size;
+                }
                 w /= 2;
                 h /= 2;
             }
 
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
+        }
+
+        public void FreeTileMemory(int tile_id)
+        {
+            if ((tile_id >= 32) && (tile_id < 224))
+                texture_array[tile_id].FreeMemory();
         }
 
         public void Unload()

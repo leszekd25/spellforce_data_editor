@@ -172,7 +172,7 @@ namespace SpellforceDataEditor.SFUnPak
             {
                 fs = new FileStream(path, FileMode.Open, FileAccess.Read);
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 return -2;
             }
@@ -216,7 +216,7 @@ namespace SpellforceDataEditor.SFUnPak
             {
                 pak_file = new FileStream(pak_fname, FileMode.Open, FileAccess.Read);
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 return -2;
             }

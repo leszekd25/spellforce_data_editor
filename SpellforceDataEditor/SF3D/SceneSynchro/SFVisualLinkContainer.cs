@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLua;
 
 namespace SpellforceDataEditor.SF3D.SceneSynchro
 {
@@ -43,7 +44,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             {
                 fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return -2;
             }

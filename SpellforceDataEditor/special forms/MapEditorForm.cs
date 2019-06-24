@@ -14,7 +14,7 @@ using SpellforceDataEditor.SFMap;
 
 namespace SpellforceDataEditor.special_forms
 {
-    public enum MAPEDIT_MODE { HMAP = 0, TEXTURE, FLAG, LAKE, UNIT, BUILDING, OBJECT, DECAL, NPC, CAMP, META, MAX }
+    public enum MAPEDIT_MODE { HMAP = 0, TEXTURE, FLAG, LAKE, UNIT, BUILDING, OBJECT, DECAL, NPC, MISC_OBJECT, META, MAX }
 
     public partial class MapEditorForm : Form
     {
@@ -55,6 +55,8 @@ namespace SpellforceDataEditor.special_forms
             edit_controls[6] = new SFMap.map_controls.MapInspectorObjectControl();
             edit_controls[7] = new SFMap.map_controls.MapInspectorDecorationControl();
             edit_controls[8] = new SFMap.map_controls.MapInspectorNPCControl();
+            edit_controls[9] = new SFMap.map_controls.MapInspectorMiscellaneuosObjectsControl();
+            edit_controls[10] = new SFMap.map_controls.MapInspectorMetadataControl();
 
             for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
                 if (edit_controls[i] != null)
@@ -153,6 +155,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     //ready = true;
                     SFResources.SFResourceManager.FindAllMeshes();
+                    SFLua.SFLuaEnvironment.Init();
                 }
                 else
                     Close();
@@ -239,7 +242,7 @@ namespace SpellforceDataEditor.special_forms
             if (map == null)
                 return;
 
-            if(mouse_pressed)
+            if (mouse_pressed)
             {
                 // generate ray
                 float px, py;
@@ -253,8 +256,7 @@ namespace SpellforceDataEditor.special_forms
                 Vector3 r_end = frustrum_vertices[4]
                     + wx * (frustrum_vertices[5] - frustrum_vertices[4])
                     + wy * (frustrum_vertices[6] - frustrum_vertices[4]);
-                SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start);
-                ray.length = 1000;
+                SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start) { length = 1000 };
                 // collide with every visible chunk
                 Vector3 result = new Vector3(0, 0, 0);
                 Vector3 offset;
@@ -439,6 +441,12 @@ namespace SpellforceDataEditor.special_forms
                 case MAPEDIT_MODE.NPC:
                     LabelMode.Text = "Edit NPCs";
                     break;
+                case MAPEDIT_MODE.MISC_OBJECT:
+                    LabelMode.Text = "Edit camps, bindstones, portals and monuments";
+                    return;
+                case MAPEDIT_MODE.META:
+                    LabelMode.Text = "Edit metadata";
+                    break;
                 default:
                     break;
             }
@@ -487,6 +495,16 @@ namespace SpellforceDataEditor.special_forms
         private void button9_Click(object sender, EventArgs e)
         {
             SetEditMode(MAPEDIT_MODE.NPC);
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            SetEditMode(MAPEDIT_MODE.MISC_OBJECT);
+        }
+        
+        private void button11_Click(object sender, EventArgs e)
+        {
+            SetEditMode(MAPEDIT_MODE.META);
         }
 
         public void GoToBuildingProperties(SFMapBuilding bld)

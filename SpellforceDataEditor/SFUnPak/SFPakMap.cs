@@ -72,7 +72,7 @@ namespace SpellforceDataEditor.SFUnPak
             {
                 fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 return -2;
             }

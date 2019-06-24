@@ -52,5 +52,18 @@ namespace SpellforceDataEditor.SFMap
             map.render_engine.scene_manager.AddObjectObject(id, obj_name);
             return obj;
         }
+
+        public bool ObjectIDIsReserved(int obj_id)
+        {
+            if ((obj_id == 65) || (obj_id == 66) || (obj_id == 67))   // editor flags (ignored)
+                return true;
+            if ((obj_id == 769)  || (obj_id == 778))                  // bindstone, world portal
+                return true;
+            if ((obj_id >= 771) && (obj_id <= 777))                   // monuments
+                return true;
+            if (obj_id == 2541)                                       // spawn point
+                return true;
+            return false;
+        }
     }
 }

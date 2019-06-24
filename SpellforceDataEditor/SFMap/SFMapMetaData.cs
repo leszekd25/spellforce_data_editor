@@ -14,14 +14,14 @@ namespace SpellforceDataEditor.SFMap
 
     public enum SFMapNPCType { UNIT, OBJECT }
 
-    public struct SFMapSpawn
+    public class SFMapSpawn
     {
         public SFCoord pos;
         public ushort text_id;
         public short unknown;
     }
 
-    public struct SFMapTeamPlayer
+    public class SFMapTeamPlayer
     {
         public int player_id;
         public ushort text_id;
@@ -37,13 +37,18 @@ namespace SpellforceDataEditor.SFMap
         }
     }
 
-    public struct SFMapCoopAISpawn
+    public class SFMapCoopAISpawn
     {
         public SFMapObject spawn_obj;
         public int spawn_id;
-        public bool spawn_certain; // not sure...
+        public int spawn_certain; // not sure...
 
-        public SFMapCoopAISpawn(SFMapObject _obj, int _id, bool _certain)
+        public SFMapCoopAISpawn()
+        {
+
+        }
+
+        public SFMapCoopAISpawn(SFMapObject _obj, int _id, int _certain)
         {
             spawn_obj = _obj;
             spawn_id = _id;
@@ -51,15 +56,15 @@ namespace SpellforceDataEditor.SFMap
         }
     }
 
-    public struct SFMapCoopSpawnParameters
+    public class SFMapCoopSpawnParameters
     {
-        public float param1, param2, param3, param4;
+        public float param1, param2, param3, param4 = 0;
     }
 
     public class SFMapMultiplayerTeamComposition
     {
         public int team_count = 0;
-        public List<SFMapTeamPlayer>[] players = null;
+        public List<List<SFMapTeamPlayer>> players = null;
     }
 
     public class SFMapMinimap
@@ -80,12 +85,17 @@ namespace SpellforceDataEditor.SFMap
     public class SFMapMetaData
     {
         public SFMapType map_type;
-        public int player_count = 0;
-        public SFMapSpawn[] spawns = null;
+        public int player_count = 0;   // actually spawn points for players, each bound to exactly one bindstone
+        public List<SFMapSpawn> spawns = null;
         public SFMapMinimap minimap = null;
-        public SFMapCoopSpawnParameters[] coop_spawn_params = null;
+        public List<SFMapCoopSpawnParameters> coop_spawn_params = null;
         public List<SFMapCoopAISpawn> coop_spawns = null;
         public List<SFMapMultiplayerTeamComposition> multi_teams = null;
+
+        public SFMapMetaData()
+        {
+            SFLua.SFLuaEnvironment.coop_spawns.Load();
+        }
 
         public void Unload()
         {
@@ -98,10 +108,16 @@ namespace SpellforceDataEditor.SFMap
 
         public int GetPlayerBySpawnPos(SFCoord pos)
         {
-            for (int i = 0; i < spawns.Length; i++)
+            if (spawns == null)
+                spawns = new List<SFMapSpawn>();
+
+            for (int i = 0; i < spawns.Count; i++)
                 if (pos == spawns[i].pos)
                     return i;
-            return -1;
+
+            spawns.Add(new SFMapSpawn());
+            spawns[spawns.Count - 1].pos = pos;
+            return spawns.Count - 1;
         }
 
         public bool GetCoopAISpawnByObject(SFMapObject o, ref SFMapCoopAISpawn sp)

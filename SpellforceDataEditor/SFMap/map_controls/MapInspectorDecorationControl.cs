@@ -10,7 +10,6 @@ namespace SpellforceDataEditor.SFMap.map_controls
 {
     public partial class MapInspectorDecorationControl : SpellforceDataEditor.SFMap.map_controls.MapInspectorBaseControl
     {
-        EditorMode edit_mode = EditorMode.IDLE;
         HashSet<SFCoord> selection = new HashSet<SFCoord>();
         bool is_adding = false;
 

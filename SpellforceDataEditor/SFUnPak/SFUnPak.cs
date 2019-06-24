@@ -81,7 +81,7 @@ namespace SpellforceDataEditor.SFUnPak
                 {
                     Directory.CreateDirectory(dir);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     return -3;
                 }
@@ -92,7 +92,7 @@ namespace SpellforceDataEditor.SFUnPak
             {
                 new_file = new FileStream(new_name, FileMode.OpenOrCreate, FileAccess.Write);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return -2;
             }
@@ -131,7 +131,7 @@ namespace SpellforceDataEditor.SFUnPak
                 {
                     Directory.CreateDirectory(dir);
                 }
-                catch(Exception e)
+                catch(Exception)
                 {
                     return -3;
                 }
@@ -142,7 +142,7 @@ namespace SpellforceDataEditor.SFUnPak
             {
                 new_file = new FileStream(new_name, FileMode.OpenOrCreate, FileAccess.Write);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return -2;
             }

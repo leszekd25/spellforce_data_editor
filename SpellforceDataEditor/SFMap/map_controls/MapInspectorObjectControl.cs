@@ -93,16 +93,25 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             if (selected_object == -1)
                 return;
-
+            
             ushort new_object_id = Utility.TryParseUInt16(SelectedObjectID.Text);
 
             SFMapObject obj = map.object_manager.objects[selected_object];
             if (obj.game_id == new_object_id)
                 return;
 
-            // check if new building exists
+            // check if new object id exists in gamedata
             if (map.gamedata.categories[33].get_element_index(new_object_id) == -1)
+            {
+                SelectedObjectID.Text = obj.game_id.ToString();
                 return;
+            }
+
+            if(map.object_manager.ObjectIDIsReserved(new_object_id))
+            {
+                SelectedObjectID.Text = obj.game_id.ToString();
+                return;
+            }
 
             map.ReplaceObject(selected_object, new_object_id);
 

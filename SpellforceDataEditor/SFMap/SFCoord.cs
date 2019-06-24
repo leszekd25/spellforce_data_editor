@@ -74,6 +74,16 @@ namespace SpellforceDataEditor.SFMap
             return 1;
         }
 
+        public override bool Equals(object obj)
+        {
+            return (obj.GetType() == typeof(SFCoord)) && (this == (SFCoord)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (x*65536+y).GetHashCode();
+        }
+
         public static explicit operator SFCoord(Vector2 v)
         {
             return new SFCoord((int)v.X, (int)v.Y);

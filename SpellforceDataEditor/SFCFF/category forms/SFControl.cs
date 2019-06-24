@@ -94,7 +94,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return "ERROR: index out of bounds";
             if (v.vtype != SFVARIANT_TYPE.String)
                 return "ERROR: wrong data type";
-            return new string((char[])v.value);
+            return Encoding.UTF8.GetString((byte[])v.value);
         }
 
         //turns a given variant from current element into a text to display on text box

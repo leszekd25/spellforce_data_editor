@@ -21,6 +21,34 @@ namespace SpellforceDataEditor.SFMap.map_controls
             InitializeComponent();
         }
 
+        private void MapInspectorLakeControl_VisibleChanged(object sender, EventArgs e)
+        {
+            if (map == null)
+                return;
+
+            if (Visible == true)
+            {
+                for (int i = 0; i < map.heightmap.lake_data.Length; i++)
+                {
+                    SFCoord p = new SFCoord(i % map.width, i / map.width);
+                    if (map.heightmap.lake_data[i] > 0)
+                        map.heightmap.OverlayAdd("LakeTile", p);
+
+                    map.heightmap.OverlaySetVisible("LakeTile", true);
+                }
+            }
+            else
+            {
+                map.heightmap.OverlayClear("LakeTile");
+                map.heightmap.OverlaySetVisible("LakeTile", false);
+            }
+
+            foreach (SFMapHeightMapChunk chunk in map.heightmap.chunks)
+                chunk.OverlayUpdate("LakeTile");
+
+            MainForm.mapedittool.update_render = true;
+        }
+
         // changes terrain in preparation of creating lake in the area
         private void PrepareLakeGround(SFCoord p, short lake_level, int slope_strength, int base_depth, int dist_to_boundary)
         {

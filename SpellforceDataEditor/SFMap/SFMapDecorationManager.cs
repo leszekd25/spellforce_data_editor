@@ -212,8 +212,8 @@ namespace SpellforceDataEditor.SFMap
                     ushort dec_id = dec_groups[dec_type].ChooseRandom();
                     if (dec_id != 0)   // if chosen decoration id is not 0, add new decoration at position
                         map.AddDecoration(dec_id, p);
-                    else               // otherwise do nothing lol
-                        ;
+                    // else               // otherwise do nothing lol
+                    //    ;
                 }
             }
         }
@@ -250,8 +250,8 @@ namespace SpellforceDataEditor.SFMap
                         ushort dec_id = dec_groups[dec_type].ChooseRandom();
                         if (dec_id != 0)   // if chosen decoration id is not 0, add new decoration at position
                             map.AddDecoration(dec_id, p);
-                        else               // otherwise do nothing lol
-                            ;
+                        // else               // otherwise do nothing lol
+                        //     ;
                     }
                 }
             }

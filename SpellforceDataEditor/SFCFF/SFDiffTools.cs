@@ -107,7 +107,7 @@ namespace SpellforceDataEditor.SFCFF
             switch(elem.difference_type)
             {
                 case SFDiffElement.DIFF_TYPE.MD5:
-                    presumed_md5 = Utility.CleanString(br.ReadChars(32));
+                    presumed_md5 = new string(br.ReadChars(32));
                     break;
                 case SFDiffElement.DIFF_TYPE.REPLACE:
                     elem.difference_index = br.ReadInt32();

@@ -21,8 +21,7 @@ namespace SpellforceDataEditor
         //functions which try to convert a string to the respective type
         static public SByte TryParseInt8(string s, SByte def = 0)
         {
-            SByte val = 0;
-            if (SByte.TryParse(s, out val))
+            if (SByte.TryParse(s, out sbyte val))
                 return val;
             else
                 return def;
@@ -30,8 +29,7 @@ namespace SpellforceDataEditor
 
         static public Int16 TryParseInt16(string s, Int16 def = 0)
         {
-            Int16 val = 0;
-            if (Int16.TryParse(s, out val))
+            if (Int16.TryParse(s, out short val))
                 return val;
             else
                 return def;
@@ -39,8 +37,7 @@ namespace SpellforceDataEditor
 
         static public Int32 TryParseInt32(string s, Int32 def = 0)
         {
-            Int32 val = 0;
-            if (Int32.TryParse(s, out val))
+            if (Int32.TryParse(s, out int val))
                 return val;
             else
                 return def;
@@ -48,8 +45,7 @@ namespace SpellforceDataEditor
 
         static public Byte TryParseUInt8(string s, Byte def = 0)
         {
-            Byte val = 0;
-            if (Byte.TryParse(s, out val))
+            if (Byte.TryParse(s, out byte val))
                 return val;
             else
                 return def;
@@ -57,8 +53,7 @@ namespace SpellforceDataEditor
 
         static public UInt16 TryParseUInt16(string s, UInt16 def = 0)
         {
-            UInt16 val = 0;
-            if (UInt16.TryParse(s, out val))
+            if (UInt16.TryParse(s, out ushort val))
                 return val;
             else
                 return def;
@@ -66,8 +61,7 @@ namespace SpellforceDataEditor
 
         static public UInt32 TryParseUInt32(string s, UInt32 def = 0)
         {
-            UInt32 val = 0;
-            if (UInt32.TryParse(s, out val))
+            if (UInt32.TryParse(s, out uint val))
                 return val;
             else
                 return def;
@@ -75,8 +69,7 @@ namespace SpellforceDataEditor
 
         static public Single TryParseFloat(string s, Single def = 0)
         {
-            Single val = 0;
-            if (Single.TryParse(s, out val))
+            if (Single.TryParse(s, out float val))
                 return val;
             else
                 return def;
@@ -84,8 +77,7 @@ namespace SpellforceDataEditor
 
         static public Double TryParseDouble(string s, Double def = 0)
         {
-            Double val = 0;
-            if (Double.TryParse(s, out val))
+            if (Double.TryParse(s, out double val))
                 return val;
             else
                 return def;
@@ -117,16 +109,16 @@ namespace SpellforceDataEditor
         }
 
         //turns string into a char array of a given length
-        static public Char[] FixedLengthString(string s, int length)
+        static public Byte[] FixedLengthString(string s, int length)
         {
-            char[] charray = new char[length];
+            byte[] charray = new byte[length];
             char[] text_array = s.ToCharArray();
 
             for (int i = 0; i < length; i++)
                 if (i < text_array.Length)
-                    charray[i] = text_array[i];
+                    charray[i] = (byte)text_array[i];
                 else
-                    charray[i] = '\0';
+                    charray[i] = 0;
 
             return charray;
         }
@@ -137,13 +129,14 @@ namespace SpellforceDataEditor
             if (ch.vtype != SFCFF.SFVARIANT_TYPE.String)
                 return "";
 
-            return (new string((char[])ch.value)).Replace("\0", string.Empty);
+            byte[] bytearray = (byte[])ch.value;
+            return (Encoding.UTF8.GetString(bytearray)).Replace("\0", string.Empty);
         }
 
         //turns char array into actual string (all zeros are truncated)
-        static public string CleanString(char[] ch)
+        static public string CleanString(byte[] ch)
         {
-            return (new string(ch).Replace("\0", string.Empty));
+            return (Encoding.UTF8.GetString(ch)).Replace("\0", string.Empty);
         }
 
         //used for header manipulation, inserts unsigned int into a given array at a given index
@@ -236,6 +229,23 @@ namespace SpellforceDataEditor
                 b = (b + a) % 65521;
             }
             return (b << 16) | a;
+        }
+
+        static public double CastDouble(object val)
+        {
+            if (val.GetType() == typeof(long))
+                return (double)(long)val;
+            else if (val.GetType() == typeof(double))
+                return (double)val;
+            throw new InvalidCastException("Utility.CastDouble(): Invalid value type!");
+        }
+
+        static public string TabulateString(string s, int tabs)
+        {
+            string replacement = "\r\n";
+            for (int i = 0; i < tabs; i++)
+                replacement += "\t";
+            return replacement+s.Replace("\r\n", replacement);
         }
     }
 }

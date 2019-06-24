@@ -33,8 +33,10 @@ namespace SpellforceDataEditor.special_forms
             FillListBoxWithMethods(typeof(LuaEvent));
             FillScriptTypeMenu();
             RefreshScriptInfo();
-            
-            LuaEnumUtility.LoadEnums();
+
+
+            if (LuaEnumUtility.lua_enums.Count == 0)
+                LuaEnumUtility.LoadEnums();
 
             SetStatus("Ready");
         }

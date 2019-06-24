@@ -121,6 +121,7 @@
             this.Controls.Add(this.TypeCombo);
             this.Controls.Add(this.BrushControl);
             this.Name = "MapInspectorLakeControl";
+            this.VisibleChanged += new System.EventHandler(this.MapInspectorLakeControl_VisibleChanged);
             this.ResumeLayout(false);
             this.PerformLayout();
 

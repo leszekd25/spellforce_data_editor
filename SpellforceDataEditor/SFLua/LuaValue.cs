@@ -58,6 +58,16 @@ namespace SpellforceDataEditor.SFLua
             return !(l1 == l2);
         }
 
+        public override bool Equals(object obj)
+        {
+            return (obj.GetType() == typeof(LuaValue_GameDataStruct)) && (this == (LuaValue_GameDataStruct)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (category*65536+id).GetHashCode();
+        }
+
         public override string ToString()
         {
             return id.ToString();

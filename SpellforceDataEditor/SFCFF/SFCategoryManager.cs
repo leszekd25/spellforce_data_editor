@@ -684,9 +684,12 @@ namespace SpellforceDataEditor.SFCFF
         public static void manual_set_gamedata(SFGameData gd)
         {
             if (gamedata == gd)
+            {
+                ready = true;
                 return;
+            }
             if (ready == true)
-                throw new InvalidOperationException("Gamedata is not closed!!!!!");
+                throw new InvalidOperationException("SFCategoryManager.manual_set_gamedata(): Gamedata is not closed!!!!!");
             gamedata = gd;
             categorySpecial_RuneHeroes.generate();
             ready = true;

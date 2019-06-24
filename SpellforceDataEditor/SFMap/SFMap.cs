@@ -61,8 +61,7 @@ namespace SpellforceDataEditor.SFMap
                 br.ReadByte();
                 width = size;
                 height = size;
-                heightmap = new SFMapHeightMap(width, height);
-                heightmap.map = this;
+                heightmap = new SFMapHeightMap(width, height) { map = this };
                 heightmap.SetTilesRaw(br.ReadBytes(size * size));
             }
             c2.Close();
@@ -131,8 +130,7 @@ namespace SpellforceDataEditor.SFMap
             // generate heightmap models and reindex textures
             heightmap.Generate();
 
-            npc_manager = new SFMapNPCManager();
-            npc_manager.map = this;
+            npc_manager = new SFMapNPCManager() { map = this };
 
             // load buildings
             tx.Text = "Loading buildings...";
@@ -143,8 +141,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 using (BinaryReader br = c11.Open())
                 {
-                    building_manager = new SFMapBuildingManager();
-                    building_manager.map = this;
+                    building_manager = new SFMapBuildingManager() { map = this };
                     while(br.BaseStream.Position < br.BaseStream.Length)
                     {
                         int x = br.ReadInt16();
@@ -174,8 +171,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 using (BinaryReader br = c12.Open())
                 {
-                    unit_manager = new SFMapUnitManager();
-                    unit_manager.map = this;
+                    unit_manager = new SFMapUnitManager() { map = this };
                     while(br.BaseStream.Position < br.BaseStream.Length)
                     {
                         int x = br.ReadInt16();
@@ -204,8 +200,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 using (BinaryReader br = c29.Open())
                 {
-                    object_manager = new SFMapObjectManager();
-                    object_manager.map = this;
+                    object_manager = new SFMapObjectManager() { map = this };
                     while (br.BaseStream.Position < br.BaseStream.Length)
                     {
                         int x = br.ReadInt16();
@@ -239,8 +234,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 using (BinaryReader br = c30.Open())
                 {
-                    int_object_manager = new SFMapInteractiveObjectManager();
-                    int_object_manager.map = this;
+                    int_object_manager = new SFMapInteractiveObjectManager() { map = this };
                     while (br.BaseStream.Position < br.BaseStream.Length)
                     {
                         int x = br.ReadInt16();
@@ -264,8 +258,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 using (BinaryReader br = c31.Open())
                 {
-                    decoration_manager = new SFMapDecorationManager();
-                    decoration_manager.map = this;
+                    decoration_manager = new SFMapDecorationManager() { map = this };
                     decoration_manager.dec_assignment = br.ReadBytes(1048576);
                 }
                 c31.Close();
@@ -301,8 +294,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 using (BinaryReader br = c35.Open())
                 {
-                    portal_manager = new SFMapPortalManager();
-                    portal_manager.map = this;
+                    portal_manager = new SFMapPortalManager() { map = this };
                     while (br.BaseStream.Position < br.BaseStream.Length)
                     {
                         int x = br.ReadInt16();
@@ -322,8 +314,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 using (BinaryReader br = c40.Open())
                 {
-                    lake_manager = new SFMapLakeManager();
-                    lake_manager.map = this;
+                    lake_manager = new SFMapLakeManager() { map = this };
                     int lake_count = br.ReadByte();
                     for(int i = 0; i < lake_count; i++)
                     {
@@ -405,18 +396,36 @@ namespace SpellforceDataEditor.SFMap
                 using (BinaryReader br = c55.Open())
                 {
                     int player_count = br.ReadInt32();
-                    metadata.player_count = player_count;
-                    metadata.spawns = new SFMapSpawn[player_count];
+                    metadata.spawns = new List<SFMapSpawn>();
                     for(int i = 0; i < player_count; i++)
                     {
                         short x = br.ReadInt16();
                         short y = br.ReadInt16();
                         ushort text_id = br.ReadUInt16();
                         short unknown = br.ReadInt16();
-                        metadata.spawns[i].pos = new SFCoord(x, y);
+
+                        // discard spawns which do not have bindstones at specified positions
+                        SFCoord pos = new SFCoord(x, y);
+                        bool bindstone_exists = false;
+                        foreach(SFMapInteractiveObject io in int_object_manager.int_objects)
+                            if((io.game_id == 769)&&(io.grid_position == pos))
+                            {
+                                bindstone_exists = true;
+                                break;
+                            }
+                        if (!bindstone_exists)
+                        {
+                            player_count -= 1;
+                            i -= 1;
+                            continue;
+                        }
+
+                        metadata.spawns.Add(new SFMapSpawn());
+                        metadata.spawns[i].pos = pos;
                         metadata.spawns[i].text_id = text_id;
                         metadata.spawns[i].unknown = unknown;
                     }
+                    metadata.player_count = player_count;
                 }
                 c55.Close();
             }
@@ -443,10 +452,10 @@ namespace SpellforceDataEditor.SFMap
 
                             SFMapMultiplayerTeamComposition tcomp = new SFMapMultiplayerTeamComposition();
                             tcomp.team_count = cur_teamcount;
-                            tcomp.players = new List<SFMapTeamPlayer>[tcomp.team_count];
+                            tcomp.players = new List<List<SFMapTeamPlayer>>();
                             for (int i = 0; i < tcomp.team_count; i++)
                             {
-                                tcomp.players[i] = new List<SFMapTeamPlayer>();
+                                tcomp.players.Add(new List<SFMapTeamPlayer>());
                                 for (int j = 0; j < p_num; j++)
                                 {
                                     short x = br.ReadInt16();
@@ -476,10 +485,10 @@ namespace SpellforceDataEditor.SFMap
 
                             SFMapMultiplayerTeamComposition tcomp = new SFMapMultiplayerTeamComposition();
                             tcomp.team_count = cur_teamcount;
-                            tcomp.players = new List<SFMapTeamPlayer>[tcomp.team_count];
+                            tcomp.players = new List<List<SFMapTeamPlayer>>();
                             for (int i = 0; i < tcomp.team_count; i++)
                             {
-                                tcomp.players[i] = new List<SFMapTeamPlayer>();
+                                tcomp.players.Add(new List<SFMapTeamPlayer>());
                                 for (int j = 0; j < p_num; j++)
                                 {
                                     short x = br.ReadInt16();
@@ -518,7 +527,7 @@ namespace SpellforceDataEditor.SFMap
                                             metadata.coop_spawns.Add(new SFMapCoopAISpawn(
                                                 object_manager.objects[obj_i], 
                                                 spawn_id, 
-                                                (spawn_certain > 0)));
+                                                spawn_certain));
                                         }
                                         if ((object_id >= 65) && (object_id <= 67))    // editor only
                                             obj_i--;
@@ -550,9 +559,10 @@ namespace SpellforceDataEditor.SFMap
             {
                 using (BinaryReader br = c59.Open())
                 {
-                    metadata.coop_spawn_params = new SFMapCoopSpawnParameters[3];
+                    metadata.coop_spawn_params = new List<SFMapCoopSpawnParameters>();
                     for(int i = 0; i < 3; i++)
                     {
+                        metadata.coop_spawn_params.Add(new SFMapCoopSpawnParameters());
                         metadata.coop_spawn_params[i].param1 = br.ReadSingle();
                         metadata.coop_spawn_params[i].param2 = br.ReadSingle();
                         metadata.coop_spawn_params[i].param3 = br.ReadSingle();
@@ -562,28 +572,28 @@ namespace SpellforceDataEditor.SFMap
                 c59.Close();
             }
 
-            // generate overlay data
+            // create overlays, generation in relevant control...
             heightmap.OverlayCreate("TileMovementBlock", new OpenTK.Vector4(0.5f, 0, 0, 0.7f));
-            for (int i = 0; i < height; i++)
-                for (int j = 0; j < width; j++)
-                    if (heightmap.texture_manager.texture_tiledata[heightmap.tile_data[i * width + j]].blocks_movement)
-                        heightmap.OverlayAdd("TileMovementBlock", new SFCoord(j, i));
+            //for (int i = 0; i < height; i++)
+            //    for (int j = 0; j < width; j++)
+            //       if (heightmap.texture_manager.texture_tiledata[heightmap.tile_data[i * width + j]].blocks_movement)
+            //            heightmap.OverlayAdd("TileMovementBlock", new SFCoord(j, i));
 
             heightmap.OverlayCreate("ManualMovementBlock", new OpenTK.Vector4(1, 0, 0, 0.7f));
-            foreach (SFCoord p in heightmap.chunk42_data)
-                heightmap.OverlayAdd("ManualMovementBlock", p);
+            //foreach (SFCoord p in heightmap.chunk42_data)
+            //    heightmap.OverlayAdd("ManualMovementBlock", p);
 
             heightmap.OverlayCreate("ManualVisionBlock", new OpenTK.Vector4(1, 1, 0, 0.7f));
-            foreach (SFCoord p in heightmap.chunk56_data)
-                heightmap.OverlayAdd("ManualVisionBlock", p);
+            //foreach (SFCoord p in heightmap.chunk56_data)
+            //    heightmap.OverlayAdd("ManualVisionBlock", p);
 
             heightmap.OverlayCreate("LakeTile", new OpenTK.Vector4(0.4f, 0.4f, 0.9f, 0.7f));
-            for (int i = 0; i < heightmap.lake_data.Length; i++)
-            {
-                SFCoord p = new SFCoord(i % width, i / width);
-                if(heightmap.lake_data[i] > 0)
-                    heightmap.OverlayAdd("LakeTile", p);
-            }
+            //for (int i = 0; i < heightmap.lake_data.Length; i++)
+            //{
+            //    SFCoord p = new SFCoord(i % width, i / width);
+            //    if(heightmap.lake_data[i] > 0)
+            //        heightmap.OverlayAdd("LakeTile", p);
+            //}
 
             heightmap.OverlayCreate("ManualLakeTile", new OpenTK.Vector4(0.6f, 0.6f, 1.0f, 0.7f));
             
@@ -778,7 +788,7 @@ namespace SpellforceDataEditor.SFMap
                             else
                             {
                                 bw.Write((short)coop_spawn.spawn_id);
-                                bw.Write((short)(coop_spawn.spawn_certain ? 1 : 0));
+                                bw.Write((short)coop_spawn.spawn_certain);
                             }
                         }
                     }
@@ -879,7 +889,7 @@ namespace SpellforceDataEditor.SFMap
                     break;
                 case SFMapType.MULTIPLAYER:
                     chunk_type = 2;
-                    team_array = metadata.TeamsToArray(2, true);
+                    team_array = metadata.TeamsToArray(2, false);
                     break;
                 default:
                     chunk_type = 0;
@@ -902,13 +912,13 @@ namespace SpellforceDataEditor.SFMap
             }
 
             // chunk 55
-            byte[] c55_data = new byte[4 + metadata.spawns.Length * 8];
+            byte[] c55_data = new byte[4 + metadata.spawns.Count * 8];
             using (MemoryStream ms = new MemoryStream(c55_data))
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
-                    bw.Write((int)metadata.spawns.Length);
-                    for(int i = 0; i < metadata.spawns.Length; i++)
+                    bw.Write((int)metadata.spawns.Count);
+                    for(int i = 0; i < metadata.spawns.Count; i++)
                     {
                         bw.Write((short)metadata.spawns[i].pos.x);
                         bw.Write((short)metadata.spawns[i].pos.y);
@@ -943,7 +953,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 float[] c59_data = new float[12];
                 byte[] c59_rawdata = new byte[48];
-                for (int i = 0; i < metadata.coop_spawn_params.Length; i++)
+                for (int i = 0; i < metadata.coop_spawn_params.Count; i++)
                 {
                     c59_data[i * 4 + 0] = metadata.coop_spawn_params[i].param1;
                     c59_data[i * 4 + 1] = metadata.coop_spawn_params[i].param2;
@@ -1037,7 +1047,6 @@ namespace SpellforceDataEditor.SFMap
         {
             SFMapInteractiveObject obj = int_object_manager.AddInteractiveObject(game_id, pos, angle, unk_byte);
 
-
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.Object3D _obj = render_engine.scene_manager.objects_static[obj.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
@@ -1047,6 +1056,34 @@ namespace SpellforceDataEditor.SFMap
 
             heightmap.GetChunk(pos).AddInteractiveObject(obj);
             render_engine.scene_manager.objects_static[obj.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
+        }
+
+        public int ReplaceMonument(int monument_index, int new_monument_type)
+        {
+            if ((new_monument_type < 0)||(new_monument_type > 6))
+                return -1;
+
+            List<int> monument_indexes = new List<int>();
+            for (int i = 0; i < int_object_manager.int_objects.Count; i++)
+                if ((int_object_manager.int_objects[i].game_id >= 771) && (int_object_manager.int_objects[i].game_id <= 777))
+                    monument_indexes.Add(i);
+
+            if ((monument_index < 0)||(monument_index >= monument_indexes.Count))
+                return -2;
+
+            SFMapInteractiveObject io = int_object_manager.int_objects[monument_indexes[monument_index]];
+
+            render_engine.scene_manager.DeleteObject(io.GetObjectName());
+            render_engine.scene_manager.AddObjectObject(new_monument_type+771, io.GetObjectName());
+            io.game_id = new_monument_type + 771;
+
+            float z = heightmap.GetZ(io.grid_position) / 100.0f;
+            SF3D.Object3D _obj = render_engine.scene_manager.objects_static[io.GetObjectName()];
+            _obj.Position = new OpenTK.Vector3((float)io.grid_position.x, (float)z, (float)(height - io.grid_position.y - 1));
+            _obj.Scale = new OpenTK.Vector3(100 / 128f);
+            _obj.SetAnglePlane(io.angle);
+
+            return 0;
         }
 
         public void AddBuilding(int game_id, SFCoord pos, int angle, int npc_id, int lvl, int race_id)

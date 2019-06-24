@@ -9,7 +9,7 @@ namespace SpellforceDataEditor.SFMap
 {
     public class SFMapSelectionHelper
     {
-        enum SelectionType { NONE, UNIT, BUILDING, OBJECT, INTERACTIVE_OBJECT }
+        enum SelectionType { NONE, UNIT, BUILDING, OBJECT, INTERACTIVE_OBJECT, PORTAL }
 
         static SF3D.SFModel3D selection_mesh = new SF3D.SFModel3D();
         SFMap map = null;
@@ -20,6 +20,7 @@ namespace SpellforceDataEditor.SFMap
         SFMapBuilding selected_building = null;
         SFMapObject selected_object = null;
         SFMapInteractiveObject selected_interactive_object = null;
+        SFMapPortal selected_portal = null;
         SelectionType selection_type = SelectionType.NONE;
 
         public SFMapSelectionHelper()
@@ -114,6 +115,22 @@ namespace SpellforceDataEditor.SFMap
             SetSelectionScale(map.render_engine.scene_manager.mesh_data.GetObjectSelectionSize(obj.game_id));
         }
 
+        public void SelectInteractiveObject(SFMapInteractiveObject io)
+        {
+            CancelSelection();
+            selection_type = SelectionType.INTERACTIVE_OBJECT;
+            selected_interactive_object = io;
+            SetSelectionScale(map.render_engine.scene_manager.mesh_data.GetObjectSelectionSize(io.game_id));
+        }
+
+        public void SelectPortal(SFMapPortal p)
+        {
+            CancelSelection();
+            selection_type = SelectionType.PORTAL;
+            selected_portal = p;
+            SetSelectionScale(map.render_engine.scene_manager.mesh_data.GetObjectSelectionSize(778));
+        }
+
         // should be run once per render tick
         public void UpdateSelection()
         {
@@ -150,6 +167,25 @@ namespace SpellforceDataEditor.SFMap
                     SetSelectionOffset(r_off);*/
                     SetSelectionPosition(selected_object.grid_position);
                 }
+            }
+            else if(selection_type == SelectionType.INTERACTIVE_OBJECT)
+            {
+                if (selected_interactive_object != null)
+                {
+                    /*Vector2 off = map.building_manager.building_collision[(ushort)selected_building.game_id].collision_mesh.origin;
+                    float angle = (float)(selected_building.angle * Math.PI / 180);
+                    Vector2 r_off = new Vector2(offset.X, offset.Y);
+                    r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
+                    r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
+
+                    SetSelectionOffset(r_off);*/
+                    SetSelectionPosition(selected_interactive_object.grid_position);
+                }
+            }
+            else if (selection_type == SelectionType.PORTAL)
+            {
+                if (selected_portal != null)
+                    SetSelectionPosition(selected_portal.grid_position);
             }
             // todo: add more selection types
         }

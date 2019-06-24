@@ -148,16 +148,18 @@
             this.button11.Size = new System.Drawing.Size(48, 48);
             this.button11.TabIndex = 17;
             this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
             // 
             // button10
             // 
             this.button10.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button10.Image = global::SpellforceDataEditor.Properties.Resources.enemycamp_icon;
+            this.button10.Image = global::SpellforceDataEditor.Properties.Resources.monument_icon;
             this.button10.Location = new System.Drawing.Point(3, 487);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(48, 48);
             this.button10.TabIndex = 16;
             this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // button9
             // 
