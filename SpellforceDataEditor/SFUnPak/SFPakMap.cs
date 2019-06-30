@@ -26,12 +26,18 @@ namespace SpellforceDataEditor.SFUnPak
         public int AddPak(string pak_fname)
         {
             if (!File.Exists(pak_fname))
+            {
+                LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakMap.AddPak(): Pak file "+pak_fname+" does not exist!");
+
                 return -4;
+            }
 
             SFPakFileSystem fs = new SFPakFileSystem();
             int open_result = fs.Init(pak_fname);
             if (open_result != 0)
             {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakMap.AddPak(): Error initializing pak file " + pak_fname);
+
                 System.Diagnostics.Debug.WriteLine("ERROR PAK INIT " + pak_fname + " CODE" + open_result.ToString());
                 return open_result;
             }
@@ -45,6 +51,8 @@ namespace SpellforceDataEditor.SFUnPak
         {
             if (pak_map.ContainsKey(pak_name))
                 return pak_map[pak_name];
+            LogUtils.Log.Warning(LogUtils.LogSource.SFUnPak, "SFPakMap.GetPak(): Could not find pak name "+pak_name);
+
             return null;
         }
 
@@ -74,6 +82,7 @@ namespace SpellforceDataEditor.SFUnPak
             }
             catch(Exception)
             {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakMap.LoadData(): File "+fname+" does not exist!");
                 return -2;
             }
             BinaryReader br = new BinaryReader(fs);
@@ -124,6 +133,8 @@ namespace SpellforceDataEditor.SFUnPak
         // frees memory*
         public void Clear()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakMap.Clear() called");
+
             foreach (SFPakFileSystem sys in pak_map.Values)
                 sys.Dispose();
             pak_map.Clear();

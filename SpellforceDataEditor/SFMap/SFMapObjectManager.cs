@@ -49,8 +49,17 @@ namespace SpellforceDataEditor.SFMap
             objects.Add(obj);
 
             string obj_name = obj.GetObjectName();
-            map.render_engine.scene_manager.AddObjectObject(id, obj_name);
+            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(id, obj_name);
             return obj;
+        }
+
+        public void RemoveObject(SFMapObject o)
+        {
+            objects.Remove(o);
+
+            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject(o.GetObjectName());
+
+            map.heightmap.GetChunk(o.grid_position).RemoveObject(o);
         }
 
         public bool ObjectIDIsReserved(int obj_id)

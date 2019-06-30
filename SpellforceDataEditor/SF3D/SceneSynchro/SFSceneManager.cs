@@ -33,7 +33,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public float current_time { get; private set; } = 0f;        // current scene time in seconds
 
         public SFVisualLinkContainer mesh_data { get; private set; } = new SFVisualLinkContainer();
-        public SFCFF.SFGameData gamedata = SFCFF.SFCategoryManager.gamedata;
 
         public void Init()
         {
@@ -64,6 +63,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                             scene.meta.is_animated = false;
                         break;
                     default:
+                        LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFSceneManager.ParseSceneDescription(): Unknown type (type = " + sl.type + ")");
                         break;
                 }
             }
@@ -85,16 +85,16 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         private void MakeUnitScene(int unit_id, SFSceneDescription sd)
         {
             //find unit data element (cat 18)
-            SFCategoryElement unit_data = gamedata.categories[17].find_binary_element<UInt16>(0, (UInt16)unit_id);
+            SFCategoryElement unit_data = SFCategoryManager.gamedata.categories[17].find_binary_element<UInt16>(0, (UInt16)unit_id);
             if (unit_data == null)
                 return;
             //find unit eq element (cat 19)
-            SFCategoryElement unit_eq = gamedata.categories[18].find_binary_element<UInt16>(0, (UInt16)unit_id);
+            SFCategoryElement unit_eq = SFCategoryManager.gamedata.categories[18].find_binary_element<UInt16>(0, (UInt16)unit_id);
             if (unit_eq == null)
                 return;
 
             //get unit gender
-            SFCategoryElement unit_stats = gamedata.categories[3].find_binary_element<UInt16>
+            SFCategoryElement unit_stats = SFCategoryManager.gamedata.categories[3].find_binary_element<UInt16>
                                                                      (0, (UInt16)unit_data.get_single_variant(2).value);
             bool is_female = false;
             if (unit_stats != null)
@@ -103,11 +103,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             //get chest item (2) (animated)
             UInt16 chest_id = GetItemID(unit_eq, 2);
             if (chest_id == 0)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.MakeUnitScene(): Chest id not found!");
                 return;
+            }
             //find chest skin/animations
             string chest_name = mesh_data.GetItemMesh(chest_id, is_female);
             if (chest_name == "")
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.MakeUnitScene(): Chest model name not found (chest id = " + chest_id.ToString() + ")");
                 return;
+            }
             string anim_name = mesh_data.GetItemAnimation(chest_id, is_female);
 
             //special case: monument unit, needs to be considered separately
@@ -144,6 +150,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 {
                     sd.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { head_name, "", head_name });
                     sd.meta.obj_to_anim[head_name] = anim_name;
+                }
+                else
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.MakeUnitScene(): Head model not found (head id = " + head_id.ToString() + ")");
                 }
             }
 
@@ -185,7 +195,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 {
                     bool is_shield = false;
                     //check if it's a shield (type 9)
-                    SFCategoryElement item_data = gamedata.categories[6].find_binary_element<UInt16>(0, lhand_id);
+                    SFCategoryElement item_data = SFCategoryManager.gamedata.categories[6].find_binary_element<UInt16>(0, lhand_id);
                     if (item_data != null)
                     {
                         int item_type = (Byte)item_data.get_single_variant(2).value;
@@ -215,15 +225,22 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 12:
                 case 13:
                     //get item id
-                    SFCategoryElement item = gamedata.categories[category].get_element(element);
+                    SFCategoryElement item = SFCategoryManager.gamedata.categories[category].get_element(element);
                     if (item == null)
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Item not found (category is " + category.ToString()
+                            + ", element is " + element.ToString() + ")");
                         break;
+                    }
                     int item_id = (UInt16)item.get_single_variant(0).value;
 
                     //find item mesh
                     string m_name = mesh_data.GetItemMesh(item_id, false);
                     if (m_name == "")
+                    {
+                        LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Item mesh not found (item id = " + item_id.ToString() + ")");
                         break;
+                    }
 
                     //create scene
                     sd.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { m_name, "", m_name });
@@ -233,15 +250,22 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 24:
                 case 25:
                     //get item id
-                    SFCategoryElement building = gamedata.categories[category].get_element(element);
+                    SFCategoryElement building = SFCategoryManager.gamedata.categories[category].get_element(element);
                     if (building == null)
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Building not found (category is " + category.ToString()
+                            + ", element is " + element.ToString() + ")");
                         break;
+                    }
                     int building_id = (UInt16)building.get_single_variant(0).value;
 
                     //find item mesh
                     List<string> m_arr = mesh_data.GetBuildingMeshes(building_id);
                     if (m_arr == null)
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Building mesh list not found (building id = " + building_id.ToString() + ")");
                         break;
+                    }
 
                     //create scene
                     foreach (string m in m_arr)
@@ -252,15 +276,22 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 34:
                 case 35:
                     //get item id
-                    SFCategoryElement obj = gamedata.categories[category].get_element(element);
+                    SFCategoryElement obj = SFCategoryManager.gamedata.categories[category].get_element(element);
                     if (obj == null)
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Object not found (category is " + category.ToString()
+                            + ", element is " + element.ToString() + ")");
                         break;
+                    }
                     int obj_id = (UInt16)obj.get_single_variant(0).value;
 
                     //find item mesh
                     List<string> m_lst = mesh_data.GetObjectMeshes(obj_id);
                     if (m_lst == null)
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Object mesh list not found (building id = " + obj_id.ToString() + ")");
                         break;
+                    }
 
                     //create scene
                     foreach (string m in m_lst)
@@ -274,9 +305,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 21:
                 case 22:
                     //get unit id
-                    SFCategoryElement un = gamedata.categories[category].get_element(element);
+                    SFCategoryElement un = SFCategoryManager.gamedata.categories[category].get_element(element);
                     if (un == null)
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Unit not found (category is " + category.ToString()
+                            + ", element is " + element.ToString() + ")");
                         break;
+                    }
                     int un_id = (UInt16)un.get_single_variant(0).value;
 
                     MakeUnitScene(un_id, sd);
@@ -290,12 +325,19 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // removes objects from the scene and resets scene data
         public void ClearScene()
         {
-            List<string> keys = objects_static.Keys.ToList();
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFSceneManager.ClearScene() called");
+            while (objects_static.Count != 0)
+                DeleteObject(objects_static.Keys.ElementAt(0));
+
+            while (objects_dynamic.Count != 0)
+                DeleteObject(objects_dynamic.Keys.ElementAt(0));
+
+            /*List<string> keys = objects_static.Keys.ToList();
             foreach (string k in keys)
                 DeleteObject(k);
             keys = objects_dynamic.Keys.ToList();
             foreach (string k in keys)
-                DeleteObject(k);
+                DeleteObject(k);*/
             scene_meta = null;
         }
 
@@ -313,7 +355,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             {
                 int result = SFResourceManager.Models.Load(mesh_name);
                 if ((result != 0) && (result != -1))
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddObjectStatic(): Mesh could not be loaded (mesh name: "
+                    + mesh_name + ")");
                     loaded = false;
+                }
             }
             else
                 loaded = false;
@@ -342,10 +388,18 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             bool loaded = true;
             int result = SFResourceManager.Skeletons.Load(skel_name);
             if ((result != 0) && (result != -1))
+            {
                 loaded = false;
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddObjectDynamic(): Skeleton could not be loaded (skeleton name: "
+                    + skel_name + ")");
+            }
             result = SFResourceManager.Skins.Load(skel_name);
             if ((result != 0) && (result != -1))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddObjectDynamic(): Skin could not be loaded (skin name: "
+                       + skel_name + ")");
                 loaded = false;
+            }
 
             objectAnimated obj_d1 = new objectAnimated();
             obj_d1.Name = obj_name;
@@ -365,6 +419,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             objectAnimated par = null;
             if (objects_dynamic.ContainsKey(obj_anim_name))
                 par = objects_dynamic[obj_anim_name];
+            else
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddObjectBoneanchor(): Bone not found (object name: "
+                    + obj_anim_name + ", bone name: " + skel_bone_name + ")");
 
             ObjectBoneAnchor obj_b1 = new ObjectBoneAnchor();
             obj_b1.Name = obj_name;
@@ -390,7 +447,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 objects_dynamic.Remove(obj_name);
             }
             else
+            {
+                LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFSceneManager.DeleteObject(): Object does not exist (obj name: "
+                    + obj_name + ")");
                 return;
+            }
             
             obj_s.Dispose();
 
@@ -406,16 +467,24 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 AddObjectStatic("", "", object_name);
 
                 //find unit data element (cat 18)
-                SFCategoryElement unit_data = gamedata.categories[17].find_binary_element<UInt16>(0, (UInt16)unit_id);
+                SFCategoryElement unit_data = SFCategoryManager.gamedata.categories[17].find_binary_element<UInt16>(0, (UInt16)unit_id);
                 if (unit_data == null)
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddObjectUnit(): Unit does not exist (unit id = "
+                        + unit_id + ")");
                     return;
+                }
                 //find unit eq element (cat 19)
-                SFCategoryElement unit_eq = gamedata.categories[18].find_binary_element<UInt16>(0, (UInt16)unit_id);
+                SFCategoryElement unit_eq = SFCategoryManager.gamedata.categories[18].find_binary_element<UInt16>(0, (UInt16)unit_id);
                 if (unit_eq == null)
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddObjectUnit(): Unit has no inventory assigned to it (unit id = "
+                        + unit_id + ")");
                     return;
+                }
 
                 //get unit gender
-                SFCategoryElement unit_stats = gamedata.categories[3].find_binary_element<UInt16>
+                SFCategoryElement unit_stats = SFCategoryManager.gamedata.categories[3].find_binary_element<UInt16>
                                                                          (0, (UInt16)unit_data.get_single_variant(2).value);
                 bool is_female = false;
                 if (unit_stats != null)
@@ -424,11 +493,19 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 //get chest item (2) (animated)
                 UInt16 chest_id = GetItemID(unit_eq, 2);
                 if (chest_id == 0)
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddObjectUnit(): Unit does not have chestpiece assigned (unit id = "
+                        + unit_id + ")");
                     return;
+                }
                 //find chest skin/animations
                 string chest_name = mesh_data.GetItemMesh(chest_id, is_female);
                 if (chest_name == "")
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddObjectUnit(): Undefined chestpiece mesh (unit id = "
+                        + unit_id + ")");
                     return;
+                }
                 string anim_name = mesh_data.GetItemAnimation(chest_id, is_female);
 
                 //special case: monument unit, needs to be considered separately
@@ -462,6 +539,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     if (head_name != "")
                     {
                         AddObjectDynamic(head_name, object_name, object_name + "_HEAD");
+                    }
+                    else
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddObjectUnit(): Unit head has undefined mesh (unit id = "
+                            + unit_id.ToString() + ", head id = "+head_id.ToString()+")");
                     }
                 }
 
@@ -503,7 +585,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     {
                         bool is_shield = false;
                         //check if it's a shield (type 9)
-                        SFCategoryElement item_data = gamedata.categories[6].find_binary_element<UInt16>(0, lhand_id);
+                        SFCategoryElement item_data = SFCategoryManager.gamedata.categories[6].find_binary_element<UInt16>(0, lhand_id);
                         if (item_data != null)
                         {
                             int item_type = (Byte)item_data.get_single_variant(2).value;
@@ -521,14 +603,19 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public void AddObjectObject(int object_id, string object_name)
         {
             List<string> m_lst = mesh_data.GetObjectMeshes(object_id);
-            if (m_lst == null)
-                return;
 
             // create root
             AddObjectStatic("", "", object_name);
-            
+
+            if (m_lst == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddObjectObject(): Object mesh is usassigned (object id = "
+                    + object_id + ")");
+                return;
+            }
+
             // add meshes
-            for(int i = 0; i < m_lst.Count; i++)
+            for (int i = 0; i < m_lst.Count; i++)
             {
                 string m = m_lst[i];
                 AddObjectStatic(m, object_name, object_name + "_" + i.ToString());
@@ -539,11 +626,16 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public void AddObjectBuilding(int building_id, string object_name)
         {
             List<string> m_lst = mesh_data.GetBuildingMeshes(building_id);
-            if (m_lst == null)
-                return;
 
             // create root
             AddObjectStatic("", "", object_name);
+
+            if (m_lst == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddObjectBuilding(): Building mesh is usassigned (building id = "
+                    + building_id + ")");
+                return;
+            }
 
             // add meshes
             for (int i = 0; i < m_lst.Count; i++)

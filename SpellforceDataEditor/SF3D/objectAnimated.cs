@@ -118,9 +118,11 @@ namespace SpellforceDataEditor.SF3D
                 if(parent_obj.skeleton.bone_names[i].Contains(name))
                 {
                     bone_index = i;
-                    break;
+                    return;
                 }
             }
+
+            LogUtils.Log.Error(LogUtils.LogSource.SF3D, "ObjectBoneAnchor.SetBone(): Bone does not exist (bone name: "+name+")");
         }
     }
 }

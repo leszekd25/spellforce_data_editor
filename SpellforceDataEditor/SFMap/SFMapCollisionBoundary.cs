@@ -9,7 +9,7 @@ namespace SpellforceDataEditor.SFMap
 {
     public class SFMapCollisionPolygon2D
     {
-        Vector2[] vertices;
+        public Vector2[] vertices { get; private set; }
         int current_angle = -1;
         Vector2[] rotated_vertices;
         SFCoord rotated_bbox_topleft;
@@ -23,6 +23,8 @@ namespace SpellforceDataEditor.SFMap
         public void Rebuild(Vector2[] v, Vector2 offset)
         {
             vertices = v;
+            for (int i = 0; i < v.Length; i++)
+                vertices[i] = new Vector2(-v[i].X, v[i].Y);
             rotated_vertices = new Vector2[vertices.Length];
             SetRotation(offset, 0);
         }
@@ -35,17 +37,19 @@ namespace SpellforceDataEditor.SFMap
             current_angle = angle;
             float angle_rad = (float)(angle * Math.PI / 180);
 
-            Vector2 rotated_offset = new Vector2(offset.X, offset.Y);
+            Vector2 fixed_offset = new Vector2(offset.X , offset.Y );
+
+            Vector2 rotated_offset = new Vector2(fixed_offset.X, fixed_offset.Y);
             if (angle != 0)
             {
-                rotated_offset.X = (float)((Math.Cos(angle_rad) * offset.X) - (Math.Sin(angle_rad) * offset.Y));
-                rotated_offset.Y = (float)((Math.Sin(angle_rad) * offset.X) + (Math.Cos(angle_rad) * offset.Y));
+                rotated_offset.X = (float)((Math.Cos(angle_rad) * fixed_offset.X) - (Math.Sin(angle_rad) * fixed_offset.Y));
+                rotated_offset.Y = (float)((Math.Sin(angle_rad) * fixed_offset.X) + (Math.Cos(angle_rad) * fixed_offset.Y));
             }
 
             for (int i = 0; i < vertices.Length; i++)
             {
                 if (angle == 0)
-                    rotated_vertices[i] = vertices[i]+offset;
+                    rotated_vertices[i] = vertices[i] + fixed_offset;
                 else
                 {
                     rotated_vertices[i].X = (float)((Math.Cos(angle_rad) * vertices[i].X) - (Math.Sin(angle_rad) * vertices[i].Y));
@@ -128,9 +132,11 @@ namespace SpellforceDataEditor.SFMap
 
     public class SFMapCollisionBoundary
     {
-        List<SFMapCollisionPolygon2D> polygons = new List<SFMapCollisionPolygon2D>();
+        public List<SFMapCollisionPolygon2D> polygons { get; private set; } = new List<SFMapCollisionPolygon2D>();
         public Vector2 origin { get; private set; } = new Vector2(0, 0);
         public HashSet<SFCoord> interior_cells { get; private set; } = new HashSet<SFCoord>();
+
+        SF3D.SFModel3D b_outline = new SF3D.SFModel3D();
 
         public void AddPolygon(SFMapCollisionPolygon2D poly)
         {

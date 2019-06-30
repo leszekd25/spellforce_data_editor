@@ -20,7 +20,7 @@ namespace SpellforceDataEditor.SFResources
         Dictionary<string, T> cont =new Dictionary<string, T>();
         Dictionary<string, int> reference_count = new Dictionary<string, int>();
         string prefix_path = "";
-        string suffix_extension = "";
+        string[] suffix_extensions = null;
 
         public SFResourceContainer()
         {
@@ -30,17 +30,12 @@ namespace SpellforceDataEditor.SFResources
         {
             cont = new Dictionary<string, T>();
             prefix_path = p;
-            suffix_extension = s;
+            suffix_extensions = s.Replace("|", " ").Split(' ');
         }
 
         public void SetPrefixPath(string p)
         {
             prefix_path = p;
-        }
-
-        public void SetSuffixExtension(string e)
-        {
-            suffix_extension = e;
         }
 
         // name of the resource in the pak files
@@ -49,12 +44,31 @@ namespace SpellforceDataEditor.SFResources
             if (cont.ContainsKey(rname))
             {
                 reference_count[rname] += 1;
+                // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
                 return -1;
             }
-            System.Diagnostics.Debug.WriteLine("LOADING "+rname+suffix_extension);
-            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFind(prefix_path+"\\" + rname + suffix_extension);
-            if (ms == null)
+            string res_to_load = "";
+            MemoryStream ms = null;
+            foreach (string ext in suffix_extensions)
+            {
+                res_to_load = rname;
+                if (!rname.Contains(ext))
+                    res_to_load += ext;
+                LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Loading resource " + res_to_load);
+                 ms = SFUnPak.SFUnPak.LoadFileFind(prefix_path + "\\" + res_to_load);
+                if (ms == null)
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Could not find resource " + prefix_path + "\\" + res_to_load);
+                    continue;
+                }
+                break;
+            }
+            if(ms == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): None of the suffix extensions matched the given resource");
                 return -2;
+            }
+
             //resource loading stack
             string prev_res = SFResourceManager.current_resource;
             SFResourceManager.current_resource = rname;
@@ -62,12 +76,17 @@ namespace SpellforceDataEditor.SFResources
             int res_code = resource.Load(ms);
             SFResourceManager.current_resource = prev_res;
             //end of stack
+
             if (res_code != 0)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Could not load resource " + prefix_path + "\\" + res_to_load);
                 return res_code;
+            }
             resource.Init();
             resource.SetName(rname);
             cont.Add(rname, resource);
             reference_count.Add(rname, 1);
+            // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
             ms.Close();
             //System.Diagnostics.Debug.WriteLine("LOADED " + rname + suffix_extension);
             return 0;
@@ -77,9 +96,16 @@ namespace SpellforceDataEditor.SFResources
         public int LoadFromMemory(MemoryStream ms, string rname)
         {
             if (cont.ContainsKey(rname))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): Resource "+rname+" already exists!");
                 throw new Exception("Can't load directly from memory: Resource already exists!");
+            }
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): loading resource " + rname + " from memory");
             if (ms == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): Datastream not specified!");
                 return -2;
+            }
             //resource loading stack
             string prev_res = SFResourceManager.current_resource;
             SFResourceManager.current_resource = rname;
@@ -88,11 +114,15 @@ namespace SpellforceDataEditor.SFResources
             SFResourceManager.current_resource = prev_res;
             //end of stack
             if (res_code != 0)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): Could not load resource " + rname + " from memory!");
                 return res_code;
+            }
             resource.Init();
             resource.SetName(rname);
             cont.Add(rname, resource);
             reference_count.Add(rname, 1);
+            // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
             ms.Close();
             //System.Diagnostics.Debug.WriteLine("LOADED " + rname + suffix_extension);
             return 0;
@@ -102,11 +132,16 @@ namespace SpellforceDataEditor.SFResources
         public int AddManually(T res, string rname)
         {
             if (cont.ContainsKey(rname))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.AddManually(): Resource " + rname + " already exists!");
                 throw new Exception("Can't load directly from memory: Resource already exists!");
+            }
             res.Init();
             res.SetName(rname);
             cont.Add(rname, res);
-            reference_count.Add(rname, 1);
+            reference_count.Add(rname, 0);
+            // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.AddManually(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
+
             return 0;
         }
 
@@ -114,10 +149,17 @@ namespace SpellforceDataEditor.SFResources
         public int Dispose(string rname)
         {
             if (!cont.ContainsKey(rname))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Resource " + rname + " does not exist!");
                 return -1;
+            }
             reference_count[rname] -= 1;
+            // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
+
             if (reference_count[rname] == 0)
             {
+                LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Removing resource "+rname);
+
                 cont[rname].Dispose();
                 cont.Remove(rname);
                 reference_count.Remove(rname);
@@ -135,7 +177,12 @@ namespace SpellforceDataEditor.SFResources
 
         public int Extract(string rname)
         {
-            return SFUnPak.SFUnPak.ExtractFileFind(prefix_path + "\\" + rname + suffix_extension, prefix_path + "\\" + rname + suffix_extension);
+            foreach(string ext in suffix_extensions)
+            {
+                if (SFUnPak.SFUnPak.ExtractFileFind(prefix_path + "\\" + rname + ext, prefix_path + "\\" + rname + ext) == 0)
+                    return 0;
+            }
+            return -1;
         }
 
         public List<string> GetNames()
@@ -146,9 +193,13 @@ namespace SpellforceDataEditor.SFResources
         // removes all resources no matter the reference counters
         public void DisposeAll()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.DisposeAll() called");
+
             string[] names = cont.Keys.ToArray();
             foreach (string rname in names)
             {
+                LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.DisposeAll(): Removing resource " + rname);
+
                 cont[rname].Dispose();
                 cont.Remove(rname);
                 reference_count.Remove(rname);

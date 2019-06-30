@@ -135,16 +135,37 @@ namespace SpellforceDataEditor.SFLua.lua_sql
 
         public int Load()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load() called");
             if (SFLua.SFLuaEnvironment.state == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Lua is not initialized!");
                 return -100;
+            }
+            if(!Settings.AllowLua)
+            {
+                LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Lua is disabled. Check config.txt for AllowLua option");
+                return -4;
+            }
 
             // check if file exists
             string filename = SFUnPak.SFUnPak.game_directory_name;
             if (filename == "")
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Game directory not found!");
                 return -1;
+            }
             filename += "\\script\\gdsrtscoopspawngroups.lua";
             if (!File.Exists(filename))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Spawn group file does not exist!");
                 return -2;
+            }
+            
+            if (!Settings.ConfirmRunLua(filename))
+            {
+                LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Script execution aborted by user.");
+                return -5;
+            }
 
             string script_string = "import = function () end\r\n" + File.ReadAllText(filename);
             object[] ret = SFLua.SFLuaEnvironment.state.DoString(script_string);
@@ -152,6 +173,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql
             if (coop_spawn_types == null)
                 coop_spawn_types = new Dictionary<int, SFMapCoopSpawnTypeInfo>();
 
+            int log_current_spawn = 0;
             try
             {
                 coop_spawn_types.Clear();
@@ -165,6 +187,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql
                 // iterate over the rts coop spawn table
                 foreach (long i in indices)
                 {
+                    log_current_spawn = (int)i;
                     NLua.LuaTable i_table = (NLua.LuaTable)table[i];
                     SFMapCoopSpawnTypeInfo csti = new SFMapCoopSpawnTypeInfo();
                     csti.ParseLoad(i_table);
@@ -175,24 +198,37 @@ namespace SpellforceDataEditor.SFLua.lua_sql
             {
                 coop_spawn_types.Clear();
                 coop_spawn_types = null;
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Error reading spawn file! Spawn ID = "+log_current_spawn.ToString());
                 return -3;
             }
+
+            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Spawn file read successfully, found spawns: "+coop_spawn_types.Count.ToString());
 
             return 0;
         }
 
         public int Save()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Save(): called");
             if (SFLua.SFLuaEnvironment.state == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Save(): Lua is not initialized!");
                 return -100;
+            }
 
             if (coop_spawn_types == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Save(): Spawns are not loaded in!");
                 return -4;
+            }
 
             // check if file exists
             string filename = SFUnPak.SFUnPak.game_directory_name;
             if (filename == "")
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Save(): Game directory not found!");
                 return -1;
+            }
             filename += "\\script\\gdsrtscoopspawngroups_new.lua";
 
             try
@@ -201,6 +237,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql
             }
             catch (Exception)
             {
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Save(): Error writing spawn data to file (filename = "+filename+")");
                 return -3;
             }
 

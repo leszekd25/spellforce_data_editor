@@ -28,9 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.BuildingListReset = new System.Windows.Forms.Button();
-            this.BuildingListSearchPhrase = new System.Windows.Forms.TextBox();
-            this.BuildingListSearch = new System.Windows.Forms.Button();
             this.ListBuildings = new System.Windows.Forms.ListBox();
             this.label9 = new System.Windows.Forms.Label();
             this.SelectedBuildingPanel = new System.Windows.Forms.Panel();
@@ -53,34 +50,12 @@
             this.BuildingToPlaceName = new System.Windows.Forms.Label();
             this.BuildingToPlaceID = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.BuildingListFindPrevious = new System.Windows.Forms.Button();
+            this.BuildingListSearchPhrase = new System.Windows.Forms.TextBox();
+            this.BuildingListFindNext = new System.Windows.Forms.Button();
             this.SelectedBuildingPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SelectedBuildingAngleTrackBar)).BeginInit();
             this.SuspendLayout();
-            // 
-            // BuildingListReset
-            // 
-            this.BuildingListReset.Location = new System.Drawing.Point(251, 488);
-            this.BuildingListReset.Name = "BuildingListReset";
-            this.BuildingListReset.Size = new System.Drawing.Size(147, 23);
-            this.BuildingListReset.TabIndex = 19;
-            this.BuildingListReset.Text = "Reset";
-            this.BuildingListReset.UseVisualStyleBackColor = true;
-            // 
-            // BuildingListSearchPhrase
-            // 
-            this.BuildingListSearchPhrase.Location = new System.Drawing.Point(251, 286);
-            this.BuildingListSearchPhrase.Name = "BuildingListSearchPhrase";
-            this.BuildingListSearchPhrase.Size = new System.Drawing.Size(147, 20);
-            this.BuildingListSearchPhrase.TabIndex = 18;
-            // 
-            // BuildingListSearch
-            // 
-            this.BuildingListSearch.Location = new System.Drawing.Point(251, 312);
-            this.BuildingListSearch.Name = "BuildingListSearch";
-            this.BuildingListSearch.Size = new System.Drawing.Size(147, 23);
-            this.BuildingListSearch.TabIndex = 17;
-            this.BuildingListSearch.Text = "Search";
-            this.BuildingListSearch.UseVisualStyleBackColor = true;
             // 
             // ListBuildings
             // 
@@ -296,12 +271,39 @@
             this.label1.TabIndex = 10;
             this.label1.Text = "Building to place:";
             // 
+            // BuildingListFindPrevious
+            // 
+            this.BuildingListFindPrevious.Location = new System.Drawing.Point(251, 341);
+            this.BuildingListFindPrevious.Name = "BuildingListFindPrevious";
+            this.BuildingListFindPrevious.Size = new System.Drawing.Size(147, 23);
+            this.BuildingListFindPrevious.TabIndex = 19;
+            this.BuildingListFindPrevious.Text = "Find previous";
+            this.BuildingListFindPrevious.UseVisualStyleBackColor = true;
+            this.BuildingListFindPrevious.Click += new System.EventHandler(this.BuildingListFindPrevious_Click);
+            // 
+            // BuildingListSearchPhrase
+            // 
+            this.BuildingListSearchPhrase.Location = new System.Drawing.Point(251, 286);
+            this.BuildingListSearchPhrase.Name = "BuildingListSearchPhrase";
+            this.BuildingListSearchPhrase.Size = new System.Drawing.Size(147, 20);
+            this.BuildingListSearchPhrase.TabIndex = 18;
+            // 
+            // BuildingListFindNext
+            // 
+            this.BuildingListFindNext.Location = new System.Drawing.Point(251, 312);
+            this.BuildingListFindNext.Name = "BuildingListFindNext";
+            this.BuildingListFindNext.Size = new System.Drawing.Size(147, 23);
+            this.BuildingListFindNext.TabIndex = 17;
+            this.BuildingListFindNext.Text = "Find next";
+            this.BuildingListFindNext.UseVisualStyleBackColor = true;
+            this.BuildingListFindNext.Click += new System.EventHandler(this.BuildingListFindNext_Click);
+            // 
             // MapInspectorBuildingControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.Controls.Add(this.BuildingListReset);
+            this.Controls.Add(this.BuildingListFindPrevious);
             this.Controls.Add(this.BuildingListSearchPhrase);
-            this.Controls.Add(this.BuildingListSearch);
+            this.Controls.Add(this.BuildingListFindNext);
             this.Controls.Add(this.ListBuildings);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.SelectedBuildingPanel);
@@ -320,10 +322,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button BuildingListReset;
-        private System.Windows.Forms.TextBox BuildingListSearchPhrase;
-        private System.Windows.Forms.Button BuildingListSearch;
         private System.Windows.Forms.ListBox ListBuildings;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Panel SelectedBuildingPanel;
@@ -346,5 +344,8 @@
         private System.Windows.Forms.Label BuildingToPlaceName;
         private System.Windows.Forms.TextBox BuildingToPlaceID;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button BuildingListFindPrevious;
+        private System.Windows.Forms.TextBox BuildingListSearchPhrase;
+        private System.Windows.Forms.Button BuildingListFindNext;
     }
 }

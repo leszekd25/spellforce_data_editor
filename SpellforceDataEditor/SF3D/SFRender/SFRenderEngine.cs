@@ -19,21 +19,27 @@ using SpellforceDataEditor.SFMap;
 
 namespace SpellforceDataEditor.SF3D.SFRender
 {
-    public class SFRenderEngine
+    public static class SFRenderEngine
     {
-        public SFSceneManager scene_manager { get; } = new SFSceneManager();
-        public SFMapHeightMap heightmap { get; private set; } = null;
+        public static SFSceneManager scene_manager { get; } = new SFSceneManager();
+        public static SFMapHeightMap heightmap { get; private set; } = null;
 
-        public Camera3D camera { get; } = new Camera3D();
+        public static Camera3D camera { get; } = new Camera3D();
 
         static SFShader shader_simple = new SFShader();
         static SFShader shader_animated = new SFShader();
         static SFShader shader_heightmap = new SFShader();
         static SFShader shader_overlay = new SFShader();
 
+        static bool initialized = false;
+
         //called only once!
-        public void Initialize(Vector2 view_size)
+        public static void Initialize(Vector2 view_size)
         {
+            if (initialized)
+                return;
+
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.Initialize() called");
             ResizeView(view_size);
 
             GL.ClearColor(Color.MidnightBlue);
@@ -59,24 +65,24 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_overlay.CompileShader(Properties.Resources.vshader_overlay, Properties.Resources.fshader_overlay);
             shader_overlay.AddParameter("MVP");
             shader_overlay.AddParameter("Color");
+
+            //initialized = true;
         }
 
-        public void ResizeView(Vector2 view_size)
-        { 
+        public static void ResizeView(Vector2 view_size)
+        {
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.ResizeView() called (view_size = " + view_size.ToString() + ")");
             camera.ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
                 (float)Math.PI / 4, view_size.X / view_size.Y, 0.1f, 100f);
             GL.Viewport(0, 0, (int)view_size.X, (int)view_size.Y);
         }
         
-        public void AssignHeightMap(SFMapHeightMap hm)
+        public static void AssignHeightMap(SFMapHeightMap hm)
         {
-            // remove previous heightmap
-
-            // add new heightmap
             heightmap = hm;
         }
 
-        private void UpdateVisibleChunks()
+        private static void UpdateVisibleChunks()
         {
             // 1. find collection of visible chunks
             List<SFMapHeightMapChunk> vis_chunks = new List<SFMapHeightMapChunk>();
@@ -164,7 +170,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             heightmap.visible_chunks = vis_chunks;
         }
 
-        private void UpdateVisibleLakes()
+        private static void UpdateVisibleLakes()
         {
             // reset visibility
             SFMapLakeManager lake_manager = heightmap.map.lake_manager;
@@ -177,7 +183,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     lake_manager.lake_visible[i] |= chunk.lakes_contained[i];
         }
 
-        private void RenderHeightmap()
+        private static void RenderHeightmap()
         {
             // special shader here...
             GL.UseProgram(shader_heightmap.ProgramID);
@@ -203,7 +209,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
-        private void RenderLakes()
+        private static void RenderLakes()
         {
             SFMapLakeManager lake_manager = heightmap.map.lake_manager;
 
@@ -232,7 +238,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
-        public void RenderOverlays()
+        public static void RenderOverlays()
         {
             GL.UseProgram(shader_overlay.ProgramID);
             foreach (string o in heightmap.visible_overlays)
@@ -256,7 +262,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
-        public void RenderFrame()
+        public static void RenderFrame()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             if (camera.Modified)

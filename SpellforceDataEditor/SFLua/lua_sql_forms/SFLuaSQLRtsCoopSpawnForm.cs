@@ -62,10 +62,13 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             if (ListSpawnTypes.SelectedIndex == -1)
                 return;
 
+            SpawnDataUnits.Items.Clear();
             GroupSpawnData.Items.Clear();
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             var spawn_data = SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].data;
+            if (spawn_data == null)
+                return;
 
             List<int> activation_keys = spawn_data.Keys.ToList();
             activation_keys.Sort();
@@ -393,8 +396,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                     return;
 
                 ushort unit_id = Utility.TryParseUInt16(SelectedUnitID.Text);
-
-                MainForm.data.Tracer_StepForward(17, unit_id, false);
+                int unit_index = SFCFF.SFCategoryManager.gamedata.categories[17].get_element_index(unit_id);
+                if(unit_index != -1)
+                    MainForm.data.Tracer_StepForward(17, unit_index, false);
             }
         }
 
@@ -408,8 +412,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                     return;
 
                 ushort unit_id = Utility.TryParseUInt16(SelectedSpawnDataUnitID.Text);
-
-                MainForm.data.Tracer_StepForward(17, unit_id, false);
+                int unit_index = SFCFF.SFCategoryManager.gamedata.categories[17].get_element_index(unit_id);
+                if (unit_index != -1)
+                    MainForm.data.Tracer_StepForward(17, unit_index, false);
             }
         }
 
@@ -433,7 +438,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void GroupUnitAdd_Click(object sender, EventArgs e)
         {
-            if (GroupStartUnits.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == -1)
                 return;
 
             int key = ListSpawnTypes.SelectedIndex + 1;

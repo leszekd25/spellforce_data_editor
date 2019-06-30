@@ -51,11 +51,11 @@ namespace SpellforceDataEditor.SFMap
             units.Add(unit);
 
             string obj_name = unit.GetObjectName();
-            map.render_engine.scene_manager.AddObjectUnit(id, obj_name, false);
+            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectUnit(id, obj_name, false);
             
             // 3. add new unit in respective chunk
             map.heightmap.GetChunk(position).AddUnit(unit);
-            map.render_engine.scene_manager.objects_static[unit.GetObjectName()].Visible = map.heightmap.GetChunk(position).Visible;
+            SF3D.SFRender.SFRenderEngine.scene_manager.objects_static[unit.GetObjectName()].Visible = map.heightmap.GetChunk(position).Visible;
 
             return unit;
         }
@@ -64,7 +64,7 @@ namespace SpellforceDataEditor.SFMap
         {
             units.Remove(u);
 
-            map.render_engine.scene_manager.DeleteObject(u.GetObjectName());
+            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject(u.GetObjectName());
 
             map.heightmap.GetChunk(u.grid_position).RemoveUnit(u);
         }

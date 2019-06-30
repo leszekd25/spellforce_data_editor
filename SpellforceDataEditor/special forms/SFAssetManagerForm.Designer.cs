@@ -29,11 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.glControl1 = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(32), 24, 8, 4));
+            this.glControl1 = new OpenTK.GLControl();
             this.ListEntries = new System.Windows.Forms.ListBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.GameDirDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusText = new System.Windows.Forms.ToolStripStatusLabel();
@@ -49,7 +47,6 @@
             this.button1Extract = new System.Windows.Forms.Button();
             this.button2Extract = new System.Windows.Forms.Button();
             this.comboMessages = new System.Windows.Forms.ComboBox();
-            this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelSound.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackSoundDuration)).BeginInit();
@@ -83,28 +80,11 @@
             // 
             // menuStrip1
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.testToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(771, 24);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
-            // 
-            // testToolStripMenuItem
-            // 
-            this.testToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.testToolStripMenuItem1});
-            this.testToolStripMenuItem.Name = "testToolStripMenuItem";
-            this.testToolStripMenuItem.Size = new System.Drawing.Size(66, 20);
-            this.testToolStripMenuItem.Text = "Manager";
-            // 
-            // testToolStripMenuItem1
-            // 
-            this.testToolStripMenuItem1.Name = "testToolStripMenuItem1";
-            this.testToolStripMenuItem1.Size = new System.Drawing.Size(204, 22);
-            this.testToolStripMenuItem1.Text = "Specify game directory...";
-            this.testToolStripMenuItem1.Click += new System.EventHandler(this.testToolStripMenuItem1_Click);
             // 
             // statusStrip1
             // 
@@ -267,8 +247,6 @@
             this.Text = "SF3DManagerForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SF3DManagerForm_FormClosing);
             this.Load += new System.EventHandler(this.SF3DManagerForm_Load);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.PanelSound.ResumeLayout(false);
@@ -284,8 +262,6 @@
         private OpenTK.GLControl glControl1;
         private System.Windows.Forms.ListBox ListEntries;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem1;
         private System.Windows.Forms.FolderBrowserDialog GameDirDialog;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel StatusText;

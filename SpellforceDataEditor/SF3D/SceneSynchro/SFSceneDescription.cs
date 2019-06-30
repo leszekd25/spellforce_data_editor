@@ -40,6 +40,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 return args.Count == 4; //obj name, x, y, z
             if (type == SCENE_ITEM_TYPE.SCENE_ANIM)
                 return args.Count == 1; //1 if animated, 0 otherwise
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFSceneDescription.is_valid(): Unknown command type (type = " + type.ToString() + ")");
             return false;
         }
     }

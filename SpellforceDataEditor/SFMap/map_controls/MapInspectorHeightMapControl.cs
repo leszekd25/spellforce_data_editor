@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
-    public partial class MapInspectorHeightMapControl : SpellforceDataEditor.SFMap.map_controls.MapInspectorBaseControl
+    public partial class MapInspectorHeightMapControl : MapInspectorBaseControl
     {
         public MapInspectorHeightMapControl()
         {
@@ -27,9 +27,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (topleft.y < 0)
                 topleft.y = 0;
             if (bottomright.x >= map.width)
-                bottomright.x = map.width - 1;
+                bottomright.x = (short)(map.width - 1);
             if (bottomright.y >= map.height)
-                bottomright.y = map.height - 1;
+                bottomright.y = (short)(map.height - 1);
 
             switch(ComboDrawMode.SelectedIndex)
             {

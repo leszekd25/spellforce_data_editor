@@ -28,9 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.ObjectListReset = new System.Windows.Forms.Button();
-            this.ObjectListSearchPhrase = new System.Windows.Forms.TextBox();
-            this.ObjectListSearch = new System.Windows.Forms.Button();
             this.ListObjects = new System.Windows.Forms.ListBox();
             this.label9 = new System.Windows.Forms.Label();
             this.SelectedObjectPanel = new System.Windows.Forms.Panel();
@@ -51,34 +48,12 @@
             this.ObjectToPlaceName = new System.Windows.Forms.Label();
             this.ObjectToPlaceID = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.ObjectListFindPrevious = new System.Windows.Forms.Button();
+            this.ObjectListSearchPhrase = new System.Windows.Forms.TextBox();
+            this.ObjectListFindNext = new System.Windows.Forms.Button();
             this.SelectedObjectPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SelectedObjectAngleTrackBar)).BeginInit();
             this.SuspendLayout();
-            // 
-            // ObjectListReset
-            // 
-            this.ObjectListReset.Location = new System.Drawing.Point(251, 488);
-            this.ObjectListReset.Name = "ObjectListReset";
-            this.ObjectListReset.Size = new System.Drawing.Size(147, 23);
-            this.ObjectListReset.TabIndex = 29;
-            this.ObjectListReset.Text = "Reset";
-            this.ObjectListReset.UseVisualStyleBackColor = true;
-            // 
-            // ObjectListSearchPhrase
-            // 
-            this.ObjectListSearchPhrase.Location = new System.Drawing.Point(251, 286);
-            this.ObjectListSearchPhrase.Name = "ObjectListSearchPhrase";
-            this.ObjectListSearchPhrase.Size = new System.Drawing.Size(147, 20);
-            this.ObjectListSearchPhrase.TabIndex = 28;
-            // 
-            // ObjectListSearch
-            // 
-            this.ObjectListSearch.Location = new System.Drawing.Point(251, 312);
-            this.ObjectListSearch.Name = "ObjectListSearch";
-            this.ObjectListSearch.Size = new System.Drawing.Size(147, 23);
-            this.ObjectListSearch.TabIndex = 27;
-            this.ObjectListSearch.Text = "Search";
-            this.ObjectListSearch.UseVisualStyleBackColor = true;
             // 
             // ListObjects
             // 
@@ -271,12 +246,39 @@
             this.label1.TabIndex = 20;
             this.label1.Text = "Object to place:";
             // 
+            // ObjectListFindPrevious
+            // 
+            this.ObjectListFindPrevious.Location = new System.Drawing.Point(251, 341);
+            this.ObjectListFindPrevious.Name = "ObjectListFindPrevious";
+            this.ObjectListFindPrevious.Size = new System.Drawing.Size(147, 23);
+            this.ObjectListFindPrevious.TabIndex = 29;
+            this.ObjectListFindPrevious.Text = "Find previous";
+            this.ObjectListFindPrevious.UseVisualStyleBackColor = true;
+            this.ObjectListFindPrevious.Click += new System.EventHandler(this.ObjectListFindPrevious_Click);
+            // 
+            // ObjectListSearchPhrase
+            // 
+            this.ObjectListSearchPhrase.Location = new System.Drawing.Point(251, 286);
+            this.ObjectListSearchPhrase.Name = "ObjectListSearchPhrase";
+            this.ObjectListSearchPhrase.Size = new System.Drawing.Size(147, 20);
+            this.ObjectListSearchPhrase.TabIndex = 28;
+            // 
+            // ObjectListFindNext
+            // 
+            this.ObjectListFindNext.Location = new System.Drawing.Point(251, 312);
+            this.ObjectListFindNext.Name = "ObjectListFindNext";
+            this.ObjectListFindNext.Size = new System.Drawing.Size(147, 23);
+            this.ObjectListFindNext.TabIndex = 27;
+            this.ObjectListFindNext.Text = "Find next";
+            this.ObjectListFindNext.UseVisualStyleBackColor = true;
+            this.ObjectListFindNext.Click += new System.EventHandler(this.ObjectListFindNext_Click);
+            // 
             // MapInspectorObjectControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.Controls.Add(this.ObjectListReset);
+            this.Controls.Add(this.ObjectListFindPrevious);
             this.Controls.Add(this.ObjectListSearchPhrase);
-            this.Controls.Add(this.ObjectListSearch);
+            this.Controls.Add(this.ObjectListFindNext);
             this.Controls.Add(this.ListObjects);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.SelectedObjectPanel);
@@ -295,10 +297,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button ObjectListReset;
-        private System.Windows.Forms.TextBox ObjectListSearchPhrase;
-        private System.Windows.Forms.Button ObjectListSearch;
         private System.Windows.Forms.ListBox ListObjects;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Panel SelectedObjectPanel;
@@ -319,5 +317,8 @@
         private System.Windows.Forms.Label ObjectToPlaceName;
         private System.Windows.Forms.TextBox ObjectToPlaceID;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button ObjectListFindPrevious;
+        private System.Windows.Forms.TextBox ObjectListSearchPhrase;
+        private System.Windows.Forms.Button ObjectListFindNext;
     }
 }

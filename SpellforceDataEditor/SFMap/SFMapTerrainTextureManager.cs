@@ -44,9 +44,16 @@ namespace SpellforceDataEditor.SFMap
         public void LoadTextureNames()
         {
             if (SFUnPak.SFUnPak.game_directory_name == "")
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.LoadTextureNames(): Unspecified game directory!");
                 return;
+            }
 
             texture_filenames = SFUnPak.SFUnPak.ListAllWithFilename("texture", "landscape_island_", new string[] { "sf1.pak"});
+            // bugfix for sf1.pak texture list
+            texture_filenames.Remove("landscape_island_100_mud.dds");
+            texture_filenames.Remove("landscape_island_100_mudd.dds");
+
         }
 
         public void SetTextureIDsRaw(byte[] data)
@@ -72,6 +79,8 @@ namespace SpellforceDataEditor.SFMap
         // generate opengl array texture for heightmap
         public void Init()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.Init() called");
+
             LoadTextureNames();
             // load base textures
             for (int i = 0; i < MAX_TEXTURES; i++)
@@ -79,12 +88,20 @@ namespace SpellforceDataEditor.SFMap
                 string filename = GetTextureNameByID(texture_id[i]);
                 base_texture_bank[i] = new SFTexture();
 
-                MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf1.pak", "texture\\" + filename);
+                MemoryStream ms    = SFUnPak.SFUnPak.LoadFileFrom("sf32.pak", "texture\\" + filename);
+                if (ms == null) ms = SFUnPak.SFUnPak.LoadFileFrom("sf22.pak", "texture\\" + filename);
+                if (ms == null) ms = SFUnPak.SFUnPak.LoadFileFrom("sf1.pak", "texture\\" + filename);
                 if (ms == null)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.Init(): Could not find texture " + filename);
                     throw new Exception("SFMapTerrainTextureManager.Init(): Can't find texture!");
+                }
                 int res_code = base_texture_bank[i].Load(ms);
                 if (res_code != 0)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.Init(): Could not load texture " + filename);
                     throw new Exception("SFMapTerrainTextureManager.Init(): Can't load texture!");
+                }
                 ms.Close();
 
                 base_texture_bank[i].Uncompress();
@@ -114,9 +131,9 @@ namespace SpellforceDataEditor.SFMap
             int mipmap_divisor = 1;
             int min_allowed_level = 0;
             int _size = 256;
-            while(_size > SFTexture.MaximumAllowedTextureSize) { min_allowed_level += 1; _size /= 2; }
+            while(_size > Settings.MaximumAllowedTextureSize) { min_allowed_level += 1; _size /= 2; }
 
-            min_allowed_level = (min_allowed_level > SFTexture.IgnoredMipMapsCount ? min_allowed_level : SFTexture.IgnoredMipMapsCount);
+            min_allowed_level = (min_allowed_level > Settings.IgnoredMipMapsCount ? min_allowed_level : Settings.IgnoredMipMapsCount);
 
             for (int i = 0; i < min_allowed_level; i++)
                 mipmap_divisor *= 2;
@@ -154,6 +171,7 @@ namespace SpellforceDataEditor.SFMap
                     ErrorCode ec = GL.GetError();
                     if (ec == ErrorCode.NoError)
                         break;
+                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.Init(): OpenGL error '" + ec.ToString() + "' for terrain texture id " + i.ToString());
                     System.Diagnostics.Debug.WriteLine("TTM.Init() " + ec+" "+i.ToString());
                 }
             }
@@ -169,7 +187,11 @@ namespace SpellforceDataEditor.SFMap
         public bool SetBaseTexture(int base_index, int tex_id)
         {
             if ((tex_id <= 0) || (tex_id > 237))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.SetBaseTexture(): Invalid terrain texture ID "+tex_id.ToString());
+
                 return false;
+            }
             texture_id[base_index] = (byte)tex_id;
             // unload existing texture
             base_texture_bank[base_index].Dispose();
@@ -178,10 +200,16 @@ namespace SpellforceDataEditor.SFMap
 
             MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf1.pak", "texture\\" + filename);
             if (ms == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.SetBaseTexture(): Could not find texture "+filename);
                 throw new Exception("SFMapTerrainTextureManager.SetBaseTexture(): Can't find texture!");
+            }
             int res_code = base_texture_bank[base_index].Load(ms);
             if (res_code != 0)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.SetBaseTexture(): Could not find texture " + filename);
                 throw new Exception("SFMapTerrainTextureManager.SetBaseTexture(): Can't load texture!");
+            }
             ms.Close();
 
             base_texture_bank[base_index].Uncompress();
@@ -298,6 +326,7 @@ namespace SpellforceDataEditor.SFMap
 
         public void Unload()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.Unload() called");
             GL.DeleteTexture(terrain_texture);
             for(int i = 0; i < MAX_REINDEX; i++)
             {

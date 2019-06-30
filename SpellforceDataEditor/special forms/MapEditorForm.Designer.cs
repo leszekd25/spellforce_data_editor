@@ -29,14 +29,16 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapEditorForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.RenderWindow = new OpenTK.GLControl();
+            this.closeMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenMap = new System.Windows.Forms.OpenFileDialog();
             this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
-            this.SaveMap = new System.Windows.Forms.SaveFileDialog();
+            this.DialogSaveMap = new System.Windows.Forms.SaveFileDialog();
             this.PanelModes = new System.Windows.Forms.Panel();
             this.button11 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
@@ -73,7 +75,9 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadToolStripMenuItem,
-            this.saveMapToolStripMenuItem});
+            this.saveMapToolStripMenuItem,
+            this.closeMapToolStripMenuItem,
+            this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -81,31 +85,30 @@
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.loadToolStripMenuItem.Text = "Load map";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
             // saveMapToolStripMenuItem
             // 
             this.saveMapToolStripMenuItem.Name = "saveMapToolStripMenuItem";
-            this.saveMapToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.saveMapToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.saveMapToolStripMenuItem.Text = "Save map";
             this.saveMapToolStripMenuItem.Click += new System.EventHandler(this.saveMapToolStripMenuItem_Click);
             // 
-            // RenderWindow
+            // closeMapToolStripMenuItem
             // 
-            this.RenderWindow.BackColor = System.Drawing.Color.Black;
-            this.RenderWindow.Location = new System.Drawing.Point(511, 52);
-            this.RenderWindow.Name = "RenderWindow";
-            this.RenderWindow.Size = new System.Drawing.Size(589, 589);
-            this.RenderWindow.TabIndex = 2;
-            this.RenderWindow.VSync = true;
-            this.RenderWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
-            this.RenderWindow.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseDown);
-            this.RenderWindow.MouseEnter += new System.EventHandler(this.RenderWindow_MouseEnter);
-            this.RenderWindow.MouseLeave += new System.EventHandler(this.RenderWindow_MouseLeave);
-            this.RenderWindow.MouseMove += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseMove);
-            this.RenderWindow.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
+            this.closeMapToolStripMenuItem.Name = "closeMapToolStripMenuItem";
+            this.closeMapToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.closeMapToolStripMenuItem.Text = "Close map";
+            this.closeMapToolStripMenuItem.Click += new System.EventHandler(this.closeMapToolStripMenuItem_Click);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // OpenMap
             // 
@@ -116,10 +119,10 @@
             // 
             this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
             // 
-            // SaveMap
+            // DialogSaveMap
             // 
-            this.SaveMap.DefaultExt = "map";
-            this.SaveMap.Filter = "Map file | *.map";
+            this.DialogSaveMap.DefaultExt = "map";
+            this.DialogSaveMap.Filter = "Map file | *.map";
             // 
             // PanelModes
             // 
@@ -142,7 +145,7 @@
             // button11
             // 
             this.button11.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button11.Image = global::SpellforceDataEditor.Properties.Resources.metadata_icon;
+            this.button11.Image = ((System.Drawing.Image)(resources.GetObject("button11.Image")));
             this.button11.Location = new System.Drawing.Point(3, 541);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(48, 48);
@@ -153,7 +156,7 @@
             // button10
             // 
             this.button10.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button10.Image = global::SpellforceDataEditor.Properties.Resources.monument_icon;
+            this.button10.Image = ((System.Drawing.Image)(resources.GetObject("button10.Image")));
             this.button10.Location = new System.Drawing.Point(3, 487);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(48, 48);
@@ -164,7 +167,7 @@
             // button9
             // 
             this.button9.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button9.Image = global::SpellforceDataEditor.Properties.Resources.npc_icon;
+            this.button9.Image = ((System.Drawing.Image)(resources.GetObject("button9.Image")));
             this.button9.Location = new System.Drawing.Point(3, 433);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(48, 48);
@@ -175,7 +178,7 @@
             // button8
             // 
             this.button8.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button8.Image = global::SpellforceDataEditor.Properties.Resources.decoration_icon;
+            this.button8.Image = ((System.Drawing.Image)(resources.GetObject("button8.Image")));
             this.button8.Location = new System.Drawing.Point(3, 381);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(48, 48);
@@ -186,7 +189,7 @@
             // button7
             // 
             this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button7.Image = global::SpellforceDataEditor.Properties.Resources.object_icon;
+            this.button7.Image = ((System.Drawing.Image)(resources.GetObject("button7.Image")));
             this.button7.Location = new System.Drawing.Point(3, 327);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(48, 48);
@@ -197,7 +200,7 @@
             // button6
             // 
             this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button6.Image = global::SpellforceDataEditor.Properties.Resources.building_icon;
+            this.button6.Image = ((System.Drawing.Image)(resources.GetObject("button6.Image")));
             this.button6.Location = new System.Drawing.Point(3, 273);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(48, 48);
@@ -208,7 +211,7 @@
             // button5
             // 
             this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button5.Image = global::SpellforceDataEditor.Properties.Resources.unit_icon;
+            this.button5.Image = ((System.Drawing.Image)(resources.GetObject("button5.Image")));
             this.button5.Location = new System.Drawing.Point(3, 219);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(48, 48);
@@ -219,7 +222,7 @@
             // ButtonLake
             // 
             this.ButtonLake.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ButtonLake.Image = global::SpellforceDataEditor.Properties.Resources.lake_icon;
+            this.ButtonLake.Image = ((System.Drawing.Image)(resources.GetObject("ButtonLake.Image")));
             this.ButtonLake.Location = new System.Drawing.Point(3, 165);
             this.ButtonLake.Name = "ButtonLake";
             this.ButtonLake.Size = new System.Drawing.Size(48, 48);
@@ -230,7 +233,7 @@
             // ButtonFlag
             // 
             this.ButtonFlag.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ButtonFlag.Image = global::SpellforceDataEditor.Properties.Resources.flag_icon;
+            this.ButtonFlag.Image = ((System.Drawing.Image)(resources.GetObject("ButtonFlag.Image")));
             this.ButtonFlag.Location = new System.Drawing.Point(3, 111);
             this.ButtonFlag.Name = "ButtonFlag";
             this.ButtonFlag.Size = new System.Drawing.Size(48, 48);
@@ -241,7 +244,7 @@
             // ButtonTerrainTexture
             // 
             this.ButtonTerrainTexture.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ButtonTerrainTexture.Image = global::SpellforceDataEditor.Properties.Resources.texture_icon;
+            this.ButtonTerrainTexture.Image = ((System.Drawing.Image)(resources.GetObject("ButtonTerrainTexture.Image")));
             this.ButtonTerrainTexture.Location = new System.Drawing.Point(3, 57);
             this.ButtonTerrainTexture.Name = "ButtonTerrainTexture";
             this.ButtonTerrainTexture.Size = new System.Drawing.Size(48, 48);
@@ -252,7 +255,7 @@
             // ButtonHeightmap
             // 
             this.ButtonHeightmap.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ButtonHeightmap.Image = global::SpellforceDataEditor.Properties.Resources.hmap_icon;
+            this.ButtonHeightmap.Image = ((System.Drawing.Image)(resources.GetObject("ButtonHeightmap.Image")));
             this.ButtonHeightmap.Location = new System.Drawing.Point(3, 3);
             this.ButtonHeightmap.Name = "ButtonHeightmap";
             this.ButtonHeightmap.Size = new System.Drawing.Size(48, 48);
@@ -309,7 +312,6 @@
             this.Controls.Add(this.StatusStrip);
             this.Controls.Add(this.ToolbarStrip);
             this.Controls.Add(this.PanelModes);
-            this.Controls.Add(this.RenderWindow);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(1005, 706);
@@ -333,11 +335,10 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
-        private OpenTK.GLControl RenderWindow;
         private System.Windows.Forms.OpenFileDialog OpenMap;
         private System.Windows.Forms.Timer TimerAnimation;
         private System.Windows.Forms.ToolStripMenuItem saveMapToolStripMenuItem;
-        private System.Windows.Forms.SaveFileDialog SaveMap;
+        private System.Windows.Forms.SaveFileDialog DialogSaveMap;
         private System.Windows.Forms.Panel PanelModes;
         private System.Windows.Forms.ToolStrip ToolbarStrip;
         private System.Windows.Forms.ToolStrip StatusStrip;
@@ -355,5 +356,7 @@
         private System.Windows.Forms.Button ButtonTerrainTexture;
         private System.Windows.Forms.Panel InspectorPanel;
         private System.Windows.Forms.Label LabelMode;
+        private System.Windows.Forms.ToolStripMenuItem closeMapToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }

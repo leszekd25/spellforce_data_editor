@@ -7,6 +7,7 @@ using System.Windows.Forms;
 
 using System.IO;
 using SpellforceDataEditor.SFChunkFile;
+using SpellforceDataEditor.SF3D.SFRender;
 
 namespace SpellforceDataEditor.SFMap
 {
@@ -27,31 +28,35 @@ namespace SpellforceDataEditor.SFMap
         public SFMapLakeManager lake_manager { get; private set; } = null;
         public SFMapMetaData metadata { get; private set; } = null;
         public SFMapSelectionHelper selection_helper { get; private set; } = new SFMapSelectionHelper();
-        public SFMapNPCManager npc_manager { get; private set; } = new SFMapNPCManager();
-        public SF3D.SFRender.SFRenderEngine render_engine { get; private set; } = null;
+        public SFMapNPCManager npc_manager { get; private set; } = null;
         public SFCFF.SFGameData gamedata { get; private set; } = null;
 
-        public int Load(string filename, SF3D.SFRender.SFRenderEngine re, SFCFF.SFGameData gd, ToolStripLabel tx)
+        public int Load(string filename, SFCFF.SFGameData gd, ToolStripLabel tx)
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load() called, filename: " + filename);
             tx.Text = "Loading...";
             tx.GetCurrentParent().Refresh();
             SFChunkFile.SFChunkFile f = new SFChunkFile.SFChunkFile();
             int res = f.Open(filename);
             if (res != 0)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not open map file!");
                 return res;
+            }
 
             // load map size and tile indices
-            render_engine = re;
             gamedata = gd;
 
             short size;
 
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading tile data");
             tx.Text = "Loading map data...";
             tx.GetCurrentParent().Refresh();
 
             SFChunkFileChunk c2 = f.GetChunkByID(2);
-            if(c2 == null)
+            if (c2 == null)
             {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not read map size or tile data!");
                 f.Close();
                 return -4;
             }
@@ -63,10 +68,12 @@ namespace SpellforceDataEditor.SFMap
                 height = size;
                 heightmap = new SFMapHeightMap(width, height) { map = this };
                 heightmap.SetTilesRaw(br.ReadBytes(size * size));
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Map size is " + size.ToString());
             }
             c2.Close();
 
             // load terrain texture data
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading tile definitions");
             SFChunkFileChunk c3 = f.GetChunkByID(3);
             if (c3 != null)
             {
@@ -91,13 +98,14 @@ namespace SpellforceDataEditor.SFMap
                             ch3_br.ReadByte();
                             byte b_m = ch3_br.ReadByte(); byte b_v = ch3_br.ReadByte();
                             heightmap.texture_manager.texture_tiledata[i].blocks_movement = ((b_m % 2) == 1 ? true : false);
-                            heightmap.texture_manager.texture_tiledata[i].blocks_vision = ((b_v % 2) == 1? true : false);
+                            heightmap.texture_manager.texture_tiledata[i].blocks_vision = ((b_v % 2) == 1 ? true : false);
                         }
                     }
                 }
                 c3.Close();
             }
 
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading textures");
             SFChunkFileChunk c4 = f.GetChunkByID(4);
             if (c4 != null)
             {
@@ -112,12 +120,14 @@ namespace SpellforceDataEditor.SFMap
             heightmap.texture_manager.Init();
 
             // load heightmap
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading heightmap");
             for (short i = 0; i < size; i++)
             {
                 SFChunkFileChunk c6_i = f.GetChunkByID(6, i);
                 if (c6_i == null)
                 {
                     f.Close();
+                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not read heightmap!");
                     return -4;
                 }
                 using (BinaryReader br = c6_i.Open())
@@ -133,16 +143,17 @@ namespace SpellforceDataEditor.SFMap
             npc_manager = new SFMapNPCManager() { map = this };
 
             // load buildings
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading buildings");
             tx.Text = "Loading buildings...";
             tx.GetCurrentParent().Refresh();
 
             SFChunkFileChunk c11 = f.GetChunkByID(11);
-            if(c11 != null)
+            if (c11 != null)
             {
                 using (BinaryReader br = c11.Open())
                 {
                     building_manager = new SFMapBuildingManager() { map = this };
-                    while(br.BaseStream.Position < br.BaseStream.Length)
+                    while (br.BaseStream.Position < br.BaseStream.Length)
                     {
                         int x = br.ReadInt16();
                         int y = br.ReadInt16();
@@ -152,7 +163,7 @@ namespace SpellforceDataEditor.SFMap
                         int b_type = br.ReadByte();
                         int b_lvl = 1;
                         int race_id = 0;
-                        if(c11.get_data_type() > 1)
+                        if (c11.get_data_type() > 1)
                             b_lvl = br.ReadByte();
                         if (c11.get_data_type() > 2)
                             race_id = br.ReadByte();
@@ -160,19 +171,21 @@ namespace SpellforceDataEditor.SFMap
                     }
                 }
                 c11.Close();
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Buildings loaded: " + building_manager.buildings.Count.ToString());
             }
 
             // load units
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading units");
             tx.Text = "Loading units...";
             tx.GetCurrentParent().Refresh();
 
             SFChunkFileChunk c12 = f.GetChunkByID(12);
-            if(c12 != null)
+            if (c12 != null)
             {
                 using (BinaryReader br = c12.Open())
                 {
                     unit_manager = new SFMapUnitManager() { map = this };
-                    while(br.BaseStream.Position < br.BaseStream.Length)
+                    while (br.BaseStream.Position < br.BaseStream.Length)
                     {
                         int x = br.ReadInt16();
                         int y = br.ReadInt16();
@@ -183,15 +196,17 @@ namespace SpellforceDataEditor.SFMap
                         int unknown = br.ReadUInt16();
                         int group = br.ReadByte();
                         int unknown2 = 0;
-                        if(c12.get_data_type() == 5)
+                        if (c12.get_data_type() >= 5)
                             unknown2 = br.ReadByte();
                         AddUnit(unit_id, pos, angle, npc_id, unknown, group, unknown2);
                     }
                 }
                 c12.Close();
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Units loaded: " + unit_manager.units.Count.ToString());
             }
 
             // load objects
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading objects");
             tx.Text = "Loading objects...";
             tx.GetCurrentParent().Refresh();
 
@@ -215,6 +230,11 @@ namespace SpellforceDataEditor.SFMap
                             unk1 = br.ReadUInt16();
                             br.ReadBytes(4);
                         }
+                        else if(c29.get_data_type() == 5)
+                        {
+                            unk1 = br.ReadUInt16();
+                            br.ReadBytes(2);
+                        }
                         else if (c29.get_data_type() == 4)
                             unk1 = br.ReadUInt16();
                         if ((object_id >= 65) && (object_id <= 67))   // editor only
@@ -223,9 +243,11 @@ namespace SpellforceDataEditor.SFMap
                     }
                 }
                 c29.Close();
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Objects loaded: " + object_manager.objects.Count.ToString());
             }
 
             // load interactive objects
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading interactive objects");
             tx.Text = "Loading interactive objects...";
             tx.GetCurrentParent().Refresh();
 
@@ -247,9 +269,11 @@ namespace SpellforceDataEditor.SFMap
                     }
                 }
                 c30.Close();
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Interactive objects loaded: " + int_object_manager.int_objects.Count.ToString());
             }
 
             // load decorations
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading decal data");
             tx.Text = "Loading decorations...";
             tx.GetCurrentParent().Refresh();
 
@@ -265,13 +289,13 @@ namespace SpellforceDataEditor.SFMap
             }
             SFChunkFileChunk c32 = f.GetChunkByID(32);
             if (c32 != null)
-            { 
+            {
                 using (BinaryReader br = c32.Open())
                 {
-                    for(int i = 0; i < 255; i++)
+                    for (int i = 0; i < 255; i++)
                     {
                         decoration_manager.dec_groups[i] = new SFMapDecorationGroup();
-                        for(int j = 0; j < 30; j++)
+                        for (int j = 0; j < 30; j++)
                             decoration_manager.dec_groups[i].dec_id[j] = br.ReadUInt16();
                         for (int j = 0; j < 30; j++)
                         {
@@ -286,6 +310,7 @@ namespace SpellforceDataEditor.SFMap
             decoration_manager.GenerateDecorations();
 
             // load portals
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading portals");
             tx.Text = "Loading portals...";
             tx.GetCurrentParent().Refresh();
 
@@ -306,17 +331,19 @@ namespace SpellforceDataEditor.SFMap
                     }
                 }
                 c35.Close();
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Portals loaded: " + portal_manager.portals.Count.ToString());
             }
 
             // load lakes
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading lakes");
             SFChunkFileChunk c40 = f.GetChunkByID(40);
-            if(c40 != null)
+            if (c40 != null)
             {
                 using (BinaryReader br = c40.Open())
                 {
                     lake_manager = new SFMapLakeManager() { map = this };
                     int lake_count = br.ReadByte();
-                    for(int i = 0; i < lake_count; i++)
+                    for (int i = 0; i < lake_count; i++)
                     {
                         short x = br.ReadInt16();
                         short y = br.ReadInt16();
@@ -326,9 +353,11 @@ namespace SpellforceDataEditor.SFMap
                     }
                 }
                 c40.Close();
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Lakes found: " + lake_manager.lakes.Count.ToString());
             }
 
             // load map flags
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading map flags");
             tx.Text = "Loading map flags...";
             tx.GetCurrentParent().Refresh();
 
@@ -349,6 +378,8 @@ namespace SpellforceDataEditor.SFMap
                 }
                 c42.Close();
             }
+            else
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Movement flag data not found");
             SFChunkFileChunk c56 = f.GetChunkByID(56);
             if (c56 != null)
             {
@@ -366,6 +397,8 @@ namespace SpellforceDataEditor.SFMap
                 }
                 c56.Close();
             }
+            else
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Vision flag data not found");
             SFChunkFileChunk c60 = f.GetChunkByID(60);
             if (c60 != null)
             {
@@ -384,20 +417,23 @@ namespace SpellforceDataEditor.SFMap
                 }
                 c60.Close();
             }
+            else
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Additional flag data not found");
 
             // load metadata
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading player spawn data");
             tx.Text = "Loading metadata...";
             tx.GetCurrentParent().Refresh();
             metadata = new SFMapMetaData();
 
             SFChunkFileChunk c55 = f.GetChunkByID(55);
-            if(c55 != null)
+            if (c55 != null)
             {
                 using (BinaryReader br = c55.Open())
                 {
                     int player_count = br.ReadInt32();
                     metadata.spawns = new List<SFMapSpawn>();
-                    for(int i = 0; i < player_count; i++)
+                    for (int i = 0; i < player_count; i++)
                     {
                         short x = br.ReadInt16();
                         short y = br.ReadInt16();
@@ -407,14 +443,15 @@ namespace SpellforceDataEditor.SFMap
                         // discard spawns which do not have bindstones at specified positions
                         SFCoord pos = new SFCoord(x, y);
                         bool bindstone_exists = false;
-                        foreach(SFMapInteractiveObject io in int_object_manager.int_objects)
-                            if((io.game_id == 769)&&(io.grid_position == pos))
+                        foreach (SFMapInteractiveObject io in int_object_manager.int_objects)
+                            if ((io.game_id == 769) && (io.grid_position == pos))
                             {
                                 bindstone_exists = true;
                                 break;
                             }
                         if (!bindstone_exists)
                         {
+                            LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Spawn data not associated with bindstone, removing (position: " + pos.ToString() + ")");
                             player_count -= 1;
                             i -= 1;
                             continue;
@@ -428,16 +465,21 @@ namespace SpellforceDataEditor.SFMap
                     metadata.player_count = player_count;
                 }
                 c55.Close();
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Player spawns loaded: " + metadata.player_count.ToString());
             }
+            else
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Player spawn data not found!");
 
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading team compositions");
             SFChunkFileChunk c53 = f.GetChunkByID(53);
-            if(c53 != null)
+            if (c53 != null)
             {
                 using (BinaryReader br = c53.Open())
                 {
                     metadata.multi_teams = new List<SFMapMultiplayerTeamComposition>();
                     if (c53.get_data_type() == 2)
                     {
+                        LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Found team composition data, assuming multiplayer map type");
                         metadata.map_type = SFMapType.MULTIPLAYER;
                         int cur_teamcount = 2;
                         int p_num = br.ReadInt32();
@@ -471,6 +513,7 @@ namespace SpellforceDataEditor.SFMap
                     }
                     else if (c53.get_data_type() == 4)
                     {
+                        LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Found team composition data, assuming coop map type");
                         metadata.map_type = SFMapType.COOP;
                         int cur_teamcount = 1;
                         int p_num = br.ReadInt32();
@@ -525,8 +568,8 @@ namespace SpellforceDataEditor.SFMap
                                             short spawn_id = br2.ReadInt16();
                                             short spawn_certain = br2.ReadInt16();
                                             metadata.coop_spawns.Add(new SFMapCoopAISpawn(
-                                                object_manager.objects[obj_i], 
-                                                spawn_id, 
+                                                object_manager.objects[obj_i],
+                                                spawn_id,
                                                 spawn_certain));
                                         }
                                         if ((object_id >= 65) && (object_id <= 67))    // editor only
@@ -546,21 +589,25 @@ namespace SpellforceDataEditor.SFMap
                         metadata.minimap.texture_data = br.ReadBytes(width * height * 3);
                         metadata.minimap.GenerateTexture();
                     }
+                    else
+                        LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Found team composition data, but could not load it!");
                 }
                 c53.Close();
             }
             else
             {
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Team composition data not found, assuming campaign map type");
                 metadata.map_type = SFMapType.CAMPAIGN;
             }
-            
+
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading coop spawn parameters");
             SFChunkFileChunk c59 = f.GetChunkByID(59);
-            if(c59 != null)
+            if (c59 != null)
             {
                 using (BinaryReader br = c59.Open())
                 {
                     metadata.coop_spawn_params = new List<SFMapCoopSpawnParameters>();
-                    for(int i = 0; i < 3; i++)
+                    for (int i = 0; i < 3; i++)
                     {
                         metadata.coop_spawn_params.Add(new SFMapCoopSpawnParameters());
                         metadata.coop_spawn_params[i].param1 = br.ReadSingle();
@@ -572,6 +619,7 @@ namespace SpellforceDataEditor.SFMap
                 c59.Close();
             }
 
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Creating overlays");
             // create overlays, generation in relevant control...
             heightmap.OverlayCreate("TileMovementBlock", new OpenTK.Vector4(0.5f, 0, 0, 0.7f));
             //for (int i = 0; i < height; i++)
@@ -596,11 +644,11 @@ namespace SpellforceDataEditor.SFMap
             //}
 
             heightmap.OverlayCreate("ManualLakeTile", new OpenTK.Vector4(0.6f, 0.6f, 1.0f, 0.7f));
-            
+
             heightmap.OverlayCreate("BuildingBlock", new OpenTK.Vector4(0.3f, 1f, 0.3f, 0.7f));
             for (int i = 0; i < height; i++)
                 for (int j = 0; j < width; j++)
-                    if (heightmap.building_data[i*width+j] != 0)
+                    if (heightmap.building_data[i * width + j] != 0)
                         heightmap.OverlayAdd("BuildingBlock", new SFCoord(j, i));
 
             heightmap.OverlayCreate("DecorationTile", new OpenTK.Vector4(0.9f, 0.3f, 0.9f, 0.9f));
@@ -617,7 +665,7 @@ namespace SpellforceDataEditor.SFMap
                 chunk.OverlayUpdate("DecorationTile");
             }
 
-            // heightmap.OverlaySetVisible("BuildingBlock", true);
+            //heightmap.OverlaySetVisible("BuildingBlock", true);
 
             // selection helper stuff
             selection_helper.AssignToMap(this);
@@ -626,6 +674,7 @@ namespace SpellforceDataEditor.SFMap
 
             f.Close();
 
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Load successful!");
             tx.Text = "Map loaded";
 
             return 0;
@@ -633,14 +682,20 @@ namespace SpellforceDataEditor.SFMap
 
         public int Save(string filename)
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save() called, filename: " + filename);
             if (gamedata == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.Save(): No gamedata assigned to map!");
                 return -1;
+            }
 
             SFChunkFile.SFChunkFile f = new SFChunkFile.SFChunkFile();
             int res = f.Create(filename, SFChunkFileType.MAP);
             if (res != 0)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.Save(): Failed to create map file (filename: " + filename + ")");
                 return res;
-
+            }
 
             int data_size;
 
@@ -658,7 +713,7 @@ namespace SpellforceDataEditor.SFMap
             // chunks 6
             short[] c6i_data = new short[heightmap.height];
             byte[] c6i_rawdata = new byte[heightmap.height * 2];
-            for(int i = 0; i < heightmap.width; i++)
+            for (int i = 0; i < heightmap.width; i++)
             {
                 heightmap.GetRowRaw(i, ref c6i_data);
                 Buffer.BlockCopy(c6i_data, 0, c6i_rawdata, 0, c6i_rawdata.Length);
@@ -667,7 +722,7 @@ namespace SpellforceDataEditor.SFMap
 
             // chunk 3
             byte[] c3_data = new byte[3570];
-            for(int i = 0; i < 255; i++)
+            for (int i = 0; i < 255; i++)
             {
                 c3_data[i * 14 + 0] = heightmap.texture_manager.texture_tiledata[i].ind1;
                 c3_data[i * 14 + 1] = heightmap.texture_manager.texture_tiledata[i].ind2;
@@ -688,7 +743,7 @@ namespace SpellforceDataEditor.SFMap
 
             // chunk 4
             byte[] c4_data = new byte[63];
-            for(int i = 0; i < 63; i++)
+            for (int i = 0; i < 63; i++)
             {
                 c4_data[i] = (byte)heightmap.texture_manager.texture_id[i];
             }
@@ -733,7 +788,7 @@ namespace SpellforceDataEditor.SFMap
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
                     bw.Write((byte)lake_manager.lakes.Count);
-                    for(int i = 0; i < lake_manager.lakes.Count; i++)
+                    for (int i = 0; i < lake_manager.lakes.Count; i++)
                     {
                         bw.Write((short)lake_manager.lakes[i].start.x);
                         bw.Write((short)lake_manager.lakes[i].start.y);
@@ -770,7 +825,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
-                    for(int i = 0; i < object_manager.objects.Count; i++)
+                    for (int i = 0; i < object_manager.objects.Count; i++)
                     {
                         bw.Write((short)object_manager.objects[i].grid_position.x);
                         bw.Write((short)object_manager.objects[i].grid_position.y);
@@ -783,7 +838,7 @@ namespace SpellforceDataEditor.SFMap
                         else
                         {
                             SFMapCoopAISpawn coop_spawn = new SFMapCoopAISpawn();
-                            if(!metadata.GetCoopAISpawnByObject(object_manager.objects[i], ref coop_spawn))
+                            if (!metadata.GetCoopAISpawnByObject(object_manager.objects[i], ref coop_spawn))
                                 bw.Write((int)0);
                             else
                             {
@@ -798,11 +853,11 @@ namespace SpellforceDataEditor.SFMap
 
             // chunk 35
             byte[] c35_data = new byte[portal_manager.portals.Count * 8];
-            using(MemoryStream ms = new MemoryStream(c35_data))
+            using (MemoryStream ms = new MemoryStream(c35_data))
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
-                    for(int i = 0; i < portal_manager.portals.Count; i++)
+                    for (int i = 0; i < portal_manager.portals.Count; i++)
                     {
                         bw.Write((short)portal_manager.portals[i].grid_position.x);
                         bw.Write((short)portal_manager.portals[i].grid_position.y);
@@ -819,7 +874,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
-                    for(int i = 0; i < int_object_manager.int_objects.Count; i++)
+                    for (int i = 0; i < int_object_manager.int_objects.Count; i++)
                     {
                         bw.Write((short)int_object_manager.int_objects[i].grid_position.x);
                         bw.Write((short)int_object_manager.int_objects[i].grid_position.y);
@@ -832,12 +887,12 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(30, 0, true, 1, c30_data);
 
             // chunk 11
-            byte[] c11_data = new byte[building_manager.buildings.Count * (metadata.map_type == SFMapType.CAMPAIGN ? 11 : 10)];
+            byte[] c11_data = new byte[building_manager.buildings.Count * 11];
             using (MemoryStream ms = new MemoryStream(c11_data))
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
-                    for(int i = 0; i < building_manager.buildings.Count; i++)
+                    for (int i = 0; i < building_manager.buildings.Count; i++)
                     {
                         bw.Write((short)building_manager.buildings[i].grid_position.x);
                         bw.Write((short)building_manager.buildings[i].grid_position.y);
@@ -845,12 +900,11 @@ namespace SpellforceDataEditor.SFMap
                         bw.Write((short)building_manager.buildings[i].npc_id);
                         bw.Write((byte)building_manager.buildings[i].game_id);
                         bw.Write((byte)building_manager.buildings[i].level);
-                        if(metadata.map_type == SFMapType.CAMPAIGN)
-                            bw.Write((byte)building_manager.buildings[i].race_id);
+                        bw.Write((byte)building_manager.buildings[i].race_id);
                     }
                 }
             }
-            f.AddChunk(11, 0, true, (short)(metadata.map_type == SFMapType.CAMPAIGN ? 3 : 2), c11_data);
+            f.AddChunk(11, 0, true, (short)3, c11_data);
 
             // chunk 12
             byte[] c12_data = new byte[unit_manager.units.Count * 14];
@@ -858,7 +912,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
-                    for(int i = 0; i < unit_manager.units.Count; i++)
+                    for (int i = 0; i < unit_manager.units.Count; i++)
                     {
                         bw.Write((short)unit_manager.units[i].grid_position.x);
                         bw.Write((short)unit_manager.units[i].grid_position.y);
@@ -878,7 +932,7 @@ namespace SpellforceDataEditor.SFMap
             // chunk 53
             short chunk_type;
             byte[] team_array = new byte[0];
-            switch(metadata.map_type)
+            switch (metadata.map_type)
             {
                 case SFMapType.CAMPAIGN:
                     chunk_type = 0;
@@ -918,7 +972,7 @@ namespace SpellforceDataEditor.SFMap
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
                     bw.Write((int)metadata.spawns.Count);
-                    for(int i = 0; i < metadata.spawns.Count; i++)
+                    for (int i = 0; i < metadata.spawns.Count; i++)
                     {
                         bw.Write((short)metadata.spawns[i].pos.x);
                         bw.Write((short)metadata.spawns[i].pos.y);
@@ -936,7 +990,7 @@ namespace SpellforceDataEditor.SFMap
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
                     bw.Write(heightmap.chunk60_data.Count);
-                    for(int i = 0; i < heightmap.chunk60_data.Count; i++)
+                    for (int i = 0; i < heightmap.chunk60_data.Count; i++)
                     {
                         bw.Write((byte)heightmap.chunk60_data[i].unknown);
                         bw.Write((short)heightmap.chunk60_data[i].pos.x);
@@ -949,7 +1003,7 @@ namespace SpellforceDataEditor.SFMap
             // chunk 8000 not used?
 
             // chunk 59
-            if(metadata.map_type == SFMapType.COOP)
+            if (metadata.map_type == SFMapType.COOP)
             {
                 float[] c59_data = new float[12];
                 byte[] c59_rawdata = new byte[48];
@@ -964,18 +1018,28 @@ namespace SpellforceDataEditor.SFMap
                 f.AddChunk(59, 0, true, 1, c59_rawdata);
             }
 
-
             f.Close();
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Map saved successfully");
 
             return 0;
         }
 
         public void Unload()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Unload() called");
             heightmap.Unload();
             metadata.Unload();             // minimap texture
-            selection_helper.Dispose();    // selection 3d mesh
-        }
+            selection_helper.Dispose();    // selection 3d meshpublic SFMapHeightMap heightmap { get; private set; } = null;
+            building_manager = null;
+            unit_manager = null;
+            object_manager = null;
+            int_object_manager = null;
+            decoration_manager = null;
+            portal_manager = null;
+            lake_manager = null;
+            metadata = null;
+            npc_manager = null;
+    }
 
         public void AddDecoration(int game_id, SFCoord pos)
         {
@@ -983,7 +1047,7 @@ namespace SpellforceDataEditor.SFMap
 
 
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = render_engine.scene_manager.objects_static[dec.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[dec.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
         }
@@ -997,31 +1061,52 @@ namespace SpellforceDataEditor.SFMap
 
 
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = render_engine.scene_manager.objects_static[obj.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(angle);
 
 
             heightmap.GetChunk(pos).AddObject(obj);
-            render_engine.scene_manager.objects_static[obj.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
+            SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
+        }
+
+        public int DeleteObject(int object_map_index)
+        {
+            SFMapObject obj = null;
+            if ((object_manager.objects.Count <= object_map_index) || (object_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.DeleteObject(): Invalid object index! Object index = " + object_map_index.ToString());
+                return -1;
+            }
+            obj = object_manager.objects[object_map_index];
+
+            object_manager.RemoveObject(obj);
+
+            if (obj.npc_id != 0)
+                npc_manager.RemoveNPCRef(obj.npc_id);
+
+            return 0;
         }
 
         public int ReplaceObject(int object_map_index, ushort new_object_id)
         {
             SFMapObject obj = null;
             if ((object_manager.objects.Count <= object_map_index) || (object_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.ReplaceObject(): invalid object index! Object index = " + object_map_index.ToString());
                 return -1;
+            }
             obj = object_manager.objects[object_map_index];
 
-            render_engine.scene_manager.DeleteObject(obj.GetObjectName());
-            render_engine.scene_manager.AddObjectObject(new_object_id, obj.GetObjectName());
+            SFRenderEngine.scene_manager.DeleteObject(obj.GetObjectName());
+            SFRenderEngine.scene_manager.AddObjectObject(new_object_id, obj.GetObjectName());
 
             obj.game_id = new_object_id;
 
             // object transform
             float z = heightmap.GetZ(obj.grid_position) / 100.0f;
-            SF3D.Object3D _obj = render_engine.scene_manager.objects_static[obj.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)obj.grid_position.x, (float)z, (float)(height - obj.grid_position.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(obj.angle);
@@ -1034,11 +1119,42 @@ namespace SpellforceDataEditor.SFMap
         {
             SFMapObject obj = null;
             if ((object_manager.objects.Count <= object_map_index) || (object_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.RotateObject(): invalid object index! Object index = " + object_map_index.ToString());
                 return -1;
+            }
             obj = object_manager.objects[object_map_index];
 
-            SF3D.Object3D _obj = render_engine.scene_manager.objects_static[obj.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()];
             _obj.SetAnglePlane(angle);
+
+            return 0;
+        }
+
+        public int MoveObject(int object_map_index, SFCoord new_pos)
+        {
+            SFMapObject obj = null;
+            if ((object_manager.objects.Count <= object_map_index) || (object_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MoveObject(): Invalid object index! Object index = " + object_map_index.ToString());
+                return -1;
+            }
+            obj = object_manager.objects[object_map_index];
+            /*if (!heightmap.CanMoveToPosition(new_pos))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MoveObject(): Can't move object to position " + new_pos.ToString());
+                return -2;
+            }*/
+
+            // move unit and set chunk dependency
+            heightmap.GetChunk(obj.grid_position).objects.Remove(obj);
+            obj.grid_position = new_pos;
+            heightmap.GetChunk(obj.grid_position).objects.Add(obj);
+
+            // change visual transform
+            float z = heightmap.GetZ(new_pos) / 100.0f;
+            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()];
+            _obj.Position = new OpenTK.Vector3((float)new_pos.x, (float)z, (float)(height - new_pos.y - 1));
 
             return 0;
         }
@@ -1048,37 +1164,43 @@ namespace SpellforceDataEditor.SFMap
             SFMapInteractiveObject obj = int_object_manager.AddInteractiveObject(game_id, pos, angle, unk_byte);
 
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = render_engine.scene_manager.objects_static[obj.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(angle);
 
 
             heightmap.GetChunk(pos).AddInteractiveObject(obj);
-            render_engine.scene_manager.objects_static[obj.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
+            SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
         }
 
         public int ReplaceMonument(int monument_index, int new_monument_type)
         {
-            if ((new_monument_type < 0)||(new_monument_type > 6))
+            if ((new_monument_type < 0) || (new_monument_type > 6))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.ReplaceMonument(): invalid monument type! Monument type = " + new_monument_type.ToString());
                 return -1;
+            }
 
             List<int> monument_indexes = new List<int>();
             for (int i = 0; i < int_object_manager.int_objects.Count; i++)
                 if ((int_object_manager.int_objects[i].game_id >= 771) && (int_object_manager.int_objects[i].game_id <= 777))
                     monument_indexes.Add(i);
 
-            if ((monument_index < 0)||(monument_index >= monument_indexes.Count))
+            if ((monument_index < 0) || (monument_index >= monument_indexes.Count))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.ReplaceMonument(): invalid monument index! Monument index = " + monument_index.ToString());
                 return -2;
+            }
 
             SFMapInteractiveObject io = int_object_manager.int_objects[monument_indexes[monument_index]];
 
-            render_engine.scene_manager.DeleteObject(io.GetObjectName());
-            render_engine.scene_manager.AddObjectObject(new_monument_type+771, io.GetObjectName());
+            SFRenderEngine.scene_manager.DeleteObject(io.GetObjectName());
+            SFRenderEngine.scene_manager.AddObjectObject(new_monument_type + 771, io.GetObjectName());
             io.game_id = new_monument_type + 771;
 
             float z = heightmap.GetZ(io.grid_position) / 100.0f;
-            SF3D.Object3D _obj = render_engine.scene_manager.objects_static[io.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[io.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)io.grid_position.x, (float)z, (float)(height - io.grid_position.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(io.angle);
@@ -1093,7 +1215,7 @@ namespace SpellforceDataEditor.SFMap
                 npc_manager.AddNPCRef(npc_id, bld);
 
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = render_engine.scene_manager.objects_static[bld.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[bld.GetObjectName()];
 
             OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)bld.game_id].collision_mesh.origin;
             float angle_rad = (float)(angle * Math.PI / 180);
@@ -1106,26 +1228,47 @@ namespace SpellforceDataEditor.SFMap
             _obj.SetAnglePlane(angle);
 
             heightmap.GetChunk(pos).AddBuilding(bld);
-            render_engine.scene_manager.objects_static[bld.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
+            SFRenderEngine.scene_manager.objects_static[bld.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
+        }
+
+        public int DeleteBuilding(int building_map_index)
+        {
+            SFMapBuilding building = null;
+            if ((building_manager.buildings.Count <= building_map_index) || (building_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.DeleteBuilding(): Invalid building index! Building index = " + building_map_index.ToString());
+                return -1;
+            }
+            building = building_manager.buildings[building_map_index];
+
+            building_manager.RemoveBuilding(building);
+
+            if (building.npc_id != 0)
+                npc_manager.RemoveNPCRef(building.npc_id);
+
+            return 0;
         }
 
         public int ReplaceBuilding(int building_map_index, ushort new_building_id)
         {
             SFMapBuilding building;
             if ((building_manager.buildings.Count <= building_map_index) || (building_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.ReplaceBuilding(): invalid building index! Building index = " + building_map_index.ToString());
                 return -1;
+            }
             building = building_manager.buildings[building_map_index];
 
-            render_engine.scene_manager.DeleteObject(building.GetObjectName());
+            SFRenderEngine.scene_manager.DeleteObject(building.GetObjectName());
             building_manager.RemoveBuildingCollisionBoundary(building.game_id);
             building_manager.AddBuildingCollisionBoundary(new_building_id);
-            render_engine.scene_manager.AddObjectBuilding(new_building_id, building.GetObjectName());
+            SFRenderEngine.scene_manager.AddObjectBuilding(new_building_id, building.GetObjectName());
 
             building.game_id = new_building_id;
             
             SFCoord pos = building.grid_position;
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = render_engine.scene_manager.objects_static[building.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[building.GetObjectName()];
 
             OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)building.game_id].collision_mesh.origin;
             float angle_rad = (float)(building.angle * Math.PI / 180);
@@ -1144,12 +1287,15 @@ namespace SpellforceDataEditor.SFMap
         {
             SFMapBuilding building = null;
             if ((building_manager.buildings.Count <= building_map_index) || (building_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.RotateBuilding(): invalid building index! Building index = " + building_map_index.ToString());
                 return -1;
+            }
             building = building_manager.buildings[building_map_index];
             
             SFCoord pos = building.grid_position;
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = render_engine.scene_manager.objects_static[building.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[building.GetObjectName()];
 
             OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)building.game_id].collision_mesh.origin;
             float angle_rad = (float)(building.angle * Math.PI / 180);
@@ -1161,6 +1307,47 @@ namespace SpellforceDataEditor.SFMap
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(building.angle);
 
+            //render_engine.scene_manager.objects_static[building.GetObjectName()+"_OUTLINE"].Rotation = OpenTK.Quaternion.FromEulerAngles(0, (float)(angle * Math.PI / 180), 0);
+
+
+
+            return 0;
+        }
+
+        public int MoveBuilding(int building_map_index, SFCoord new_pos)
+        {
+            SFMapBuilding building = null;
+            if ((building_manager.buildings.Count <= building_map_index) || (building_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MoveBuilding(): Invalid building index! Building index = " + building_map_index.ToString());
+                return -1;
+            }
+            building = building_manager.buildings[building_map_index];
+            /*if (!heightmap.CanMoveToPosition(new_pos))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MoveBuilding(): Can't move building to position " + new_pos.ToString());
+                return -2;
+            }*/
+
+            // move unit and set chunk dependency
+            heightmap.GetChunk(building.grid_position).buildings.Remove(building);
+            building.grid_position = new_pos;
+            heightmap.GetChunk(building.grid_position).buildings.Add(building);
+
+            // change visual transform
+            float z = heightmap.GetZ(new_pos) / 100.0f;
+            SF3D.Object3D obj = SFRenderEngine.scene_manager.objects_static[building.GetObjectName()];
+
+            OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)building.game_id].collision_mesh.origin;
+            float angle_rad = (float)(building.angle * Math.PI / 180);
+            OpenTK.Vector2 b_offset_rotated = new OpenTK.Vector2(b_offset.X, b_offset.Y);
+            b_offset_rotated.X = (float)((Math.Cos(angle_rad) * b_offset.X) - (Math.Sin(angle_rad) * b_offset.Y));
+            b_offset_rotated.Y = (float)((Math.Sin(angle_rad) * b_offset.X) + (Math.Cos(angle_rad) * b_offset.Y));
+
+            obj.Position = new OpenTK.Vector3((float)new_pos.x - b_offset_rotated.X, (float)z, (float)(height - new_pos.y - 1) + b_offset_rotated.Y);
+            obj.Scale = new OpenTK.Vector3(100 / 128f);
+            obj.SetAnglePlane(building.angle);
+
             return 0;
         }
 
@@ -1170,14 +1357,14 @@ namespace SpellforceDataEditor.SFMap
 
 
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = render_engine.scene_manager.objects_static[ptl.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[ptl.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(angle);
 
 
             heightmap.GetChunk(pos).AddPortal(ptl);
-            render_engine.scene_manager.objects_static[ptl.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
+            SFRenderEngine.scene_manager.objects_static[ptl.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
         }
 
         public void AddUnit(int game_id, SFCoord pos, int angle, int npc_id, int unknown, int group, int unknown2)
@@ -1194,17 +1381,23 @@ namespace SpellforceDataEditor.SFMap
             // 2. modify object transform and appearance
 
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D obj = render_engine.scene_manager.objects_static[unit.GetObjectName()];
+            SF3D.Object3D obj = SFRenderEngine.scene_manager.objects_static[unit.GetObjectName()];
             obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             obj.SetAnglePlane(angle);
             // find unit scale
             int unit_index = gamedata.categories[17].get_element_index(game_id);
             if (unit_index == -1)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit with given id does not exist! Unit id = "+game_id.ToString());
                 throw new InvalidDataException("SFMap.AddUnit(): Invalid unit ID!");
+            }
             SFCFF.SFCategoryElement unit_data = gamedata.categories[17].get_element(unit_index);
             unit_index = gamedata.categories[3].get_element_index((ushort)unit_data.get_single_variant(2).value);
-            if(unit_index == -1)
+            if (unit_index == -1)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit stats with given id does not exist! Unit stats id = " + unit_data.get_single_variant(2).value.ToString());
                 throw new InvalidDataException("SFMap.AddUnit(): Invalid unit data!");
+            }
             unit_data = gamedata.categories[3].get_element(unit_index);
             float unit_size = Math.Max(((ushort)unit_data.get_single_variant(19).value), (ushort)40) / 100.0f;
             obj.Scale = new OpenTK.Vector3(unit_size*100/128);
@@ -1213,11 +1406,17 @@ namespace SpellforceDataEditor.SFMap
         public int MoveUnit(int unit_map_index, SFCoord new_pos)
         {
             SFMapUnit unit = null;
-            if ((unit_manager.units.Count <= unit_map_index)||(unit_map_index < 0))
+            if ((unit_manager.units.Count <= unit_map_index) || (unit_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MoveUnit(): Invalid unit index! Unit index = " + unit_map_index.ToString());
                 return -1;
+            }
             unit = unit_manager.units[unit_map_index];
             if (!heightmap.CanMoveToPosition(new_pos))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MoveUnit(): Can't move unit to position "+new_pos.ToString());
                 return -2;
+            }
 
             // move unit and set chunk dependency
             heightmap.GetChunk(unit.grid_position).units.Remove(unit);
@@ -1226,7 +1425,7 @@ namespace SpellforceDataEditor.SFMap
 
             // change visual transform
             float z = heightmap.GetZ(new_pos) / 100.0f;
-            SF3D.Object3D obj = render_engine.scene_manager.objects_static[unit.GetObjectName()];
+            SF3D.Object3D obj = SFRenderEngine.scene_manager.objects_static[unit.GetObjectName()];
             obj.Position = new OpenTK.Vector3((float)new_pos.x, (float)z, (float)(height - new_pos.y - 1));
 
             return 0;
@@ -1236,10 +1435,13 @@ namespace SpellforceDataEditor.SFMap
         {
             SFMapUnit unit = null;
             if ((unit_manager.units.Count <= unit_map_index) || (unit_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.RotateUnit(): Invalid unit index! Unit index = " + unit_map_index.ToString());
                 return -1;
+            }
             unit = unit_manager.units[unit_map_index];
 
-            SF3D.Object3D obj = render_engine.scene_manager.objects_static[unit.GetObjectName()];
+            SF3D.Object3D obj = SFRenderEngine.scene_manager.objects_static[unit.GetObjectName()];
             obj.SetAnglePlane(angle);
 
             return 0;
@@ -1249,7 +1451,10 @@ namespace SpellforceDataEditor.SFMap
         {
             SFMapUnit unit = null;
             if ((unit_manager.units.Count <= unit_map_index) || (unit_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.DeleteUnit(): Invalid unit index! Unit index = " + unit_map_index.ToString());
                 return -1;
+            }
             unit = unit_manager.units[unit_map_index];
 
             unit_manager.RemoveUnit(unit);
@@ -1264,27 +1469,36 @@ namespace SpellforceDataEditor.SFMap
         {
             SFMapUnit unit = null;
             if ((unit_manager.units.Count <= unit_map_index) || (unit_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Invalid unit index! Unit index = " + unit_map_index.ToString());
                 return -1;
+            }
             unit = unit_manager.units[unit_map_index];
 
-            render_engine.scene_manager.DeleteObject(unit.GetObjectName());
-            render_engine.scene_manager.AddObjectUnit(new_unit_id, unit.GetObjectName(), false);
+            SFRenderEngine.scene_manager.DeleteObject(unit.GetObjectName());
+            SFRenderEngine.scene_manager.AddObjectUnit(new_unit_id, unit.GetObjectName(), false);
 
             unit.game_id = new_unit_id;
 
             // object transform
             float z = heightmap.GetZ(unit.grid_position) / 100.0f;
-            SF3D.Object3D obj = render_engine.scene_manager.objects_static[unit.GetObjectName()];
+            SF3D.Object3D obj = SFRenderEngine.scene_manager.objects_static[unit.GetObjectName()];
             obj.Position = new OpenTK.Vector3((float)unit.grid_position.x, (float)z, (float)(height - unit.grid_position.y - 1));
             obj.SetAnglePlane(unit.angle);
             // unit scale
             int unit_index = gamedata.categories[17].get_element_index(unit.game_id);
             if (unit_index == -1)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Unit with given id does not exist! Unit id = " + unit.game_id.ToString());
                 throw new InvalidDataException("SFMap.ReplaceUnit(): Invalid unit ID!");
+            }
             SFCFF.SFCategoryElement unit_data = gamedata.categories[17].get_element(unit_index);
             unit_index = gamedata.categories[3].get_element_index((ushort)unit_data.get_single_variant(2).value);
             if (unit_index == -1)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit stats with given id does not exist! Unit stats id = " + unit_data.get_single_variant(2).value.ToString());
                 throw new InvalidDataException("SFMap.ReplaceUnit(): Invalid unit data!");
+            }
             unit_data = gamedata.categories[3].get_element(unit_index);
             float unit_size = Math.Max(((ushort)unit_data.get_single_variant(19).value), (ushort)40) / 100.0f;
             obj.Scale = new OpenTK.Vector3(unit_size * 100 / 128);

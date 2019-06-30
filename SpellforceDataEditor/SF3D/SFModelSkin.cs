@@ -33,6 +33,7 @@ namespace SpellforceDataEditor.SF3D
 
         public SFMaterial material = null;
         public int[] bones = null;
+        public string bsi_name = ""+Utility.S_NONAME;
 
         public int vertex_array = -1;
         public int vertex_buffer, uv_buffer, normal_buffer, bone_index_buffer, bone_weight_buffer, element_buffer;
@@ -124,9 +125,13 @@ namespace SpellforceDataEditor.SF3D
             {
                 int bsi_code = SFResourceManager.BSIs.Load(SFResourceManager.current_resource);
                 if (bsi_code != 0)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkinChunk.Load(): Could not load bone skin index file (BSI name = " + SFResourceManager.current_resource + ")");
                     return bsi_code;
+                }
                 bsi = SFResourceManager.BSIs.Get(SFResourceManager.current_resource);
             }
+            SetName(SFResourceManager.current_resource);
             bones = new int[bsi.bone_index_remap[chunk_id].Length];
             bsi.bone_index_remap[chunk_id].CopyTo(bones, 0);
 
@@ -146,7 +151,7 @@ namespace SpellforceDataEditor.SF3D
             material.matDepthBias = br.ReadByte();
             material.texTiling = br.ReadSingle();
             char[] chars = br.ReadChars(64);
-            matname = new string(chars);
+            matname = new string(chars).ToLower();
             matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
 
             SFTexture tex = SFResourceManager.Textures.Get(matname);
@@ -154,7 +159,10 @@ namespace SpellforceDataEditor.SF3D
             {
                 int tex_code = SFResourceManager.Textures.Load(matname);
                 if (tex_code != 0)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkinChunk.Load(): Could not load texture (texture name = " + matname + ")");
                     return tex_code;
+                }
                 tex = SFResourceManager.Textures.Get(matname);
             }
             material.texture = tex;
@@ -168,12 +176,12 @@ namespace SpellforceDataEditor.SF3D
 
         public void SetName(string s)
         {
-            
+            bsi_name = s;
         }
 
         public string GetName()
         {
-            return Utility.S_NONAME;
+            return bsi_name;
         }
 
         public void Dispose()
@@ -222,7 +230,10 @@ namespace SpellforceDataEditor.SF3D
                 chunk.chunk_id = i;
                 int return_code = chunk.Load(ms);
                 if (return_code != 0)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkin.Load(): Could not load skin chunk (chunk ID = " + i.ToString() + ")");
                     return return_code;
+                }
             }
             return 0;
         }

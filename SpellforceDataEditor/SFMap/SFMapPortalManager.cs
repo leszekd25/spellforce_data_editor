@@ -46,7 +46,7 @@ namespace SpellforceDataEditor.SFMap
             portals.Add(ptl);
 
             string ptl_name = ptl.GetObjectName();
-            map.render_engine.scene_manager.AddObjectObject(778, ptl_name);   // portal id
+            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(778, ptl_name);   // portal id
             return ptl;
         }
     }

@@ -159,8 +159,22 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             SFMapBuilding building = map.building_manager.buildings[selected_building];
             SelectedBuildingAngle.Text = SelectedBuildingAngleTrackBar.Value.ToString();
+
+            // clear overlay at current building
+            /*HashSet<SFCoord> pot_cells_taken = new HashSet<SFCoord>();
+            map.building_manager.BoundaryFits(building.game_id, building.grid_position, building.angle, pot_cells_taken);
+            foreach (SFCoord p in pot_cells_taken)
+                map.heightmap.OverlayRemove("BuildingBlock", p);*/
+
             building.angle = SelectedBuildingAngleTrackBar.Value;
             map.RotateBuilding(selected_building, building.angle);
+
+            /*map.building_manager.BoundaryFits(building.game_id, building.grid_position, building.angle, pot_cells_taken);
+            foreach (SFCoord p in pot_cells_taken)
+                map.heightmap.OverlayAdd("BuildingBlock", p);
+
+            foreach (SFMapHeightMapChunk chunk in map.heightmap.chunks)
+                chunk.OverlayUpdate("BuildingBlock");*/
 
             MainForm.mapedittool.update_render = true;
         }
@@ -221,6 +235,102 @@ namespace SpellforceDataEditor.SFMap.map_controls
             }
         }
 
+        public override void OnMouseDown(SFCoord clicked_pos, MouseButtons button)
+        {
+            if (map == null)
+                return;
+
+            SFCoord fixed_pos = new SFCoord(clicked_pos.x, map.height - clicked_pos.y - 1);
+            // get unit under position
+            SFMapBuilding building = null;
+            foreach(SFMapBuilding b in map.building_manager.buildings)
+            {
+                float sel_scale = SF3D.SFRender.SFRenderEngine.scene_manager.mesh_data.GetBuildingSelectionSize(b.game_id)/2;
+
+                OpenTK.Vector2 off = map.building_manager.building_collision[(ushort)b.game_id].collision_mesh.origin;
+                float angle = (float)(b.angle * Math.PI / 180);
+                OpenTK.Vector2 r_off = new OpenTK.Vector2(off.X, off.Y);
+                r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
+                r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
+                SFCoord offset_pos = new SFCoord((int)r_off.X, (int)r_off.Y);
+
+                if (SFCoord.Distance(b.grid_position-offset_pos, fixed_pos) <= sel_scale)
+                {
+                    building = b;
+                    break;
+                }
+            }
+
+            // if no unit under the cursor and left mouse clicked, create new unit
+            if (building == null)
+            {
+                if (button == MouseButtons.Left)
+                {
+                    // if dragging unit, just move selected unit, dont create a new one
+                    if (drag_enabled)
+                    {
+                        //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                            map.MoveBuilding(selected_building, fixed_pos);
+                    }
+                    else
+                    {
+                        // check if can place
+                        //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                        //{
+                        ushort new_building_id = Utility.TryParseUInt16(BuildingToPlaceID.Text);
+                        if (map.gamedata.categories[23].get_element_index(new_building_id) == -1)
+                            return;
+                        // create new unit and drag it until mouse released
+                        map.AddBuilding(new_building_id, fixed_pos, 0, 0, 0, 0);
+                        ListBuildings.Items.Add(GetBuildingString(map.building_manager.buildings[map.building_manager.buildings.Count - 1]));
+                        SelectBuilding(map.building_manager.buildings.Count - 1, false);
+                        drag_enabled = true;
+                        //}
+                    }
+                }
+            }
+            else
+            {
+                if (button == MouseButtons.Left)
+                {
+                    // if dragging unit, just move selected unit, dont create a new one
+                    if (drag_enabled)
+                    {
+                        //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                            map.MoveBuilding(selected_building, fixed_pos);
+                    }
+                    else
+                    {
+                        // find selected unit id
+                        int building_map_index = map.building_manager.buildings.IndexOf(building);
+                        if (building_map_index == -1)
+                            return;
+
+                        SelectBuilding(building_map_index, false);
+                        drag_enabled = true;
+                    }
+                }
+                // delete unit
+                else if (button == MouseButtons.Right)
+                {
+                    int building_map_index = map.building_manager.buildings.IndexOf(building);
+                    if (building_map_index == -1)
+                        return;
+
+                    if (building_map_index == selected_building)
+                        SelectBuilding(-1, false);
+
+                    map.DeleteBuilding(building_map_index);
+                    ListBuildings.Items.RemoveAt(building_map_index);
+                }
+            }
+        }
+
+        public override void OnMouseUp()
+        {
+            drag_enabled = false;
+        }
+
         private void SelectedBuildingNPCID_MouseDown(object sender, MouseEventArgs e)
         {
             if (selected_building == -1)
@@ -246,6 +356,61 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 map.building_manager.buildings[selected_building].npc_id = npc_id;
                 SelectedBuildingNPCID.Text = npc_id.ToString();
             }
+        }
+
+        private void BuildingListFindNext_Click(object sender, EventArgs e)
+        {
+            if (map == null)
+                return;
+
+            string search_phrase = BuildingListSearchPhrase.Text.ToLower();
+            if (search_phrase == "")
+                return;
+
+            int search_start = ListBuildings.SelectedIndex;
+
+            for (int i = search_start + 1; i < map.building_manager.buildings.Count; i++)
+                if (ListBuildings.Items[i].ToString().ToLower().Contains(search_phrase))
+                {
+                    ListBuildings.SelectedIndex = i;
+                    return;
+                }
+
+            for (int i = 0; i <= search_start; i++)
+                if (ListBuildings.Items[i].ToString().ToLower().Contains(search_phrase))
+                {
+                    ListBuildings.SelectedIndex = i;
+                    return;
+                }
+        }
+
+        private void BuildingListFindPrevious_Click(object sender, EventArgs e)
+        {
+            if (map == null)
+                return;
+
+            string search_phrase = BuildingListSearchPhrase.Text.ToLower();
+            if (search_phrase == "")
+                return;
+
+            int search_start = ListBuildings.SelectedIndex;
+
+            for (int i = search_start - 1; i >= 0; i--)
+                if (ListBuildings.Items[i].ToString().ToLower().Contains(search_phrase))
+                {
+                    ListBuildings.SelectedIndex = i;
+                    return;
+                }
+
+            if (search_start == -1)
+                search_start = 0;
+
+            for (int i = map.building_manager.buildings.Count - 1; i >= search_start; i--)
+                if (ListBuildings.Items[i].ToString().ToLower().Contains(search_phrase))
+                {
+                    ListBuildings.SelectedIndex = i;
+                    return;
+                }
         }
     }
 }

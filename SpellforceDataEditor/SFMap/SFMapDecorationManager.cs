@@ -53,9 +53,16 @@ namespace SpellforceDataEditor.SFMap
         public int AddDecoration(ushort d_id, byte d_w)
         {
             if (dec_used == 29)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapDecorationManager.AddDecoration(): Maximum decoration capacity reached!");
                 return -1;
+            }
             if (d_w == 0)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapDecorationManager.AddDecoration(): Invalid weight specified! Weight = 0");
+
                 return -2;
+            }
 
 
             dec_used += 1;
@@ -67,10 +74,16 @@ namespace SpellforceDataEditor.SFMap
 
         public int RemoveDecoration(int dec_index)
         {
-            if((dec_index < 0)||(dec_index >= 30))
+            if ((dec_index < 0) || (dec_index >= 30))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMapDecorationManager.RemoveDecoration(): Invalid decoration index specified! Decoration index = "+dec_index.ToString());
                 return -1;
+            }
             if (weight[dec_index] == 0)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMapDecorationManager.RemoveDecoration(): Decoration with specified index does not exist! Decoration index = "+dec_index.ToString());
                 return -2;
+            }
 
             for(int i = dec_index; i < dec_used; i++)
             {
@@ -100,11 +113,11 @@ namespace SpellforceDataEditor.SFMap
             decorations.Add(dec);
 
             string dec_name = dec.GetObjectName();
-            map.render_engine.scene_manager.AddObjectObject(id, dec_name);
+            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(id, dec_name);
             
             // 3. add new unit in respective chunk
             map.heightmap.GetChunk(position).AddDecoration(dec);
-            map.render_engine.scene_manager.objects_static[dec_name].Visible = map.heightmap.GetChunk(position).Visible;
+            SF3D.SFRender.SFRenderEngine.scene_manager.objects_static[dec_name].Visible = map.heightmap.GetChunk(position).Visible;
 
             return dec;
         }
@@ -113,7 +126,7 @@ namespace SpellforceDataEditor.SFMap
         {
             decorations.Remove(d);
 
-            map.render_engine.scene_manager.DeleteObject(d.GetObjectName());
+            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject(d.GetObjectName());
 
             map.heightmap.GetChunk(d.grid_position).RemoveDecoration(d);
         }
@@ -123,8 +136,8 @@ namespace SpellforceDataEditor.SFMap
             if (d.game_id == new_id)
                 return;
 
-            map.render_engine.scene_manager.DeleteObject(d.GetObjectName());
-            map.render_engine.scene_manager.AddObjectObject(new_id, d.GetObjectName());
+            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject(d.GetObjectName());
+            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(new_id, d.GetObjectName());
         }
 
         public byte GetDecAssignment(SFCoord pos)

@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using OpenTK;
 using System.IO;
 using SpellforceDataEditor.SFMap;
+using SpellforceDataEditor.SF3D.SFRender;
 
 namespace SpellforceDataEditor.special_forms
 {
@@ -19,7 +20,6 @@ namespace SpellforceDataEditor.special_forms
     public partial class MapEditorForm : Form
     {
         SFMap.SFMap map = null;
-        SF3D.SFRender.SFRenderEngine render_engine = new SF3D.SFRender.SFRenderEngine();
         SFCFF.SFGameData gamedata = null;
 
         bool dynamic_render = false;     // if true, window will redraw every frame at 25 fps
@@ -28,18 +28,20 @@ namespace SpellforceDataEditor.special_forms
 
         bool mouse_on_view = false;      // if true, mouse is in render window
         public bool update_render = false;
-        Vector2 scroll_movement = new Vector2(0, 0);   // how much is camera going to move this frame
-        SFCoord cursor_coord = new SFCoord(0, 0);      // map coordinates at mouse cursor
+        Vector2 scroll_mouse_start = new Vector2(0, 0);
+        bool mouse_scroll = false;
         int gc_timer = 0;
 
         MAPEDIT_MODE edit_mode = MAPEDIT_MODE.HMAP;
         SFMap.map_controls.MapInspectorBaseControl[] edit_controls = new SFMap.map_controls.MapInspectorBaseControl[(int)MAPEDIT_MODE.MAX];
 
+        OpenTK.GLControl RenderWindow = null;
+
         public MapEditorForm()
         {
             InitializeComponent();
             TimerAnimation.Enabled = true;
-            TimerAnimation.Interval = 1000 / render_engine.scene_manager.frames_per_second;
+            TimerAnimation.Interval = 1000 / SFRenderEngine.scene_manager.frames_per_second;
             TimerAnimation.Start();
 
             // add controls
@@ -59,11 +61,13 @@ namespace SpellforceDataEditor.special_forms
             edit_controls[10] = new SFMap.map_controls.MapInspectorMetadataControl();
 
             for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
+            {
                 if (edit_controls[i] != null)
                 {
                     InspectorPanel.Controls.Add(edit_controls[i]);
-                    edit_controls[i].map = map;
+                    edit_controls[i].Enabled = false;
                 }
+            }
 
             for (int i = 0; i < InspectorPanel.Controls.Count; i++)
             { 
@@ -75,8 +79,51 @@ namespace SpellforceDataEditor.special_forms
 
             SetEditMode(MAPEDIT_MODE.HMAP);
         }
+        
+        private void MapEditorForm_Load(object sender, EventArgs e)
+        {
+            SFResources.SFResourceManager.FindAllMeshes();
+            SFLua.SFLuaEnvironment.Init();
+
+            LogUtils.Log.MemoryUsage();
+        }
+
+        private void MapEditorForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if(CloseMap() != 0)
+                e.Cancel = true;
+        }
+
+        private void MapEditorForm_Resize(object sender, EventArgs e)
+        {
+            if(RenderWindow!=null)
+                ResizeWindow();
+        }
 
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CloseMap();
+            LoadMap();
+        }
+
+        private void saveMapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveMap();
+        }
+
+        private void closeMapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CloseMap();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+
+
+        private int LoadMap()
         {
             if (OpenMap.ShowDialog() == DialogResult.OK)
             {
@@ -90,7 +137,7 @@ namespace SpellforceDataEditor.special_forms
                             if (MainForm.data.close_data() == DialogResult.Cancel)
                             {
                                 StatusText.Text = "Could not load game data: Another game data is already loaded, which will cause desync!";
-                                return;
+                                return -1;
                             }
                         }
                     }
@@ -103,88 +150,218 @@ namespace SpellforceDataEditor.special_forms
                 if (gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
                 {
                     StatusText.Text = "Failed to load gamedata";
-                    return;
+                    return -2;
                 }
 
-                if(MainForm.data != null)
+                if (MainForm.data != null)
                     MainForm.data.mapeditor_set_gamedata(gamedata);
                 else
                     SFCFF.SFCategoryManager.manual_set_gamedata(gamedata);
+                
+                CreateRenderWindow();
 
                 map = new SFMap.SFMap();
                 try
                 {
-                    if (map.Load(OpenMap.FileName, render_engine, gamedata, StatusText) != 0)
+                    if (map.Load(OpenMap.FileName, gamedata, StatusText) != 0)
                     {
                         StatusText.Text = "Failed to load map";
-                        return;
+                        DestroyRenderWindow();
+                        return -3;
                     }
                 }
                 catch (InvalidDataException)
                 {
                     StatusText.Text = "Map contains invalid data!";
-                    return;
+                    DestroyRenderWindow();
+                    return -4;
                 }
-                render_engine.AssignHeightMap(map.heightmap);
+                SFRenderEngine.AssignHeightMap(map.heightmap);
 
                 for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
                     if (edit_controls[i] != null)
                     {
-                        InspectorPanel.Controls.Add(edit_controls[i]);
                         edit_controls[i].map = map;
+                        edit_controls[i].Enabled = true;
                     }
 
                 // ui initialization
                 ((SFMap.map_controls.MapInspectorTerrainTextureControl)(edit_controls[1])).GenerateBaseTexturePreviews();
                 ((SFMap.map_controls.MapInspectorTerrainTextureControl)(edit_controls[1])).GenerateTileListEntries();
 
+                map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
+                map.selection_helper.SetCursorVisibility(true);
+
                 RenderWindow.Invalidate();
 
-                if(MainForm.data != null)
+                if (MainForm.data != null)
+                {
+                    LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap(): Synchronized with gamedata editor");
                     MessageBox.Show("Note: Editor now operates on gamedata file in your Spellforce directory. Modifying in-editor gamedata and saving results will result in permanent change to your gamedata in your Spellforce directory.");
+                }
+
+                LogUtils.Log.MemoryUsage();
+                return 0;
             }
+
+            return -5;
         }
 
-        private void MapEditorForm_Load(object sender, EventArgs e)
+
+
+        private DialogResult SaveMap()
         {
-            if (File.Exists("game_directory.txt"))
+            if (map == null)
+                return DialogResult.No;
+
+
+            DialogResult dr = DialogSaveMap.ShowDialog();
+
+            if (dr == DialogResult.OK)
             {
-                string gamedir = File.ReadAllText("game_directory.txt");
-                int result = SFUnPak.SFUnPak.SpecifyGameDirectory(gamedir); //render_engine.SpecifyGameDirectory(dname);
-                if (result == 0)
+                StatusText.Text = "Saving the map...";
+                if (map.Save(DialogSaveMap.FileName) != 0)
                 {
-                    //ready = true;
-                    SFResources.SFResourceManager.FindAllMeshes();
-                    SFLua.SFLuaEnvironment.Init();
+                    StatusText.Text = "Failed to save map";
+                    return DialogResult.No;
                 }
-                else
-                    Close();
-                //return result;
+                StatusText.Text = DialogSaveMap.FileName + " saved successfully";
+                if (MainForm.data != null)
+                {
+                    if (MainForm.data.data_changed)
+                    {
+                        // important: remove created NPC IDs that are not used
+                        foreach (int npc_id in ((SFMap.map_controls.MapInspectorNPCControl)edit_controls[8]).created_npc_ids)
+                            if (!map.npc_manager.npc_info.ContainsKey(npc_id))
+                                ((SFMap.map_controls.MapInspectorNPCControl)edit_controls[8]).RemoveNewNPCID(npc_id);
+                        MainForm.data.save_data();
+                        ((SFMap.map_controls.MapInspectorNPCControl)edit_controls[8]).created_npc_ids.Clear();
+                    }
+                }
             }
 
-            render_engine.Initialize(new Vector2(RenderWindow.ClientSize.Width, RenderWindow.ClientSize.Height));
-            render_engine.camera.Position = new Vector3(0, 25, 12);
-            render_engine.camera.Lookat = new Vector3(0, 0, 0);
-            render_engine.scene_manager.gamedata = gamedata;
+            return dr;
+        }
 
-            RenderWindow.Invalidate();
+
+
+        private int CloseMap()
+        {
+            if (map == null)
+                return 0;
+
+            DialogResult dr = MessageBox.Show(
+                "Do you want to save the map before quitting? This will also overwrite gamedata if modified", "Save before quit?", MessageBoxButtons.YesNoCancel);
+            if (dr == DialogResult.Cancel)
+                return -1;
+            else if(dr == DialogResult.Yes)
+            {
+                if (SaveMap() == DialogResult.Cancel)
+                    return -2;
+            }
+
+            map.Unload();
+            if (MainForm.data != null)
+            {
+                MainForm.data.close_data();
+                MainForm.data.mapeditor_desynchronize();
+            }
+            else
+                SFCFF.SFCategoryManager.unload_all();
+            SFRenderEngine.scene_manager.ClearScene();
+            SFRenderEngine.AssignHeightMap(null);
+            if (MainForm.viewer != null)
+                MainForm.viewer.ResetScene();
+            for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
+                if (edit_controls[i] != null)
+                {
+                    edit_controls[i].Enabled = false;
+                    edit_controls[i].map = null;
+                }
+            map = null;
+            // for good measure (bad! bad!) (TODO: make this do nothing since all resources should be properly disposed at this point)                for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
+            SFResources.SFResourceManager.DisposeAll();
+            DestroyRenderWindow();
+            GC.Collect();
+
+            LogUtils.Log.MemoryUsage();
+
+            return 0;
+        }
+
+        // moved from designer to code, experimenting with memory usage
+        private void CreateRenderWindow()
+        {
+            if (RenderWindow != null)
+                return;
+
+            this.RenderWindow = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(32), 24, 8, 4));
+            this.RenderWindow.BackColor = System.Drawing.Color.Black;
+            this.RenderWindow.Location = new System.Drawing.Point(511, 52);
+            this.RenderWindow.Name = "RenderWindow";
+            this.RenderWindow.Size = new System.Drawing.Size(589, 589);
+            this.RenderWindow.TabIndex = 2;
+            this.RenderWindow.VSync = true;
+            this.RenderWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
+            this.RenderWindow.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseDown);
+            this.RenderWindow.MouseEnter += new System.EventHandler(this.RenderWindow_MouseEnter);
+            this.RenderWindow.MouseLeave += new System.EventHandler(this.RenderWindow_MouseLeave);
+            this.RenderWindow.MouseMove += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseMove);
+            this.RenderWindow.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
+            this.Controls.Add(this.RenderWindow);
+            
+            SFRenderEngine.Initialize(new Vector2(RenderWindow.ClientSize.Width, RenderWindow.ClientSize.Height));
+            SFRenderEngine.camera.Position = new Vector3(0, 25, 12);
+            SFRenderEngine.camera.Lookat = new Vector3(0, 0, 0);
+
+            ResizeWindow();
+        }
+
+        // after this is called, memory will be freed (?)
+        private void DestroyRenderWindow()
+        {
+            if (RenderWindow == null)
+                return;
+
+            this.RenderWindow.Paint -= new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
+            this.RenderWindow.MouseDown -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseDown);
+            this.RenderWindow.MouseEnter -= new System.EventHandler(this.RenderWindow_MouseEnter);
+            this.RenderWindow.MouseLeave -= new System.EventHandler(this.RenderWindow_MouseLeave);
+            this.RenderWindow.MouseMove -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseMove);
+            this.RenderWindow.MouseUp -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
+
+            this.Controls.Remove(RenderWindow);
+            this.RenderWindow.Dispose();
+            this.RenderWindow = null;
         }
 
         private void RenderWindow_Paint(object sender, PaintEventArgs e)
         {
             RenderWindow.MakeCurrent();
-            render_engine.RenderFrame();
+            SFRenderEngine.RenderFrame();
             RenderWindow.SwapBuffers();
         }
 
         private void RenderWindow_MouseDown(object sender, MouseEventArgs e)
         {
+            if(e.Button == MouseButtons.Middle)
+            {
+                scroll_mouse_start = new Vector2(Cursor.Position.X, Cursor.Position.Y);
+                mouse_scroll = true;
+                return;
+            }
             mouse_pressed = true;
             mouse_last_pressed = e.Button;
         }
 
         private void RenderWindow_MouseUp(object sender, MouseEventArgs e)
         {
+            if (e.Button == MouseButtons.Middle)
+            {
+                scroll_mouse_start = new Vector2(0, 0);
+                mouse_scroll = false;
+                return;
+            }
             mouse_pressed = false;
             edit_controls[(int)edit_mode].OnMouseUp();
             update_render = true;
@@ -194,29 +371,17 @@ namespace SpellforceDataEditor.special_forms
         {  
             if (!mouse_on_view)
                 return;
+        }
 
-            float cam_speed = 51; //limited by framerate
-            Vector2 camera_movement = new Vector2(0, 0);
-            // location of mouse relative to window
+        private void RenderWindow_MouseLeave(object sender, EventArgs e)
+        {
+            mouse_on_view = false;
+            mouse_pressed = false;
+        }
 
-            float px, py;
-            px = Cursor.Position.X - this.Location.X - RenderWindow.Location.X;
-            py = Cursor.Position.Y - this.Location.Y - RenderWindow.Location.Y;
-            if (px < 32)
-                camera_movement.X = -cam_speed / render_engine.scene_manager.frames_per_second;
-            else if (px > RenderWindow.Size.Width - 32)
-                camera_movement.X = cam_speed / render_engine.scene_manager.frames_per_second;
-            if (py < 64)
-                camera_movement.Y = -cam_speed / render_engine.scene_manager.frames_per_second;
-            else if (py > RenderWindow.Size.Height - 32)
-                camera_movement.Y = cam_speed / render_engine.scene_manager.frames_per_second;
-
-            scroll_movement = camera_movement;
-            if (camera_movement != new Vector2(0, 0))
-                EnableAnimation();
-            else
-                DisableAnimation();
-            
+        private void RenderWindow_MouseEnter(object sender, EventArgs e)
+        {
+            mouse_on_view = true;
         }
 
         private void RenderWindow_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
@@ -227,14 +392,13 @@ namespace SpellforceDataEditor.special_forms
         private void EnableAnimation()
         {
             dynamic_render = true;
-            render_engine.scene_manager.delta_timer.Restart();
+            SFRenderEngine.scene_manager.delta_timer.Restart();
         }
 
         private void DisableAnimation()
         {
             dynamic_render = false;
-            render_engine.scene_manager.delta_timer.Stop();
-            scroll_movement = new Vector2(0, 0);
+            SFRenderEngine.scene_manager.delta_timer.Stop();
         }
 
         private void TimerAnimation_Tick(object sender, EventArgs e)
@@ -242,17 +406,17 @@ namespace SpellforceDataEditor.special_forms
             if (map == null)
                 return;
 
-            if (mouse_pressed)
+            if (mouse_on_view)
             {
                 // generate ray
                 float px, py;
                 px = Cursor.Position.X - this.Location.X - RenderWindow.Location.X;
-                py = Cursor.Position.Y - this.Location.Y - RenderWindow.Location.Y;
+                py = Cursor.Position.Y - this.Location.Y - RenderWindow.Location.Y - 29;
                 float wx, wy;
-                wx = px / RenderWindow.Size.Width;
-                wy = py / RenderWindow.Size.Height;
-                Vector3[] frustrum_vertices = render_engine.camera.FrustrumVertices;
-                Vector3 r_start = render_engine.camera.Position;
+                wx = px / RenderWindow.Size.Width;  wx = (wx+0.09f)*0.84f;
+                wy = py / RenderWindow.Size.Height; wy = (wy+0.11f)*0.84f;
+                Vector3[] frustrum_vertices = SFRenderEngine.camera.FrustrumVertices;
+                Vector3 r_start = SFRenderEngine.camera.Position;
                 Vector3 r_end = frustrum_vertices[4]
                     + wx * (frustrum_vertices[5] - frustrum_vertices[4])
                     + wy * (frustrum_vertices[6] - frustrum_vertices[4]);
@@ -274,21 +438,36 @@ namespace SpellforceDataEditor.special_forms
                 }
                 if (ray_success)
                 {
-                    cursor_coord = new SFCoord((int)result.X, (int)result.Z);
+                    SFCoord cursor_coord = new SFCoord((int)result.X, (int)result.Z);
+                    if ((result.X < 0) || (result.Z < 0))
+                        cursor_coord = new SFCoord(0, 0);
+                    if(map.selection_helper.SetCursorPosition(cursor_coord))
+                        update_render = true;
                     StatusText.Text = "MAP POS: " + cursor_coord.ToString();
 
                     // on click action
-                    edit_controls[(int)edit_mode].OnMouseDown(cursor_coord, mouse_last_pressed);
-                    update_render = true;
+                    if (mouse_pressed)
+                    {
+                        edit_controls[(int)edit_mode].OnMouseDown(cursor_coord, mouse_last_pressed);
+                        update_render = true;
+                    }
                 }
+            }
+
+            if(mouse_scroll)
+            {
+                float mouse_scroll_factor = 0.01f;
+                Vector2 scroll_mouse_end = new Vector2(Cursor.Position.X, Cursor.Position.Y);
+                Vector2 scroll_translation = (scroll_mouse_end - scroll_mouse_start)*mouse_scroll_factor;
+                SFRenderEngine.camera.translate(new Vector3(scroll_translation.X, 0, scroll_translation.Y));
+                update_render = true;
             }
 
             if ((dynamic_render)||(update_render))
             {
                 map.selection_helper.UpdateSelection();
-                render_engine.camera.translate(new Vector3(scroll_movement.X, 0, scroll_movement.Y));
                 AdjustCameraZ();
-                render_engine.scene_manager.LogicStep();
+                SFRenderEngine.scene_manager.LogicStep();
                 RenderWindow.Invalidate();
                 update_render = false;
             }
@@ -307,67 +486,18 @@ namespace SpellforceDataEditor.special_forms
         {
             if(map != null)
             {
-                Vector2 p = new Vector2(render_engine.camera.Position.X, render_engine.camera.Position.Z);
+                Vector2 p = new Vector2(SFRenderEngine.camera.Position.X, SFRenderEngine.camera.Position.Z);
                 float z = map.heightmap.GetRealZ(p);
-                render_engine.camera.translate(new Vector3(0, 25+z - render_engine.camera.Position.Y, 0));
+                SFRenderEngine.camera.translate(new Vector3(0, 25+z - SFRenderEngine.camera.Position.Y, 0));
             }
         }
 
         public void SetCameraViewPoint(SFCoord pos)
         {
             Vector3 new_camera_pos = new Vector3(pos.x, 0, map.heightmap.height - pos.y - 1 + 12);
-            render_engine.camera.translate(new_camera_pos - render_engine.camera.Position);
+            SFRenderEngine.camera.translate(new_camera_pos - SFRenderEngine.camera.Position);
             AdjustCameraZ();
             update_render = true;
-        }
-
-        private void MapEditorForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (map != null)
-            {
-                map.Unload();
-                if (MainForm.data != null)
-                {
-                    MainForm.data.close_data();
-                    MainForm.data.mapeditor_desynchronize();
-                }
-                else
-                    SFCFF.SFCategoryManager.unload_all();
-                render_engine.scene_manager.ClearScene();
-                render_engine.AssignHeightMap(null);
-                if (MainForm.viewer != null)
-                    MainForm.viewer.ResetScene();
-                // for good measure (bad! bad!)
-                SFResources.SFResourceManager.DisposeAll();
-                GC.Collect();
-            }
-        }
-
-        private void saveMapToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (map == null)
-                return;
-
-            if (SaveMap.ShowDialog() == DialogResult.OK)
-            {
-                StatusText.Text = "Saving the map...";
-                if (map.Save(SaveMap.FileName) != 0)
-                    StatusText.Text = "Failed to save map";
-                else
-                    StatusText.Text = SaveMap.FileName+ " saved successfully";
-                if(MainForm.data != null)
-                {
-                    if(MainForm.data.data_changed)
-                    {
-                        // important: remove created NPC IDs that are not used
-                        foreach(int npc_id in ((SFMap.map_controls.MapInspectorNPCControl)edit_controls[8]).created_npc_ids)
-                            if (!map.npc_manager.npc_info.ContainsKey(npc_id))
-                                ((SFMap.map_controls.MapInspectorNPCControl)edit_controls[8]).RemoveNewNPCID(npc_id);
-                        MainForm.data.save_data();
-                        ((SFMap.map_controls.MapInspectorNPCControl)edit_controls[8]).created_npc_ids.Clear();
-                    }
-                }
-            }
         }
 
         private void ResizeWindow()
@@ -379,24 +509,8 @@ namespace SpellforceDataEditor.special_forms
             RenderWindow.Size = new Size(w_size, w_size);
             PanelModes.Size = new Size(PanelModes.Size.Width, w_size + 3);
             InspectorPanel.Size = new Size(RenderWindow.Location.X - PanelModes.Size.Width - 12, w_size);
-            render_engine.ResizeView(new Vector2(w_size, w_size));
+            SFRenderEngine.ResizeView(new Vector2(w_size, w_size));
             RenderWindow.Invalidate();
-        }
-
-        private void MapEditorForm_Resize(object sender, EventArgs e)
-        {
-            ResizeWindow();
-        }
-
-        private void RenderWindow_MouseLeave(object sender, EventArgs e)
-        {
-            mouse_on_view = false;
-            mouse_pressed = false;
-        }
-
-        private void RenderWindow_MouseEnter(object sender, EventArgs e)
-        {
-            mouse_on_view = true;
         }
 
         public void SetEditMode(MAPEDIT_MODE mode)

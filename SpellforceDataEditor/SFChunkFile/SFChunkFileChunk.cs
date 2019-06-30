@@ -62,6 +62,7 @@ namespace SpellforceDataEditor.SFChunkFile
         {
             if (datastream != null)
             {
+                LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.Open(): Chunk already open");
                 databr.BaseStream.Position = 0;
                 return databr;
             }
@@ -73,7 +74,10 @@ namespace SpellforceDataEditor.SFChunkFile
         public void Close()
         {
             if (datastream == null)
+            {
+                LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.Close(): Chunk already closed");
                 return;
+            }
             databr.Close();
             datastream.Close();
             databr = null;
@@ -91,6 +95,7 @@ namespace SpellforceDataEditor.SFChunkFile
                 }
                 catch (EndOfStreamException)
                 {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.Read(): Error reading chunk data");
                     return -4;
                 }
                 return 0;
@@ -107,6 +112,7 @@ namespace SpellforceDataEditor.SFChunkFile
                 }
                 catch (EndOfStreamException)
                 {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.Read(): Error reading chunk data");
                     return -4;
                 }
 
@@ -126,11 +132,15 @@ namespace SpellforceDataEditor.SFChunkFile
                 }
                 catch (Exception)
                 {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.Read(): Error decompressing chunk data!");
                     return -2;
                 }
 
                 if (data.Length != get_unpacked_data_length())
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.Read(): Decompressed data length does not match expected length! Expected: "+get_unpacked_data_length().ToString()+", got: "+data.Length.ToString());
                     return -3;
+                }
                 return 0;
             }
         }
@@ -152,11 +162,13 @@ namespace SpellforceDataEditor.SFChunkFile
                             br.BaseStream.Position -= 16;
                         return 0;
                     default:
+                        LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.ReadHeader(): Unknown chunk type (chunk type = "+chunk_mode.ToString()+")");
                         return -1;
                 }
             }
             catch(EndOfStreamException)
             {
+                LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.ReadHeader(): Error reading chunk header");
                 return -2;
             }
         }

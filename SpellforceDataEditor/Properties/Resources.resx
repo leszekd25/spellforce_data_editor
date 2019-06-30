@@ -175,19 +175,6 @@ void main(){
   UV = vertexUV;
 }</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="object_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\object_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="hmap_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\hmap_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="lake_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\lake_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="metadata_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\metadata_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="vshader" xml:space="preserve">
     <value>#version 330 core
 
@@ -209,9 +196,6 @@ void main(){
   fragmentColor = vertexColor;
 }</value>
   </data>
-  <data name="enemycamp_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\enemycamp_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="vshader_overlay" xml:space="preserve">
     <value>#version 330 core
 
@@ -229,12 +213,6 @@ void main(){
   gl_Position = MVP * vec4(vertexPosition_modelspace,1);
   fragmentColor = Color;
 }</value>
-  </data>
-  <data name="building_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\building_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="unit_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\unit_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="fshader" xml:space="preserve">
     <value>#version 330 core
@@ -267,12 +245,6 @@ void main(){
   color = fragmentColor;
 }</value>
   </data>
-  <data name="texture_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\texture_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="flag_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\flag_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="fshader_hmap" xml:space="preserve">
     <value>#version 330 core
 
@@ -301,12 +273,6 @@ void main(){
   color = temp_c;
 }</value>
   </data>
-  <data name="npc_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\npc_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="decoration_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\decoration_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="vshader_hmap" xml:space="preserve">
     <value>#version 330 core
 
@@ -334,7 +300,38 @@ void main(){
   textureWeight = texWeight;
 }</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="building_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\building_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="decoration_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\decoration_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="flag_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\flag_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="hmap_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\hmap_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="lake_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\lake_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="metadata_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\metadata_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="monument_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\monument_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\monument_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="npc_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\npc_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="object_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\object_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="texture_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\texture_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="unit_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\unit_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

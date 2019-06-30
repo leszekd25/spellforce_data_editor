@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 using NLua;
 
@@ -13,11 +14,16 @@ namespace SpellforceDataEditor.SFLua
     {
         public static Lua state { get; private set; } = null;
         public static lua_sql.SFLuaSQLRtsCoopSpawn coop_spawns { get; private set; } = new lua_sql.SFLuaSQLRtsCoopSpawn();
+        public static lua_sql_forms.SFLuaSQLRtsCoopSpawnForm coop_spawns_form { get; private set; } = null;
         
         public static void Init()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaEnvironment.Init() called");
             if (state != null)
+            {
+                LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaEnvironment.Init(): Lua already initialized");
                 return;
+            }
             state = new Lua();
 
             InitializeConstants();
@@ -25,6 +31,7 @@ namespace SpellforceDataEditor.SFLua
 
         private static void InitializeConstants()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaEnvironment.InitializeConstants() called");
             if (LuaEnumUtility.lua_enums.Count == 0)
                 LuaEnumUtility.LoadEnums();
 
@@ -57,6 +64,22 @@ namespace SpellforceDataEditor.SFLua
 
             ret += "\r\n}";
             return ret;
+        }
+
+        public static void ShowRtsCoopSpawnGroupsForm()
+        {
+            if (coop_spawns_form != null)
+                return;
+
+            coop_spawns_form = new lua_sql_forms.SFLuaSQLRtsCoopSpawnForm();
+            coop_spawns_form.FormClosed += new FormClosedEventHandler(coop_spawns_form_FormClosed);
+            coop_spawns_form.Show();
+        }
+
+        private static void coop_spawns_form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            coop_spawns_form.FormClosed -= new FormClosedEventHandler(coop_spawns_form_FormClosed);
+            coop_spawns_form = null;
         }
     }
 }

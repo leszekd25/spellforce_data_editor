@@ -107,6 +107,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void TimerControl_Tick(object sender, EventArgs e)
         {
+            if (map == null)
+                return;
             // control logic here
             int cur_focused = GetCurrentFocusedTextureButton();
             int tiletex_focused = GetCurrentFocusedTileTextureButton();
@@ -199,6 +201,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void TexIDTextBox_Validated(object sender, EventArgs e)
         {
+            if (map == null)
+                return;
+
             if (!(map.heightmap.texture_manager.SetBaseTexture(previously_focused_base_texture, Utility.TryParseInt32(TexIDTextBox.Text))))
                 TexIDTextBox.BackColor = Color.Red;
             else
@@ -217,9 +222,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ListTiles_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListTiles.SelectedIndex == -1)
+            SelectTexture(ListTiles.SelectedIndex);
+        }
+
+        private void SelectTexture(int tex_i)
+        {
+            if (map == null)
                 return;
-            if(ListTiles.SelectedIndex < 32)
+
+            if (tex_i == -1)
+                return;
+            if (tex_i < 32)
             {
                 Tex1Button.Image = null;
                 Tex2Button.Image = null;
@@ -227,19 +240,19 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 Tex1Weight.Text = "";
                 Tex2Weight.Text = "";
                 Tex3Weight.Text = "";
-                TexPreview.Image = ((Button)(PanelTexturePreview.Controls[ListTiles.SelectedIndex])).Image;
+                TexPreview.Image = ((Button)(PanelTexturePreview.Controls[tex_i])).Image;
             }
-            else if(ListTiles.SelectedIndex < 224)
+            else if (tex_i < 224)
             {
-                Tex1Button.Image = ((Button)(PanelTexturePreview.Controls[map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].ind1])).Image;
-                Tex2Button.Image = ((Button)(PanelTexturePreview.Controls[map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].ind2])).Image;
-                Tex3Button.Image = ((Button)(PanelTexturePreview.Controls[map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].ind3])).Image;
-                Tex1Weight.Text = map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight1.ToString();
-                Tex2Weight.Text = map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight2.ToString();
-                Tex3Weight.Text = map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight3.ToString();
-                map.heightmap.texture_manager.UpdateTileTexture(ListTiles.SelectedIndex);
-                TexPreview.Image = CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
-                map.heightmap.texture_manager.FreeTileMemory(ListTiles.SelectedIndex);
+                Tex1Button.Image = ((Button)(PanelTexturePreview.Controls[map.heightmap.texture_manager.texture_tiledata[tex_i].ind1])).Image;
+                Tex2Button.Image = ((Button)(PanelTexturePreview.Controls[map.heightmap.texture_manager.texture_tiledata[tex_i].ind2])).Image;
+                Tex3Button.Image = ((Button)(PanelTexturePreview.Controls[map.heightmap.texture_manager.texture_tiledata[tex_i].ind3])).Image;
+                Tex1Weight.Text = map.heightmap.texture_manager.texture_tiledata[tex_i].weight1.ToString();
+                Tex2Weight.Text = map.heightmap.texture_manager.texture_tiledata[tex_i].weight2.ToString();
+                Tex3Weight.Text = map.heightmap.texture_manager.texture_tiledata[tex_i].weight3.ToString();
+                map.heightmap.texture_manager.UpdateTileTexture(tex_i);
+                TexPreview.Image = CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[tex_i]);
+                map.heightmap.texture_manager.FreeTileMemory(tex_i);
             }
             else
             {
@@ -249,14 +262,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 Tex1Weight.Text = "";
                 Tex2Weight.Text = "";
                 Tex3Weight.Text = "";
-                TexPreview.Image = ((Button)(PanelTexturePreview.Controls[ListTiles.SelectedIndex-192])).Image;
+                TexPreview.Image = ((Button)(PanelTexturePreview.Controls[tex_i - 192])).Image;
             }
-            MovementCheck.Checked = map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].blocks_movement;
-            VisionCheck.Checked = map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].blocks_vision;
+            MovementCheck.Checked = map.heightmap.texture_manager.texture_tiledata[tex_i].blocks_movement;
+            VisionCheck.Checked = map.heightmap.texture_manager.texture_tiledata[tex_i].blocks_vision;
         }
 
         private void Tex1Weight_TextChanged(object sender, EventArgs e)
         {
+            if (map == null)
+                return;
+
             if ((ListTiles.SelectedIndex < 32) || (ListTiles.SelectedIndex >= 224))
                 return;
             map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight1 = Utility.TryParseUInt8(Tex1Weight.Text);
@@ -269,6 +285,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void Tex2Weight_TextChanged(object sender, EventArgs e)
         {
+            if (map == null)
+                return;
 
             if ((ListTiles.SelectedIndex < 32) || (ListTiles.SelectedIndex >= 224))
                 return;
@@ -282,6 +300,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void Tex3Weight_TextChanged(object sender, EventArgs e)
         {
+            if (map == null)
+                return;
+
             if ((ListTiles.SelectedIndex < 32) || (ListTiles.SelectedIndex >= 224))
                 return;
             map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight3 = Utility.TryParseUInt8(Tex3Weight.Text);
@@ -294,6 +315,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void MovementCheck_CheckedChanged(object sender, EventArgs e)
         {
+            if (map == null)
+                return;
+
             if (ListTiles.SelectedIndex == -1)
                 return;
             map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].blocks_movement = MovementCheck.Checked;
@@ -301,6 +325,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void VisionCheck_CheckedChanged(object sender, EventArgs e)
         {
+            if (map == null)
+                return;
+
             if (ListTiles.SelectedIndex == -1)
                 return;
             map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].blocks_vision = VisionCheck.Checked;
@@ -308,34 +335,45 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         public override void OnMouseDown(SFCoord clicked_pos, MouseButtons button)
         {
-            if (ListTiles.SelectedIndex == -1)
-                return;
-
-            int size = (int)Math.Ceiling(BrushControl.brush.size);
-            BrushControl.brush.center = clicked_pos;
-            SFCoord topleft = new SFCoord(clicked_pos.x - size, clicked_pos.y - size);
-            SFCoord bottomright = new SFCoord(clicked_pos.x + size, clicked_pos.y + size);
-            if (topleft.x < 0)
-                topleft.x = 0;
-            if (topleft.y < 0)
-                topleft.y = 0;
-            if (bottomright.x >= map.width)
-                bottomright.x = map.width - 1;
-            if (bottomright.y >= map.height)
-                bottomright.y = map.height - 1;
-            
-            for (int i = topleft.x; i <= bottomright.x; i++)
+            if (button == MouseButtons.Left)
             {
-                for (int j = topleft.y; j <= bottomright.y; j++)
-                {
-                    if (BrushControl.brush.GetStrengthAt(new SFCoord(i, j)) == 0)
-                        continue;
-                    int fixed_j = map.height - j - 1;
-                    map.heightmap.tile_data[fixed_j * map.width + i] = (byte)(ListTiles.SelectedIndex);
-                }
-            }
+                if (ListTiles.SelectedIndex == -1)
+                    return;
 
-            map.heightmap.RebuildTerrainTexture(topleft, bottomright);
+                int size = (int)Math.Ceiling(BrushControl.brush.size);
+                BrushControl.brush.center = clicked_pos;
+                SFCoord topleft = new SFCoord(clicked_pos.x - size, clicked_pos.y - size);
+                SFCoord bottomright = new SFCoord(clicked_pos.x + size, clicked_pos.y + size);
+                if (topleft.x < 0)
+                    topleft.x = 0;
+                if (topleft.y < 0)
+                    topleft.y = 0;
+                if (bottomright.x >= map.width)
+                    bottomright.x = (short)(map.width - 1);
+                if (bottomright.y >= map.height)
+                    bottomright.y = (short)(map.height - 1);
+
+                for (int i = topleft.x; i <= bottomright.x; i++)
+                {
+                    for (int j = topleft.y; j <= bottomright.y; j++)
+                    {
+                        if (BrushControl.brush.GetStrengthAt(new SFCoord(i, j)) == 0)
+                            continue;
+                        int fixed_j = map.height - j - 1;
+                        map.heightmap.tile_data[fixed_j * map.width + i] = (byte)(ListTiles.SelectedIndex);
+                    }
+                }
+
+                map.heightmap.RebuildTerrainTexture(topleft, bottomright);
+            }
+            else if(button == MouseButtons.Right)
+            {
+                if ((clicked_pos.x < 0) || (clicked_pos.x >= map.width))
+                    return;
+                if ((clicked_pos.y <=0 ) || (clicked_pos.y > map.height))
+                    return;
+                ListTiles.SelectedIndex = map.heightmap.tile_data[(map.height - clicked_pos.y - 1) * map.width + clicked_pos.x];
+            }
         }
     }
 }

@@ -59,6 +59,7 @@ namespace SpellforceDataEditor.SFCFF
                 case SFVARIANT_TYPE.UInt:
                     return (int)(UInt32)value;
                 default:
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFVariant.to_int(): Type is not a number");
                     return 0;
             }
         }

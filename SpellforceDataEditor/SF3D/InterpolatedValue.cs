@@ -29,21 +29,27 @@ namespace SpellforceDataEditor.SF3D
 
         public void Add(Vector3 v, float t)
         {
-            if(t >= max_time)
+            if (t >= max_time)
             {
                 value.Add(v);
                 time.Add(t);
                 max_time = t;
             }
             else
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedVector3.Add(): Invalid time parameter (time = " + t.ToString() + ", max_time = " + max_time.ToString());
                 throw new InvalidOperationException("Invalid time parameter (t <= max_time)");
+            }
         }
 
         public Vector3 Get(float t)
         {
             int size = value.Count;
             if (size == 0)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedVector3.Get(): Data is empty!");
                 throw new IndexOutOfRangeException("Array is empty");
+            }
             if (size == 1)
                 return value[0];
 
@@ -64,6 +70,7 @@ namespace SpellforceDataEditor.SF3D
                 }
             }
 
+            LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedVector3.Get(): Data is malformed!!!!");
             throw new ArithmeticException("Invalid data");
         }
 
@@ -88,14 +95,20 @@ namespace SpellforceDataEditor.SF3D
                 max_time = t;
             }
             else
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedQuaternion.Add(): Invalid time parameter (time = " + t.ToString() + ", max_time = " + max_time.ToString());
                 throw new InvalidOperationException("Invalid time parameter (t <= max_time)");
+            }
         }
 
         public Quaternion Get(float t)
         {
             int size = value.Count;
             if (size == 0)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedQuaternion.Get(): Data is empty!");
                 throw new IndexOutOfRangeException("Array is empty");
+            }
             if (size == 1)
                 return value[0];
 
@@ -116,6 +129,7 @@ namespace SpellforceDataEditor.SF3D
                 }
             }
 
+            LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedQuaternion.Get(): Data is malformed!!!!");
             throw new ArithmeticException("Invalid data");
         }
 

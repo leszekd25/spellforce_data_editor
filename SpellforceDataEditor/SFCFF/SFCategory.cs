@@ -73,6 +73,7 @@ namespace SpellforceDataEditor.SFCFF
                         break;
                     default:
                         elem.add_single_variant(new object());
+                        LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.generate_empty_element(): Unrecognized variant type (category: " + category_name + ")");
                         break;
                 }
             }
@@ -102,6 +103,8 @@ namespace SpellforceDataEditor.SFCFF
                     current_string = Math.Min(string_size.Length - 1, current_string + 1);
                     return sr.ReadBytes(s_size);
                 default:
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.get_single_variant(): Unrecognized variant type (category: " + category_name+")");
+
                     return null;
             }
         }
@@ -134,6 +137,8 @@ namespace SpellforceDataEditor.SFCFF
                     sw.Write((byte[])var.value);
                     break;
                 default:
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.put_single_variant(): Unrecognized variant type (category: " + category_name+")");
+
                     break;
             }
         }
@@ -144,7 +149,11 @@ namespace SpellforceDataEditor.SFCFF
             current_string = 0;
             Object[] objs = new Object[elem_format.Length];
             if (sr.BaseStream.Position + elem_format.Length > sr.BaseStream.Length)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory.get_element(): Can't read past buffer! category: " + category_name);
+
                 throw new EndOfStreamException();
+            }
 
             for (int i = 0; i < elem_format.Length; i++)
             {
@@ -216,6 +225,7 @@ namespace SpellforceDataEditor.SFCFF
                 if (((T)elements[i].get_single_variant(v_index).value).CompareTo(value) == 0)
                     return get_element(i);
             }
+            LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.find_element(): Element not found (variant index = " + v_index.ToString() + ", value = " + value.ToString() + ", category: " + category_name + ")");
             return null;
         }
 
@@ -228,6 +238,7 @@ namespace SpellforceDataEditor.SFCFF
                 if (((T)elements[i].get_single_variant(v_index).value).CompareTo(value) == 0)
                     return i;
             }
+            LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.find_element_index(): Element not found (variant index = " + v_index.ToString() + ", value = " + value.ToString() + ", category: " + category_name + ")");
             return -1;
         }
 
@@ -251,6 +262,7 @@ namespace SpellforceDataEditor.SFCFF
                 else
                     current_end = current_center - 1;
             }
+            LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.find_binary_element(): Element not found (variant index = " + v_index.ToString() + ", value = " + value.ToString() + ", category: " + category_name + ")");
             return null;
         }
 
@@ -275,6 +287,7 @@ namespace SpellforceDataEditor.SFCFF
                 else
                     current_end = current_center - 1;
             }
+            LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.find_binary_element_index(): Element not found (variant index = " + v_index.ToString() + ", value = " + value.ToString() + ", category: " + category_name+")");
             return -1;
         }
 
@@ -327,6 +340,7 @@ namespace SpellforceDataEditor.SFCFF
             // 00-01 - chunk id
             // 02-03 - chunk occurence index
             // 06-09 - chunk data length
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.read() called, category name: "+category_name);
             categoryHeader = sr.ReadBytes(categoryHeader.Length);
 
             bool bad_header = false;
@@ -335,6 +349,7 @@ namespace SpellforceDataEditor.SFCFF
                 bad_header = true;
 
             block_length = BitConverter.ToUInt32(categoryHeader, 6);
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.read(): Data size: " + block_length.ToString()+" bytes");
             elements.Clear();
             Byte[] block_buffer = new Byte[block_length];
             sr.Read(block_buffer, 0, (int)(block_length));
@@ -350,10 +365,12 @@ namespace SpellforceDataEditor.SFCFF
                 }
                 catch (EndOfStreamException)
                 {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory.read(): Can't read past buffer! Category: "+category_name);
                     return -2;
                 }
                 catch (Exception)
                 {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory.read(): Unknown error while reading! Category: " + category_name);
                     return -3;
                 }
                 elements.Add(elem);
@@ -361,14 +378,20 @@ namespace SpellforceDataEditor.SFCFF
             mr.Close();
             block_buffer = null;
             if (bad_header)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.read(): Retrieved chunk ID did not match supposed chunk ID! Category: " + category_name);
                 return -1;
+            }
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.read(): Items read: " + elements.Count.ToString());
             return 0;
         }
 
         //inserts all elements into the buffer
         public void write(BinaryWriter sw)
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.write() called, category name: " + category_name);
             UInt32 new_block_size = (UInt32)get_size();
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.write(): Presumed data size: "+new_block_size.ToString()+" bytes");
             Utility.CopyUInt32ToByteArray(category_id, ref categoryHeader, 0);
             categoryHeader[4] = 0;
             categoryHeader[5] = 0;
@@ -468,6 +491,7 @@ namespace SpellforceDataEditor.SFCFF
         //removes all elements and resets category
         public void unload()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.unload() called, category name: " + category_name);
             elements.Clear();
 
             categoryHeader = new byte[12];

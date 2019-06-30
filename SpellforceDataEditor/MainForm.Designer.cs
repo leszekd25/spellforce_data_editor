@@ -38,6 +38,11 @@
             this.linkEditor = new System.Windows.Forms.LinkLabel();
             this.bMap = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
+            this.ButtonSpecifyGameDirectory = new System.Windows.Forms.Button();
+            this.ButtonAbout = new System.Windows.Forms.Button();
+            this.LabelIsSpecifiedGameDir = new System.Windows.Forms.Label();
+            this.bSQLEdit = new System.Windows.Forms.Button();
+            this.GameDirDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.SuspendLayout();
             // 
             // label1
@@ -50,7 +55,7 @@
             // 
             // bGDEditor
             // 
-            this.bGDEditor.Location = new System.Drawing.Point(131, 4);
+            this.bGDEditor.Location = new System.Drawing.Point(131, 38);
             this.bGDEditor.Name = "bGDEditor";
             this.bGDEditor.Size = new System.Drawing.Size(115, 23);
             this.bGDEditor.TabIndex = 1;
@@ -60,7 +65,8 @@
             // 
             // bAssets
             // 
-            this.bAssets.Location = new System.Drawing.Point(131, 33);
+            this.bAssets.ForeColor = System.Drawing.Color.Crimson;
+            this.bAssets.Location = new System.Drawing.Point(252, 38);
             this.bAssets.Name = "bAssets";
             this.bAssets.Size = new System.Drawing.Size(115, 23);
             this.bAssets.TabIndex = 2;
@@ -70,8 +76,8 @@
             // 
             // bScripting
             // 
-            this.bScripting.ForeColor = System.Drawing.Color.Crimson;
-            this.bScripting.Location = new System.Drawing.Point(131, 62);
+            this.bScripting.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.bScripting.Location = new System.Drawing.Point(131, 67);
             this.bScripting.Name = "bScripting";
             this.bScripting.Size = new System.Drawing.Size(115, 23);
             this.bScripting.TabIndex = 3;
@@ -82,7 +88,7 @@
             // bMods
             // 
             this.bMods.ForeColor = System.Drawing.Color.Crimson;
-            this.bMods.Location = new System.Drawing.Point(131, 91);
+            this.bMods.Location = new System.Drawing.Point(252, 67);
             this.bMods.Name = "bMods";
             this.bMods.Size = new System.Drawing.Size(115, 23);
             this.bMods.TabIndex = 4;
@@ -104,7 +110,7 @@
             // labelVersion
             // 
             this.labelVersion.AutoSize = true;
-            this.labelVersion.Location = new System.Drawing.Point(12, 111);
+            this.labelVersion.Location = new System.Drawing.Point(12, 130);
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(108, 13);
             this.labelVersion.TabIndex = 6;
@@ -115,7 +121,7 @@
             this.linkEditor.AutoSize = true;
             this.linkEditor.LinkBehavior = System.Windows.Forms.LinkBehavior.AlwaysUnderline;
             this.linkEditor.LinkColor = System.Drawing.Color.Blue;
-            this.linkEditor.Location = new System.Drawing.Point(12, 125);
+            this.linkEditor.Location = new System.Drawing.Point(128, 130);
             this.linkEditor.Name = "linkEditor";
             this.linkEditor.Size = new System.Drawing.Size(111, 13);
             this.linkEditor.TabIndex = 7;
@@ -127,7 +133,7 @@
             // bMap
             // 
             this.bMap.ForeColor = System.Drawing.Color.Crimson;
-            this.bMap.Location = new System.Drawing.Point(131, 120);
+            this.bMap.Location = new System.Drawing.Point(252, 96);
             this.bMap.Name = "bMap";
             this.bMap.Size = new System.Drawing.Size(115, 23);
             this.bMap.TabIndex = 8;
@@ -140,15 +146,60 @@
             this.label3.ForeColor = System.Drawing.Color.Crimson;
             this.label3.Location = new System.Drawing.Point(12, 67);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(108, 35);
+            this.label3.Size = new System.Drawing.Size(108, 52);
             this.label3.TabIndex = 9;
-            this.label3.Text = "Crimson features are in experimental stage";
+            this.label3.Text = "Crimson features require specified game directory";
+            // 
+            // ButtonSpecifyGameDirectory
+            // 
+            this.ButtonSpecifyGameDirectory.ForeColor = System.Drawing.Color.Crimson;
+            this.ButtonSpecifyGameDirectory.Location = new System.Drawing.Point(131, 9);
+            this.ButtonSpecifyGameDirectory.Name = "ButtonSpecifyGameDirectory";
+            this.ButtonSpecifyGameDirectory.Size = new System.Drawing.Size(115, 23);
+            this.ButtonSpecifyGameDirectory.TabIndex = 10;
+            this.ButtonSpecifyGameDirectory.Text = "Specify game dir...";
+            this.ButtonSpecifyGameDirectory.UseVisualStyleBackColor = true;
+            this.ButtonSpecifyGameDirectory.Click += new System.EventHandler(this.ButtonSpecifyGameDirectory_Click);
+            // 
+            // ButtonAbout
+            // 
+            this.ButtonAbout.Location = new System.Drawing.Point(252, 125);
+            this.ButtonAbout.Name = "ButtonAbout";
+            this.ButtonAbout.Size = new System.Drawing.Size(115, 23);
+            this.ButtonAbout.TabIndex = 11;
+            this.ButtonAbout.Text = "About...";
+            this.ButtonAbout.UseVisualStyleBackColor = true;
+            this.ButtonAbout.Click += new System.EventHandler(this.ButtonAbout_Click);
+            // 
+            // LabelIsSpecifiedGameDir
+            // 
+            this.LabelIsSpecifiedGameDir.AutoSize = true;
+            this.LabelIsSpecifiedGameDir.Location = new System.Drawing.Point(252, 9);
+            this.LabelIsSpecifiedGameDir.Name = "LabelIsSpecifiedGameDir";
+            this.LabelIsSpecifiedGameDir.Size = new System.Drawing.Size(0, 13);
+            this.LabelIsSpecifiedGameDir.TabIndex = 12;
+            // 
+            // bSQLEdit
+            // 
+            this.bSQLEdit.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.bSQLEdit.ForeColor = System.Drawing.Color.Crimson;
+            this.bSQLEdit.Location = new System.Drawing.Point(131, 96);
+            this.bSQLEdit.Name = "bSQLEdit";
+            this.bSQLEdit.Size = new System.Drawing.Size(115, 23);
+            this.bSQLEdit.TabIndex = 13;
+            this.bSQLEdit.Text = "SQL Modifier";
+            this.bSQLEdit.UseVisualStyleBackColor = false;
+            this.bSQLEdit.Click += new System.EventHandler(this.bSQLEdit_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(258, 147);
+            this.ClientSize = new System.Drawing.Size(377, 158);
+            this.Controls.Add(this.bSQLEdit);
+            this.Controls.Add(this.LabelIsSpecifiedGameDir);
+            this.Controls.Add(this.ButtonAbout);
+            this.Controls.Add(this.ButtonSpecifyGameDirectory);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.bMap);
             this.Controls.Add(this.linkEditor);
@@ -178,5 +229,10 @@
         private System.Windows.Forms.LinkLabel linkEditor;
         private System.Windows.Forms.Button bMap;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button ButtonSpecifyGameDirectory;
+        private System.Windows.Forms.Button ButtonAbout;
+        private System.Windows.Forms.Label LabelIsSpecifiedGameDir;
+        private System.Windows.Forms.Button bSQLEdit;
+        private System.Windows.Forms.FolderBrowserDialog GameDirDialog;
     }
 }

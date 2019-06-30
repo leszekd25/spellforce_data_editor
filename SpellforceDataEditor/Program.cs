@@ -14,9 +14,25 @@ namespace SpellforceDataEditor
         [STAThread]
         static void Main()
         {
+            LogUtils.Log.SetOption(LogUtils.LogOption.ALL);
+            LogUtils.Log.Info(LogUtils.LogSource.Main, "Program.Main(): session start time: " + DateTime.Now.ToLongTimeString());
+            Settings.Load();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            try
+            {
+                Application.Run(new MainForm());
+            }
+            catch(Exception e)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.Main, "Program.Main() terminated due to error! Exception data: " + e.ToString()+" # "+e.Message);
+            }
+            finally
+            {
+                Settings.Save();
+                LogUtils.Log.Info(LogUtils.LogSource.Main, "Program.Main(): session finish time: " + DateTime.Now.ToLongTimeString());
+                LogUtils.Log.SaveLog("UserLog.txt");
+            }
         }
     }
 }

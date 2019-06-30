@@ -84,6 +84,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LogUtils\Log.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="SF3D\ColorUtility.cs" />
     <Compile Include="SF3D\Physics\BoundingBox.cs" />
     <Compile Include="SF3D\Physics\Plane.cs" />
@@ -632,6 +634,12 @@
     <Compile Include="SFCFF\SFGameData.cs" />
     <Compile Include="SFMod\SFModInfo.cs" />
     <Compile Include="SFMod\SFModTemplate.cs" />
+    <Compile Include="special forms\AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\AboutForm.Designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="special forms\CalculatorsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -655,6 +663,12 @@
     </Compile>
     <Compile Include="special forms\ModManagerForm.Designer.cs">
       <DependentUpon>ModManagerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="special forms\SQLModifierForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\SQLModifierForm.Designer.cs">
+      <DependentUpon>SQLModifierForm.cs</DependentUpon>
     </Compile>
     <Compile Include="special forms\utility_forms\SelectLuaEnumForm.cs">
       <SubType>Form</SubType>
@@ -1002,6 +1016,9 @@
     <EmbeddedResource Include="SFMod\mod_controls\TemplateSelectForm.resx">
       <DependentUpon>TemplateSelectForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="special forms\AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="special forms\CalculatorsForm.resx">
       <DependentUpon>CalculatorsForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -1013,6 +1030,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\ModManagerForm.resx">
       <DependentUpon>ModManagerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="special forms\SQLModifierForm.resx">
+      <DependentUpon>SQLModifierForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\utility_forms\SelectLuaEnumForm.resx">
       <DependentUpon>SelectLuaEnumForm.cs</DependentUpon>
@@ -1089,18 +1109,17 @@
     <None Include="monument_icon.png" />
     <Content Include="npc_icon.png" />
     <Content Include="object_icon.png" />
+    <None Include="Resources\unit_icon.png" />
+    <None Include="Resources\metadata_icon.png" />
+    <None Include="Resources\monument_icon.png" />
+    <None Include="Resources\npc_icon.png" />
+    <None Include="Resources\object_icon.png" />
     <None Include="Resources\building_icon.png" />
     <None Include="Resources\decoration_icon.png" />
-    <None Include="Resources\enemycamp_icon.png" />
     <None Include="Resources\flag_icon.png" />
     <None Include="Resources\hmap_icon.png" />
     <None Include="Resources\lake_icon.png" />
-    <None Include="Resources\metadata_icon.png" />
-    <None Include="Resources\npc_icon.png" />
-    <None Include="Resources\object_icon.png" />
     <None Include="Resources\texture_icon.png" />
-    <None Include="Resources\unit_icon.png" />
-    <Content Include="Resources\monument_icon.png" />
     <Content Include="texture_icon.png" />
     <Content Include="unit_icon.png" />
   </ItemGroup>

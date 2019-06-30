@@ -130,13 +130,13 @@ namespace SpellforceDataEditor
                 return "";
 
             byte[] bytearray = (byte[])ch.value;
-            return (Encoding.UTF8.GetString(bytearray)).Replace("\0", string.Empty);
+            return (Encoding.Default.GetString(bytearray)).Replace("\0", string.Empty);
         }
 
         //turns char array into actual string (all zeros are truncated)
         static public string CleanString(byte[] ch)
         {
-            return (Encoding.UTF8.GetString(ch)).Replace("\0", string.Empty);
+            return (Encoding.Default.GetString(ch)).Replace("\0", string.Empty);
         }
 
         //used for header manipulation, inserts unsigned int into a given array at a given index

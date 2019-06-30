@@ -10,13 +10,13 @@ namespace SpellforceDataEditor.SFMap
 {
     public struct SFCoord : IComparable
     {
-        public int x;
-        public int y;
+        public short x;
+        public short y;
 
         public SFCoord(int _x, int _y)
         {
-            x = _x;
-            y = _y;
+            x = (short)_x;
+            y = (short)_y;
         }
 
         public static SFCoord operator +(SFCoord c1, SFCoord c2)

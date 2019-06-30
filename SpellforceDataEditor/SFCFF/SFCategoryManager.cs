@@ -592,9 +592,10 @@ namespace SpellforceDataEditor.SFCFF
                     p[4] = Utility.S_UNKNOWN;
                     break;
                 case 211: //mirage
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
+                    p[0] = "Health multiplier (%)";
+                    p[1] = "Time between ticks (ms)";
                     p[2] = Utility.S_UNKNOWN;
+                    p[3] = "Mana cost per tick";
                     break;
                 case 213: //feedback
                     p[0] = Utility.S_UNKNOWN;
@@ -663,6 +664,7 @@ namespace SpellforceDataEditor.SFCFF
         //constructor, it creates categories
         public static void init()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategoryManager.init() called");
             categorySpecial_RuneHeroes = new SFCategoryRuneHeroes();
             //categorySpecial_RuneHeroes.set_manager(this);
         }

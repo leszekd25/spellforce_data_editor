@@ -92,14 +92,11 @@ namespace SpellforceDataEditor.SFMap
         public List<SFMapCoopAISpawn> coop_spawns = null;
         public List<SFMapMultiplayerTeamComposition> multi_teams = null;
 
-        public SFMapMetaData()
-        {
-            SFLua.SFLuaEnvironment.coop_spawns.Load();
-        }
-
         public void Unload()
         {
-            if(minimap != null)
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapMetaData.Unload() called");
+
+            if (minimap != null)
             {
                 if (minimap.tex_id != -1)
                     GL.DeleteTexture(minimap.tex_id);
@@ -114,6 +111,8 @@ namespace SpellforceDataEditor.SFMap
             for (int i = 0; i < spawns.Count; i++)
                 if (pos == spawns[i].pos)
                     return i;
+
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapMetaData.GetPlayerBySpawnPos(): Spawn not found at position "+pos.ToString()+", creating new spawn");
 
             spawns.Add(new SFMapSpawn());
             spawns[spawns.Count - 1].pos = pos;

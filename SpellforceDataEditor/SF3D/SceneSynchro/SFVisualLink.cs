@@ -27,11 +27,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             String[] arr = data.Split(' ');
             if (arr.Length == 0)
+            {
+                LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFVisualLink.Read(): Empty string found, possibly malformed database?");
                 return false;
+            }
             int tmp_id;    //ugh...
             bool success = int.TryParse(arr[0], out tmp_id);
             if (!success)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFVisualLink.Read(): Could not retrieve link ID from string '"+arr[0]+"'");
                 return false;
+            }
             ID = tmp_id;
             for (int i = 1; i < arr.Length; i++)
                 lines.Add(arr[i]);

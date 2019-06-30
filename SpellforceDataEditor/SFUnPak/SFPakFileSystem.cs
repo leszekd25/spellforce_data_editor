@@ -131,6 +131,7 @@ namespace SpellforceDataEditor.SFUnPak
 
         public void Dispose()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Dispose() called, filename: " + pak_fname);
             file_headers.Clear();
             Close();
         }
@@ -167,6 +168,7 @@ namespace SpellforceDataEditor.SFUnPak
         // initializes pak structure for use from memory
         public int Init(string path)
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Init() called, filename: " + path);
             FileStream fs;
             try
             {
@@ -174,6 +176,7 @@ namespace SpellforceDataEditor.SFUnPak
             }
             catch(Exception)
             {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Init(): Could not open pak file" + path);
                 return -2;
             }
             pak_fname = path;
@@ -184,6 +187,7 @@ namespace SpellforceDataEditor.SFUnPak
             if(!pak_header.is_valid())
             {
                 fs.Close();
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Init(): Pak header is invalid!");
                 return -3;
             }
 
@@ -212,12 +216,15 @@ namespace SpellforceDataEditor.SFUnPak
         // opens pak file for reading
         public int Open()
         {
+            //LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Open() called, filename: " + pak_fname);
+
             try
             {
                 pak_file = new FileStream(pak_fname, FileMode.Open, FileAccess.Read);
             }
             catch(Exception)
             {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Open(): Could not open pak file" + pak_fname);
                 return -2;
             }
             pak_stream = new BinaryReader(pak_file, Encoding.Default);
@@ -227,6 +234,8 @@ namespace SpellforceDataEditor.SFUnPak
         // closes pak file
         public void Close()
         {
+            //LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Close() called, filename: " + pak_fname);
+
             pak_stream.Close();
             pak_file.Close();
         }
@@ -256,9 +265,12 @@ namespace SpellforceDataEditor.SFUnPak
         // if managed_open, it will not try to open a pak, as it assumes the pak is already open
         MemoryStream GetFileBuffer(int file_index, bool managed_open = false)
         {
-            if(!managed_open)
-                if(Open() != 0)
-                    throw new FileLoadException("Could not open pak file "+pak_fname);
+            if (!managed_open)
+                if (Open() != 0)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.GetFileBuffer(): Could not open pak file "+pak_fname);
+                    throw new FileLoadException("Could not open pak file " + pak_fname);
+                }
             SFPakEntryHeader head = file_headers[file_index];
             uint start = (uint)(data_offset + head.data_offset);
             int length = head.size;

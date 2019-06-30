@@ -45,7 +45,7 @@ namespace SpellforceDataEditor.SFMap
             set
             {
                 visible = value;
-                SF3D.SceneSynchro.SFSceneManager scene = hmap.map.render_engine.scene_manager;
+                SF3D.SceneSynchro.SFSceneManager scene = SF3D.SFRender.SFRenderEngine.scene_manager;
                 foreach (SFMapUnit u in units)
                     scene.objects_static[u.GetObjectName()].Visible = value;
                 foreach (SFMapObject o in objects)
@@ -302,7 +302,8 @@ namespace SpellforceDataEditor.SFMap
             for (int i = 0; i < 3; i++)
                 if ((int)v[i] == id)
                     return i;
-            return -1;
+            LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapHeightMap.GetIndex(): Could not find id = "+id.ToString()+" in specified material vector! This should not happen!");
+            throw new Exception("SFMapHeightMap.GetIndex(): Invalid id!");
         }
 
         public void RebuildGeometry(short[] data, int map_size)
@@ -370,7 +371,7 @@ namespace SpellforceDataEditor.SFMap
 
 
             // fix all object positions (without lakes for now...)
-            SF3D.SceneSynchro.SFSceneManager scene = hmap.map.render_engine.scene_manager;
+            SF3D.SceneSynchro.SFSceneManager scene = SF3D.SFRender.SFRenderEngine.scene_manager;
             foreach (SFMapUnit u in units)
             {
                 SF3D.Object3D _obj = scene.objects_static[u.GetObjectName()];
@@ -540,6 +541,9 @@ namespace SpellforceDataEditor.SFMap
 
         public void Unload()
         {
+            if (vertex_array == -1)
+                return;
+
             GL.DeleteBuffer(position_buffer);
             GL.DeleteBuffer(uv_buffer);
             GL.DeleteBuffer(color_buffer);
@@ -548,7 +552,19 @@ namespace SpellforceDataEditor.SFMap
             GL.DeleteVertexArray(vertex_array);
             units.Clear();
             objects.Clear();
+            buildings.Clear();
             decorations.Clear();
+            int_objects.Clear();
+            portals.Clear();
+            overlays.Clear();
+            lakes_contained.Clear();
+            hmap = null;
+            material_id = null;
+            vertices = null;
+            colors = null;
+            uvs = null;
+            texture_id = null;
+            texture_weights = null;
         }
 
         public void AddUnit(SFMapUnit u)
@@ -566,9 +582,19 @@ namespace SpellforceDataEditor.SFMap
             objects.Add(o);
         }
 
+        public void RemoveObject(SFMapObject o)
+        {
+            objects.Remove(o);
+        }
+
         public void AddInteractiveObject(SFMapInteractiveObject io)
         {
             int_objects.Add(io);
+        }
+
+        public void RemoveInteractiveObject(SFMapInteractiveObject io)
+        {
+            int_objects.Remove(io);
         }
 
         public void AddDecoration(SFMapDecoration d)
@@ -586,9 +612,19 @@ namespace SpellforceDataEditor.SFMap
             buildings.Add(b);
         }
 
+        public void RemoveBuilding(SFMapBuilding b)
+        {
+            buildings.Remove(b);
+        }
+
         public void AddPortal(SFMapPortal p)
         {
             portals.Add(p);
+        }
+
+        public void RemovePortal(SFMapPortal p)
+        {
+            portals.Remove(p);
         }
 
         public void OverlayUpdate(string o_name)
@@ -666,6 +702,8 @@ namespace SpellforceDataEditor.SFMap
 
         public void Generate()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate() called");
+
             chunk_size = 16;
             int chunk_count_x = width / chunk_size;
             int chunk_count_y = height / chunk_size;
@@ -681,6 +719,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 chunk.Init();
             }
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate(): Chunks generated: "+chunks.Length.ToString());
         }
 
         public short GetZ(SFCoord pos)
@@ -688,19 +727,19 @@ namespace SpellforceDataEditor.SFMap
             return height_data[pos.y * width + pos.x];
         }
 
-        public float GetRealZ(OpenTK.Vector2 pos)
+        public float GetRealZ(Vector2 pos)
         {
             int chunk_count_x = width / chunk_size;
             int chunk_count_y = height / chunk_size;
             // get chunk id
             int cx = (int)(pos.X / chunk_size);
-            int cy = (int)(pos.Y / chunk_size);
+            int cy = (int)((map.height-pos.Y-1) / chunk_size);
             if ((cx < 0) || (cx >= chunk_count_x) || (cy < 0) || (cy >= chunk_count_y))
                 return 0;
             // calculate ray collision point
-            SF3D.Physics.Ray ray = new SF3D.Physics.Ray(new Vector3(pos.X, 1000, width - pos.Y+chunk_size), new Vector3(0, -1100, 0));
+            SF3D.Physics.Ray ray = new SF3D.Physics.Ray(new Vector3(pos.X, 1000, pos.Y), new Vector3(0, -1100, 0));
             Vector3 result;
-            if (ray.Intersect(chunks[cy * chunk_count_x + cx].vertices, new Vector3(cx * chunk_size, 0, width - (cy * chunk_size)), out result))
+            if (ray.Intersect(chunks[(chunk_count_y - cy - 1) * chunk_count_x + cx].vertices, new Vector3(cx * chunk_size, 0, height - ((cy+1) * chunk_size)), out result))
                 return result.Y;
             return 0;
         }
@@ -799,7 +838,9 @@ namespace SpellforceDataEditor.SFMap
 
         public void OverlayCreate(string o_name, Vector4 col)
         {
-            foreach(SFMapHeightMapChunk chunk in chunks)
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.OverlayCreate() called, overlay name: "+o_name);
+
+            foreach (SFMapHeightMapChunk chunk in chunks)
             {
                 chunk.overlays.Add(o_name, new MapEdit.MapOverlayChunk());
                 chunk.overlays[o_name].Init();
@@ -810,13 +851,18 @@ namespace SpellforceDataEditor.SFMap
         public void OverlayAdd(string o_name, SFCoord pos)
         {
             SFMapHeightMapChunk chunk = GetChunk(pos);
-            chunk.overlays[o_name].points.Add(pos-new SFCoord(chunk.ix*chunk_size, ((width/chunk_size)-chunk.iy-1)*chunk_size));
+            SFCoord new_pos = pos - new SFCoord(chunk.ix * chunk_size, ((width / chunk_size) - chunk.iy - 1) * chunk_size);
+            if (!chunk.overlays[o_name].points.Contains(new_pos))
+                chunk.overlays[o_name].points.Add(new_pos);
         }
 
         public void OverlayRemove(string o_name, SFCoord pos)
         {
             SFMapHeightMapChunk chunk = GetChunk(pos);
-            chunk.overlays[o_name].points.Remove(pos - new SFCoord(chunk.ix * chunk_size, chunk.iy * chunk_size));
+            SFCoord new_pos = pos - new SFCoord(chunk.ix * chunk_size, ((width / chunk_size) - chunk.iy - 1) * chunk_size);
+            int i = chunk.overlays[o_name].points.IndexOf(new_pos);
+            if (i != -1)
+                chunk.overlays[o_name].points.RemoveAt(i);
         }
 
         public void OverlayClear(string o_name)
@@ -937,9 +983,20 @@ namespace SpellforceDataEditor.SFMap
 
         public void Unload()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Unload() called");
+            if (map == null)
+                return;
+
             texture_manager.Unload();
             foreach (SFMapHeightMapChunk chunk in chunks)
                 chunk.Unload();
+            chunk42_data.Clear();
+            chunk56_data.Clear();
+            chunk60_data.Clear();
+            visible_chunks.Clear();
+            visible_overlays.Clear();
+            chunks = null;
+            map = null;
         }
     }
 }

@@ -114,7 +114,7 @@ namespace SpellforceDataEditor.SF3D
                 mat.matDepthBias = br.ReadByte();
                 mat.texTiling = br.ReadSingle();
                 char[] chars = br.ReadChars(64);
-                matname = new string(chars);
+                matname = new string(chars).ToLower();
                 matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
                 //System.Diagnostics.Debug.WriteLine(matname + " " + mat.ToString());
 
@@ -123,7 +123,10 @@ namespace SpellforceDataEditor.SF3D
                 {
                     int tex_code = SFResourceManager.Textures.Load(matname);
                     if (tex_code != 0)
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModel3D.Load(): Could not load texture (texture name = "+matname+")");
                         return tex_code;
+                    }
                     tex = SFResourceManager.Textures.Get(matname);
                     tex.FreeMemory();
                 }
@@ -200,7 +203,10 @@ namespace SpellforceDataEditor.SF3D
                 {
                     int tex_code = SFResourceManager.Textures.Load(t_name);
                     if (tex_code != 0)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModel3D.CreateRaw(): Could not load texture (texture name = " + t_name + ")");
                         return tex_code;
+                    }
                     tex = SFResourceManager.Textures.Get(t_name);
                 }
                 materials[0].texture = tex;

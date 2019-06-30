@@ -46,6 +46,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
             catch (Exception)
             {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFVisualLinkContainer.LoadSDB(): Could not open database at location "+fname+"!");
                 return -2;
             }
 
@@ -81,6 +82,18 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 else
                     current_end = current_center - 1;
             }
+
+            string list_name = "<unknown>";
+            if (list == items)
+                list_name = "item";
+            else if (list == buildings)
+                list_name = "building";
+            else if (list == objects)
+                list_name = "object";
+            else if (list == heads)
+                list_name = "head";
+            if(id != 0)
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFVisualLinkContainer.FindVisualLink(): Could not find link! link id = "+id.ToString()+", list: "+list_name);
             return null;
         }
 
@@ -89,7 +102,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             SFVisualLink building = FindVisualLink(buildings, building_id);
             if (building == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFVisualLinkContainer.GetBuildingMeshes(): Could not find building link (building id = "+building_id+")");
                 return null;
+            }
 
             List<String> meshes = building.lines.Skip(1).ToList();     // ignore line with selection size
             for (int i = 0; i < meshes.Count; i++)
@@ -109,10 +125,14 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             SFVisualLink building = FindVisualLink(buildings, building_id);
             if (building == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFVisualLinkContainer.GetBuildingSelectionSize(): Could not find building link (building id = " + building_id + ")");
                 return 0.0f;
+            }
 
             float ret = 0.0f;
-            float.TryParse(building.lines[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out ret);
+            if (!float.TryParse(building.lines[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out ret))
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFVisualLinkContainer.GetBuildingSelectionSize(): Could not parse selection size from string '" + building.lines[0] + "' (building_id = " + building_id + ")");
 
             return ret;
         }
@@ -122,7 +142,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             SFVisualLink obj = FindVisualLink(objects, object_id);
             if (obj == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFVisualLinkContainer.GetObjectMeshes(): Could not find object link (object id = " + object_id + ")");
                 return null;
+            }
 
             return obj.lines.Skip(1).ToList();
         }
@@ -131,10 +154,14 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             SFVisualLink obj = FindVisualLink(objects, object_id);
             if (obj == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFVisualLinkContainer.GetObjectSelectionSize(): Could not find object link (object id = " + object_id + ")");
                 return 0.0f;
+            }
 
             float ret = 0.0f;
-            float.TryParse(obj.lines[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out ret);
+            if (!float.TryParse(obj.lines[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out ret))
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFVisualLinkContainer.GetObjectSelectionSize(): Could not parse selection size from string '" + obj.lines[0] + "' (object_id = " + object_id + ")");
 
             return ret;
         }
@@ -145,7 +172,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             SFVisualLink item = FindVisualLink(items, item_id);
             if (item == null)
+            {
+                if(item_id != 0)
+                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFVisualLinkContainer.GetItemMesh(): Could not find item link (item id = " + item_id + ")");
                 return "";
+            }
 
             if (item.lines.Count == 0)
                 return "";
@@ -164,6 +195,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 return item.lines[0];
             }
 
+            LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFVisualLinkContainer.GetItemMesh(): Could not retrieve mesh name from link (item id = " + item_id + ")");
             return "";
         }
 
@@ -173,7 +205,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             SFVisualLink item = FindVisualLink(items, item_id);
             if (item == null)
-                return null;
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFVisualLinkContainer.GetItemAnimation(): Could not find item link (item id = " + item_id + ")");
+                return "";
+            }
 
             if (item.lines.Count < 2)
                 return "";
@@ -185,7 +220,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
             if (!(item.lines[item.lines.Count - 1].Contains("male")))
                 return item.lines[item.lines.Count - 1];
-            
+
+            LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFVisualLinkContainer.GetItemAniamtion(): Could not retrieve animation name from link (item id = " + item_id + ")");
             return "";
         }
 
@@ -195,7 +231,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             SFVisualLink head = FindVisualLink(heads, head_id);
             if (head == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFVisualLinkContainer.GetHeadMesh(): Could not find head link (head id = " + head_id + ")");
                 return "";
+            }
 
             return (is_female ? head.lines[1] : head.lines[0]);
         }

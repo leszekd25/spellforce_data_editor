@@ -37,6 +37,7 @@ namespace SpellforceDataEditor.SFCFF
         // returns whether it succeeded
         public int Load(string filename)
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFGameData.Read() called");
             FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
 
             //md5 calculation for data diff tool
@@ -72,6 +73,8 @@ namespace SpellforceDataEditor.SFCFF
             //br.Close();
             fs.Close();
 
+            if(result != 0)
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFGameData.Read() failed! Read log above this line for details");
             return result;
         }
 
@@ -109,6 +112,7 @@ namespace SpellforceDataEditor.SFCFF
         // returns if succeeded
         public int Unload()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFGameData.Unload() called");
             foreach (SFCategory cat in categories)
                 cat.unload();
 

@@ -54,14 +54,14 @@ namespace SpellforceDataEditor.SFMap
             int i = 0;
             foreach(SFCoord pos in cells)
             {
-                vertices[i * 4 + 0] = new Vector3((float)(pos.x), real_z, ((float)size) - (float)(pos.y) - 1);
-                vertices[i * 4 + 1] = new Vector3((float)(pos.x+1), real_z, ((float)size) - (float)(pos.y) - 1);
-                vertices[i * 4 + 2] = new Vector3((float)(pos.x), real_z, ((float)size) - (float)(pos.y+1) - 1);
-                vertices[i * 4 + 3] = new Vector3((float)(pos.x+1), real_z, ((float)size) - (float)(pos.y+1) - 1);
-                uvs[i * 4 + 0] = new Vector2(0.0f, 0.0f);
-                uvs[i * 4 + 1] = new Vector2(1.0f, 0.0f);
-                uvs[i * 4 + 2] = new Vector2(0.0f, 1.0f);
-                uvs[i * 4 + 3] = new Vector2(1.0f, 1.0f);
+                vertices[i * 4 + 0] = new Vector3((float)(pos.x) - 0.5f, real_z, ((float)size) - (float)(pos.y) - 0.5f);
+                vertices[i * 4 + 1] = new Vector3((float)(pos.x+1) - 0.5f, real_z, ((float)size) - (float)(pos.y) - 0.5f);
+                vertices[i * 4 + 2] = new Vector3((float)(pos.x) - 0.5f, real_z, ((float)size) - (float)(pos.y+1) - 0.5f);
+                vertices[i * 4 + 3] = new Vector3((float)(pos.x+1) - 0.5f, real_z, ((float)size) - (float)(pos.y+1) - 0.5f);
+                uvs[i * 4 + 0] = new Vector2(pos.x / 4.0f, pos.y / 4.0f);
+                uvs[i * 4 + 1] = new Vector2((pos.x + 1) / 4.0f, pos.y / 4.0f);
+                uvs[i * 4 + 2] = new Vector2(pos.x / 4.0f, (pos.y + 1) / 4.0f);
+                uvs[i * 4 + 3] = new Vector2((pos.x + 1) / 4.0f, (pos.y + 1) / 4.0f);
                 colors[i * 4 + 0] = new Vector4(1, 1, 1, 1);
                 colors[i * 4 + 1] = new Vector4(1, 1, 1, 1);
                 colors[i * 4 + 2] = new Vector4(1, 1, 1, 1);
@@ -78,7 +78,6 @@ namespace SpellforceDataEditor.SFMap
                 indices[i * 6 + 5] = (uint)(i * 4 + 3);
                 i++;
             }
-
             string tex_name = map.lake_manager.GetLakeTextureName(type);
 
             SF3D.SFModel3D lake_mesh = new SF3D.SFModel3D();
@@ -86,19 +85,20 @@ namespace SpellforceDataEditor.SFMap
             SFResources.SFResourceManager.Models.AddManually(lake_mesh, GetObjectName());
         }
 
+        // the closest cells which do NOT belong to lake
         public void RecalculateBoundary()
         {
             boundary = new HashSet<SFCoord>();
             foreach(SFCoord p in cells)
             {
                 if (!cells.Contains(new SFCoord(p.x + 1, p.y)))
-                    boundary.Add(p);
+                    boundary.Add(new SFCoord(p.x + 1, p.y));
                 if (!cells.Contains(new SFCoord(p.x - 1, p.y)))
-                    boundary.Add(p);
+                    boundary.Add(new SFCoord(p.x - 1, p.y));
                 if (!cells.Contains(new SFCoord(p.x, p.y + 1)))
-                    boundary.Add(p);
+                    boundary.Add(new SFCoord(p.x, p.y + 1));
                 if (!cells.Contains(new SFCoord(p.x, p.y - 1)))
-                    boundary.Add(p);
+                    boundary.Add(new SFCoord(p.x, p.y - 1));
             }
         }
         
@@ -150,7 +150,7 @@ namespace SpellforceDataEditor.SFMap
             }
 
             string obj_name = lake.GetObjectName();
-            map.render_engine.scene_manager.AddObjectStatic(obj_name, "", obj_name);
+            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectStatic(obj_name, "", obj_name);
             return lake;
         }
 
@@ -158,8 +158,11 @@ namespace SpellforceDataEditor.SFMap
         {
             int lake_index = lakes.IndexOf(lake);
             if (lake_index < 0)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMapLakeManager.RemoveLake(): Lake not found in lake table!");
                 return;
-            
+            }
+
             foreach (SFCoord p in lake.cells)
                 map.heightmap.lake_data[p.y * map.width + p.x] = 0;
 
@@ -173,7 +176,7 @@ namespace SpellforceDataEditor.SFMap
                 chunk.lakes_contained.RemoveAt(lake_index);
 
             string obj_name = lake.GetObjectName();
-            map.render_engine.scene_manager.DeleteObject(obj_name);
+            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject(obj_name);
 
             lakes.Remove(lake);
         }
@@ -184,9 +187,11 @@ namespace SpellforceDataEditor.SFMap
             if (type == 0)
                 tex_name = "landscape_lake_water";
             else if (type == 1)
-                tex_name = "landscape_lake_lava1";
+                tex_name = "landscape_swamp_l8";
             else if (type == 2)
-                tex_name = "landscape_lake_swamp";
+                tex_name = "landscape_lake_lava1";
+            else if (type == 3)
+                tex_name = "landscape_lake_ice_l8";
             return tex_name;
         }
 
@@ -194,7 +199,10 @@ namespace SpellforceDataEditor.SFMap
         {
             int lake_index = lakes.IndexOf(lake);
             if (lake_index < 0)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMapLakeManager.UpdateLake(): Lake not found in lake table!");
                 return;
+            }
 
             lake.cells = map.heightmap.GetIslandByHeight(lake.start, lake.z_diff);
             for (int i = 0; i < map.width * map.height; i++)
@@ -215,7 +223,7 @@ namespace SpellforceDataEditor.SFMap
             }
 
             string obj_name = lake.GetObjectName();
-            map.render_engine.scene_manager.objects_static[obj_name].Mesh =
+            SF3D.SFRender.SFRenderEngine.scene_manager.objects_static[obj_name].Mesh =
                 SFResources.SFResourceManager.Models.Get(obj_name);
         }
     }

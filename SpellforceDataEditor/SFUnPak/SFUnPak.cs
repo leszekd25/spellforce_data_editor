@@ -15,7 +15,8 @@ namespace SpellforceDataEditor.SFUnPak
 {
     public static class SFUnPak
     {
-        static public string game_directory_name = "";
+        static public string game_directory_name { get; private set; } = "";
+        static public bool game_directory_specified { get; private set; } = false;
         static List<string> paks= new List<string>();
         static SFPakMap pak_map = new SFPakMap();
 
@@ -33,13 +34,31 @@ namespace SpellforceDataEditor.SFUnPak
         // returns if succeeded
         static public int SpecifyGameDirectory(string dname)
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory() called, directory: "+dname);
+            game_directory_specified = false;
             if (!Directory.Exists(dname))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Directory "+dname+" does not exist!");
                 return -1;
+            }
             if (!Directory.Exists(dname + "\\pak"))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Directory " + dname + "\\pak" + " does not exist!");
                 return -2;
+            }
 
             if (game_directory_name == dname)
+            {
+                LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Directory is up-to-date");
+                game_directory_specified = true;
                 return 0;
+            }
+
+            if(game_directory_name != "")
+                LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Directory changed, reloading data");
+            else
+                LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Directory specified, loading data");
+
 
             game_directory_name = dname;
 
@@ -52,18 +71,48 @@ namespace SpellforceDataEditor.SFUnPak
                 //pak_map.AddPak(file);
                 paks.Add(Path.GetFileName(file));
             }
+            // organize paks in descending order
+            List<string> ordered_paks = new List<string>();
+            int max_pak = -1;
+            int next_pak_old_index = -1;
+            while(paks.Count != 0)
+            {
+                max_pak = -1;
+                for(int i = 0; i < paks.Count; i++)
+                {
+                    string _s = new string(paks[i].Intersect("0123456789").ToArray());
+                    int cur_pak_num = Int32.Parse(_s);
+                    if(cur_pak_num > max_pak)
+                    {
+                        max_pak = cur_pak_num;
+                        next_pak_old_index = i;
+                    }
+                }
+                if(max_pak!=-1)
+                {
+                    ordered_paks.Add(paks[next_pak_old_index]);
+                    paks.RemoveAt(next_pak_old_index);
+                }
+            }
+            paks = ordered_paks;
+
             if(pak_map.LoadData("pakdata.dat") == 0)
             {
+                LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Pak map loaded");
+                game_directory_specified = true;
                 return 0;
             }
             else
             {
+                LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Failed to load pak map, generating new one");
+
                 foreach (string file in files)
                 {
                     pak_map.AddPak(file);
                 }
                 pak_map.SaveData("pakdata.dat");
             }
+            game_directory_specified = true;
             return 0;
         }
 
@@ -72,7 +121,11 @@ namespace SpellforceDataEditor.SFUnPak
         {
             MemoryStream ms = LoadFileFrom(pak_name, filename);
             if (ms == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.ExtractFileFrom(): Could not load file! pak_name: " + pak_name + ", filename: " + filename);
+
                 return -1;
+            }
 
             string dir = Path.GetDirectoryName(new_name);
             if (!Directory.Exists(dir))
@@ -83,6 +136,7 @@ namespace SpellforceDataEditor.SFUnPak
                 }
                 catch (Exception)
                 {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.ExtractFileFrom(): Could not create directory " + dir + " to store extracted data!");
                     return -3;
                 }
             }
@@ -94,6 +148,7 @@ namespace SpellforceDataEditor.SFUnPak
             }
             catch (Exception)
             {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.ExtractFileFrom(): Could not create file " + new_name + " to store extracted data!");
                 return -2;
             }
 
@@ -111,7 +166,11 @@ namespace SpellforceDataEditor.SFUnPak
             SFPakFileSystem fs = pak_map.GetPak(pak_name);
 
             if (fs == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.LoadFileFrom(): Could not find pak file "+pak_name);
+
                 return null;
+            }
 
             return fs.GetFileBuffer(filename);
         }
@@ -122,7 +181,10 @@ namespace SpellforceDataEditor.SFUnPak
         {
             MemoryStream ms = LoadFileFind(filename);
             if (ms == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.ExtractFileFind(): Could not find file "+filename);
                 return -1;
+            }
 
             string dir = Path.GetDirectoryName(new_name);
             if (!Directory.Exists(dir))
@@ -133,6 +195,7 @@ namespace SpellforceDataEditor.SFUnPak
                 }
                 catch(Exception)
                 {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.ExtractFileFind(): Could not create directory " + dir + " to store extracted data!");
                     return -3;
                 }
             }
@@ -144,6 +207,7 @@ namespace SpellforceDataEditor.SFUnPak
             }
             catch (Exception)
             {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.ExtractFileFind(): Could not create file " + new_name + " to store extracted data!");
                 return -2;
             }
 

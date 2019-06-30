@@ -24,6 +24,7 @@ namespace SpellforceDataEditor.SFCFF
         //w reference to tool strip progress bar
         public static List<int> Search(SFCategory category, List<int> source, string query, SearchType type, int column_i, System.Windows.Forms.ToolStripProgressBar pbar)
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFSearchModule.Search() called, query: '"+query+"'");
             query = query.Trim();
             if (type == SearchType.TYPE_STRING)
                 query = query.ToLower();
@@ -135,6 +136,8 @@ namespace SpellforceDataEditor.SFCFF
                 if (success)
                     target.Add(i);
             }
+
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFSearchModule.Search() concluded, found elements: " + target.Count.ToString());
             return target;
         }
     }

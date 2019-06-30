@@ -30,34 +30,8 @@ namespace SpellforceDataEditor.special_forms
         public ModManagerForm()
         {
             InitializeComponent();
-            // check if game drectory is specified
-            if(SFUnPak.SFUnPak.game_directory_name == "")
-            {
-                if (File.Exists("game_directory.txt"))
-                {
-                    string gamedir = File.ReadAllText("game_directory.txt");
-                    int result = SFUnPak.SFUnPak.SpecifyGameDirectory(gamedir);
-                    if (result == 0)
-                    {
-                        StatusText.Text = "Ready";
-                        ready = true;
-                    }
-                    else
-                    {
-                        StatusText.Text = "Something went wrong! Try specifying game directory again";
-                        ready = false;
-                    }
-                }
-                else
-                {
-                    StatusText.Text = "Specify game directory before using this tool";
-                    ready = false;
-                }
-            }
-            if(ready)
-            {
-                Prepare();
-            }
+            // assumes game directory is specified
+            Prepare();
         }
 
         // prepares the manager for use
@@ -283,28 +257,6 @@ namespace SpellforceDataEditor.special_forms
             cur_used.name = name;
             cur_used.Save();
             StatusText.Text = "Template saved";
-        }
-
-        private void specifyGameDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            bool prev_ready = ready;
-            if (SelectGameDirectory.ShowDialog() == DialogResult.OK)
-            {
-                StatusText.Text = "Processing...";
-                int result = SFUnPak.SFUnPak.SpecifyGameDirectory(SelectGameDirectory.SelectedPath);
-                if (result == 0)
-                {
-                    File.WriteAllText("game_directory.txt", SelectGameDirectory.SelectedPath);
-                    StatusText.Text = "Ready";
-                    ready = true;
-                }
-                else
-                {
-                    StatusText.Text = "Failed to specify directory";
-                }
-            }
-            if((ready)&&(!prev_ready))
-                Prepare();
         }
 
         private void specifyOriginalGamedatacffToolStripMenuItem_Click(object sender, EventArgs e)

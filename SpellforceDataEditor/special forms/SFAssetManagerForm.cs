@@ -20,7 +20,6 @@ namespace SpellforceDataEditor.special_forms
 {
     public partial class SFAssetManagerForm : Form
     {
-        SFRenderEngine render_engine;
         SFSoundEngine sound_engine;
 
         bool synchronized = false;
@@ -28,65 +27,21 @@ namespace SpellforceDataEditor.special_forms
         Point mouse_pos;
         bool mouse_pressed = false;
 
-        bool ready = false;
-
         public SFAssetManagerForm()
         {
-            render_engine = new SFRenderEngine();
             sound_engine = new SFSoundEngine();
             InitializeComponent();
         }
 
-        //specify game directory button
-        private void testToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            if (GameDirDialog.ShowDialog() == DialogResult.OK)
-            {
-                int result = specify_game_directory(GameDirDialog.SelectedPath);
-                if (result == 0)
-                {
-                    File.WriteAllText("game_directory.txt", GameDirDialog.SelectedPath);
-                    StatusText.Text = "Successfully loaded PAK data";
-                }
-                else
-                {
-                    StatusText.Text = "Failed to load PAK data";
-                }
-            }
-        }
-
-        int specify_game_directory(string dname)
-        {
-            StatusText.Text = "Loading...";
-            statusStrip1.Refresh();
-            int result = SFUnPak.SFUnPak.SpecifyGameDirectory(dname); //render_engine.SpecifyGameDirectory(dname);
-            if(result == 0)
-            {
-                ready = true;
-                SFResourceManager.FindAllMeshes();
-                SFLua.SFLuaEnvironment.Init();
-            }
-            return result;
-        }
-
-        //on form open
+        // on form open
+        // assumes game directory is specified
         private void SF3DManagerForm_Load(object sender, EventArgs e)
         {
-            int preload_success = -1;
-            if(File.Exists("game_directory.txt"))
-            {
-                string gamedir = File.ReadAllText("game_directory.txt");
-                preload_success = specify_game_directory(gamedir);
-            }
-            if (preload_success == 0)
-                StatusText.Text = "PAK data preloaded successfully";
-            else
-                StatusText.Text = "Failed to preload PAK files. Specify game directory";
+            SFResourceManager.FindAllMeshes();
 
-            render_engine.Initialize(new Vector2(glControl1.ClientSize.Width, glControl1.ClientSize.Height));
-            render_engine.camera.Position = new Vector3(0, 1, 6);
-            render_engine.camera.Lookat = new Vector3(0, 1, 0);
-            render_engine.scene_manager.gamedata = SFCFF.SFCategoryManager.gamedata;
+            SFRenderEngine.Initialize(new Vector2(glControl1.ClientSize.Width, glControl1.ClientSize.Height));
+            SFRenderEngine.camera.Position = new Vector3(0, 1, 6);
+            SFRenderEngine.camera.Lookat = new Vector3(0, 1, 0);
 
             glControl1.Invalidate();
         }
@@ -94,13 +49,13 @@ namespace SpellforceDataEditor.special_forms
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             glControl1.MakeCurrent();
-            render_engine.RenderFrame();
+            SFRenderEngine.RenderFrame();
             glControl1.SwapBuffers();
         }
 
         private void SF3DManagerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            render_engine.scene_manager.ClearScene();
+            SFRenderEngine.scene_manager.ClearScene();
             SFResourceManager.DisposeAll();
             sound_engine.UnloadSound();
         }
@@ -117,13 +72,10 @@ namespace SpellforceDataEditor.special_forms
 
         private void ComboBrowseMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!ready)
-                return;
-
             DisableAnimation();
             ListEntries.Items.Clear();
             ListAnimations.Items.Clear();
-            render_engine.scene_manager.ClearScene();
+            SFRenderEngine.scene_manager.ClearScene();
             sound_engine.UnloadSound();
             TimerSoundDuration.Stop();
             trackSoundDuration.Value = 0;
@@ -138,7 +90,7 @@ namespace SpellforceDataEditor.special_forms
                 //generate scene
                 SFSceneDescription scene = new SFSceneDescription();
                 scene.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { "", "", "simple_mesh" });
-                render_engine.scene_manager.ParseSceneDescription(scene);
+                SFRenderEngine.scene_manager.ParseSceneDescription(scene);
 
                 foreach (string mesh_name in SFResourceManager.mesh_names)
                     ListEntries.Items.Add(mesh_name);
@@ -154,7 +106,7 @@ namespace SpellforceDataEditor.special_forms
                 //generate scene
                 SFSceneDescription scene = new SFSceneDescription();
                 scene.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { "", "", "dynamic_mesh" });
-                render_engine.scene_manager.ParseSceneDescription(scene);
+                SFRenderEngine.scene_manager.ParseSceneDescription(scene);
 
                 foreach (string skel_name in SFResourceManager.skeleton_names)
                     ListEntries.Items.Add(skel_name);
@@ -197,12 +149,9 @@ namespace SpellforceDataEditor.special_forms
 
         private void ListEntries_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!ready)
-                return;
-
             SFResourceManager.DisposeAll();
 
-            SFSceneManager scene = render_engine.scene_manager;
+            SFSceneManager scene = SFRenderEngine.scene_manager;
 
             if (ComboBrowseMode.SelectedIndex == 0)
             {
@@ -353,18 +302,18 @@ namespace SpellforceDataEditor.special_forms
             float cam_speed = 6; //limited by framerate
 
             //calculate movement vector
-            Vector3 cam_move = (((render_engine.camera.Lookat - render_engine.camera.Position).Normalized())*cam_speed)/render_engine.scene_manager.frames_per_second;
+            Vector3 cam_move = (((SFRenderEngine.camera.Lookat - SFRenderEngine.camera.Position).Normalized())*cam_speed)/ SFRenderEngine.scene_manager.frames_per_second;
 
             if (e.KeyChar == 'w')
-                render_engine.camera.translate(cam_move);
+                SFRenderEngine.camera.translate(cam_move);
             else if (e.KeyChar == 's')
-                render_engine.camera.translate(-cam_move);
+                SFRenderEngine.camera.translate(-cam_move);
         }
 
 
         private void ListAnimations_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SFSceneManager scene = render_engine.scene_manager;
+            SFSceneManager scene = SFRenderEngine.scene_manager;
 
             if (ComboBrowseMode.SelectedIndex == 1)
             {
@@ -440,32 +389,32 @@ namespace SpellforceDataEditor.special_forms
         private void EnableAnimation()
         {
             TimerAnimation.Enabled = true;
-            TimerAnimation.Interval = 1000/render_engine.scene_manager.frames_per_second;
+            TimerAnimation.Interval = 1000/ SFRenderEngine.scene_manager.frames_per_second;
             TimerAnimation.Start();
-            render_engine.scene_manager.delta_timer.Restart();
+            SFRenderEngine.scene_manager.delta_timer.Restart();
         }
 
         private void DisableAnimation()
         {
             TimerAnimation.Stop();
             TimerAnimation.Enabled = false;
-            render_engine.scene_manager.delta_timer.Stop();
+            SFRenderEngine.scene_manager.delta_timer.Stop();
         }
 
         private void TimerAnimation_Tick(object sender, EventArgs e)
         {
-            if (render_engine.scene_manager.scene_meta == null)
+            if (SFRenderEngine.scene_manager.scene_meta == null)
                 return;
             //set slider
 
-            double ratio = render_engine.scene_manager.current_time / render_engine.scene_manager.scene_meta.duration; //sound_engine.GetSoundPosition() / sound_engine.GetSoundDuration();
+            double ratio = SFRenderEngine.scene_manager.current_time / SFRenderEngine.scene_manager.scene_meta.duration; //sound_engine.GetSoundPosition() / sound_engine.GetSoundDuration();
             trackSoundDuration.Value = Math.Max(0, Math.Min(trackSoundDuration.Maximum, (int)(trackSoundDuration.Maximum * ratio)));
-            TimeSpan cur = TimeSpan.FromSeconds(render_engine.scene_manager.current_time);
-            TimeSpan tot = TimeSpan.FromSeconds(render_engine.scene_manager.scene_meta.duration);
+            TimeSpan cur = TimeSpan.FromSeconds(SFRenderEngine.scene_manager.current_time);
+            TimeSpan tot = TimeSpan.FromSeconds(SFRenderEngine.scene_manager.scene_meta.duration);
             labelSoundDuration.Text = cur.ToString(@"m\:ss") + "/" + tot.ToString(@"m\:ss");
 
             TimerAnimation.Start();
-            render_engine.scene_manager.LogicStep();
+            SFRenderEngine.scene_manager.LogicStep();
             glControl1.Invalidate();
         }
 
@@ -504,7 +453,7 @@ namespace SpellforceDataEditor.special_forms
             mouse_pressed = false;
             if (ComboBrowseMode.SelectedIndex != 1)
                 DisableAnimation();
-            if ((ComboBrowseMode.SelectedIndex == 2)&& (render_engine.scene_manager.scene_meta != null) && (render_engine.scene_manager.scene_meta.is_animated))
+            if ((ComboBrowseMode.SelectedIndex == 2)&& (SFRenderEngine.scene_manager.scene_meta != null) && (SFRenderEngine.scene_manager.scene_meta.is_animated))
                 EnableAnimation();
         }
 
@@ -518,7 +467,7 @@ namespace SpellforceDataEditor.special_forms
             float mx, my;
             mx = Cursor.Position.X - mouse_pos.X; my = Cursor.Position.Y - mouse_pos.Y;
             //produce angle difference
-            render_engine.camera.Direction += new Vector2(mx * mult_f, -my * mult_f);
+            SFRenderEngine.camera.Direction += new Vector2(mx * mult_f, -my * mult_f);
             //set cursor position
             Cursor.Position = new Point(this.Location.X + glControl1.Location.X + (glControl1.Size.Width / 2), this.Location.Y + glControl1.Location.Y + (glControl1.Size.Height / 2));
 
@@ -533,19 +482,19 @@ namespace SpellforceDataEditor.special_forms
             DisableAnimation();
             ListEntries.Items.Clear();
             ListAnimations.Items.Clear();
-            render_engine.scene_manager.ClearScene();
+            SFRenderEngine.scene_manager.ClearScene();
             SFResourceManager.DisposeAll();
             GC.Collect(2, GCCollectionMode.Forced, false);
 
             System.Diagnostics.Debug.WriteLine("GENERATING SCENE " + cat.ToString() + "|" + elem.ToString());
-            render_engine.scene_manager.ParseSceneDescription(render_engine.scene_manager.CatElemToScene(cat, elem));
+            SFRenderEngine.scene_manager.ParseSceneDescription(SFRenderEngine.scene_manager.CatElemToScene(cat, elem));
 
-            if (render_engine.scene_manager.scene_meta.is_animated)
+            if (SFRenderEngine.scene_manager.scene_meta.is_animated)
             {
-                if (render_engine.scene_manager.scene_meta.obj_to_anim.ContainsKey("MAIN"))
+                if (SFRenderEngine.scene_manager.scene_meta.obj_to_anim.ContainsKey("MAIN"))
                 {
                     ListAnimations.Items.Clear();
-                    List<string> anims = GetAllSkeletonAnimations(render_engine.scene_manager.scene_meta.obj_to_anim["MAIN"]);
+                    List<string> anims = GetAllSkeletonAnimations(SFRenderEngine.scene_manager.scene_meta.obj_to_anim["MAIN"]);
                     foreach (string n in anims)
                         ListAnimations.Items.Add(n);
                 }
@@ -562,7 +511,7 @@ namespace SpellforceDataEditor.special_forms
             }
             if(ComboBrowseMode.SelectedIndex == 2)
             {
-                if (render_engine.scene_manager.scene_meta.is_animated)
+                if (SFRenderEngine.scene_manager.scene_meta.is_animated)
                     EnableAnimation();
             }
             if ((ComboBrowseMode.SelectedIndex == 3)||(ComboBrowseMode.SelectedIndex == 4)||(ComboBrowseMode.SelectedIndex == 5))
@@ -582,7 +531,7 @@ namespace SpellforceDataEditor.special_forms
             }
             if (ComboBrowseMode.SelectedIndex == 2)
             {
-                if (render_engine.scene_manager.scene_meta.is_animated)
+                if (SFRenderEngine.scene_manager.scene_meta.is_animated)
                     DisableAnimation();
             }
             if ((ComboBrowseMode.SelectedIndex == 3) || (ComboBrowseMode.SelectedIndex == 4) || (ComboBrowseMode.SelectedIndex == 5))
@@ -612,16 +561,16 @@ namespace SpellforceDataEditor.special_forms
 
             if (ComboBrowseMode.SelectedIndex == 1)
             {
-                render_engine.scene_manager.SetSceneTime((float)ratio * render_engine.scene_manager.scene_meta.duration);
-                render_engine.scene_manager.LogicStep(false);
+                SFRenderEngine.scene_manager.SetSceneTime((float)ratio * SFRenderEngine.scene_manager.scene_meta.duration);
+                SFRenderEngine.scene_manager.LogicStep(false);
                 glControl1.Invalidate();
             }
             if(ComboBrowseMode.SelectedIndex == 2)
             {
-                if (!render_engine.scene_manager.scene_meta.is_animated)
+                if (!SFRenderEngine.scene_manager.scene_meta.is_animated)
                     return;
-                render_engine.scene_manager.SetSceneTime((float)ratio * render_engine.scene_manager.scene_meta.duration);
-                render_engine.scene_manager.LogicStep(false);
+                SFRenderEngine.scene_manager.SetSceneTime((float)ratio * SFRenderEngine.scene_manager.scene_meta.duration);
+                SFRenderEngine.scene_manager.LogicStep(false);
                 glControl1.Invalidate();
             }
             if ((ComboBrowseMode.SelectedIndex == 3) || (ComboBrowseMode.SelectedIndex == 4) || (ComboBrowseMode.SelectedIndex == 5))
@@ -665,7 +614,7 @@ namespace SpellforceDataEditor.special_forms
                 if (mod == null)
                     return;
 
-                objectAnimated obj = render_engine.scene_manager.objects_dynamic["dynamic_mesh"];
+                objectAnimated obj = SFRenderEngine.scene_manager.objects_dynamic["dynamic_mesh"];
 
                 SFResourceManager.Skins.Extract(item);
                 List<string> skels = SFResourceManager.Skeletons.GetNames();
@@ -757,11 +706,6 @@ namespace SpellforceDataEditor.special_forms
                 return;
 
             if (item == "RTS Battle")
-                SFResourceManager.Messages.SetSuffixExtension(".wav");
-            else
-                SFResourceManager.Messages.SetSuffixExtension(".mp3");
-
-            if (item == "RTS Battle")
                 SFResourceManager.Messages.SetPrefixPath("sound\\speech\\battle");
             else if (item == "Male")
                 SFResourceManager.Messages.SetPrefixPath("sound\\speech\\male");
@@ -782,7 +726,7 @@ namespace SpellforceDataEditor.special_forms
         // failsafe for the case map is unloaded and viewer is opened
         public void ResetScene()
         {
-            render_engine.scene_manager.ClearScene();
+            SFRenderEngine.scene_manager.ClearScene();
         }
     }
 }

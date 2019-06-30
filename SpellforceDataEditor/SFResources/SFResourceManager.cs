@@ -17,7 +17,7 @@ namespace SpellforceDataEditor.SFResources
 {
     public static class SFResourceManager
     {
-        public static SFResourceContainer<SFTexture> Textures { get; private set; } = new SFResourceContainer<SFTexture>("texture", ".dds");
+        public static SFResourceContainer<SFTexture> Textures { get; private set; } = new SFResourceContainer<SFTexture>("texture", ".dds|.tga");
         public static SFResourceContainer<SFModel3D> Models { get; private set; } = new SFResourceContainer<SFModel3D>("mesh", ".msb");
         public static SFResourceContainer<SFAnimation> Animations { get; private set; } = new SFResourceContainer<SFAnimation>("animation", ".bob");
         public static SFResourceContainer<SFBoneIndex> BSIs { get; private set; } = new SFResourceContainer<SFBoneIndex>("skinning\\b20", ".bsi");
@@ -25,7 +25,7 @@ namespace SpellforceDataEditor.SFResources
         public static SFResourceContainer<SFSkeleton> Skeletons { get; private set; } = new SFResourceContainer<SFSkeleton>("animation", ".bor");
         public static SFResourceContainer<StreamResource> Musics { get; private set; } = new SFResourceContainer<StreamResource>("sound", ".mp3");
         public static SFResourceContainer<StreamResource> Sounds { get; private set; } = new SFResourceContainer<StreamResource>("sound", ".wav");
-        public static SFResourceContainer<StreamResource> Messages { get; private set; } = new SFResourceContainer<StreamResource>("", ""); //modified externally
+        public static SFResourceContainer<StreamResource> Messages { get; private set; } = new SFResourceContainer<StreamResource>("", ".wav|.mp3"); //modified externally
         public static string current_resource = "";
         public static List<string> mesh_names { get; private set; } = new List<string>();
         public static List<string> skeleton_names { get; private set; } = new List<string>();
@@ -37,17 +37,19 @@ namespace SpellforceDataEditor.SFResources
         //generate mesh names, for use in SF3DManager
         public static void FindAllMeshes()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes() called");
+
             string[] filter_mesh = { "sf8.pak", "sf22.pak", "sf32.pak" };
             string[] filter_skel = { "sf4.pak", "sf22.pak", "sf32.pak" };
             string[] filter_anim = { "sf5.pak", "sf22.pak", "sf32.pak" };
             string[] filter_musi = { "sf3.pak", "sf20.pak", "sf30.pak" };
             string[] filter_snds = { "sf2.pak", "sf20.pak", "sf30.pak" };
             string[] filter_mess_battle = { "sf2.pak", "sf23.pak", "sf33.pak" };
-            string[] filter_mess_other =  { "sf10.pak", "sf20.pak", "sf23.pak", "sf33.pak" };
-            string[] filter_mess_talk =   { "sf10.pak", "sf23.pak", "sf33.pak" };
+            string[] filter_mess_other = { "sf10.pak", "sf20.pak", "sf23.pak", "sf33.pak" };
+            string[] filter_mess_talk = { "sf10.pak", "sf23.pak", "sf33.pak" };
 
             mesh_names = SFUnPak.SFUnPak.ListAllWithExtension("mesh", ".msb", filter_mesh);
-            skeleton_names = SFUnPak.SFUnPak.ListAllWithExtension( "animation", ".bor", filter_skel);
+            skeleton_names = SFUnPak.SFUnPak.ListAllWithExtension("animation", ".bor", filter_skel);
             skeleton_names.RemoveAll(x => !(x.StartsWith("figure")));
             animation_names = SFUnPak.SFUnPak.ListAllWithExtension("animation", ".bob", filter_anim);
             music_names = SFUnPak.SFUnPak.ListAllWithExtension("sound", ".mp3", filter_musi);
@@ -57,10 +59,22 @@ namespace SpellforceDataEditor.SFResources
             message_names["Male"] = SFUnPak.SFUnPak.ListAllWithExtension("sound\\speech\\male", ".mp3", filter_mess_talk);
             message_names["Female"] = SFUnPak.SFUnPak.ListAllWithExtension("sound\\speech\\female", ".mp3", filter_mess_talk);
             message_names["RTS Workers"] = SFUnPak.SFUnPak.ListAllWithExtension("sound\\speech\\messages", ".mp3", filter_mess_talk);
+
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): 3D models found: " + mesh_names.Count.ToString());
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): Skeletons found: " + skeleton_names.Count.ToString());
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): Animations found: " + animation_names.Count.ToString());
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): Music files found: " + music_names.Count.ToString());
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): Miscellaneous sound files found: " + sound_names.Count.ToString());
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): RTS Battle message sound files found: " + message_names["RTS Battle"].Count.ToString());
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): NPC message sound files found: " + message_names["NPC"].Count.ToString());
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): Male message sound files found: " + message_names["Male"].Count.ToString());
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): Female message sound files found: " + message_names["Female"].Count.ToString());
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): RTS Workers message sound files found: " + message_names["RTS Workers"].Count.ToString());
         }
 
         public static void DisposeAll()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.DisposeAll() called");
             Textures.DisposeAll();
             Models.DisposeAll();
             Animations.DisposeAll();

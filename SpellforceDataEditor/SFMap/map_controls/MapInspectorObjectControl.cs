@@ -162,6 +162,94 @@ namespace SpellforceDataEditor.SFMap.map_controls
             obj.unknown1 = Utility.TryParseUInt16(SelectedObjectUnk1.Text);
         }
 
+        public override void OnMouseDown(SFCoord clicked_pos, MouseButtons button)
+        {
+            if (map == null)
+                return;
+
+            SFCoord fixed_pos = new SFCoord(clicked_pos.x, map.height - clicked_pos.y - 1);
+            // get unit under position
+            SFMapObject obj = null;
+            foreach (SFMapObject o in map.object_manager.objects)
+            {
+                float sel_scale = (float)Math.Max(2, SF3D.SFRender.SFRenderEngine.scene_manager.mesh_data.GetObjectSelectionSize(o.game_id))/2;
+                if (SFCoord.Distance(o.grid_position, fixed_pos) <= sel_scale)
+                {
+                    obj = o;
+                    break;
+                }
+            }
+
+            // if no unit under the cursor and left mouse clicked, create new unit
+            if (obj == null)
+            {
+                if (button == MouseButtons.Left)
+                {
+                    // if dragging unit, just move selected unit, dont create a new one
+                    if (drag_enabled)
+                    {
+                        //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                        map.MoveObject(selected_object, fixed_pos);
+                    }
+                    else
+                    {
+                        // check if can place
+                        //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                        //{
+                        ushort new_object_id = Utility.TryParseUInt16(ObjectToPlaceID.Text);
+                        if (map.gamedata.categories[33].get_element_index(new_object_id) == -1)
+                            return;
+                        // create new unit and drag it until mouse released
+                        map.AddObject(new_object_id, fixed_pos, 0, 0, 0);
+                        ListObjects.Items.Add(GetObjectString(map.object_manager.objects[map.object_manager.objects.Count - 1]));
+                        SelectObject(map.object_manager.objects.Count - 1, false);
+                        drag_enabled = true;
+                        //}
+                    }
+                }
+            }
+            else
+            {
+                if (button == MouseButtons.Left)
+                {
+                    // if dragging unit, just move selected unit, dont create a new one
+                    if (drag_enabled)
+                    {
+                        //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                        map.MoveObject(selected_object, fixed_pos);
+                    }
+                    else
+                    {
+                        // find selected unit id
+                        int object_map_index = map.object_manager.objects.IndexOf(obj);
+                        if (object_map_index == -1)
+                            return;
+
+                        SelectObject(object_map_index, false);
+                        drag_enabled = true;
+                    }
+                }
+                // delete unit
+                else if (button == MouseButtons.Right)
+                {
+                    int object_map_index = map.object_manager.objects.IndexOf(obj);
+                    if (object_map_index == -1)
+                        return;
+
+                    if (object_map_index == selected_object)
+                        SelectObject(-1, false);
+
+                    map.DeleteObject(object_map_index);
+                    ListObjects.Items.RemoveAt(object_map_index);
+                }
+            }
+        }
+
+        public override void OnMouseUp()
+        {
+            drag_enabled = false;
+        }
+
         private void SelectedObjectNPCID_MouseDown(object sender, MouseEventArgs e)
         {
             if (selected_object == -1)
@@ -187,6 +275,61 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 map.object_manager.objects[selected_object].npc_id = npc_id;
                 SelectedObjectNPCID.Text = npc_id.ToString();
             }
+        }
+
+        private void ObjectListFindNext_Click(object sender, EventArgs e)
+        {
+            if (map == null)
+                return;
+
+            string search_phrase = ObjectListSearchPhrase.Text.ToLower();
+            if (search_phrase == "")
+                return;
+
+            int search_start = ListObjects.SelectedIndex;
+
+            for (int i = search_start + 1; i < map.object_manager.objects.Count; i++)
+                if (ListObjects.Items[i].ToString().ToLower().Contains(search_phrase))
+                {
+                    ListObjects.SelectedIndex = i;
+                    return;
+                }
+
+            for (int i = 0; i <= search_start; i++)
+                if (ListObjects.Items[i].ToString().ToLower().Contains(search_phrase))
+                {
+                    ListObjects.SelectedIndex = i;
+                    return;
+                }
+        }
+
+        private void ObjectListFindPrevious_Click(object sender, EventArgs e)
+        {
+            if (map == null)
+                return;
+
+            string search_phrase = ObjectListSearchPhrase.Text.ToLower();
+            if (search_phrase == "")
+                return;
+
+            int search_start = ListObjects.SelectedIndex;
+
+            for (int i = search_start - 1; i >= 0; i--)
+                if (ListObjects.Items[i].ToString().ToLower().Contains(search_phrase))
+                {
+                    ListObjects.SelectedIndex = i;
+                    return;
+                }
+
+            if (search_start == -1)
+                search_start = 0;
+
+            for (int i = map.object_manager.objects.Count - 1; i >= search_start; i--)
+                if (ListObjects.Items[i].ToString().ToLower().Contains(search_phrase))
+                {
+                    ListObjects.SelectedIndex = i;
+                    return;
+                }
         }
     }
 }

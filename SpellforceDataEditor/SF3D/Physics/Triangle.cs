@@ -18,6 +18,8 @@ namespace SpellforceDataEditor.SF3D.Physics
         {
             v1 = u1; v2 = u2; v3 = u3;
             normal = Vector3.Cross(v3 - v1, v2 - v1).Normalized();
+            if (normal == Vector3.Zero)
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "Triangle(): Malformed triangle, normal is zero length!");
         }
 
         public float GetArea()

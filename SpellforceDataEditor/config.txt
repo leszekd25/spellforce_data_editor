@@ -1,0 +1,19 @@
+! Ignore
+# IgnoredMipMapsCount allowed values: 0, 1, 2
+# The lower the value, the lower quality the textures, but the faster loading time and the lower RAM usage
+IgnoredMipMapsCount 0
+
+# MaximumAllowedTextureSize allowed values: 64, 128, 256, ...
+# The higher the value, the better quality textures will be loaded in if possible, but at the cost of longer loading times and higher RAM usage
+MaximumAllowedTextureSize 2048
+
+# GameDirectory is a path parameter, it should point at the folder with Spellforce.exe
+# When specified, editor will try to preload data from PAKs found in the GameDirectory/pak folder
+# Some editor features require this to be a valid parameter
+GameDirectory 
+
+# LogInfo/Warning/Error allowed values: YES, NO
+# Sets log level option to be set on or off
+LogInfo YES
+LogWarning YES
+LogError YES

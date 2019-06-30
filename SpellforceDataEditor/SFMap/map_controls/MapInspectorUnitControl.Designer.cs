@@ -52,9 +52,9 @@
             this.labelX = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.ListUnits = new System.Windows.Forms.ListBox();
-            this.UnitListSearch = new System.Windows.Forms.Button();
+            this.UnitListFindNext = new System.Windows.Forms.Button();
             this.UnitListSearchPhrase = new System.Windows.Forms.TextBox();
-            this.UnitListReset = new System.Windows.Forms.Button();
+            this.UnitListFindPrevious = new System.Windows.Forms.Button();
             this.SelectedUnitPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SelectedUnitAngleTrackBar)).BeginInit();
             this.SuspendLayout();
@@ -290,14 +290,15 @@
             this.ListUnits.TabIndex = 6;
             this.ListUnits.SelectedIndexChanged += new System.EventHandler(this.ListUnits_SelectedIndexChanged);
             // 
-            // UnitListSearch
+            // UnitListFindNext
             // 
-            this.UnitListSearch.Location = new System.Drawing.Point(251, 312);
-            this.UnitListSearch.Name = "UnitListSearch";
-            this.UnitListSearch.Size = new System.Drawing.Size(147, 23);
-            this.UnitListSearch.TabIndex = 7;
-            this.UnitListSearch.Text = "Search";
-            this.UnitListSearch.UseVisualStyleBackColor = true;
+            this.UnitListFindNext.Location = new System.Drawing.Point(251, 312);
+            this.UnitListFindNext.Name = "UnitListFindNext";
+            this.UnitListFindNext.Size = new System.Drawing.Size(147, 23);
+            this.UnitListFindNext.TabIndex = 7;
+            this.UnitListFindNext.Text = "Find next";
+            this.UnitListFindNext.UseVisualStyleBackColor = true;
+            this.UnitListFindNext.Click += new System.EventHandler(this.UnitListFindNext_Click);
             // 
             // UnitListSearchPhrase
             // 
@@ -306,21 +307,22 @@
             this.UnitListSearchPhrase.Size = new System.Drawing.Size(147, 20);
             this.UnitListSearchPhrase.TabIndex = 8;
             // 
-            // UnitListReset
+            // UnitListFindPrevious
             // 
-            this.UnitListReset.Location = new System.Drawing.Point(251, 488);
-            this.UnitListReset.Name = "UnitListReset";
-            this.UnitListReset.Size = new System.Drawing.Size(147, 23);
-            this.UnitListReset.TabIndex = 9;
-            this.UnitListReset.Text = "Reset";
-            this.UnitListReset.UseVisualStyleBackColor = true;
+            this.UnitListFindPrevious.Location = new System.Drawing.Point(251, 341);
+            this.UnitListFindPrevious.Name = "UnitListFindPrevious";
+            this.UnitListFindPrevious.Size = new System.Drawing.Size(147, 23);
+            this.UnitListFindPrevious.TabIndex = 9;
+            this.UnitListFindPrevious.Text = "Find previous";
+            this.UnitListFindPrevious.UseVisualStyleBackColor = true;
+            this.UnitListFindPrevious.Click += new System.EventHandler(this.UnitListFindPrevious_Click);
             // 
             // MapInspectorUnitControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.Controls.Add(this.UnitListReset);
+            this.Controls.Add(this.UnitListFindPrevious);
             this.Controls.Add(this.UnitListSearchPhrase);
-            this.Controls.Add(this.UnitListSearch);
+            this.Controls.Add(this.UnitListFindNext);
             this.Controls.Add(this.ListUnits);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.SelectedUnitPanel);
@@ -363,9 +365,9 @@
         private System.Windows.Forms.TrackBar SelectedUnitAngleTrackBar;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ListBox ListUnits;
-        private System.Windows.Forms.Button UnitListSearch;
+        private System.Windows.Forms.Button UnitListFindNext;
         private System.Windows.Forms.TextBox UnitListSearchPhrase;
-        private System.Windows.Forms.Button UnitListReset;
+        private System.Windows.Forms.Button UnitListFindPrevious;
         private System.Windows.Forms.Label SelectedUnitNameAndLevel;
     }
 }

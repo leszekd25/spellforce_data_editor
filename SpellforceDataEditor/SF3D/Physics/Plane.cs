@@ -18,6 +18,8 @@ namespace SpellforceDataEditor.SF3D.Physics
         {
             point = p;
             normal = n;
+            if (normal == Vector3.Zero)
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "Plane(): Normal is zero length (point: "+p.ToString()+")");
         }
 
         public Plane(Triangle t)

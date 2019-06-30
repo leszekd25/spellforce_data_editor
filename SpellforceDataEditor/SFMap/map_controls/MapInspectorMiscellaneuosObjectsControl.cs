@@ -26,6 +26,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (Visible)
             {
+                SFLua.SFLuaEnvironment.coop_spawns.Load();
                 ReloadCoopCampList();
                 ReloadBindstoneList();
                 ReloadPortalList();
@@ -118,8 +119,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ButtonChangeSelectedCampType_Click(object sender, EventArgs e)
         {
-            var sql_edit = new SFLua.lua_sql_forms.SFLuaSQLRtsCoopSpawnForm();
-            sql_edit.Show();
+            if (!Settings.AllowLua)
+            {
+                MessageBox.Show("Lua interpreter is disabled. Close editor, set 'AllowLua' in settings to 'YES' and run editor again to enable Lua interpreter.");
+                return;
+            }
+            SFLua.SFLuaEnvironment.ShowRtsCoopSpawnGroupsForm();
             ReloadCoopCampList();
         }
 

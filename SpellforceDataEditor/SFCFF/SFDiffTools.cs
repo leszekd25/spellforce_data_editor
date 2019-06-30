@@ -94,6 +94,7 @@ namespace SpellforceDataEditor.SFCFF
                     bw.Write(elem.difference_index);
                     break;
                 default:
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFDiffTols.write_diff_element(): Unknown diff type (type: "+elem.difference_index.ToString()+")");
                     break;
             }
             return;
@@ -131,6 +132,7 @@ namespace SpellforceDataEditor.SFCFF
                     elem.difference_index = br.ReadInt32();
                     break;
                 default:
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFDiffTols.read_diff_element(): Unknown diff type (type: " + elem.difference_index.ToString() + ")");
                     break;
             }
             return elem;
@@ -174,10 +176,12 @@ namespace SpellforceDataEditor.SFCFF
             }
             catch(FileNotFoundException)
             {
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFDiffTols.load_diff_data(): Can't open file "+fname);
                 return false;
             }
             catch(Exception)
             {
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFDiffTols.load_diff_data(): Unknown error");
                 return false;
             }
 
@@ -201,6 +205,7 @@ namespace SpellforceDataEditor.SFCFF
                     if (presumed_md5 != SFCategoryManager.get_data_md5())
                     {
                         clear_data();
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFDiffTols.load_diff_data(): MD5 hashes don't match!");
                         success = false;
                         break;
                     }

@@ -206,9 +206,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
             // get unit under position
             SFMapUnit unit = null;
             SFMapHeightMapChunk chunk = map.heightmap.GetChunk(fixed_pos);
-            foreach(SFMapUnit u in chunk.units)
+            foreach (SFMapUnit u in chunk.units)
             {
-                if(u.grid_position == fixed_pos)
+                if (u.grid_position == fixed_pos)
                 {
                     unit = u;
                     break;
@@ -216,7 +216,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             }
 
             // if no unit under the cursor and left mouse clicked, create new unit
-            if(unit == null)
+            if (unit == null)
             {
                 if (button == MouseButtons.Left)
                 {
@@ -265,7 +265,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     }
                 }
                 // delete unit
-                else if(button == MouseButtons.Right)
+                else if (button == MouseButtons.Right)
                 {
                     int unit_map_index = map.unit_manager.units.IndexOf(unit);
                     if (unit_map_index == -1)
@@ -310,6 +310,61 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 map.unit_manager.units[selected_unit].npc_id = npc_id;
                 SelectedUnitNPCID.Text = npc_id.ToString();
             }
+        }
+
+        private void UnitListFindNext_Click(object sender, EventArgs e)
+        {
+            if (map == null)
+                return;
+
+            string search_phrase = UnitListSearchPhrase.Text.ToLower();
+            if (search_phrase == "")
+                return;
+
+            int search_start = ListUnits.SelectedIndex;
+
+            for(int i = search_start+1; i < map.unit_manager.units.Count; i++)
+                if(ListUnits.Items[i].ToString().ToLower().Contains(search_phrase))
+                {
+                    ListUnits.SelectedIndex = i;
+                    return;
+                }
+
+            for (int i = 0; i <= search_start; i++)
+                if (ListUnits.Items[i].ToString().ToLower().Contains(search_phrase))
+                {
+                    ListUnits.SelectedIndex = i;
+                    return;
+                }
+        }
+
+        private void UnitListFindPrevious_Click(object sender, EventArgs e)
+        {
+            if (map == null)
+                return;
+
+            string search_phrase = UnitListSearchPhrase.Text.ToLower();
+            if (search_phrase == "")
+                return;
+
+            int search_start = ListUnits.SelectedIndex;
+
+            for (int i = search_start-1; i >= 0; i--)
+                if (ListUnits.Items[i].ToString().ToLower().Contains(search_phrase))
+                {
+                    ListUnits.SelectedIndex = i;
+                    return;
+                }
+
+            if (search_start == -1)
+                search_start = 0;
+
+            for (int i = map.unit_manager.units.Count-1; i >= search_start; i--)
+                if (ListUnits.Items[i].ToString().ToLower().Contains(search_phrase))
+                {
+                    ListUnits.SelectedIndex = i;
+                    return;
+                }
         }
     }
 }

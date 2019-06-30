@@ -37,14 +37,22 @@ namespace SpellforceDataEditor.SF3D
         {
             int i = line.IndexOf(',');
             if (i == -1)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFSkeleton.Load_GetVector3(): Line does not contain vector3! line: '" + line + "')");
                 throw new InvalidDataException("ERROR: Corrupted .bor file!");
+            }
             int j = line.Substring(i + 2).IndexOf(',');
             if (j == -1)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFSkeleton.Load_GetVector3(): Line does not contain vector3! line: '" + line + "')");
                 throw new InvalidDataException("ERROR: Corrupted .bor file!");
+            }
             Vector3 vec = new Vector3();
-            float.TryParse(line.Substring(0, i), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out vec.X);
-            float.TryParse(line.Substring(i + 2, j), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out vec.Y);
-            float.TryParse(line.Substring(i + j + 4), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out vec.Z);
+            bool success = float.TryParse(line.Substring(0, i), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out vec.X);
+            success &= float.TryParse(line.Substring(i + 2, j), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out vec.Y);
+            success &= float.TryParse(line.Substring(i + j + 4), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out vec.Z);
+            if (!success)
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSkeleton.Load_GetVector3(): Could not successfully read vector3 (line: '" + line + "')");
             return vec;
         }
 
@@ -60,9 +68,11 @@ namespace SpellforceDataEditor.SF3D
             float Rre = 0f;
             Vector3 Rim = new Vector3();
 
+            int line_index = 0;
             while (!sr.EndOfStream)
             {
                 string line = sr.ReadLine().Trim();
+                line_index += 1;
 
                 if (line == "")
                     continue;
@@ -87,7 +97,8 @@ namespace SpellforceDataEditor.SF3D
                         if (line.Substring(0, 3) == "NOB")
                         {
                             int bc;
-                            Int32.TryParse(line.Substring(6), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out bc);
+                            if(!Int32.TryParse(line.Substring(6), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out bc))
+                                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSkeleton.Load(): Failed to read bone count! line "+line_index.ToString()+": '" + line + "')");
                             bone_count = bc;
                             bone_parents = new int[bc];
                             bone_pos = new Vector3[bc];
@@ -102,17 +113,20 @@ namespace SpellforceDataEditor.SF3D
                             current_bone_name = line.Substring(4).Replace("\"", string.Empty);
                         if (line[0] == 'I')
                         {
-                            Int32.TryParse(line.Substring(5), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out current_bone);
+                            if(!Int32.TryParse(line.Substring(5), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out current_bone))
+                                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSkeleton.Load(): Failed to read bone index! line" + line_index.ToString() + ": '" + line + "')");
                             bone_names[current_bone] = current_bone_name;
                         }
                         if (line[0] == 'F')
-                            Int32.TryParse(line.Substring(4), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out bone_parents[current_bone]);
+                            if(!Int32.TryParse(line.Substring(4), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out bone_parents[current_bone]))
+                                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSkeleton.Load(): Failed to read bone parent! line" + line_index.ToString() + ": '" + line + "')");
                         break;
                     case 3:
                         if (line[0] == 'P')
                             bone_pos[current_bone] = Load_GetVector3(line.Substring(4));
                         if (line.Substring(0, 3) == "Rre")
-                            Single.TryParse(line.Substring(6), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out Rre);
+                            if(!Single.TryParse(line.Substring(6), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out Rre))
+                                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSkeleton.Load(): Failed to read bone Re(rotation)! line" + line_index.ToString() + ": '" + line + "')");
                         if (line.Substring(0, 3) == "Rim")
                         {
                             Rim = Load_GetVector3(line.Substring(6));
@@ -142,7 +156,7 @@ namespace SpellforceDataEditor.SF3D
                 //check all combinations of options
                 bone_inverted_matrices[i] = bone_reference_matrices[i].Inverted();
             }
-
+            
             return 0;
         }
 

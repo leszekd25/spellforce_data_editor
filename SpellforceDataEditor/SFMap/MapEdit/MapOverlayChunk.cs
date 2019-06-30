@@ -11,7 +11,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 {
     public class MapOverlayChunk
     {
-        public HashSet<SFCoord> points { get; private set; } = new HashSet<SFCoord>();
+        public List<SFCoord> points { get; private set; } = new List<SFCoord>();
         public Vector3[] vertices;
         public uint[] elements;
         public int v_array { get; private set; } = -1;
@@ -84,7 +84,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             if(v_array != -1)
             {
                 GL.DeleteBuffer(vb_vertices);
+                GL.DeleteBuffer(vb_elements);
                 GL.DeleteVertexArray(v_array);
+                points.Clear();
+                v_array = -1;
             }
         }
     }

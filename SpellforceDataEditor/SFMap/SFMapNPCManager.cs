@@ -23,7 +23,10 @@ namespace SpellforceDataEditor.SFMap
             else if (_ref.GetType() == typeof(SFMapObject))
                 npc_type = NPCType.OBJECT;
             else
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapNPCInfo(): Invalid object type "+_ref.GetType().ToString());
                 throw new ArgumentException("SFMapNPCInfo(): Invalid object type!");
+            }
         }
     }
 
@@ -35,7 +38,11 @@ namespace SpellforceDataEditor.SFMap
         public int AddNPCRef(int npc_id, object npc_ref)
         {
             if (npc_info.ContainsKey(npc_id))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMapNPCManager.AddNPCRef(): NPC id "+npc_id.ToString()+" already exists");
+
                 return -1;
+            }
 
             npc_info.Add(npc_id, new SFMapNPCInfo(npc_ref));
             return 0;
@@ -44,7 +51,10 @@ namespace SpellforceDataEditor.SFMap
         public int RemoveNPCRef(int npc_id)
         {
             if (!npc_info.ContainsKey(npc_id))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMapNPCManager.RemoveNPCRef(): NPC id " + npc_id.ToString() + " does not exist");
                 return -1;
+            }
 
             npc_info.Remove(npc_id);
             return 0;

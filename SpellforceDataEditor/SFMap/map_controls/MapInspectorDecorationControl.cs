@@ -159,9 +159,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 if (topleft.y < 0)
                     topleft.y = 0;
                 if (bottomright.x >= map.width)
-                    bottomright.x = map.width - 1;
+                    bottomright.x = (short)(map.width - 1);
                 if (bottomright.y >= map.height)
-                    bottomright.y = map.height - 1;
+                    bottomright.y = (short)(map.height - 1);
 
                 for (int i = topleft.x; i <= bottomright.x; i++)
                 {
