@@ -12,6 +12,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
     public partial class MapInspectorMiscellaneuosObjectsControl : SpellforceDataEditor.SFMap.map_controls.MapInspectorBaseControl
     {
+        bool drag_enabled = false;
+        bool no_camera_jump = false;     // forgive me lord for i have sinned (todo: remove this and add proper Select_ methods)
         MISC_EDITMODE mode = MISC_EDITMODE.COOP_CAMPS;
 
         public MapInspectorMiscellaneuosObjectsControl()
@@ -110,12 +112,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             string ret = "";
             if (SFCFF.SFCategoryManager.ready)
-                ret += SFCFF.SFCategoryManager.get_object_name((ushort)io.game_id)+" ";
+                ret += SFCFF.SFCategoryManager.get_object_name((ushort)io.game_id) + " ";
             ret += io.grid_position.ToString();
             return ret;
         }
-
-        // testing purpose for now
 
         private void ButtonChangeSelectedCampType_Click(object sender, EventArgs e)
         {
@@ -139,7 +139,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SelectedCampUnknown.Text = map.metadata.coop_spawns[ListCoopCamps.SelectedIndex].spawn_certain.ToString();
 
             map.selection_helper.SelectObject(map.metadata.coop_spawns[ListCoopCamps.SelectedIndex].spawn_obj);
-            MainForm.mapedittool.SetCameraViewPoint(map.metadata.coop_spawns[ListCoopCamps.SelectedIndex].spawn_obj.grid_position);
+            if(!no_camera_jump)
+                MainForm.mapedittool.SetCameraViewPoint(map.metadata.coop_spawns[ListCoopCamps.SelectedIndex].spawn_obj.grid_position);
+            no_camera_jump = false;
+
+            ComboEditMode.SelectedIndex = 0;
         }
 
         private void ListBindstones_SelectedIndexChanged(object sender, EventArgs e)
@@ -159,7 +163,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SelectedBindstoneAngle.Text = io.angle.ToString();
 
             map.selection_helper.SelectInteractiveObject(io);
-            MainForm.mapedittool.SetCameraViewPoint(io.grid_position);
+            if(!no_camera_jump)
+                MainForm.mapedittool.SetCameraViewPoint(io.grid_position);
+            no_camera_jump = false;
+
+            ComboEditMode.SelectedIndex = 1;
         }
 
         private void ListPortals_SelectedIndexChanged(object sender, EventArgs e)
@@ -173,7 +181,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SelectedPortalID.Text = map.portal_manager.portals[ListPortals.SelectedIndex].game_id.ToString();
 
             map.selection_helper.SelectPortal(map.portal_manager.portals[ListPortals.SelectedIndex]);
-            MainForm.mapedittool.SetCameraViewPoint(map.portal_manager.portals[ListPortals.SelectedIndex].grid_position);
+            if (!no_camera_jump)
+                MainForm.mapedittool.SetCameraViewPoint(map.portal_manager.portals[ListPortals.SelectedIndex].grid_position);
+            no_camera_jump = false;
+
+            ComboEditMode.SelectedIndex = 2;
         }
 
         private void ListMonuments_SelectedIndexChanged(object sender, EventArgs e)
@@ -183,7 +195,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             List<int> monument_indexes = new List<int>();
             for (int i = 0; i < map.int_object_manager.int_objects.Count; i++)
-                if ((map.int_object_manager.int_objects[i].game_id >= 771)&& (map.int_object_manager.int_objects[i].game_id <= 777))
+                if ((map.int_object_manager.int_objects[i].game_id >= 771) && (map.int_object_manager.int_objects[i].game_id <= 777))
                     monument_indexes.Add(i);
 
             SFMapInteractiveObject io = map.int_object_manager.int_objects[monument_indexes[ListMonuments.SelectedIndex]];
@@ -194,7 +206,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SelectedMonumentType.SelectedIndex = io.game_id - 771;
 
             map.selection_helper.SelectInteractiveObject(io);
-            MainForm.mapedittool.SetCameraViewPoint(io.grid_position);
+            if (!no_camera_jump)
+                MainForm.mapedittool.SetCameraViewPoint(io.grid_position);
+            no_camera_jump = false;
+
+            ComboEditMode.SelectedIndex = 3;
         }
 
         private void SelectedCampType_Validated(object sender, EventArgs e)
@@ -225,9 +241,355 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             if (ListMonuments.SelectedIndex == -1)
                 return;
-            
+
             map.ReplaceMonument(ListMonuments.SelectedIndex, SelectedMonumentType.SelectedIndex);
             MainForm.mapedittool.update_render = true;
+        }
+
+        public override void OnMouseDown(SFCoord clicked_pos, MouseButtons button)
+        {
+            if (map == null)
+                return;
+
+            SFCoord fixed_pos = new SFCoord(clicked_pos.x, map.height - clicked_pos.y - 1);
+            SFMapObject obj = null;
+            SFMapInteractiveObject int_obj = null;
+            SFMapPortal portal = null;
+            SFMapCoopAISpawn spawn = null;
+
+            int io_index = -1;
+            int iter = -1;
+
+            // todo: move this to respective methods
+            switch (mode)
+            {
+                case MISC_EDITMODE.COOP_CAMPS:
+                    foreach (SFMapCoopAISpawn _spawn in map.metadata.coop_spawns)
+                    {
+                        if (SFCoord.Distance(_spawn.spawn_obj.grid_position, fixed_pos) <= 8)   // since spawn size is 16
+                        {
+                            obj = _spawn.spawn_obj;
+                            spawn = _spawn;
+                            break;
+                        }
+                    }
+
+                    // if no unit under the cursor and left mouse clicked, create new unit
+                    if (obj == null)
+                    {
+                        if (button == MouseButtons.Left)
+                        {
+                            if (drag_enabled == true)
+                            {
+                                map.MoveObject(map.object_manager.objects.IndexOf(map.metadata.coop_spawns[ListCoopCamps.SelectedIndex].spawn_obj), fixed_pos);
+                            }
+                            else
+                            {
+                                // check if can place
+                                //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                                //{
+                                ushort new_object_id = 2541;
+                                if (map.gamedata.categories[33].get_element_index(new_object_id) == -1)
+                                    return;
+                                // create new spawn and drag it until mouse released
+                                map.AddObject(new_object_id, fixed_pos, 0, 0, 0);
+                                map.metadata.coop_spawns.Add(new SFMapCoopAISpawn(map.object_manager.objects[map.object_manager.objects.Count - 1], 0, 0));
+
+
+                                ListCoopCamps.Items.Add(GetCoopSpawnString(map.metadata.coop_spawns[map.metadata.coop_spawns.Count - 1]));
+                                no_camera_jump = true;
+                                ListCoopCamps.SelectedIndex = map.metadata.coop_spawns.Count - 1;
+                                drag_enabled = true;
+                                //}
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (button == MouseButtons.Left)
+                        {
+                            // if dragging unit, just move selected unit, dont create a new one
+                            if (drag_enabled)
+                            {
+                                //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                                map.MoveObject(map.object_manager.objects.IndexOf(obj), fixed_pos);
+                            }
+                            else
+                            {
+                                no_camera_jump = true;
+                                ListCoopCamps.SelectedIndex = map.metadata.coop_spawns.IndexOf(spawn);
+                                drag_enabled = true;
+                            }
+                        }
+                        // delete unit
+                        else if (button == MouseButtons.Right)
+                        {
+                            int object_map_index = map.object_manager.objects.IndexOf(obj);
+                            if (object_map_index == -1)
+                                return;
+
+                            if (map.metadata.coop_spawns.IndexOf(spawn) == ListCoopCamps.SelectedIndex)
+                                ListCoopCamps.SelectedIndex = -1;
+
+                            map.DeleteObject(object_map_index);
+                            ListCoopCamps.Items.RemoveAt(map.metadata.coop_spawns.IndexOf(spawn));
+                        }
+                    }
+                    break;
+
+                case MISC_EDITMODE.BINDSTONES:
+                    foreach (SFMapInteractiveObject io in map.int_object_manager.int_objects)
+                    {
+                        if (io.game_id != 769)
+                            continue;
+
+                        iter += 1;
+                        if (SFCoord.Distance(io.grid_position, fixed_pos) <= 2)   // bindstone size selection...
+                        {
+                            int_obj = io;
+                            io_index = iter;
+                            break;
+                        }
+                    }
+
+                    // if no unit under the cursor and left mouse clicked, create new unit
+                    if (int_obj == null)
+                    {
+                        if (button == MouseButtons.Left)
+                        {
+                            if (drag_enabled == true)
+                            {
+                                iter = -1;
+                                io_index = ListBindstones.SelectedIndex;
+                                //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                                for(int i = 0; i < map.int_object_manager.int_objects.Count; i++)
+                                {
+                                    if (map.int_object_manager.int_objects[i].game_id == 769)
+                                    {
+                                        iter += 1;
+                                        if(iter == io_index)
+                                        map.MoveInteractiveObject(i, fixed_pos);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // check if can place
+                                //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                                //{
+                                ushort new_object_id = 769;
+                                // create new spawn and drag it until mouse released
+                                map.AddInteractiveObject(new_object_id, fixed_pos, 0, 0);
+                                ListBindstones.Items.Add(GetBindstoneString(map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]));
+                                no_camera_jump = true;
+                                ListBindstones.SelectedIndex = ListBindstones.Items.Count - 1;
+                                drag_enabled = true;
+                                //}
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (button == MouseButtons.Left)
+                        {
+                            // if dragging unit, just move selected unit, dont create a new one
+                            if (drag_enabled)
+                            {
+                                //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                                map.MoveInteractiveObject(map.int_object_manager.int_objects.IndexOf(int_obj), fixed_pos);
+                            }
+                            else
+                            {
+                                no_camera_jump = true;
+                                ListBindstones.SelectedIndex = io_index;
+                                drag_enabled = true;
+                            }
+                        }
+                        // delete unit
+                        else if (button == MouseButtons.Right)
+                        {
+                            bool can_remove = true;
+                            int player = map.metadata.FindPlayerBySpawnPos(int_obj.grid_position);
+                            if (player != -1)
+                            {
+                                if (map.metadata.IsPlayerActive(player))
+                                    can_remove = false;
+                            }
+
+                            if (can_remove)
+                            {
+                                if (ListBindstones.SelectedIndex == io_index)
+                                    ListBindstones.SelectedIndex = -1;
+
+                                map.DeleteInteractiveObject(map.int_object_manager.int_objects.IndexOf(int_obj));
+                                ListBindstones.Items.RemoveAt(io_index);
+                            }
+                        }
+                    }
+                    break;
+                case MISC_EDITMODE.PORTALS:
+                    foreach (SFMapPortal _portal in map.portal_manager.portals)
+                    {
+                        if (SFCoord.Distance(_portal.grid_position, fixed_pos) <= 3)   // since spawn size is 16
+                        {
+                            portal = _portal;
+                            break;
+                        }
+                    }
+
+                    // if no unit under the cursor and left mouse clicked, create new unit
+                    if (portal == null)
+                    {
+                        if (button == MouseButtons.Left)
+                        {
+                            if (drag_enabled == true)
+                            {
+                                map.MovePortal(ListPortals.SelectedIndex, fixed_pos);
+                            }
+                            else
+                            {
+                                // check if can place
+                                //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                                //{
+                                // create new spawn and drag it until mouse released
+                                map.AddPortal(0, fixed_pos, 0);
+
+                                ListPortals.Items.Add(GetPortalString(map.portal_manager.portals[map.portal_manager.portals.Count - 1]));
+                                no_camera_jump = true;
+                                ListPortals.SelectedIndex = map.portal_manager.portals.Count - 1;
+                                drag_enabled = true;
+                                //}
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (button == MouseButtons.Left)
+                        {
+                            // if dragging unit, just move selected unit, dont create a new one
+                            if (drag_enabled)
+                            {
+                                //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                                map.MovePortal(ListPortals.SelectedIndex, fixed_pos);
+                            }
+                            else
+                            {
+                                no_camera_jump = true;
+                                ListPortals.SelectedIndex = map.portal_manager.portals.IndexOf(portal);
+                                drag_enabled = true;
+                            }
+                        }
+                        // delete unit
+                        else if (button == MouseButtons.Right)
+                        {
+                            int portal_map_index = map.portal_manager.portals.IndexOf(portal);
+                            if (portal_map_index == -1)
+                                return;
+
+                            if (portal_map_index == ListPortals.SelectedIndex)
+                                ListPortals.SelectedIndex = -1;
+
+                            map.DeletePortal(portal_map_index);
+                            ListPortals.Items.RemoveAt(portal_map_index);
+                        }
+                    }
+                    break;
+                case MISC_EDITMODE.MONUMENTS:
+                    foreach (SFMapInteractiveObject io in map.int_object_manager.int_objects)
+                    {
+                        if ((io.game_id < 771)||(io.game_id > 777))
+                            continue;
+
+                        iter += 1;
+                        if (SFCoord.Distance(io.grid_position, fixed_pos) <= 5)   // monument size selection...
+                        {
+                            int_obj = io;
+                            io_index = iter;
+                            break;
+                        }
+                    }
+
+                    // if no unit under the cursor and left mouse clicked, create new unit
+                    if (int_obj == null)
+                    {
+                        if (button == MouseButtons.Left)
+                        {
+                            if (drag_enabled == true)
+                            {
+                                iter = -1;
+                                io_index = ListMonuments.SelectedIndex;
+                                //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                                for (int i = 0; i < map.int_object_manager.int_objects.Count; i++)
+                                {
+                                    if ((map.int_object_manager.int_objects[i].game_id >= 771) && (map.int_object_manager.int_objects[i].game_id <= 777))
+                                    {
+                                        iter += 1;
+                                        if (iter == io_index)
+                                            map.MoveInteractiveObject(i, fixed_pos);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // check if can place
+                                //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                                //{
+                                ushort new_object_id = (ushort)(771 + SelectedMonumentType.SelectedIndex);
+                                if (new_object_id == 770)
+                                    new_object_id = 777;
+                                // create new spawn and drag it until mouse released
+                                map.AddInteractiveObject(new_object_id, fixed_pos, 0, 0);
+                                ListMonuments.Items.Add(GetMonumentString(map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]));
+                                no_camera_jump = true;
+                                ListMonuments.SelectedIndex = ListBindstones.Items.Count - 1;
+                                drag_enabled = true;
+                                //}
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (button == MouseButtons.Left)
+                        {
+                            // if dragging unit, just move selected unit, dont create a new one
+                            if (drag_enabled)
+                            {
+                                //if (map.heightmap.CanMoveToPosition(fixed_pos))
+
+                                map.MoveInteractiveObject(map.int_object_manager.int_objects.IndexOf(int_obj), fixed_pos);
+                            }
+                            else
+                            {
+                                no_camera_jump = true;
+                                ListMonuments.SelectedIndex = io_index;
+                                drag_enabled = true;
+                            }
+                        }
+                        // delete unit
+                        else if (button == MouseButtons.Right)
+                        {
+                            if (ListMonuments.SelectedIndex == io_index)
+                                ListMonuments.SelectedIndex = -1;
+
+                            map.DeleteInteractiveObject(map.int_object_manager.int_objects.IndexOf(int_obj));
+                            ListMonuments.Items.RemoveAt(io_index);
+                        }
+                    }
+                    break;
+            }
+        }
+
+        public override void OnMouseUp()
+        {
+            drag_enabled = false;
+        }
+
+        private void ComboEditMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ComboEditMode.SelectedIndex == -1)
+                return;
+
+            mode = (MISC_EDITMODE)ComboEditMode.SelectedIndex;
         }
     }
 }

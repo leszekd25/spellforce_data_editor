@@ -289,6 +289,7 @@
             this.ComboEditMode.Size = new System.Drawing.Size(121, 21);
             this.ComboEditMode.TabIndex = 35;
             this.ComboEditMode.Text = "Coop camps";
+            this.ComboEditMode.SelectedIndexChanged += new System.EventHandler(this.ComboEditMode_SelectedIndexChanged);
             // 
             // label11
             // 

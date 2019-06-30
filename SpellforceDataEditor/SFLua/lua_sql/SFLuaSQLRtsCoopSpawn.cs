@@ -198,9 +198,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql
             {
                 coop_spawn_types.Clear();
                 coop_spawn_types = null;
-                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Error reading spawn file! Spawn ID = "+log_current_spawn.ToString());
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Error reading spawn file! Spawn ID = " + log_current_spawn.ToString());
                 return -3;
             }
+            
 
             LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Spawn file read successfully, found spawns: "+coop_spawn_types.Count.ToString());
 

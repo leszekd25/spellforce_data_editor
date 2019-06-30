@@ -494,7 +494,7 @@ namespace SpellforceDataEditor.special_forms
 
         public void SetCameraViewPoint(SFCoord pos)
         {
-            Vector3 new_camera_pos = new Vector3(pos.x, 0, map.heightmap.height - pos.y - 1 + 12);
+            Vector3 new_camera_pos = new Vector3(pos.x+0.03f, 0, map.heightmap.height - pos.y - 1 + 12+0.03f);
             SFRenderEngine.camera.translate(new_camera_pos - SFRenderEngine.camera.Position);
             AdjustCameraZ();
             update_render = true;

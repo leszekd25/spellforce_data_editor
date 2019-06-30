@@ -49,5 +49,14 @@ namespace SpellforceDataEditor.SFMap
             SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(778, ptl_name);   // portal id
             return ptl;
         }
+
+        public void RemovePortal(SFMapPortal portal)
+        {
+            portals.Remove(portal);
+
+            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject(portal.GetObjectName());
+
+            map.heightmap.GetChunk(portal.grid_position).RemovePortal(portal);
+        }
     }
 }

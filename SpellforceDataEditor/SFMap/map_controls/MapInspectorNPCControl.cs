@@ -250,6 +250,16 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             int new_selected = selected_npc_index;
+            SFMapNPCInfo npc_info = map.npc_manager.npc_info[selected_npc];
+            // update object npc id
+            NPCType npc_type = npc_info.npc_type;
+            object npc_ref = npc_info.npc_ref;
+            if (npc_type == NPCType.BUILDING)
+                ((SFMapBuilding)npc_ref).npc_id = 0;
+            else if (npc_type == NPCType.OBJECT)
+                ((SFMapObject)npc_ref).npc_id = 0;
+            else if (npc_type == NPCType.UNIT)
+                ((SFMapUnit)npc_ref).npc_id = 0;
 
             map.npc_manager.RemoveNPCRef(selected_npc);
             ListNPCs.SelectedIndex = -1;

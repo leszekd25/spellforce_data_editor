@@ -23,7 +23,7 @@ namespace SpellforceDataEditor.SFMap
 
     public class SFMapTeamPlayer
     {
-        public int player_id;
+        public int player_id;     // spawn index in spawn array
         public ushort text_id;
         public string coop_map_type;
         public string coop_map_lvl;
@@ -119,6 +119,18 @@ namespace SpellforceDataEditor.SFMap
             return spawns.Count - 1;
         }
 
+        public int FindPlayerBySpawnPos(SFCoord pos)
+        {
+            if (spawns == null)
+                spawns = new List<SFMapSpawn>();
+
+            for (int i = 0; i < spawns.Count; i++)
+                if (pos == spawns[i].pos)
+                    return i;
+
+            return -1;
+        }
+
         public bool GetCoopAISpawnByObject(SFMapObject o, ref SFMapCoopAISpawn sp)
         {
             foreach (SFMapCoopAISpawn cs in coop_spawns)
@@ -172,6 +184,24 @@ namespace SpellforceDataEditor.SFMap
                     return ms.GetBuffer().Take((int)ms.Position).ToArray();
                 }
             }
+        }
+
+        public bool IsPlayerActive(int p_id)
+        {
+            if (multi_teams == null)
+                return false;
+            foreach(SFMapMultiplayerTeamComposition teamcomp in multi_teams)
+            {
+                foreach(List<SFMapTeamPlayer> list in teamcomp.players)
+                {
+                    foreach(SFMapTeamPlayer player in list)
+                    {
+                        if (p_id == player.player_id)
+                            return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

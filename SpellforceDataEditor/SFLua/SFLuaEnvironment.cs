@@ -73,13 +73,24 @@ namespace SpellforceDataEditor.SFLua
 
             coop_spawns_form = new lua_sql_forms.SFLuaSQLRtsCoopSpawnForm();
             coop_spawns_form.FormClosed += new FormClosedEventHandler(coop_spawns_form_FormClosed);
-            coop_spawns_form.Show();
+            coop_spawns_form.ShowDialog();
         }
 
         private static void coop_spawns_form_FormClosed(object sender, FormClosedEventArgs e)
         {
             coop_spawns_form.FormClosed -= new FormClosedEventHandler(coop_spawns_form_FormClosed);
             coop_spawns_form = null;
+        }
+
+        public static void Unload()
+        {
+            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaEnvironment.Unload() called");
+
+            if (state == null)
+                return;
+
+            state.Close();
+            state = null;
         }
     }
 }

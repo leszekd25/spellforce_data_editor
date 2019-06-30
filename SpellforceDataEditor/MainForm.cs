@@ -248,5 +248,10 @@ namespace SpellforceDataEditor
             applicationinfo = null;
             GC.Collect();
         }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SFLua.SFLuaEnvironment.Unload();
+        }
     }
 }

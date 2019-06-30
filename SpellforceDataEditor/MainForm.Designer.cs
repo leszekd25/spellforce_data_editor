@@ -114,7 +114,7 @@
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(108, 13);
             this.labelVersion.TabIndex = 6;
-            this.labelVersion.Text = "Version 23.03.2019.1";
+            this.labelVersion.Text = "Version 30.06.2019.1";
             // 
             // linkEditor
             // 
@@ -212,6 +212,7 @@
             this.Controls.Add(this.label1);
             this.Name = "MainForm";
             this.Text = "All-in-one Tool Manager";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

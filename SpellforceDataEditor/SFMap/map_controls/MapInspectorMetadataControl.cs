@@ -257,26 +257,35 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 if (map.int_object_manager.int_objects[i].game_id == 769)
                     bindstone_indexes.Add(i);
 
+            // bindstone
             int selected_bindstone_index = bindstone_indexes[ComboBindstoneList.SelectedIndex];
             SFMapInteractiveObject io = map.int_object_manager.int_objects[selected_bindstone_index];
 
+            // selected spawn
             int selected_spawn_index = ListPlayerSpawns.SelectedIndex;
 
+            // search for spawn on the bindstone position
+            bool found_spawn = false;
             foreach(SFMapSpawn spawn in map.metadata.spawns)
             {
                 if(spawn.pos == io.grid_position)
                 {
+                    found_spawn = true;
                     if (spawn == map.metadata.spawns[selected_spawn_index])
                         break;
                     // swap positions
                     SFCoord tmp_pos = spawn.pos;
                     spawn.pos = map.metadata.spawns[selected_spawn_index].pos;
                     map.metadata.spawns[selected_spawn_index].pos = tmp_pos;
-                    ReloadPlayerSpawnList();
-                    ListPlayerSpawns.SelectedIndex = selected_spawn_index;
                     break;
                 }
             }
+            if(found_spawn == false)
+            {
+                map.metadata.spawns[selected_spawn_index].pos = io.grid_position;
+            }
+            ReloadPlayerSpawnList();
+            ListPlayerSpawns.SelectedIndex = selected_spawn_index;
         }
 
         private void SelectedSpawnTextID_Validated(object sender, EventArgs e)

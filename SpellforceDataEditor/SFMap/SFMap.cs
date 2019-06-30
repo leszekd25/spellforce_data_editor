@@ -1174,6 +1174,49 @@ namespace SpellforceDataEditor.SFMap
             SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
         }
 
+        public int MoveInteractiveObject(int int_object_map_index, SFCoord new_pos)
+        {
+            SFMapInteractiveObject int_obj = null;
+            if ((int_object_manager.int_objects.Count <= int_object_map_index) || (int_object_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MoveInteractiveObject(): Invalid interactive object index! Interactive object index = " + int_object_map_index.ToString());
+                return -1;
+            }
+            int_obj = int_object_manager.int_objects[int_object_map_index];
+            /*if (!heightmap.CanMoveToPosition(new_pos))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MoveInteractiveObject(): Can't move interactive object to position " + new_pos.ToString());
+                return -2;
+            }*/
+
+            // move unit and set chunk dependency
+            heightmap.GetChunk(int_obj.grid_position).int_objects.Remove(int_obj);
+            int_obj.grid_position = new_pos;
+            heightmap.GetChunk(int_obj.grid_position).int_objects.Add(int_obj);
+
+            // change visual transform
+            float z = heightmap.GetZ(new_pos) / 100.0f;
+            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[int_obj.GetObjectName()];
+            _obj.Position = new OpenTK.Vector3((float)new_pos.x, (float)z, (float)(height - new_pos.y - 1));
+
+            return 0;
+        }
+
+        public int DeleteInteractiveObject(int int_object_map_index)
+        {
+            SFMapInteractiveObject int_obj = null;
+            if ((int_object_manager.int_objects.Count <= int_object_map_index) || (int_object_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.DeleteInteractiveObject(): Invalid interactive object index! Interactive object index = " + int_object_map_index.ToString());
+                return -1;
+            }
+            int_obj = int_object_manager.int_objects[int_object_map_index];
+
+            int_object_manager.RemoveInteractiveObject(int_obj);
+
+            return 0;
+        }
+
         public int ReplaceMonument(int monument_index, int new_monument_type)
         {
             if ((new_monument_type < 0) || (new_monument_type > 6))
@@ -1365,6 +1408,49 @@ namespace SpellforceDataEditor.SFMap
 
             heightmap.GetChunk(pos).AddPortal(ptl);
             SFRenderEngine.scene_manager.objects_static[ptl.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
+        }
+
+        public int DeletePortal(int portal_map_index)
+        {
+            SFMapPortal portal = null;
+            if ((portal_manager.portals.Count <= portal_map_index) || (portal_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.DeletePortal(): Invalid portal index! Portal index = " + portal_map_index.ToString());
+                return -1;
+            }
+            portal = portal_manager.portals[portal_map_index];
+
+            portal_manager.RemovePortal(portal);
+
+            return 0;
+        }
+
+        public int MovePortal(int portal_map_index, SFCoord new_pos)
+        {
+            SFMapPortal portal = null;
+            if ((portal_manager.portals.Count <= portal_map_index) || (portal_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MovePortal(): Invalid portal index! Portal index = " + portal_map_index.ToString());
+                return -1;
+            }
+            portal = portal_manager.portals[portal_map_index];
+            /*if (!heightmap.CanMoveToPosition(new_pos))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MovePortal(): Can't move portal to position " + new_pos.ToString());
+                return -2;
+            }*/
+
+            // move unit and set chunk dependency
+            heightmap.GetChunk(portal.grid_position).portals.Remove(portal);
+            portal.grid_position = new_pos;
+            heightmap.GetChunk(portal.grid_position).portals.Add(portal);
+
+            // change visual transform
+            float z = heightmap.GetZ(new_pos) / 100.0f;
+            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[portal.GetObjectName()];
+            _obj.Position = new OpenTK.Vector3((float)new_pos.x, (float)z, (float)(height - new_pos.y - 1));
+
+            return 0;
         }
 
         public void AddUnit(int game_id, SFCoord pos, int angle, int npc_id, int unknown, int group, int unknown2)

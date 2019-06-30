@@ -51,5 +51,14 @@ namespace SpellforceDataEditor.SFMap
             SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(id, obj_name);
             return obj;
         }
+
+        public void RemoveInteractiveObject(SFMapInteractiveObject int_obj)
+        {
+            int_objects.Remove(int_obj);
+
+            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject(int_obj.GetObjectName());
+
+            map.heightmap.GetChunk(int_obj.grid_position).RemoveInteractiveObject(int_obj);
+        }
     }
 }
