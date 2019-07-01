@@ -788,7 +788,7 @@ namespace SpellforceDataEditor.SFCFF
                 return Utility.S_NONAME;
 
             int text_id = (int)(UInt16)spell_elem.get_single_variant(1).value;
-            SFCategoryElement text_elem = find_element_text(text_id, 1);
+            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
             if (text_elem == null)
                 return Utility.S_MISSING;
 
@@ -807,7 +807,7 @@ namespace SpellforceDataEditor.SFCFF
                 return Utility.S_NONAME; ;
 
             int text_id = (int)(UInt16)unit_elem.get_single_variant(1).value;
-            SFCategoryElement text_elem = find_element_text(text_id, 1);
+            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
             if (text_elem == null)
                 return Utility.S_MISSING; ;
 
@@ -873,7 +873,7 @@ namespace SpellforceDataEditor.SFCFF
             }
 
             int text_id_major = (int)(UInt16)skill_elem.get_single_variant(2).value;
-            SFCategoryElement txt_elem_major = find_element_text(text_id_major, 1);
+            SFCategoryElement txt_elem_major = find_element_text(text_id_major, Settings.LanguageID);
             if (txt_elem_major != null)
                 txt_major = Utility.CleanString(txt_elem_major.get_single_variant(4));
 
@@ -887,7 +887,7 @@ namespace SpellforceDataEditor.SFCFF
                 int text_id_minor = (int)(UInt16)skill_elem.get_single_variant(skill_minor*3+2).value;
                 if (text_id_minor != 0)
                 {
-                    SFCategoryElement txt_elem_minor = find_element_text(text_id_minor, 1);
+                    SFCategoryElement txt_elem_minor = find_element_text(text_id_minor, Settings.LanguageID);
                     if (txt_elem_minor != null)
                         txt_minor = Utility.CleanString(txt_elem_minor.get_single_variant(4));
                 }
@@ -904,7 +904,7 @@ namespace SpellforceDataEditor.SFCFF
                 return Utility.S_NONAME;
 
             int text_id = (int)(UInt16)race_elem.get_single_variant(7).value;
-            SFCategoryElement text_elem = find_element_text(text_id, 1);
+            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
             if (text_elem == null)
                 return Utility.S_MISSING;
 
@@ -921,7 +921,7 @@ namespace SpellforceDataEditor.SFCFF
                 return Utility.S_NONAME;
 
             int text_id = (int)(UInt16)item_elem.get_single_variant(3).value;
-            SFCategoryElement text_elem = find_element_text(text_id, 1);
+            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
             if (text_elem == null)
                 return Utility.S_MISSING;
 
@@ -938,7 +938,7 @@ namespace SpellforceDataEditor.SFCFF
                 return Utility.S_NONAME;
 
             int text_id = (int)(UInt16)building_elem.get_single_variant(5).value;
-            SFCategoryElement text_elem = find_element_text(text_id, 1);
+            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
             if (text_elem == null)
                 return Utility.S_MISSING;
 
@@ -965,7 +965,7 @@ namespace SpellforceDataEditor.SFCFF
                 return Utility.S_NONAME;
 
             int text_id = (int)(UInt16)object_elem.get_single_variant(1).value;
-            SFCategoryElement text_elem = find_element_text(text_id, 1);
+            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
             if (text_elem == null)
                 return Utility.S_MISSING;
 
@@ -982,7 +982,7 @@ namespace SpellforceDataEditor.SFCFF
                 return Utility.S_NONAME;
 
             int text_id = (int)(UInt16)desc_elem.get_single_variant(1).value;
-            SFCategoryElement text_elem = find_element_text(text_id, 1);
+            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
             if (text_elem == null)
                 return Utility.S_MISSING;
 
@@ -1000,7 +1000,7 @@ namespace SpellforceDataEditor.SFCFF
                 return Utility.S_NONAME;
 
             int text_id = (int)(UInt16)rune_elem.get_single_variant(1).value;
-            SFCategoryElement text_elem = find_element_text(text_id, 1);
+            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
             if (text_elem == null)
                 return Utility.S_MISSING;
 

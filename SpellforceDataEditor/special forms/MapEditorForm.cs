@@ -30,6 +30,7 @@ namespace SpellforceDataEditor.special_forms
         public bool update_render = false;
         Vector2 scroll_mouse_start = new Vector2(0, 0);
         bool mouse_scroll = false;
+        float zoom_level = 1.0f;
         int gc_timer = 0;
 
         MAPEDIT_MODE edit_mode = MAPEDIT_MODE.HMAP;
@@ -192,6 +193,8 @@ namespace SpellforceDataEditor.special_forms
                 map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
                 map.selection_helper.SetCursorVisibility(true);
 
+                SetCameraViewPoint(new SFCoord(map.width/2, map.height/2));
+
                 RenderWindow.Invalidate();
 
                 if (MainForm.data != null)
@@ -308,8 +311,10 @@ namespace SpellforceDataEditor.special_forms
             this.RenderWindow.MouseLeave += new System.EventHandler(this.RenderWindow_MouseLeave);
             this.RenderWindow.MouseMove += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseMove);
             this.RenderWindow.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
+            this.RenderWindow.MouseWheel += new MouseEventHandler(this.RenderWindow_MouseWheel);
             this.Controls.Add(this.RenderWindow);
             
+            // it seems shaders must always be compiled upon creating new window
             SFRenderEngine.Initialize(new Vector2(RenderWindow.ClientSize.Width, RenderWindow.ClientSize.Height));
             SFRenderEngine.camera.Position = new Vector3(0, 25, 12);
             SFRenderEngine.camera.Lookat = new Vector3(0, 0, 0);
@@ -329,6 +334,7 @@ namespace SpellforceDataEditor.special_forms
             this.RenderWindow.MouseLeave -= new System.EventHandler(this.RenderWindow_MouseLeave);
             this.RenderWindow.MouseMove -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseMove);
             this.RenderWindow.MouseUp -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
+            this.RenderWindow.MouseWheel -= new MouseEventHandler(this.RenderWindow_MouseWheel);
 
             this.Controls.Remove(RenderWindow);
             this.RenderWindow.Dispose();
@@ -387,6 +393,23 @@ namespace SpellforceDataEditor.special_forms
         private void RenderWindow_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
 
+        }
+
+        private void RenderWindow_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if(e.Delta < 0)
+            {
+                zoom_level *= 1.1f;
+                if (zoom_level > 2)
+                    zoom_level = 2;
+            }
+            else if(e.Delta > 0)
+            {
+                zoom_level *= 0.9f;
+                if (zoom_level < 0.3f)
+                    zoom_level = 0.3f;
+            }
+            AdjustCameraZ();
         }
 
         private void EnableAnimation()
@@ -488,7 +511,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 Vector2 p = new Vector2(SFRenderEngine.camera.Position.X, SFRenderEngine.camera.Position.Z);
                 float z = map.heightmap.GetRealZ(p);
-                SFRenderEngine.camera.translate(new Vector3(0, 25+z - SFRenderEngine.camera.Position.Y, 0));
+                SFRenderEngine.camera.translate(new Vector3(0, (25*zoom_level)+z - SFRenderEngine.camera.Position.Y, 0));
             }
         }
 

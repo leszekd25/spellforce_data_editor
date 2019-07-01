@@ -89,7 +89,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 {
                     SFCFF.SFCategoryElement portal_data = SFCFF.SFCategoryManager.gamedata.categories[38].get_element(portal_index);
                     ushort text_id = (ushort)portal_data.get_single_variant(5).value;
-                    SFCFF.SFCategoryElement text_data = SFCFF.SFCategoryManager.find_element_text(text_id, 1);
+                    SFCFF.SFCategoryElement text_data = SFCFF.SFCategoryManager.find_element_text(text_id, Settings.LanguageID);
                     if (text_data != null)
                         ret += Utility.CleanString(text_data.get_single_variant(4)) + " ";
                     else

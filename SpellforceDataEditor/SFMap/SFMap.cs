@@ -1100,7 +1100,7 @@ namespace SpellforceDataEditor.SFMap
             obj = object_manager.objects[object_map_index];
 
             SFRenderEngine.scene_manager.DeleteObject(obj.GetObjectName());
-            SFRenderEngine.scene_manager.AddObjectObject(new_object_id, obj.GetObjectName());
+            SFRenderEngine.scene_manager.AddObjectObject(new_object_id, obj.GetObjectName(), true);
 
             obj.game_id = new_object_id;
 
@@ -1239,7 +1239,7 @@ namespace SpellforceDataEditor.SFMap
             SFMapInteractiveObject io = int_object_manager.int_objects[monument_indexes[monument_index]];
 
             SFRenderEngine.scene_manager.DeleteObject(io.GetObjectName());
-            SFRenderEngine.scene_manager.AddObjectObject(new_monument_type + 771, io.GetObjectName());
+            SFRenderEngine.scene_manager.AddObjectObject(new_monument_type + 771, io.GetObjectName(), true);
             io.game_id = new_monument_type + 771;
 
             float z = heightmap.GetZ(io.grid_position) / 100.0f;

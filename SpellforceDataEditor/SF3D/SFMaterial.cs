@@ -25,6 +25,7 @@ namespace SpellforceDataEditor.SF3D
         public byte matDepthBias = 0;
         public float texTiling = 1f;
         public SFTexture texture = null;
+        public bool apply_shading = true;
 
         public uint indexStart = 0;
         public uint indexCount = 0;

@@ -113,7 +113,7 @@ namespace SpellforceDataEditor.SFMap
             decorations.Add(dec);
 
             string dec_name = dec.GetObjectName();
-            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(id, dec_name);
+            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(id, dec_name, false);
             
             // 3. add new unit in respective chunk
             map.heightmap.GetChunk(position).AddDecoration(dec);
@@ -137,7 +137,7 @@ namespace SpellforceDataEditor.SFMap
                 return;
 
             SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject(d.GetObjectName());
-            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(new_id, d.GetObjectName());
+            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(new_id, d.GetObjectName(), false);
         }
 
         public byte GetDecAssignment(SFCoord pos)

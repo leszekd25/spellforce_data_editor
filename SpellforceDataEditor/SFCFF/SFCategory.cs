@@ -300,7 +300,7 @@ namespace SpellforceDataEditor.SFCFF
             else
             {
                 int text_id = (int)(UInt16)elem.get_single_variant(cat_index).value;
-                SFCategoryElement txt_elem = SFCategoryManager.find_element_text(text_id, 1);
+                SFCategoryElement txt_elem = SFCategoryManager.find_element_text(text_id, Settings.LanguageID);
                 if (txt_elem != null)
                     return Utility.CleanString(txt_elem.get_single_variant(4));
                 else
@@ -826,7 +826,7 @@ namespace SpellforceDataEditor.SFCFF
                     txt = Utility.S_NONAME;
                 else
                 {
-                    SFCategoryElement txt_elem = SFCategoryManager.find_element_text((UInt16)(set_elem.get_single_variant(1).value), 1);
+                    SFCategoryElement txt_elem = SFCategoryManager.find_element_text((UInt16)(set_elem.get_single_variant(1).value), Settings.LanguageID);
                     if (txt_elem == null)
                         txt = Utility.S_MISSING;
                     else
@@ -1052,7 +1052,7 @@ namespace SpellforceDataEditor.SFCFF
         public override string get_element_string(int index)
         {
             string txt;
-            SFCategoryElement elem = SFCategoryManager.find_element_text((UInt16)(get_element_variant(index, 0).value), 1);
+            SFCategoryElement elem = SFCategoryManager.find_element_text((UInt16)(get_element_variant(index, 0).value), Settings.LanguageID);
             if (elem == null)
                 txt = Utility.S_NONAME;
             else

@@ -24,7 +24,7 @@ namespace SpellforceDataEditor.special_forms
         public ChangeDataLangForm()
         {
             InitializeComponent();
-            LabelDescription.Text = "Choose a line on the right which is\r\nin language you want in Spellforce\r\nPress OK to change data language";
+            LabelDescription.Text = "Choose a line on the right which is\r\nin language you want in Spellforce\r\nPress OK to change data language\r\n(DEPRECATED! USE LanguageID\r\nSETTING IN config.txt!)";
 
             SFCategoryElement text7055 = SFCategoryManager.get_category(14).find_binary_element<UInt16>(0, 7055).get_copy();
             int elem_num = text7055.get_size() / 566;    //566 = sub-element's size

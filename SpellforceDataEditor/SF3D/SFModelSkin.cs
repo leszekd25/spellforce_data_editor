@@ -48,6 +48,7 @@ namespace SpellforceDataEditor.SF3D
 
             vertex_array = GL.GenVertexArray();
             vertex_buffer = GL.GenBuffer();
+            normal_buffer = GL.GenBuffer();
             uv_buffer = GL.GenBuffer();
             bone_index_buffer = GL.GenBuffer();
             bone_weight_buffer = GL.GenBuffer();
@@ -65,15 +66,20 @@ namespace SpellforceDataEditor.SF3D
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
 
+            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Length * 12, normals, BufferUsageHint.StaticDraw);
+            GL.EnableVertexAttribArray(2);
+            GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, 0, 0);
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, bone_index_buffer);
             GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, bone_indices.Length * 16, bone_indices, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(2);
-            GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, 0, 0);
+            GL.EnableVertexAttribArray(3);
+            GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, bone_weight_buffer);
             GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, bone_weights.Length * 16, bone_weights, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(3);
-            GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, 0, 0);
+            GL.EnableVertexAttribArray(4);
+            GL.VertexAttribPointer(4, 4, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
             GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, face_indices.Length * 4, face_indices, BufferUsageHint.StaticDraw);
@@ -190,7 +196,7 @@ namespace SpellforceDataEditor.SF3D
             if (vertex_array != -1)
             {
                 GL.DeleteBuffer(vertex_buffer);
-                //GL.DeleteBuffer(normal_buffer);
+                GL.DeleteBuffer(normal_buffer);
                 GL.DeleteBuffer(uv_buffer);
                 GL.DeleteBuffer(bone_index_buffer);
                 GL.DeleteBuffer(bone_weight_buffer);

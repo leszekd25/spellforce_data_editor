@@ -71,7 +71,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return Utility.S_MISSING;
             SFCFF.SFCategoryElement npc_data = SFCFF.SFCategoryManager.gamedata.categories[36].get_element(npc_index);
             ushort text_id = (ushort)npc_data.get_single_variant(1).value;
-            SFCFF.SFCategoryElement text_data = SFCFF.SFCategoryManager.find_element_text(text_id, 1);
+            SFCFF.SFCategoryElement text_data = SFCFF.SFCategoryManager.find_element_text(text_id, Settings.LanguageID);
             if (text_data == null)
                 return Utility.S_NONAME;
             return Utility.CleanString(text_data.get_single_variant(4));

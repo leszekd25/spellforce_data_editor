@@ -14,6 +14,7 @@ namespace SpellforceDataEditor
         public static int MaximumAllowedTextureSize { get; private set; } = 2048;
 
         public static string GameDirectory { get; set; } = "";
+        public static int LanguageID { get; private set; } = 1;
 
         public static bool LogInfo { get; private set; } = true;
         public static bool LogWarning { get; private set; } = true;
@@ -90,6 +91,11 @@ namespace SpellforceDataEditor
                             else
                                 EnableLuaRunWarning = 0;
                             break;
+                        case "LanguageID":
+                            LanguageID = Utility.TryParseUInt8(words[1], (byte)LanguageID);
+                            if (LanguageID > 4)
+                                LanguageID = 1;
+                            break;
                     }
                     if (ignore_rest)
                         break;
@@ -157,6 +163,9 @@ namespace SpellforceDataEditor
                             break;
                         case "EnableLuaRunWarning":
                             words = new string[] { words[0], (EnableLuaRunWarning == 3 ? "YES" : (EnableLuaRunWarning == 0 ? "NO" : "ONCE")) };
+                            break;
+                        case "LanguageID":
+                            words = new string[] { words[0], LanguageID.ToString() };
                             break;
                         default:
                             new_settings.Add(s);

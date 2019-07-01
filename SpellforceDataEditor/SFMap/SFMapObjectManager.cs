@@ -49,7 +49,7 @@ namespace SpellforceDataEditor.SFMap
             objects.Add(obj);
 
             string obj_name = obj.GetObjectName();
-            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(id, obj_name);
+            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(id, obj_name, true);
             return obj;
         }
 

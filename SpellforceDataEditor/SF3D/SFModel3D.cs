@@ -223,6 +223,7 @@ namespace SpellforceDataEditor.SF3D
             vertex_array = GL.GenVertexArray();
             vertex_buffer = GL.GenBuffer();
             uv_buffer = GL.GenBuffer();
+            normal_buffer = GL.GenBuffer();
             color_buffer = GL.GenBuffer();
             element_buffer = GL.GenBuffer();
 
@@ -233,15 +234,20 @@ namespace SpellforceDataEditor.SF3D
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, color_buffer);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, colors.Length*16, colors, BufferUsageHint.StaticDraw);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Length*12, normals, BufferUsageHint.StaticDraw);
             GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 0, 0);
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
             GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, uvs.Length * 8, uvs, BufferUsageHint.StaticDraw);
             GL.EnableVertexAttribArray(2);
             GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, color_buffer);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, colors.Length * 16, colors, BufferUsageHint.StaticDraw);
+            GL.EnableVertexAttribArray(3);
+            GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
             GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, face_indices.Length * 4, face_indices, BufferUsageHint.StaticDraw);
@@ -286,7 +292,7 @@ namespace SpellforceDataEditor.SF3D
             if(vertex_array != -1)
             {
                 GL.DeleteBuffer(vertex_buffer);
-                //GL.DeleteBuffer(normal_buffer);
+                GL.DeleteBuffer(normal_buffer);
                 GL.DeleteBuffer(color_buffer);
                 GL.DeleteBuffer(uv_buffer);
                 GL.DeleteBuffer(element_buffer);

@@ -600,7 +600,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
 
         // adds game object to the scene
-        public void AddObjectObject(int object_id, string object_name)
+        public void AddObjectObject(int object_id, string object_name, bool apply_shading)
         {
             List<string> m_lst = mesh_data.GetObjectMeshes(object_id);
 
@@ -618,7 +618,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             for (int i = 0; i < m_lst.Count; i++)
             {
                 string m = m_lst[i];
-                AddObjectStatic(m, object_name, object_name + "_" + i.ToString());
+                string mesh_obj_name = object_name + "_" + i.ToString();
+                AddObjectStatic(m, object_name, mesh_obj_name);
+                if (objects_static[mesh_obj_name].Mesh != null)
+                    foreach (SFMaterial mat in objects_static[mesh_obj_name].Mesh.materials)
+                        mat.apply_shading = apply_shading;
             }
         }
 

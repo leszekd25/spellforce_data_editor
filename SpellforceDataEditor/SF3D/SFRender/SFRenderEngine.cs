@@ -26,6 +26,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         public static Camera3D camera { get; } = new Camera3D();
 
+        public static LightingAmbient ambient_light { get; } = new LightingAmbient();
+        public static LightingSun sun_light { get; } = new LightingSun();
+
         static SFShader shader_simple = new SFShader();
         static SFShader shader_animated = new SFShader();
         static SFShader shader_heightmap = new SFShader();
@@ -51,20 +54,47 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             shader_simple.CompileShader(Properties.Resources.vshader, Properties.Resources.fshader);
             shader_simple.AddParameter("MVP");
+            shader_simple.AddParameter("M");
             shader_simple.AddParameter("texture_used");
+            shader_simple.AddParameter("apply_shading");
+            shader_simple.AddParameter("SunDirection");
+            shader_simple.AddParameter("SunStrength");
+            shader_simple.AddParameter("SunColor");
+            shader_simple.AddParameter("AmbientStrength");
+            shader_simple.AddParameter("AmbientColor");
 
             shader_animated.CompileShader(Properties.Resources.vshader_skel, Properties.Resources.fshader_skel);
             shader_animated.AddParameter("MVP");
+            shader_animated.AddParameter("M");
             shader_animated.AddParameter("texture_used");
+            shader_animated.AddParameter("apply_shading");
             shader_animated.AddParameter("boneTransforms");
+            shader_animated.AddParameter("SunDirection");
+            shader_animated.AddParameter("SunStrength");
+            shader_animated.AddParameter("SunColor");
+            shader_animated.AddParameter("AmbientStrength");
+            shader_animated.AddParameter("AmbientColor");
 
             shader_heightmap.CompileShader(Properties.Resources.vshader_hmap, Properties.Resources.fshader_hmap);
             shader_heightmap.AddParameter("MVP");
-            shader_heightmap.AddParameter("texture_used");
+            shader_heightmap.AddParameter("M");
+            shader_heightmap.AddParameter("SunDirection");
+            shader_heightmap.AddParameter("SunStrength");
+            shader_heightmap.AddParameter("SunColor");
+            shader_heightmap.AddParameter("AmbientStrength");
+            shader_heightmap.AddParameter("AmbientColor");
 
             shader_overlay.CompileShader(Properties.Resources.vshader_overlay, Properties.Resources.fshader_overlay);
             shader_overlay.AddParameter("MVP");
             shader_overlay.AddParameter("Color");
+
+            sun_light.Direction = -(new Vector3(0,-1, 0).Normalized());
+            sun_light.Color = new Vector4(1.0f, 1.0f, 1.0f, 0.8f);
+            sun_light.Strength = 1.0f;
+            ambient_light.Strength = 0.7f;
+            ambient_light.Color = new Vector4(0.7f, 0.7f, 1.0f, 1.0f);
+
+            ApplyLight();
 
             //initialized = true;
         }
@@ -80,6 +110,32 @@ namespace SpellforceDataEditor.SF3D.SFRender
         public static void AssignHeightMap(SFMapHeightMap hm)
         {
             heightmap = hm;
+        }
+
+        private static void ApplyLight()
+        {
+            GL.UseProgram(shader_simple.ProgramID);
+            GL.Uniform1(shader_simple["SunStrength"], sun_light.Strength);
+            GL.Uniform3(shader_simple["SunDirection"], sun_light.Direction);
+            GL.Uniform4(shader_simple["SunColor"], sun_light.Color);
+            GL.Uniform1(shader_simple["AmbientStrength"], ambient_light.Strength);
+            GL.Uniform4(shader_simple["AmbientColor"], ambient_light.Color);
+
+            GL.UseProgram(shader_animated.ProgramID);
+            GL.Uniform1(shader_animated["SunStrength"], sun_light.Strength);
+            GL.Uniform3(shader_animated["SunDirection"], sun_light.Direction);
+            GL.Uniform4(shader_animated["SunColor"], sun_light.Color);
+            GL.Uniform1(shader_animated["AmbientStrength"], ambient_light.Strength);
+            GL.Uniform4(shader_animated["AmbientColor"], ambient_light.Color);
+
+            GL.UseProgram(shader_heightmap.ProgramID);
+            GL.Uniform1(shader_heightmap["SunStrength"], sun_light.Strength);
+            GL.Uniform3(shader_heightmap["SunDirection"], sun_light.Direction);
+            GL.Uniform4(shader_heightmap["SunColor"], sun_light.Color);
+            GL.Uniform1(shader_heightmap["AmbientStrength"], ambient_light.Strength);
+            GL.Uniform4(shader_heightmap["AmbientColor"], ambient_light.Color);
+
+            GL.UseProgram(0);
         }
 
         private static void UpdateVisibleChunks()
@@ -199,9 +255,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 Matrix4 MVP_mat = chunk_matrix * camera.ViewProjMatrix;
 
                 GL.UniformMatrix4(shader_heightmap["MVP"], false, ref MVP_mat);
+                GL.UniformMatrix4(shader_heightmap["M"], false, ref chunk_matrix);
 
                 GL.BindVertexArray(chunk.vertex_array);
-                GL.Uniform1(shader_heightmap["texture_used"], 1);
                 GL.BindTexture(TextureTarget.Texture2DArray, heightmap.texture_manager.terrain_texture);
 
                 GL.DrawArrays(PrimitiveType.Triangles, 0, chunk.vertices.Length);
@@ -214,6 +270,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             SFMapLakeManager lake_manager = heightmap.map.lake_manager;
 
             GL.UseProgram(shader_simple.ProgramID);
+            GL.Uniform1(shader_simple["apply_shading"], 0);
             for(int i = 0; i < lake_manager.lakes.Count; i++)
             {
                 if(lake_manager.lake_visible[i])
@@ -286,7 +343,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     continue;
 
                 Matrix4 MVP_mat = obj.ModelMatrix * camera.ViewProjMatrix;
+                Matrix4 model_mat = obj.ModelMatrix;
                 GL.UniformMatrix4(shader_simple["MVP"], false, ref MVP_mat);
+                GL.UniformMatrix4(shader_simple["M"], false, ref model_mat);
 
                 //opaque materials first (no alpha except 0 and 1)
                 GL.BindVertexArray(obj.Mesh.vertex_array);
@@ -299,6 +358,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     mat.yet_to_be_drawn = false;
 
                     GL.Uniform1(shader_simple["texture_used"], (mat.texture != null ? 1 : 0));
+                    GL.Uniform1(shader_simple["apply_shading"], (mat.apply_shading?1:0));
                     if (mat.texture != null)
                         GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
                     else
@@ -314,6 +374,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     {
                         //todo: triangle sorting
                         GL.Uniform1(shader_simple["texture_used"], (mat.texture != null?1:0));
+                        GL.Uniform1(shader_simple["apply_shading"], (mat.apply_shading ? 1 : 0));
+
                         if (mat.texture != null)
                             GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
                         else
@@ -335,7 +397,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     continue;
 
                 Matrix4 MVP_mat = obj.ModelMatrix * camera.ViewProjMatrix;
+                Matrix4 model_mat = obj.ModelMatrix;
                 GL.UniformMatrix4(shader_animated["MVP"], false, ref MVP_mat);
+                GL.UniformMatrix4(shader_animated["M"], false, ref model_mat);
 
                 Matrix4[] bones = new Matrix4[20];
                 for (int i = 0; i < obj.skin.submodels.Count; i++)
@@ -345,6 +409,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         bones[j] = obj.bone_transforms[chunk.bones[j]];
                     GL.BindVertexArray(chunk.vertex_array);
                     GL.UniformMatrix4(shader_animated["boneTransforms"], 20, false, ref bones[0].Row0.X);
+                    GL.Uniform1(shader_animated["apply_shading"], (chunk.material.apply_shading ? 1 : 0));
                     GL.BindTexture(TextureTarget.Texture2D, chunk.material.texture.tex_id);
                     GL.DrawElements(PrimitiveType.Triangles, chunk.face_indices.Length, DrawElementsType.UnsignedInt, 0);
                 }

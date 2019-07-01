@@ -19,7 +19,7 @@ namespace SpellforceDataEditor.SFMap
         // heightmap
         public byte[] material_id;
         public Vector3[] vertices;
-        public Vector4[] colors;
+        public Vector3[] normals;
         public Vector2[] uvs;
         public Vector3[] texture_id;
         public Vector3[] texture_weights;
@@ -61,7 +61,8 @@ namespace SpellforceDataEditor.SFMap
             }
         }
 
-        public int vertex_array, position_buffer, color_buffer, uv_buffer, tex_id_buffer, tex_weight_buffer;
+        public int vertex_array, position_buffer, normal_buffer, uv_buffer, tex_id_buffer, tex_weight_buffer;
+
 
         public void Generate(short[] data, byte[] tex_data, int map_size, int size, int x, int y)
         {
@@ -81,7 +82,7 @@ namespace SpellforceDataEditor.SFMap
             material_id = new byte[(size + 1) * (size + 1)];
 
             vertices = new OpenTK.Vector3[size * size * 6];
-            colors = new OpenTK.Vector4[size * size * 6];
+            normals = new OpenTK.Vector3[size * size * 6];
             uvs = new OpenTK.Vector2[size * size * 6];
             texture_id = new Vector3[size * size * 6];
             texture_weights = new Vector3[size * size * 6];
@@ -152,6 +153,13 @@ namespace SpellforceDataEditor.SFMap
                         triangle_ws = new Vector3(0.0f);
                         triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + (j + 1)])] = 1.0f;
                         texture_weights[t + 5] = triangle_ws;
+
+                        normals[t + 0] = GetVertexNormal(data, map_size, col_start + j, row_start + i);
+                        normals[t + 1] = GetVertexNormal(data, map_size, col_start + j+1, row_start + i+1);
+                        normals[t + 2] = GetVertexNormal(data, map_size, col_start + j, row_start + i+1);
+                        normals[t + 3] = normals[(i * size + j) * 6 + 0]; //GetVertexNormal(data, map_size, col_start + j, row_start + i);
+                        normals[t + 4] = GetVertexNormal(data, map_size, col_start + j+1, row_start + i);
+                        normals[t + 5] = normals[(i * size + j) * 6 + 1]; //GetVertexNormal(data, map_size, col_start + j+1, row_start + i+1);
                     }
                     else
                     {
@@ -195,6 +203,13 @@ namespace SpellforceDataEditor.SFMap
                         triangle_ws = new Vector3(0.0f);
                         triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + j])] = 1.0f;
                         texture_weights[t + 5] = triangle_ws;
+
+                        normals[t + 0] = GetVertexNormal(data, map_size, col_start + j, row_start + i);
+                        normals[t + 1] = GetVertexNormal(data, map_size, col_start + j + 1, row_start + i);
+                        normals[t + 2] = GetVertexNormal(data, map_size, col_start + j, row_start + i + 1);
+                        normals[t + 3] = normals[(i * size + j) * 6 + 1]; //GetVertexNormal(data, map_size, col_start + j + 1, row_start + i);
+                        normals[t + 4] = GetVertexNormal(data, map_size, col_start + j + 1, row_start + i + 1);
+                        normals[t + 5] = normals[(i * size + j) * 6 + 2]; //GetVertexNormal(data, map_size, col_start + j, row_start + i + 1);
                     }
                 }
             }
@@ -204,9 +219,6 @@ namespace SpellforceDataEditor.SFMap
             {
                 // color (debug heightmap)
                 float h = vertices[i].Y;
-                byte col = (byte)(Math.Min(255, (int)(h * 8)));
-                float norm_color = (float)col / 255.0f;
-                colors[i] = new OpenTK.Vector4(norm_color, norm_color, norm_color, 1.0f);
                 uvs[i] = vertices[i].Xz / 4;
                 max_height = Math.Max(max_height, h);
             }
@@ -219,7 +231,7 @@ namespace SpellforceDataEditor.SFMap
             vertex_array = GL.GenVertexArray();
             position_buffer = GL.GenBuffer();
             uv_buffer = GL.GenBuffer();
-            color_buffer = GL.GenBuffer();
+            normal_buffer = GL.GenBuffer();
             tex_id_buffer = GL.GenBuffer();
             tex_weight_buffer = GL.GenBuffer();
 
@@ -230,10 +242,10 @@ namespace SpellforceDataEditor.SFMap
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, color_buffer);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, colors.Length * 16, colors, BufferUsageHint.DynamicDraw);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Length * 12, normals, BufferUsageHint.DynamicDraw);
             GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 0, 0);
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
             GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, uvs.Length * 8, uvs, BufferUsageHint.DynamicDraw);
@@ -306,6 +318,18 @@ namespace SpellforceDataEditor.SFMap
             throw new Exception("SFMapHeightMap.GetIndex(): Invalid id!");
         }
 
+        // https://www.gamedev.net/forums/topic/163625-fast-way-to-calculate-heightmap-normals/
+        private Vector3 GetVertexNormal(short[] data, int map_size, int x, int y)
+        {
+            float hscale = 100.0f;
+            float az = (x < map_size - 1) ? (GetHeightAt(data, map_size, x + 1, y)) : (0);
+            float bz = (y < map_size - 1) ? (GetHeightAt(data, map_size, x, y + 1)) : (0);
+            float cz = (x > 0) ? (GetHeightAt(data, map_size, x - 1, y)) : (0);
+            float dz = (y > 0) ? (GetHeightAt(data, map_size, x, y - 1)) : (0);
+
+            return (new Vector3(cz - az, 2 * hscale, dz - bz)).Normalized();
+        }
+
         public void RebuildGeometry(short[] data, int map_size)
         {
             float flatten_factor = 100;
@@ -334,6 +358,12 @@ namespace SpellforceDataEditor.SFMap
                         vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
                         vertices[t + 5] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
+                        normals[t + 0] = GetVertexNormal(data, map_size, col_start + j, row_start + i);
+                        normals[t + 1] = GetVertexNormal(data, map_size, col_start + j + 1, row_start + i + 1);
+                        normals[t + 2] = GetVertexNormal(data, map_size, col_start + j, row_start + i + 1);
+                        normals[t + 3] = normals[(i * size + j) * 6 + 0]; //GetVertexNormal(data, map_size, col_start + j, row_start + i);
+                        normals[t + 4] = GetVertexNormal(data, map_size, col_start + j + 1, row_start + i);
+                        normals[t + 5] = normals[(i * size + j) * 6 + 1]; //GetVertexNormal(data, map_size, col_start + j+1, row_start + i+1);
                     }
                     else
                     {
@@ -347,6 +377,12 @@ namespace SpellforceDataEditor.SFMap
                         vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
                         vertices[t + 5] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
+                        normals[t + 0] = GetVertexNormal(data, map_size, col_start + j, row_start + i);
+                        normals[t + 1] = GetVertexNormal(data, map_size, col_start + j + 1, row_start + i);
+                        normals[t + 2] = GetVertexNormal(data, map_size, col_start + j, row_start + i + 1);
+                        normals[t + 3] = normals[(i * size + j) * 6 + 1]; //GetVertexNormal(data, map_size, col_start + j + 1, row_start + i);
+                        normals[t + 4] = GetVertexNormal(data, map_size, col_start + j + 1, row_start + i + 1);
+                        normals[t + 5] = normals[(i * size + j) * 6 + 2]; //GetVertexNormal(data, map_size, col_start + j, row_start + i + 1);
                     }
                 }
             }
@@ -366,6 +402,11 @@ namespace SpellforceDataEditor.SFMap
             GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.DynamicDraw);
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Length * 12, normals, BufferUsageHint.DynamicDraw);
+            GL.EnableVertexAttribArray(0);
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindVertexArray(0);
 
@@ -514,17 +555,9 @@ namespace SpellforceDataEditor.SFMap
             {
                 // color (debug heightmap)
                 float h = vertices[i].Y;
-                byte col = (byte)(Math.Min(255, (int)(h * 8)));
-                float norm_color = (float)col / 255.0f;
-                colors[i] = new OpenTK.Vector4(norm_color, norm_color, norm_color, 1.0f);
             }
 
             GL.BindVertexArray(vertex_array);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, color_buffer);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, colors.Length * 16, colors, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, tex_id_buffer);
             GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, texture_id.Length * 12, texture_id, BufferUsageHint.DynamicDraw);
@@ -546,7 +579,7 @@ namespace SpellforceDataEditor.SFMap
 
             GL.DeleteBuffer(position_buffer);
             GL.DeleteBuffer(uv_buffer);
-            GL.DeleteBuffer(color_buffer);
+            GL.DeleteBuffer(normal_buffer);
             GL.DeleteBuffer(tex_id_buffer);
             GL.DeleteBuffer(tex_weight_buffer);
             GL.DeleteVertexArray(vertex_array);
@@ -561,7 +594,7 @@ namespace SpellforceDataEditor.SFMap
             hmap = null;
             material_id = null;
             vertices = null;
-            colors = null;
+            normals = null;
             uvs = null;
             texture_id = null;
             texture_weights = null;

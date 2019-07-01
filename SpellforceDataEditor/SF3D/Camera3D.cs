@@ -59,6 +59,9 @@ namespace SpellforceDataEditor.SF3D
                 modified = true;
             }
         }
+
+        // view matrix: modelmatrix
+        // proj matrix: projmatrix
         public Matrix4 ViewProjMatrix { get { return viewproj_matrix; } }
         public Matrix4 ProjMatrix { get { return proj_matrix; } set { proj_matrix = value; viewproj_matrix = proj_matrix; } }
         public Physics.Plane[] FrustrumPlanes { get { return frustrum_planes; } }
@@ -95,6 +98,7 @@ namespace SpellforceDataEditor.SF3D
             modified = true;
         }
 
+        // todo: this is wrong at certain angles?
         private void calculate_frustrum_vertices()
         {
             // get forward, up, right direction

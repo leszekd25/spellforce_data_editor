@@ -302,12 +302,20 @@ namespace SpellforceDataEditor.special_forms
             float cam_speed = 6; //limited by framerate
 
             //calculate movement vector
-            Vector3 cam_move = (((SFRenderEngine.camera.Lookat - SFRenderEngine.camera.Position).Normalized())*cam_speed)/ SFRenderEngine.scene_manager.frames_per_second;
+            Vector3 forward = (SFRenderEngine.camera.Lookat - SFRenderEngine.camera.Position).Normalized();
+            Vector3 up = new Vector3(0, 1, 0);
+            Vector3 right = Vector3.Cross(forward, up);
+            float speed_factor = cam_speed / SFRenderEngine.scene_manager.frames_per_second;
+            Vector3 cam_move = ((SFRenderEngine.camera.Lookat - SFRenderEngine.camera.Position).Normalized()*cam_speed)/ SFRenderEngine.scene_manager.frames_per_second;
 
             if (e.KeyChar == 'w')
-                SFRenderEngine.camera.translate(cam_move);
+                SFRenderEngine.camera.translate(forward * speed_factor);
             else if (e.KeyChar == 's')
-                SFRenderEngine.camera.translate(-cam_move);
+                SFRenderEngine.camera.translate(-forward * speed_factor);
+            else if (e.KeyChar == 'a')
+                SFRenderEngine.camera.translate(-right * speed_factor);
+            else if (e.KeyChar == 'd')
+                SFRenderEngine.camera.translate(right * speed_factor);
         }
 
 

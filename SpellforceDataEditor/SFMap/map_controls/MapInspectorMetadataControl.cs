@@ -87,7 +87,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             string ret = "";
             if(SFCFF.SFCategoryManager.ready)
             {
-                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.find_element_text(spawn.text_id, 1);
+                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.find_element_text(spawn.text_id, Settings.LanguageID);
                 if (text_elem != null)
                     ret += Utility.CleanString(text_elem.get_single_variant(4));
                 else
@@ -456,7 +456,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SelectedPlayerTextID.Text = tp.text_id.ToString();
             if (SFCFF.SFCategoryManager.ready)
             {
-                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.find_element_text(tp.text_id, 1);
+                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.find_element_text(tp.text_id, Settings.LanguageID);
                 if (text_elem != null)
                     LabelSelectedPlayerText.Text = Utility.CleanString(text_elem.get_single_variant(4));
                 else
@@ -482,7 +482,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             tp.text_id = Utility.TryParseUInt16(SelectedPlayerTextID.Text);
             if (SFCFF.SFCategoryManager.ready)
             {
-                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.find_element_text(tp.text_id, 1);
+                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.find_element_text(tp.text_id, Settings.LanguageID);
                 if (text_elem != null)
                     LabelSelectedPlayerText.Text = Utility.CleanString(text_elem.get_single_variant(4));
                 else
