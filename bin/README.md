@@ -14,15 +14,9 @@ An experimental visual creator of LUA scripts. Supports all available commands i
 This feature is currently in development. It allows creating and managing mods in an intuitive way.
 
 # Map Editor
-Initial support for map viewing implemented, many bugs though. Some known bugs:
-
-- Tile assignment is incorrect in some cases
-
-- Camera occasionally sinks under the ground
-
-- RAM usage might be very high on most maps
+Most of the features are now complete (but might be buggy), including: heightmap editing, texture editing, unit/object/building placement and editing, miscellaneous objects editing, NPC placement and editing
 
 # How to use
 To use the application, simply unzip it wherever you feel like.
 
-Latest version: 23.03.2019.1
+Latest version: 30.06.2019.1
