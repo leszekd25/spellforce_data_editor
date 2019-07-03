@@ -34,6 +34,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static SFShader shader_heightmap = new SFShader();
         static SFShader shader_overlay = new SFShader();
 
+        static SFShader shader_framebuffer_simple = new SFShader();
+        static FrameBuffer screenspace_framebuffer = null;
+        static FrameBuffer screenspace_intermediate = null;
+
+        static Vector2 render_size = new Vector2(0, 0);
+
         static bool initialized = false;
 
         //called only once!
@@ -42,12 +48,15 @@ namespace SpellforceDataEditor.SF3D.SFRender
             if (initialized)
                 return;
 
+            render_size = view_size;
+
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.Initialize() called");
             ResizeView(view_size);
 
             GL.ClearColor(Color.MidnightBlue);
 
             GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.StencilTest);
             GL.Enable(EnableCap.Blend);
             GL.DepthFunc(DepthFunction.Less);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -88,23 +97,40 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_overlay.AddParameter("MVP");
             shader_overlay.AddParameter("Color");
 
-            sun_light.Direction = -(new Vector3(0,-1, 0).Normalized());
-            sun_light.Color = new Vector4(1.0f, 1.0f, 1.0f, 0.8f);
-            sun_light.Strength = 1.0f;
-            ambient_light.Strength = 0.7f;
-            ambient_light.Color = new Vector4(0.7f, 0.7f, 1.0f, 1.0f);
+            shader_framebuffer_simple.CompileShader(Properties.Resources.vshader_framebuffer, Properties.Resources.fshader_framebuffer_simple);
+
+            sun_light.Direction = -(new Vector3(0, -1, 0).Normalized());
+            sun_light.Color = new Vector4(1, 1, 1, 1);
+            sun_light.Strength = 1.3f;
+            ambient_light.Strength = 1.0f;
+            ambient_light.Color = new Vector4(0.5f, 0.5f, 1.0f, 1.0f);
+
+            if (screenspace_framebuffer != null)
+            {
+                screenspace_framebuffer.Dispose();
+                screenspace_intermediate.Dispose();
+            }
+            screenspace_framebuffer = new FrameBuffer((int)view_size.X, (int)view_size.Y, 4);
+            screenspace_intermediate = new FrameBuffer((int)view_size.X, (int)view_size.Y, 0);
 
             ApplyLight();
 
+            // this doesnt work for now...
             //initialized = true;
         }
 
         public static void ResizeView(Vector2 view_size)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.ResizeView() called (view_size = " + view_size.ToString() + ")");
+            render_size = view_size;
             camera.ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
                 (float)Math.PI / 4, view_size.X / view_size.Y, 0.1f, 100f);
             GL.Viewport(0, 0, (int)view_size.X, (int)view_size.Y);
+            if (screenspace_framebuffer != null)
+            {
+                screenspace_framebuffer.Resize((int)view_size.X, (int)view_size.Y);
+                screenspace_intermediate.Resize((int)view_size.X, (int)view_size.Y);
+            }
         }
         
         public static void AssignHeightMap(SFMapHeightMap hm)
@@ -136,6 +162,20 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Uniform4(shader_heightmap["AmbientColor"], ambient_light.Color);
 
             GL.UseProgram(0);
+        }
+
+        private static void SetFramebuffer(FrameBuffer f)
+        {
+            if (f == null)
+            {
+                GL.Viewport(0, 0, (int)render_size.X, (int)render_size.Y);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            }
+            else
+            {
+                GL.Viewport(0, 0, f.width, f.height);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, f.fbo);
+            }
         }
 
         private static void UpdateVisibleChunks()
@@ -321,11 +361,17 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         public static void RenderFrame()
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            // first pass: draw everything
+            SetFramebuffer(screenspace_framebuffer);
+            GL.ClearColor(Color.MidnightBlue);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+            GL.Enable(EnableCap.DepthTest);
+
+
             if (camera.Modified)
                 camera.update_modelMatrix();
 
-            // heightmap
+            // heightmap and overlays
             if (heightmap != null)
             {
                 UpdateVisibleChunks();
@@ -415,6 +461,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 }
             }
 
+            // lakes
             if(heightmap != null)
             {
                 UpdateVisibleLakes();
@@ -422,6 +469,23 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
 
             GL.BindVertexArray(0);
+
+            // move from multisampled to intermediate framebuffer, to be able to use screenspace shader
+            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, screenspace_framebuffer.fbo);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, screenspace_intermediate.fbo);
+            GL.BlitFramebuffer(0, 0, (int)render_size.X, (int)render_size.Y, 0, 0, (int)render_size.X, (int)render_size.Y, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
+
+            // final pass: draw to a quad for post-processing effects
+            SetFramebuffer(null);
+            GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+
+            GL.UseProgram(shader_framebuffer_simple.ProgramID);
+            GL.BindVertexArray(FrameBuffer.screen_vao);
+            GL.Disable(EnableCap.DepthTest);
+            GL.BindTexture(TextureTarget.Texture2D, screenspace_intermediate.texture_color);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+
             GL.UseProgram(0);
         }
     }

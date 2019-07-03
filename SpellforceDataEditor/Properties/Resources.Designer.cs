@@ -125,6 +125,25 @@ namespace SpellforceDataEditor.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to #version 330 core
+        ///out vec4 FragColor;
+        ///  
+        ///in vec2 TexCoords;
+        ///
+        ///uniform sampler2D screenTexture;
+        ///
+        ///void main()
+        ///{ 
+        ///    FragColor = texture(screenTexture, TexCoords);
+        ///}.
+        /// </summary>
+        internal static string fshader_framebuffer_simple {
+            get {
+                return ResourceManager.GetString("fshader_framebuffer_simple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 330 core
         ///
         ///in vec3 fragmentPosition;
         ///in vec2 UV;
@@ -307,6 +326,25 @@ namespace SpellforceDataEditor.Properties {
         internal static string vshader {
             get {
                 return ResourceManager.GetString("vshader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 330 core
+        ///layout (location = 0) in vec2 aPos;
+        ///layout (location = 1) in vec2 aTexCoords;
+        ///
+        ///out vec2 TexCoords;
+        ///
+        ///void main()
+        ///{
+        ///    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
+        ///    TexCoords = aTexCoords;
+        ///}.
+        /// </summary>
+        internal static string vshader_framebuffer {
+            get {
+                return ResourceManager.GetString("vshader_framebuffer", resourceCulture);
             }
         }
         

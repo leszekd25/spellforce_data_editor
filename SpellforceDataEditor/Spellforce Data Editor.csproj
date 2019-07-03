@@ -92,6 +92,8 @@
     <Compile Include="SF3D\Physics\Plane.cs" />
     <Compile Include="SF3D\Physics\Ray.cs" />
     <Compile Include="SF3D\Physics\Triangle.cs" />
+    <Compile Include="SF3D\SFRender\FrameBuffer.cs" />
+    <Compile Include="SF3D\SFRender\RenderNode.cs" />
     <Compile Include="SFCFF\calculator forms\CalcControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

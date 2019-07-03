@@ -518,6 +518,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
                 //add anim model to scene
                 AddObjectDynamic(chest_name, object_name, object_name + "_CHEST");
+                // apply flat shade
+                objectAnimated uo = objects_dynamic[object_name + "_CHEST"];
+                if (uo.skin != null)
+                    foreach (SFModelSkinChunk msc in uo.skin.submodels)
+                        msc.material.flat_shade = true;
 
                 //get legs item (5) (animated)
                 UInt16 legs_id = GetItemID(unit_eq, 5);
@@ -528,6 +533,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     if (legs_name != "")
                     {
                         AddObjectDynamic(legs_name, object_name, object_name + "_LEGS");
+                        uo = objects_dynamic[object_name + "_LEGS"];
+                        if (uo.skin != null)
+                            foreach (SFModelSkinChunk msc in uo.skin.submodels)
+                                msc.material.flat_shade = true;
                     }
                 }
                 //special case: anim_name is of "figure_hero": need to also add human head (animated)
@@ -539,6 +548,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     if (head_name != "")
                     {
                         AddObjectDynamic(head_name, object_name, object_name + "_HEAD");
+                        uo = objects_dynamic[object_name + "_HEAD"];
+                        if (uo.skin != null)
+                            foreach (SFModelSkinChunk msc in uo.skin.submodels)
+                                msc.material.flat_shade = true;
                     }
                     else
                     {
@@ -558,6 +571,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         //create bone attachment
                         AddObjectBoneanchor(object_name + "_CHEST", "Head", object_name + "_HEADBONE");
                         AddObjectStatic(helmet_name, object_name + "_HEADBONE", object_name + "_HELMET");
+                        ObjectSimple3D ho = objects_static[object_name + "_HELMET"];
+                        if (ho.Mesh != null)
+                            foreach (SFMaterial mat in ho.Mesh.materials)
+                                mat.flat_shade = true;
                     }
                 }
 
@@ -572,6 +589,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         //create bone attachment
                         AddObjectBoneanchor(object_name + "_CHEST", "R Hand weapon", object_name + "_RHANDBONE");
                         AddObjectStatic(rhand_name, object_name + "_RHANDBONE", object_name + "_RHAND");
+                        ObjectSimple3D ho = objects_static[object_name + "_RHAND"];
+                        if (ho.Mesh != null)
+                            foreach (SFMaterial mat in ho.Mesh.materials)
+                                mat.flat_shade = true;
                     }
                 }
 
@@ -594,6 +615,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         //create bone attachment
                         AddObjectBoneanchor(object_name + "_CHEST", (is_shield ? "L Forearm shield" : "L Hand weapon"), object_name + "_LHANDBONE");
                         AddObjectStatic(lhand_name, object_name + "_LHANDBONE", object_name + "_LHAND");
+                        ObjectSimple3D ho = objects_static[object_name + "_LHAND"];
+                        if (ho.Mesh != null)
+                            foreach (SFMaterial mat in ho.Mesh.materials)
+                                mat.flat_shade = true;
                     }
                 }
             }

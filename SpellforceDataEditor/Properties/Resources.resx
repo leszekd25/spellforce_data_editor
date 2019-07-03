@@ -155,11 +155,12 @@ void main(){
     brightness = 1.0;
 
   // calculate output color
-  color = AmbientColor * AmbientStrength;
-  color += (SunColor * SunStrength * brightness);
-  color = clamp(color, 0.0, 1.0);
+  vec4 ambient_color = AmbientColor * AmbientStrength;
+  vec4 sun_color = SunColor * SunStrength;
+  color = (ambient_color*(1-brightness))+(sun_color*brightness);
   color.a = 1.0;
   color = color*temp_c;
+  color = clamp(color, 0.0, 1.0);
 }</value>
   </data>
   <data name="vshader_skel" xml:space="preserve">
@@ -313,11 +314,12 @@ void main(){
     brightness = 1.0;
 
   // calculate output color
-  color = AmbientColor * AmbientStrength;
-  color += (SunColor * SunStrength * brightness);
-  color = clamp(color, 0.0, 1.0);
+  vec4 ambient_color = AmbientColor * AmbientStrength;
+  vec4 sun_color = SunColor * SunStrength;
+  color = (ambient_color*(1-brightness))+(sun_color*brightness);
   color.a = 1.0;
   color = color*temp_c;
+  color = clamp(color, 0.0, 1.0);
 }</value>
   </data>
   <data name="fshader_overlay" xml:space="preserve">
@@ -368,11 +370,12 @@ void main(){
   temp_c.a = 1.0;
 
   // calculate output color
-  color = AmbientColor * AmbientStrength;
-  color += (SunColor * SunStrength * brightness);
-  color = clamp(color, 0.0, 1.0);
+  vec4 ambient_color = AmbientColor * AmbientStrength;
+  vec4 sun_color = SunColor * SunStrength;
+  color = (ambient_color*(1-brightness))+(sun_color*brightness);
   color.a = 1.0;
   color = color*temp_c;
+  color = clamp(color, 0.0, 1.0);
 }</value>
   </data>
   <data name="vshader_hmap" xml:space="preserve">
@@ -437,5 +440,31 @@ void main(){
   </data>
   <data name="unit_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\unit_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fshader_framebuffer_simple" xml:space="preserve">
+    <value>#version 330 core
+out vec4 FragColor;
+  
+in vec2 TexCoords;
+
+uniform sampler2D screenTexture;
+
+void main()
+{ 
+    FragColor = texture(screenTexture, TexCoords);
+}</value>
+  </data>
+  <data name="vshader_framebuffer" xml:space="preserve">
+    <value>#version 330 core
+layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec2 aTexCoords;
+
+out vec2 TexCoords;
+
+void main()
+{
+    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
+    TexCoords = aTexCoords;
+}</value>
   </data>
 </root>
