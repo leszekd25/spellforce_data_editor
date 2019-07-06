@@ -245,7 +245,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SFMapBuilding building = null;
             foreach(SFMapBuilding b in map.building_manager.buildings)
             {
-                float sel_scale = SF3D.SFRender.SFRenderEngine.scene_manager.mesh_data.GetBuildingSelectionSize(b.game_id)/2;
+                float sel_scale = SF3D.SFRender.SFRenderEngine.scene.mesh_data.GetBuildingSelectionSize(b.game_id)/2;
 
                 OpenTK.Vector2 off = map.building_manager.building_collision[(ushort)b.game_id].collision_mesh.origin;
                 float angle = (float)(b.angle * Math.PI / 180);

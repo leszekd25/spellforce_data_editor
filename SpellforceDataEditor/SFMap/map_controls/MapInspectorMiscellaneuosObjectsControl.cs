@@ -591,5 +591,65 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             mode = (MISC_EDITMODE)ComboEditMode.SelectedIndex;
         }
+
+        private void SelectedBindstoneAngleTrackBar_Scroll(object sender, EventArgs e)
+        {
+            if (ListBindstones.SelectedIndex == -1)
+                return;
+
+            List<int> bindstone_indexes = new List<int>();
+            for (int i = 0; i < map.int_object_manager.int_objects.Count; i++)
+                if (map.int_object_manager.int_objects[i].game_id == 769)
+                    bindstone_indexes.Add(i);
+
+            SFMapInteractiveObject io = map.int_object_manager.int_objects[bindstone_indexes[ListBindstones.SelectedIndex]];
+            SelectedBindstoneAngle.Text = SelectedBindstoneAngleTrackBar.Value.ToString();
+            io.angle = SelectedBindstoneAngleTrackBar.Value;
+            map.RotateInteractiveObject(bindstone_indexes[ListBindstones.SelectedIndex], io.angle);
+
+            MainForm.mapedittool.update_render = true;
+        }
+
+        private void SelectedBindstoneAngle_Validated(object sender, EventArgs e)
+        {
+            SelectedBindstoneAngleTrackBar.Value = (int)(Math.Max((ushort)0, Math.Min((ushort)359, Utility.TryParseUInt16(SelectedBindstoneAngle.Text))));
+        }
+
+        private void SelectedPortalAngleTrackbar_Scroll(object sender, EventArgs e)
+        {
+            if (ListPortals.SelectedIndex == -1)
+                return;
+
+            SFMapPortal p = map.portal_manager.portals[ListPortals.SelectedIndex];
+            SelectedPortalAngle.Text = SelectedPortalAngleTrackbar.Value.ToString();
+            p.angle = SelectedPortalAngleTrackbar.Value;
+            map.RotatePortal(ListPortals.SelectedIndex, p.angle);
+
+            MainForm.mapedittool.update_render = true;
+        }
+
+        private void SelectedPortalAngle_Validated(object sender, EventArgs e)
+        {
+            SelectedPortalAngleTrackbar.Value = (int)(Math.Max((ushort)0, Math.Min((ushort)359, Utility.TryParseUInt16(SelectedPortalAngle.Text))));
+        }
+
+        private void SelectedMonumentAngleTrackbar_Scroll(object sender, EventArgs e)
+        {
+            if (ListMonuments.SelectedIndex == -1)
+                return;
+
+            List<int> monument_indexes = new List<int>();
+            for (int i = 0; i < map.int_object_manager.int_objects.Count; i++)
+                if ((map.int_object_manager.int_objects[i].game_id >= 771) && (map.int_object_manager.int_objects[i].game_id <= 777))
+                    monument_indexes.Add(i);
+
+            SFMapInteractiveObject io = map.int_object_manager.int_objects[monument_indexes[ListMonuments.SelectedIndex]];
+            SelectedMonumentAngle.Text = SelectedMonumentAngleTrackbar.Value.ToString();
+            io.angle = SelectedMonumentAngleTrackbar.Value;
+            map.RotateInteractiveObject(monument_indexes[ListMonuments.SelectedIndex], io.angle);
+
+            MainForm.mapedittool.update_render = true;
+
+        }
     }
 }

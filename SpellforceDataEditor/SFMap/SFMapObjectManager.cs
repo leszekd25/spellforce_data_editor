@@ -49,7 +49,7 @@ namespace SpellforceDataEditor.SFMap
             objects.Add(obj);
 
             string obj_name = obj.GetObjectName();
-            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(id, obj_name, true);
+            SF3D.SFRender.SFRenderEngine.scene.AddObjectObject(id, obj_name, true);
             return obj;
         }
 
@@ -57,7 +57,7 @@ namespace SpellforceDataEditor.SFMap
         {
             objects.Remove(o);
 
-            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject(o.GetObjectName());
+            SF3D.SFRender.SFRenderEngine.scene.DeleteObject(o.GetObjectName());
 
             map.heightmap.GetChunk(o.grid_position).RemoveObject(o);
         }

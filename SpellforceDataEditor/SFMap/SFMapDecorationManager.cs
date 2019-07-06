@@ -113,11 +113,11 @@ namespace SpellforceDataEditor.SFMap
             decorations.Add(dec);
 
             string dec_name = dec.GetObjectName();
-            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(id, dec_name, false);
+            SF3D.SFRender.SFRenderEngine.scene.AddObjectObject(id, dec_name, false);
             
             // 3. add new unit in respective chunk
             map.heightmap.GetChunk(position).AddDecoration(dec);
-            SF3D.SFRender.SFRenderEngine.scene_manager.objects_static[dec_name].Visible = map.heightmap.GetChunk(position).Visible;
+            SF3D.SFRender.SFRenderEngine.scene.objects_static[dec_name].Visible = map.heightmap.GetChunk(position).Visible;
 
             return dec;
         }
@@ -126,7 +126,7 @@ namespace SpellforceDataEditor.SFMap
         {
             decorations.Remove(d);
 
-            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject(d.GetObjectName());
+            SF3D.SFRender.SFRenderEngine.scene.DeleteObject(d.GetObjectName());
 
             map.heightmap.GetChunk(d.grid_position).RemoveDecoration(d);
         }
@@ -136,8 +136,8 @@ namespace SpellforceDataEditor.SFMap
             if (d.game_id == new_id)
                 return;
 
-            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject(d.GetObjectName());
-            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectObject(new_id, d.GetObjectName(), false);
+            SF3D.SFRender.SFRenderEngine.scene.DeleteObject(d.GetObjectName());
+            SF3D.SFRender.SFRenderEngine.scene.AddObjectObject(new_id, d.GetObjectName(), false);
         }
 
         public byte GetDecAssignment(SFCoord pos)

@@ -45,7 +45,7 @@ namespace SpellforceDataEditor.SFMap
             set
             {
                 visible = value;
-                SF3D.SceneSynchro.SFSceneManager scene = SF3D.SFRender.SFRenderEngine.scene_manager;
+                SF3D.SceneSynchro.SFScene scene = SF3D.SFRender.SFRenderEngine.scene;
                 foreach (SFMapUnit u in units)
                     scene.objects_static[u.GetObjectName()].Visible = value;
                 foreach (SFMapObject o in objects)
@@ -412,7 +412,7 @@ namespace SpellforceDataEditor.SFMap
 
 
             // fix all object positions (without lakes for now...)
-            SF3D.SceneSynchro.SFSceneManager scene = SF3D.SFRender.SFRenderEngine.scene_manager;
+            SF3D.SceneSynchro.SFScene scene = SF3D.SFRender.SFRenderEngine.scene;
             foreach (SFMapUnit u in units)
             {
                 SF3D.Object3D _obj = scene.objects_static[u.GetObjectName()];

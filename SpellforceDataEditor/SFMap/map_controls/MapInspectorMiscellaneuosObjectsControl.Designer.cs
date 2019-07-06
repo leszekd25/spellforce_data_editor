@@ -165,6 +165,7 @@
             this.SelectedBindstoneAngle.Name = "SelectedBindstoneAngle";
             this.SelectedBindstoneAngle.Size = new System.Drawing.Size(35, 20);
             this.SelectedBindstoneAngle.TabIndex = 24;
+            this.SelectedBindstoneAngle.Validated += new System.EventHandler(this.SelectedBindstoneAngle_Validated);
             // 
             // SelectedBindstoneAngleTrackBar
             // 
@@ -177,6 +178,7 @@
             this.SelectedBindstoneAngleTrackBar.SmallChange = 5;
             this.SelectedBindstoneAngleTrackBar.TabIndex = 23;
             this.SelectedBindstoneAngleTrackBar.TickFrequency = 45;
+            this.SelectedBindstoneAngleTrackBar.Scroll += new System.EventHandler(this.SelectedBindstoneAngleTrackBar_Scroll);
             // 
             // label6
             // 
@@ -193,6 +195,7 @@
             this.SelectedPortalAngle.Name = "SelectedPortalAngle";
             this.SelectedPortalAngle.Size = new System.Drawing.Size(35, 20);
             this.SelectedPortalAngle.TabIndex = 34;
+            this.SelectedPortalAngle.Validated += new System.EventHandler(this.SelectedPortalAngle_Validated);
             // 
             // SelectedPortalAngleTrackbar
             // 
@@ -205,6 +208,7 @@
             this.SelectedPortalAngleTrackbar.SmallChange = 5;
             this.SelectedPortalAngleTrackbar.TabIndex = 33;
             this.SelectedPortalAngleTrackbar.TickFrequency = 45;
+            this.SelectedPortalAngleTrackbar.Scroll += new System.EventHandler(this.SelectedPortalAngleTrackbar_Scroll);
             // 
             // label7
             // 
@@ -345,6 +349,7 @@
             this.SelectedMonumentAngleTrackbar.SmallChange = 5;
             this.SelectedMonumentAngleTrackbar.TabIndex = 49;
             this.SelectedMonumentAngleTrackbar.TickFrequency = 45;
+            this.SelectedMonumentAngleTrackbar.Scroll += new System.EventHandler(this.SelectedMonumentAngleTrackbar_Scroll);
             // 
             // label13
             // 

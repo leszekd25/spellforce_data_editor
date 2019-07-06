@@ -19,7 +19,7 @@ using SpellforceDataEditor.SFResources;
 
 namespace SpellforceDataEditor.SF3D.SceneSynchro
 {
-    public class SFSceneManager
+    public class SFScene
     {
         // TODO: multiple scenes (at least one for map editor and one for asset viewer
         public SFSceneDescriptionMeta scene_meta { get; private set; } = null;     // scene metadata
@@ -33,6 +33,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public float current_time { get; private set; } = 0f;        // current scene time in seconds
 
         public SFVisualLinkContainer mesh_data { get; private set; } = new SFVisualLinkContainer();
+
+        public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>> tex_list_simple { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>>();
+        public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>> tex_list_animated { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>>();
 
         public void Init()
         {
@@ -731,6 +734,25 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     current_time -= scene_meta.duration;
 
             frame_counter++;
+        }
+
+        public int AddTextureEntrySimple(SFTexture tex, TexturedGeometryListElementSimple elem)
+        {
+            if (!tex_list_simple.ContainsKey(tex))
+                tex_list_simple.Add(tex, new LinearPool<TexturedGeometryListElementSimple>());
+
+            return tex_list_simple[tex].Add(elem);
+        }
+
+        public void ClearTextureEntrySimple(SFTexture tex, TexturedGeometryListElementSimple elem)
+        {
+            if (!tex_list_simple.ContainsKey(tex))
+                return;
+
+            tex_list_simple[tex].Remove(elem);
+
+            if (tex_list_simple[tex].used_count == 0)
+                tex_list_simple.Remove(tex);
         }
     }
 }

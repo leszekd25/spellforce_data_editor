@@ -1047,7 +1047,7 @@ namespace SpellforceDataEditor.SFMap
 
 
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[dec.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[dec.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
         }
@@ -1061,14 +1061,14 @@ namespace SpellforceDataEditor.SFMap
 
 
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[obj.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(angle);
 
 
             heightmap.GetChunk(pos).AddObject(obj);
-            SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
+            SFRenderEngine.scene.objects_static[obj.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
         }
 
         public int DeleteObject(int object_map_index)
@@ -1099,14 +1099,14 @@ namespace SpellforceDataEditor.SFMap
             }
             obj = object_manager.objects[object_map_index];
 
-            SFRenderEngine.scene_manager.DeleteObject(obj.GetObjectName());
-            SFRenderEngine.scene_manager.AddObjectObject(new_object_id, obj.GetObjectName(), true);
+            SFRenderEngine.scene.DeleteObject(obj.GetObjectName());
+            SFRenderEngine.scene.AddObjectObject(new_object_id, obj.GetObjectName(), true);
 
             obj.game_id = new_object_id;
 
             // object transform
             float z = heightmap.GetZ(obj.grid_position) / 100.0f;
-            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[obj.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)obj.grid_position.x, (float)z, (float)(height - obj.grid_position.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(obj.angle);
@@ -1125,7 +1125,7 @@ namespace SpellforceDataEditor.SFMap
             }
             obj = object_manager.objects[object_map_index];
 
-            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[obj.GetObjectName()];
             _obj.SetAnglePlane(angle);
 
             return 0;
@@ -1153,7 +1153,7 @@ namespace SpellforceDataEditor.SFMap
 
             // change visual transform
             float z = heightmap.GetZ(new_pos) / 100.0f;
-            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[obj.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)new_pos.x, (float)z, (float)(height - new_pos.y - 1));
 
             return 0;
@@ -1164,14 +1164,14 @@ namespace SpellforceDataEditor.SFMap
             SFMapInteractiveObject obj = int_object_manager.AddInteractiveObject(game_id, pos, angle, unk_byte);
 
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[obj.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(angle);
 
 
             heightmap.GetChunk(pos).AddInteractiveObject(obj);
-            SFRenderEngine.scene_manager.objects_static[obj.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
+            SFRenderEngine.scene.objects_static[obj.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
         }
 
         public int MoveInteractiveObject(int int_object_map_index, SFCoord new_pos)
@@ -1196,7 +1196,7 @@ namespace SpellforceDataEditor.SFMap
 
             // change visual transform
             float z = heightmap.GetZ(new_pos) / 100.0f;
-            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[int_obj.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[int_obj.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)new_pos.x, (float)z, (float)(height - new_pos.y - 1));
 
             return 0;
@@ -1213,6 +1213,23 @@ namespace SpellforceDataEditor.SFMap
             int_obj = int_object_manager.int_objects[int_object_map_index];
 
             int_object_manager.RemoveInteractiveObject(int_obj);
+
+            return 0;
+        }
+
+        // todo: probably account for offset?
+        public int RotateInteractiveObject(int int_object_map_index, int angle)
+        {
+            SFMapInteractiveObject int_obj = null;
+            if ((int_object_manager.int_objects.Count <= int_object_map_index) || (int_object_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.RotateInteractiveObject(): invalid interactive object index! Interactive object index = " + int_object_map_index.ToString());
+                return -1;
+            }
+            int_obj = int_object_manager.int_objects[int_object_map_index];
+
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[int_obj.GetObjectName()];
+            _obj.SetAnglePlane(angle);
 
             return 0;
         }
@@ -1238,12 +1255,12 @@ namespace SpellforceDataEditor.SFMap
 
             SFMapInteractiveObject io = int_object_manager.int_objects[monument_indexes[monument_index]];
 
-            SFRenderEngine.scene_manager.DeleteObject(io.GetObjectName());
-            SFRenderEngine.scene_manager.AddObjectObject(new_monument_type + 771, io.GetObjectName(), true);
+            SFRenderEngine.scene.DeleteObject(io.GetObjectName());
+            SFRenderEngine.scene.AddObjectObject(new_monument_type + 771, io.GetObjectName(), true);
             io.game_id = new_monument_type + 771;
 
             float z = heightmap.GetZ(io.grid_position) / 100.0f;
-            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[io.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[io.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)io.grid_position.x, (float)z, (float)(height - io.grid_position.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(io.angle);
@@ -1258,7 +1275,7 @@ namespace SpellforceDataEditor.SFMap
                 npc_manager.AddNPCRef(npc_id, bld);
 
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[bld.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[bld.GetObjectName()];
 
             OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)bld.game_id].collision_mesh.origin;
             float angle_rad = (float)(angle * Math.PI / 180);
@@ -1271,7 +1288,7 @@ namespace SpellforceDataEditor.SFMap
             _obj.SetAnglePlane(angle);
 
             heightmap.GetChunk(pos).AddBuilding(bld);
-            SFRenderEngine.scene_manager.objects_static[bld.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
+            SFRenderEngine.scene.objects_static[bld.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
         }
 
         public int DeleteBuilding(int building_map_index)
@@ -1302,16 +1319,16 @@ namespace SpellforceDataEditor.SFMap
             }
             building = building_manager.buildings[building_map_index];
 
-            SFRenderEngine.scene_manager.DeleteObject(building.GetObjectName());
+            SFRenderEngine.scene.DeleteObject(building.GetObjectName());
             building_manager.RemoveBuildingCollisionBoundary(building.game_id);
             building_manager.AddBuildingCollisionBoundary(new_building_id);
-            SFRenderEngine.scene_manager.AddObjectBuilding(new_building_id, building.GetObjectName());
+            SFRenderEngine.scene.AddObjectBuilding(new_building_id, building.GetObjectName());
 
             building.game_id = new_building_id;
             
             SFCoord pos = building.grid_position;
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[building.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[building.GetObjectName()];
 
             OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)building.game_id].collision_mesh.origin;
             float angle_rad = (float)(building.angle * Math.PI / 180);
@@ -1338,7 +1355,7 @@ namespace SpellforceDataEditor.SFMap
             
             SFCoord pos = building.grid_position;
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[building.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[building.GetObjectName()];
 
             OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)building.game_id].collision_mesh.origin;
             float angle_rad = (float)(building.angle * Math.PI / 180);
@@ -1379,7 +1396,7 @@ namespace SpellforceDataEditor.SFMap
 
             // change visual transform
             float z = heightmap.GetZ(new_pos) / 100.0f;
-            SF3D.Object3D obj = SFRenderEngine.scene_manager.objects_static[building.GetObjectName()];
+            SF3D.Object3D obj = SFRenderEngine.scene.objects_static[building.GetObjectName()];
 
             OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)building.game_id].collision_mesh.origin;
             float angle_rad = (float)(building.angle * Math.PI / 180);
@@ -1400,14 +1417,14 @@ namespace SpellforceDataEditor.SFMap
 
 
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[ptl.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[ptl.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(angle);
 
 
             heightmap.GetChunk(pos).AddPortal(ptl);
-            SFRenderEngine.scene_manager.objects_static[ptl.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
+            SFRenderEngine.scene.objects_static[ptl.GetObjectName()].Visible = heightmap.GetChunk(pos).Visible;
         }
 
         public int DeletePortal(int portal_map_index)
@@ -1447,8 +1464,25 @@ namespace SpellforceDataEditor.SFMap
 
             // change visual transform
             float z = heightmap.GetZ(new_pos) / 100.0f;
-            SF3D.Object3D _obj = SFRenderEngine.scene_manager.objects_static[portal.GetObjectName()];
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[portal.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)new_pos.x, (float)z, (float)(height - new_pos.y - 1));
+
+            return 0;
+        }
+
+        // todo: probably account for offset?
+        public int RotatePortal(int portal_map_index, int angle)
+        {
+            SFMapPortal portal = null;
+            if ((portal_manager.portals.Count <= portal_map_index) || (portal_map_index < 0))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.RotatePortal(): invalid portal index! Portal index = " + portal_map_index.ToString());
+                return -1;
+            }
+            portal = portal_manager.portals[portal_map_index];
+
+            SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[portal.GetObjectName()];
+            _obj.SetAnglePlane(angle);
 
             return 0;
         }
@@ -1467,7 +1501,7 @@ namespace SpellforceDataEditor.SFMap
             // 2. modify object transform and appearance
 
             float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.Object3D obj = SFRenderEngine.scene_manager.objects_static[unit.GetObjectName()];
+            SF3D.Object3D obj = SFRenderEngine.scene.objects_static[unit.GetObjectName()];
             obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             obj.SetAnglePlane(angle);
             // find unit scale
@@ -1511,7 +1545,7 @@ namespace SpellforceDataEditor.SFMap
 
             // change visual transform
             float z = heightmap.GetZ(new_pos) / 100.0f;
-            SF3D.Object3D obj = SFRenderEngine.scene_manager.objects_static[unit.GetObjectName()];
+            SF3D.Object3D obj = SFRenderEngine.scene.objects_static[unit.GetObjectName()];
             obj.Position = new OpenTK.Vector3((float)new_pos.x, (float)z, (float)(height - new_pos.y - 1));
 
             return 0;
@@ -1527,7 +1561,7 @@ namespace SpellforceDataEditor.SFMap
             }
             unit = unit_manager.units[unit_map_index];
 
-            SF3D.Object3D obj = SFRenderEngine.scene_manager.objects_static[unit.GetObjectName()];
+            SF3D.Object3D obj = SFRenderEngine.scene.objects_static[unit.GetObjectName()];
             obj.SetAnglePlane(angle);
 
             return 0;
@@ -1561,14 +1595,14 @@ namespace SpellforceDataEditor.SFMap
             }
             unit = unit_manager.units[unit_map_index];
 
-            SFRenderEngine.scene_manager.DeleteObject(unit.GetObjectName());
-            SFRenderEngine.scene_manager.AddObjectUnit(new_unit_id, unit.GetObjectName(), false);
+            SFRenderEngine.scene.DeleteObject(unit.GetObjectName());
+            SFRenderEngine.scene.AddObjectUnit(new_unit_id, unit.GetObjectName(), false);
 
             unit.game_id = new_unit_id;
 
             // object transform
             float z = heightmap.GetZ(unit.grid_position) / 100.0f;
-            SF3D.Object3D obj = SFRenderEngine.scene_manager.objects_static[unit.GetObjectName()];
+            SF3D.Object3D obj = SFRenderEngine.scene.objects_static[unit.GetObjectName()];
             obj.Position = new OpenTK.Vector3((float)unit.grid_position.x, (float)z, (float)(height - unit.grid_position.y - 1));
             obj.SetAnglePlane(unit.angle);
             // unit scale

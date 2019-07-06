@@ -84,6 +84,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LinearPool.cs" />
     <Compile Include="LogUtils\Log.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SF3D\ColorUtility.cs" />
@@ -93,7 +94,8 @@
     <Compile Include="SF3D\Physics\Ray.cs" />
     <Compile Include="SF3D\Physics\Triangle.cs" />
     <Compile Include="SF3D\SFRender\FrameBuffer.cs" />
-    <Compile Include="SF3D\SFRender\RenderNode.cs" />
+    <Compile Include="SF3D\SceneSynchro\SceneNode.cs" />
+    <Compile Include="SF3D\SceneSynchro\TexturedGeometryList.cs" />
     <Compile Include="SFCFF\calculator forms\CalcControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -417,7 +419,7 @@
     <Compile Include="SF3D\InterpolatedValue.cs" />
     <Compile Include="SF3D\Object3D.cs" />
     <Compile Include="SF3D\objectAnimated.cs" />
-    <Compile Include="SF3D\SceneSynchro\SFSceneManager.cs" />
+    <Compile Include="SF3D\SceneSynchro\SFScene.cs" />
     <Compile Include="SF3D\SceneSynchro\SFVisualLink.cs" />
     <Compile Include="SF3D\SceneSynchro\SFVisualLinkContainer.cs" />
     <Compile Include="SF3D\SFAnimation.cs" />

@@ -211,7 +211,7 @@ namespace SpellforceDataEditor.SFMap
                 map.heightmap.building_data[p.y * map.width + p.x] = (ushort)buildings.Count;*/
 
             string bld_name = bld.GetObjectName();
-            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectBuilding(id, bld_name);
+            SF3D.SFRender.SFRenderEngine.scene.AddObjectBuilding(id, bld_name);
 
             /*SFResources.SFResourceManager.Models.AddManually(building_collision[(ushort)id].b_outline, bld_name + "_OUTLINE");
             map.render_engine.scene_manager.AddObjectStatic(bld_name + "_OUTLINE", "", bld_name + "_OUTLINE");
@@ -229,7 +229,7 @@ namespace SpellforceDataEditor.SFMap
             RemoveBuildingCollisionBoundary(b.game_id);
             buildings.Remove(b);
 
-            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject(b.GetObjectName());
+            SF3D.SFRender.SFRenderEngine.scene.DeleteObject(b.GetObjectName());
 
             map.heightmap.GetChunk(b.grid_position).RemoveBuilding(b);
         }

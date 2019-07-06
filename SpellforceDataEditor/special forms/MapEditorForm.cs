@@ -42,7 +42,7 @@ namespace SpellforceDataEditor.special_forms
         {
             InitializeComponent();
             TimerAnimation.Enabled = true;
-            TimerAnimation.Interval = 1000 / SFRenderEngine.scene_manager.frames_per_second;
+            TimerAnimation.Interval = 1000 / SFRenderEngine.scene.frames_per_second;
             TimerAnimation.Start();
 
             // add controls
@@ -271,7 +271,7 @@ namespace SpellforceDataEditor.special_forms
             }
             else
                 SFCFF.SFCategoryManager.unload_all();
-            SFRenderEngine.scene_manager.ClearScene();
+            SFRenderEngine.scene.ClearScene();
             SFRenderEngine.AssignHeightMap(null);
             if (MainForm.viewer != null)
                 MainForm.viewer.ResetScene();
@@ -415,13 +415,13 @@ namespace SpellforceDataEditor.special_forms
         private void EnableAnimation()
         {
             dynamic_render = true;
-            SFRenderEngine.scene_manager.delta_timer.Restart();
+            SFRenderEngine.scene.delta_timer.Restart();
         }
 
         private void DisableAnimation()
         {
             dynamic_render = false;
-            SFRenderEngine.scene_manager.delta_timer.Stop();
+            SFRenderEngine.scene.delta_timer.Stop();
         }
 
         private void TimerAnimation_Tick(object sender, EventArgs e)
@@ -490,7 +490,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 map.selection_helper.UpdateSelection();
                 AdjustCameraZ();
-                SFRenderEngine.scene_manager.LogicStep();
+                SFRenderEngine.scene.LogicStep();
                 RenderWindow.Invalidate();
                 update_render = false;
             }

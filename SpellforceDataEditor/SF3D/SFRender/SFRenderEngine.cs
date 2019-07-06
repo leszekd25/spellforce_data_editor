@@ -21,7 +21,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 {
     public static class SFRenderEngine
     {
-        public static SFSceneManager scene_manager { get; } = new SFSceneManager();
+        public static SFScene scene { get; } = new SFScene();
         public static SFMapHeightMap heightmap { get; private set; } = null;
 
         public static Camera3D camera { get; } = new Camera3D();
@@ -32,7 +32,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static SFShader shader_simple = new SFShader();
         static SFShader shader_animated = new SFShader();
         static SFShader shader_heightmap = new SFShader();
-        static SFShader shader_overlay = new SFShader();
+        static SFShader shader_overlay = new SFShader();  // ?
 
         static SFShader shader_framebuffer_simple = new SFShader();
         static FrameBuffer screenspace_framebuffer = null;
@@ -315,7 +315,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             {
                 if(lake_manager.lake_visible[i])
                 {
-                    ObjectSimple3D obj = scene_manager.objects_static[lake_manager.lakes[i].GetObjectName()];
+                    ObjectSimple3D obj = scene.objects_static[lake_manager.lakes[i].GetObjectName()];
                     if (obj.Mesh == null)
                         continue;
 
@@ -381,7 +381,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             //static objects
             GL.UseProgram(shader_simple.ProgramID);
-            foreach (ObjectSimple3D obj in scene_manager.objects_static.Values)
+            foreach (ObjectSimple3D obj in scene.objects_static.Values)
             {
                 if (!obj.Visible)
                     continue;
@@ -435,7 +435,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
             //animated objects (assuming animated models are entirely opaque)
             GL.UseProgram(shader_animated.ProgramID);
-            foreach (objectAnimated obj in scene_manager.objects_dynamic.Values)
+            foreach (objectAnimated obj in scene.objects_dynamic.Values)
             {
                 if (!obj.Visible)
                     continue;

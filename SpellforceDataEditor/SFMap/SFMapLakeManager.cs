@@ -150,7 +150,7 @@ namespace SpellforceDataEditor.SFMap
             }
 
             string obj_name = lake.GetObjectName();
-            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectStatic(obj_name, "", obj_name);
+            SF3D.SFRender.SFRenderEngine.scene.AddObjectStatic(obj_name, "", obj_name);
             return lake;
         }
 
@@ -176,7 +176,7 @@ namespace SpellforceDataEditor.SFMap
                 chunk.lakes_contained.RemoveAt(lake_index);
 
             string obj_name = lake.GetObjectName();
-            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject(obj_name);
+            SF3D.SFRender.SFRenderEngine.scene.DeleteObject(obj_name);
 
             lakes.Remove(lake);
         }
@@ -223,7 +223,7 @@ namespace SpellforceDataEditor.SFMap
             }
 
             string obj_name = lake.GetObjectName();
-            SF3D.SFRender.SFRenderEngine.scene_manager.objects_static[obj_name].Mesh =
+            SF3D.SFRender.SFRenderEngine.scene.objects_static[obj_name].Mesh =
                 SFResources.SFResourceManager.Models.Get(obj_name);
         }
     }

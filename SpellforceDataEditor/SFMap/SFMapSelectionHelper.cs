@@ -82,11 +82,11 @@ namespace SpellforceDataEditor.SFMap
         public void AssignToMap(SFMap _map)
         {
             map = _map;
-            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectStatic("_SELECTION_", "", "_SELECTION_");
-            sel_obj = SF3D.SFRender.SFRenderEngine.scene_manager.objects_static["_SELECTION_"];
+            SF3D.SFRender.SFRenderEngine.scene.AddObjectStatic("_SELECTION_", "", "_SELECTION_");
+            sel_obj = SF3D.SFRender.SFRenderEngine.scene.objects_static["_SELECTION_"];
             sel_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
-            SF3D.SFRender.SFRenderEngine.scene_manager.AddObjectStatic("_CURSOR_", "", "_CURSOR_");
-            cur_obj = SF3D.SFRender.SFRenderEngine.scene_manager.objects_static["_CURSOR_"];
+            SF3D.SFRender.SFRenderEngine.scene.AddObjectStatic("_CURSOR_", "", "_CURSOR_");
+            cur_obj = SF3D.SFRender.SFRenderEngine.scene.objects_static["_CURSOR_"];
             cur_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
         }
 
@@ -135,7 +135,7 @@ namespace SpellforceDataEditor.SFMap
             CancelSelection();
             selection_type = SelectionType.BUILDING;
             selected_building = building;
-            SetSelectionScale(SF3D.SFRender.SFRenderEngine.scene_manager.mesh_data.GetBuildingSelectionSize(building.game_id));
+            SetSelectionScale(SF3D.SFRender.SFRenderEngine.scene.mesh_data.GetBuildingSelectionSize(building.game_id));
         }
 
         public void SelectObject(SFMapObject obj)
@@ -143,7 +143,7 @@ namespace SpellforceDataEditor.SFMap
             CancelSelection();
             selection_type = SelectionType.OBJECT;
             selected_object = obj;
-            SetSelectionScale(SF3D.SFRender.SFRenderEngine.scene_manager.mesh_data.GetObjectSelectionSize(obj.game_id));
+            SetSelectionScale(SF3D.SFRender.SFRenderEngine.scene.mesh_data.GetObjectSelectionSize(obj.game_id));
         }
 
         public void SelectInteractiveObject(SFMapInteractiveObject io)
@@ -151,7 +151,7 @@ namespace SpellforceDataEditor.SFMap
             CancelSelection();
             selection_type = SelectionType.INTERACTIVE_OBJECT;
             selected_interactive_object = io;
-            SetSelectionScale(SF3D.SFRender.SFRenderEngine.scene_manager.mesh_data.GetObjectSelectionSize(io.game_id));
+            SetSelectionScale(SF3D.SFRender.SFRenderEngine.scene.mesh_data.GetObjectSelectionSize(io.game_id));
         }
 
         public void SelectPortal(SFMapPortal p)
@@ -159,7 +159,7 @@ namespace SpellforceDataEditor.SFMap
             CancelSelection();
             selection_type = SelectionType.PORTAL;
             selected_portal = p;
-            SetSelectionScale(SF3D.SFRender.SFRenderEngine.scene_manager.mesh_data.GetObjectSelectionSize(778));
+            SetSelectionScale(SF3D.SFRender.SFRenderEngine.scene.mesh_data.GetObjectSelectionSize(778));
         }
 
         // should be run once per render tick
@@ -242,8 +242,8 @@ namespace SpellforceDataEditor.SFMap
         public void Dispose()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapSelectionHelper.Dispose() called");
-            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject("_SELECTION_");
-            SF3D.SFRender.SFRenderEngine.scene_manager.DeleteObject("_CURSOR_");
+            SF3D.SFRender.SFRenderEngine.scene.DeleteObject("_SELECTION_");
+            SF3D.SFRender.SFRenderEngine.scene.DeleteObject("_CURSOR_");
         }
     }
 }

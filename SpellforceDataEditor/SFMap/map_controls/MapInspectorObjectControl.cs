@@ -143,7 +143,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SFMapObject obj = map.object_manager.objects[selected_object];
             SelectedObjectAngle.Text = SelectedObjectAngleTrackBar.Value.ToString();
             obj.angle = SelectedObjectAngleTrackBar.Value;
-            map.RotateBuilding(selected_object, obj.angle);
+            map.RotateObject(selected_object, obj.angle);
 
             MainForm.mapedittool.update_render = true;
         }
@@ -172,7 +172,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SFMapObject obj = null;
             foreach (SFMapObject o in map.object_manager.objects)
             {
-                float sel_scale = (float)Math.Max(2, SF3D.SFRender.SFRenderEngine.scene_manager.mesh_data.GetObjectSelectionSize(o.game_id))/2;
+                float sel_scale = (float)Math.Max(2, SF3D.SFRender.SFRenderEngine.scene.mesh_data.GetObjectSelectionSize(o.game_id))/2;
                 if (SFCoord.Distance(o.grid_position, fixed_pos) <= sel_scale)
                 {
                     obj = o;
