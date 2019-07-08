@@ -34,11 +34,14 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         public SFVisualLinkContainer mesh_data { get; private set; } = new SFVisualLinkContainer();
 
+        public SceneNode scene_root;
         public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>> tex_list_simple { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>>();
         public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>> tex_list_animated { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>>();
 
         public void Init()
         {
+            scene_root = new SceneNode("root");
+
             delta_timer.Start();
         }
 
@@ -753,6 +756,25 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
             if (tex_list_simple[tex].used_count == 0)
                 tex_list_simple.Remove(tex);
+        }
+
+        public int AddTextureEntryAnimated(SFTexture tex, TexturedGeometryListElementAnimated elem)
+        {
+            if (!tex_list_animated.ContainsKey(tex))
+                tex_list_animated.Add(tex, new LinearPool<TexturedGeometryListElementAnimated>());
+
+            return tex_list_animated[tex].Add(elem);
+        }
+
+        public void ClearTextureEntryAnimated(SFTexture tex, TexturedGeometryListElementAnimated elem)
+        {
+            if (!tex_list_animated.ContainsKey(tex))
+                return;
+
+            tex_list_animated[tex].Remove(elem);
+
+            if (tex_list_animated[tex].used_count == 0)
+                tex_list_animated.Remove(tex);
         }
     }
 }

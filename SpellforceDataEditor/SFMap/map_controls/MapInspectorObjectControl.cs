@@ -331,5 +331,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     return;
                 }
         }
+
+        private void ObjectToPlaceID_TextChanged(object sender, EventArgs e)
+        {
+            ushort object_id = Utility.TryParseUInt16(ObjectToPlaceID.Text);
+
+            ObjectToPlaceName.Text = SFCFF.SFCategoryManager.get_object_name(object_id);
+        }
     }
 }

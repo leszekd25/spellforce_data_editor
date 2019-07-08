@@ -236,6 +236,7 @@
             this.ObjectToPlaceID.Size = new System.Drawing.Size(100, 20);
             this.ObjectToPlaceID.TabIndex = 21;
             this.ObjectToPlaceID.Text = "0";
+            this.ObjectToPlaceID.TextChanged += new System.EventHandler(this.ObjectToPlaceID_TextChanged);
             // 
             // label1
             // 

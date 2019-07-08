@@ -369,6 +369,7 @@ namespace SpellforceDataEditor.SFMap
                 using (BinaryReader br = c42.Open())
                 {
                     int pos_count = c42.get_original_data_length() / 4;
+                    LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Movement flag count: " + pos_count.ToString());
                     for (int i = 0; i < pos_count; i++)
                     {
                         pos.x = br.ReadInt16();
@@ -752,6 +753,8 @@ namespace SpellforceDataEditor.SFMap
             // chunk 42
             heightmap.chunk42_data.Sort();
             byte[] c42_data = new byte[heightmap.chunk42_data.Count * 4];
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Movement flag count: " + heightmap.chunk42_data.Count.ToString());
+
             using (MemoryStream ms = new MemoryStream(c42_data))
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))

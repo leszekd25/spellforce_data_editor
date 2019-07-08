@@ -129,12 +129,13 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     for (int j = topleft.y; j <= bottomright.y; j++)
                     {
                         SFCoord p = new SFCoord(i, j);
+                        SFCoord inv_p = new SFCoord(i, map.height - p.y - 1);
                         if (BrushControl.brush.GetStrengthAt(p) == 0)
                             continue;
-                        if (!data_list.Contains(p))
+                        if (!data_list.Contains(inv_p))
                         {
-                            data_list.Add(p);
-                            map.heightmap.OverlayAdd(o_name, new SFCoord(p.x, map.height - p.y - 1));
+                            data_list.Add(inv_p);
+                            map.heightmap.OverlayAdd(o_name, inv_p);
                         }
                     }
                 }
@@ -146,12 +147,13 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     for (int j = topleft.y; j <= bottomright.y; j++)
                     {
                         SFCoord p = new SFCoord(i, j);
+                        SFCoord inv_p = new SFCoord(i, map.height - p.y - 1);
                         if (BrushControl.brush.GetStrengthAt(p) == 0)
                             continue;
-                        if (data_list.Contains(p))
+                        if (data_list.Contains(inv_p))
                         {
-                            data_list.Remove(p);
-                            map.heightmap.OverlayRemove(o_name, new SFCoord(p.x, map.height - p.y - 1));
+                            data_list.Remove(inv_p);
+                            map.heightmap.OverlayRemove(o_name, inv_p);
                         }
                     }
                 }

@@ -108,9 +108,10 @@ namespace SpellforceDataEditor.SFMap
                 base_texture_bank[i].Init();
             }
             // generate inbetween textures
-            for(int i = 0; i < 32; i++)
+            texture_array[0] = base_texture_bank[0];
+            for(int i = 1; i < 32; i++)
             {
-                texture_array[i] = base_texture_bank[i];
+                texture_array[i] = base_texture_bank[i+31];
             }
             for(int i = 224; i < 255; i++)
             {
@@ -120,8 +121,8 @@ namespace SpellforceDataEditor.SFMap
             {
                 if ((texture_tiledata[i].ind1 != 0) && (texture_tiledata[i].ind2 != 0))
                 {
-                    texture_array[i] = SFTexture.MixUncompressed(base_texture_bank[texture_tiledata[i].ind1], texture_tiledata[i].weight1,
-                                                                 base_texture_bank[texture_tiledata[i].ind2], texture_tiledata[i].weight2);
+                    texture_array[i] = SFTexture.MixUncompressed(base_texture_bank[texture_tiledata[i].ind1+31], texture_tiledata[i].weight1,
+                                                                 base_texture_bank[texture_tiledata[i].ind2+31], texture_tiledata[i].weight2);
                     texture_array[i].Init();
                 }
                 else
@@ -249,8 +250,8 @@ namespace SpellforceDataEditor.SFMap
                 if((texture_tiledata[i].ind1 == base_index)||(texture_tiledata[i].ind2 == base_index))
                 {
                     texture_array[i].Dispose();
-                    texture_array[i] = SFTexture.MixUncompressed(base_texture_bank[texture_tiledata[i].ind1], texture_tiledata[i].weight1,
-                                                                 base_texture_bank[texture_tiledata[i].ind2], texture_tiledata[i].weight2);
+                    texture_array[i] = SFTexture.MixUncompressed(base_texture_bank[texture_tiledata[i].ind1+31], texture_tiledata[i].weight1,
+                                                                 base_texture_bank[texture_tiledata[i].ind2+31], texture_tiledata[i].weight2);
                     texture_array[i].Init();
 
                     offset = 0;
@@ -287,8 +288,8 @@ namespace SpellforceDataEditor.SFMap
             // load new texture
 
             texture_array[tile_id] = SFTexture.MixUncompressed(
-                base_texture_bank[texture_tiledata[tile_id].ind1], texture_tiledata[tile_id].weight1,
-                base_texture_bank[texture_tiledata[tile_id].ind2], texture_tiledata[tile_id].weight2);
+                base_texture_bank[texture_tiledata[tile_id].ind1+31], texture_tiledata[tile_id].weight1,
+                base_texture_bank[texture_tiledata[tile_id].ind2+31], texture_tiledata[tile_id].weight2);
             texture_array[tile_id].Init();
             // insert texture data to the atlas
 

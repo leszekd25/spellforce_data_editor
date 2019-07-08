@@ -179,14 +179,36 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
     }
 
+    public struct TexGeometryLinkAnimated
+    {
+        public SFTexture texture;
+        public int index;
+    }
+
     public class SceneNodeAnimated : SceneNode
     {
         public SFSkeleton Skeleton { get; private set; } = null;
-        public SFModelSkin Skin { get; private set; } = null;
+        public SFModelSkin Skin
+        {
+            get
+            {
+                return Skin;
+            }
+            set
+            {
+                Skin = value;
+                if (Skin == null)
+                    ClearTexGeometry();
+                else
+                    AddTexGeometry();
+            }
+        }
         public SFAnimation Animation { get; private set; } = null;
         public Matrix4[] BoneTransforms = null;
         public float AnimCurrentTime { get; private set; } = 0;
         public bool AnimPlaying { get; set; } = false;
+
+        public TexGeometryLinkAnimated[] TextureGeometryIndex { get; private set; } = null;
 
         public SceneNodeAnimated(string n) : base(n) { }
 
@@ -232,6 +254,37 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             Skeleton.CalculateTransformation(BoneTransforms, ref BoneTransforms);
             for (int i = 0; i < BoneTransforms.Length; i++)
                 BoneTransforms[i] = Skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
+        }
+
+        // also do this if transparent = true, let transparent object list deal with those
+        private void ClearTexGeometry()
+        {
+            if (TextureGeometryIndex == null)
+                return;
+
+            foreach (TexGeometryLinkAnimated link in TextureGeometryIndex)
+                SFRender.SFRenderEngine.scene.tex_list_animated[link.texture].RemoveAt(link.index);
+
+            TextureGeometryIndex = null;
+        }
+
+        // also do this if transparent = false, let transparent object list deal with those
+        private void AddTexGeometry()
+        {
+            if (TextureGeometryIndex != null)
+                ClearTexGeometry();
+
+            TextureGeometryIndex = new TexGeometryLinkAnimated[Skin.submodels.Count];
+
+            for (int i = 0; i < Skin.submodels.Count; i++)
+            {
+                TextureGeometryIndex[i].texture = Skin.submodels[i].material.texture;
+                // long name :^)
+                TexturedGeometryListElementAnimated elem = new TexturedGeometryListElementAnimated();
+                elem.node = this;
+                elem.submodel_index = i;
+                TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntryAnimated(Skin.submodels[i].material.texture, elem);
+            }
         }
     }
 
@@ -293,7 +346,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
     public class SceneNodeMapChunk: SceneNode
     {
-        private SFMap.SFMapHeightMapChunk MapChunk;
+        public SFMap.SFMapHeightMapChunk MapChunk;
 
         public SceneNodeMapChunk(string n) : base(n) { }
     }

@@ -37,20 +37,20 @@
 65 0 editor_dummy_handblocked
 66 0 editor_dummy_visblock
 67 0 editor_dummy_handblocked_visblock
-128 2 
-129 2 
-130 2 
-131 2 
-132 3 
-256 3.5 
-257 3.5 
-258 3.5 
-259 3.5 
-260 3.5 
-261 3.5 
-262 3.5 
-263 3.5 
-264 3.5 
+128 2 nature_berry_01 nature_berry_decal
+129 2 nature_berry_02 nature_berry_decal
+130 2 nature_berry_03 nature_berry_decal
+131 2 nature_berry_04 nature_berry_decal
+132 3 nature_berry_05 nature_berry_decal
+256 3.5 nature_crushable_rock1 nature_crushable_rock_decal
+257 3.5 nature_crushable_rock2 nature_crushable_rock_decal
+258 3.5 nature_crushable_rock3 nature_crushable_rock_decal
+259 3.5 nature_crushable_rock4 nature_crushable_rock_decal
+260 3.5 nature_crushable_rock5 nature_crushable_rock_decal
+261 3.5 nature_crushable_rock6 nature_crushable_rock_decal
+262 3.5 nature_crushable_rock7 nature_crushable_rock_decal
+263 3.5 nature_crushable_rock8 nature_crushable_rock_decal
+264 3.5 nature_crushable_rock9 nature_crushable_rock_decal
 512 2 nature_tree_cypress_cripple
 513 2 nature_tree_cypress_large
 514 2 nature_tree_cypress_medium
@@ -525,42 +525,42 @@
 1190 0 nature_bush_tropic_06_big
 1191 0 nature_bush_scrub_small_desert
 1192 0 nature_bush_scrub_big_desert
-1280 3 
-1281 3 
-1282 3 
-1283 3 
-1284 3 
-1285 3 
-1286 3 
-1287 3 
-1288 3 
-1408 3 
-1409 3 
-1410 3 
-1411 3 
-1412 3 
-1413 3 
-1414 3 
-1415 3 
-1416 3 
-1536 3.5 
-1537 3.5 
-1538 3.5 
-1539 3.5 
-1540 3.5 
-1541 3.5 
-1542 3.5 
-1543 3.5 
-1544 3.5 
-1664 3 
-1665 3 
-1666 3 
-1667 3 
-1668 3 
-1669 3 
-1670 3 
-1671 3 
-1672 3 
+1280 3 worlditem_aria_source_water_fontaine worlditem_aria_source_water_decal
+1281 3 worlditem_aria_source_water_fontaine worlditem_aria_source_water_decal
+1282 3 worlditem_aria_source_water_fontaine worlditem_aria_source_water_decal
+1283 3 worlditem_aria_source_water_fontaine worlditem_aria_source_water_decal
+1284 3 worlditem_aria_source_water_fontaine worlditem_aria_source_water_decal
+1285 3 worlditem_aria_source_water_fontaine worlditem_aria_source_water_decal
+1286 3 worlditem_aria_source_water_fontaine worlditem_aria_source_water_decal
+1287 3 worlditem_aria_source_water_fontaine worlditem_aria_source_water_decal
+1288 3 worlditem_aria_source_water_fontaine worlditem_aria_source_water_decal
+1408 3 nature_lenya_01 nature_lenya_decal
+1409 3 nature_lenya_02 nature_lenya_decal
+1410 3 nature_lenya_03 nature_lenya_decal
+1411 3 nature_lenya_04 nature_lenya_decal
+1412 3 nature_lenya_05 nature_lenya_decal
+1413 3 nature_lenya_06 nature_lenya_decal
+1414 3 nature_lenya_07 nature_lenya_decal
+1415 3 nature_lenya_08 nature_lenya_decal
+1416 3 nature_lenya_09 nature_lenya_decal
+1536 3.5 nature_iron_01 nature_iron_decal
+1537 3.5 nature_iron_02 nature_iron_decal
+1538 3.5 nature_iron_03 nature_iron_decal
+1539 3.5 nature_iron_04 nature_iron_decal
+1540 3.5 nature_iron_05 nature_iron_decal
+1541 3.5 nature_iron_06 nature_iron_decal
+1542 3.5 nature_iron_07 nature_iron_decal
+1543 3.5 nature_iron_08 nature_iron_decal
+1544 3.5 nature_iron_09 nature_iron_decal
+1664 3 nature_mitthril_01 nature_mithril_decal
+1665 3 nature_mitthril_02 nature_mithril_decal
+1666 3 nature_mitthril_03 nature_mithril_decal
+1667 3 nature_mitthril_04 nature_mithril_decal
+1668 3 nature_mitthril_05 nature_mithril_decal
+1669 3 nature_mitthril_06 nature_mithril_decal
+1670 3 nature_mitthril_07 nature_mithril_decal
+1671 3 nature_mitthril_08 nature_mithril_decal
+1672 3 nature_mitthril_09 nature_mithril_decal
 1792 1 
 1793 1 
 1794 1 
@@ -929,7 +929,7 @@
 2538 0 landscape_attachment_bridge_stone_flat
 2539 0 landscape_attachment_bridge_stone_large
 2540 0 landscape_attachment_bridge_stone_small
-2541 0 system_element_invis
+2541 0 editor_dummy_spawnpoint
 2542 2 nature_prop_treasurechest_02
 2543 0 landscape_attachment_bridge_stone_01_red
 2544 0 landscape_attachment_bridge_stone_02_red
