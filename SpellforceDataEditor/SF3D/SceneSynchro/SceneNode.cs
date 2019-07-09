@@ -13,15 +13,22 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
     // ultimately might become obsolete...
     public class SceneNode
     {
-        public string Name = "";
+        public string Name { get; private set; } = "";
         public SceneNode Parent = null;
         public List<SceneNode> Children { get; protected set; } = new List<SceneNode>();
-
-        public virtual bool NeedsUpdate { get; protected set; } = true;
+        
         public virtual bool NeedsUpdateLocalTransform { get; protected set; } = true;
+          
+        protected Vector3 position = new Vector3(0);
+        protected Quaternion rotation = new Quaternion(0, 0, 0, 1);
+        protected Vector3 scale = new Vector3(1);
         protected Matrix4 local_transform = Matrix4.Identity;
         protected Matrix4 result_transform = Matrix4.Identity;
-        public Matrix4 LocalTransform { get { return local_transform; } set { local_transform = value; TouchLocalTransform(); Touch(); } }
+
+        public Vector3 Position { get { return position; } set { position = value; TouchLocalTransform(); TouchParents(); } }
+        public Quaternion Rotation { get { return rotation; } set { rotation = value; TouchLocalTransform(); TouchParents(); } }
+        public Vector3 Scale { get { return scale; } set { scale = value; TouchLocalTransform(); TouchParents(); } }
+        public Matrix4 LocalTransform { get { return local_transform; } protected set { local_transform = value; } }
         public Matrix4 ResultTransform { get { return result_transform; } protected set { result_transform = value; } }
         public bool Visible { get; set; } = true;
 
@@ -34,60 +41,104 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         public void AddNode(SceneNode node)
         {
+            if(node == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SceneNode.AddNode(): Node to add is null!");
+                return;
+            }
             Children.Add(node);
             node.Parent = this;
         }
 
         public void RemoveNode(SceneNode node)
         {
+            if(node == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SceneNode.RemoveNode(): Node to remove is null!");
+                return;
+            }
             node.Parent = null;
             Children.Remove(node);
+        }
+
+        public void RemoveNode(string path)
+        {
+            SceneNode n = FindNode<SceneNode>(path);
+            if (n != null)
+                n.Parent.RemoveNode(n);
         }
 
         public void SetParent(SceneNode node)
         {
             if (Parent != null)
                 Parent.RemoveNode(this);
-            node.AddNode(this);
+            if(node != null)
+                node.AddNode(this);
         }
 
-        // public void FindNode()
+        public static float DegToRad(int deg)
+        {
+            return 3.141526f * deg / 180.0f;
+        }
+
+        public static int RadToDeg(float rad)
+        {
+            return (int)(rad * 180 / 3.141526f);
+        }
+
+        // utility function
+        public void SetAnglePlane(int angle_deg)
+        {
+            if (Parent == null)
+                Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2)   // only when has parent
+                         * Quaternion.FromAxisAngle(new Vector3(0, 0, 1), DegToRad(angle_deg));
+        }
 
         // if something requires updating, notify all parents about that, root including, so the engine knows to run update routine
-        public void Touch()
+        protected void TouchParents()
         {
-            NeedsUpdate = true;
-            if ((Parent != null) && (Parent.NeedsUpdate != true))
-                Parent.Touch();
+            NeedsUpdateLocalTransform = true;
+            if ((Parent != null) && (Parent.NeedsUpdateLocalTransform != true))
+                Parent.TouchParents();
         }
 
         // if one local transform changes, so must all subsequent transforms
-        public void TouchLocalTransform()
+        protected void TouchLocalTransform()
         {
             NeedsUpdateLocalTransform = true;
-            NeedsUpdate = true;
             foreach (SceneNode node in Children)
                 node.TouchLocalTransform();
         }
 
-        public virtual void UpdateTransform()
+        public void Update(float t)
         {
-            if (!NeedsUpdate)
-                return;
+            UpdateTransform();
+            UpdateTime(t);
 
+            foreach (SceneNode node in Children)
+                node.Update(t);
+        }
+
+        protected virtual void UpdateTransform()
+        {
             if (NeedsUpdateLocalTransform)
             {
+                Matrix4 translation_matrix = Matrix4.CreateTranslation(position);
+                Matrix4 rotation_matrix = Matrix4.CreateFromQuaternion(rotation);
+                Matrix4 scale_matrix = Matrix4.CreateScale(scale);
+                local_transform = scale_matrix * rotation_matrix * translation_matrix;
+
                 if (Parent != null)
                     result_transform = local_transform * Parent.ResultTransform;
                 else
                     result_transform = local_transform;
                 NeedsUpdateLocalTransform = false;
             }
+        }
 
-            NeedsUpdate = false;
+        protected virtual void UpdateTime(float t)
+        {
 
-            foreach (SceneNode node in Children)
-                node.UpdateTransform();
         }
 
         public T FindNode<T>(string path) where T: SceneNode
@@ -117,6 +168,19 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (Parent == null)
                 return this.Name;
             return Parent.GetFullPath() + '.' + this.Name;
+        }
+
+        public void Dispose()
+        {
+            InternalDispose();
+
+            foreach (SceneNode c in Children)
+                c.Dispose();
+        }
+
+        protected virtual void InternalDispose()
+        {
+
         }
     }
 
@@ -175,6 +239,15 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 elem.node = this;
                 elem.submodel_index = i;
                 TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntrySimple(Mesh.materials[i].texture, elem);
+            }
+        }
+
+        protected override void InternalDispose()
+        {
+            if(Mesh != null)
+            {
+                SFResources.SFResourceManager.Models.Dispose(Mesh.GetName());
+                Mesh = null;
             }
         }
     }
@@ -256,6 +329,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 BoneTransforms[i] = Skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
         }
 
+        protected override void UpdateTime(float t)
+        {
+            SetAnimationTime(t);
+        }
+
         // also do this if transparent = true, let transparent object list deal with those
         private void ClearTexGeometry()
         {
@@ -286,22 +364,32 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntryAnimated(Skin.submodels[i].material.texture, elem);
             }
         }
+
+        protected override void InternalDispose()
+        {
+            if (Skeleton != null)
+            {
+                SFResources.SFResourceManager.Skeletons.Dispose(Skeleton.GetName());
+                Skeleton = null;
+            }
+            if (Skin != null)
+            {
+                SFResources.SFResourceManager.Skins.Dispose(Skin.GetName());
+                Skin = null;
+            }
+        }
     }
 
     public class SceneNodeBone : SceneNode
     {
         // parent must be SceneNodeAnimated
         private int BoneIndex = -1;
-        public override bool NeedsUpdate { get { return true; } }
         public override bool NeedsUpdateLocalTransform { get { return true; } }
 
         public SceneNodeBone(string n) : base(n) { }
 
-        public override void UpdateTransform()
+        protected override void UpdateTransform()
         {
-            if (!NeedsUpdate)
-                return;
-
             if (NeedsUpdateLocalTransform)
             {
                 if (Parent != null)
@@ -316,11 +404,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     result_transform = local_transform;
                 NeedsUpdateLocalTransform = false;
             }
-
-            NeedsUpdate = false;
-
-            foreach (SceneNode node in Children)
-                node.UpdateTransform();
         }
 
         public void SetBone(string name)
@@ -349,5 +432,127 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public SFMap.SFMapHeightMapChunk MapChunk;
 
         public SceneNodeMapChunk(string n) : base(n) { }
+
+        protected virtual void DisposeInternal()
+        {
+            if(MapChunk != null)
+                MapChunk.Unload();
+        }
+    }
+
+    public class SceneNodeCamera: SceneNode
+    {
+        private Vector3 lookat = new Vector3(0, 1, 0);
+        private Vector2 direction = new Vector2(0, 0);
+        private Matrix4 proj_matrix = new Matrix4();
+        private Matrix4 viewproj_matrix = new Matrix4();
+        private Vector3[] frustrum_vertices;// = camera.get_frustrum_vertices();
+        // construct frustrum planes
+        private Physics.Plane[] frustrum_planes;// = new Physics.Plane[6];
+
+        public Vector3 Lookat
+        {
+            get
+            {
+                return lookat;
+            }
+            set
+            {
+                lookat = value;
+
+                direction.X = (float)Math.Atan2(-(lookat.Z - Position.Z), lookat.X - Position.X) + 2 * 1.570796f;
+                if (Math.Abs(lookat.X - Position.Z) > 0.0001)
+                {
+                    direction.Y = (float)Math.Atan2(lookat.Y - Position.Y, new Vector3(lookat.X - Position.X, -(lookat.Z - Position.Z), 0).Length);
+                    direction.Y = (direction.Y > 1.5 ? 1.5f : (direction.Y < -1.5 ? -1.5f : direction.Y));
+                }
+                //System.Diagnostics.Debug.WriteLine(direction.ToString());
+                TouchLocalTransform(); TouchParents();
+            }
+        }
+        public Vector2 Direction
+        {
+            get
+            {
+                return direction;
+            }
+            set
+            {
+                direction = value;
+                direction.Y = (direction.Y > 1.5 ? 1.5f : (direction.Y < -1.5 ? -1.5f : direction.Y));
+                //calculate rotation vector
+                lookat = Position + new Vector3((float)Math.Cos(direction.X) * (float)Math.Cos(direction.Y),
+                                                (float)Math.Sin(direction.Y),
+                                                (float)Math.Sin(direction.X) * (float)Math.Cos(direction.Y));
+                TouchLocalTransform(); TouchParents();
+            }
+        }
+
+        // view matrix: modelmatrix
+        // proj matrix: projmatrix
+        public Matrix4 ViewProjMatrix { get { return viewproj_matrix; } }
+        public Matrix4 ProjMatrix { get { return proj_matrix; } set { proj_matrix = value; viewproj_matrix = proj_matrix; } }
+        public Physics.Plane[] FrustrumPlanes { get { return frustrum_planes; } }
+        public Vector3[] FrustrumVertices { get { return frustrum_vertices; } }
+
+        public SceneNodeCamera(string s): base(s)
+        {
+            frustrum_vertices = new Vector3[8];
+            frustrum_planes = new Physics.Plane[6];
+            UpdateTransform();
+        }
+
+        protected override void UpdateTransform()
+        {
+            if (NeedsUpdateLocalTransform)
+            {
+                local_transform = Matrix4.LookAt(Position, lookat, new Vector3(0, 1, 0));
+                viewproj_matrix = local_transform * ProjMatrix;
+
+                // calculate frustrum geometry
+                calculate_frustrum_vertices();
+                frustrum_planes[0] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[4], frustrum_vertices[1]));  // top plane
+                frustrum_planes[1] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[2], frustrum_vertices[3], frustrum_vertices[6]));  // bottom plane
+                frustrum_planes[2] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[2], frustrum_vertices[4]));  // left plane
+                frustrum_planes[3] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[1], frustrum_vertices[5], frustrum_vertices[3]));  // right plane
+                frustrum_planes[4] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[1], frustrum_vertices[2]));  // near plane
+                frustrum_planes[5] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[4], frustrum_vertices[6], frustrum_vertices[5]));  // far plane
+
+                NeedsUpdateLocalTransform = false;
+            }
+        }
+
+        public void translate(Vector3 tr)
+        {
+            position += tr;
+            lookat += tr;
+            TouchLocalTransform(); TouchParents();
+        }
+
+        // todo: this is wrong at certain angles?
+        private void calculate_frustrum_vertices()
+        {
+            // get forward, up, right direction
+            // mirrored in XZ plane...
+            Vector3 forward = local_transform.Row2.Xyz;
+            Vector3 up = local_transform.Row1.Xyz;
+            Vector3 right = local_transform.Row0.Xyz;
+
+            // 100f, Math.Pi/4 are magic for now.....
+            float deviation = (float)Math.Tan(Math.PI / 4) / 2;
+            Vector3 center = position + forward * 0.1f;
+            Vector3 center2 = position + forward * 100f;
+            frustrum_vertices[0] = center + (-right + up) * deviation * 0.1f;
+            frustrum_vertices[1] = center + (right + up) * deviation * 0.1f;
+            frustrum_vertices[2] = center + (-right - up) * deviation * 0.1f;
+            frustrum_vertices[3] = center + (right - up) * deviation * 0.1f;
+            frustrum_vertices[4] = center2 + (-right + up) * deviation * 100f;
+            frustrum_vertices[5] = center2 + (right + up) * deviation * 100f;
+            frustrum_vertices[6] = center2 + (-right - up) * deviation * 100f;
+            frustrum_vertices[7] = center2 + (right - up) * deviation * 100f;
+            // reflection along XY plane at z = position.Z
+            for (int i = 0; i < 8; i++)
+                frustrum_vertices[i].Z = 2 * position.Z - frustrum_vertices[i].Z;
+        }
     }
 }

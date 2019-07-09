@@ -1064,6 +1064,7 @@ namespace SpellforceDataEditor.SFMap
 
 
             float z = heightmap.GetZ(pos) / 100.0f;
+            //SF3D.SceneSynchro.SceneNode _obj = heightmap.GetChunkNode(pos).FindNode<SF3D.SceneSynchro.SceneNode>(obj.GetObjectName());
             SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[obj.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
@@ -1102,6 +1103,12 @@ namespace SpellforceDataEditor.SFMap
             }
             obj = object_manager.objects[object_map_index];
 
+            //SF3D.SceneSynchro.SceneNode chunk_node = heightmap.GetChunkNode(obj.grid_position);
+            //SF3D.SceneSynchro.SceneNode obj_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(obj.GetObjectName());
+            //if (obj_node != null)
+            //    SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(obj_node);
+            //SF3D.SceneSynchro.SceneNode _obj = SFRenderEngine.scene.AddSceneObject(new_object_id, obj.GetObjectName(), false);
+            //_obj.SetParent(chunk_node);*/
             SFRenderEngine.scene.DeleteObject(obj.GetObjectName());
             SFRenderEngine.scene.AddObjectObject(new_object_id, obj.GetObjectName(), true);
 
@@ -1128,6 +1135,7 @@ namespace SpellforceDataEditor.SFMap
             }
             obj = object_manager.objects[object_map_index];
 
+            //SF3D.SceneSynchro.SceneNode _obj = heightmap.GetChunkNode(obj.grid_position).FindNode<SF3D.SceneSynchro.SceneNode>(obj.GetObjectName());
             SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[obj.GetObjectName()];
             _obj.SetAnglePlane(angle);
 
@@ -1150,8 +1158,14 @@ namespace SpellforceDataEditor.SFMap
             }*/
 
             // move unit and set chunk dependency
+            //SF3D.SceneSynchro.SceneNode node = heightmap.GetChunkNode(obj.grid_position);
+            //SF3D.SceneSynchro.SceneNode _obj = node.FindNode<SceneNode>(obj.GetObjectName());
+            //node.MapChunk.objects.Remove(obj);
             heightmap.GetChunk(obj.grid_position).objects.Remove(obj);
             obj.grid_position = new_pos;
+            //node = heightmap.GetChunkNode(obj.grid_position);
+            //node.MapChunk.objects.Add(obj);
+            //_obj.SetParent(node);
             heightmap.GetChunk(obj.grid_position).objects.Add(obj);
 
             // change visual transform
@@ -1167,6 +1181,8 @@ namespace SpellforceDataEditor.SFMap
             SFMapInteractiveObject obj = int_object_manager.AddInteractiveObject(game_id, pos, angle, unk_byte);
 
             float z = heightmap.GetZ(pos) / 100.0f;
+
+            //SF3D.SceneSynchro.SceneNode _obj = heightmap.GetChunkNode(pos).FindNode<SF3D.SceneSynchro.SceneNode>(obj.GetObjectName());
             SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[obj.GetObjectName()];
             _obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
@@ -1193,8 +1209,14 @@ namespace SpellforceDataEditor.SFMap
             }*/
 
             // move unit and set chunk dependency
+            //SF3D.SceneSynchro.SceneNode node = heightmap.GetChunkNode(int_obj.grid_position);
+            //SF3D.SceneSynchro.SceneNode _obj = node.FindNode<SceneNode>(int_obj.GetObjectName());
+            //node.MapChunk.int_objects.Remove(int_obj);
             heightmap.GetChunk(int_obj.grid_position).int_objects.Remove(int_obj);
             int_obj.grid_position = new_pos;
+            //node = heightmap.GetChunkNode(int_obj.grid_position);
+            //node.MapChunk.int_objects.Add(int_obj);
+            //_obj.SetParent(node);
             heightmap.GetChunk(int_obj.grid_position).int_objects.Add(int_obj);
 
             // change visual transform
@@ -1231,6 +1253,7 @@ namespace SpellforceDataEditor.SFMap
             }
             int_obj = int_object_manager.int_objects[int_object_map_index];
 
+            //SF3D.SceneSynchro.SceneNode _obj = heightmap.GetChunkNode(int_obj.grid_position).FindNode<SF3D.SceneSynchro.SceneNode>(int_obj.GetObjectName());
             SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[int_obj.GetObjectName()];
             _obj.SetAnglePlane(angle);
 
@@ -1258,6 +1281,12 @@ namespace SpellforceDataEditor.SFMap
 
             SFMapInteractiveObject io = int_object_manager.int_objects[monument_indexes[monument_index]];
 
+            //SF3D.SceneSynchro.SceneNode chunk_node = heightmap.GetChunkNode(io.grid_position);
+            //SF3D.SceneSynchro.SceneNode io_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(io.GetObjectName());
+            //if (io_node != null)
+            //    SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(io_node);
+            //SF3D.SceneSynchro.SceneNode _obj = SFRenderEngine.scene.AddSceneObject(new_monument_type+771, io.GetObjectName(), true);
+            //_obj.SetParent(chunk_node);*/
             SFRenderEngine.scene.DeleteObject(io.GetObjectName());
             SFRenderEngine.scene.AddObjectObject(new_monument_type + 771, io.GetObjectName(), true);
             io.game_id = new_monument_type + 771;
@@ -1277,7 +1306,8 @@ namespace SpellforceDataEditor.SFMap
             if (npc_id != 0)
                 npc_manager.AddNPCRef(npc_id, bld);
 
-            float z = heightmap.GetZ(pos) / 100.0f;
+            float z = heightmap.GetZ(pos) / 100.0f; 
+            //SF3D.SceneSynchro.SceneNode _obj = heightmap.GetChunkNode(pos).FindNode<SF3D.SceneSynchro.SceneNode>(bld.GetObjectName());
             SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[bld.GetObjectName()];
 
             OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)bld.game_id].collision_mesh.origin;
@@ -1322,6 +1352,12 @@ namespace SpellforceDataEditor.SFMap
             }
             building = building_manager.buildings[building_map_index];
 
+            //SF3D.SceneSynchro.SceneNode chunk_node = heightmap.GetChunkNode(building.grid_position);
+            //SF3D.SceneSynchro.SceneNode bld_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(building.GetObjectName());
+            //if (bld_node != null)
+            //    SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(bld_node);
+            //SF3D.SceneSynchro.SceneNode _obj = SFRenderEngine.scene.AddSceneBuilding(new_building_id, building.GetObjectName());
+            //_obj.SetParent(chunk_node);*/
             SFRenderEngine.scene.DeleteObject(building.GetObjectName());
             building_manager.RemoveBuildingCollisionBoundary(building.game_id);
             building_manager.AddBuildingCollisionBoundary(new_building_id);
@@ -1358,6 +1394,7 @@ namespace SpellforceDataEditor.SFMap
             
             SFCoord pos = building.grid_position;
             float z = heightmap.GetZ(pos) / 100.0f;
+            //SF3D.SceneSynchro.SceneNode _obj = heightmap.GetChunkNode(building.grid_position).FindNode<SF3D.SceneSynchro.SceneNode>(building.GetObjectName());
             SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[building.GetObjectName()];
 
             OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)building.game_id].collision_mesh.origin;
@@ -1393,8 +1430,14 @@ namespace SpellforceDataEditor.SFMap
             }*/
 
             // move unit and set chunk dependency
+            //SF3D.SceneSynchro.SceneNode node = heightmap.GetChunkNode(building.grid_position);
+            //SF3D.SceneSynchro.SceneNode obj = node.FindNode<SceneNode>(building.GetObjectName());
+            //node.MapChunk.buildings.Remove(building);
             heightmap.GetChunk(building.grid_position).buildings.Remove(building);
             building.grid_position = new_pos;
+            //node = heightmap.GetChunkNode(building.grid_position);
+            //node.MapChunk.buildings.Add(building);
+            //obj.SetParent(node);
             heightmap.GetChunk(building.grid_position).buildings.Add(building);
 
             // change visual transform
@@ -1461,8 +1504,14 @@ namespace SpellforceDataEditor.SFMap
             }*/
 
             // move unit and set chunk dependency
+            //SF3D.SceneSynchro.SceneNode node = heightmap.GetChunkNode(portal.grid_position);
+            //SF3D.SceneSynchro.SceneNode _obj = node.FindNode<SceneNode>(portal.GetObjectName());
+            //node.MapChunk.portals.Remove(portal);
             heightmap.GetChunk(portal.grid_position).portals.Remove(portal);
             portal.grid_position = new_pos;
+            //node = heightmap.GetChunkNode(portal.grid_position);
+            //node.MapChunk.portals.Add(portal);
+            //_obj.SetParent(node);
             heightmap.GetChunk(portal.grid_position).portals.Add(portal);
 
             // change visual transform
@@ -1484,6 +1533,7 @@ namespace SpellforceDataEditor.SFMap
             }
             portal = portal_manager.portals[portal_map_index];
 
+            //SF3D.SceneSynchro.SceneNode _obj = heightmap.GetChunkNode(portal.grid_position).FindNode<SF3D.SceneSynchro.SceneNode>(portal.GetObjectName());
             SF3D.Object3D _obj = SFRenderEngine.scene.objects_static[portal.GetObjectName()];
             _obj.SetAnglePlane(angle);
 
@@ -1504,6 +1554,7 @@ namespace SpellforceDataEditor.SFMap
             // 2. modify object transform and appearance
 
             float z = heightmap.GetZ(pos) / 100.0f;
+            //SF3D.SceneSynchro.SceneNode obj = heightmap.GetChunkNode(unit.grid_position).FindNode<SF3D.SceneSynchro.SceneNode>(unit.GetObjectName());
             SF3D.Object3D obj = SFRenderEngine.scene.objects_static[unit.GetObjectName()];
             obj.Position = new OpenTK.Vector3((float)pos.x, (float)z, (float)(height - pos.y - 1));
             obj.SetAnglePlane(angle);
@@ -1542,8 +1593,14 @@ namespace SpellforceDataEditor.SFMap
             }
 
             // move unit and set chunk dependency
+            //SF3D.SceneSynchro.SceneNode node = heightmap.GetChunkNode(unit.grid_position);
+            //SF3D.SceneSynchro.SceneNode _obj = node.FindNode<SceneNode>(unit.GetObjectName());
+            //node.MapChunk.units.Remove(unit);
             heightmap.GetChunk(unit.grid_position).units.Remove(unit);
             unit.grid_position = new_pos;
+            //node = heightmap.GetChunkNode(unit.grid_position);
+            //node.MapChunk.units.Add(unit);
+            //_obj.SetParent(node);
             heightmap.GetChunk(unit.grid_position).units.Add(unit);
 
             // change visual transform
@@ -1564,6 +1621,7 @@ namespace SpellforceDataEditor.SFMap
             }
             unit = unit_manager.units[unit_map_index];
 
+            //SF3D.SceneSynchro.SceneNode obj = heightmap.GetChunkNode(unit.grid_position).FindNode<SF3D.SceneSynchro.SceneNode>(unit.GetObjectName());
             SF3D.Object3D obj = SFRenderEngine.scene.objects_static[unit.GetObjectName()];
             obj.SetAnglePlane(angle);
 
@@ -1598,6 +1656,12 @@ namespace SpellforceDataEditor.SFMap
             }
             unit = unit_manager.units[unit_map_index];
 
+            //SF3D.SceneSynchro.SceneNode chunk_node = heightmap.GetChunkNode(unit.grid_position);
+            //SF3D.SceneSynchro.SceneNode unit_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(unit.GetObjectName());
+            //if (unit_node != null)
+            //    SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(unit_node);
+            //SF3D.SceneSynchro.SceneNode obj = SFRenderEngine.scene.AddSceneUnit(new_unit_id, unit.GetObjectName(), false);
+            //obj.SetParent(chunk_node);*/
             SFRenderEngine.scene.DeleteObject(unit.GetObjectName());
             SFRenderEngine.scene.AddObjectUnit(new_unit_id, unit.GetObjectName(), false);
 

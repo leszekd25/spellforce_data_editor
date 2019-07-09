@@ -33,6 +33,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static SFShader shader_animated = new SFShader();
         static SFShader shader_heightmap = new SFShader();
         static SFShader shader_overlay = new SFShader();  // ?
+        static SFShader active_shader = null;
 
         static SFShader shader_framebuffer_simple = new SFShader();
         static FrameBuffer screenspace_framebuffer = null;
@@ -164,6 +165,17 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.UseProgram(0);
         }
 
+        private static void UseShader(SFShader shader)
+        {
+            if (shader == active_shader)
+                return;
+            active_shader = shader;
+            if (shader != null)
+                GL.UseProgram(shader.ProgramID);
+            else
+                GL.UseProgram(0);
+        }
+
         private static void SetFramebuffer(FrameBuffer f)
         {
             if (f == null)
@@ -182,6 +194,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         {
             // 1. find collection of visible chunks
             List<SFMapHeightMapChunk> vis_chunks = new List<SFMapHeightMapChunk>();
+            //List<SceneNodeMapChunk> vis_chunks = new List<SceneNodeMapChunk>();
 
             // test visibility of each chunk
             foreach(SFMapHeightMapChunk chunk in heightmap.chunks)
@@ -191,6 +204,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     vis_chunks.Add(chunk);
                 }
             }
+            /*
+            foreach(SceneNodeMapChunk chunk_node in heightmap.chunk_nodes)
+                if(chunk_node.MapChunk.aabb.IsOutsideOfConvexHull(scene.camera.FrustrumPlanes))
+                    vis_chunks.Add(chunk_node);
+            */
             // NOTE: chunks are already sorted due to how lists operate
             // 2. compare with existing collection of visible chunks: march two lists at once
             // chunk ID is chunk.iy*map.width/16+chunk.ix
@@ -212,6 +230,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 {
                     for (int i = next_list_id; i < vis_chunks.Count; i++)
                     {
+                        //vis_chunks[i].SetParent(scene.root);
                         vis_chunks[i].Visible = true;
                         // add visible to the next chunk
                     }
@@ -221,13 +240,16 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 {
                     for (int i = cur_list_id; i < heightmap.visible_chunks.Count; i++)
                     {
+                        //heightmap.visible_chunks[i].SetParent(null);
                         heightmap.visible_chunks[i].Visible = false;
                         // add invisible to the current chunk
                     }
                     break;
                 }
 
+                //cur_chunk_id = heightmap.visible_chunks[cur_list_id].MapChunk.id;
                 cur_chunk_id = heightmap.visible_chunks[cur_list_id].id;
+                //next_chunk_id = vis_chunks[next_list_id].MapChunk.id;
                 next_chunk_id = vis_chunks[next_list_id].id;
                 // if next id > cur id, keep increasing cur id, while simultaneously turning chunks invisible
                 // otherwise keep increasing next_id, while simultaneuosly turning chunks visible
@@ -235,12 +257,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 {
                     while(next_chunk_id > cur_chunk_id)
                     {
+                        //heightmap.visible_chunks[cur_list_id].SetParent(null);
                         heightmap.visible_chunks[cur_list_id].Visible = false;
                         // turn chunk invisible
 
                         cur_list_id += 1;
                         if (cur_list_id == heightmap.visible_chunks.Count)
                             break;
+                        //cur_chunk_id = heightmap.visible_chunks[cur_list_id].MapChunk.id;
                         cur_chunk_id = heightmap.visible_chunks[cur_list_id].id;
                     }
                 }
@@ -248,12 +272,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 {
                     while (next_chunk_id < cur_chunk_id)
                     {
+                        //vis_chunks[next_list_id].SetParent(root);
                         vis_chunks[next_list_id].Visible = true;
                         // turn chunk visible
 
                         next_list_id += 1;
                         if (next_list_id == vis_chunks.Count)
                             break;
+                        //next_chunk_id = vis_chunks[next_list_id].MapChunk.id;
                         next_chunk_id = vis_chunks[next_list_id].id;
                     }
                 }
@@ -274,17 +300,23 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 lake_manager.lake_visible[i] = false;
 
             // update visibility
+            //foreach(SceneNodeMapChunk chunk_node in heightmap.visible_chunks)
             foreach (SFMapHeightMapChunk chunk in heightmap.visible_chunks)
                 for (int i = 0; i < lake_manager.lake_visible.Count; i++)
+                    //lake_manager.lake_visible[i] |= chunk_node.MapChunk.lakes_contained[i];
                     lake_manager.lake_visible[i] |= chunk.lakes_contained[i];
         }
 
         private static void RenderHeightmap()
         {
             // special shader here...
+            //UseShader(shader_heightmap);
             GL.UseProgram(shader_heightmap.ProgramID);
+            // GL.BindTexture(TextureTarget.Texture2DArray, heightmap.texture_manager.terrain_texture);
+            //foreach(SceneNodeMapChunk chunk_node in heightmap.chunks_visible)
             foreach (SFMapHeightMapChunk chunk in heightmap.chunks)
             {
+                //SFMapHeightMapChunk chunk = chunk_node.MapChunk;
                 if (!chunk.Visible)
                     continue;
 
@@ -303,12 +335,13 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.DrawArrays(PrimitiveType.Triangles, 0, chunk.vertices.Length);
                 GL.BindTexture(TextureTarget.Texture2DArray, 0);
             }
+            //GL.BindTexture(TextureTarget.Texture2DArray, 0);
         }
 
         private static void RenderLakes()
         {
             SFMapLakeManager lake_manager = heightmap.map.lake_manager;
-
+            //UseShader(shader_simple);
             GL.UseProgram(shader_simple.ProgramID);
             GL.Uniform1(shader_simple["apply_shading"], 0);
             for(int i = 0; i < lake_manager.lakes.Count; i++)
@@ -359,7 +392,130 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
-        public static void RenderFrame()
+        
+        public static void RenderSimpleObjects()
+        {
+            //static objects
+            //UseShader(shader_simple);
+            //GL.UseProgram(shader_simple.ProgramID);
+            GL.Uniform1(active_shader["texture_used"], 1);
+            foreach (SFTexture tex in scene.tex_list_simple.Keys)
+            {
+                GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
+                LinearPool<TexturedGeometryListElementSimple> elem_list = scene.tex_list_simple[tex];
+                foreach(TexturedGeometryListElementSimple elem in elem_list.elements)
+                {
+                    Matrix4 model_mat = elem.node.LocalTransform;
+                    GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
+
+                    // first non-transparent parts
+                    GL.BindVertexArray(elem.node.Mesh.vertex_array);
+                    for (int i = 0; i < elem.node.Mesh.materials.Length; i++)
+                    {
+                        SFMaterial mat = elem.node.Mesh.materials[i];
+
+                        if ((mat.matFlags & 4) == 0)
+                            continue;
+                        mat.yet_to_be_drawn = false;
+
+                        // todo: make this work on any shader, not just shader_simple
+                        GL.Uniform1(active_shader["apply_shading"], (mat.apply_shading ? 1 : 0));
+
+                        GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
+                    }
+                    //transparent parts next
+                    for (int i = 0; i < elem.node.Mesh.materials.Length; i++)
+                    {
+                        SFMaterial mat = elem.node.Mesh.materials[i];
+                        if (mat.yet_to_be_drawn)
+                        {
+                            //todo: triangle sorting
+                            GL.Uniform1(active_shader["apply_shading"], (mat.apply_shading ? 1 : 0));
+
+                            GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
+                        }
+                        mat.yet_to_be_drawn = true;    //reset
+                    }
+                }
+            }
+        }
+
+        public static void RenderAnimatedObjects()
+        {
+            //UseShader(shader_animated);
+            foreach(SFTexture tex in scene.tex_list_animated.Keys)
+            {
+                GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
+                LinearPool<TexturedGeometryListElementAnimated> elem_list = scene.tex_list_animated[tex];
+                foreach (TexturedGeometryListElementAnimated elem in elem_list.elements)
+                {
+                    Matrix4 model_mat = elem.node.LocalTransform;
+                    GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
+
+                    Matrix4[] bones = new Matrix4[20];
+                    for (int i = 0; i < elem.node.Skin.submodels.Count; i++)
+                    {
+                        SFModelSkinChunk chunk = elem.node.Skin.submodels[i];
+                        for (int j = 0; j < chunk.bones.Length; j++)
+                            bones[j] = elem.node.BoneTransforms[chunk.bones[j]];
+                        GL.BindVertexArray(chunk.vertex_array);
+                        GL.UniformMatrix4(shader_animated["boneTransforms"], 20, false, ref bones[0].Row0.X);
+                        GL.Uniform1(shader_animated["apply_shading"], (chunk.material.apply_shading ? 1 : 0));
+                        GL.DrawElements(PrimitiveType.Triangles, chunk.face_indices.Length, DrawElementsType.UnsignedInt, 0);
+                    }
+                }
+            }
+        }
+
+        public static void RenderScene()
+        {
+            //draw everything to a texture
+            SetFramebuffer(screenspace_framebuffer);
+            GL.ClearColor(Color.MidnightBlue);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+            GL.Enable(EnableCap.DepthTest);
+            
+            // heightmap and overlays
+            if (heightmap != null)
+            {
+                UpdateVisibleChunks();
+                RenderHeightmap();
+                RenderOverlays();
+            }
+
+            UseShader(shader_animated);
+            RenderAnimatedObjects();
+
+            UseShader(shader_simple);
+            RenderSimpleObjects();
+
+            if (heightmap != null)
+            {
+                UpdateVisibleLakes();
+                RenderLakes();
+            }
+            
+            // move from multisampled to intermediate framebuffer, to be able to use screenspace shader
+            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, screenspace_framebuffer.fbo);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, screenspace_intermediate.fbo);
+            GL.BlitFramebuffer(0, 0, (int)render_size.X, (int)render_size.Y, 0, 0, (int)render_size.X, (int)render_size.Y, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
+
+            // final pass: draw a textured quad for post-processing effects - quad will be rendered on screen
+            SetFramebuffer(null);
+            GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+
+            UseShader(shader_framebuffer_simple);
+            GL.BindVertexArray(FrameBuffer.screen_vao);
+            GL.Disable(EnableCap.DepthTest);
+            GL.BindTexture(TextureTarget.Texture2D, screenspace_intermediate.texture_color);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+
+            UseShader(null);
+        }
+        
+
+        public static void RenderFrame() 
         {
             // first pass: draw everything
             SetFramebuffer(screenspace_framebuffer);

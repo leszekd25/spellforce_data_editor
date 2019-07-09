@@ -46,6 +46,9 @@ namespace SpellforceDataEditor.SFMap
             portals.Add(ptl);
 
             string ptl_name = ptl.GetObjectName();
+
+            //SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(778, bld_name, true);
+            //node.SetParent(map.heightmap.GetChunkNode(position));
             SF3D.SFRender.SFRenderEngine.scene.AddObjectObject(778, ptl_name, true);   // portal id
             return ptl;
         }
@@ -53,7 +56,11 @@ namespace SpellforceDataEditor.SFMap
         public void RemovePortal(SFMapPortal portal)
         {
             portals.Remove(portal);
-
+            
+            //SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(portal.grid_position);
+            //SF3D.SceneSynchro.SceneNode ptl_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(portal.GetObjectName());
+            //if (ptl_node != null)
+            //    SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(ptl_node);
             SF3D.SFRender.SFRenderEngine.scene.DeleteObject(portal.GetObjectName());
 
             map.heightmap.GetChunk(portal.grid_position).RemovePortal(portal);
