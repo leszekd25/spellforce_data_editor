@@ -20,7 +20,7 @@ namespace SpellforceDataEditor.special_forms
 {
     public partial class SFAssetManagerForm : Form
     {
-        SFSoundEngine sound_engine;
+        SFSoundEngine sound_engine = new SFSoundEngine();
 
         bool synchronized = false;
 
@@ -29,7 +29,6 @@ namespace SpellforceDataEditor.special_forms
 
         public SFAssetManagerForm()
         {
-            sound_engine = new SFSoundEngine();
             InitializeComponent();
         }
 
@@ -39,23 +38,28 @@ namespace SpellforceDataEditor.special_forms
         {
             SFResourceManager.FindAllMeshes();
 
+            SFRenderEngine.scene.Init();
             SFRenderEngine.Initialize(new Vector2(glControl1.ClientSize.Width, glControl1.ClientSize.Height));
-            SFRenderEngine.camera.Position = new Vector3(0, 1, 6);
-            SFRenderEngine.camera.Lookat = new Vector3(0, 1, 0);
+            SFRenderEngine.scene.camera.Position = new Vector3(0, 1, 6);
+            SFRenderEngine.scene.camera.Lookat = new Vector3(0, 1, 0);
 
             glControl1.Invalidate();
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
+            SFRenderEngine.scene.Update();
+
             glControl1.MakeCurrent();
-            SFRenderEngine.RenderFrame();
+            SFRenderEngine.RenderScene();
             glControl1.SwapBuffers();
         }
 
         private void SF3DManagerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            SFRenderEngine.scene.ClearScene();
+            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
+            SFRenderEngine.scene.root = null;
+            SFRenderEngine.scene.camera = null;
             SFResourceManager.DisposeAll();
             sound_engine.UnloadSound();
         }
@@ -75,7 +79,7 @@ namespace SpellforceDataEditor.special_forms
             DisableAnimation();
             ListEntries.Items.Clear();
             ListAnimations.Items.Clear();
-            SFRenderEngine.scene.ClearScene();
+            ResetScene();
             sound_engine.UnloadSound();
             TimerSoundDuration.Stop();
             trackSoundDuration.Value = 0;
@@ -88,9 +92,9 @@ namespace SpellforceDataEditor.special_forms
                 ListEntries.Show();
                 button1Extract.Show();
                 //generate scene
-                SFSceneDescription scene = new SFSceneDescription();
-                scene.add_line(SCENE_ITEM_TYPE.OBJ_SIMPLE, new string[] { "", "", "simple_mesh" });
-                SFRenderEngine.scene.ParseSceneDescription(scene);
+                SceneNodeSimple simple_node = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "", "simple_mesh");
+                simple_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+
 
                 foreach (string mesh_name in SFResourceManager.mesh_names)
                     ListEntries.Items.Add(mesh_name);
@@ -104,9 +108,9 @@ namespace SpellforceDataEditor.special_forms
                 ListAnimations.Show();
                 button2Extract.Show();
                 //generate scene
-                SFSceneDescription scene = new SFSceneDescription();
-                scene.add_line(SCENE_ITEM_TYPE.OBJ_ANIMATED, new string[] { "", "", "dynamic_mesh" });
-                SFRenderEngine.scene.ParseSceneDescription(scene);
+                SceneNodeAnimated animated_node = SFRenderEngine.scene.AddSceneNodeAnimated(SFRenderEngine.scene.root, "", "dynamic_mesh");
+                animated_node.Rotation =Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+
 
                 foreach (string skel_name in SFResourceManager.skeleton_names)
                     ListEntries.Items.Add(skel_name);
@@ -149,13 +153,11 @@ namespace SpellforceDataEditor.special_forms
 
         private void ListEntries_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SFResourceManager.DisposeAll();
-
             SFScene scene = SFRenderEngine.scene;
 
             if (ComboBrowseMode.SelectedIndex == 0)
             {
-                ObjectSimple3D obj_s1 = scene.objects_static["simple_mesh"];
+                SceneNodeSimple obj_s1 = scene.root.FindNode<SceneNodeSimple>("simple_mesh");
                 obj_s1.Mesh = null;
 
                 if (ListEntries.SelectedIndex != -1)
@@ -178,7 +180,7 @@ namespace SpellforceDataEditor.special_forms
                 ListAnimations.Items.Clear();
                 DisableAnimation();
 
-                objectAnimated obj_d1 = scene.objects_dynamic["dynamic_mesh"];
+                SceneNodeAnimated obj_d1 = scene.root.FindNode<SceneNodeAnimated>("dynamic_mesh");
                 SFModelSkin skin = null;
                 SFSkeleton skel = null;
 
@@ -208,7 +210,7 @@ namespace SpellforceDataEditor.special_forms
                     skel = SFResourceManager.Skeletons.Get(skel_name);
                     StatusText.Text = "Loaded skeleton " + skel_name;
 
-                    List<string> anims = GetAllSkeletonAnimations(skel_name);
+                    List<string> anims = GetAllSkeletonAnimations(skel);
                     foreach (string n in anims)
                         ListAnimations.Items.Add(n);
                 }
@@ -302,20 +304,20 @@ namespace SpellforceDataEditor.special_forms
             float cam_speed = 6; //limited by framerate
 
             //calculate movement vector
-            Vector3 forward = (SFRenderEngine.camera.Lookat - SFRenderEngine.camera.Position).Normalized();
+            Vector3 forward = (SFRenderEngine.scene.camera.Lookat - SFRenderEngine.scene.camera.Position).Normalized();
             Vector3 up = new Vector3(0, 1, 0);
             Vector3 right = Vector3.Cross(forward, up);
             float speed_factor = cam_speed / SFRenderEngine.scene.frames_per_second;
-            Vector3 cam_move = ((SFRenderEngine.camera.Lookat - SFRenderEngine.camera.Position).Normalized()*cam_speed)/ SFRenderEngine.scene.frames_per_second;
+            Vector3 cam_move = ((SFRenderEngine.scene.camera.Lookat - SFRenderEngine.scene.camera.Position).Normalized()*cam_speed)/ SFRenderEngine.scene.frames_per_second;
 
             if (e.KeyChar == 'w')
-                SFRenderEngine.camera.translate(forward * speed_factor);
+                SFRenderEngine.scene.camera.translate(forward * speed_factor);
             else if (e.KeyChar == 's')
-                SFRenderEngine.camera.translate(-forward * speed_factor);
+                SFRenderEngine.scene.camera.translate(-forward * speed_factor);
             else if (e.KeyChar == 'a')
-                SFRenderEngine.camera.translate(-right * speed_factor);
+                SFRenderEngine.scene.camera.translate(-right * speed_factor);
             else if (e.KeyChar == 'd')
-                SFRenderEngine.camera.translate(right * speed_factor);
+                SFRenderEngine.scene.camera.translate(right * speed_factor);
         }
 
 
@@ -325,7 +327,7 @@ namespace SpellforceDataEditor.special_forms
 
             if (ComboBrowseMode.SelectedIndex == 1)
             {
-                objectAnimated obj_d1 = scene.objects_dynamic["dynamic_mesh"];
+                SceneNodeAnimated obj_d1 = scene.root.FindNode<SceneNodeAnimated>("dynamic_mesh");
 
                 if (ListAnimations.SelectedIndex != -1)
                 {
@@ -339,7 +341,7 @@ namespace SpellforceDataEditor.special_forms
                         DisableAnimation();
                         return;
                     }
-                    if(SFResourceManager.Animations.Get(anim_name).bone_count != obj_d1.skeleton.bone_count)
+                    if(SFResourceManager.Animations.Get(anim_name).bone_count != obj_d1.Skeleton.bone_count)
                     {
                         StatusText.Text = "Invalid animation "+anim_name;
                         DisableAnimation();
@@ -348,7 +350,7 @@ namespace SpellforceDataEditor.special_forms
 
                     obj_d1.SetAnimation(SFResourceManager.Animations.Get(anim_name), true);
                     scene.SetSceneTime(0f);
-                    scene.scene_meta.duration = obj_d1.animation.max_time;
+                    scene.scene_meta.duration = obj_d1.Animation.max_time;
                     StatusText.Text = "Loaded animation " + anim_name;
                     statusStrip1.Refresh();
 
@@ -371,16 +373,21 @@ namespace SpellforceDataEditor.special_forms
                         return;
                     }
 
-                    foreach (KeyValuePair<string, string> kv in scene.scene_meta.obj_to_anim)
+                    SceneNode obj = SFRenderEngine.scene.root.FindNode<SceneNode>("unit");
+                    if (obj != null)
                     {
-                        if (SFResourceManager.Animations.Get(anim_name).bone_count != scene.objects_dynamic[kv.Key].skeleton.bone_count)
+                        foreach(SceneNodeAnimated node in obj.Children)
                         {
-                            StatusText.Text = "Invalid animation " + anim_name;
-                            DisableAnimation();
-                            return;
+                            if(node.Skeleton.bone_count != SFResourceManager.Animations.Get(anim_name).bone_count)
+                            {
+                                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFAssetManagerForm.ListAnimations_SelectedIndexChanged(): invalid bone count!");
+                                StatusText.Text = "Invalid animation " + anim_name;
+                                DisableAnimation();
+                                return;
+                            }
+                            node.SetAnimation(SFResourceManager.Animations.Get(anim_name), true);
+                            scene.scene_meta.duration = node.Animation.max_time;
                         }
-                        scene.objects_dynamic[kv.Key].SetAnimation(SFResourceManager.Animations.Get(anim_name), true);
-                        scene.scene_meta.duration = scene.objects_dynamic[kv.Key].animation.max_time;
                     }
 
                     scene.SetSceneTime(0f);
@@ -422,12 +429,17 @@ namespace SpellforceDataEditor.special_forms
             labelSoundDuration.Text = cur.ToString(@"m\:ss") + "/" + tot.ToString(@"m\:ss");
 
             TimerAnimation.Start();
-            SFRenderEngine.scene.LogicStep();
             glControl1.Invalidate();
         }
 
-        private List<string> GetAllSkeletonAnimations(string skel_name)
+        private List<string> GetAllSkeletonAnimations(SFSkeleton skel)
         {
+            if(skel == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFAssetManagerForm.GetAllSkeletonAnimations(): Skeleton is null!");
+                return new List<string>();
+            }
+            string skel_name = skel.GetName();
             List<string> anims = new List<string>();
 
             //do the following:
@@ -475,11 +487,11 @@ namespace SpellforceDataEditor.special_forms
             float mx, my;
             mx = Cursor.Position.X - mouse_pos.X; my = Cursor.Position.Y - mouse_pos.Y;
             //produce angle difference
-            SFRenderEngine.camera.Direction += new Vector2(mx * mult_f, -my * mult_f);
+            SFRenderEngine.scene.camera.Direction += new Vector2(mx * mult_f, -my * mult_f);
             //set cursor position
             Cursor.Position = new Point(this.Location.X + glControl1.Location.X + (glControl1.Size.Width / 2), this.Location.Y + glControl1.Location.Y + (glControl1.Size.Height / 2));
 
-            //glControl1.Invalidate();
+            glControl1.Invalidate();
         }
 
         public void GenerateScene(int cat, int elem)
@@ -490,21 +502,29 @@ namespace SpellforceDataEditor.special_forms
             DisableAnimation();
             ListEntries.Items.Clear();
             ListAnimations.Items.Clear();
-            SFRenderEngine.scene.ClearScene();
+            ResetScene();
             SFResourceManager.DisposeAll();
             GC.Collect(2, GCCollectionMode.Forced, false);
 
             System.Diagnostics.Debug.WriteLine("GENERATING SCENE " + cat.ToString() + "|" + elem.ToString());
-            SFRenderEngine.scene.ParseSceneDescription(SFRenderEngine.scene.CatElemToScene(cat, elem));
+            SFRenderEngine.scene.CatElemToScene(cat, elem);
 
-            if (SFRenderEngine.scene.scene_meta.is_animated)
+            if (SFRenderEngine.scene.scene_meta.is_animated)   // only if selected element is a unit...
             {
-                if (SFRenderEngine.scene.scene_meta.obj_to_anim.ContainsKey("MAIN"))
+                SceneNode unit_node = SFRenderEngine.scene.root.FindNode<SceneNode>("unit");
+                if (unit_node != null)
                 {
-                    ListAnimations.Items.Clear();
-                    List<string> anims = GetAllSkeletonAnimations(SFRenderEngine.scene.scene_meta.obj_to_anim["MAIN"]);
-                    foreach (string n in anims)
-                        ListAnimations.Items.Add(n);
+                    if (unit_node.Children.Count != 0)
+                    {
+                        ListAnimations.Items.Clear();
+                        SceneNodeAnimated chest_node = unit_node.FindNode<SceneNodeAnimated>("Chest");
+                        if (chest_node != null)
+                        {
+                            List<string> anims = GetAllSkeletonAnimations(chest_node.Skeleton);
+                            foreach (string n in anims)
+                                ListAnimations.Items.Add(n);
+                        }
+                    }
                 }
             }
 
@@ -570,7 +590,6 @@ namespace SpellforceDataEditor.special_forms
             if (ComboBrowseMode.SelectedIndex == 1)
             {
                 SFRenderEngine.scene.SetSceneTime((float)ratio * SFRenderEngine.scene.scene_meta.duration);
-                SFRenderEngine.scene.LogicStep(false);
                 glControl1.Invalidate();
             }
             if(ComboBrowseMode.SelectedIndex == 2)
@@ -578,7 +597,6 @@ namespace SpellforceDataEditor.special_forms
                 if (!SFRenderEngine.scene.scene_meta.is_animated)
                     return;
                 SFRenderEngine.scene.SetSceneTime((float)ratio * SFRenderEngine.scene.scene_meta.duration);
-                SFRenderEngine.scene.LogicStep(false);
                 glControl1.Invalidate();
             }
             if ((ComboBrowseMode.SelectedIndex == 3) || (ComboBrowseMode.SelectedIndex == 4) || (ComboBrowseMode.SelectedIndex == 5))
@@ -621,13 +639,12 @@ namespace SpellforceDataEditor.special_forms
                 SFModelSkin mod = SFResourceManager.Skins.Get(item);
                 if (mod == null)
                     return;
-
-                objectAnimated obj = SFRenderEngine.scene.objects_dynamic["dynamic_mesh"];
+                SceneNodeAnimated obj = SFRenderEngine.scene.root.FindNode<SceneNodeAnimated>("dynamic_mesh");
 
                 SFResourceManager.Skins.Extract(item);
                 List<string> skels = SFResourceManager.Skeletons.GetNames();
                 foreach (string skel in skels)
-                    if(obj.skeleton == SFResourceManager.Skeletons.Get(skel))
+                    if(obj.Skeleton == SFResourceManager.Skeletons.Get(skel))
                     {
                         SFResourceManager.Skeletons.Extract(skel);
                         SFResourceManager.BSIs.Extract(skel);
@@ -635,7 +652,7 @@ namespace SpellforceDataEditor.special_forms
                         
                         List<string> tx = SFResourceManager.Textures.GetNames();
                         foreach (string t in tx)
-                            foreach (SFModelSkinChunk ch in obj.skin.submodels)
+                            foreach (SFModelSkinChunk ch in obj.Skin.submodels)
                             {
                                 SFMaterial mat = ch.material;
                                 if (mat.texture == SFResourceManager.Textures.Get(t))
@@ -734,7 +751,9 @@ namespace SpellforceDataEditor.special_forms
         // failsafe for the case map is unloaded and viewer is opened
         public void ResetScene()
         {
-            SFRenderEngine.scene.ClearScene();
+            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
+            SFRenderEngine.scene.root.Visible = true;
+            SFRenderEngine.scene.camera.SetParent(SFRenderEngine.scene.root);
         }
     }
 }

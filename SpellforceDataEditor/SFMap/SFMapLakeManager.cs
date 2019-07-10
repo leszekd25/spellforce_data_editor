@@ -140,8 +140,8 @@ namespace SpellforceDataEditor.SFMap
             // add new visibility flag for render engine
             lake_visible.Add(false);
             // add a flag to each heightmap chunk that a new lake was generated
-            foreach(SFMapHeightMapChunk chunk in map.heightmap.chunks)
-                chunk.lakes_contained.Add(false);
+            foreach(SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
+                chunk_node.MapChunk.lakes_contained.Add(false);
             // update chunk lake visibility by looping each lake coordinate
             foreach(SFCoord pos in lake.cells)
             {
@@ -150,7 +150,8 @@ namespace SpellforceDataEditor.SFMap
             }
 
             string obj_name = lake.GetObjectName();
-            SF3D.SFRender.SFRenderEngine.scene.AddObjectStatic(obj_name, "", obj_name);
+            // TODO: make lake meshes per chunk
+            //SF3D.SFRender.SFRenderEngine.scene.AddObjectStatic(obj_name, "", obj_name);
             return lake;
         }
 
@@ -172,11 +173,11 @@ namespace SpellforceDataEditor.SFMap
 
             lake_visible.RemoveAt(lake_index);
 
-            foreach (SFMapHeightMapChunk chunk in map.heightmap.chunks)
-                chunk.lakes_contained.RemoveAt(lake_index);
+            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
+                chunk_node.MapChunk.lakes_contained.RemoveAt(lake_index);
 
             string obj_name = lake.GetObjectName();
-            SF3D.SFRender.SFRenderEngine.scene.DeleteObject(obj_name);
+            //SF3D.SFRender.SFRenderEngine.scene.DeleteObject(obj_name);
 
             lakes.Remove(lake);
         }
@@ -213,9 +214,9 @@ namespace SpellforceDataEditor.SFMap
                 map.heightmap.lake_data[p.y * map.width + p.x] = (byte)(lake_index+1);
             lake.Generate(map);   // creates a lake mesh
             lake.RecalculateBoundary();
-            
-            foreach (SFMapHeightMapChunk chunk in map.heightmap.chunks)
-                chunk.lakes_contained[lake_index] = false;
+
+            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
+                chunk_node.MapChunk.lakes_contained[lake_index] = false;
             foreach (SFCoord pos in lake.cells)
             {
                 SFMapHeightMapChunk chunk = map.heightmap.GetChunk(pos);
@@ -223,8 +224,8 @@ namespace SpellforceDataEditor.SFMap
             }
 
             string obj_name = lake.GetObjectName();
-            SF3D.SFRender.SFRenderEngine.scene.objects_static[obj_name].Mesh =
-                SFResources.SFResourceManager.Models.Get(obj_name);
+            //SF3D.SFRender.SFRenderEngine.scene.objects_static[obj_name].Mesh =
+                //SFResources.SFResourceManager.Models.Get(obj_name);
         }
     }
 }

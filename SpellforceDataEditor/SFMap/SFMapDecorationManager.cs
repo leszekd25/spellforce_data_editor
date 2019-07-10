@@ -113,13 +113,11 @@ namespace SpellforceDataEditor.SFMap
             decorations.Add(dec);
 
             string dec_name = dec.GetObjectName();
-            SF3D.SFRender.SFRenderEngine.scene.AddObjectObject(id, dec_name, false);
-            //SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, dec_name, false);
-            //node.SetParent(map.heightmap.GetChunkNode(position));
+            SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, dec_name, false);
+            node.SetParent(map.heightmap.GetChunkNode(position));
             
             // 3. add new unit in respective chunk
             map.heightmap.GetChunk(position).AddDecoration(dec);
-            SF3D.SFRender.SFRenderEngine.scene.objects_static[dec_name].Visible = map.heightmap.GetChunk(position).Visible;
 
             return dec;
         }
@@ -127,12 +125,11 @@ namespace SpellforceDataEditor.SFMap
         public void RemoveDecoration(SFMapDecoration d)
         {
             decorations.Remove(d);
-
-            SF3D.SFRender.SFRenderEngine.scene.DeleteObject(d.GetObjectName());
-            //SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(d.grid_position);
-            //SF3D.SceneSynchro.SceneNode dec_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName());
-            //if (dec_node != null)
-            //    SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(dec_node);
+            
+            SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(d.grid_position);
+            SF3D.SceneSynchro.SceneNode dec_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName());
+            if (dec_node != null)
+                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(dec_node);
 
             map.heightmap.GetChunk(d.grid_position).RemoveDecoration(d);
         }
@@ -141,14 +138,12 @@ namespace SpellforceDataEditor.SFMap
         {
             if (d.game_id == new_id)
                 return;
-
-            SF3D.SFRender.SFRenderEngine.scene.DeleteObject(d.GetObjectName());
-            SF3D.SFRender.SFRenderEngine.scene.AddObjectObject(new_id, d.GetObjectName(), false);
-            /*SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(d.grid_position);
+            
+            SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(d.grid_position);
             SF3D.SceneSynchro.SceneNode dec_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName());
             if(dec_node != null)
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(dec_node);
-            SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(new_id, d.GetObjectName(), false).SetParent(chunk_node);*/
+            SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(new_id, d.GetObjectName(), false).SetParent(chunk_node);
         }
 
         public byte GetDecAssignment(SFCoord pos)

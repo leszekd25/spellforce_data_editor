@@ -22,12 +22,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
     public static class SFRenderEngine
     {
         public static SFScene scene { get; } = new SFScene();
-        public static SFMapHeightMap heightmap { get; private set; } = null;
-
-        public static Camera3D camera { get; } = new Camera3D();
-
-        public static LightingAmbient ambient_light { get; } = new LightingAmbient();
-        public static LightingSun sun_light { get; } = new LightingSun();
 
         static SFShader shader_simple = new SFShader();
         static SFShader shader_animated = new SFShader();
@@ -100,11 +94,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             shader_framebuffer_simple.CompileShader(Properties.Resources.vshader_framebuffer, Properties.Resources.fshader_framebuffer_simple);
 
-            sun_light.Direction = -(new Vector3(0, -1, 0).Normalized());
-            sun_light.Color = new Vector4(1, 1, 1, 1);
-            sun_light.Strength = 1.3f;
-            ambient_light.Strength = 1.0f;
-            ambient_light.Color = new Vector4(0.5f, 0.5f, 1.0f, 1.0f);
+            scene.sun_light.Direction = -(new Vector3(0, -1, 0).Normalized());
+            scene.sun_light.Color = new Vector4(1, 1, 1, 1);
+            scene.sun_light.Strength = 1.3f;
+            scene.ambient_light.Strength = 1.0f;
+            scene.ambient_light.Color = new Vector4(0.5f, 0.5f, 1.0f, 1.0f);
 
             if (screenspace_framebuffer != null)
             {
@@ -124,7 +118,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         {
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.ResizeView() called (view_size = " + view_size.ToString() + ")");
             render_size = view_size;
-            camera.ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
+            scene.camera.ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
                 (float)Math.PI / 4, view_size.X / view_size.Y, 0.1f, 100f);
             GL.Viewport(0, 0, (int)view_size.X, (int)view_size.Y);
             if (screenspace_framebuffer != null)
@@ -133,34 +127,29 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 screenspace_intermediate.Resize((int)view_size.X, (int)view_size.Y);
             }
         }
-        
-        public static void AssignHeightMap(SFMapHeightMap hm)
-        {
-            heightmap = hm;
-        }
 
         private static void ApplyLight()
         {
             GL.UseProgram(shader_simple.ProgramID);
-            GL.Uniform1(shader_simple["SunStrength"], sun_light.Strength);
-            GL.Uniform3(shader_simple["SunDirection"], sun_light.Direction);
-            GL.Uniform4(shader_simple["SunColor"], sun_light.Color);
-            GL.Uniform1(shader_simple["AmbientStrength"], ambient_light.Strength);
-            GL.Uniform4(shader_simple["AmbientColor"], ambient_light.Color);
+            GL.Uniform1(shader_simple["SunStrength"], scene.sun_light.Strength);
+            GL.Uniform3(shader_simple["SunDirection"], scene.sun_light.Direction);
+            GL.Uniform4(shader_simple["SunColor"], scene.sun_light.Color);
+            GL.Uniform1(shader_simple["AmbientStrength"], scene.ambient_light.Strength);
+            GL.Uniform4(shader_simple["AmbientColor"], scene.ambient_light.Color);
 
             GL.UseProgram(shader_animated.ProgramID);
-            GL.Uniform1(shader_animated["SunStrength"], sun_light.Strength);
-            GL.Uniform3(shader_animated["SunDirection"], sun_light.Direction);
-            GL.Uniform4(shader_animated["SunColor"], sun_light.Color);
-            GL.Uniform1(shader_animated["AmbientStrength"], ambient_light.Strength);
-            GL.Uniform4(shader_animated["AmbientColor"], ambient_light.Color);
+            GL.Uniform1(shader_animated["SunStrength"], scene.sun_light.Strength);
+            GL.Uniform3(shader_animated["SunDirection"], scene.sun_light.Direction);
+            GL.Uniform4(shader_animated["SunColor"], scene.sun_light.Color);
+            GL.Uniform1(shader_animated["AmbientStrength"], scene.ambient_light.Strength);
+            GL.Uniform4(shader_animated["AmbientColor"], scene.ambient_light.Color);
 
             GL.UseProgram(shader_heightmap.ProgramID);
-            GL.Uniform1(shader_heightmap["SunStrength"], sun_light.Strength);
-            GL.Uniform3(shader_heightmap["SunDirection"], sun_light.Direction);
-            GL.Uniform4(shader_heightmap["SunColor"], sun_light.Color);
-            GL.Uniform1(shader_heightmap["AmbientStrength"], ambient_light.Strength);
-            GL.Uniform4(shader_heightmap["AmbientColor"], ambient_light.Color);
+            GL.Uniform1(shader_heightmap["SunStrength"], scene.sun_light.Strength);
+            GL.Uniform3(shader_heightmap["SunDirection"], scene.sun_light.Direction);
+            GL.Uniform4(shader_heightmap["SunColor"], scene.sun_light.Color);
+            GL.Uniform1(shader_heightmap["AmbientStrength"], scene.ambient_light.Strength);
+            GL.Uniform4(shader_heightmap["AmbientColor"], scene.ambient_light.Color);
 
             GL.UseProgram(0);
         }
@@ -193,22 +182,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
         private static void UpdateVisibleChunks()
         {
             // 1. find collection of visible chunks
-            List<SFMapHeightMapChunk> vis_chunks = new List<SFMapHeightMapChunk>();
-            //List<SceneNodeMapChunk> vis_chunks = new List<SceneNodeMapChunk>();
+            List<SceneNodeMapChunk> vis_chunks = new List<SceneNodeMapChunk>();
 
             // test visibility of each chunk
-            foreach(SFMapHeightMapChunk chunk in heightmap.chunks)
-            {
-                if (!chunk.aabb.IsOutsideOfConvexHull(camera.FrustrumPlanes))  // frustrum planes updated when camera is updated
-                {
-                    vis_chunks.Add(chunk);
-                }
-            }
-            /*
-            foreach(SceneNodeMapChunk chunk_node in heightmap.chunk_nodes)
-                if(chunk_node.MapChunk.aabb.IsOutsideOfConvexHull(scene.camera.FrustrumPlanes))
+            
+            foreach(SceneNodeMapChunk chunk_node in scene.heightmap.chunk_nodes)
+                if(!chunk_node.MapChunk.aabb.IsOutsideOfConvexHull(scene.camera.FrustrumPlanes))
                     vis_chunks.Add(chunk_node);
-            */
+            
             // NOTE: chunks are already sorted due to how lists operate
             // 2. compare with existing collection of visible chunks: march two lists at once
             // chunk ID is chunk.iy*map.width/16+chunk.ix
@@ -219,7 +200,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             bool next_end = false, cur_end = false;
             while(true)
             {
-                if (cur_list_id == heightmap.visible_chunks.Count)
+                if (cur_list_id == scene.heightmap.visible_chunks.Count)
                     cur_end = true;
                 if (next_list_id == vis_chunks.Count)
                     next_end = true;
@@ -230,57 +211,49 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 {
                     for (int i = next_list_id; i < vis_chunks.Count; i++)
                     {
-                        //vis_chunks[i].SetParent(scene.root);
-                        vis_chunks[i].Visible = true;
+                        vis_chunks[i].SetParent(scene.root);
                         // add visible to the next chunk
                     }
                     break;
                 }
                 if(next_end)
                 {
-                    for (int i = cur_list_id; i < heightmap.visible_chunks.Count; i++)
+                    for (int i = cur_list_id; i < scene.heightmap.visible_chunks.Count; i++)
                     {
-                        //heightmap.visible_chunks[i].SetParent(null);
-                        heightmap.visible_chunks[i].Visible = false;
+                        scene.heightmap.visible_chunks[i].SetParent(null);
                         // add invisible to the current chunk
                     }
                     break;
                 }
 
-                //cur_chunk_id = heightmap.visible_chunks[cur_list_id].MapChunk.id;
-                cur_chunk_id = heightmap.visible_chunks[cur_list_id].id;
-                //next_chunk_id = vis_chunks[next_list_id].MapChunk.id;
-                next_chunk_id = vis_chunks[next_list_id].id;
+                cur_chunk_id = scene.heightmap.visible_chunks[cur_list_id].MapChunk.id;
+                next_chunk_id = vis_chunks[next_list_id].MapChunk.id;
                 // if next id > cur id, keep increasing cur id, while simultaneously turning chunks invisible
                 // otherwise keep increasing next_id, while simultaneuosly turning chunks visible
                 if (next_chunk_id > cur_chunk_id)
                 {
                     while(next_chunk_id > cur_chunk_id)
                     {
-                        //heightmap.visible_chunks[cur_list_id].SetParent(null);
-                        heightmap.visible_chunks[cur_list_id].Visible = false;
+                        scene.heightmap.visible_chunks[cur_list_id].SetParent(null);
                         // turn chunk invisible
 
                         cur_list_id += 1;
-                        if (cur_list_id == heightmap.visible_chunks.Count)
+                        if (cur_list_id == scene.heightmap.visible_chunks.Count)
                             break;
-                        //cur_chunk_id = heightmap.visible_chunks[cur_list_id].MapChunk.id;
-                        cur_chunk_id = heightmap.visible_chunks[cur_list_id].id;
+                        cur_chunk_id = scene.heightmap.visible_chunks[cur_list_id].MapChunk.id;
                     }
                 }
                 else if (next_chunk_id < cur_chunk_id)
                 {
                     while (next_chunk_id < cur_chunk_id)
                     {
-                        //vis_chunks[next_list_id].SetParent(root);
-                        vis_chunks[next_list_id].Visible = true;
+                        vis_chunks[next_list_id].SetParent(scene.root);
                         // turn chunk visible
 
                         next_list_id += 1;
                         if (next_list_id == vis_chunks.Count)
                             break;
-                        //next_chunk_id = vis_chunks[next_list_id].MapChunk.id;
-                        next_chunk_id = vis_chunks[next_list_id].id;
+                        next_chunk_id = vis_chunks[next_list_id].MapChunk.id;
                     }
                 }
                 else
@@ -289,60 +262,47 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     cur_list_id += 1;
                 }
             }
-            heightmap.visible_chunks = vis_chunks;
+            scene.heightmap.visible_chunks = vis_chunks;
         }
 
         private static void UpdateVisibleLakes()
         {
             // reset visibility
-            SFMapLakeManager lake_manager = heightmap.map.lake_manager;
+            SFMapLakeManager lake_manager = scene.heightmap.map.lake_manager;
             for (int i = 0; i < lake_manager.lake_visible.Count; i++)
                 lake_manager.lake_visible[i] = false;
 
             // update visibility
-            //foreach(SceneNodeMapChunk chunk_node in heightmap.visible_chunks)
-            foreach (SFMapHeightMapChunk chunk in heightmap.visible_chunks)
+            foreach(SceneNodeMapChunk chunk_node in scene.heightmap.visible_chunks)
                 for (int i = 0; i < lake_manager.lake_visible.Count; i++)
-                    //lake_manager.lake_visible[i] |= chunk_node.MapChunk.lakes_contained[i];
-                    lake_manager.lake_visible[i] |= chunk.lakes_contained[i];
+                    lake_manager.lake_visible[i] |= chunk_node.MapChunk.lakes_contained[i];
         }
 
         private static void RenderHeightmap()
         {
-            // special shader here...
-            //UseShader(shader_heightmap);
-            GL.UseProgram(shader_heightmap.ProgramID);
-            // GL.BindTexture(TextureTarget.Texture2DArray, heightmap.texture_manager.terrain_texture);
-            //foreach(SceneNodeMapChunk chunk_node in heightmap.chunks_visible)
-            foreach (SFMapHeightMapChunk chunk in heightmap.chunks)
+            GL.BindTexture(TextureTarget.Texture2DArray, scene.heightmap.texture_manager.terrain_texture);
+            foreach(SceneNodeMapChunk chunk_node in scene.heightmap.visible_chunks)
             {
-                //SFMapHeightMapChunk chunk = chunk_node.MapChunk;
-                if (!chunk.Visible)
-                    continue;
+                SFMapHeightMapChunk chunk = chunk_node.MapChunk;
 
                 // get chunk position
-                Vector3 chunk_pos = new Vector3(chunk.ix * heightmap.chunk_size, 0, chunk.iy * heightmap.chunk_size);
-                Matrix4 chunk_matrix = Matrix4.CreateTranslation(chunk_pos);
+                Matrix4 chunk_matrix = chunk_node.ResultTransform;
 
-                Matrix4 MVP_mat = chunk_matrix * camera.ViewProjMatrix;
+                Matrix4 MVP_mat = chunk_matrix * scene.camera.ViewProjMatrix;
 
                 GL.UniformMatrix4(shader_heightmap["MVP"], false, ref MVP_mat);
                 GL.UniformMatrix4(shader_heightmap["M"], false, ref chunk_matrix);
 
                 GL.BindVertexArray(chunk.vertex_array);
-                GL.BindTexture(TextureTarget.Texture2DArray, heightmap.texture_manager.terrain_texture);
-
                 GL.DrawArrays(PrimitiveType.Triangles, 0, chunk.vertices.Length);
-                GL.BindTexture(TextureTarget.Texture2DArray, 0);
             }
-            //GL.BindTexture(TextureTarget.Texture2DArray, 0);
+            GL.BindTexture(TextureTarget.Texture2DArray, 0);
         }
 
+        // TODO! generate lake meshes for each map chunk (difficult?)
         private static void RenderLakes()
         {
-            SFMapLakeManager lake_manager = heightmap.map.lake_manager;
-            //UseShader(shader_simple);
-            GL.UseProgram(shader_simple.ProgramID);
+            /*SFMapLakeManager lake_manager = scene.heightmap.map.lake_manager;
             GL.Uniform1(shader_simple["apply_shading"], 0);
             for(int i = 0; i < lake_manager.lakes.Count; i++)
             {
@@ -365,12 +325,13 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                     GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
                 }
-            }
+            }*/
         }
 
+        // todo: move overlays to nodes
         public static void RenderOverlays()
         {
-            GL.UseProgram(shader_overlay.ProgramID);
+            /*GL.UseProgram(shader_overlay.ProgramID);
             foreach (string o in heightmap.visible_overlays)
             {
                 foreach (SFMapHeightMapChunk chunk in heightmap.visible_chunks)
@@ -389,53 +350,36 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     GL.BindVertexArray(chunk.overlays[o].v_array);
                     GL.DrawElements(PrimitiveType.Triangles, chunk.overlays[o].elements.Length, DrawElementsType.UnsignedInt, 0);
                 }
-            }
+            }*/
         }
 
-        
+        // todo: sort transparent materials
         public static void RenderSimpleObjects()
         {
             //static objects
-            //UseShader(shader_simple);
-            //GL.UseProgram(shader_simple.ProgramID);
             GL.Uniform1(active_shader["texture_used"], 1);
+            GL.Uniform1(active_shader["apply_shading"], 1);
             foreach (SFTexture tex in scene.tex_list_simple.Keys)
             {
                 GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
                 LinearPool<TexturedGeometryListElementSimple> elem_list = scene.tex_list_simple[tex];
-                foreach(TexturedGeometryListElementSimple elem in elem_list.elements)
-                {
-                    Matrix4 model_mat = elem.node.LocalTransform;
+                for(int i = 0; i < elem_list.elements.Count; i++)
+                { 
+                    if (!elem_list.elem_active[i])
+                        continue;
+                    TexturedGeometryListElementSimple elem = elem_list.elements[i];
+
+                    Matrix4 model_mat = elem.node.ResultTransform;
+                    Matrix4 mvp_mat = model_mat * scene.camera.ViewProjMatrix;
                     GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
+                    GL.UniformMatrix4(active_shader["MVP"], false, ref mvp_mat);
 
-                    // first non-transparent parts
+                    SFMaterial mat = elem.node.Mesh.materials[elem.submodel_index];
+                    
                     GL.BindVertexArray(elem.node.Mesh.vertex_array);
-                    for (int i = 0; i < elem.node.Mesh.materials.Length; i++)
-                    {
-                        SFMaterial mat = elem.node.Mesh.materials[i];
+                    //GL.Uniform1(active_shader["apply_shading"], (mat.apply_shading ? 1 : 0));
 
-                        if ((mat.matFlags & 4) == 0)
-                            continue;
-                        mat.yet_to_be_drawn = false;
-
-                        // todo: make this work on any shader, not just shader_simple
-                        GL.Uniform1(active_shader["apply_shading"], (mat.apply_shading ? 1 : 0));
-
-                        GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
-                    }
-                    //transparent parts next
-                    for (int i = 0; i < elem.node.Mesh.materials.Length; i++)
-                    {
-                        SFMaterial mat = elem.node.Mesh.materials[i];
-                        if (mat.yet_to_be_drawn)
-                        {
-                            //todo: triangle sorting
-                            GL.Uniform1(active_shader["apply_shading"], (mat.apply_shading ? 1 : 0));
-
-                            GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
-                        }
-                        mat.yet_to_be_drawn = true;    //reset
-                    }
+                    GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
                 }
             }
         }
@@ -447,22 +391,28 @@ namespace SpellforceDataEditor.SF3D.SFRender
             {
                 GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
                 LinearPool<TexturedGeometryListElementAnimated> elem_list = scene.tex_list_animated[tex];
-                foreach (TexturedGeometryListElementAnimated elem in elem_list.elements)
+                for (int i = 0; i < elem_list.elements.Count; i++)
                 {
-                    Matrix4 model_mat = elem.node.LocalTransform;
+                    if (!elem_list.elem_active[i])
+                        continue;
+                    TexturedGeometryListElementAnimated elem = elem_list.elements[i];
+
+                    Matrix4 model_mat = elem.node.ResultTransform;
+                    Matrix4 mvp_mat = model_mat * scene.camera.ViewProjMatrix;
                     GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
+                    GL.UniformMatrix4(active_shader["MVP"], false, ref mvp_mat);
+
+                    SFModelSkinChunk chunk = elem.node.Skin.submodels[elem.submodel_index];
 
                     Matrix4[] bones = new Matrix4[20];
-                    for (int i = 0; i < elem.node.Skin.submodels.Count; i++)
-                    {
-                        SFModelSkinChunk chunk = elem.node.Skin.submodels[i];
-                        for (int j = 0; j < chunk.bones.Length; j++)
-                            bones[j] = elem.node.BoneTransforms[chunk.bones[j]];
-                        GL.BindVertexArray(chunk.vertex_array);
-                        GL.UniformMatrix4(shader_animated["boneTransforms"], 20, false, ref bones[0].Row0.X);
-                        GL.Uniform1(shader_animated["apply_shading"], (chunk.material.apply_shading ? 1 : 0));
-                        GL.DrawElements(PrimitiveType.Triangles, chunk.face_indices.Length, DrawElementsType.UnsignedInt, 0);
-                    }
+                    for (int j = 0; j < chunk.bones.Length; j++)
+                        bones[j] = elem.node.BoneTransforms[chunk.bones[j]];
+
+                    GL.BindVertexArray(chunk.vertex_array);
+                    GL.UniformMatrix4(active_shader["boneTransforms"], 20, false, ref bones[0].Row0.X);
+                    GL.Uniform1(active_shader["apply_shading"], (chunk.material.apply_shading ? 1 : 0));
+
+                    GL.DrawElements(PrimitiveType.Triangles, chunk.face_indices.Length, DrawElementsType.UnsignedInt, 0);
                 }
             }
         }
@@ -474,12 +424,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.ClearColor(Color.MidnightBlue);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
             GL.Enable(EnableCap.DepthTest);
-            
+
             // heightmap and overlays
-            if (heightmap != null)
+            if (scene.heightmap != null)
             {
+                UseShader(shader_heightmap);
                 UpdateVisibleChunks();
                 RenderHeightmap();
+                UseShader(shader_simple);
                 RenderOverlays();
             }
 
@@ -489,12 +441,13 @@ namespace SpellforceDataEditor.SF3D.SFRender
             UseShader(shader_simple);
             RenderSimpleObjects();
 
-            if (heightmap != null)
+            if (scene.heightmap != null)
             {
+                UseShader(shader_simple);
                 UpdateVisibleLakes();
                 RenderLakes();
             }
-            
+
             // move from multisampled to intermediate framebuffer, to be able to use screenspace shader
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, screenspace_framebuffer.fbo);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, screenspace_intermediate.fbo);
@@ -512,137 +465,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
 
             UseShader(null);
-        }
-        
-
-        public static void RenderFrame() 
-        {
-            // first pass: draw everything
-            SetFramebuffer(screenspace_framebuffer);
-            GL.ClearColor(Color.MidnightBlue);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-            GL.Enable(EnableCap.DepthTest);
-
-
-            if (camera.Modified)
-                camera.update_modelMatrix();
-
-            // heightmap and overlays
-            if (heightmap != null)
-            {
-                UpdateVisibleChunks();
-                RenderHeightmap();
-                RenderOverlays();
-            }
-
-            //static objects
-            GL.UseProgram(shader_simple.ProgramID);
-            foreach (ObjectSimple3D obj in scene.objects_static.Values)
-            {
-                if (!obj.Visible)
-                    continue;
-                if (obj.Mesh == null)
-                    continue;
-
-                Matrix4 MVP_mat = obj.ModelMatrix * camera.ViewProjMatrix;
-                Matrix4 model_mat = obj.ModelMatrix;
-                GL.UniformMatrix4(shader_simple["MVP"], false, ref MVP_mat);
-                GL.UniformMatrix4(shader_simple["M"], false, ref model_mat);
-
-                //opaque materials first (no alpha except 0 and 1)
-                GL.BindVertexArray(obj.Mesh.vertex_array);
-                for (int i = 0; i < obj.Mesh.materials.Length; i++)
-                {
-                    SFMaterial mat = obj.Mesh.materials[i];
-
-                    if ((mat.matFlags & 4) == 0)
-                        continue;
-                    mat.yet_to_be_drawn = false;
-
-                    GL.Uniform1(shader_simple["texture_used"], (mat.texture != null ? 1 : 0));
-                    GL.Uniform1(shader_simple["apply_shading"], (mat.apply_shading?1:0));
-                    if (mat.texture != null)
-                        GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
-                    else
-                        GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                    GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
-                }
-                //transparent materials next
-                for (int i = 0; i < obj.Mesh.materials.Length; i++)
-                {
-                    SFMaterial mat = obj.Mesh.materials[i];
-                    if (mat.yet_to_be_drawn)
-                    {
-                        //todo: triangle sorting
-                        GL.Uniform1(shader_simple["texture_used"], (mat.texture != null?1:0));
-                        GL.Uniform1(shader_simple["apply_shading"], (mat.apply_shading ? 1 : 0));
-
-                        if (mat.texture != null)
-                            GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
-                        else
-                            GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                        GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
-                    }
-                    mat.yet_to_be_drawn = true;    //reset
-                }
-
-            }
-            //animated objects (assuming animated models are entirely opaque)
-            GL.UseProgram(shader_animated.ProgramID);
-            foreach (objectAnimated obj in scene.objects_dynamic.Values)
-            {
-                if (!obj.Visible)
-                    continue;
-                if (obj.skin == null)
-                    continue;
-
-                Matrix4 MVP_mat = obj.ModelMatrix * camera.ViewProjMatrix;
-                Matrix4 model_mat = obj.ModelMatrix;
-                GL.UniformMatrix4(shader_animated["MVP"], false, ref MVP_mat);
-                GL.UniformMatrix4(shader_animated["M"], false, ref model_mat);
-
-                Matrix4[] bones = new Matrix4[20];
-                for (int i = 0; i < obj.skin.submodels.Count; i++)
-                {
-                    SFModelSkinChunk chunk = obj.skin.submodels[i];
-                    for (int j = 0; j < chunk.bones.Length; j++)
-                        bones[j] = obj.bone_transforms[chunk.bones[j]];
-                    GL.BindVertexArray(chunk.vertex_array);
-                    GL.UniformMatrix4(shader_animated["boneTransforms"], 20, false, ref bones[0].Row0.X);
-                    GL.Uniform1(shader_animated["apply_shading"], (chunk.material.apply_shading ? 1 : 0));
-                    GL.BindTexture(TextureTarget.Texture2D, chunk.material.texture.tex_id);
-                    GL.DrawElements(PrimitiveType.Triangles, chunk.face_indices.Length, DrawElementsType.UnsignedInt, 0);
-                }
-            }
-
-            // lakes
-            if(heightmap != null)
-            {
-                UpdateVisibleLakes();
-                RenderLakes();
-            }
-
-            GL.BindVertexArray(0);
-
-            // move from multisampled to intermediate framebuffer, to be able to use screenspace shader
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, screenspace_framebuffer.fbo);
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, screenspace_intermediate.fbo);
-            GL.BlitFramebuffer(0, 0, (int)render_size.X, (int)render_size.Y, 0, 0, (int)render_size.X, (int)render_size.Y, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
-
-            // final pass: draw to a quad for post-processing effects
-            SetFramebuffer(null);
-            GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            GL.UseProgram(shader_framebuffer_simple.ProgramID);
-            GL.BindVertexArray(FrameBuffer.screen_vao);
-            GL.Disable(EnableCap.DepthTest);
-            GL.BindTexture(TextureTarget.Texture2D, screenspace_intermediate.texture_color);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
-
-            GL.UseProgram(0);
         }
     }
 }

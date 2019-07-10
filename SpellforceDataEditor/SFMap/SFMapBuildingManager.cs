@@ -19,7 +19,7 @@ namespace SpellforceDataEditor.SFMap
         public int level = 1;
         public int race_id = 0;
         // debug only
-        public SF3D.ObjectSimple3D boundary_outline = null;
+        public SF3D.SceneSynchro.SceneNodeSimple boundary_outline = null;
 
         public string GetObjectName()
         {
@@ -211,9 +211,8 @@ namespace SpellforceDataEditor.SFMap
                 map.heightmap.building_data[p.y * map.width + p.x] = (ushort)buildings.Count;*/
 
             string bld_name = bld.GetObjectName();
-            //SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneBuilding(id, bld_name);
-            //node.SetParent(map.heightmap.GetChunkNode(position));
-            SF3D.SFRender.SFRenderEngine.scene.AddObjectBuilding(id, bld_name);
+            SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneBuilding(id, bld_name);
+            node.SetParent(map.heightmap.GetChunkNode(position));
 
             /*SFResources.SFResourceManager.Models.AddManually(building_collision[(ushort)id].b_outline, bld_name + "_OUTLINE");
             map.render_engine.scene_manager.AddObjectStatic(bld_name + "_OUTLINE", "", bld_name + "_OUTLINE");
@@ -231,11 +230,10 @@ namespace SpellforceDataEditor.SFMap
             RemoveBuildingCollisionBoundary(b.game_id);
             buildings.Remove(b);
 
-            //SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(b.grid_position);
-            //SF3D.SceneSynchro.SceneNode bld_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(b.GetObjectName());
-            //if (bld_node != null)
-            //    SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(bld_node);
-            SF3D.SFRender.SFRenderEngine.scene.DeleteObject(b.GetObjectName());
+            SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(b.grid_position);
+            SF3D.SceneSynchro.SceneNode bld_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(b.GetObjectName());
+            if (bld_node != null)
+                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(bld_node);
 
             map.heightmap.GetChunk(b.grid_position).RemoveBuilding(b);
         }

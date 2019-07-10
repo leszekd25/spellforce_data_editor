@@ -414,11 +414,8 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SF3D\Camera3D.cs" />
     <Compile Include="SF3D\CompressedMatrix.cs" />
     <Compile Include="SF3D\InterpolatedValue.cs" />
-    <Compile Include="SF3D\Object3D.cs" />
-    <Compile Include="SF3D\objectAnimated.cs" />
     <Compile Include="SF3D\SceneSynchro\SFScene.cs" />
     <Compile Include="SF3D\SceneSynchro\SFVisualLink.cs" />
     <Compile Include="SF3D\SceneSynchro\SFVisualLinkContainer.cs" />
@@ -729,7 +726,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SFCFF\SFDataTracer.cs" />
     <Compile Include="SFCFF\SFDiffTools.cs" />
-    <Compile Include="SF3D\SceneSynchro\SFSceneDescription.cs" />
     <Compile Include="SFCFF\SFSearchModule.cs" />
     <Compile Include="SFUnPak\SFPakFileSystem.cs" />
     <Compile Include="SFUnPak\SFPakMap.cs" />

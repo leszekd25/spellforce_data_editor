@@ -158,7 +158,8 @@ namespace SpellforceDataEditor.special_forms
                     MainForm.data.mapeditor_set_gamedata(gamedata);
                 else
                     SFCFF.SFCategoryManager.manual_set_gamedata(gamedata);
-                
+
+                SFRenderEngine.scene.Init();
                 CreateRenderWindow();
 
                 map = new SFMap.SFMap();
@@ -177,7 +178,7 @@ namespace SpellforceDataEditor.special_forms
                     DestroyRenderWindow();
                     return -4;
                 }
-                SFRenderEngine.AssignHeightMap(map.heightmap);
+                SFRenderEngine.scene.heightmap = map.heightmap;
 
                 for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
                     if (edit_controls[i] != null)
@@ -271,8 +272,10 @@ namespace SpellforceDataEditor.special_forms
             }
             else
                 SFCFF.SFCategoryManager.unload_all();
-            SFRenderEngine.scene.ClearScene();
-            SFRenderEngine.AssignHeightMap(null);
+            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
+            SFRenderEngine.scene.root = null;
+            SFRenderEngine.scene.camera = null;
+            SFRenderEngine.scene.heightmap = null;
             if (MainForm.viewer != null)
                 MainForm.viewer.ResetScene();
             for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
@@ -316,8 +319,6 @@ namespace SpellforceDataEditor.special_forms
             
             // it seems shaders must always be compiled upon creating new window
             SFRenderEngine.Initialize(new Vector2(RenderWindow.ClientSize.Width, RenderWindow.ClientSize.Height));
-            SFRenderEngine.camera.Position = new Vector3(0, 25, 12);
-            SFRenderEngine.camera.Lookat = new Vector3(0, 0, 0);
 
             ResizeWindow();
         }
@@ -344,7 +345,7 @@ namespace SpellforceDataEditor.special_forms
         private void RenderWindow_Paint(object sender, PaintEventArgs e)
         {
             RenderWindow.MakeCurrent();
-            SFRenderEngine.RenderFrame();
+            SFRenderEngine.RenderScene();
             RenderWindow.SwapBuffers();
         }
 
@@ -438,8 +439,8 @@ namespace SpellforceDataEditor.special_forms
                 float wx, wy;
                 wx = px / RenderWindow.Size.Width;  wx = (wx+0.09f)*0.84f;
                 wy = py / RenderWindow.Size.Height; wy = (wy+0.11f)*0.84f;
-                Vector3[] frustrum_vertices = SFRenderEngine.camera.FrustrumVertices;
-                Vector3 r_start = SFRenderEngine.camera.Position;
+                Vector3[] frustrum_vertices = SFRenderEngine.scene.camera.FrustrumVertices;
+                Vector3 r_start = SFRenderEngine.scene.camera.Position;
                 Vector3 r_end = frustrum_vertices[4]
                     + wx * (frustrum_vertices[5] - frustrum_vertices[4])
                     + wy * (frustrum_vertices[6] - frustrum_vertices[4]);
@@ -450,7 +451,7 @@ namespace SpellforceDataEditor.special_forms
                 bool ray_success = false;
                 for (int i = 0; i < map.heightmap.visible_chunks.Count; i++)
                 {
-                    SFMapHeightMapChunk chunk = map.heightmap.visible_chunks[i];
+                    SFMapHeightMapChunk chunk = map.heightmap.visible_chunks[i].MapChunk;
                     offset = new Vector3(chunk.ix * 16, 0, chunk.iy * 16);
                     if (ray.Intersect(chunk.vertices, offset, out result))
                     {
@@ -482,7 +483,7 @@ namespace SpellforceDataEditor.special_forms
                 float mouse_scroll_factor = 0.01f;
                 Vector2 scroll_mouse_end = new Vector2(Cursor.Position.X, Cursor.Position.Y);
                 Vector2 scroll_translation = (scroll_mouse_end - scroll_mouse_start)*mouse_scroll_factor;
-                SFRenderEngine.camera.translate(new Vector3(scroll_translation.X, 0, scroll_translation.Y));
+                SFRenderEngine.scene.camera.translate(new Vector3(scroll_translation.X, 0, scroll_translation.Y));
                 update_render = true;
             }
 
@@ -490,7 +491,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 map.selection_helper.UpdateSelection();
                 AdjustCameraZ();
-                SFRenderEngine.scene.LogicStep();
+                SFRenderEngine.scene.Update();
                 RenderWindow.Invalidate();
                 update_render = false;
             }
@@ -509,16 +510,20 @@ namespace SpellforceDataEditor.special_forms
         {
             if(map != null)
             {
-                Vector2 p = new Vector2(SFRenderEngine.camera.Position.X, SFRenderEngine.camera.Position.Z);
+                Vector2 p = new Vector2(SFRenderEngine.scene.camera.Position.X, SFRenderEngine.scene.camera.Position.Z);
                 float z = map.heightmap.GetRealZ(p);
-                SFRenderEngine.camera.translate(new Vector3(0, (25*zoom_level)+z - SFRenderEngine.camera.Position.Y, 0));
+                SFRenderEngine.scene.camera.translate(new Vector3(0, (25*zoom_level)+z - SFRenderEngine.scene.camera.Position.Y, 0));
             }
         }
 
         public void SetCameraViewPoint(SFCoord pos)
         {
+            // these two decide camera angle
+            SFRenderEngine.scene.camera.Position = new Vector3(0, 25, 12);
+            SFRenderEngine.scene.camera.Lookat = new Vector3(0, 0, 0);
+
             Vector3 new_camera_pos = new Vector3(pos.x+0.03f, 0, map.heightmap.height - pos.y - 1 + 12+0.03f);
-            SFRenderEngine.camera.translate(new_camera_pos - SFRenderEngine.camera.Position);
+            SFRenderEngine.scene.camera.translate(new_camera_pos - SFRenderEngine.scene.camera.Position);
             AdjustCameraZ();
             update_render = true;
         }

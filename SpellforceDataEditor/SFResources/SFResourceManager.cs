@@ -75,12 +75,12 @@ namespace SpellforceDataEditor.SFResources
         public static void DisposeAll()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.DisposeAll() called");
-            Textures.DisposeAll();
             Models.DisposeAll();
             Animations.DisposeAll();
             BSIs.DisposeAll();
             Skins.DisposeAll();
             Skeletons.DisposeAll();
+            Textures.DisposeAll();    // likely unneeded, but still called
             Musics.DisposeAll();
             Sounds.DisposeAll();
             Messages.DisposeAll();

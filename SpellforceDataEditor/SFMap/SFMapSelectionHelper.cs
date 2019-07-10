@@ -14,8 +14,8 @@ namespace SpellforceDataEditor.SFMap
         static SF3D.SFModel3D selection_mesh = new SF3D.SFModel3D();
         static SF3D.SFModel3D cursor_mesh = new SF3D.SFModel3D();
         SFMap map = null;
-        SF3D.ObjectSimple3D sel_obj = null;
-        SF3D.ObjectSimple3D cur_obj = null;
+        SF3D.SceneSynchro.SceneNodeSimple sel_obj = null;
+        SF3D.SceneSynchro.SceneNodeSimple cur_obj = null;
         Vector2 offset = new Vector2(0, 0);
         SFCoord cursor_position = new SFCoord(0, 0);
 
@@ -82,11 +82,9 @@ namespace SpellforceDataEditor.SFMap
         public void AssignToMap(SFMap _map)
         {
             map = _map;
-            SF3D.SFRender.SFRenderEngine.scene.AddObjectStatic("_SELECTION_", "", "_SELECTION_");
-            sel_obj = SF3D.SFRender.SFRenderEngine.scene.objects_static["_SELECTION_"];
+            sel_obj = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(SF3D.SFRender.SFRenderEngine.scene.root, "_SELECTION_", "_SELECTION_");
             sel_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
-            SF3D.SFRender.SFRenderEngine.scene.AddObjectStatic("_CURSOR_", "", "_CURSOR_");
-            cur_obj = SF3D.SFRender.SFRenderEngine.scene.objects_static["_CURSOR_"];
+            cur_obj = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(SF3D.SFRender.SFRenderEngine.scene.root, "_CURSOR_", "_CURSOR_");
             cur_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
         }
 
@@ -236,14 +234,16 @@ namespace SpellforceDataEditor.SFMap
 
         public void SetCursorVisibility(bool vis)
         {
-            cur_obj.Visible = vis;
+            cur_obj.Visible = false;
         }
 
         public void Dispose()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapSelectionHelper.Dispose() called");
-            SF3D.SFRender.SFRenderEngine.scene.DeleteObject("_SELECTION_");
-            SF3D.SFRender.SFRenderEngine.scene.DeleteObject("_CURSOR_");
+            SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(SF3D.SFRender.SFRenderEngine.scene.root.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("_SELECTION_"));
+            SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(SF3D.SFRender.SFRenderEngine.scene.root.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("_CURSOR_"));
+            sel_obj = null;
+            cur_obj = null;
         }
     }
 }

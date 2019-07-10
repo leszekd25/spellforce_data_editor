@@ -46,8 +46,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             }
 
-            foreach (SFMapHeightMapChunk chunk in map.heightmap.chunks)
-                chunk.OverlayUpdate("LakeTile");
+            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
+                chunk_node.MapChunk.OverlayUpdate("LakeTile");
 
             MainForm.mapedittool.update_render = true;
         }

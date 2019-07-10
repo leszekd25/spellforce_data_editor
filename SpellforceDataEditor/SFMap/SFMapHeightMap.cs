@@ -13,6 +13,7 @@ namespace SpellforceDataEditor.SFMap
     public class SFMapHeightMapChunk
     {
         public SFMapHeightMap hmap = null;
+        public SF3D.SceneSynchro.SceneNodeMapChunk owner = null;
         public int width, height;
         public int id, ix, iy;
         
@@ -35,31 +36,6 @@ namespace SpellforceDataEditor.SFMap
         public List<SFMapPortal> portals = new List<SFMapPortal>();
         public List<SFMapDecoration> decorations = new List<SFMapDecoration>();
         public List<bool> lakes_contained = new List<bool>();
-        private bool visible = false;              // if false, units and objects in the chunk are not rendered
-        public bool Visible
-        {
-            get
-            {
-                return visible;
-            }
-            set
-            {
-                visible = value;
-                SF3D.SceneSynchro.SFScene scene = SF3D.SFRender.SFRenderEngine.scene;
-                foreach (SFMapUnit u in units)
-                    scene.objects_static[u.GetObjectName()].Visible = value;
-                foreach (SFMapObject o in objects)
-                    scene.objects_static[o.GetObjectName()].Visible = value;
-                foreach (SFMapInteractiveObject io in int_objects)
-                    scene.objects_static[io.GetObjectName()].Visible = value;
-                foreach (SFMapDecoration d in decorations)
-                    scene.objects_static[d.GetObjectName()].Visible = value;
-                foreach (SFMapBuilding b in buildings)
-                    scene.objects_static[b.GetObjectName()].Visible = value;
-                foreach (SFMapPortal p in portals)
-                    scene.objects_static[p.GetObjectName()].Visible = value;
-            }
-        }
 
         public int vertex_array, position_buffer, normal_buffer, uv_buffer, tex_id_buffer, tex_weight_buffer;
 
@@ -412,35 +388,34 @@ namespace SpellforceDataEditor.SFMap
 
 
             // fix all object positions (without lakes for now...)
-            SF3D.SceneSynchro.SFScene scene = SF3D.SFRender.SFRenderEngine.scene;
             foreach (SFMapUnit u in units)
             {
-                SF3D.Object3D _obj = scene.objects_static[u.GetObjectName()];
+                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(u.grid_position) / 100.0f, _obj.Position.Z);
             }
             foreach (SFMapObject o in objects)
             {
-                SF3D.Object3D _obj = scene.objects_static[o.GetObjectName()];
+                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(o.GetObjectName());
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(o.grid_position) / 100.0f, _obj.Position.Z);
             }
             foreach (SFMapInteractiveObject io in int_objects)
             {
-                SF3D.Object3D _obj = scene.objects_static[io.GetObjectName()];
+                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(io.GetObjectName());
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(io.grid_position) / 100.0f, _obj.Position.Z);
             }
             foreach (SFMapDecoration d in decorations)
             {
-                SF3D.Object3D _obj = scene.objects_static[d.GetObjectName()];
+                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName());
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(d.grid_position) / 100.0f, _obj.Position.Z);
             }
             foreach (SFMapBuilding b in buildings)
             {
-                SF3D.Object3D _obj = scene.objects_static[b.GetObjectName()];
+                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(b.GetObjectName());
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(b.grid_position) / 100.0f, _obj.Position.Z);
             }
             foreach (SFMapPortal p in portals)
             {
-                SF3D.Object3D _obj = scene.objects_static[p.GetObjectName()];
+                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(p.GetObjectName());
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(p.grid_position) / 100.0f, _obj.Position.Z);
             }
 
@@ -592,6 +567,7 @@ namespace SpellforceDataEditor.SFMap
             overlays.Clear();
             lakes_contained.Clear();
             hmap = null;
+            owner = null;
             material_id = null;
             vertices = null;
             normals = null;
@@ -694,9 +670,8 @@ namespace SpellforceDataEditor.SFMap
         public List<SFMapChunk60Data> chunk60_data = new List<SFMapChunk60Data>();
 
         public int chunk_size { get; private set; }
-        public SFMapHeightMapChunk[] chunks { get; private set; }
         public SF3D.SceneSynchro.SceneNodeMapChunk[] chunk_nodes { get; private set; }
-        public List<SFMapHeightMapChunk> visible_chunks = new List<SFMapHeightMapChunk>();
+        public List<SF3D.SceneSynchro.SceneNodeMapChunk> visible_chunks = new List<SF3D.SceneSynchro.SceneNodeMapChunk>();
 
         public List<string> visible_overlays { get; private set; } = new List<string>();
 
@@ -714,7 +689,6 @@ namespace SpellforceDataEditor.SFMap
         public SFMapHeightMapChunk GetChunk(SFCoord pos)
         {
             int chunk_count_y = height / chunk_size;
-            return chunks[(chunk_count_y * ((height - pos.y - 1) / chunk_size) + (pos.x / chunk_size))];
             return chunk_nodes[(chunk_count_y * ((height - pos.y - 1) / chunk_size) + (pos.x / chunk_size))].MapChunk;
         }
 
@@ -722,6 +696,12 @@ namespace SpellforceDataEditor.SFMap
         {
             int chunk_count_y = height / chunk_size;
             return chunk_nodes[(chunk_count_y * ((height - pos.y - 1) / chunk_size) + (pos.x / chunk_size))];
+        }
+
+        // takes into account that each object on the map is bound to a chunk
+        public Vector3 GetFixedPosition(SFCoord pos)
+        {
+            return new Vector3(pos.x % chunk_size, GetZ(pos)/100.0f, (height - pos.y - 1) % chunk_size);
         }
 
         public void SetRowRaw(int row, byte[] chunk_data)
@@ -748,31 +728,22 @@ namespace SpellforceDataEditor.SFMap
             chunk_size = 16;
             int chunk_count_x = width / chunk_size;
             int chunk_count_y = height / chunk_size;
-            chunks = new SFMapHeightMapChunk[chunk_count_x * chunk_count_y];
-            for (int i = 0; i < chunk_count_y; i++)
-                for (int j = 0; j < chunk_count_x; j++)
-                {
-                    chunks[i * chunk_count_x + j] = new SFMapHeightMapChunk();
-                    chunks[i * chunk_count_x + j].hmap = this;
-                    chunks[i * chunk_count_x + j].Generate(height_data, tile_data, width, chunk_size, j, i);   // assumes width = height, todo: remove this condition
-                }
-            foreach (SFMapHeightMapChunk chunk in chunks)
-            {
-                chunk.Init();
-            }
-            /*chunk_nodes = new SF3D.SceneSynchro.SceneNodeMapChunk[chunk_count_x * chunk_count_y];
+            chunk_nodes = new SF3D.SceneSynchro.SceneNodeMapChunk[chunk_count_x * chunk_count_y];
             for(int i = 0; i < chunk_count_y; i++)
                 for(int j = 0; j < chunk_count_x; j++)
                 {
+                    chunk_nodes[i * chunk_count_x + j] = new SF3D.SceneSynchro.SceneNodeMapChunk("hmap_" + j.ToString() + "_" + i.ToString());
+                    chunk_nodes[i * chunk_count_x + j].Visible = false;
                     chunk_nodes[i * chunk_count_x + j].MapChunk = new SFMapHeightMapChunk();
                     chunk_nodes[i * chunk_count_x + j].MapChunk.hmap = this;
                     chunk_nodes[i * chunk_count_x + j].MapChunk.Generate(height_data, tile_data, width, chunk_size, j, i);
+                    chunk_nodes[i * chunk_count_x + j].Position = new Vector3(j * chunk_size, 0, i * chunk_size);
                 }
             foreach(SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
             {
                 chunk.MapChunk.Init();
-            }*/
-            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate(): Chunks generated: "+chunks.Length.ToString());
+            }
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate(): Chunks generated: "+chunk_nodes.Length.ToString());
         }
 
         public short GetZ(SFCoord pos)
@@ -792,13 +763,10 @@ namespace SpellforceDataEditor.SFMap
             // calculate ray collision point
             SF3D.Physics.Ray ray = new SF3D.Physics.Ray(new Vector3(pos.X, 1000, pos.Y), new Vector3(0, -1100, 0));
             Vector3 result;
-            if (ray.Intersect(chunks[(chunk_count_y - cy - 1) * chunk_count_x + cx].vertices, new Vector3(cx * chunk_size, 0, height - ((cy+1) * chunk_size)), out result))
-                return result.Y;
-            return 0;
-            /*if (ray.Intersect(chunk_nodes[(chunk_count_y - cy - 1) * chunk_count_x + cx].MapChunk.vertices,
+            if (ray.Intersect(chunk_nodes[(chunk_count_y - cy - 1) * chunk_count_x + cx].MapChunk.vertices,
                 new Vector3(cx * chunk_size, 0, height - ((cy + 1) * chunk_size)), out result))
                 return result.Y;
-            return 0;*/
+            return 0;
         }
 
         public void ResetMask()
@@ -866,15 +834,8 @@ namespace SpellforceDataEditor.SFMap
             int botchunky = bottomright.y / 16;
 
             for (int i = topchunkx; i <= botchunkx; i++)
-            {
                 for (int j = topchunky; j <= botchunky; j++)
-                {
-                    chunks[j * chunk_count_x + i].RebuildGeometry(height_data, width);  // room to optimize,
-                }
-            }
-            /*for (int i = topchunkx; i <= botchunkx; i++)
-                for (int j = topchunky; j <= botchunky; j++)
-                    chunk_nodes[j * chunk_count_x + i].MapChunk.RebuildGeometry(height_data, width);*/
+                    chunk_nodes[j * chunk_count_x + i].MapChunk.RebuildGeometry(height_data, width);
         }
 
         public void RebuildTerrainTexture(SFCoord topleft, SFCoord bottomright)
@@ -888,33 +849,20 @@ namespace SpellforceDataEditor.SFMap
             int botchunky = bottomright.y / 16;
 
             for (int i = topchunkx; i <= botchunkx; i++)
-            {
                 for (int j = topchunky; j <= botchunky; j++)
-                {
-                    chunks[j * chunk_count_x + i].RebuildTerrainTexture(tile_data, width);  // room to optimize,
-                }
-            }
-            /*for (int i = topchunkx; i <= botchunkx; i++)
-                for (int j = topchunky; j <= botchunky; j++)
-                    chunk_nodes[j * chunk_count_x + i].MapChunk.RebuildTerrainTexture(tile_data, width);*/
+                    chunk_nodes[j * chunk_count_x + i].MapChunk.RebuildTerrainTexture(tile_data, width);
         }
 
         public void OverlayCreate(string o_name, Vector4 col)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.OverlayCreate() called, overlay name: "+o_name);
 
-            foreach (SFMapHeightMapChunk chunk in chunks)
-            {
-                chunk.overlays.Add(o_name, new MapEdit.MapOverlayChunk());
-                chunk.overlays[o_name].Init();
-                chunk.overlays[o_name].color = col;
-            }
-            /*foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
+            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
             {
                 chunk.MapChunk.overlays.Add(o_name, new MapEdit.MapOverlayChunk());
                 chunk.MapChunk.overlays[o_name].Init();
                 chunk.MapChunk.overlays[o_name].color = col;
-            }*/
+            }
         }
 
         public void OverlayAdd(string o_name, SFCoord pos)
@@ -936,18 +884,12 @@ namespace SpellforceDataEditor.SFMap
 
         public void OverlayClear(string o_name)
         {
-            foreach (SFMapHeightMapChunk chunk in chunks)
-                if (chunk.overlays[o_name].points.Count != 0)
-                {
-                    chunk.overlays[o_name].points.Clear();
-                    chunk.overlays[o_name].Update(chunk);
-                }
-            /*foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
+            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
                 if (chunk.MapChunk.overlays[o_name].points.Count != 0)
                 {
                     chunk.MapChunk.overlays[o_name].points.Clear();
                     chunk.MapChunk.overlays[o_name].Update(chunk.MapChunk);
-                }*/
+                }
         }
 
         public void OverlaySetVisible(string o_name, bool visible)
@@ -973,15 +915,8 @@ namespace SpellforceDataEditor.SFMap
             int botchunky = bottomright.y / chunk_size;
 
             for (int i = topchunkx; i <= botchunkx; i++)
-            {
                 for (int j = topchunky; j <= botchunky; j++)
-                {
-                    chunks[j * chunk_count_x + i].OverlayUpdate(o_name); 
-                }
-            }
-            /*for (int i = topchunkx; i <= botchunkx; i++)
-                for (int j = topchunky; j <= botchunky; j++)
-                    chunk_nodes[j * chunk_count_x + i].MapChunk.OverlayUpdate(o_name);*/
+                    chunk_nodes[j * chunk_count_x + i].MapChunk.OverlayUpdate(o_name);
         }
 
         public List<HashSet<SFCoord>> GetSeparateIslands(HashSet<SFCoord> src)
@@ -1066,16 +1001,15 @@ namespace SpellforceDataEditor.SFMap
                 return;
 
             texture_manager.Unload();
-            foreach (SFMapHeightMapChunk chunk in chunks)
-                chunk.Unload();
-            /*foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
-                chunk.Dispose();*/
+            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
+                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(chunk);
+
             chunk42_data.Clear();
             chunk56_data.Clear();
             chunk60_data.Clear();
             visible_chunks.Clear();
             visible_overlays.Clear();
-            chunks = null;
+            chunk_nodes = null;
             map = null;
         }
     }

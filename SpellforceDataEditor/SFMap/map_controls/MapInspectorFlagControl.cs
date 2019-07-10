@@ -30,11 +30,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
                 map.heightmap.OverlayClear("ManualVisionBlock");
                 map.heightmap.OverlaySetVisible("ManualVisionBlock", false);
-                foreach (SFMapHeightMapChunk chunk in map.heightmap.chunks)
+                foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
                 {
-                    chunk.OverlayUpdate("TileMovementBlock");
-                    chunk.OverlayUpdate("ManualMovementBlock");
-                    chunk.OverlayUpdate("ManualVisionBlock");
+                    chunk_node.MapChunk.OverlayUpdate("TileMovementBlock");
+                    chunk_node.MapChunk.OverlayUpdate("ManualMovementBlock");
+                    chunk_node.MapChunk.OverlayUpdate("ManualVisionBlock");
                 }
             }
             else
@@ -54,17 +54,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 {
                     map.heightmap.OverlaySetVisible("TileMovementBlock", true);
                     map.heightmap.OverlaySetVisible("ManualMovementBlock", true);
-                    foreach (SFMapHeightMapChunk chunk in map.heightmap.chunks)
+                    foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
                     {
-                        chunk.OverlayUpdate("TileMovementBlock");
-                        chunk.OverlayUpdate("ManualMovementBlock");
+                        chunk_node.MapChunk.OverlayUpdate("TileMovementBlock");
+                        chunk_node.MapChunk.OverlayUpdate("ManualMovementBlock");
                     }
                 }
                 if (CheckVision.Checked)
                 {
                     map.heightmap.OverlaySetVisible("ManualVisionBlock", true);
-                    foreach (SFMapHeightMapChunk chunk in map.heightmap.chunks)
-                        chunk.OverlayUpdate("ManualVisionBlock");
+                    foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
+                        chunk_node.MapChunk.OverlayUpdate("ManualVisionBlock");
                 }
             }
             MainForm.mapedittool.update_render = true;
@@ -75,10 +75,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
             map.heightmap.OverlaySetVisible("TileMovementBlock", CheckMovement.Checked);
             map.heightmap.OverlaySetVisible("ManualMovementBlock", CheckMovement.Checked);
             if(CheckMovement.Checked)
-                foreach (SFMapHeightMapChunk chunk in map.heightmap.chunks)
+                foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
                 {
-                    chunk.OverlayUpdate("TileMovementBlock");
-                    chunk.OverlayUpdate("ManualMovementBlock");
+                    chunk_node.MapChunk.OverlayUpdate("TileMovementBlock");
+                    chunk_node.MapChunk.OverlayUpdate("ManualMovementBlock");
                 }
 
             MainForm.mapedittool.update_render = true;
@@ -88,8 +88,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             map.heightmap.OverlaySetVisible("ManualVisionBlock", CheckVision.Checked);
             if(CheckVision.Checked)
-                foreach (SFMapHeightMapChunk chunk in map.heightmap.chunks)
-                    chunk.OverlayUpdate("ManualVisionBlock");
+                foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
+                    chunk_node.MapChunk.OverlayUpdate("ManualVisionBlock");
 
             MainForm.mapedittool.update_render = true;
         }

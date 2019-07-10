@@ -14,23 +14,40 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
     public class SceneNode
     {
         public string Name { get; private set; } = "";
-        public SceneNode Parent = null;
+        public SceneNode Parent { get; set; } = null;
         public List<SceneNode> Children { get; protected set; } = new List<SceneNode>();
         
         public virtual bool NeedsUpdateLocalTransform { get; protected set; } = true;
-          
+
+        protected bool visible = true;
         protected Vector3 position = new Vector3(0);
         protected Quaternion rotation = new Quaternion(0, 0, 0, 1);
         protected Vector3 scale = new Vector3(1);
         protected Matrix4 local_transform = Matrix4.Identity;
         protected Matrix4 result_transform = Matrix4.Identity;
-
+        
+        // todo: add a LocalVisible, so even when parent changes to visible while this is invisible, this is still invisible
+        public virtual bool Visible
+        {
+            get
+            {
+                return visible;
+            }
+            set
+            {
+                if (visible != value)
+                {
+                    visible = value;
+                    foreach (SceneNode n in Children)
+                        n.Visible = value;
+                }
+            }
+        }
         public Vector3 Position { get { return position; } set { position = value; TouchLocalTransform(); TouchParents(); } }
         public Quaternion Rotation { get { return rotation; } set { rotation = value; TouchLocalTransform(); TouchParents(); } }
         public Vector3 Scale { get { return scale; } set { scale = value; TouchLocalTransform(); TouchParents(); } }
         public Matrix4 LocalTransform { get { return local_transform; } protected set { local_transform = value; } }
         public Matrix4 ResultTransform { get { return result_transform; } protected set { result_transform = value; } }
-        public bool Visible { get; set; } = true;
 
         public RenderFlags render_flags;
 
@@ -48,6 +65,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
             Children.Add(node);
             node.Parent = this;
+            node.Visible = Visible;
         }
 
         public void RemoveNode(SceneNode node)
@@ -58,6 +76,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 return;
             }
             node.Parent = null;
+            node.Visible = false;
             Children.Remove(node);
         }
 
@@ -72,8 +91,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             if (Parent != null)
                 Parent.RemoveNode(this);
-            if(node != null)
+            if (node != null)
                 node.AddNode(this);
+            else
+                Visible = false;
         }
 
         public static float DegToRad(int deg)
@@ -89,9 +110,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // utility function
         public void SetAnglePlane(int angle_deg)
         {
-            if (Parent == null)
-                Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2)   // only when has parent
-                         * Quaternion.FromAxisAngle(new Vector3(0, 0, 1), DegToRad(angle_deg));
+            Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2)
+                     * Quaternion.FromAxisAngle(new Vector3(0, 0, 1), DegToRad(angle_deg));
         }
 
         // if something requires updating, notify all parents about that, root including, so the engine knows to run update routine
@@ -143,24 +163,27 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         public T FindNode<T>(string path) where T: SceneNode
         {
-            string[] names = path.Split('.');
+            string[] names = (Name+'.'+path).Split('.');
             return FindNode<T>(names, 0);
         }
 
         private T FindNode<T>(string[] names, int current_index) where T: SceneNode
         {
-            if ((names[current_index] == Name)&&(this.GetType() == typeof(T)))
-                return (T)this;
-            if (current_index == names.Length - 1)
-                return null;
-            T result = null;
-            foreach(SceneNode node in Children)
+            if (names[current_index] == Name)
             {
-                result = node.FindNode<T>(names, current_index + 1);
-                if (result != null)
-                    break;
+                if ((current_index == names.Length - 1)&&(this.GetType() == typeof(T)))
+                    return (T)this;
+
+                T result = null;
+                foreach (SceneNode node in Children)
+                {
+                    result = node.FindNode<T>(names, current_index + 1);
+                    if (result != null)
+                        break;
+                }
+                return result;
             }
-            return result;
+            return null;
         }
 
         public string GetFullPath()
@@ -176,6 +199,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
             foreach (SceneNode c in Children)
                 c.Dispose();
+
+            while(Children.Count != 0)
+                Children[0].SetParent(null);
         }
 
         protected virtual void InternalDispose()
@@ -192,19 +218,32 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
     public class SceneNodeSimple : SceneNode
     {
+        private SFModel3D mesh;
         public SFModel3D Mesh
         {
             get
             {
-                return Mesh;
+                return mesh;
             }
             set
             {
-                Mesh = value;
-                if (Mesh == null)
+                mesh = value;
+                if (mesh == null)
+                    ClearTexGeometry();
+                else if(Visible)
+                    AddTexGeometry();
+            }
+        }
+        public override bool Visible
+        {
+            get => base.Visible;
+            set
+            {
+                if (value == false)
                     ClearTexGeometry();
                 else
                     AddTexGeometry();
+                base.Visible = value;
             }
         }
         public TexGeometryLinkSimple[] TextureGeometryIndex { get; private set; } = null;
@@ -218,7 +257,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 return;
 
             foreach (TexGeometryLinkSimple link in TextureGeometryIndex)
+            {
+                if (link.texture == null)
+                    continue;
                 SFRender.SFRenderEngine.scene.tex_list_simple[link.texture].RemoveAt(link.index);
+                if (SFRender.SFRenderEngine.scene.tex_list_simple[link.texture].used_count == 0)
+                    SFRender.SFRenderEngine.scene.tex_list_simple.Remove(link.texture);
+            }
 
             TextureGeometryIndex = null;
         }
@@ -228,17 +273,21 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             if (TextureGeometryIndex != null)
                 ClearTexGeometry();
+            if (mesh == null)
+                return;
 
-            TextureGeometryIndex = new TexGeometryLinkSimple[Mesh.materials.Length];
+            TextureGeometryIndex = new TexGeometryLinkSimple[mesh.materials.Length];
 
             for(int i = 0; i < Mesh.materials.Length; i++)
             {
-                TextureGeometryIndex[i].texture = Mesh.materials[i].texture;
+                TextureGeometryIndex[i].texture = mesh.materials[i].texture;
+                if (mesh.materials[i].texture == null)
+                    continue;
                 // long name :^)
                 TexturedGeometryListElementSimple elem = new TexturedGeometryListElementSimple();
                 elem.node = this;
                 elem.submodel_index = i;
-                TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntrySimple(Mesh.materials[i].texture, elem);
+                TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntrySimple(mesh.materials[i].texture, elem);
             }
         }
 
@@ -260,19 +309,21 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
     public class SceneNodeAnimated : SceneNode
     {
-        public SFSkeleton Skeleton { get; private set; } = null;
+        private SFSkeleton skeleton = null;
+        private SFModelSkin skin = null;
+        public SFSkeleton Skeleton { get { return skeleton; } private set { skeleton = value; } }
         public SFModelSkin Skin
         {
             get
             {
-                return Skin;
+                return skin;
             }
-            set
+            private set
             {
-                Skin = value;
-                if (Skin == null)
+                skin = value;
+                if (skin == null)
                     ClearTexGeometry();
-                else
+                else if(Visible)
                     AddTexGeometry();
             }
         }
@@ -280,6 +331,18 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public Matrix4[] BoneTransforms = null;
         public float AnimCurrentTime { get; private set; } = 0;
         public bool AnimPlaying { get; set; } = false;
+        public override bool Visible
+        {
+            get => base.Visible;
+            set
+            {
+                if (value == false)
+                    ClearTexGeometry();
+                else
+                    AddTexGeometry();
+                base.Visible = value;
+            }
+        }
 
         public TexGeometryLinkAnimated[] TextureGeometryIndex { get; private set; } = null;
 
@@ -324,9 +387,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             for (int i = 0; i < BoneTransforms.Length; i++)
                 BoneTransforms[i] = Animation.CalculateBoneMatrix(i, AnimCurrentTime).to_mat4();
-            Skeleton.CalculateTransformation(BoneTransforms, ref BoneTransforms);
+            skeleton.CalculateTransformation(BoneTransforms, ref BoneTransforms);
             for (int i = 0; i < BoneTransforms.Length; i++)
-                BoneTransforms[i] = Skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
+                BoneTransforms[i] = skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
         }
 
         protected override void UpdateTime(float t)
@@ -341,9 +404,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 return;
 
             foreach (TexGeometryLinkAnimated link in TextureGeometryIndex)
+            {
                 SFRender.SFRenderEngine.scene.tex_list_animated[link.texture].RemoveAt(link.index);
+                if (SFRender.SFRenderEngine.scene.tex_list_animated[link.texture].used_count == 0)
+                    SFRender.SFRenderEngine.scene.tex_list_animated.Remove(link.texture);
+            }
 
-            TextureGeometryIndex = null;
+                TextureGeometryIndex = null;
         }
 
         // also do this if transparent = false, let transparent object list deal with those
@@ -351,17 +418,19 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             if (TextureGeometryIndex != null)
                 ClearTexGeometry();
+            if (skin == null)
+                return;
 
-            TextureGeometryIndex = new TexGeometryLinkAnimated[Skin.submodels.Count];
+            TextureGeometryIndex = new TexGeometryLinkAnimated[skin.submodels.Count];
 
             for (int i = 0; i < Skin.submodels.Count; i++)
             {
-                TextureGeometryIndex[i].texture = Skin.submodels[i].material.texture;
+                TextureGeometryIndex[i].texture = skin.submodels[i].material.texture;
                 // long name :^)
                 TexturedGeometryListElementAnimated elem = new TexturedGeometryListElementAnimated();
                 elem.node = this;
                 elem.submodel_index = i;
-                TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntryAnimated(Skin.submodels[i].material.texture, elem);
+                TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntryAnimated(skin.submodels[i].material.texture, elem);
             }
         }
 
@@ -390,20 +459,18 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         protected override void UpdateTransform()
         {
-            if (NeedsUpdateLocalTransform)
+            if (Parent != null)
             {
-                if (Parent != null)
-                {
-                    if((Parent.GetType() == typeof(SceneNodeAnimated))&&(BoneIndex != -1))
-                        result_transform = local_transform * ((SceneNodeAnimated)(Parent)).Skeleton.bone_reference_matrices[BoneIndex]
-                            * ((SceneNodeAnimated)(Parent)).BoneTransforms[BoneIndex] * Parent.ResultTransform;
-                    else
-                        result_transform = local_transform * Parent.ResultTransform;
-                }
+                if((Parent.GetType() == typeof(SceneNodeAnimated))&&(BoneIndex != -1))
+                    result_transform = local_transform * ((SceneNodeAnimated)(Parent)).Skeleton.bone_reference_matrices[BoneIndex]
+                        * ((SceneNodeAnimated)(Parent)).BoneTransforms[BoneIndex] * Parent.ResultTransform;
                 else
-                    result_transform = local_transform;
-                NeedsUpdateLocalTransform = false;
+                    result_transform = local_transform * Parent.ResultTransform;
             }
+            else
+                result_transform = local_transform;
+
+            TouchLocalTransform();
         }
 
         public void SetBone(string name)
@@ -438,6 +505,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if(MapChunk != null)
                 MapChunk.Unload();
         }
+
+
     }
 
     public class SceneNodeCamera: SceneNode
