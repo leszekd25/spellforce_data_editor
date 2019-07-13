@@ -47,6 +47,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // render engine takes these lists and renders stuff from the lists, one list for each texture for each shader
         public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>> tex_list_simple { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>>();
         public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>> tex_list_animated { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>>();
+        public LinearPool<TexturedGeometryListElementSimple> untextured_list_simple { get; private set; } = new LinearPool<TexturedGeometryListElementSimple>();
 
         public void Init()
         {
@@ -148,6 +149,18 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
         }
         // NEW SCENE SYSTEM STUFF!
+
+        public int AddUntexturedEntrySimple(TexturedGeometryListElementSimple elem)
+        {
+            return untextured_list_simple.Add(elem);
+        }
+
+        public void ClearUntexturedEntrySimple(TexturedGeometryListElementSimple elem)
+        {
+            untextured_list_simple.Remove(elem);
+            if (untextured_list_simple.used_count == 0)
+                untextured_list_simple.Clear();
+        }
 
         public int AddTextureEntrySimple(SFTexture tex, TexturedGeometryListElementSimple elem)
         {

@@ -125,18 +125,16 @@ namespace SpellforceDataEditor.SF3D
                 face_indices[i * 3 + 2] = (uint)br.ReadUInt16();
                 br.ReadUInt16();
             }
-            
-            SFBoneIndex bsi = SFResourceManager.BSIs.Get(SFResourceManager.current_resource);
-            if(bsi == null)
+
+            SFBoneIndex bsi = null;
+            int bsi_code = SFResourceManager.BSIs.Load(SFResourceManager.current_resource);
+            if ((bsi_code != 0)&&(bsi_code != -1))
             {
-                int bsi_code = SFResourceManager.BSIs.Load(SFResourceManager.current_resource);
-                if (bsi_code != 0)
-                {
-                    LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkinChunk.Load(): Could not load bone skin index file (BSI name = " + SFResourceManager.current_resource + ")");
-                    return bsi_code;
-                }
-                bsi = SFResourceManager.BSIs.Get(SFResourceManager.current_resource);
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkinChunk.Load(): Could not load bone skin index file (BSI name = " + SFResourceManager.current_resource + ")");
+                return bsi_code;
             }
+            bsi = SFResourceManager.BSIs.Get(SFResourceManager.current_resource);
+            
             SetName(SFResourceManager.current_resource);
             bones = new int[bsi.bone_index_remap[chunk_id].Length];
             bsi.bone_index_remap[chunk_id].CopyTo(bones, 0);
@@ -160,17 +158,14 @@ namespace SpellforceDataEditor.SF3D
             matname = new string(chars).ToLower();
             matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
 
-            SFTexture tex = SFResourceManager.Textures.Get(matname);
-            if (tex == null)
+            SFTexture tex = null;
+            int tex_code = SFResourceManager.Textures.Load(matname);
+            if ((tex_code != 0)&&(tex_code != -1))
             {
-                int tex_code = SFResourceManager.Textures.Load(matname);
-                if (tex_code != 0)
-                {
-                    LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkinChunk.Load(): Could not load texture (texture name = " + matname + ")");
-                    return tex_code;
-                }
-                tex = SFResourceManager.Textures.Get(matname);
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkinChunk.Load(): Could not load texture (texture name = " + matname + ")");
+                return tex_code;
             }
+            tex = SFResourceManager.Textures.Get(matname);
             material.texture = tex;
             material.indexStart = 0;
             material.indexCount = (uint)face_indices.Length;

@@ -12,6 +12,9 @@ namespace SpellforceDataEditor
     {
         public static int IgnoredMipMapsCount { get; private set; } = 0;
         public static int MaximumAllowedTextureSize { get; private set; } = 2048;
+        public static bool EnableShadows { get; private set; } = true;
+        public static int ShadowMapSize { get; private set; } = 1024;
+        public static int AntiAliasingSamples { get; private set; } = 4;
 
         public static string GameDirectory { get; set; } = "";
         public static int LanguageID { get; private set; } = 1;
@@ -57,6 +60,20 @@ namespace SpellforceDataEditor
                             MaximumAllowedTextureSize = Utility.TryParseUInt16(words[1], (ushort)MaximumAllowedTextureSize);
                             if (MaximumAllowedTextureSize < 64)
                                 MaximumAllowedTextureSize = 64;
+                            break;
+                        case "ShadowMapSize":
+                            ShadowMapSize = Utility.TryParseUInt16(words[1], (ushort)ShadowMapSize);
+                            if (ShadowMapSize < 64)
+                                ShadowMapSize = 64;
+                            break;
+                        case "EnableShadows":
+                            EnableShadows = (words[1] == "YES");
+                            break;
+                        case "AntiAliasingSamples":
+                            AntiAliasingSamples = Utility.TryParseUInt16(words[1], (ushort)AntiAliasingSamples);
+                            if (AntiAliasingSamples > 4)
+                                AntiAliasingSamples = 4;
+                            AntiAliasingSamples = (AntiAliasingSamples / 2) * 2;
                             break;
                         case "GameDirectory":
                             string s2 = words[1];
@@ -145,6 +162,15 @@ namespace SpellforceDataEditor
                             break;
                         case "MaximumAllowedTextureSize":
                             words = new string[] { words[0], MaximumAllowedTextureSize.ToString() };
+                            break;
+                        case "ShadowMapSize":
+                            words = new string[] { words[0], ShadowMapSize.ToString() };
+                            break;
+                        case "EnableShadows":
+                            words = new string[] { words[0], EnableShadows ? "YES" : "NO" };
+                            break;
+                        case "AntiAliasingSamples":
+                            words = new string[] { words[0], AntiAliasingSamples.ToString() };
                             break;
                         case "GameDirectory":
                             words = new string[] { words[0], GameDirectory };

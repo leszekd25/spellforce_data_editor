@@ -94,7 +94,7 @@ namespace SpellforceDataEditor.SFMap
                 colors[i] = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
             }
 
-            b_outline.CreateRaw(vertices, uvs, colors, normals, indices, "");
+            b_outline.CreateRaw(vertices, uvs, colors, normals, indices, null);
         }
     }
 

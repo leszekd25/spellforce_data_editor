@@ -41,6 +41,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             //System.Diagnostics.Debug.WriteLine("LINKING PROGRAM");
             int programID = GL.CreateProgram();
+            System.Diagnostics.Debug.WriteLine("ShaderCompiler.Compile(): Creating shader id " + programID.ToString());
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "ShaderCompiler.Compile(): Creating shader id " + programID.ToString());
             GL.AttachShader(programID, VertexShaderID);
             GL.AttachShader(programID, FragmentShaderID);

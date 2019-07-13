@@ -16,6 +16,7 @@ namespace SpellforceDataEditor.SFMap
         public SF3D.SceneSynchro.SceneNodeMapChunk owner = null;
         public int width, height;
         public int id, ix, iy;
+        public bool visible = false;
         
         // heightmap
         public byte[] material_id;
@@ -24,6 +25,9 @@ namespace SpellforceDataEditor.SFMap
         public Vector2[] uvs;
         public Vector3[] texture_id;
         public Vector3[] texture_weights;
+
+        // lake
+        public SFModel3D lake_model = null;    // generated here, but owned by ResourceManager
 
         // overlays
         public Dictionary<string, MapEdit.MapOverlayChunk> overlays { get; private set; } = new Dictionary<string, MapEdit.MapOverlayChunk>();
@@ -35,25 +39,26 @@ namespace SpellforceDataEditor.SFMap
         public List<SFMapUnit> units = new List<SFMapUnit>();
         public List<SFMapPortal> portals = new List<SFMapPortal>();
         public List<SFMapDecoration> decorations = new List<SFMapDecoration>();
-        public List<bool> lakes_contained = new List<bool>();
 
         public int vertex_array, position_buffer, normal_buffer, uv_buffer, tex_id_buffer, tex_weight_buffer;
 
 
-        public void Generate(short[] data, byte[] tex_data, int map_size, int size, int x, int y)
+        public void Generate()
         {
+            short[] data = hmap.height_data;
+            byte[] tex_data = hmap.tile_data;
+
             float flatten_factor = 100;
 
-            width = size;
-            height = size;
-            ix = x;
-            iy = y;
-            id = y * (map_size / size) + x;
+            int map_size = hmap.width;
+            int size = width;
+            
+            id = iy * (map_size / size) + ix;
 
             int chunk_count = map_size / size;
 
-            int row_start = (chunk_count - y - 1) * size;
-            int col_start = x * size;
+            int row_start = (chunk_count - iy - 1) * size;
+            int col_start = ix * size;
 
             material_id = new byte[(size + 1) * (size + 1)];
 
@@ -199,7 +204,7 @@ namespace SpellforceDataEditor.SFMap
                 max_height = Math.Max(max_height, h);
             }
 
-            aabb = new SF3D.Physics.BoundingBox(new Vector3(x * size, 0, y * size), new Vector3((x + 1) * size, max_height, (y * size) + size));
+            aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, 0, iy * size), new Vector3((ix + 1) * size, max_height, (iy * size) + size));
         }
 
         public void Init()
@@ -306,8 +311,12 @@ namespace SpellforceDataEditor.SFMap
             return (new Vector3(cz - az, 2 * hscale, dz - bz)).Normalized();
         }
 
+        // for heightmap edit only
         public void RebuildGeometry(short[] data, int map_size)
         {
+            if (!visible)
+                return;
+
             float flatten_factor = 100;
 
             int size = width;
@@ -419,12 +428,16 @@ namespace SpellforceDataEditor.SFMap
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(p.grid_position) / 100.0f, _obj.Position.Z);
             }
 
-            foreach (MapEdit.MapOverlayChunk o in overlays.Values)
-                o.Update(this);
+            foreach (string o_name in overlays.Keys)
+                OverlayUpdate(o_name);
         }
 
+        // for texture edit only
         public void RebuildTerrainTexture(byte[] tex_data, int map_size)
         {
+            if (!visible)
+                return;
+
             int size = width;
             int chunk_count = map_size / size;
 
@@ -546,6 +559,162 @@ namespace SpellforceDataEditor.SFMap
 
             GL.BindVertexArray(0);
         }
+        
+        struct SFMapLakeCellInfo
+        {
+            public byte lake_id;          // lake id (each lake has uniquely assigned id)
+            public short lake_type;       // lake type (water, lava, swamp, ice)
+            public float lake_height;    // height of the lake at particular cell
+        }
+
+        // for lake edit only
+        public void RebuildLake()
+        {
+            if (!visible)
+                return;
+            // these are lake ids... different lake ids != different lake types
+            // one material dedicated to each lake type on the chunk!
+            // LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFMapHeightMap.RebuildLake() called, lake name LAKE_" + ix.ToString() + "_" + iy.ToString());
+            Dictionary<SFCoord, SFMapLakeCellInfo> lake_info = new Dictionary<SFCoord, SFMapLakeCellInfo>();
+            Dictionary<short, int> lake_types = new Dictionary<short, int>();
+
+            int chunk_count = hmap.width / width;
+            int row_start = (chunk_count - iy - 1) * height;
+            int col_start = ix * width;
+
+            for (int i = 0; i < height; i++)
+                for(int j = 0; j < width; j++)
+                {
+                    SFCoord pos = new SFCoord(j, width-i-1);
+                    SFMapLakeCellInfo lc_info = new SFMapLakeCellInfo();
+                    int index = ((row_start + i) * hmap.width) + col_start + j;
+                    byte lake_index = hmap.lake_data[index];
+                    if(lake_index != 0)
+                    {
+                        SFMapLake lake_object = hmap.map.lake_manager.lakes[lake_index - 1];
+                        lc_info.lake_id = lake_index;
+                        lc_info.lake_type = (short)lake_object.type;
+                        if (!lake_types.ContainsKey(lc_info.lake_type))
+                            lake_types.Add(lc_info.lake_type, 1);
+                        else
+                            lake_types[lc_info.lake_type] += 1;
+                        lc_info.lake_height = ((hmap.GetZ(lake_object.start) + lake_object.z_diff)) / 100.0f;
+                        lake_info.Add(pos, lc_info);
+                    }
+                }
+            
+            if (lake_model != null)
+            {
+                SFResources.SFResourceManager.Models.Dispose(lake_model.GetName());
+                lake_model = null;
+            }
+            
+            int total_cell_count = 0;
+            foreach (short t in lake_types.Keys)
+                total_cell_count += lake_types[t];
+            if (total_cell_count == 0)
+                return;
+
+            // generate geometry
+            Vector3[] vertices = new Vector3[total_cell_count * 4];
+            Vector2[] uvs = new Vector2[total_cell_count * 4];
+            Vector4[] colors = new Vector4[total_cell_count * 4];
+            Vector3[] normals = new Vector3[total_cell_count * 4];
+            uint[] indices = new uint[total_cell_count * 6];
+            SFMaterial[] materials = new SFMaterial[lake_types.Count];
+
+            int k = 0;
+            int mat_index = 0;
+            foreach (short t in lake_types.Keys)
+            {
+                // generate geometry for each lake type
+                foreach (SFCoord pos in lake_info.Keys)
+                {
+                    SFMapLakeCellInfo lc_info = lake_info[pos];
+                    if (lc_info.lake_type != t)
+                        continue;
+
+                    float real_z = lc_info.lake_height;
+
+                    vertices[k * 4 + 0] = new Vector3((float)(pos.x) - 0.5f, real_z, (float)(pos.y) - 0.5f);
+                    vertices[k * 4 + 1] = new Vector3((float)(pos.x + 1) - 0.5f, real_z,  (float)(pos.y) - 0.5f);
+                    vertices[k * 4 + 2] = new Vector3((float)(pos.x) - 0.5f, real_z,  (float)(pos.y + 1) - 0.5f);
+                    vertices[k * 4 + 3] = new Vector3((float)(pos.x + 1) - 0.5f, real_z, (float)(pos.y + 1) - 0.5f);
+                    uvs[k * 4 + 0] = new Vector2(pos.x / 4.0f, pos.y / 4.0f);
+                    uvs[k * 4 + 1] = new Vector2((pos.x + 1) / 4.0f, pos.y / 4.0f);
+                    uvs[k * 4 + 2] = new Vector2(pos.x / 4.0f, (pos.y + 1) / 4.0f);
+                    uvs[k * 4 + 3] = new Vector2((pos.x + 1) / 4.0f, (pos.y + 1) / 4.0f);
+                    colors[k * 4 + 0] = new Vector4(1, 1, 1, 1);
+                    colors[k * 4 + 1] = new Vector4(1, 1, 1, 1);
+                    colors[k * 4 + 2] = new Vector4(1, 1, 1, 1);
+                    colors[k * 4 + 3] = new Vector4(1, 1, 1, 1);
+                    normals[k * 4 + 0] = new Vector3(0, 1, 0);
+                    normals[k * 4 + 1] = new Vector3(0, 1, 0);
+                    normals[k * 4 + 2] = new Vector3(0, 1, 0);
+                    normals[k * 4 + 3] = new Vector3(0, 1, 0);
+                    indices[k * 6 + 0] = (uint)(k * 4 + 0);
+                    indices[k * 6 + 1] = (uint)(k * 4 + 1);
+                    indices[k * 6 + 2] = (uint)(k * 4 + 2);
+                    indices[k * 6 + 3] = (uint)(k * 4 + 1);
+                    indices[k * 6 + 4] = (uint)(k * 4 + 2);
+                    indices[k * 6 + 5] = (uint)(k * 4 + 3);
+
+                    k += 1;
+                }
+                // generate material for this geometry
+                materials[mat_index] = new SFMaterial();
+                materials[mat_index].indexStart = (uint)((k - lake_types[t]) * 6);
+                materials[mat_index].indexCount = (uint)(lake_types[t] * 6);
+
+                string tex_name = hmap.map.lake_manager.GetLakeTextureName(t);
+                SFTexture tex = null;
+                int tex_code = SFResources.SFResourceManager.Textures.Load(tex_name);
+                if ((tex_code != 0) && (tex_code != -1))
+                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapLake.Generate(): Could not load texture (texture name = " + tex_name + ")");
+                else
+                {
+                    tex = SFResources.SFResourceManager.Textures.Get(tex_name);
+                    tex.FreeMemory();
+                }
+                materials[mat_index].texture = tex;
+
+                mat_index += 1;
+            }
+
+            lake_model = new SFModel3D();
+            lake_model.CreateRaw(vertices, uvs, colors, normals, indices, materials);
+            SFResources.SFResourceManager.Models.AddManually(lake_model, "LAKE_" + ix.ToString() + "_" + iy.ToString());
+        }
+
+        // only happens after visibility actually changes
+        public void UpdateVisible(bool vis)
+        {
+            if(visible)
+            {
+                if (!vis)
+                {
+                    visible = false;
+                    if (lake_model != null)
+                    {
+                        SFResources.SFResourceManager.Models.Dispose(lake_model.GetName());
+                        lake_model = null;
+                    }
+
+                    foreach (MapEdit.MapOverlayChunk ov in overlays.Values)
+                        ov.Dispose();
+                }
+            }
+            else
+            {
+                if (vis)
+                {
+                    visible = true;
+                    RebuildLake();
+                    foreach (string o_name in overlays.Keys)
+                        OverlayUpdate(o_name);
+                }
+            }
+        }
 
         public void Unload()
         {
@@ -558,6 +727,16 @@ namespace SpellforceDataEditor.SFMap
             GL.DeleteBuffer(tex_id_buffer);
             GL.DeleteBuffer(tex_weight_buffer);
             GL.DeleteVertexArray(vertex_array);
+
+            if(lake_model != null)
+            {
+                SFResources.SFResourceManager.Models.Dispose(lake_model.GetName());
+                lake_model = null;
+            }
+
+            foreach (MapEdit.MapOverlayChunk ov in overlays.Values)
+                ov.Dispose();
+
             units.Clear();
             objects.Clear();
             buildings.Clear();
@@ -565,7 +744,7 @@ namespace SpellforceDataEditor.SFMap
             int_objects.Clear();
             portals.Clear();
             overlays.Clear();
-            lakes_contained.Clear();
+
             hmap = null;
             owner = null;
             material_id = null;
@@ -638,7 +817,9 @@ namespace SpellforceDataEditor.SFMap
 
         public void OverlayUpdate(string o_name)
         {
-            overlays[o_name].Update(this);
+            if (!visible)
+                return;
+            overlays[o_name].Update(this, o_name);
         }
     }
 
@@ -733,11 +914,18 @@ namespace SpellforceDataEditor.SFMap
                 for(int j = 0; j < chunk_count_x; j++)
                 {
                     chunk_nodes[i * chunk_count_x + j] = new SF3D.SceneSynchro.SceneNodeMapChunk("hmap_" + j.ToString() + "_" + i.ToString());
-                    chunk_nodes[i * chunk_count_x + j].Visible = false;
-                    chunk_nodes[i * chunk_count_x + j].MapChunk = new SFMapHeightMapChunk();
-                    chunk_nodes[i * chunk_count_x + j].MapChunk.hmap = this;
-                    chunk_nodes[i * chunk_count_x + j].MapChunk.Generate(height_data, tile_data, width, chunk_size, j, i);
-                    chunk_nodes[i * chunk_count_x + j].Position = new Vector3(j * chunk_size, 0, i * chunk_size);
+                    SF3D.SceneSynchro.SceneNodeMapChunk chunk_node = chunk_nodes[i * chunk_count_x + j];
+                    chunk_node.Visible = false;
+                    chunk_node.MapChunk = new SFMapHeightMapChunk();
+                    chunk_node.MapChunk.hmap = this;
+                    chunk_node.MapChunk.owner = chunk_nodes[i * chunk_count_x + j];
+                    chunk_node.MapChunk.ix = j;
+                    chunk_node.MapChunk.iy = i;
+                    chunk_node.MapChunk.width = chunk_size;
+                    chunk_node.MapChunk.height = chunk_size;
+
+                    chunk_node.MapChunk.Generate();
+                    chunk_node.Position = new Vector3(j * chunk_size, 0, i * chunk_size);
                 }
             foreach(SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
             {
@@ -860,7 +1048,6 @@ namespace SpellforceDataEditor.SFMap
             foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
             {
                 chunk.MapChunk.overlays.Add(o_name, new MapEdit.MapOverlayChunk());
-                chunk.MapChunk.overlays[o_name].Init();
                 chunk.MapChunk.overlays[o_name].color = col;
             }
         }
@@ -888,7 +1075,7 @@ namespace SpellforceDataEditor.SFMap
                 if (chunk.MapChunk.overlays[o_name].points.Count != 0)
                 {
                     chunk.MapChunk.overlays[o_name].points.Clear();
-                    chunk.MapChunk.overlays[o_name].Update(chunk.MapChunk);
+                    chunk.MapChunk.OverlayUpdate(o_name);
                 }
         }
 
@@ -966,6 +1153,19 @@ namespace SpellforceDataEditor.SFMap
                 result.Add(island);
             }
             return result;
+        }
+
+        public List<SF3D.SceneSynchro.SceneNodeMapChunk> GetAreaMapNodes(HashSet<SFCoord> points)
+        {
+            List<SF3D.SceneSynchro.SceneNodeMapChunk> list = new List<SF3D.SceneSynchro.SceneNodeMapChunk>();
+            foreach(SFCoord p in points)
+            {
+                SF3D.SceneSynchro.SceneNodeMapChunk node = GetChunkNode(p);
+                if (!list.Contains(node))
+                    list.Add(node);
+            }
+
+            return list;
         }
 
         public bool CanMoveToPosition(SFCoord pos)

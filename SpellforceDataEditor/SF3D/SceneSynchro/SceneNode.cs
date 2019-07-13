@@ -208,6 +208,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
 
         }
+
+        public override string ToString()
+        {
+            return Name + " ("+Children.Count+" children)";
+        }
     }
 
     public struct TexGeometryLinkSimple
@@ -259,10 +264,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             foreach (TexGeometryLinkSimple link in TextureGeometryIndex)
             {
                 if (link.texture == null)
-                    continue;
-                SFRender.SFRenderEngine.scene.tex_list_simple[link.texture].RemoveAt(link.index);
-                if (SFRender.SFRenderEngine.scene.tex_list_simple[link.texture].used_count == 0)
-                    SFRender.SFRenderEngine.scene.tex_list_simple.Remove(link.texture);
+                {
+                    SFRender.SFRenderEngine.scene.untextured_list_simple.RemoveAt(link.index);
+                    if (SFRender.SFRenderEngine.scene.untextured_list_simple.used_count == 0)
+                        SFRender.SFRenderEngine.scene.untextured_list_simple.Clear();
+                }
+                else
+                {
+                    SFRender.SFRenderEngine.scene.tex_list_simple[link.texture].RemoveAt(link.index);
+                    if (SFRender.SFRenderEngine.scene.tex_list_simple[link.texture].used_count == 0)
+                        SFRender.SFRenderEngine.scene.tex_list_simple.Remove(link.texture);
+                }
             }
 
             TextureGeometryIndex = null;
@@ -280,14 +292,15 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
             for(int i = 0; i < Mesh.materials.Length; i++)
             {
-                TextureGeometryIndex[i].texture = mesh.materials[i].texture;
-                if (mesh.materials[i].texture == null)
-                    continue;
-                // long name :^)
                 TexturedGeometryListElementSimple elem = new TexturedGeometryListElementSimple();
                 elem.node = this;
                 elem.submodel_index = i;
-                TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntrySimple(mesh.materials[i].texture, elem);
+                TextureGeometryIndex[i].texture = mesh.materials[i].texture;
+                if (mesh.materials[i].texture == null)
+                    TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddUntexturedEntrySimple(elem);
+                else
+                    TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntrySimple(mesh.materials[i].texture, elem);
+                // long name :^)
             }
         }
 
@@ -500,7 +513,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         public SceneNodeMapChunk(string n) : base(n) { }
 
-        protected virtual void DisposeInternal()
+        protected override void InternalDispose()
         {
             if(MapChunk != null)
                 MapChunk.Unload();

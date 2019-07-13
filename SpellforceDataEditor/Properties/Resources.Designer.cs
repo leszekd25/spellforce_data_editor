@@ -97,6 +97,7 @@ namespace SpellforceDataEditor.Properties {
         ///in vec3 fragmentNormal;
         ///in vec2 UV;
         ///in vec4 fragmentColor;
+        ///in vec4 fragmentPositionLightSpace;
         ///
         ///out vec4 color;
         ///
@@ -106,16 +107,13 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 SunColor;
         ///uniform float AmbientStrength;
         ///uniform vec4 AmbientColor;
-        ///uniform sampler2D myTextureSampler;
+        ///uniform sampler2D DiffuseTex;
+        ///uniform sampler2D ShadowMap;
         ///uniform bool texture_used;
         ///uniform bool apply_shading;
         ///
-        ///void main(){
-        ///  vec4 temp_c;
-        ///  if(texture_used)
-        ///    temp_c = texture(myTextureSampler, UV);
-        ///  else
-        ///    temp_c = fragmentColo [rest of string was truncated]&quot;;.
+        ///vec2 poissonDisk[4] = vec2[](
+        ///  vec2( -0.94201624, -0.39906216 ),        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader {
             get {
@@ -130,11 +128,21 @@ namespace SpellforceDataEditor.Properties {
         ///in vec2 TexCoords;
         ///
         ///uniform sampler2D screenTexture;
-        ///
         ///void main()
-        ///{ 
-        ///    FragColor = texture(screenTexture, TexCoords);
-        ///}.
+        ///{
+        ///    // this is for shadowmap
+        ///    /*float color = texture(screenTexture, TexCoords).r;
+        ///    if(color != 1.0)
+        ///    {
+        ///        if(color != 0.0)
+        ///            color = (1.0-color)*100;
+        ///        color = clamp(color, 0.0, 1.0);
+        ///        color = 1.0-color;
+        ///        //color = 0.0;
+        ///    }
+        ///    FragColor = vec4(color, color, color, 1.0);*/
+        ///    // this is for final render
+        ///    FragColor = texture(screenT [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_framebuffer_simple {
             get {
@@ -150,6 +158,7 @@ namespace SpellforceDataEditor.Properties {
         ///in vec3 fragmentNormal;
         ///flat in vec3 textureID;
         ///in vec3 textureWeight;
+        ///in vec4 fragmentPositionLightSpace;
         ///
         ///out vec4 color;
         ///
@@ -160,11 +169,12 @@ namespace SpellforceDataEditor.Properties {
         ///uniform float AmbientStrength;
         ///uniform vec4 AmbientColor;
         ///uniform sampler2DArray myTextureSampler;
+        ///uniform sampler2D ShadowMap;
         ///
-        ///void main(){
-        ///  // calculate brightness resulting from light coming from sun
-        ///  mat3 normalMatrix = transpose(inverse(mat3(M)));
-        ///  vec3 normal = normalize [rest of string was truncated]&quot;;.
+        ///
+        ///vec2 poissonDisk[4] = vec2[](
+        ///  vec2( -0.94201624, -0.39906216 ),
+        ///  vec2( 0.94558609 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_hmap {
             get {
@@ -192,9 +202,29 @@ namespace SpellforceDataEditor.Properties {
         /// <summary>
         ///   Looks up a localized string similar to #version 330 core
         ///
+        ///in vec2 UV;
+        ///uniform sampler2D DiffuseTexture;
+        ///
+        ///void main()
+        ///{
+        ///    if(texture(DiffuseTexture, UV).a &lt; 0.9)
+        ///        discard;
+        ///    gl_FragDepth =gl_FragCoord.z;
+        ///}.
+        /// </summary>
+        internal static string fshader_shadowmap {
+            get {
+                return ResourceManager.GetString("fshader_shadowmap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 330 core
+        ///
         ///in vec3 fragmentPosition;
         ///in vec2 UV;
         ///in vec3 fragmentNormal;
+        ///in vec4 fragmentPositionLightSpace;
         ///
         ///out vec4 color;
         ///
@@ -204,18 +234,14 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 SunColor;
         ///uniform float AmbientStrength;
         ///uniform vec4 AmbientColor;
-        ///uniform sampler2D myTextureSampler;
+        ///uniform sampler2D DiffuseTex;
+        ///uniform sampler2D ShadowMap;
         ///uniform bool apply_shading;
         ///
-        ///void main(){
-        ///  vec4 temp_c = texture(myTextureSampler, UV);
-        ///  if (temp_c.a == 0.0)
-        ///    discard;
-        ///
-        ///  float brightness;
-        ///  if(apply_shading)
-        ///  {
-        ///    // calculate brightness res [rest of string was truncated]&quot;;.
+        ///vec2 poissonDisk[4] = vec2[](
+        ///  vec2( -0.94201624, -0.39906216 ),
+        ///  vec2( 0.94558609, -0.76890725 ),
+        ///  vec2( -0.0941 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_skel {
             get {
@@ -316,12 +342,12 @@ namespace SpellforceDataEditor.Properties {
         ///out vec3 fragmentNormal;
         ///out vec2 UV;
         ///out vec4 fragmentColor;
+        ///out vec4 fragmentPositionLightSpace;
         ///
         ///// Values that stay constant for the whole mesh.
         ///uniform mat4 MVP;
-        ///  
-        ///void main(){
-        ///  // Output position of the vertex, in clip space : MVP [rest of string was truncated]&quot;;.
+        ///uniform mat4 LSM;
+        ///uniform mat4 M;        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader {
             get {
@@ -363,11 +389,9 @@ namespace SpellforceDataEditor.Properties {
         ///out vec3 fragmentNormal;
         ///flat out vec3 textureID;
         ///out vec3 textureWeight;
+        ///out vec4 fragmentPositionLightSpace;
         ///
-        ///// Values that stay constant for the whole mesh.
-        ///uniform mat4 MVP;
-        ///  
-        ///void mai [rest of string was truncated]&quot;;.
+        ///// Values that stay constant for the whole  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_hmap {
             get {
@@ -401,6 +425,83 @@ namespace SpellforceDataEditor.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to #version 330 core
+        ///layout(location = 0) in vec3 vertexPosition_modelspace;
+        ///layout(location = 1) in vec3 vertexNormal;
+        ///layout(location = 2) in vec2 vertexUV;
+        ///layout(location = 3) in vec4 vertexColor;
+        ///
+        ///out vec2 UV;
+        ///
+        ///uniform mat4 LSM;  // light space matrix
+        ///uniform mat4 M;  // model matrix
+        ///
+        ///void main()
+        ///{
+        ///    gl_Position = LSM * M * vec4(vertexPosition_modelspace, 1.0);
+        ///    UV = vertexUV;
+        ///}.
+        /// </summary>
+        internal static string vshader_shadowmap {
+            get {
+                return ResourceManager.GetString("vshader_shadowmap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 330 core
+        ///
+        ///// Input vertex data, different for all executions of this shader.
+        ///layout(location = 0) in vec3 vertexPosition_modelspace;
+        ///layout(location = 1) in vec2 vertexUV;
+        ///layout(location = 2) in vec3 vertexNormal;
+        ///layout(location = 3) in vec4 vertexBoneIndex;
+        ///layout(location = 4) in vec4 vertexBoneWeight;
+        ///
+        ///out vec2 UV;
+        ///
+        ///// Values that stay constant for the whole mesh.
+        ///uniform mat4 LSM;
+        ///uniform mat4 M;
+        ///uniform mat4 boneTransforms[20];
+        ///  
+        ///void main(){
+        ///  vec4 Vertex;
+        ///  vec4 newVerte [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string vshader_shadowmap_animated {
+            get {
+                return ResourceManager.GetString("vshader_shadowmap_animated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 330 core
+        ///
+        ///// Input vertex data, different for all executions of this shader.
+        ///layout(location = 0) in vec3 vertexPosition_modelspace;
+        ///layout(location = 1) in vec3 vertexNormal;
+        ///layout(location = 2) in vec2 vertexUV;
+        ///layout(location = 3) in vec3 texID;
+        ///layout(location = 4) in vec3 texWeight;
+        ///
+        ///out vec2 UV;
+        ///
+        ///// Values that stay constant for the whole mesh.
+        ///uniform mat4 LSM;
+        ///uniform mat4 M;
+        ///  
+        ///void main(){
+        ///  // Output position of the vertex, in clip space : MVP * position
+        ///  gl_Position  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string vshader_shadowmap_heightmap {
+            get {
+                return ResourceManager.GetString("vshader_shadowmap_heightmap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 330 core
         ///
         ///// Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
@@ -412,12 +513,11 @@ namespace SpellforceDataEditor.Properties {
         ///out vec3 fragmentPosition;
         ///out vec2 UV;
         ///out vec3 fragmentNormal;
+        ///out vec4 fragmentPositionLightSpace;
         ///
         ///// Values that stay constant for the whole mesh.
         ///uniform mat4 MVP;
-        ///uniform mat4 boneTransforms[20];
-        ///  
-        ///void mai [rest of string was truncated]&quot;;.
+        ///uniform  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_skel {
             get {

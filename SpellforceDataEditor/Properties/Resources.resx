@@ -123,6 +123,7 @@
 in vec3 fragmentPosition;
 in vec2 UV;
 in vec3 fragmentNormal;
+in vec4 fragmentPositionLightSpace;
 
 out vec4 color;
 
@@ -132,27 +133,51 @@ uniform vec3 SunDirection;
 uniform vec4 SunColor;
 uniform float AmbientStrength;
 uniform vec4 AmbientColor;
-uniform sampler2D myTextureSampler;
+uniform sampler2D DiffuseTex;
+uniform sampler2D ShadowMap;
 uniform bool apply_shading;
 
+vec2 poissonDisk[4] = vec2[](
+  vec2( -0.94201624, -0.39906216 ),
+  vec2( 0.94558609, -0.76890725 ),
+  vec2( -0.094184101, -0.92938870 ),
+  vec2( 0.34495938, 0.29387760 )
+);
+
+float CalculateShadow(vec4 FPLS, float b){
+    vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
+    if(ProjectionCoordinates.z &gt; 1.0)
+        return 1.0;
+    ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
+    float bias = max(0.05 * (1.0 - b), 0.005);  
+    float result = 0.0;
+    float CurrentDepth = ProjectionCoordinates.z;
+    //shadow map sampling
+    for(int i = 0; i &lt; 4; i++)
+    {
+        float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy+poissonDisk[i]/2000.0).r;
+        result += CurrentDepth - bias &lt; ClosestDepth  ? 1.0 : 0.0;
+    }
+    return result/4;
+}
+
 void main(){
-  vec4 temp_c = texture(myTextureSampler, UV);
+  vec4 temp_c = texture(DiffuseTex, UV);
   if (temp_c.a == 0.0)
     discard;
 
-  float brightness;
+  float brightness = 1.0;
   if(apply_shading)
   {
     // calculate brightness resulting from light coming from sun
     mat3 normalMatrix = transpose(inverse(mat3(M)));
     vec3 normal = normalize(normalMatrix * fragmentNormal);
-    vec3 fragVec = vec3(M * vec4(fragmentPosition, 1));
-    vec3 surfaceToLight = SunDirection;
-    brightness = dot(normal, surfaceToLight); // both vectors are normalized
+    vec3 fragVec = fragmentPosition;
+    brightness = dot(normal, SunDirection); // both vectors are normalized
+    // calculate shadow
+    brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
     brightness = clamp(brightness, 0, 1);  
   }
-  else
-    brightness = 1.0;
 
   // calculate output color
   vec4 ambient_color = AmbientColor * AmbientStrength;
@@ -176,9 +201,12 @@ layout(location = 4) in vec4 vertexBoneWeight;
 out vec3 fragmentPosition;
 out vec2 UV;
 out vec3 fragmentNormal;
+out vec4 fragmentPositionLightSpace;
 
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;
+uniform mat4 LSM;
+uniform mat4 M;
 uniform mat4 boneTransforms[20];
   
 void main(){
@@ -221,6 +249,7 @@ void main(){
   
   // Output position of the vertex, in clip space : MVP * position
   gl_Position =  MVP * vec4(newVertex.xyz, 1.0);
+  fragmentPositionLightSpace = LSM * M * vec4(newVertex.xyz, 1);
   fragmentPosition = newVertex.xyz;
   UV = vertexUV;
   fragmentNormal = newNormal.xyz;
@@ -239,14 +268,18 @@ out vec3 fragmentPosition;
 out vec3 fragmentNormal;
 out vec2 UV;
 out vec4 fragmentColor;
+out vec4 fragmentPositionLightSpace;
 
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;
+uniform mat4 LSM;
+uniform mat4 M;
   
 void main(){
   // Output position of the vertex, in clip space : MVP * position
   gl_Position = MVP * vec4(vertexPosition_modelspace,1);
-  fragmentPosition = vertexPosition_modelspace;
+  fragmentPositionLightSpace = LSM * M * vec4(vertexPosition_modelspace, 1);
+  fragmentPosition = vec3(M * vec4(vertexPosition_modelspace, 1));
   UV = vertexUV;
   fragmentNormal = vertexNormal;
   fragmentColor = vertexColor;
@@ -277,6 +310,7 @@ in vec3 fragmentPosition;
 in vec3 fragmentNormal;
 in vec2 UV;
 in vec4 fragmentColor;
+in vec4 fragmentPositionLightSpace;
 
 out vec4 color;
 
@@ -286,32 +320,57 @@ uniform vec3 SunDirection;
 uniform vec4 SunColor;
 uniform float AmbientStrength;
 uniform vec4 AmbientColor;
-uniform sampler2D myTextureSampler;
+uniform sampler2D DiffuseTex;
+uniform sampler2D ShadowMap;
 uniform bool texture_used;
 uniform bool apply_shading;
+
+vec2 poissonDisk[4] = vec2[](
+  vec2( -0.94201624, -0.39906216 ),
+  vec2( 0.94558609, -0.76890725 ),
+  vec2( -0.094184101, -0.92938870 ),
+  vec2( 0.34495938, 0.29387760 )
+);
+
+float CalculateShadow(vec4 FPLS, float b){
+    vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
+    if(ProjectionCoordinates.z &gt; 1.0)
+        return 1.0;
+    ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
+    float bias = max(0.05 * (1.0 - b), 0.005);  
+    float result = 0.0;
+    float CurrentDepth = ProjectionCoordinates.z;
+    //shadow map sampling
+    for(int i = 0; i &lt; 4; i++)
+    {
+        float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy+poissonDisk[i]/2000.0).r;
+        result += CurrentDepth - bias &lt; ClosestDepth  ? 1.0 : 0.0;
+    }
+    return result/4;
+}
 
 void main(){
   vec4 temp_c;
   if(texture_used)
-    temp_c = texture(myTextureSampler, UV);
+    temp_c = texture(DiffuseTex, UV);
   else
     temp_c = fragmentColor;
   if (temp_c.a == 0.0)
     discard;
 
-  float brightness;
+  float brightness = 1.0;
   if(apply_shading)
   {
     // calculate brightness resulting from light coming from sun
     mat3 normalMatrix = transpose(inverse(mat3(M)));
     vec3 normal = normalize(normalMatrix * fragmentNormal);
-    vec3 fragVec = vec3(M * vec4(fragmentPosition, 1));
-    vec3 surfaceToLight = SunDirection;
-    brightness = dot(normal, surfaceToLight); // both vectors are normalized
+    vec3 fragVec = fragmentPosition;
+    brightness = dot(normal, SunDirection); // both vectors are normalized
+    // calculate shadow
+    brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
     brightness = clamp(brightness, 0, 1);  
   }
-  else
-    brightness = 1.0;
+
 
   // calculate output color
   vec4 ambient_color = AmbientColor * AmbientStrength;
@@ -341,6 +400,7 @@ in vec2 UV;
 in vec3 fragmentNormal;
 flat in vec3 textureID;
 in vec3 textureWeight;
+in vec4 fragmentPositionLightSpace;
 
 out vec4 color;
 
@@ -351,15 +411,42 @@ uniform vec4 SunColor;
 uniform float AmbientStrength;
 uniform vec4 AmbientColor;
 uniform sampler2DArray myTextureSampler;
+uniform sampler2D ShadowMap;
+
+
+vec2 poissonDisk[4] = vec2[](
+  vec2( -0.94201624, -0.39906216 ),
+  vec2( 0.94558609, -0.76890725 ),
+  vec2( -0.094184101, -0.92938870 ),
+  vec2( 0.34495938, 0.29387760 )
+);
+
+float CalculateShadow(vec4 FPLS, float b){
+    vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
+    if(ProjectionCoordinates.z &gt; 1.0)
+        return 1.0;
+    ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
+    float bias = max(0.05 * (1.0 - b), 0.005);  
+    float result = 0.0;
+    float CurrentDepth = ProjectionCoordinates.z;
+    //shadow map sampling
+    for(int i = 0; i &lt; 4; i++)
+    {
+        float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy+poissonDisk[i]/2000.0).r;
+        result += CurrentDepth - bias &lt; ClosestDepth  ? 1.0 : 0.0;
+    }
+    return result/4;
+}
 
 void main(){
   // calculate brightness resulting from light coming from sun
   mat3 normalMatrix = transpose(inverse(mat3(M)));
   vec3 normal = normalize(normalMatrix * fragmentNormal);
-  vec3 fragVec = vec3(M * vec4(fragmentPosition, 1));
-  vec3 surfaceToLight = SunDirection;
-  float brightness = dot(normal, surfaceToLight); // both vectors are normalized
-  brightness = clamp(brightness, 0, 1);
+  vec3 fragVec = fragmentPosition;
+  float brightness = dot(normal, SunDirection); // both vectors are normalized
+    // calculate shadow
+  brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
+  brightness = clamp(brightness, 0, 1);  
 
   // calculate diffuse color based on heightmap textures
   vec4 temp_c = vec4(1.0, 1.0, 1.0, 1.0);
@@ -393,13 +480,17 @@ out vec2 UV;
 out vec3 fragmentNormal;
 flat out vec3 textureID;
 out vec3 textureWeight;
+out vec4 fragmentPositionLightSpace;
 
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;
+uniform mat4 LSM;
+uniform mat4 M;
   
 void main(){
   // Output position of the vertex, in clip space : MVP * position
   gl_Position = MVP * vec4(vertexPosition_modelspace,1);
+  fragmentPositionLightSpace = LSM * M * vec4(vertexPosition_modelspace, 1);
   UV = vertexUV;
   fragmentPosition = vertexPosition_modelspace;
   fragmentNormal = vertexNormal;
@@ -448,9 +539,20 @@ out vec4 FragColor;
 in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
-
 void main()
-{ 
+{
+    // this is for shadowmap
+    /*float color = texture(screenTexture, TexCoords).r;
+    if(color != 1.0)
+    {
+        if(color != 0.0)
+            color = (1.0-color)*100;
+        color = clamp(color, 0.0, 1.0);
+        color = 1.0-color;
+        //color = 0.0;
+    }
+    FragColor = vec4(color, color, color, 1.0);*/
+    // this is for final render
     FragColor = texture(screenTexture, TexCoords);
 }</value>
   </data>
@@ -465,6 +567,111 @@ void main()
 {
     gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
     TexCoords = aTexCoords;
+}</value>
+  </data>
+  <data name="fshader_shadowmap" xml:space="preserve">
+    <value>#version 330 core
+
+in vec2 UV;
+uniform sampler2D DiffuseTexture;
+
+void main()
+{
+    if(texture(DiffuseTexture, UV).a &lt; 0.9)
+        discard;
+    gl_FragDepth =gl_FragCoord.z;
+}</value>
+  </data>
+  <data name="vshader_shadowmap" xml:space="preserve">
+    <value>#version 330 core
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vertexNormal;
+layout(location = 2) in vec2 vertexUV;
+layout(location = 3) in vec4 vertexColor;
+
+out vec2 UV;
+
+uniform mat4 LSM;  // light space matrix
+uniform mat4 M;  // model matrix
+
+void main()
+{
+    gl_Position = LSM * M * vec4(vertexPosition_modelspace, 1.0);
+    UV = vertexUV;
+}</value>
+  </data>
+  <data name="vshader_shadowmap_animated" xml:space="preserve">
+    <value>#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec2 vertexUV;
+layout(location = 2) in vec3 vertexNormal;
+layout(location = 3) in vec4 vertexBoneIndex;
+layout(location = 4) in vec4 vertexBoneWeight;
+
+out vec2 UV;
+
+// Values that stay constant for the whole mesh.
+uniform mat4 LSM;
+uniform mat4 M;
+uniform mat4 boneTransforms[20];
+  
+void main(){
+  vec4 Vertex;
+  vec4 newVertex;
+  int index;
+
+  Vertex = vec4(vertexPosition_modelspace, 1.0);
+  newVertex = vec4(0.0, 0.0, 0.0, 1.0);
+
+  index = int(vertexBoneIndex.x);
+  if(index != -1)
+  {
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.x;
+  }
+  index = int(vertexBoneIndex.y);
+  if(index != -1)
+  {
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.y + newVertex;
+  }
+  index = int(vertexBoneIndex.z);
+  if(index != -1)
+  {
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.z + newVertex;
+  }
+  index = int(vertexBoneIndex.w);
+  if(index != -1)
+  {
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.w + newVertex;
+  }
+
+  
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position =  LSM * M * vec4(newVertex.xyz, 1.0);
+  UV = vertexUV;
+}</value>
+  </data>
+  <data name="vshader_shadowmap_heightmap" xml:space="preserve">
+    <value>#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vertexNormal;
+layout(location = 2) in vec2 vertexUV;
+layout(location = 3) in vec3 texID;
+layout(location = 4) in vec3 texWeight;
+
+out vec2 UV;
+
+// Values that stay constant for the whole mesh.
+uniform mat4 LSM;
+uniform mat4 M;
+  
+void main(){
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position = LSM * M* vec4(vertexPosition_modelspace,1);
+  UV = vertexUV;
 }</value>
   </data>
 </root>

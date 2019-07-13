@@ -118,18 +118,16 @@ namespace SpellforceDataEditor.SF3D
                 matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
                 //System.Diagnostics.Debug.WriteLine(matname + " " + mat.ToString());
 
-                SFTexture tex = SFResourceManager.Textures.Get(matname);
-                if(tex == null)
+                SFTexture tex = null;
+                int tex_code = SFResourceManager.Textures.Load(matname);
+                if ((tex_code != 0)&&(tex_code != -1))
                 {
-                    int tex_code = SFResourceManager.Textures.Load(matname);
-                    if (tex_code != 0)
-                    {
-                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModel3D.Load(): Could not load texture (texture name = "+matname+")");
-                        return tex_code;
-                    }
-                    tex = SFResourceManager.Textures.Get(matname);
-                    tex.FreeMemory();
+                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModel3D.Load(): Could not load texture (texture name = "+matname+")");
+                    return tex_code;
                 }
+                tex = SFResourceManager.Textures.Get(matname);
+                tex.FreeMemory();
+
                 mat.texture = tex;
                 //System.Diagnostics.Debug.WriteLine(tex.ToString());
 
@@ -180,7 +178,7 @@ namespace SpellforceDataEditor.SF3D
             return 0;
         }
 
-        public int CreateRaw(Vector3[] _vertices, Vector2[] _uvs, Vector4[] _colors, Vector3[] _normals, uint[] _indices, string t_name)
+        public int CreateRaw(Vector3[] _vertices, Vector2[] _uvs, Vector4[] _colors, Vector3[] _normals, uint[] _indices, SFMaterial[] _materials)
         {
             // reset first
             Dispose();
@@ -190,27 +188,16 @@ namespace SpellforceDataEditor.SF3D
             colors = _colors;
             normals = _normals;
             face_indices = _indices;
-
-            // material
-            materials = new SFMaterial[1];
-            materials[0] = new SFMaterial();
-            materials[0].indexStart = 0;
-            materials[0].indexCount = (uint)face_indices.Length;
-            if (t_name != "")
+            if (_materials == null)
             {
-                SFTexture tex = SFResourceManager.Textures.Get(t_name);
-                if (tex == null)
-                {
-                    int tex_code = SFResourceManager.Textures.Load(t_name);
-                    if (tex_code != 0)
-                    {
-                        LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModel3D.CreateRaw(): Could not load texture (texture name = " + t_name + ")");
-                        return tex_code;
-                    }
-                    tex = SFResourceManager.Textures.Get(t_name);
-                }
-                materials[0].texture = tex;
+                materials = new SFMaterial[1];
+                materials[0] = new SFMaterial();
+                materials[0].indexStart = 0;
+                materials[0].indexCount = (uint)face_indices.Length;
+                materials[0].texture = null;
             }
+            else
+                materials = _materials;
 
             // aabb
             RecalculateBoundingBox();

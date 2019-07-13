@@ -58,8 +58,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
             ref_count += 1;
 
-            // values allowed: 1, 2, 3, 4, 5
-
             buff_type = buf;
             tex_type = tex;
             sample_count = sc;
@@ -121,9 +119,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     texture_color = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2DMultisample, texture_color);
                     GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, 4, PixelInternalFormat.Rgb, width, height, true);
+                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int)All.Linear);
+                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int)All.Linear);
                     GL.BindTexture(TextureTarget.Texture2DMultisample, 0);
 
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2DMultisample, texture_color, 0);
+                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, texture_color, 0);
                 }
 
                 if ((tex_type & TextureType.DEPTH) != 0)
@@ -131,9 +131,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     texture_depth = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2DMultisample, texture_depth);
                     GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, 4, PixelInternalFormat.DepthComponent24, width, height, true);
+                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int)All.Nearest);
+                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int)All.Nearest);
                     GL.BindTexture(TextureTarget.Texture2DMultisample, 0);
 
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2DMultisample, texture_depth, 0);
+                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, texture_depth, 0);
                 }
 
                 if ((tex_type & TextureType.STENCIL) != 0)
@@ -143,7 +145,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, 4, PixelInternalFormat.R8, width, height, true);
                     GL.BindTexture(TextureTarget.Texture2DMultisample, 0);
 
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, TextureTarget.Texture2DMultisample, texture_stencil, 0);
+                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, texture_stencil, 0);
                 }
 
                 if (buff_type != RenderBufferType.NONE)
@@ -167,17 +169,19 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
                     GL.BindTexture(TextureTarget.Texture2D, 0);
 
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture_color, 0);
+                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, texture_color, 0);
                 }
 
                 if ((tex_type & TextureType.DEPTH) != 0)
                 {
                     texture_depth = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2D, texture_depth);
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, width, height, 0, PixelFormat.DepthComponent, PixelType.UnsignedInt, new IntPtr(0));
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, new IntPtr(0));
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
                     GL.BindTexture(TextureTarget.Texture2D, 0);
 
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, texture_depth, 0);
+                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, texture_depth, 0);
                 }
 
                 if ((tex_type & TextureType.STENCIL) != 0)
@@ -185,9 +189,13 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     texture_stencil = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2D, texture_stencil);
                     GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R8, width, height, 0, PixelFormat.StencilIndex, PixelType.UnsignedByte, new IntPtr(0));
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+                    float[] col = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, col);
                     GL.BindTexture(TextureTarget.Texture2D, 0);
 
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, TextureTarget.Texture2D, texture_stencil, 0);
+                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, texture_stencil, 0);
                 }
 
                 if (buff_type != RenderBufferType.NONE)
@@ -199,6 +207,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                     GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, buff_fba_type, RenderbufferTarget.Renderbuffer, rbo);
                 }
+            }
+
+            if ((buff_type != RenderBufferType.COLOR) && ((tex_type & TextureType.COLOR) == 0))
+            {
+                GL.DrawBuffer(DrawBufferMode.None);
+                GL.ReadBuffer(ReadBufferMode.None);
             }
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)

@@ -11,33 +11,25 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 {
     public class MapOverlayChunk
     {
+        public SF3D.SFModel3D mesh { get; private set; } = null;
         public List<SFCoord> points { get; private set; } = new List<SFCoord>();
-        public Vector3[] vertices;
-        public uint[] elements;
-        public int v_array { get; private set; } = -1;
-        int vb_vertices = -1;
-        int vb_elements = -1;
         public Vector4 color = new Vector4(1);
 
-        public void Init()
+        public void Update(SFMapHeightMapChunk hmap_chunk, string name)
         {
-            v_array = GL.GenVertexArray();
-            vb_vertices = GL.GenBuffer();
-            vb_elements = GL.GenBuffer();
+            if (mesh != null)
+                SFResources.SFResourceManager.Models.Dispose(mesh.GetName());
+            mesh = null;
 
-            GL.BindVertexArray(v_array);
+            if (points.Count == 0)
+                return;
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vb_vertices);
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindVertexArray(0);
-        }
-
-        public void Update(SFMapHeightMapChunk hmap_chunk)
-        {
-            vertices = new Vector3[points.Count * 5];
-            elements = new uint[points.Count * 12];
+            Vector3[] vertices = new Vector3[points.Count * 5];
+            Vector2[] uvs = new Vector2[points.Count * 5];
+            Vector4[] colors = new Vector4[points.Count * 5];
+            Vector3[] normals = new Vector3[points.Count  * 5];
+            uint[] elements = new uint[points.Count * 12];
+            
             uint k = 0;
             foreach(SFCoord p in points)
             {
@@ -49,6 +41,18 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 vertices[k * 5 + 2] = new Vector3(p.x - 0.2f, h, (hmap_chunk.hmap.chunk_size - p.y - 1) + 0.2f);
                 vertices[k * 5 + 3] = new Vector3(p.x + 0.2f, h, (hmap_chunk.hmap.chunk_size - p.y - 1) + 0.2f);
                 vertices[k * 5 + 4] = new Vector3(p.x, h + 1f, (hmap_chunk.hmap.chunk_size - p.y - 1));
+                // colors
+                colors[k * 5 + 0] = color;
+                colors[k * 5 + 1] = color;
+                colors[k * 5 + 2] = color;
+                colors[k * 5 + 3] = color;
+                colors[k * 5 + 4] = color;
+                // normals
+                normals[k * 5 + 0] = new Vector3(0, 1, 0);
+                normals[k * 5 + 1] = new Vector3(0, 1, 0);
+                normals[k * 5 + 2] = new Vector3(0, 1, 0);
+                normals[k * 5 + 3] = new Vector3(0, 1, 0);
+                normals[k * 5 + 4] = new Vector3(0, 1, 0);
                 // elements
                 elements[k * 12 + 0] = k * 5 + 0;
                 elements[k * 12 + 1] = k * 5 + 1;
@@ -66,29 +70,16 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 k++;
             }
 
-            GL.BindVertexArray(v_array);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vb_vertices);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, vb_elements);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, elements.Length * 4, elements, BufferUsageHint.DynamicDraw);
-
-            GL.BindVertexArray(0);
+            
+            mesh = new SF3D.SFModel3D();
+            mesh.CreateRaw(vertices, uvs, colors, normals, elements, null);
+            SFResources.SFResourceManager.Models.AddManually(mesh, "OVERLAY_" + name + "_" + hmap_chunk.ix.ToString() + "_" + hmap_chunk.iy.ToString());
         }
 
         public void Dispose()
         {
-            if(v_array != -1)
-            {
-                GL.DeleteBuffer(vb_vertices);
-                GL.DeleteBuffer(vb_elements);
-                GL.DeleteVertexArray(v_array);
-                points.Clear();
-                v_array = -1;
-            }
+            if (mesh != null)
+                mesh.Dispose();
         }
     }
 }

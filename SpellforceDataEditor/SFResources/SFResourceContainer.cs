@@ -156,8 +156,10 @@ namespace SpellforceDataEditor.SFResources
             reference_count[rname] -= 1;
             // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
 
-            if (reference_count[rname] == 0)
+            if (reference_count[rname] <= 0)
             {
+                if (reference_count[rname] != 0)
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Negative reference count!");
                 LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Removing resource "+rname);
 
                 cont[rname].Dispose();
