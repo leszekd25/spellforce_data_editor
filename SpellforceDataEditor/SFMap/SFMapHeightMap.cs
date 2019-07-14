@@ -24,7 +24,6 @@ namespace SpellforceDataEditor.SFMap
         public Vector3[] normals;
         public Vector2[] uvs;
         public Vector3[] texture_id;
-        public Vector3[] texture_weights;
 
         // lake
         public SFModel3D lake_model = null;    // generated here, but owned by ResourceManager
@@ -40,12 +39,17 @@ namespace SpellforceDataEditor.SFMap
         public List<SFMapPortal> portals = new List<SFMapPortal>();
         public List<SFMapDecoration> decorations = new List<SFMapDecoration>();
 
-        public int vertex_array, position_buffer, normal_buffer, uv_buffer, tex_id_buffer, tex_weight_buffer;
+        public int vertex_array, position_buffer, normal_buffer, uv_buffer, tex_id_buffer = -1;
 
 
         public void Generate()
         {
-            short[] data = hmap.height_data;
+            if (!visible)
+                return;
+
+            Degenerate();
+
+            ushort[] data = hmap.height_data;
             byte[] tex_data = hmap.tile_data;
 
             float flatten_factor = 100;
@@ -66,7 +70,6 @@ namespace SpellforceDataEditor.SFMap
             normals = new OpenTK.Vector3[size * size * 6];
             uvs = new OpenTK.Vector2[size * size * 6];
             texture_id = new Vector3[size * size * 6];
-            texture_weights = new Vector3[size * size * 6];
 
             // precalculate material data
             for (int i = 0; i <= size; i++)
@@ -89,122 +92,90 @@ namespace SpellforceDataEditor.SFMap
                 {
                     int t = (i * size + j) * 6;
                     Vector3 triangle_mats;
-                    Vector3 triangle_ws;
 
                     if ((i + j) % 2 == 0)
                     {
                         // left triangle
-                        vertices[t + 0] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 1] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-                        vertices[t + 2] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 0] = new Vector3((float)j, GetHeightAt(col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 1] = new Vector3((float)j + 1, GetHeightAt(col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 2] = new Vector3((float)j, GetHeightAt(col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
                         triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[(i + 1) * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
-                        triangle_mats = SortV3(triangle_mats);
                         texture_id[t + 0] = triangle_mats;
                         texture_id[t + 1] = triangle_mats;
                         texture_id[t + 2] = triangle_mats;
 
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + j])] = 1.0f;
-                        texture_weights[t + 0] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + (j + 1)])] = 1.0f;
-                        texture_weights[t + 1] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + j])] = 1.0f;
-                        texture_weights[t + 2] = triangle_ws;
-
                         // right triangle
-                        vertices[t + 3] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 5] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 3] = new Vector3((float)j, GetHeightAt(col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 5] = new Vector3((float)j + 1, GetHeightAt(col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
                         triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j + 1]);
-                        triangle_mats = SortV3(triangle_mats);
                         texture_id[t + 3] = triangle_mats;
                         texture_id[t + 4] = triangle_mats;
                         texture_id[t + 5] = triangle_mats;
 
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + j])] = 1.0f;
-                        texture_weights[t + 3] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + (j + 1)])] = 1.0f;
-                        texture_weights[t + 4] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + (j + 1)])] = 1.0f;
-                        texture_weights[t + 5] = triangle_ws;
-
-                        normals[t + 0] = GetVertexNormal(data, map_size, col_start + j, row_start + i);
-                        normals[t + 1] = GetVertexNormal(data, map_size, col_start + j+1, row_start + i+1);
-                        normals[t + 2] = GetVertexNormal(data, map_size, col_start + j, row_start + i+1);
+                        normals[t + 0] = GetVertexNormal(col_start + j, row_start + i);
+                        normals[t + 1] = GetVertexNormal(col_start + j+1, row_start + i+1);
+                        normals[t + 2] = GetVertexNormal(col_start + j, row_start + i+1);
                         normals[t + 3] = normals[(i * size + j) * 6 + 0]; //GetVertexNormal(data, map_size, col_start + j, row_start + i);
-                        normals[t + 4] = GetVertexNormal(data, map_size, col_start + j+1, row_start + i);
+                        normals[t + 4] = GetVertexNormal(col_start + j+1, row_start + i);
                         normals[t + 5] = normals[(i * size + j) * 6 + 1]; //GetVertexNormal(data, map_size, col_start + j+1, row_start + i+1);
                     }
                     else
                     {
                         // left triangle
-                        vertices[t + 0] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 1] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 2] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 0] = new Vector3((float)j, GetHeightAt(col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 1] = new Vector3((float)j + 1, GetHeightAt(col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 2] = new Vector3((float)j, GetHeightAt(col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
                         triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
-                        triangle_mats = SortV3(triangle_mats);
                         texture_id[t + 0] = triangle_mats;
                         texture_id[t + 1] = triangle_mats;
                         texture_id[t + 2] = triangle_mats;
-
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + j])] = 1.0f;
-                        texture_weights[t + 0] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + (j + 1)])] = 1.0f;
-                        texture_weights[t + 1] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + j])] = 1.0f;
-                        texture_weights[t + 2] = triangle_ws;
                         // right triangle
-                        vertices[t + 3] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-                        vertices[t + 5] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 3] = new Vector3((float)j + 1, GetHeightAt(col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 5] = new Vector3((float)j, GetHeightAt(col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
                         triangle_mats = new Vector3(material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
-                        triangle_mats = SortV3(triangle_mats);
                         texture_id[t + 3] = triangle_mats;
                         texture_id[t + 4] = triangle_mats;
                         texture_id[t + 5] = triangle_mats;
 
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + (j + 1)])] = 1.0f;
-                        texture_weights[t + 3] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + (j + 1)])] = 1.0f;
-                        texture_weights[t + 4] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + j])] = 1.0f;
-                        texture_weights[t + 5] = triangle_ws;
-
-                        normals[t + 0] = GetVertexNormal(data, map_size, col_start + j, row_start + i);
-                        normals[t + 1] = GetVertexNormal(data, map_size, col_start + j + 1, row_start + i);
-                        normals[t + 2] = GetVertexNormal(data, map_size, col_start + j, row_start + i + 1);
+                        normals[t + 0] = GetVertexNormal(col_start + j, row_start + i);
+                        normals[t + 1] = GetVertexNormal(col_start + j + 1, row_start + i);
+                        normals[t + 2] = GetVertexNormal(col_start + j, row_start + i + 1);
                         normals[t + 3] = normals[(i * size + j) * 6 + 1]; //GetVertexNormal(data, map_size, col_start + j + 1, row_start + i);
-                        normals[t + 4] = GetVertexNormal(data, map_size, col_start + j + 1, row_start + i + 1);
+                        normals[t + 4] = GetVertexNormal(col_start + j + 1, row_start + i + 1);
                         normals[t + 5] = normals[(i * size + j) * 6 + 2]; //GetVertexNormal(data, map_size, col_start + j, row_start + i + 1);
                     }
                 }
             }
-
-            float max_height = 0;
+            
             for (int i = 0; i < vertices.Length; i++)
-            {
-                // color (debug heightmap)
-                float h = vertices[i].Y;
                 uvs[i] = vertices[i].Xz / 4;
-                max_height = Math.Max(max_height, h);
-            }
 
-            aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, 0, iy * size), new Vector3((ix + 1) * size, max_height, (iy * size) + size));
+            GenerateAABB();
+            Init();
+        }
+
+        public void GenerateAABB()
+        {
+            int size = width;
+
+            ushort max_height = 0;
+
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    ushort h = GetHeightAt(ix * size + j, iy * size + i);
+                    if (h > max_height)
+                        max_height = h;
+                }
+            }
+            aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, 0, iy * size), new Vector3((ix + 1) * size, max_height/100.0f, (iy * size) + size));
         }
 
         public void Init()
@@ -214,7 +185,6 @@ namespace SpellforceDataEditor.SFMap
             uv_buffer = GL.GenBuffer();
             normal_buffer = GL.GenBuffer();
             tex_id_buffer = GL.GenBuffer();
-            tex_weight_buffer = GL.GenBuffer();
 
             GL.BindVertexArray(vertex_array);
 
@@ -238,81 +208,51 @@ namespace SpellforceDataEditor.SFMap
             GL.EnableVertexAttribArray(3);
             GL.VertexAttribPointer(3, 3, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, tex_weight_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, texture_weights.Length * 12, texture_weights, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexAttribArray(4);
-            GL.VertexAttribPointer(4, 3, VertexAttribPointerType.Float, false, 0, 0);
-
             GL.BindVertexArray(0);
         }
 
-        private short GetHeightAt(short[] data, int size, int x, int y)
+        public void Degenerate()
         {
-            int pos = (y * size) + x;
-            if ((pos < 0) || (pos >= data.Length))
+            if (vertex_array == -1)
+                return;
+
+            GL.DeleteBuffer(position_buffer);
+            GL.DeleteBuffer(uv_buffer);
+            GL.DeleteBuffer(normal_buffer);
+            GL.DeleteBuffer(tex_id_buffer);
+            GL.DeleteVertexArray(vertex_array);
+
+            material_id = null;
+            vertices = null;
+            normals = null;
+            uvs = null;
+            texture_id = null;
+
+            vertex_array = -1;
+        }
+
+        private ushort GetHeightAt(int x, int y)
+        {
+            int pos = (y * hmap.width) + x;
+            if ((pos < 0) || (pos >= hmap.height_data.Length))
                 return 0;
-            return data[pos];
-        }
-
-        // used for sorting materials
-        private Vector3 SortV3(Vector3 r)
-        {
-            Vector3 v = new Vector3();
-            int max_id = 0, min_id = 0, mid_id = 0;
-
-            float t = r[0];
-            if (r[1] > t)
-            {
-                t = r[1];
-                max_id = 1;
-            }
-            if (r[2] > t)
-                max_id = 2;
-
-            t = r[0];
-            if (r[1] < t)
-            {
-                t = r[1];
-                min_id = 1;
-            }
-            if (r[2] < t)
-                min_id = 2;
-
-            if (max_id == min_id)
-                mid_id = max_id;
-            else
-                mid_id = 3 - max_id - min_id;
-
-            v[0] = r[min_id];
-            v[1] = r[mid_id];
-            v[2] = r[max_id];
-
-            return v;
-        }
-
-        private int GetIndex(Vector3 v, int id)
-        {
-            for (int i = 0; i < 3; i++)
-                if ((int)v[i] == id)
-                    return i;
-            LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapHeightMap.GetIndex(): Could not find id = "+id.ToString()+" in specified material vector! This should not happen!");
-            throw new Exception("SFMapHeightMap.GetIndex(): Invalid id!");
+            return hmap.height_data[pos];
         }
 
         // https://www.gamedev.net/forums/topic/163625-fast-way-to-calculate-heightmap-normals/
-        private Vector3 GetVertexNormal(short[] data, int map_size, int x, int y)
+        private Vector3 GetVertexNormal(int x, int y)
         {
             float hscale = 100.0f;
-            float az = (x < map_size - 1) ? (GetHeightAt(data, map_size, x + 1, y)) : (0);
-            float bz = (y < map_size - 1) ? (GetHeightAt(data, map_size, x, y + 1)) : (0);
-            float cz = (x > 0) ? (GetHeightAt(data, map_size, x - 1, y)) : (0);
-            float dz = (y > 0) ? (GetHeightAt(data, map_size, x, y - 1)) : (0);
+            float az = (x < hmap.width - 1) ? (GetHeightAt(x + 1, y)) : (0);
+            float bz = (y < hmap.height - 1) ? (GetHeightAt(x, y + 1)) : (0);
+            float cz = (x > 0) ? (GetHeightAt(x - 1, y)) : (0);
+            float dz = (y > 0) ? (GetHeightAt(x, y - 1)) : (0);
 
             return (new Vector3(cz - az, 2 * hscale, dz - bz)).Normalized();
         }
 
         // for heightmap edit only
-        public void RebuildGeometry(short[] data, int map_size)
+        public void RebuildGeometry()
         {
             if (!visible)
                 return;
@@ -320,7 +260,7 @@ namespace SpellforceDataEditor.SFMap
             float flatten_factor = 100;
 
             int size = width;
-            int chunk_count = map_size / size;
+            int chunk_count = hmap.width / size;
 
             int row_start = (chunk_count - iy - 1) * size;
             int col_start = ix * size;
@@ -334,39 +274,39 @@ namespace SpellforceDataEditor.SFMap
                     if ((i + j) % 2 == 0)
                     {
                         // left triangle
-                        vertices[t + 0] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 1] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-                        vertices[t + 2] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 0] = new Vector3((float)j, GetHeightAt(col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 1] = new Vector3((float)j + 1, GetHeightAt(col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 2] = new Vector3((float)j, GetHeightAt(col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
                         // right triangle
-                        vertices[t + 3] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 5] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 3] = new Vector3((float)j, GetHeightAt(col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 5] = new Vector3((float)j + 1, GetHeightAt(col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
-                        normals[t + 0] = GetVertexNormal(data, map_size, col_start + j, row_start + i);
-                        normals[t + 1] = GetVertexNormal(data, map_size, col_start + j + 1, row_start + i + 1);
-                        normals[t + 2] = GetVertexNormal(data, map_size, col_start + j, row_start + i + 1);
+                        normals[t + 0] = GetVertexNormal(col_start + j, row_start + i);
+                        normals[t + 1] = GetVertexNormal(col_start + j + 1, row_start + i + 1);
+                        normals[t + 2] = GetVertexNormal(col_start + j, row_start + i + 1);
                         normals[t + 3] = normals[(i * size + j) * 6 + 0]; //GetVertexNormal(data, map_size, col_start + j, row_start + i);
-                        normals[t + 4] = GetVertexNormal(data, map_size, col_start + j + 1, row_start + i);
+                        normals[t + 4] = GetVertexNormal(col_start + j + 1, row_start + i);
                         normals[t + 5] = normals[(i * size + j) * 6 + 1]; //GetVertexNormal(data, map_size, col_start + j+1, row_start + i+1);
                     }
                     else
                     {
                         // left triangle
-                        vertices[t + 0] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 1] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 2] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 0] = new Vector3((float)j, GetHeightAt(col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 1] = new Vector3((float)j + 1, GetHeightAt(col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 2] = new Vector3((float)j, GetHeightAt(col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
                         // right triangle
-                        vertices[t + 3] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(data, map_size, col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-                        vertices[t + 5] = new Vector3((float)j, GetHeightAt(data, map_size, col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 3] = new Vector3((float)j + 1, GetHeightAt(col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
+                        vertices[t + 4] = new Vector3((float)j + 1, GetHeightAt(col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
+                        vertices[t + 5] = new Vector3((float)j, GetHeightAt(col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
 
-                        normals[t + 0] = GetVertexNormal(data, map_size, col_start + j, row_start + i);
-                        normals[t + 1] = GetVertexNormal(data, map_size, col_start + j + 1, row_start + i);
-                        normals[t + 2] = GetVertexNormal(data, map_size, col_start + j, row_start + i + 1);
+                        normals[t + 0] = GetVertexNormal(col_start + j, row_start + i);
+                        normals[t + 1] = GetVertexNormal(col_start + j + 1, row_start + i);
+                        normals[t + 2] = GetVertexNormal(col_start + j, row_start + i + 1);
                         normals[t + 3] = normals[(i * size + j) * 6 + 1]; //GetVertexNormal(data, map_size, col_start + j + 1, row_start + i);
-                        normals[t + 4] = GetVertexNormal(data, map_size, col_start + j + 1, row_start + i + 1);
+                        normals[t + 4] = GetVertexNormal(col_start + j + 1, row_start + i + 1);
                         normals[t + 5] = normals[(i * size + j) * 6 + 2]; //GetVertexNormal(data, map_size, col_start + j, row_start + i + 1);
                     }
                 }
@@ -463,78 +403,33 @@ namespace SpellforceDataEditor.SFMap
                 {
                     int t = (i * size + j) * 6;
                     Vector3 triangle_mats;
-                    Vector3 triangle_ws;
 
                     if ((i + j) % 2 == 0)
                     {
                         // left triangle
                         triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[(i + 1) * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
-                        triangle_mats = SortV3(triangle_mats);
                         texture_id[t + 0] = triangle_mats;
                         texture_id[t + 1] = triangle_mats;
                         texture_id[t + 2] = triangle_mats;
 
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + j])] = 1.0f;
-                        texture_weights[t + 0] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + (j + 1)])] = 1.0f;
-                        texture_weights[t + 1] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + j])] = 1.0f;
-                        texture_weights[t + 2] = triangle_ws;
-
                         // right triangle
                         triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j + 1]);
-                        triangle_mats = SortV3(triangle_mats);
                         texture_id[t + 3] = triangle_mats;
                         texture_id[t + 4] = triangle_mats;
                         texture_id[t + 5] = triangle_mats;
-
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + j])] = 1.0f;
-                        texture_weights[t + 3] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + (j + 1)])] = 1.0f;
-                        texture_weights[t + 4] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + (j + 1)])] = 1.0f;
-                        texture_weights[t + 5] = triangle_ws;
                     }
                     else
                     {
                         // left triangle
                         triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
-                        triangle_mats = SortV3(triangle_mats);
                         texture_id[t + 0] = triangle_mats;
                         texture_id[t + 1] = triangle_mats;
                         texture_id[t + 2] = triangle_mats;
-
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + j])] = 1.0f;
-                        texture_weights[t + 0] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + (j + 1)])] = 1.0f;
-                        texture_weights[t + 1] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + j])] = 1.0f;
-                        texture_weights[t + 2] = triangle_ws;
                         // right triangle
                         triangle_mats = new Vector3(material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
-                        triangle_mats = SortV3(triangle_mats);
                         texture_id[t + 3] = triangle_mats;
                         texture_id[t + 4] = triangle_mats;
                         texture_id[t + 5] = triangle_mats;
-
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[i * (size + 1) + (j + 1)])] = 1.0f;
-                        texture_weights[t + 3] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + (j + 1)])] = 1.0f;
-                        texture_weights[t + 4] = triangle_ws;
-                        triangle_ws = new Vector3(0.0f);
-                        triangle_ws[GetIndex(triangle_mats, material_id[(i + 1) * (size + 1) + j])] = 1.0f;
-                        texture_weights[t + 5] = triangle_ws;
                     }
                 }
             }
@@ -551,11 +446,6 @@ namespace SpellforceDataEditor.SFMap
             GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, texture_id.Length * 12, texture_id, BufferUsageHint.DynamicDraw);
             GL.EnableVertexAttribArray(3);
             GL.VertexAttribPointer(3, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, tex_weight_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, texture_weights.Length * 12, texture_weights, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexAttribArray(4);
-            GL.VertexAttribPointer(4, 3, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindVertexArray(0);
         }
@@ -694,6 +584,9 @@ namespace SpellforceDataEditor.SFMap
                 if (!vis)
                 {
                     visible = false;
+
+                    Degenerate();
+
                     if (lake_model != null)
                     {
                         SFResources.SFResourceManager.Models.Dispose(lake_model.GetName());
@@ -709,6 +602,7 @@ namespace SpellforceDataEditor.SFMap
                 if (vis)
                 {
                     visible = true;
+                    Generate();
                     RebuildLake();
                     foreach (string o_name in overlays.Keys)
                         OverlayUpdate(o_name);
@@ -725,7 +619,6 @@ namespace SpellforceDataEditor.SFMap
             GL.DeleteBuffer(uv_buffer);
             GL.DeleteBuffer(normal_buffer);
             GL.DeleteBuffer(tex_id_buffer);
-            GL.DeleteBuffer(tex_weight_buffer);
             GL.DeleteVertexArray(vertex_array);
 
             if(lake_model != null)
@@ -752,7 +645,8 @@ namespace SpellforceDataEditor.SFMap
             normals = null;
             uvs = null;
             texture_id = null;
-            texture_weights = null;
+
+            vertex_array = -1;
         }
 
         public void AddUnit(SFMapUnit u)
@@ -841,7 +735,7 @@ namespace SpellforceDataEditor.SFMap
         public SFMap map = null;
         public SFMapTerrainTextureManager texture_manager { get; private set; } = new SFMapTerrainTextureManager();
         public int width, height;
-        public short[] height_data;
+        public ushort[] height_data;
         public byte[] tile_data;
         public byte[] lake_data;    // 0 - no lake, 1-255 - lakes 0-254
         public ushort[] building_data;   // 0 - no building, 1-65535 - buildings 0-65534
@@ -860,7 +754,7 @@ namespace SpellforceDataEditor.SFMap
         {
             width = w;
             height = h;
-            height_data = new short[w * h];
+            height_data = new ushort[w * h];
             tile_data = new byte[w * h];
             lake_data = new byte[w * h];  lake_data.Initialize();
             building_data = new ushort[w * h]; building_data.Initialize();
@@ -888,10 +782,10 @@ namespace SpellforceDataEditor.SFMap
         public void SetRowRaw(int row, byte[] chunk_data)
         {
             for(int i = 0; i < width; i++)
-                height_data[row * width + i] = BitConverter.ToInt16(chunk_data, i * 2);
+                height_data[row * width + i] = BitConverter.ToUInt16(chunk_data, i * 2);
         }
 
-        public void GetRowRaw(int row, ref short[] chunk_data)
+        public void GetRowRaw(int row, ref ushort[] chunk_data)
         {
             for (int i = 0; i < width; i++)
                 chunk_data[i] = height_data[row * width + i];
@@ -923,38 +817,51 @@ namespace SpellforceDataEditor.SFMap
                     chunk_node.MapChunk.iy = i;
                     chunk_node.MapChunk.width = chunk_size;
                     chunk_node.MapChunk.height = chunk_size;
+                    chunk_node.MapChunk.GenerateAABB();
 
                     chunk_node.MapChunk.Generate();
                     chunk_node.Position = new Vector3(j * chunk_size, 0, i * chunk_size);
                 }
-            foreach(SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
-            {
-                chunk.MapChunk.Init();
-            }
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate(): Chunks generated: "+chunk_nodes.Length.ToString());
         }
 
-        public short GetZ(SFCoord pos)
+        public ushort GetZ(SFCoord pos)
         {
             return height_data[pos.y * width + pos.x];
         }
 
+        private bool FitsInMap(SFCoord p)
+        {
+            return ((p.x >= 0) && (p.x < width) && (p.y >= 0) && (p.y < height));
+        }
+
         public float GetRealZ(Vector2 pos)
         {
-            int chunk_count_x = width / chunk_size;
-            int chunk_count_y = height / chunk_size;
-            // get chunk id
-            int cx = (int)(pos.X / chunk_size);
-            int cy = (int)((map.height-pos.Y-1) / chunk_size);
-            if ((cx < 0) || (cx >= chunk_count_x) || (cy < 0) || (cy >= chunk_count_y))
-                return 0;
-            // calculate ray collision point
-            SF3D.Physics.Ray ray = new SF3D.Physics.Ray(new Vector3(pos.X, 1000, pos.Y), new Vector3(0, -1100, 0));
-            Vector3 result;
-            if (ray.Intersect(chunk_nodes[(chunk_count_y - cy - 1) * chunk_count_x + cx].MapChunk.vertices,
-                new Vector3(cx * chunk_size, 0, height - ((cy + 1) * chunk_size)), out result))
-                return result.Y;
-            return 0;
+            short left = (short)pos.X;
+            short top = (short)(height-pos.Y-1);
+            float tx = pos.X - left;
+            float ty = (height-pos.Y-1) - top;
+
+            ushort[] val = new ushort[] { 0, 0, 0, 0 };
+            SFCoord p = new SFCoord(left, top);   // top left
+            if (FitsInMap(p))
+                val[0] = GetZ(p);
+            p = new SFCoord(left+1, top);   // top right
+            if (FitsInMap(p))
+                val[1] = GetZ(p);
+            p = new SFCoord(left, top+1);   // bottom left
+            if (FitsInMap(p))
+                val[2] = GetZ(p);
+            p = new SFCoord(left+1, top+1);   // bottom right
+            if (FitsInMap(p))
+                val[3] = GetZ(p);
+
+            return Utility.BilinearInterpolation(val[0], val[1], val[2], val[3], tx, ty)/100.0f;
+        }
+
+        public byte GetTile(SFCoord pos)
+        {
+            return tile_data[pos.y * width + pos.x];
         }
 
         public void ResetMask()
@@ -973,7 +880,7 @@ namespace SpellforceDataEditor.SFMap
             SFCoord cur_pos;
             SFCoord next_pos;
 
-            short start_z = GetZ(start);
+            ushort start_z = GetZ(start);
             temporary_mask[start.y * width + start.x] = true;
             to_be_checked.Enqueue(start);
 
@@ -1023,7 +930,7 @@ namespace SpellforceDataEditor.SFMap
 
             for (int i = topchunkx; i <= botchunkx; i++)
                 for (int j = topchunky; j <= botchunky; j++)
-                    chunk_nodes[j * chunk_count_x + i].MapChunk.RebuildGeometry(height_data, width);
+                    chunk_nodes[j * chunk_count_x + i].MapChunk.RebuildGeometry();
         }
 
         public void RebuildTerrainTexture(SFCoord topleft, SFCoord bottomright)

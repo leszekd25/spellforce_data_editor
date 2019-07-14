@@ -382,7 +382,7 @@ namespace SpellforceDataEditor.Properties {
         ///layout(location = 1) in vec3 vertexNormal;
         ///layout(location = 2) in vec2 vertexUV;
         ///layout(location = 3) in vec3 texID;
-        ///layout(location = 4) in vec3 texWeight;
+        /////layout(location = 4) in vec3 texWeight;
         ///
         ///out vec3 fragmentPosition;
         ///out vec2 UV;
@@ -391,7 +391,7 @@ namespace SpellforceDataEditor.Properties {
         ///out vec3 textureWeight;
         ///out vec4 fragmentPositionLightSpace;
         ///
-        ///// Values that stay constant for the whole  [rest of string was truncated]&quot;;.
+        ///// Values that stay constant for the whol [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_hmap {
             get {
@@ -482,7 +482,7 @@ namespace SpellforceDataEditor.Properties {
         ///layout(location = 1) in vec3 vertexNormal;
         ///layout(location = 2) in vec2 vertexUV;
         ///layout(location = 3) in vec3 texID;
-        ///layout(location = 4) in vec3 texWeight;
+        /////layout(location = 4) in vec3 texWeight;
         ///
         ///out vec2 UV;
         ///
@@ -492,7 +492,7 @@ namespace SpellforceDataEditor.Properties {
         ///  
         ///void main(){
         ///  // Output position of the vertex, in clip space : MVP * position
-        ///  gl_Position  [rest of string was truncated]&quot;;.
+        ///  gl_Positio [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_shadowmap_heightmap {
             get {

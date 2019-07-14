@@ -139,8 +139,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 screenspace_intermediate.Dispose();
             }
             shadowmap_depth = new FrameBuffer(Settings.ShadowMapSize, Settings.ShadowMapSize, 0, FrameBuffer.TextureType.DEPTH, FrameBuffer.RenderBufferType.NONE);
-            screenspace_framebuffer = new FrameBuffer((int)view_size.X, (int)view_size.Y, Settings.AntiAliasingSamples, FrameBuffer.TextureType.COLOR | FrameBuffer.TextureType.DEPTH, FrameBuffer.RenderBufferType.STENCIL);
-            screenspace_intermediate = new FrameBuffer((int)view_size.X, (int)view_size.Y, 0, FrameBuffer.TextureType.COLOR | FrameBuffer.TextureType.DEPTH, FrameBuffer.RenderBufferType.STENCIL);
+            screenspace_framebuffer = new FrameBuffer((int)view_size.X, (int)view_size.Y, Settings.AntiAliasingSamples);
+            screenspace_intermediate = new FrameBuffer((int)view_size.X, (int)view_size.Y, 0);
 
             ApplyLight();
             ApplyTexturingUnits();

@@ -247,5 +247,13 @@ namespace SpellforceDataEditor
                 replacement += "\t";
             return replacement+s.Replace("\r\n", replacement);
         }
+
+        static public float BilinearInterpolation(float tl, float tr, float bl, float br, float t1, float t2)
+        {
+            return (tl * (1 - t1) * (1 - t2))
+                 + (tr * t1 * (1 - t2))
+                 + (bl * (1 - t1) * t2)
+                 + (br * t1 * t2);
+        }
     }
 }

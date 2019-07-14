@@ -178,6 +178,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
                 map.heightmap.RebuildOverlay(topleft, bottomright, "DecorationTile");
             }
+            else if(button == MouseButtons.Right)
+            {
+                byte selected_dec_group = map.decoration_manager.GetFixedDecAssignment(new SFCoord(clicked_pos.x, map.height - clicked_pos.y - 1));
+                ListGroups.SelectedIndex = selected_dec_group;
+            }
         }
 
         public override void OnMouseUp()

@@ -31,53 +31,101 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (bottomright.y >= map.height)
                 bottomright.y = (short)(map.height - 1);
 
-            switch(ComboDrawMode.SelectedIndex)
+            if (button == MouseButtons.Left)
             {
-                case 0:  // add
-                    for (int i = topleft.x; i <= bottomright.x; i++)
-                    {
-                        for (int j = topleft.y; j <= bottomright.y; j++)
+                switch (ComboDrawMode.SelectedIndex)
+                {
+                    case 0:  // add
+                        for (int i = topleft.x; i <= bottomright.x; i++)
                         {
+                            for (int j = topleft.y; j <= bottomright.y; j++)
+                            {
 
-                            float cell_strength = BrushControl.brush.GetStrengthAt(new SFCoord(i, j));
-                            int fixed_j = map.height - j - 1;
-                            if (map.heightmap.lake_data[fixed_j * map.width + i] != 0)
-                                continue;
-                            map.heightmap.height_data[fixed_j * map.width + i] += (short)(strength * cell_strength);
-                            if (map.heightmap.height_data[fixed_j * map.width + i] > 30000)
-                                map.heightmap.height_data[fixed_j * map.width + i] = 30000;
+                                float cell_strength = BrushControl.brush.GetStrengthAt(new SFCoord(i, j));
+                                int fixed_j = map.height - j - 1;
+                                if (map.heightmap.lake_data[fixed_j * map.width + i] != 0)
+                                    continue;
+                                map.heightmap.height_data[fixed_j * map.width + i] += (ushort)(strength * cell_strength);
+                                if (map.heightmap.height_data[fixed_j * map.width + i] > 30000)
+                                    map.heightmap.height_data[fixed_j * map.width + i] = 30000;
+                            }
                         }
-                    }
-                    break;
-                case 1:  // sub
-                    for (int i = topleft.x; i <= bottomright.x; i++)
-                    {
-                        for (int j = topleft.y; j <= bottomright.y; j++)
+                        break;
+                    case 1:  // sub
+                        for (int i = topleft.x; i <= bottomright.x; i++)
                         {
-                            float cell_strength = BrushControl.brush.GetStrengthAt(new SFCoord(i, j));
-                            int fixed_j = map.height - j - 1;
-                            if (map.heightmap.lake_data[fixed_j * map.width + i] != 0)
-                                continue;
-                            map.heightmap.height_data[fixed_j * map.width + i] -= (short)(strength * cell_strength);
-                            if (map.heightmap.height_data[fixed_j * map.width + i] < 0)
-                                map.heightmap.height_data[fixed_j * map.width + i] = 0;
+                            for (int j = topleft.y; j <= bottomright.y; j++)
+                            {
+                                float cell_strength = BrushControl.brush.GetStrengthAt(new SFCoord(i, j));
+                                int fixed_j = map.height - j - 1;
+                                if (map.heightmap.lake_data[fixed_j * map.width + i] != 0)
+                                    continue;
+                                if (strength * cell_strength >= map.heightmap.height_data[fixed_j * map.width + i])
+                                    map.heightmap.height_data[fixed_j * map.width + i] = 0;
+                                else
+                                    map.heightmap.height_data[fixed_j * map.width + i] -= (ushort)(strength * cell_strength);
+                            }
                         }
-                    }
-                    break;
-                case 2:  // set
-                    for (int i = topleft.x; i <= bottomright.x; i++)
-                    {
-                        for (int j = topleft.y; j <= bottomright.y; j++)
+                        break;
+                    case 2:  // set
+                        for (int i = topleft.x; i <= bottomright.x; i++)
                         {
-                            int fixed_j = map.height - j - 1;
-                            if (map.heightmap.lake_data[fixed_j * map.width + i] != 0)
-                                continue;
-                            map.heightmap.height_data[fixed_j * map.width + i] = (short)(strength);
+                            for (int j = topleft.y; j <= bottomright.y; j++)
+                            {
+                                int fixed_j = map.height - j - 1;
+                                if (map.heightmap.lake_data[fixed_j * map.width + i] != 0)
+                                    continue;
+                                map.heightmap.height_data[fixed_j * map.width + i] = (ushort)(strength);
+                            }
                         }
-                    }
-                    break;
-                default:
-                    break;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else if(button == MouseButtons.Right)
+            {
+                switch (ComboDrawMode.SelectedIndex)
+                {
+                    case 0:  // add
+                        for (int i = topleft.x; i <= bottomright.x; i++)
+                        {
+                            for (int j = topleft.y; j <= bottomright.y; j++)
+                            {
+
+                                float cell_strength = BrushControl.brush.GetStrengthAt(new SFCoord(i, j));
+                                int fixed_j = map.height - j - 1;
+                                if (map.heightmap.lake_data[fixed_j * map.width + i] != 0)
+                                    continue;
+                                if (strength * cell_strength >= map.heightmap.height_data[fixed_j * map.width + i])
+                                    map.heightmap.height_data[fixed_j * map.width + i] = 0;
+                                else
+                                    map.heightmap.height_data[fixed_j * map.width + i] -= (ushort)(strength * cell_strength);
+                            }
+                        }
+                        break;
+                    case 1:  // sub
+                        for (int i = topleft.x; i <= bottomright.x; i++)
+                        {
+                            for (int j = topleft.y; j <= bottomright.y; j++)
+                            {
+                                float cell_strength = BrushControl.brush.GetStrengthAt(new SFCoord(i, j));
+                                int fixed_j = map.height - j - 1;
+                                if (map.heightmap.lake_data[fixed_j * map.width + i] != 0)
+                                    continue;
+                                map.heightmap.height_data[fixed_j * map.width + i] += (ushort)(strength * cell_strength);
+                                if (map.heightmap.height_data[fixed_j * map.width + i] > 30000)
+                                    map.heightmap.height_data[fixed_j * map.width + i] = 30000;
+                            }
+                        }
+                        break;
+                    case 2:  // set
+                        SFCoord inv_clicked_pos = new SFCoord(clicked_pos.x, map.height - clicked_pos.y - 1);
+                        StrengthTextBox.Text = map.heightmap.height_data[inv_clicked_pos.y * map.width + inv_clicked_pos.x].ToString();
+                        return;
+                    default:
+                        break;
+                }
             }
 
             map.heightmap.RebuildGeometry(topleft, bottomright);

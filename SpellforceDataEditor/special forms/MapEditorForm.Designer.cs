@@ -56,6 +56,8 @@
             this.StatusText = new System.Windows.Forms.ToolStripLabel();
             this.InspectorPanel = new System.Windows.Forms.Panel();
             this.LabelMode = new System.Windows.Forms.Label();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.SpecificText = new System.Windows.Forms.ToolStripLabel();
             this.menuStrip1.SuspendLayout();
             this.PanelModes.SuspendLayout();
             this.StatusStrip.SuspendLayout();
@@ -275,7 +277,9 @@
             // 
             this.StatusStrip.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.StatusText});
+            this.StatusText,
+            this.toolStripSeparator1,
+            this.SpecificText});
             this.StatusStrip.Location = new System.Drawing.Point(0, 642);
             this.StatusStrip.Name = "StatusStrip";
             this.StatusStrip.Size = new System.Drawing.Size(1100, 25);
@@ -301,6 +305,16 @@
             this.LabelMode.Name = "LabelMode";
             this.LabelMode.Size = new System.Drawing.Size(0, 13);
             this.LabelMode.TabIndex = 0;
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // SpecificText
+            // 
+            this.SpecificText.Name = "SpecificText";
+            this.SpecificText.Size = new System.Drawing.Size(0, 22);
             // 
             // MapEditorForm
             // 
@@ -358,5 +372,7 @@
         private System.Windows.Forms.Label LabelMode;
         private System.Windows.Forms.ToolStripMenuItem closeMapToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripLabel SpecificText;
     }
 }

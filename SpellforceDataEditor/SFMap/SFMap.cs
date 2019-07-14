@@ -712,7 +712,7 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(2, 0, true, 6, c2_data);
 
             // chunks 6
-            short[] c6i_data = new short[heightmap.height];
+            ushort[] c6i_data = new ushort[heightmap.height];
             byte[] c6i_rawdata = new byte[heightmap.height * 2];
             for (int i = 0; i < heightmap.width; i++)
             {

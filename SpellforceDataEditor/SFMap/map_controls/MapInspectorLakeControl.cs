@@ -54,9 +54,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void PrepareLakeBoundary(SFMapLake lake)
         {
-            short lake_lowest = map.heightmap.height_data[lake.start.y * map.width + lake.start.x];
+            ushort lake_lowest = map.heightmap.height_data[lake.start.y * map.width + lake.start.x];
             foreach (SFCoord p in lake.boundary)
-                map.heightmap.height_data[p.y * map.width + p.x] = (short)(lake_lowest + lake.z_diff + 1);
+                map.heightmap.height_data[p.y * map.width + p.x] = (ushort)(lake_lowest + lake.z_diff + 1);
         }
 
         // select cells to create lake over
@@ -166,7 +166,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (edit_mode == EditorMode.ADDING)
             {
                 // find lowest possible level
-                short lowest_lvl = 32767;
+                ushort lowest_lvl = 65535;
                 SFCoord new_start = new SFCoord(0, 0);
                 foreach (SFMapLake lake in affected_lakes)
                 {
@@ -177,14 +177,14 @@ namespace SpellforceDataEditor.SFMap.map_controls
                         lowest_lvl = map.heightmap.height_data[tmp_p.y * map.width + tmp_p.x];
                     }
                 }
-                if(lowest_lvl == 32767)
+                if(lowest_lvl == 65535)
                 {
                     foreach (SFCoord p in tmp_lake.cells)
                     {
                         if (lowest_lvl > map.heightmap.height_data[p.y * map.width + p.x] - base_depth)
                         {
                             new_start = p;
-                            lowest_lvl = (short)(map.heightmap.height_data[p.y * map.width + p.x] - base_depth);
+                            lowest_lvl = (ushort)(map.heightmap.height_data[p.y * map.width + p.x] - base_depth);
                         }
                     }
                 }
@@ -219,7 +219,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                         continue;
 
                     // calculate current lowest point of the lake
-                    short lowest_level = map.heightmap.height_data[lake.start.y * map.width + lake.start.x];
+                    ushort lowest_level = map.heightmap.height_data[lake.start.y * map.width + lake.start.x];
                     SFCoord start = lake.start;
 
                     // calculate area of lake without overlapping region, if its 0, remove lake
@@ -229,7 +229,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     foreach (SFCoord p in lake_overlap)
                     {
                         map.heightmap.OverlayRemove("LakeTile", p);
-                        map.heightmap.height_data[p.y * map.width + p.x] = (short)(lowest_level + lake.z_diff + 1);
+                        map.heightmap.height_data[p.y * map.width + p.x] = (ushort)(lowest_level + lake.z_diff + 1);
                     }
 
                     int new_lake_type = lake.type;
@@ -245,7 +245,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     foreach (HashSet<SFCoord> new_lake in new_lakes)
                     {
                         // find new lowest point of the new lake
-                        short new_lowest_level = 32767;
+                        ushort new_lowest_level = 65535;
                         SFCoord new_start = new SFCoord(0, 0);
                         foreach (SFCoord p in new_lake)
                         {

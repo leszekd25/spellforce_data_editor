@@ -473,7 +473,7 @@ layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec2 vertexUV;
 layout(location = 3) in vec3 texID;
-layout(location = 4) in vec3 texWeight;
+//layout(location = 4) in vec3 texWeight;
 
 out vec3 fragmentPosition;
 out vec2 UV;
@@ -486,6 +486,12 @@ out vec4 fragmentPositionLightSpace;
 uniform mat4 MVP;
 uniform mat4 LSM;
 uniform mat4 M;
+
+vec3 texW[3] = vec3[] (
+  vec3(1, 0, 0),
+  vec3(0, 1, 0),
+  vec3(0, 0, 1)
+);
   
 void main(){
   // Output position of the vertex, in clip space : MVP * position
@@ -495,7 +501,7 @@ void main(){
   fragmentPosition = vertexPosition_modelspace;
   fragmentNormal = vertexNormal;
   textureID = texID;
-  textureWeight = texWeight;
+  textureWeight = texW[int(mod(gl_VertexID, 3))];
 }</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -660,7 +666,7 @@ layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec2 vertexUV;
 layout(location = 3) in vec3 texID;
-layout(location = 4) in vec3 texWeight;
+//layout(location = 4) in vec3 texWeight;
 
 out vec2 UV;
 

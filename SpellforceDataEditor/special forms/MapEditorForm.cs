@@ -449,7 +449,7 @@ namespace SpellforceDataEditor.special_forms
                 Vector3 result = new Vector3(0, 0, 0);
                 Vector3 offset;
                 bool ray_success = false;
-                for (int i = 0; i < map.heightmap.visible_chunks.Count; i++)
+                for (int i = map.heightmap.visible_chunks.Count-1; i >= 0; i--)
                 {
                     SFMapHeightMapChunk chunk = map.heightmap.visible_chunks[i].MapChunk;
                     offset = new Vector3(chunk.ix * 16, 0, chunk.iy * 16);
@@ -463,11 +463,27 @@ namespace SpellforceDataEditor.special_forms
                 if (ray_success)
                 {
                     SFCoord cursor_coord = new SFCoord((int)result.X, (int)result.Z);
+                    SFCoord inv_cursor_coord = new SFCoord(cursor_coord.x, map.height - cursor_coord.y - 1);
                     if ((result.X < 0) || (result.Z < 0))
                         cursor_coord = new SFCoord(0, 0);
                     if(map.selection_helper.SetCursorPosition(cursor_coord))
                         update_render = true;
-                    StatusText.Text = "MAP POS: " + cursor_coord.ToString();
+                    StatusText.Text = "Cursor position: " + inv_cursor_coord.ToString();
+                    switch(edit_mode)
+                    {
+                        case MAPEDIT_MODE.HMAP:
+                            SpecificText.Text = "Height: " + map.heightmap.GetZ(inv_cursor_coord).ToString();
+                            break;
+                        case MAPEDIT_MODE.TEXTURE:
+                            SpecificText.Text = "Tile ID: " + map.heightmap.GetTile(inv_cursor_coord).ToString();
+                            break;
+                        case MAPEDIT_MODE.DECAL:
+                            SpecificText.Text = "Decoration group ID: " + map.decoration_manager.GetFixedDecAssignment(inv_cursor_coord).ToString();
+                            break;
+                        default:
+                            SpecificText.Text = "";
+                            break;
+                    }
 
                     // on click action
                     if (mouse_pressed)
@@ -512,6 +528,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 Vector2 p = new Vector2(SFRenderEngine.scene.camera.Position.X, SFRenderEngine.scene.camera.Position.Z);
                 float z = map.heightmap.GetRealZ(p);
+                
                 SFRenderEngine.scene.camera.translate(new Vector3(0, (25*zoom_level)+z - SFRenderEngine.scene.camera.Position.Y, 0));
             }
         }
@@ -536,7 +553,7 @@ namespace SpellforceDataEditor.special_forms
             RenderWindow.Location = new Point(this.Size.Width - w_size - 1, ystart);
             RenderWindow.Size = new Size(w_size, w_size);
             PanelModes.Size = new Size(PanelModes.Size.Width, w_size + 3);
-            InspectorPanel.Size = new Size(RenderWindow.Location.X - PanelModes.Size.Width - 12, w_size);
+            InspectorPanel.Size = new Size(RenderWindow.Location.X - PanelModes.Size.Width - 12, w_size-25);
             SFRenderEngine.ResizeView(new Vector2(w_size, w_size));
             RenderWindow.Invalidate();
         }
