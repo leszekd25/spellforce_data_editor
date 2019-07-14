@@ -19,4 +19,4 @@ Most of the features are now complete (but might be buggy), including: heightmap
 # How to use
 To use the application, simply unzip it wherever you feel like.
 
-Latest version: 13.07.2019.1
+Latest version: 14.07.2019.1
