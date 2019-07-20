@@ -75,11 +75,11 @@
             this.label19 = new System.Windows.Forms.Label();
             this.PanelCoopParameters = new System.Windows.Forms.Panel();
             this.PanelSpawnPoints = new System.Windows.Forms.Panel();
-            this.PanelMultiplayerCompositions = new System.Windows.Forms.Panel();
             this.ComboBindstoneList = new System.Windows.Forms.ComboBox();
+            this.PanelMultiplayerCompositions = new System.Windows.Forms.Panel();
+            this.LabelSelectedPlayerText = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.SelectedPlayerTextID = new System.Windows.Forms.TextBox();
-            this.LabelSelectedPlayerText = new System.Windows.Forms.Label();
             this.PanelCoopParameters.SuspendLayout();
             this.PanelSpawnPoints.SuspendLayout();
             this.PanelMultiplayerCompositions.SuspendLayout();
@@ -400,6 +400,7 @@
             this.TeamCompAdd.TabIndex = 37;
             this.TeamCompAdd.Text = "Add";
             this.TeamCompAdd.UseVisualStyleBackColor = true;
+            this.TeamCompAdd.Click += new System.EventHandler(this.TeamCompAdd_Click);
             // 
             // TeamCompRemove
             // 
@@ -409,6 +410,7 @@
             this.TeamCompRemove.TabIndex = 38;
             this.TeamCompRemove.Text = "Remove";
             this.TeamCompRemove.UseVisualStyleBackColor = true;
+            this.TeamCompRemove.Click += new System.EventHandler(this.TeamCompRemove_Click);
             // 
             // label17
             // 
@@ -524,6 +526,15 @@
             this.PanelSpawnPoints.Size = new System.Drawing.Size(437, 120);
             this.PanelSpawnPoints.TabIndex = 48;
             // 
+            // ComboBindstoneList
+            // 
+            this.ComboBindstoneList.FormattingEnabled = true;
+            this.ComboBindstoneList.Location = new System.Drawing.Point(296, 18);
+            this.ComboBindstoneList.Name = "ComboBindstoneList";
+            this.ComboBindstoneList.Size = new System.Drawing.Size(132, 21);
+            this.ComboBindstoneList.TabIndex = 31;
+            this.ComboBindstoneList.SelectedIndexChanged += new System.EventHandler(this.ComboBindstoneList_SelectedIndexChanged);
+            // 
             // PanelMultiplayerCompositions
             // 
             this.PanelMultiplayerCompositions.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -552,14 +563,13 @@
             this.PanelMultiplayerCompositions.Size = new System.Drawing.Size(437, 262);
             this.PanelMultiplayerCompositions.TabIndex = 49;
             // 
-            // ComboBindstoneList
+            // LabelSelectedPlayerText
             // 
-            this.ComboBindstoneList.FormattingEnabled = true;
-            this.ComboBindstoneList.Location = new System.Drawing.Point(296, 18);
-            this.ComboBindstoneList.Name = "ComboBindstoneList";
-            this.ComboBindstoneList.Size = new System.Drawing.Size(132, 21);
-            this.ComboBindstoneList.TabIndex = 31;
-            this.ComboBindstoneList.SelectedIndexChanged += new System.EventHandler(this.ComboBindstoneList_SelectedIndexChanged);
+            this.LabelSelectedPlayerText.AutoSize = true;
+            this.LabelSelectedPlayerText.Location = new System.Drawing.Point(221, 145);
+            this.LabelSelectedPlayerText.Name = "LabelSelectedPlayerText";
+            this.LabelSelectedPlayerText.Size = new System.Drawing.Size(0, 13);
+            this.LabelSelectedPlayerText.TabIndex = 47;
             // 
             // label20
             // 
@@ -578,14 +588,6 @@
             this.SelectedPlayerTextID.Size = new System.Drawing.Size(65, 20);
             this.SelectedPlayerTextID.TabIndex = 33;
             this.SelectedPlayerTextID.Validated += new System.EventHandler(this.SelectedPlayerTextID_Validated);
-            // 
-            // LabelSelectedPlayerText
-            // 
-            this.LabelSelectedPlayerText.AutoSize = true;
-            this.LabelSelectedPlayerText.Location = new System.Drawing.Point(221, 145);
-            this.LabelSelectedPlayerText.Name = "LabelSelectedPlayerText";
-            this.LabelSelectedPlayerText.Size = new System.Drawing.Size(0, 13);
-            this.LabelSelectedPlayerText.TabIndex = 47;
             // 
             // MapInspectorMetadataControl
             // 

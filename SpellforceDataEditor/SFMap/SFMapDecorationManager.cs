@@ -47,7 +47,7 @@ namespace SpellforceDataEditor.SFMap
         {
             if (dec_used == 0)
                 return 0;
-            return dec_id[1+Utility.Rand() % dec_used];
+            return dec_id[1+MathUtils.Rand() % dec_used];
         }
 
         public int AddDecoration(ushort d_id, byte d_w)

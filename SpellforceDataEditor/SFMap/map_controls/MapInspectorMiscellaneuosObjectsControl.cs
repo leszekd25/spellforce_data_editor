@@ -380,6 +380,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
                                 ushort new_object_id = 769;
                                 // create new spawn and drag it until mouse released
                                 map.AddInteractiveObject(new_object_id, fixed_pos, 0, 1);
+                                map.metadata.spawns.Add(new SFMapSpawn());
+                                map.metadata.spawns[map.metadata.spawns.Count - 1].pos = fixed_pos;
                                 ListBindstones.Items.Add(GetBindstoneString(map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]));
                                 no_camera_jump = true;
                                 ListBindstones.SelectedIndex = ListBindstones.Items.Count - 1;
@@ -422,6 +424,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
                                     ListBindstones.SelectedIndex = -1;
 
                                 map.DeleteInteractiveObject(map.int_object_manager.int_objects.IndexOf(int_obj));
+                                for (int i = 0; i < map.metadata.spawns.Count; i++)
+                                    if (int_obj.grid_position == map.metadata.spawns[i].pos)
+                                    {
+                                        map.metadata.spawns.RemoveAt(i);
+                                        break;
+                                    }
                                 ListBindstones.Items.RemoveAt(io_index);
                             }
                         }

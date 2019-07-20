@@ -24,51 +24,28 @@ namespace SpellforceDataEditor.SFMap.map_controls
             InitializeComponent();
         }
 
-        // operates on a 64x64 mip map level ground texture, hardcoded for now...
-        private Bitmap CreateBitmapFromTexture(SFTexture tex)
-        {
-            Bitmap b = new Bitmap(tex.width/4, tex.height/4);
-            int ignored_level = 0;
-            while (!tex.IsValidMipMapLevel(ignored_level))
-                ignored_level += 1;
-
-            if (ignored_level > 2)
-                return b;
-
-            int offset = (tex.width * tex.height * 4) * (ignored_level > 0 ? 0 : 1) 
-                       + (tex.width * tex.height)     * (ignored_level > 1 ? 0 : 1);
-
-
-            for (int i = 0; i < 64; i++)
-                for (int j = 0; j < 64; j++)
-                    b.SetPixel(i, j, Color.FromArgb(
-                        255, 
-                        tex.data[offset+4*(i * 64 + j) + 0],
-                        tex.data[offset+4*(i * 64 + j) + 1],
-                        tex.data[offset+4*(i * 64 + j) + 2]));
-            return b;
-        }
 
         // 64x64 data
         public void GenerateBaseTexturePreviews()
         {
+            PanelTexturePreview.Controls.Clear();
             SFMapTerrainTextureManager manager = map.heightmap.texture_manager;
-            for(int i =0; i < 63; i++)
+            for(int i =0; i < 32; i++)
             {
                 Button b = new Button();
                 b.Size = new Size(70, 70);
                 b.Location = new Point(3+(i%4)*74, 3+(i/4)*74);
-                b.Image = CreateBitmapFromTexture(manager.base_texture_bank[i]);
+                if(i==0)
+                    b.Image = manager.CreateBitmapFromTexture(manager.base_texture_bank[0]);
+                else
+                    b.Image = manager.CreateBitmapFromTexture(manager.base_texture_bank[i+31]);
                 PanelTexturePreview.Controls.Add(b);
             }
-            Button no_b = new Button();
-            no_b.Size = new Size(70, 70);
-            no_b.Location = new Point(225, 3 + 74 * 15);
-            PanelTexturePreview.Controls.Add(no_b);
         }
 
         public void GenerateTileListEntries()
         {
+            ListTiles.Items.Clear();
             for(int i = 0; i < 32; i++)
             {
                 ListTiles.Items.Add(i.ToString() + ". " + map.heightmap.texture_manager.texture_tiledata[i].ind1.ToString());
@@ -80,15 +57,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     + map.heightmap.texture_manager.texture_tiledata[i].ind2.ToString() + ", "
                     + map.heightmap.texture_manager.texture_tiledata[i].ind3.ToString() + ", ");
             }
-            for (int i = 224; i < 255; i++)
-            {
-                ListTiles.Items.Add(i.ToString() + ". " + map.heightmap.texture_manager.texture_tiledata[i].ind1.ToString());
-            }
         }
 
         private int GetCurrentFocusedTextureButton()
         {
-            for (int i = 0; i < 64; i++)
+            for (int i = 0; i < 32; i++)
                 if (PanelTexturePreview.Controls[i].Focused)
                     return i;
             return -1;
@@ -118,7 +91,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 case TTMode.IDLE:
                     if(tiletex_focused != -1)
                     {
-                        if ((ListTiles.SelectedIndex < 32) || (ListTiles.SelectedIndex >= 224))
+                        if (ListTiles.SelectedIndex < 32)
                             break;
                         previously_focused_tiletex = tiletex_focused;
                         editor_mode = TTMode.CHANGE_TILE_TEXTURE;
@@ -134,10 +107,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     {
                         focused_base_texture = cur_focused;
                         previously_focused_base_texture = cur_focused;
-                        if (cur_focused != 63)
-                            TexIDTextBox.Text = map.heightmap.texture_manager.texture_id[cur_focused].ToString();
-                        else
-                            TexIDTextBox.Text = "<leave empty>";
+                        TexIDTextBox.Text = map.heightmap.texture_manager.texture_id[cur_focused].ToString();
                     }
                     break;
                 case TTMode.EDIT_BASE_TEXTURE:
@@ -169,7 +139,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                                 Tex3Button.Refresh();
                             }
                             map.heightmap.texture_manager.UpdateTileTexture(ListTiles.SelectedIndex);
-                            TexPreview.Image = CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
+                            TexPreview.Image = map.heightmap.texture_manager.CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
                             map.heightmap.texture_manager.FreeTileMemory(ListTiles.SelectedIndex);
                             TexPreview.Refresh();
                             MainForm.mapedittool.update_render = true;
@@ -204,13 +174,18 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (map == null)
                 return;
 
-            if (!(map.heightmap.texture_manager.SetBaseTexture(previously_focused_base_texture, Utility.TryParseInt32(TexIDTextBox.Text))))
+            int tex_id = 0;
+            if ((previously_focused_base_texture != 0) && (previously_focused_base_texture != -1))
+                tex_id = previously_focused_base_texture + 31;
+
+            if (!(map.heightmap.texture_manager.SetBaseTexture(tex_id, Utility.TryParseInt32(TexIDTextBox.Text)+119)))
                 TexIDTextBox.BackColor = Color.Red;
             else
             {
+                map.heightmap.texture_manager.SetBaseTexture(tex_id - 31, Utility.TryParseInt32(TexIDTextBox.Text));
                 TexIDTextBox.BackColor = Color.White;
                 ((Button)(PanelTexturePreview.Controls[previously_focused_base_texture])).Image =
-                    CreateBitmapFromTexture(map.heightmap.texture_manager.base_texture_bank[previously_focused_base_texture]);
+                    map.heightmap.texture_manager.CreateBitmapFromTexture(map.heightmap.texture_manager.base_texture_bank[tex_id]);
 
 
                 PanelTexturePreview.Controls[previously_focused_base_texture].Refresh();
@@ -251,18 +226,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 Tex2Weight.Text = map.heightmap.texture_manager.texture_tiledata[tex_i].weight2.ToString();
                 Tex3Weight.Text = map.heightmap.texture_manager.texture_tiledata[tex_i].weight3.ToString();
                 map.heightmap.texture_manager.UpdateTileTexture(tex_i);
-                TexPreview.Image = CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[tex_i]);
+                TexPreview.Image = map.heightmap.texture_manager.CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[tex_i]);
                 map.heightmap.texture_manager.FreeTileMemory(tex_i);
-            }
-            else
-            {
-                Tex1Button.Image = null;
-                Tex2Button.Image = null;
-                Tex3Button.Image = null;
-                Tex1Weight.Text = "";
-                Tex2Weight.Text = "";
-                Tex3Weight.Text = "";
-                TexPreview.Image = ((Button)(PanelTexturePreview.Controls[tex_i - 192])).Image;
             }
             MovementCheck.Checked = map.heightmap.texture_manager.texture_tiledata[tex_i].blocks_movement;
             VisionCheck.Checked = map.heightmap.texture_manager.texture_tiledata[tex_i].blocks_vision;
@@ -273,11 +238,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (map == null)
                 return;
 
-            if ((ListTiles.SelectedIndex < 32) || (ListTiles.SelectedIndex >= 224))
+            if (ListTiles.SelectedIndex < 32)
                 return;
             map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight1 = Utility.TryParseUInt8(Tex1Weight.Text);
             map.heightmap.texture_manager.UpdateTileTexture(ListTiles.SelectedIndex);
-            TexPreview.Image = CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
+            TexPreview.Image = map.heightmap.texture_manager.CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
             map.heightmap.texture_manager.FreeTileMemory(ListTiles.SelectedIndex);
             TexPreview.Refresh();
             MainForm.mapedittool.update_render = true;
@@ -288,11 +253,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (map == null)
                 return;
 
-            if ((ListTiles.SelectedIndex < 32) || (ListTiles.SelectedIndex >= 224))
+            if (ListTiles.SelectedIndex < 32)
                 return;
             map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight2 = Utility.TryParseUInt8(Tex2Weight.Text);
             map.heightmap.texture_manager.UpdateTileTexture(ListTiles.SelectedIndex);
-            TexPreview.Image = CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
+            TexPreview.Image = map.heightmap.texture_manager.CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
             map.heightmap.texture_manager.FreeTileMemory(ListTiles.SelectedIndex);
             TexPreview.Refresh();
             MainForm.mapedittool.update_render = true;
@@ -303,11 +268,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (map == null)
                 return;
 
-            if ((ListTiles.SelectedIndex < 32) || (ListTiles.SelectedIndex >= 224))
+            if (ListTiles.SelectedIndex < 32)
                 return;
             map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].weight3 = Utility.TryParseUInt8(Tex3Weight.Text);
             map.heightmap.texture_manager.UpdateTileTexture(ListTiles.SelectedIndex);
-            TexPreview.Image = CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
+            TexPreview.Image = map.heightmap.texture_manager.CreateBitmapFromTexture(map.heightmap.texture_manager.texture_array[ListTiles.SelectedIndex]);
             map.heightmap.texture_manager.FreeTileMemory(ListTiles.SelectedIndex);
             TexPreview.Refresh();
             MainForm.mapedittool.update_render = true;
@@ -321,6 +286,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (ListTiles.SelectedIndex == -1)
                 return;
             map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].blocks_movement = MovementCheck.Checked;
+            if((ListTiles.SelectedIndex!=0)&&(ListTiles.SelectedIndex < 32))
+                map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex+223].blocks_movement = MovementCheck.Checked;
         }
 
         private void VisionCheck_CheckedChanged(object sender, EventArgs e)
@@ -331,6 +298,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (ListTiles.SelectedIndex == -1)
                 return;
             map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex].blocks_vision = VisionCheck.Checked;
+            if ((ListTiles.SelectedIndex != 0) && (ListTiles.SelectedIndex < 32))
+                map.heightmap.texture_manager.texture_tiledata[ListTiles.SelectedIndex+223].blocks_vision = VisionCheck.Checked;
         }
 
         public override void OnMouseDown(SFCoord clicked_pos, MouseButtons button)
@@ -339,6 +308,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
             {
                 if (ListTiles.SelectedIndex == -1)
                     return;
+                if (ListTiles.SelectedIndex == 0)
+                    return;
+
+                int tex_id = ListTiles.SelectedIndex;
+                if (tex_id < 32)
+                    tex_id += 223;
 
                 int size = (int)Math.Ceiling(BrushControl.brush.size);
                 BrushControl.brush.center = clicked_pos;
@@ -360,7 +335,16 @@ namespace SpellforceDataEditor.SFMap.map_controls
                         if (BrushControl.brush.GetStrengthAt(new SFCoord(i, j)) == 0)
                             continue;
                         int fixed_j = map.height - j - 1;
-                        map.heightmap.tile_data[fixed_j * map.width + i] = (byte)(ListTiles.SelectedIndex);
+                        if (map.heightmap.height_data[fixed_j * map.width + i] == 0)
+                            continue;
+                        if(CheckEditSimilar.Checked)
+                        {
+                            bool b_mov = map.heightmap.texture_manager.texture_tiledata[tex_id].blocks_movement ^
+                                         map.heightmap.texture_manager.texture_tiledata[map.heightmap.tile_data[fixed_j * map.width + i]].blocks_movement;
+                            if (b_mov)
+                                continue;
+                        }
+                        map.heightmap.tile_data[fixed_j * map.width + i] = (byte)(tex_id);
                     }
                 }
 
@@ -372,7 +356,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     return;
                 if ((clicked_pos.y <=0 ) || (clicked_pos.y > map.height))
                     return;
-                ListTiles.SelectedIndex = map.heightmap.tile_data[(map.height - clicked_pos.y - 1) * map.width + clicked_pos.x];
+                int tex_id = map.heightmap.tile_data[(map.height - clicked_pos.y - 1) * map.width + clicked_pos.x];
+                if (tex_id > 223)
+                    tex_id -= 223;
+                ListTiles.SelectedIndex = tex_id;
             }
         }
     }

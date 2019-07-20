@@ -227,6 +227,11 @@ namespace SpellforceDataEditor.SFChunkFile
                 LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.AddChunk(): File is not open for writing!");
                 throw new InvalidOperationException("SFChunkFile.AddChunk(): File not open for writing!");
             }
+            if(raw_data.Length == 0)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFChunkFile, "SFChunkFile.AddChunk(): Provided data is empty! Omitting chunk...");
+                return;
+            }
 
             SFChunkFileChunk chunk = new SFChunkFileChunk();
 

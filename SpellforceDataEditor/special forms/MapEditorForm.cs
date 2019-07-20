@@ -38,6 +38,8 @@ namespace SpellforceDataEditor.special_forms
 
         OpenTK.GLControl RenderWindow = null;
 
+        SFMap.map_dialog.MapAutoTextureDialog autotexture_form = null;
+
         public MapEditorForm()
         {
             InitializeComponent();
@@ -101,10 +103,16 @@ namespace SpellforceDataEditor.special_forms
                 ResizeWindow();
         }
 
+        private void createNewMapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CloseMap() == 0)
+                CreateMap();
+        }
+
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CloseMap();
-            LoadMap();
+            if (CloseMap() == 0)
+                LoadMap();
         }
 
         private void saveMapToolStripMenuItem_Click(object sender, EventArgs e)
@@ -124,8 +132,96 @@ namespace SpellforceDataEditor.special_forms
 
 
 
+        private int CreateMap()
+        {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap() called");
+
+            ushort map_size = 0;
+            SFMap.MapGen.MapGenerator generator = null;
+            SFMap.map_dialog.MapPromptNewMap newmap = new SFMap.map_dialog.MapPromptNewMap();
+            if (newmap.ShowDialog() == DialogResult.OK)
+            {
+                map_size = newmap.MapSize;
+                if (newmap.use_generator)
+                {
+                    newmap.UpdateGenerator();
+                    generator = newmap.generator;
+                }
+            }
+            else
+                return -1;
+
+            if (MainForm.data != null)
+            {
+                if (MainForm.data.data_loaded)
+                {
+                    if (!MainForm.data.synchronized_with_mapeditor)
+                    {
+                        if (MainForm.data.close_data() == DialogResult.Cancel)
+                        {
+                            StatusText.Text = "Could not load game data: Another game data is already loaded, which will cause desync!";
+                            return -1;
+                        }
+                    }
+                }
+            }
+            else if (SFCFF.SFCategoryManager.ready)
+                SFCFF.SFCategoryManager.unload_all();
+
+            StatusText.Text = "Loading GameData.cff...";
+            StatusText.GetCurrentParent().Refresh();
+            if (gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
+            {
+                StatusText.Text = "Failed to load gamedata";
+                return -2;
+            }
+
+            if (MainForm.data != null)
+                MainForm.data.mapeditor_set_gamedata(gamedata);
+            else
+                SFCFF.SFCategoryManager.manual_set_gamedata(gamedata);
+
+            SFRenderEngine.scene.Init();
+            CreateRenderWindow();
+
+            map = new SFMap.SFMap();
+            map.CreateDefault(map_size, generator, gamedata, StatusText);
+
+            SFRenderEngine.scene.heightmap = map.heightmap;
+
+            for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
+                if (edit_controls[i] != null)
+                {
+                    edit_controls[i].map = map;
+                    edit_controls[i].Enabled = true;
+                }
+
+            // ui initialization
+            ((SFMap.map_controls.MapInspectorTerrainTextureControl)(edit_controls[1])).GenerateBaseTexturePreviews();
+            ((SFMap.map_controls.MapInspectorTerrainTextureControl)(edit_controls[1])).GenerateTileListEntries();
+            ((SFMap.map_controls.MapInspectorUnitControl)(edit_controls[4])).InitializeComboRaces();
+
+            map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
+            map.selection_helper.SetCursorVisibility(true);
+
+            SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
+
+            RenderWindow.Invalidate();
+
+            if (MainForm.data != null)
+            {
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap(): Synchronized with gamedata editor");
+                MessageBox.Show("Note: Editor now operates on gamedata file in your Spellforce directory. Modifying in-editor gamedata and saving results will result in permanent change to your gamedata in your Spellforce directory.");
+            }
+
+            LogUtils.Log.MemoryUsage();
+            return 0;
+        }
+
         private int LoadMap()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap() called");
+
             if (OpenMap.ShowDialog() == DialogResult.OK)
             {
                 // check if gamedata is open in the editor and prompt to close it
@@ -190,6 +286,7 @@ namespace SpellforceDataEditor.special_forms
                 // ui initialization
                 ((SFMap.map_controls.MapInspectorTerrainTextureControl)(edit_controls[1])).GenerateBaseTexturePreviews();
                 ((SFMap.map_controls.MapInspectorTerrainTextureControl)(edit_controls[1])).GenerateTileListEntries();
+                ((SFMap.map_controls.MapInspectorUnitControl)(edit_controls[4])).InitializeComboRaces();
 
                 map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
                 map.selection_helper.SetCursorVisibility(true);
@@ -215,6 +312,8 @@ namespace SpellforceDataEditor.special_forms
 
         private DialogResult SaveMap()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.SaveMap() called");
+
             if (map == null)
                 return DialogResult.No;
 
@@ -251,6 +350,8 @@ namespace SpellforceDataEditor.special_forms
 
         private int CloseMap()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.CloseMap() called");
+
             if (map == null)
                 return 0;
 
@@ -462,10 +563,9 @@ namespace SpellforceDataEditor.special_forms
                 }
                 if (ray_success)
                 {
-                    SFCoord cursor_coord = new SFCoord((int)result.X, (int)result.Z);
+                    SFCoord cursor_coord = new SFCoord((int)(Math.Max(0, Math.Min(result.X, map.width-1))), (int)(Math.Max(0,Math.Min(result.Z, map.height-1))));
                     SFCoord inv_cursor_coord = new SFCoord(cursor_coord.x, map.height - cursor_coord.y - 1);
-                    if ((result.X < 0) || (result.Z < 0))
-                        cursor_coord = new SFCoord(0, 0);
+
                     if(map.selection_helper.SetCursorPosition(cursor_coord))
                         update_render = true;
                     StatusText.Text = "Cursor position: " + inv_cursor_coord.ToString();
@@ -690,6 +790,24 @@ namespace SpellforceDataEditor.special_forms
         public SFMap.map_controls.MapInspectorBaseControl GetEditorControl(int mode)
         {
             return edit_controls[mode];
+        }
+
+        private void slopebasedPaintToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (map == null)
+                return;
+            if (autotexture_form != null)
+                return;
+            autotexture_form = new SFMap.map_dialog.MapAutoTextureDialog();
+            autotexture_form.map = map;
+            autotexture_form.FormClosing += new FormClosingEventHandler(autotextureform_FormClosing);
+            autotexture_form.Show();
+        }
+
+        private void autotextureform_FormClosing(object  sender, FormClosingEventArgs e)
+        {
+            autotexture_form.FormClosing -= new FormClosingEventHandler(autotextureform_FormClosing);
+            autotexture_form = null;
         }
     }
 }

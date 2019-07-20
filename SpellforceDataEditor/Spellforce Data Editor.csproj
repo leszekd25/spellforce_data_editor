@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="LinearPool.cs" />
     <Compile Include="LogUtils\Log.cs" />
+    <Compile Include="MathUtils.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SF3D\ColorUtility.cs" />
     <Compile Include="SF3D\Lighting.cs" />
@@ -524,6 +525,9 @@
     <Compile Include="SFLua\SFLuaEnvironment.cs" />
     <Compile Include="SFMap\MapEdit\MapBrush.cs" />
     <Compile Include="SFMap\MapEdit\MapOverlayChunk.cs" />
+    <Compile Include="SFMap\MapGen\GradientMap.cs" />
+    <Compile Include="SFMap\MapGen\LatticeKernel.cs" />
+    <Compile Include="SFMap\MapGen\MapGenerator.cs" />
     <Compile Include="SFMap\map_controls\MapBrushControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -601,6 +605,18 @@
     </Compile>
     <Compile Include="SFMap\map_controls\MapInspectorUnitControl.Designer.cs">
       <DependentUpon>MapInspectorUnitControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapAutoTextureDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapAutoTextureDialog.Designer.cs">
+      <DependentUpon>MapAutoTextureDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapPromptNewMap.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapPromptNewMap.Designer.cs">
+      <DependentUpon>MapPromptNewMap.cs</DependentUpon>
     </Compile>
     <Compile Include="SFMap\SFCoord.cs" />
     <Compile Include="SFMap\SFMap.cs" />
@@ -1010,6 +1026,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapInspectorUnitControl.resx">
       <DependentUpon>MapInspectorUnitControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_dialog\MapAutoTextureDialog.resx">
+      <DependentUpon>MapAutoTextureDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_dialog\MapPromptNewMap.resx">
+      <DependentUpon>MapPromptNewMap.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMod\mod_controls\ModInfoForm.resx">
       <DependentUpon>ModInfoForm.cs</DependentUpon>

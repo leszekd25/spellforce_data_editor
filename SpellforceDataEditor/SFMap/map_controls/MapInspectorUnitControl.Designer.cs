@@ -28,9 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
             this.UnitToPlaceID = new System.Windows.Forms.TextBox();
-            this.UnitToPlaceNameAndLevel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.SelectedUnitPanel = new System.Windows.Forms.Panel();
             this.SelectedUnitNameAndLevel = new System.Windows.Forms.Label();
@@ -55,23 +53,19 @@
             this.UnitListFindNext = new System.Windows.Forms.Button();
             this.UnitListSearchPhrase = new System.Windows.Forms.TextBox();
             this.UnitListFindPrevious = new System.Windows.Forms.Button();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.ComboRaces = new System.Windows.Forms.ComboBox();
+            this.ComboUnit = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.SelectedUnitPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SelectedUnitAngleTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(18, 16);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(70, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Unit to place:";
-            // 
             // UnitToPlaceID
             // 
             this.UnitToPlaceID.BackColor = System.Drawing.Color.DarkOrange;
-            this.UnitToPlaceID.Location = new System.Drawing.Point(94, 13);
+            this.UnitToPlaceID.Location = new System.Drawing.Point(93, 13);
             this.UnitToPlaceID.Name = "UnitToPlaceID";
             this.UnitToPlaceID.Size = new System.Drawing.Size(100, 20);
             this.UnitToPlaceID.TabIndex = 1;
@@ -79,18 +73,10 @@
             this.UnitToPlaceID.TextChanged += new System.EventHandler(this.UnitToPlaceID_TextChanged);
             this.UnitToPlaceID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.UnitToPlaceID_MouseDown);
             // 
-            // UnitToPlaceNameAndLevel
-            // 
-            this.UnitToPlaceNameAndLevel.AutoSize = true;
-            this.UnitToPlaceNameAndLevel.Location = new System.Drawing.Point(200, 16);
-            this.UnitToPlaceNameAndLevel.Name = "UnitToPlaceNameAndLevel";
-            this.UnitToPlaceNameAndLevel.Size = new System.Drawing.Size(0, 13);
-            this.UnitToPlaceNameAndLevel.TabIndex = 2;
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(20, 51);
+            this.label2.Location = new System.Drawing.Point(18, 90);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(134, 13);
             this.label2.TabIndex = 3;
@@ -116,7 +102,7 @@
             this.SelectedUnitPanel.Controls.Add(this.label4);
             this.SelectedUnitPanel.Controls.Add(this.label3);
             this.SelectedUnitPanel.Controls.Add(this.labelX);
-            this.SelectedUnitPanel.Location = new System.Drawing.Point(14, 67);
+            this.SelectedUnitPanel.Location = new System.Drawing.Point(12, 106);
             this.SelectedUnitPanel.Name = "SelectedUnitPanel";
             this.SelectedUnitPanel.Size = new System.Drawing.Size(384, 191);
             this.SelectedUnitPanel.TabIndex = 4;
@@ -275,7 +261,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(18, 270);
+            this.label9.Location = new System.Drawing.Point(16, 309);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(63, 13);
             this.label9.TabIndex = 5;
@@ -284,7 +270,7 @@
             // ListUnits
             // 
             this.ListUnits.FormattingEnabled = true;
-            this.ListUnits.Location = new System.Drawing.Point(22, 286);
+            this.ListUnits.Location = new System.Drawing.Point(20, 325);
             this.ListUnits.Name = "ListUnits";
             this.ListUnits.Size = new System.Drawing.Size(223, 225);
             this.ListUnits.TabIndex = 6;
@@ -292,7 +278,7 @@
             // 
             // UnitListFindNext
             // 
-            this.UnitListFindNext.Location = new System.Drawing.Point(251, 312);
+            this.UnitListFindNext.Location = new System.Drawing.Point(249, 351);
             this.UnitListFindNext.Name = "UnitListFindNext";
             this.UnitListFindNext.Size = new System.Drawing.Size(147, 23);
             this.UnitListFindNext.TabIndex = 7;
@@ -302,14 +288,14 @@
             // 
             // UnitListSearchPhrase
             // 
-            this.UnitListSearchPhrase.Location = new System.Drawing.Point(251, 286);
+            this.UnitListSearchPhrase.Location = new System.Drawing.Point(249, 325);
             this.UnitListSearchPhrase.Name = "UnitListSearchPhrase";
             this.UnitListSearchPhrase.Size = new System.Drawing.Size(147, 20);
             this.UnitListSearchPhrase.TabIndex = 8;
             // 
             // UnitListFindPrevious
             // 
-            this.UnitListFindPrevious.Location = new System.Drawing.Point(251, 341);
+            this.UnitListFindPrevious.Location = new System.Drawing.Point(249, 380);
             this.UnitListFindPrevious.Name = "UnitListFindPrevious";
             this.UnitListFindPrevious.Size = new System.Drawing.Size(147, 23);
             this.UnitListFindPrevious.TabIndex = 9;
@@ -317,9 +303,58 @@
             this.UnitListFindPrevious.UseVisualStyleBackColor = true;
             this.UnitListFindPrevious.Click += new System.EventHandler(this.UnitListFindPrevious_Click);
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(17, 42);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(33, 13);
+            this.label10.TabIndex = 10;
+            this.label10.Text = "Race";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(17, 69);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(26, 13);
+            this.label11.TabIndex = 11;
+            this.label11.Text = "Unit";
+            // 
+            // ComboRaces
+            // 
+            this.ComboRaces.FormattingEnabled = true;
+            this.ComboRaces.Location = new System.Drawing.Point(93, 39);
+            this.ComboRaces.Name = "ComboRaces";
+            this.ComboRaces.Size = new System.Drawing.Size(195, 21);
+            this.ComboRaces.TabIndex = 12;
+            this.ComboRaces.SelectedIndexChanged += new System.EventHandler(this.ComboRaces_SelectedIndexChanged);
+            // 
+            // ComboUnit
+            // 
+            this.ComboUnit.FormattingEnabled = true;
+            this.ComboUnit.Location = new System.Drawing.Point(93, 66);
+            this.ComboUnit.Name = "ComboUnit";
+            this.ComboUnit.Size = new System.Drawing.Size(303, 21);
+            this.ComboUnit.TabIndex = 13;
+            this.ComboUnit.SelectedIndexChanged += new System.EventHandler(this.ComboUnit_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(18, 16);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(70, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Unit to place:";
+            // 
             // MapInspectorUnitControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.Controls.Add(this.ComboUnit);
+            this.Controls.Add(this.ComboRaces);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.UnitListFindPrevious);
             this.Controls.Add(this.UnitListSearchPhrase);
             this.Controls.Add(this.UnitListFindNext);
@@ -327,7 +362,6 @@
             this.Controls.Add(this.label9);
             this.Controls.Add(this.SelectedUnitPanel);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.UnitToPlaceNameAndLevel);
             this.Controls.Add(this.UnitToPlaceID);
             this.Controls.Add(this.label1);
             this.Name = "MapInspectorUnitControl";
@@ -341,10 +375,7 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox UnitToPlaceID;
-        private System.Windows.Forms.Label UnitToPlaceNameAndLevel;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel SelectedUnitPanel;
         private System.Windows.Forms.Label label4;
@@ -369,5 +400,10 @@
         private System.Windows.Forms.TextBox UnitListSearchPhrase;
         private System.Windows.Forms.Button UnitListFindPrevious;
         private System.Windows.Forms.Label SelectedUnitNameAndLevel;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ComboBox ComboRaces;
+        private System.Windows.Forms.ComboBox ComboUnit;
+        private System.Windows.Forms.Label label1;
     }
 }

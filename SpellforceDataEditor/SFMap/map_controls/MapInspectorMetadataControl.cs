@@ -75,8 +75,6 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void ReloadPlayerSpawnList()
         {
             ListPlayerSpawns.Items.Clear();
-            if (map.metadata.spawns == null)
-                return;
 
             for (int i = 0; i < map.metadata.spawns.Count; i++)
                 ListPlayerSpawns.Items.Add((i + 1).ToString() + ". " + GetSpawnString(map.metadata.spawns[i]));
@@ -209,8 +207,6 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void ReloadBindstoneCombo()
         {
             ComboBindstoneList.Items.Clear();
-            if (map.metadata.spawns == null)
-                return;
 
             foreach (SFMapInteractiveObject io in map.int_object_manager.int_objects)
                 if (io.game_id == 769)
@@ -247,9 +243,6 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             if (ListPlayerSpawns.SelectedIndex == -1)
-                return;
-
-            if (map.metadata.spawns == null)
                 return;
 
             List<int> bindstone_indexes = new List<int>();
@@ -293,9 +286,6 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (ListPlayerSpawns.SelectedIndex == -1)
                 return;
 
-            if (map.metadata.spawns == null)
-                return;
-
             int selected_spawn_index = ListPlayerSpawns.SelectedIndex;
 
             map.metadata.spawns[selected_spawn_index].text_id = Utility.TryParseUInt16(SelectedSpawnTextID.Text);
@@ -306,9 +296,6 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void SelectedSpawnUnknown_Validated(object sender, EventArgs e)
         {
             if (ListPlayerSpawns.SelectedIndex == -1)
-                return;
-
-            if (map.metadata.spawns == null)
                 return;
 
             int selected_spawn_index = ListPlayerSpawns.SelectedIndex;
@@ -373,7 +360,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             List<int> ret = new List<int>();
             SFMapMultiplayerTeamComposition comp = map.metadata.multi_teams[ListTeamComps.SelectedIndex];
-            for (int i = 0; i < map.metadata.player_count; i++)
+            for (int i = 0; i < map.metadata.spawns.Count; i++)
             {
                 bool found = false;
                 for(int j = 0; j < comp.players.Count; j++)
@@ -488,6 +475,59 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 else
                     LabelSelectedPlayerText.Text = Utility.S_MISSING;
             }
+        }
+
+        private void TeamCompAdd_Click(object sender, EventArgs e)
+        {
+            if (map.metadata.map_type == SFMapType.CAMPAIGN)
+                return;
+
+            int max_teamcomp_teams = 0;
+            if (map.metadata.multi_teams != null)
+            {
+                int start = (map.metadata.map_type == SFMapType.COOP ? 1 : 2);
+                for (int i = start; i <= 4; i++)
+                {
+                    bool success = false;
+                    foreach (SFMapMultiplayerTeamComposition t_comp in map.metadata.multi_teams)
+                        if (t_comp.team_count == i)
+                        {
+                            success = true;
+                            break;
+                        }
+                    if(!success)
+                    {
+                        max_teamcomp_teams = i;
+                        break;
+                    }
+                }
+            }
+            if (max_teamcomp_teams == 0)
+                return;
+
+            if (map.metadata.multi_teams == null)
+                map.metadata.multi_teams = new List<SFMapMultiplayerTeamComposition>();
+
+            SFMapMultiplayerTeamComposition tc = new SFMapMultiplayerTeamComposition();
+            tc.team_count = max_teamcomp_teams;
+            tc.players = new List<List<SFMapTeamPlayer>>();
+            for (int i = 0; i < max_teamcomp_teams; i++)
+                tc.players.Add(new List<SFMapTeamPlayer>());
+            map.metadata.multi_teams.Add(tc);
+
+            ReloadMultiplayerTeamCompositionList();
+            ListTeamComps.SelectedIndex = map.metadata.multi_teams.Count - 1;
+        }
+
+        private void TeamCompRemove_Click(object sender, EventArgs e)
+        {
+            if (ListTeamComps.SelectedIndex == -1)
+                return;
+
+            map.metadata.multi_teams.RemoveAt(ListTeamComps.SelectedIndex);
+
+            ReloadMultiplayerTeamCompositionList();
+            ListTeamComps.SelectedIndex = map.metadata.multi_teams.Count - 1;
         }
     }
 }

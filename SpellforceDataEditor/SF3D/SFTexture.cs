@@ -443,8 +443,8 @@ namespace SpellforceDataEditor.SF3D
             }
             if (w1 + w2 == 0)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFTexture.MixUncompressed(): Texture weights are invalid!");
-                throw new Exception("SFTexture.MixUncompressed(): Texture weights invalid!");
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 127 for both weights");
+                w1 = 127; w2 = 127;
             }
 
             SFTexture new_tex = new SFTexture();

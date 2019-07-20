@@ -86,7 +86,7 @@ namespace SpellforceDataEditor.SFMap
     {
         public SFMapType map_type;
         public int player_count = 0;   // actually spawn points for players, each bound to exactly one bindstone
-        public List<SFMapSpawn> spawns = null;
+        public List<SFMapSpawn> spawns = new List<SFMapSpawn>();
         public SFMapMinimap minimap = null;
         public List<SFMapCoopSpawnParameters> coop_spawn_params = null;
         public List<SFMapCoopAISpawn> coop_spawns = null;

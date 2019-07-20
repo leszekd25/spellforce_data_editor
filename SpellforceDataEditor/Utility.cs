@@ -16,7 +16,6 @@ namespace SpellforceDataEditor
         public const string S_MISSING = "<missing>";
         public const string S_UNKNOWN = "<unknown>";
         public const string S_NONE = "<none>";
-        static Random r = new Random();
         
         //functions which try to convert a string to the respective type
         static public SByte TryParseInt8(string s, SByte def = 0)
@@ -191,11 +190,6 @@ namespace SpellforceDataEditor
             if (form.Result == DialogResult.Cancel)
                 return null;
             return form.ResultString;
-        }
-
-        static public int Rand()
-        {
-            return r.Next();
         }
 
         static public string ReadSFString(BinaryReader br)

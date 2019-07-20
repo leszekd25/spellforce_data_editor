@@ -52,6 +52,7 @@
             this.Tex3Button = new System.Windows.Forms.Button();
             this.TexPreview = new System.Windows.Forms.Button();
             this.TimerControl = new System.Windows.Forms.Timer(this.components);
+            this.CheckEditSimilar = new System.Windows.Forms.CheckBox();
             this.PanelTex1.SuspendLayout();
             this.PanelTex2.SuspendLayout();
             this.PanelTex3.SuspendLayout();
@@ -255,9 +256,20 @@
             // 
             this.TimerControl.Tick += new System.EventHandler(this.TimerControl_Tick);
             // 
+            // CheckEditSimilar
+            // 
+            this.CheckEditSimilar.AutoSize = true;
+            this.CheckEditSimilar.Location = new System.Drawing.Point(199, 532);
+            this.CheckEditSimilar.Name = "CheckEditSimilar";
+            this.CheckEditSimilar.Size = new System.Drawing.Size(133, 17);
+            this.CheckEditSimilar.TabIndex = 17;
+            this.CheckEditSimilar.Text = "Match movement flags";
+            this.CheckEditSimilar.UseVisualStyleBackColor = true;
+            // 
             // MapInspectorTerrainTextureControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.Controls.Add(this.CheckEditSimilar);
             this.Controls.Add(this.TexPreview);
             this.Controls.Add(this.PanelTex3);
             this.Controls.Add(this.PanelTex2);
@@ -309,5 +321,6 @@
         private System.Windows.Forms.Button Tex3Button;
         private System.Windows.Forms.Button TexPreview;
         private System.Windows.Forms.Timer TimerControl;
+        private System.Windows.Forms.CheckBox CheckEditSimilar;
     }
 }

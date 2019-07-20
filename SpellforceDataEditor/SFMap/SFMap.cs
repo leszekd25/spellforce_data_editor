@@ -147,12 +147,12 @@ namespace SpellforceDataEditor.SFMap
             tx.Text = "Loading buildings...";
             tx.GetCurrentParent().Refresh();
 
+            building_manager = new SFMapBuildingManager() { map = this };
             SFChunkFileChunk c11 = f.GetChunkByID(11);
             if (c11 != null)
             {
                 using (BinaryReader br = c11.Open())
                 {
-                    building_manager = new SFMapBuildingManager() { map = this };
                     while (br.BaseStream.Position < br.BaseStream.Length)
                     {
                         int x = br.ReadInt16();
@@ -179,12 +179,12 @@ namespace SpellforceDataEditor.SFMap
             tx.Text = "Loading units...";
             tx.GetCurrentParent().Refresh();
 
+            unit_manager = new SFMapUnitManager() { map = this };
             SFChunkFileChunk c12 = f.GetChunkByID(12);
             if (c12 != null)
             {
                 using (BinaryReader br = c12.Open())
                 {
-                    unit_manager = new SFMapUnitManager() { map = this };
                     while (br.BaseStream.Position < br.BaseStream.Length)
                     {
                         int x = br.ReadInt16();
@@ -210,12 +210,12 @@ namespace SpellforceDataEditor.SFMap
             tx.Text = "Loading objects...";
             tx.GetCurrentParent().Refresh();
 
+            object_manager = new SFMapObjectManager() { map = this };
             SFChunkFileChunk c29 = f.GetChunkByID(29);
             if (c29 != null)
             {
                 using (BinaryReader br = c29.Open())
                 {
-                    object_manager = new SFMapObjectManager() { map = this };
                     while (br.BaseStream.Position < br.BaseStream.Length)
                     {
                         int x = br.ReadInt16();
@@ -251,12 +251,12 @@ namespace SpellforceDataEditor.SFMap
             tx.Text = "Loading interactive objects...";
             tx.GetCurrentParent().Refresh();
 
+            int_object_manager = new SFMapInteractiveObjectManager() { map = this };
             SFChunkFileChunk c30 = f.GetChunkByID(30);
             if (c30 != null)
             {
                 using (BinaryReader br = c30.Open())
                 {
-                    int_object_manager = new SFMapInteractiveObjectManager() { map = this };
                     while (br.BaseStream.Position < br.BaseStream.Length)
                     {
                         int x = br.ReadInt16();
@@ -314,12 +314,12 @@ namespace SpellforceDataEditor.SFMap
             tx.Text = "Loading portals...";
             tx.GetCurrentParent().Refresh();
 
+            portal_manager = new SFMapPortalManager() { map = this };
             SFChunkFileChunk c35 = f.GetChunkByID(35);
             if (c35 != null)
             {
                 using (BinaryReader br = c35.Open())
                 {
-                    portal_manager = new SFMapPortalManager() { map = this };
                     while (br.BaseStream.Position < br.BaseStream.Length)
                     {
                         int x = br.ReadInt16();
@@ -336,12 +336,14 @@ namespace SpellforceDataEditor.SFMap
 
             // load lakes
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading lakes");
+            tx.Text = "Loading lakes...";
+            tx.GetCurrentParent().Refresh();
+            lake_manager = new SFMapLakeManager() { map = this };
             SFChunkFileChunk c40 = f.GetChunkByID(40);
             if (c40 != null)
             {
                 using (BinaryReader br = c40.Open())
                 {
-                    lake_manager = new SFMapLakeManager() { map = this };
                     int lake_count = br.ReadByte();
                     for (int i = 0; i < lake_count; i++)
                     {
@@ -433,7 +435,6 @@ namespace SpellforceDataEditor.SFMap
                 using (BinaryReader br = c55.Open())
                 {
                     int player_count = br.ReadInt32();
-                    metadata.spawns = new List<SFMapSpawn>();
                     for (int i = 0; i < player_count; i++)
                     {
                         short x = br.ReadInt16();
@@ -550,36 +551,39 @@ namespace SpellforceDataEditor.SFMap
 
                             // load coop spawns
                             metadata.coop_spawns = new List<SFMapCoopAISpawn>();
-                            using (BinaryReader br2 = c29.Open())
+                            if (c29 != null)
                             {
-                                if (c29.get_data_type() == 6)
+                                using (BinaryReader br2 = c29.Open())
                                 {
-                                    int obj_i = 0;
-                                    while (br2.BaseStream.Position < br2.BaseStream.Length)
+                                    if (c29.get_data_type() == 6)
                                     {
-                                        int x = br2.ReadInt16();
-                                        int y = br2.ReadInt16();
-                                        SFCoord pos = new SFCoord(x, y);
-                                        int object_id = br2.ReadInt16();
-                                        br2.ReadBytes(6);
-                                        if (object_id != 2541)
-                                            br2.ReadBytes(4);
-                                        else
+                                        int obj_i = 0;
+                                        while (br2.BaseStream.Position < br2.BaseStream.Length)
                                         {
-                                            short spawn_id = br2.ReadInt16();
-                                            short spawn_certain = br2.ReadInt16();
-                                            metadata.coop_spawns.Add(new SFMapCoopAISpawn(
-                                                object_manager.objects[obj_i],
-                                                spawn_id,
-                                                spawn_certain));
+                                            int x = br2.ReadInt16();
+                                            int y = br2.ReadInt16();
+                                            SFCoord pos = new SFCoord(x, y);
+                                            int object_id = br2.ReadInt16();
+                                            br2.ReadBytes(6);
+                                            if (object_id != 2541)
+                                                br2.ReadBytes(4);
+                                            else
+                                            {
+                                                short spawn_id = br2.ReadInt16();
+                                                short spawn_certain = br2.ReadInt16();
+                                                metadata.coop_spawns.Add(new SFMapCoopAISpawn(
+                                                    object_manager.objects[obj_i],
+                                                    spawn_id,
+                                                    spawn_certain));
+                                            }
+                                            if ((object_id >= 65) && (object_id <= 67))    // editor only
+                                                obj_i--;
+                                            obj_i++;
                                         }
-                                        if ((object_id >= 65) && (object_id <= 67))    // editor only
-                                            obj_i--;
-                                        obj_i++;
                                     }
                                 }
+                                c29.Close();
                             }
-                            c29.Close();
                         }
                         // load minimap
                         int width = p_num;
@@ -1023,6 +1027,212 @@ namespace SpellforceDataEditor.SFMap
 
             f.Close();
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Map saved successfully");
+
+            return 0;
+        }
+
+        public int CreateDefault(ushort size, MapGen.MapGenerator generator, SFCFF.SFGameData gd, ToolStripLabel tx)
+        {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.CreateDefault() called, map size: " + size.ToString());
+            tx.Text = "Creating...";
+            tx.GetCurrentParent().Refresh();
+
+            // load map size and tile indices
+            gamedata = gd;
+            
+            tx.Text = "Creating map data...";
+            tx.GetCurrentParent().Refresh();
+
+            byte[] tilearray = new byte[size * size];
+            for (int i = 0; i < size * size; i++)
+                tilearray[i] = 0;
+            width = size;
+            height = size;
+            heightmap = new SFMapHeightMap(width, height) { map = this };
+            heightmap.SetTilesRaw(tilearray);
+
+            // load terrain texture data
+            byte[] moveflags = new byte[] {0, 0, 0, 0, 0, 0, 1,
+                                           1, 1, 1, 0, 1, 0, 0, 0,
+                                           0, 1, 0, 1, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 1, 0, 1, 1};
+
+            byte[] tile_data = new byte[255 * 14];
+            tile_data.Initialize();
+            for(byte i = 0; i < 255; i++)
+            {
+                // byte 0
+                if (i == 0)
+                    tile_data[i * 14 + 0] = 1;
+                if ((i >= 1) && (i <= 31))
+                    tile_data[i * 14 + 0] = i;
+                if (i >= 224)
+                    tile_data[i * 14 + 0] = (byte)(i - 192);
+                // byte 3
+                if ((i <= 31) || (i >= 224))
+                    tile_data[i * 14 + 3] = 255;
+                // byte 6
+                tile_data[i * 14 + 6] = i;
+                if ((i >= 1) && (i <= 31))
+                    tile_data[i * 14 + 6] = (byte)(i + 223);
+                // byte 7
+                tile_data[i * 14 + 7] = i;
+                if(i >= 224)
+                    tile_data[i*14+7] = (byte)(i-223);
+                // bytes 8-9
+                tile_data[i * 14 + 8] = 255;
+                tile_data[i * 14 + 9] = 128;
+                // byte 10
+                if (((i >= 1) && (i <= 120)) || (i >= 224))
+                    tile_data[i * 14 + 10] = 10;
+                // byte 11
+                tile_data[i * 14 + 11] = 255;
+                // byte 12: movement flag, byte 13: vision flag - both set later
+                if((i >= 1)&&(i <= 31))
+                    tile_data[i * 14 + 12] = moveflags[i-1];
+                if (i >= 224)
+                    tile_data[i * 14 + 12] = moveflags[i - 224];
+            }
+
+
+            for (int i = 0; i < 255; i++)
+            {
+                heightmap.texture_manager.texture_tiledata[i].ind1 = tile_data[i * 14 + 0];
+                heightmap.texture_manager.texture_tiledata[i].ind2 = tile_data[i * 14 + 1];
+                heightmap.texture_manager.texture_tiledata[i].ind3 = tile_data[i * 14 + 2];
+                heightmap.texture_manager.texture_tiledata[i].weight1 = tile_data[i * 14 + 3];
+                heightmap.texture_manager.texture_tiledata[i].weight2 = tile_data[i * 14 + 4];
+                heightmap.texture_manager.texture_tiledata[i].weight3 = tile_data[i * 14 + 5];
+                heightmap.texture_manager.texture_tiledata[i].reindex_data = tile_data[i * 14 + 6];
+                heightmap.texture_manager.texture_tiledata[i].reindex_index = tile_data[i * 14 + 7];
+                heightmap.texture_manager.texture_tiledata[i].material_property = tile_data[i * 14 + 10];
+                byte b_m = tile_data[i * 14 + 12]; byte b_v = tile_data[i * 14 + 13];
+                heightmap.texture_manager.texture_tiledata[i].blocks_movement = ((b_m % 2) == 1 ? true : false);
+                heightmap.texture_manager.texture_tiledata[i].blocks_vision = ((b_v % 2) == 1 ? true : false);
+            }
+
+            
+            byte[] texture_ids = new byte[63];
+            texture_ids[0] = 0;
+            texture_ids[1] = 69; texture_ids[2] = 66; texture_ids[3] = 67; texture_ids[4] = 70;
+            texture_ids[5] = 59; texture_ids[6] = 6; texture_ids[7] = 23; texture_ids[8] = 18;
+            texture_ids[9] = 9; texture_ids[10] = 10; texture_ids[11] = 93; texture_ids[12] = 12;
+            texture_ids[13] = 13; texture_ids[14] = 17; texture_ids[15] = 15; texture_ids[16] = 22;
+            texture_ids[17] = 33; texture_ids[18] = 54; texture_ids[19] = 29; texture_ids[20] = 68;
+            texture_ids[21] = 5; texture_ids[22] = 73; texture_ids[23] = 75; texture_ids[24] = 77;
+            texture_ids[25] = 64; texture_ids[26] = 26; texture_ids[27] = 80; texture_ids[28] = 74;
+            texture_ids[29] = 30; texture_ids[30] = 83; texture_ids[31] = 32;
+            for (int i = 1; i < 32; i++)
+                texture_ids[i + 31] = (byte)(texture_ids[i] + SFMapTerrainTextureManager.TEXTURES_AVAILABLE);
+            
+            heightmap.texture_manager.SetTextureIDsRaw(texture_ids);
+
+            // generate texture data
+            heightmap.texture_manager.Init();
+
+            // load heightmap
+            if(generator != null)
+                heightmap.height_data = generator.ProduceHeightmap();
+            else
+                for (int i = 0; i < size * size; i++)
+                    heightmap.height_data[i] = 0;
+
+            // generate heightmap models and reindex textures
+            heightmap.Generate();
+
+            npc_manager = new SFMapNPCManager() { map = this };
+
+            // load buildings
+            building_manager = new SFMapBuildingManager() { map = this };
+
+            // load units
+            unit_manager = new SFMapUnitManager() { map = this };
+
+            // load objects
+            object_manager = new SFMapObjectManager() { map = this };
+
+            // load interactive objects
+            int_object_manager = new SFMapInteractiveObjectManager() { map = this };
+
+            // load decorations
+
+            byte[] dec_data = new byte[1048576];
+            dec_data.Initialize();
+            decoration_manager = new SFMapDecorationManager() { map = this };
+            decoration_manager.dec_assignment = dec_data;
+            
+            for (int i = 0; i < 255; i++)
+                decoration_manager.dec_groups[i] = new SFMapDecorationGroup();
+            decoration_manager.GenerateDecorations();
+
+            // load portals
+            portal_manager = new SFMapPortalManager() { map = this };
+
+            // load lakes
+            lake_manager = new SFMapLakeManager() { map = this };
+
+            // load map flags
+
+            // load metadata
+            metadata = new SFMapMetaData();
+            metadata.map_type = SFMapType.COOP;
+
+            byte[] image_data = new byte[128 * 128 * 3];
+            for (int i = 0; i < 128 * 128 * 3; i++)
+                image_data[i] = (byte)((i * 1024) / 3);
+            metadata.minimap = new SFMapMinimap();
+            metadata.minimap.width = 128;
+            metadata.minimap.height = 128;
+            metadata.minimap.texture_data = image_data;
+            metadata.minimap.GenerateTexture();
+
+            metadata.coop_spawn_params = new List<SFMapCoopSpawnParameters>();
+            metadata.coop_spawn_params.Add(new SFMapCoopSpawnParameters());
+            metadata.coop_spawn_params.Add(new SFMapCoopSpawnParameters());
+            metadata.coop_spawn_params.Add(new SFMapCoopSpawnParameters());
+            metadata.coop_spawn_params[0].param1 = 1; metadata.coop_spawn_params[1].param1 = 1.5f; metadata.coop_spawn_params[2].param1 = 2;
+            metadata.coop_spawn_params[0].param2 = 1; metadata.coop_spawn_params[1].param2 = 1.5f; metadata.coop_spawn_params[2].param2 = 2;
+            metadata.coop_spawn_params[0].param3 = 1; metadata.coop_spawn_params[1].param3 = 0.7f; metadata.coop_spawn_params[2].param3 = 0.5f;
+            metadata.coop_spawn_params[0].param4 = 1; metadata.coop_spawn_params[1].param4 = 0.7f; metadata.coop_spawn_params[2].param4 = 0.5f;
+
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Create(): Creating overlays");
+            // create overlays, generation in relevant control...
+            heightmap.OverlayCreate("TileMovementBlock", new OpenTK.Vector4(0.5f, 0, 0, 0.7f));
+            heightmap.OverlayCreate("ManualMovementBlock", new OpenTK.Vector4(1, 0, 0, 0.7f));
+            heightmap.OverlayCreate("ManualVisionBlock", new OpenTK.Vector4(1, 1, 0, 0.7f));
+            heightmap.OverlayCreate("LakeTile", new OpenTK.Vector4(0.4f, 0.4f, 0.9f, 0.7f));
+            heightmap.OverlayCreate("ManualLakeTile", new OpenTK.Vector4(0.6f, 0.6f, 1.0f, 0.7f));
+
+            // debug
+            heightmap.OverlayCreate("BuildingBlock", new OpenTK.Vector4(0.3f, 1f, 0.3f, 0.7f));
+            for (int i = 0; i < height; i++)
+                for (int j = 0; j < width; j++)
+                    if (heightmap.building_data[i * width + j] != 0)
+                        heightmap.OverlayAdd("BuildingBlock", new SFCoord(j, i));
+
+            heightmap.OverlayCreate("DecorationTile", new OpenTK.Vector4(0.9f, 0.3f, 0.9f, 0.9f));
+
+
+            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in heightmap.chunk_nodes)
+            {
+                chunk_node.MapChunk.OverlayUpdate("TileMovementBlock");
+                chunk_node.MapChunk.OverlayUpdate("ManualMovementBlock");
+                chunk_node.MapChunk.OverlayUpdate("ManualVisionBlock");
+                chunk_node.MapChunk.OverlayUpdate("LakeTile");
+                chunk_node.MapChunk.OverlayUpdate("ManualLakeTile");
+                chunk_node.MapChunk.OverlayUpdate("BuildingBlock");
+                chunk_node.MapChunk.OverlayUpdate("DecorationTile");
+            }
+
+            //heightmap.OverlaySetVisible("BuildingBlock", true);
+
+            // selection helper stuff
+            selection_helper.AssignToMap(this);
+
+            // done
+
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Create() finished successfully");
+            tx.Text = "Map created";
 
             return 0;
         }

@@ -13,6 +13,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
         bool drag_enabled = false;
         int selected_unit = -1;
 
+        List<int> unitcombo_to_unitindex = new List<int>();
+
         public MapInspectorUnitControl()
         {
             InitializeComponent();
@@ -41,6 +43,75 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 ListUnits.Items.Add(GetUnitString(u));
         }
 
+        public void InitializeComboRaces()
+        {
+            if (!SFCFF.SFCategoryManager.ready)
+                return;
+
+            ComboRaces.Items.Clear();
+
+            SFCFF.SFCategory races_cat = SFCFF.SFCategoryManager.gamedata.categories[15];
+            for(int i = 0; i < races_cat.get_element_count(); i++)
+            {
+                ushort race_name_index = (ushort)(races_cat.get_element_variant(i, 7).value);
+                SFCFF.SFCategoryElement name_elem  = SFCFF.SFCategoryManager.find_element_text(race_name_index, Settings.LanguageID);
+                string race_name;
+                if (name_elem != null)
+                    race_name = Utility.CleanString(name_elem.get_single_variant(4));
+                else
+                    race_name = Utility.S_MISSING;
+                ComboRaces.Items.Add(race_name);
+            }
+        }
+        
+        private void ComboRaces_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboUnit.Items.Clear();
+            unitcombo_to_unitindex.Clear();
+            if (ComboRaces.SelectedIndex == -1)
+                return;
+
+            ReloadComboUnits();
+        }
+
+        public void ReloadComboUnits()
+        {
+            if (!SFCFF.SFCategoryManager.ready)
+                return;
+
+            byte race_id = (byte)SFCFF.SFCategoryManager.gamedata.categories[15].get_element(ComboRaces.SelectedIndex).get_single_variant(0).value;
+            List<int> unit_indices = new List<int>();
+            SFCFF.SFCategory units_cat = SFCFF.SFCategoryManager.gamedata.categories[17];
+
+            for(int i  = 0; i < units_cat.get_element_count(); i++)
+            {
+                ushort stats_id = (ushort)(units_cat.get_element(i).get_single_variant(2).value);
+                SFCFF.SFCategoryElement stats_elem = SFCFF.SFCategoryManager.gamedata.categories[3].find_binary_element(0, stats_id);
+                if (stats_elem == null)
+                    continue;
+                byte unit_race_id = (byte)stats_elem.get_single_variant(2).value;
+                if (race_id != unit_race_id)
+                    continue;
+
+                unit_indices.Add((ushort)(units_cat.get_element(i).get_single_variant(0).value));
+            }
+
+            //  TODO: sort by level
+            // right now:  just passing whole list
+            unitcombo_to_unitindex = unit_indices;
+
+            for (int i = 0; i < unitcombo_to_unitindex.Count; i++)
+                ComboUnit.Items.Add(SFCFF.SFCategoryManager.get_unit_name((ushort)unitcombo_to_unitindex[i], true));
+        }
+
+        private void ComboUnit_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ComboUnit.SelectedIndex == -1)
+                return;
+
+            UnitToPlaceID.Text = unitcombo_to_unitindex[ComboUnit.SelectedIndex].ToString();
+        }
+
         private string GetUnitString(SFMapUnit u)
         {
             string ret = SFCFF.SFCategoryManager.get_unit_name((ushort)u.game_id, true);
@@ -56,8 +127,6 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void UnitToPlaceID_TextChanged(object sender, EventArgs e)
         {
             ushort unit_id = Utility.TryParseUInt16(UnitToPlaceID.Text);
-
-            UnitToPlaceNameAndLevel.Text = SFCFF.SFCategoryManager.get_unit_name(unit_id, true);
         }
 
         private void UnitToPlaceID_MouseDown(object sender, MouseEventArgs e)

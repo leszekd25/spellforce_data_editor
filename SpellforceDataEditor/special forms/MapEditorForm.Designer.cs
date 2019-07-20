@@ -32,10 +32,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapEditorForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createNewMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.slopebasedPaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenMap = new System.Windows.Forms.OpenFileDialog();
             this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
             this.DialogSaveMap = new System.Windows.Forms.SaveFileDialog();
@@ -54,10 +57,10 @@
             this.ToolbarStrip = new System.Windows.Forms.ToolStrip();
             this.StatusStrip = new System.Windows.Forms.ToolStrip();
             this.StatusText = new System.Windows.Forms.ToolStripLabel();
-            this.InspectorPanel = new System.Windows.Forms.Panel();
-            this.LabelMode = new System.Windows.Forms.Label();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.SpecificText = new System.Windows.Forms.ToolStripLabel();
+            this.InspectorPanel = new System.Windows.Forms.Panel();
+            this.LabelMode = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.PanelModes.SuspendLayout();
             this.StatusStrip.SuspendLayout();
@@ -66,7 +69,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.toolsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1100, 24);
@@ -76,6 +80,7 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createNewMapToolStripMenuItem,
             this.loadToolStripMenuItem,
             this.saveMapToolStripMenuItem,
             this.closeMapToolStripMenuItem,
@@ -84,33 +89,55 @@
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
+            // createNewMapToolStripMenuItem
+            // 
+            this.createNewMapToolStripMenuItem.Name = "createNewMapToolStripMenuItem";
+            this.createNewMapToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.createNewMapToolStripMenuItem.Text = "Create new map";
+            this.createNewMapToolStripMenuItem.Click += new System.EventHandler(this.createNewMapToolStripMenuItem_Click);
+            // 
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.loadToolStripMenuItem.Text = "Load map";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
             // saveMapToolStripMenuItem
             // 
             this.saveMapToolStripMenuItem.Name = "saveMapToolStripMenuItem";
-            this.saveMapToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.saveMapToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.saveMapToolStripMenuItem.Text = "Save map";
             this.saveMapToolStripMenuItem.Click += new System.EventHandler(this.saveMapToolStripMenuItem_Click);
             // 
             // closeMapToolStripMenuItem
             // 
             this.closeMapToolStripMenuItem.Name = "closeMapToolStripMenuItem";
-            this.closeMapToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.closeMapToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.closeMapToolStripMenuItem.Text = "Close map";
             this.closeMapToolStripMenuItem.Click += new System.EventHandler(this.closeMapToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.slopebasedPaintToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // slopebasedPaintToolStripMenuItem
+            // 
+            this.slopebasedPaintToolStripMenuItem.Name = "slopebasedPaintToolStripMenuItem";
+            this.slopebasedPaintToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.slopebasedPaintToolStripMenuItem.Text = "Slope-based paint";
+            this.slopebasedPaintToolStripMenuItem.Click += new System.EventHandler(this.slopebasedPaintToolStripMenuItem_Click);
             // 
             // OpenMap
             // 
@@ -291,6 +318,16 @@
             this.StatusText.Name = "StatusText";
             this.StatusText.Size = new System.Drawing.Size(0, 22);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // SpecificText
+            // 
+            this.SpecificText.Name = "SpecificText";
+            this.SpecificText.Size = new System.Drawing.Size(0, 22);
+            // 
             // InspectorPanel
             // 
             this.InspectorPanel.Location = new System.Drawing.Point(60, 80);
@@ -305,16 +342,6 @@
             this.LabelMode.Name = "LabelMode";
             this.LabelMode.Size = new System.Drawing.Size(0, 13);
             this.LabelMode.TabIndex = 0;
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // SpecificText
-            // 
-            this.SpecificText.Name = "SpecificText";
-            this.SpecificText.Size = new System.Drawing.Size(0, 22);
             // 
             // MapEditorForm
             // 
@@ -374,5 +401,8 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripLabel SpecificText;
+        private System.Windows.Forms.ToolStripMenuItem createNewMapToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem slopebasedPaintToolStripMenuItem;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 using System.IO;
 using SpellforceDataEditor.SF3D;
@@ -29,9 +30,9 @@ namespace SpellforceDataEditor.SFMap
 
     public class SFMapTerrainTextureManager
     {
-        const int MAX_TEXTURES = 63;
-        const int MAX_REINDEX = 255;
-        const int TEXTURES_AVAILABLE = 119;
+        public const int MAX_TEXTURES = 63;
+        public const int MAX_REINDEX = 255;
+        public const int TEXTURES_AVAILABLE = 119;
 
         public SFTexture[] base_texture_bank { get; private set; } = new SFTexture[MAX_TEXTURES];
         public byte[] texture_id { get; private set; } = new byte[MAX_TEXTURES];
@@ -187,7 +188,11 @@ namespace SpellforceDataEditor.SFMap
 
         public bool SetBaseTexture(int base_index, int tex_id)
         {
-            if ((tex_id <= 0) || (tex_id > 237))
+            if((base_index < 0)||(base_index >= MAX_TEXTURES))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.SetBaseTexture(): Invalid base index " + base_index.ToString());
+            }
+            if ((tex_id <= 0) || (tex_id > 238))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.SetBaseTexture(): Invalid terrain texture ID "+tex_id.ToString());
 
@@ -318,6 +323,32 @@ namespace SpellforceDataEditor.SFMap
 
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
         }
+
+        // operates on a 64x64 mip map level ground texture, hardcoded for now...
+        public Bitmap CreateBitmapFromTexture(SFTexture tex)
+        {
+            Bitmap b = new Bitmap(tex.width / 4, tex.height / 4);
+            int ignored_level = 0;
+            while (!tex.IsValidMipMapLevel(ignored_level))
+                ignored_level += 1;
+
+            if (ignored_level > 2)
+                return b;
+
+            int offset = (tex.width * tex.height * 4) * (ignored_level > 0 ? 0 : 1)
+                       + (tex.width * tex.height) * (ignored_level > 1 ? 0 : 1);
+
+
+            for (int i = 0; i < 64; i++)
+                for (int j = 0; j < 64; j++)
+                    b.SetPixel(i, j, Color.FromArgb(
+                        255,
+                        tex.data[offset + 4 * (i * 64 + j) + 0],
+                        tex.data[offset + 4 * (i * 64 + j) + 1],
+                        tex.data[offset + 4 * (i * 64 + j) + 2]));
+            return b;
+        }
+
 
         public void FreeTileMemory(int tile_id)
         {

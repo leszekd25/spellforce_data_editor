@@ -58,7 +58,9 @@
             this.ComboDrawMode.Items.AddRange(new object[] {
             "Add",
             "Subtract",
-            "Set"});
+            "Set",
+            "Smooth",
+            "Rough"});
             this.ComboDrawMode.Location = new System.Drawing.Point(115, 139);
             this.ComboDrawMode.Name = "ComboDrawMode";
             this.ComboDrawMode.Size = new System.Drawing.Size(77, 21);
