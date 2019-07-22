@@ -49,19 +49,26 @@ namespace SpellforceDataEditor.SF3D.Physics
             if(ln_prod != 0)
             {
                 // intersection of ray and plane the triangle belongs to
-                float ray_d = Vector3.Dot(tr.v1 - start, tr.normal) / ln_prod;
-                point = new Vector3(ray_d * vector + start);
-                if ((point - start).Length > length)
+                float ray_d = Vector3.Dot(Vector3.Subtract(tr.v1, start), tr.normal) / ln_prod;
+                point = Vector3.Add(ray_d * vector, start);
+                if (Vector3.Subtract(point, start).Length > length)
                     return false;
                 // check if point is in triangle
                 // barycentric coordinates https://math.stackexchange.com/questions/4322/check-whether-a-point-is-within-a-3d-triangle
-                float area = tr.GetArea();
-                float alpha = Triangle.GetArea(point, tr.v2, tr.v3) / area;
-                float beta = Triangle.GetArea(point, tr.v3, tr.v1) / area;
-                float gamma = 1 - alpha - beta;
+                /*Line l1 = new Line(tr.v2, tr.v3);
+                Line l2 = new Line(tr.v3, tr.v1);
+                float alpha = (float)Math.Sqrt(l1.Distance2(point) / l1.Distance2(tr.v1));
+                float beta = (float)Math.Sqrt(l2.Distance2(point) / l2.Distance2(tr.v2));*/
+
+                /*float area = tr.area2;
+                float alpha = (float)Math.Sqrt(Triangle.GetArea2(point, tr.v2, tr.v3) / area);
+                float beta = (float)Math.Sqrt(Triangle.GetArea2(point, tr.v3, tr.v1) / area);*/
+                return tr.ContainsPoint(point);
+
+                /*float gamma = 1 - alpha - beta;
                 return ((alpha >= 0) && (alpha <= 1)
                     && (beta >= 0) && (beta <= 1)
-                    && (gamma >= 0) && (gamma <= 1));
+                    && (gamma >= 0) && (gamma <= 1));*/
             }
             else
             {
@@ -119,19 +126,15 @@ namespace SpellforceDataEditor.SF3D.Physics
         }
 
         // sequence of triangles
-        public bool Intersect(Vector3[] vertex_buffer, Vector3 offset, out Vector3 point)
+        public bool Intersect(Triangle[] triangles, Vector3 offset, out Vector3 point)
         {
             point = new Vector3(0, 0, 0);
 
             Ray r = this - offset;
-            int triangle_count = vertex_buffer.Length / 3;
-            for (int i = 0; i < triangle_count; i++)
+            for (int i = 0; i < triangles.Length; i++)
             {
                 // todo: use precalculated triangle normals
-                Triangle t = new Triangle(vertex_buffer[i * 3 + 0],
-                    vertex_buffer[i * 3 + 1],
-                    vertex_buffer[i * 3 + 2]);
-                if (r.Intersect(t, out point))
+                if (r.Intersect(triangles[i], out point))
                     return true;
             }
 

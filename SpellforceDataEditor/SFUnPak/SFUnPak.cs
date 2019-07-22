@@ -258,5 +258,10 @@ namespace SpellforceDataEditor.SFUnPak
             result.Sort();
             return result;
         }
+
+        static public void CloseAllPaks()
+        {
+            pak_map.CloseAllPaks();
+        }
     }
 }

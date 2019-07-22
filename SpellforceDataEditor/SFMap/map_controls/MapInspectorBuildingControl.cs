@@ -353,6 +353,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     return;
 
                 map.npc_manager.AddNPCRef(npc_id, map.building_manager.buildings[selected_building]);
+                npc_control.AddNewNPCID(npc_id);
                 map.building_manager.buildings[selected_building].npc_id = npc_id;
                 SelectedBuildingNPCID.Text = npc_id.ToString();
             }

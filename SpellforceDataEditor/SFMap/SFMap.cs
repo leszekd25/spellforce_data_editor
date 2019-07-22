@@ -163,9 +163,9 @@ namespace SpellforceDataEditor.SFMap
                         int b_type = br.ReadByte();
                         int b_lvl = 1;
                         int race_id = 0;
-                        if (c11.get_data_type() > 1)
+                        if (c11.header.ChunkDataType > 1)
                             b_lvl = br.ReadByte();
-                        if (c11.get_data_type() > 2)
+                        if (c11.header.ChunkDataType > 2)
                             race_id = br.ReadByte();
                         AddBuilding(b_type, pos, angle, npc_id, b_lvl, race_id);
                     }
@@ -196,7 +196,7 @@ namespace SpellforceDataEditor.SFMap
                         int unknown = br.ReadUInt16();
                         int group = br.ReadByte();
                         int unknown2 = 0;
-                        if (c12.get_data_type() >= 5)
+                        if (c12.header.ChunkDataType >= 5)
                             unknown2 = br.ReadByte();
                         AddUnit(unit_id, pos, angle, npc_id, unknown, group, unknown2);
                     }
@@ -225,17 +225,17 @@ namespace SpellforceDataEditor.SFMap
                         int angle = br.ReadInt16();
                         int npc_id = br.ReadUInt16();
                         int unk1 = 0;
-                        if (c29.get_data_type() == 6)
+                        if (c29.header.ChunkDataType == 6)
                         {
                             unk1 = br.ReadUInt16();
                             br.ReadBytes(4);
                         }
-                        else if(c29.get_data_type() == 5)
+                        else if(c29.header.ChunkDataType == 5)
                         {
                             unk1 = br.ReadUInt16();
                             br.ReadBytes(2);
                         }
-                        else if (c29.get_data_type() == 4)
+                        else if (c29.header.ChunkDataType == 4)
                             unk1 = br.ReadUInt16();
                         if ((object_id >= 65) && (object_id <= 67))   // editor only
                             continue;
@@ -479,7 +479,7 @@ namespace SpellforceDataEditor.SFMap
                 using (BinaryReader br = c53.Open())
                 {
                     metadata.multi_teams = new List<SFMapMultiplayerTeamComposition>();
-                    if (c53.get_data_type() == 2)
+                    if (c53.header.ChunkDataType == 2)
                     {
                         LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Found team composition data, assuming multiplayer map type");
                         metadata.map_type = SFMapType.MULTIPLAYER;
@@ -513,7 +513,7 @@ namespace SpellforceDataEditor.SFMap
                             cur_teamcount += 1;
                         }
                     }
-                    else if (c53.get_data_type() == 4)
+                    else if (c53.header.ChunkDataType == 4)
                     {
                         LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Found team composition data, assuming coop map type");
                         metadata.map_type = SFMapType.COOP;
@@ -555,7 +555,7 @@ namespace SpellforceDataEditor.SFMap
                             {
                                 using (BinaryReader br2 = c29.Open())
                                 {
-                                    if (c29.get_data_type() == 6)
+                                    if (c29.header.ChunkDataType == 6)
                                     {
                                         int obj_i = 0;
                                         while (br2.BaseStream.Position < br2.BaseStream.Length)
@@ -1240,9 +1240,12 @@ namespace SpellforceDataEditor.SFMap
         public void Unload()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Unload() called");
-            heightmap.Unload();
-            metadata.Unload();             // minimap texture
-            selection_helper.Dispose();    // selection 3d meshpublic SFMapHeightMap heightmap { get; private set; } = null;
+            if(heightmap!=null)
+                heightmap.Unload();
+            if(metadata!=null)
+                metadata.Unload();             // minimap texture
+            if(selection_helper!=null)
+                selection_helper.Dispose();    // selection 3d meshpublic SFMapHeightMap heightmap { get; private set; } = null;
             building_manager = null;
             unit_manager = null;
             object_manager = null;
@@ -1634,7 +1637,7 @@ namespace SpellforceDataEditor.SFMap
             b_offset_rotated.Y = (float)((Math.Sin(angle_rad) * b_offset.X) + (Math.Cos(angle_rad) * b_offset.Y));
 
             obj.Position = heightmap.GetFixedPosition(new_pos);
-            obj.Position += new OpenTK.Vector3(b_offset_rotated.X, 0, b_offset_rotated.Y);
+            obj.Position += new OpenTK.Vector3(-b_offset_rotated.X, 0, +b_offset_rotated.Y);
             obj.Scale = new OpenTK.Vector3(100 / 128f);
             obj.SetAnglePlane(building.angle);
 

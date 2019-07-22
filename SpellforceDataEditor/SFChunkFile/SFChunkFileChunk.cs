@@ -8,49 +8,29 @@ using System.IO.Compression;
 
 namespace SpellforceDataEditor.SFChunkFile
 {
+    public struct SFChunkFileChunkHeader
+    {
+        public  short ChunkID;
+        public short ChunkOccurence;
+        public short ChunkIsPacked;
+        public  int ChunkDataLength;
+        public  short ChunkDataType;
+    }
+
     public class SFChunkFileChunk
     {
-        byte[] header;
+        public SFChunkFileChunkHeader header { get; private set; }
+        public int unpacked_data_length { get; private set; }
         byte[] data;
         MemoryStream datastream = null;
         BinaryReader databr = null;
 
-        public short get_id()
-        {
-            return BitConverter.ToInt16(header, 0);
-        }
-
-        public short get_occurence()
-        {
-            return BitConverter.ToInt16(header, 2);
-        }
-
-        public short get_is_packed()
-        {
-            return BitConverter.ToInt16(header, 4);
-        }
-
-        public int get_data_length()
-        {
-            return BitConverter.ToInt32(header, 6);
-        }
-
-        public short get_data_type()
-        {
-            return BitConverter.ToInt16(header, 10);
-        }
-
-        public int get_unpacked_data_length()
-        {
-            return BitConverter.ToInt32(header, 12);
-        }
-
         public int get_original_data_length()
         {
-            if (get_is_packed() == 0)
-                return get_data_length();
+            if (header.ChunkIsPacked == 0)
+                return header.ChunkDataLength;
             else
-                return get_unpacked_data_length();
+                return unpacked_data_length;
         }
 
         public byte[] get_raw_data()
@@ -84,14 +64,27 @@ namespace SpellforceDataEditor.SFChunkFile
             datastream = null;
         }
 
+        public static SFChunkFileChunkHeader ReadChunkHeader(BinaryReader br, bool proceed = true)
+        {
+            SFChunkFileChunkHeader h = new SFChunkFileChunkHeader();
+            h.ChunkID = br.ReadInt16();
+            h.ChunkOccurence = br.ReadInt16();
+            h.ChunkIsPacked = br.ReadInt16();
+            h.ChunkDataLength = br.ReadInt32();
+            h.ChunkDataType = br.ReadInt16();
+            if(!proceed)
+                br.BaseStream.Position -= 12;
+            return h;
+        }
+
         public int Read(BinaryReader br)
         {
-            if (get_is_packed() == 0)
+            header = ReadChunkHeader(br, true);
+            if (header.ChunkIsPacked == 0)
             {
-                header = br.ReadBytes(12);
                 try
                 {
-                    data = br.ReadBytes(get_data_length());
+                    data = br.ReadBytes(header.ChunkDataLength);
                 }
                 catch (EndOfStreamException)
                 {
@@ -102,13 +95,13 @@ namespace SpellforceDataEditor.SFChunkFile
             }
             else
             {
-                header = br.ReadBytes(16);
+                unpacked_data_length = br.ReadInt32();
                 br.ReadBytes(2);
 
                 byte[] tmp_data;
                 try
                 {
-                    tmp_data = br.ReadBytes(get_data_length() - 2);
+                    tmp_data = br.ReadBytes(header.ChunkDataLength - 2);
                 }
                 catch (EndOfStreamException)
                 {
@@ -136,46 +129,13 @@ namespace SpellforceDataEditor.SFChunkFile
                     return -2;
                 }
 
-                if (data.Length != get_unpacked_data_length())
+                if (data.Length != unpacked_data_length)
                 {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.Read(): Decompressed data length does not match expected length! Expected: "+get_unpacked_data_length().ToString()+", got: "+data.Length.ToString());
+                    LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.Read(): Decompressed data length does not match expected length! Expected: "+unpacked_data_length.ToString()+", got: "+data.Length.ToString());
                     return -3;
                 }
                 return 0;
             }
-        }
-
-        public int ReadHeader(BinaryReader br, int chunk_mode, bool proceed_stream = false)
-        {
-            try
-            {
-                switch (chunk_mode)
-                {
-                    case 2:
-                        header = br.ReadBytes(12);
-                        if (!proceed_stream)
-                            br.BaseStream.Position -= 12;
-                        return 0;
-                    case 3:
-                        header = br.ReadBytes(16);
-                        if (!proceed_stream)
-                            br.BaseStream.Position -= 16;
-                        return 0;
-                    default:
-                        LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.ReadHeader(): Unknown chunk type (chunk type = "+chunk_mode.ToString()+")");
-                        return -1;
-                }
-            }
-            catch(EndOfStreamException)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.ReadHeader(): Error reading chunk header");
-                return -2;
-            }
-        }
-
-        public void SetHeader(byte[] h)
-        {
-            header = h;
         }
     }
 }

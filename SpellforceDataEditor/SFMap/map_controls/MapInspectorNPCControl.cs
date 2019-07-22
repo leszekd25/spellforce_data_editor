@@ -169,12 +169,19 @@ namespace SpellforceDataEditor.SFMap.map_controls
         // n log n, can be improved to n...
         public int FindLastUnusedNPCID()
         {
+            int base_least_npcid = 1000001;
             for (int id = 12000; id < 1000000; id++)
             {
                 if (SFCFF.SFCategoryManager.gamedata.categories[36].get_element_index(id) == -1)
-                    return id;
+                {
+                    base_least_npcid = id;
+                    break;
+                }
             }
-            return -1;
+            foreach (int i in created_npc_ids)
+                if (i > base_least_npcid)
+                    base_least_npcid = i;
+            return base_least_npcid;
         }
 
         // assumes npc_id doesn't exist in gamedata

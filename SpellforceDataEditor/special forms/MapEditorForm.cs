@@ -546,43 +546,64 @@ namespace SpellforceDataEditor.special_forms
                     + wx * (frustrum_vertices[5] - frustrum_vertices[4])
                     + wy * (frustrum_vertices[6] - frustrum_vertices[4]);
                 SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start) { length = 1000 };
+
                 // collide with every visible chunk
                 Vector3 result = new Vector3(0, 0, 0);
-                Vector3 offset;
                 bool ray_success = false;
-                for (int i = map.heightmap.visible_chunks.Count-1; i >= 0; i--)
+
+                ParallelOptions loop_options = new ParallelOptions();
+                loop_options.MaxDegreeOfParallelism = 4;
+                Parallel.For(0, map.heightmap.visible_chunks.Count, loop_options, (i, breakState) =>
+                {
+                    Vector3 local_result;
+                    SFMapHeightMapChunk chunk = map.heightmap.visible_chunks[map.heightmap.visible_chunks.Count-i-1].MapChunk;
+                    Vector3 offset = new Vector3(chunk.ix * 16, 0, chunk.iy * 16);
+                    if (ray.Intersect(chunk.collision_cache, offset, out local_result))
+                    {
+                        breakState.Break();
+                        result = local_result;
+                        ray_success = true;
+                        result += offset;
+                    }
+                });
+                /*for (int i = map.heightmap.visible_chunks.Count-1; i >= 0; i--)
                 {
                     SFMapHeightMapChunk chunk = map.heightmap.visible_chunks[i].MapChunk;
                     offset = new Vector3(chunk.ix * 16, 0, chunk.iy * 16);
-                    if (ray.Intersect(chunk.vertices, offset, out result))
+                    if (ray.Intersect(chunk.collision_cache, offset, out result))
                     {
                         ray_success = true;
                         result += offset;
                         break;
                     }
-                }
+                }*/
+
+
                 if (ray_success)
                 {
                     SFCoord cursor_coord = new SFCoord((int)(Math.Max(0, Math.Min(result.X, map.width-1))), (int)(Math.Max(0,Math.Min(result.Z, map.height-1))));
                     SFCoord inv_cursor_coord = new SFCoord(cursor_coord.x, map.height - cursor_coord.y - 1);
 
-                    if(map.selection_helper.SetCursorPosition(cursor_coord))
-                        update_render = true;
-                    StatusText.Text = "Cursor position: " + inv_cursor_coord.ToString();
-                    switch(edit_mode)
+                    if (map.selection_helper.SetCursorPosition(cursor_coord))
                     {
-                        case MAPEDIT_MODE.HMAP:
-                            SpecificText.Text = "Height: " + map.heightmap.GetZ(inv_cursor_coord).ToString();
-                            break;
-                        case MAPEDIT_MODE.TEXTURE:
-                            SpecificText.Text = "Tile ID: " + map.heightmap.GetTile(inv_cursor_coord).ToString();
-                            break;
-                        case MAPEDIT_MODE.DECAL:
-                            SpecificText.Text = "Decoration group ID: " + map.decoration_manager.GetFixedDecAssignment(inv_cursor_coord).ToString();
-                            break;
-                        default:
-                            SpecificText.Text = "";
-                            break;
+                        update_render = true;
+                        StatusText.Text = "Cursor position: " + inv_cursor_coord.ToString();
+
+                        switch (edit_mode)
+                        {
+                            case MAPEDIT_MODE.HMAP:
+                                SpecificText.Text = "Height: " + map.heightmap.GetZ(inv_cursor_coord).ToString();
+                                break;
+                            case MAPEDIT_MODE.TEXTURE:
+                                SpecificText.Text = "Tile ID: " + map.heightmap.GetTile(inv_cursor_coord).ToString();
+                                break;
+                            case MAPEDIT_MODE.DECAL:
+                                SpecificText.Text = "Decoration group ID: " + map.decoration_manager.GetFixedDecAssignment(inv_cursor_coord).ToString();
+                                break;
+                            default:
+                                SpecificText.Text = "";
+                                break;
+                        }
                     }
 
                     // on click action
@@ -607,6 +628,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 map.selection_helper.UpdateSelection();
                 AdjustCameraZ();
+                SFRenderEngine.UpdateVisibleChunks();
                 SFRenderEngine.scene.Update();
                 RenderWindow.Invalidate();
                 update_render = false;

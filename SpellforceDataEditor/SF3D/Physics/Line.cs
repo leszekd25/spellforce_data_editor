@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using OpenTK;
+
+namespace SpellforceDataEditor.SF3D.Physics
+{
+    public class Line
+    {
+        public Vector3 point;
+        public Vector3 vector;
+
+        public Line(Vector3 start, Vector3 end)
+        {
+            point = start;
+            vector = (end - start).Normalized();
+        }
+
+        public float Distance(Vector3 p)
+        {
+            Vector3 diff = point - p;
+            return (diff - (Vector3.Dot(diff, vector) * vector)).Length;
+        }
+
+        public float Distance2(Vector3 p)
+        {
+            Vector3 diff = point - p;
+            return (diff - (Vector3.Dot(diff, vector) * vector)).LengthSquared;
+        }
+    }
+}

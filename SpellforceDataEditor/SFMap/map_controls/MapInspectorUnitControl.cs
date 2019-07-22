@@ -376,6 +376,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     return;
 
                 map.npc_manager.AddNPCRef(npc_id, map.unit_manager.units[selected_unit]);
+                npc_control.AddNewNPCID(npc_id);
                 map.unit_manager.units[selected_unit].npc_id = npc_id;
                 SelectedUnitNPCID.Text = npc_id.ToString();
             }

@@ -10,12 +10,45 @@ namespace SpellforceDataEditor.SFChunkFile
 {
     public enum SFChunkFileType { GAMEDATA, MAP }
 
+    public struct SFChunkLookupKey
+    {
+        public short ChunkID;
+        public short ChunkOccurence;
+
+        public SFChunkLookupKey(short id, short occ)
+        {
+            ChunkID = id;
+            ChunkOccurence = occ;
+        }
+
+        public static bool operator ==(SFChunkLookupKey k1, SFChunkLookupKey k2)
+        {
+            return (k1.ChunkID == k2.ChunkID) && (k1.ChunkOccurence == k2.ChunkOccurence);
+        }
+
+        public static bool operator !=(SFChunkLookupKey k1, SFChunkLookupKey k2)
+        {
+            return (k1.ChunkID != k2.ChunkID) || (k1.ChunkOccurence != k2.ChunkOccurence);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return (obj.GetType() == typeof(SFChunkLookupKey)) && ((SFChunkLookupKey)obj == this);
+        }
+
+        public override int GetHashCode()
+        {
+            return ((ChunkID << 16) + ChunkOccurence).GetHashCode();
+        }
+    }
+
     public class SFChunkFile
     {
         FileStream fs = null;
         BinaryReader br = null;
         BinaryWriter bw = null;
         byte[] header;   // for map: -579674862, 3, 1, 0, 0; for gamedata: -579674862, 2, 2, 1, 0
+        Dictionary<SFChunkLookupKey, long> lookup_dict = null;
 
         public int get_data_type()
         {
@@ -61,6 +94,8 @@ namespace SpellforceDataEditor.SFChunkFile
                 return -3;
             }
             br = new BinaryReader(fs);
+
+            GenerateLookupDict();
 
             return 0;
         }
@@ -115,32 +150,30 @@ namespace SpellforceDataEditor.SFChunkFile
             bw = null;
         }
 
-        public List<int> GetChunkOffsets()
+        public void GenerateLookupDict()
         {
             if (fs == null)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkOffsets(): File is not open!");
-                throw new InvalidOperationException("SFChunkFile.GetChunkOffsets(): File not open!");
+                LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GenerateLookupDict(): File is not open!");
+                throw new InvalidOperationException("SFChunkFile.GenerateLookupDict(): File not open!");
             }
             if (br == null)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkOffsets(): File is not open for reading!");
-                throw new InvalidOperationException("SFChunkFile.GetChunkOffsets(): File not open for reading!");
+                LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GenerateLookupDict(): File is not open for reading!");
+                throw new InvalidOperationException("SFChunkFile.GenerateLookupDict(): File not open for reading!");
             }
 
-            List<int> ret = new List<int>();
+            lookup_dict = new Dictionary<SFChunkLookupKey, long>();
             br.BaseStream.Position = 20;
             int cm = get_data_type();
 
             while (br.BaseStream.Position < br.BaseStream.Length)
             {
-                ret.Add((int)br.BaseStream.Position);
-                SFChunkFileChunk chunk = new SFChunkFileChunk();
-                chunk.ReadHeader(br, cm, true);
-                br.BaseStream.Position += chunk.get_data_length();
+                long offset = br.BaseStream.Position;
+                SFChunkFileChunkHeader header = SFChunkFileChunk.ReadChunkHeader(br, false);
+                lookup_dict.Add(new SFChunkLookupKey(header.ChunkID, header.ChunkOccurence), offset);
+                br.BaseStream.Position += (cm==3?16:12)+header.ChunkDataLength;
             }
-
-            return ret;
         }
 
         public SFChunkFileChunk GetChunkByID(short id, short occ_id = 0)
@@ -156,6 +189,21 @@ namespace SpellforceDataEditor.SFChunkFile
                 LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkByID(): File is not open for reading!");
                 throw new InvalidOperationException("SFChunkFile.GetChunkByID(): File not open for reading!");
             }
+            SFChunkLookupKey key = new SFChunkLookupKey(id, occ_id);
+            if (!lookup_dict.ContainsKey(key))
+                return null;
+            
+            br.BaseStream.Position = lookup_dict[key];
+
+            SFChunkFileChunk chunk = new SFChunkFileChunk();
+            if (chunk.Read(br) != 0)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkByID(): Chunk data is not valid!");
+                throw new InvalidDataException("SFChunkFileChunk.GetChunkById(): Invalid chunk data!");
+            }
+            return chunk;
+
+            /*
 
             bool found = false;
             SFChunkFileChunk chunk = null;
@@ -180,34 +228,9 @@ namespace SpellforceDataEditor.SFChunkFile
                 br.BaseStream.Position += (cm == 2?12:16) + chunk.get_data_length();
             }
             
-            return (found ? chunk : null);
+            return (found ? chunk : null);*/
         }
 
-        public SFChunkFileChunk GetChunkByOffset(int offset)
-        {
-            LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkByOffset() called (offset = "+offset.ToString()+")");
-            if (fs == null)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkByOffset(): File is not open!");
-                throw new InvalidOperationException("SFChunkFile.GetChunkByOffset(): File not open!");
-            }
-            if (br == null)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkByOffset: File is not open for reading!");
-                throw new InvalidOperationException("SFChunkFile.GetChunkByOffset(): File not open for reading!");
-            }
-
-            SFChunkFileChunk chunk = new SFChunkFileChunk();
-            br.BaseStream.Position = offset;
-
-            if (chunk.Read(br) != 0)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkByOffset(): Chunk data is not valid!");
-                throw new InvalidDataException("SFChunkFileChunk.GetChunkByOffset(): Invalid chunk data!");
-            }
-
-            return chunk;
-        }
 
         public void AddChunk(short chunk_id, short occ_id, bool is_compressed, short data_type, byte[] raw_data)
         { 

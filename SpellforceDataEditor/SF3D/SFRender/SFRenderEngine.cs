@@ -253,7 +253,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
-        private static void UpdateVisibleChunks()
+        public static void UpdateVisibleChunks()
         {
             scene.camera.Update(0);
             // 1. find collection of visible chunks
@@ -544,6 +544,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
 
                 LinearPool<TexturedGeometryListElementAnimated> elem_list = scene.tex_list_animated[tex];
+                Matrix4[] bones = new Matrix4[20];
                 for (int i = 0; i < elem_list.elements.Count; i++)
                 {
                     if (!elem_list.elem_active[i])
@@ -561,8 +562,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     }
 
                     SFModelSkinChunk chunk = elem.node.Skin.submodels[elem.submodel_index];
-
-                    Matrix4[] bones = new Matrix4[20];
+                    
                     for (int j = 0; j < chunk.bones.Length; j++)
                         bones[j] = elem.node.BoneTransforms[chunk.bones[j]];
 
@@ -576,9 +576,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         public static void RenderScene()
         {
-            if (scene.heightmap != null)
-                UpdateVisibleChunks();
-            else
+            if (scene.heightmap == null)
                 scene.sun_light.SetupLightView(new Physics.BoundingBox(new Vector3(-5, 0, -5), new Vector3(5, 30, 5)));
 
             current_pass = RenderPass.SHADOWMAP;

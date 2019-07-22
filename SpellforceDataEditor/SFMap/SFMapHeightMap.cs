@@ -25,6 +25,8 @@ namespace SpellforceDataEditor.SFMap
         public Vector2[] uvs;
         public Vector3[] texture_id;
 
+        public SF3D.Physics.Triangle[] collision_cache;
+
         // lake
         public SFModel3D lake_model = null;    // generated here, but owned by ResourceManager
 
@@ -157,6 +159,7 @@ namespace SpellforceDataEditor.SFMap
                 uvs[i] = vertices[i].Xz / 4;
 
             GenerateAABB();
+            GenerateGeometryCache();
             Init();
         }
 
@@ -176,6 +179,16 @@ namespace SpellforceDataEditor.SFMap
                 }
             }
             aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, 0, iy * size), new Vector3((ix + 1) * size, max_height/100.0f, (iy * size) + size));
+        }
+
+        public void GenerateGeometryCache()
+        {
+            int triangle_count = vertices.Length / 3;
+            collision_cache = new SF3D.Physics.Triangle[triangle_count];
+            for (int i = 0; i < triangle_count; i++)
+                collision_cache[i] = new SF3D.Physics.Triangle(vertices[i * 3 + 0],
+                                                               vertices[i * 3 + 1],
+                                                               vertices[i * 3 + 2]);
         }
 
         public void Init()
@@ -227,6 +240,7 @@ namespace SpellforceDataEditor.SFMap
             normals = null;
             uvs = null;
             texture_id = null;
+            collision_cache = null;
 
             vertex_array = -1;
         }
@@ -293,14 +307,8 @@ namespace SpellforceDataEditor.SFMap
                 }
             }
 
-            float max_height = 0;
-            for (int i = 0; i < vertices.Length; i++)
-            {
-                float h = vertices[i].Y;
-                max_height = Math.Max(max_height, h);
-            }
-
-            aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, 0, iy * size), new Vector3((ix + 1) * size, max_height, (iy * size) + size));
+            GenerateAABB();
+            GenerateGeometryCache();
 
             GL.BindVertexArray(vertex_array);
 
@@ -628,6 +636,7 @@ namespace SpellforceDataEditor.SFMap
             normals = null;
             uvs = null;
             texture_id = null;
+            collision_cache = null;
 
             vertex_array = -1;
         }
@@ -1110,9 +1119,11 @@ namespace SpellforceDataEditor.SFMap
             if (map == null)
                 return;
 
-            texture_manager.Unload();
-            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
-                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(chunk);
+            if (texture_manager != null)
+                texture_manager.Unload();
+            if (chunk_nodes != null)
+                foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
+                    SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(chunk);
 
             chunk42_data.Clear();
             chunk56_data.Clear();

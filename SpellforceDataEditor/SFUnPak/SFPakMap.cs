@@ -91,9 +91,9 @@ namespace SpellforceDataEditor.SFUnPak
             for(int i = 0; i < num; i++)
             {
                 string key = br.ReadString();
-                SFPakFileSystem value = new SFPakFileSystem();
-                value.ReadFromFile(br);
-                pak_map.Add(key, value);
+                SFPakFileSystem sys = new SFPakFileSystem();
+                sys.ReadFromFile(br);
+                pak_map.Add(key, sys);
             }
             br.Close();
             return 0;
@@ -127,6 +127,12 @@ namespace SpellforceDataEditor.SFUnPak
                 names = names.Union(fs.ListAllWithFilename(path, substr)).ToList();
             }
             return names;
+        }
+
+        public void  CloseAllPaks()
+        {
+            foreach (SFPakFileSystem sys in pak_map.Values)
+                sys.Close();
         }
 
 

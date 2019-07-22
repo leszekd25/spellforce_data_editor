@@ -72,7 +72,8 @@ namespace SpellforceDataEditor.SF3D
                     {
                         if (min_allowed_level > level) min_allowed_level = level;
 
-                        byte[] mipMapData = data.Skip(offset).Take(size).ToArray();
+                        byte[] mipMapData = new byte[size];
+                        Array.Copy(data, offset, mipMapData, 0, size);//  data.Skip(offset).Take(size).ToArray();
                         GL.CompressedTexImage2D(TextureTarget.Texture2D, level - min_allowed_level, format, w, h,
                             0, size, mipMapData);
                         offset += size;
@@ -91,7 +92,8 @@ namespace SpellforceDataEditor.SF3D
                     {
                         if (min_allowed_level > level) min_allowed_level = level;
 
-                        byte[] mipMapData = data.Skip(offset).Take(size).ToArray();
+                        byte[] mipMapData = new byte[size];
+                        Array.Copy(data, offset, mipMapData, 0, size);//  data.Skip(offset).Take(size).ToArray();
                         GL.TexImage2D(TextureTarget.Texture2D, level - min_allowed_level, PixelInternalFormat.Rgba, w, h,
                             0, PixelFormat.Rgba, PixelType.UnsignedByte, mipMapData);
                         offset += size;
@@ -198,7 +200,8 @@ namespace SpellforceDataEditor.SF3D
             else
                 buf_size = size;
 
-            data = br.ReadBytes((int)(buf_size + skip_size)).Skip((int)skip_size).ToArray();
+            br.BaseStream.Position += skip_size;
+            data = br.ReadBytes((int)buf_size);
             return 0;
         }
 

@@ -272,6 +272,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     return;
 
                 map.npc_manager.AddNPCRef(npc_id, map.object_manager.objects[selected_object]);
+                npc_control.AddNewNPCID(npc_id);
                 map.object_manager.objects[selected_object].npc_id = npc_id;
                 SelectedObjectNPCID.Text = npc_id.ToString();
             }

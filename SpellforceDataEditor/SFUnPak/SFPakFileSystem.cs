@@ -114,13 +114,26 @@ namespace SpellforceDataEditor.SFUnPak
         }
     }
 
+    public struct SFPakFileSpan
+    {
+        public long offset;
+        public long size;
+
+        public SFPakFileSpan(long o,  long  s)
+        {
+            offset = o;
+            size = s;
+        }
+    }
+
     public class SFPakFileSystem: IDisposable
     {
         string pak_fname;
-        FileStream pak_file;
-        BinaryReader pak_stream;
+        FileStream pak_file = null;
+        BinaryReader pak_stream  = null;
         SFPakHeader pak_header= new SFPakHeader();
         List<SFPakEntryHeader> file_headers = new List<SFPakEntryHeader>();
+        Dictionary<string, Dictionary<string, SFPakFileSpan>> file_spans = new Dictionary<string, Dictionary<string, SFPakFileSpan>>();
         uint name_offset = 0;
         uint data_offset = 0;
 
@@ -132,6 +145,9 @@ namespace SpellforceDataEditor.SFUnPak
         public void Dispose()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Dispose() called, filename: " + pak_fname);
+            foreach (var dict in file_spans.Values)
+                dict.Clear();
+            file_spans.Clear();
             file_headers.Clear();
             Close();
         }
@@ -206,6 +222,11 @@ namespace SpellforceDataEditor.SFUnPak
             {
                 file_headers[i].name = GetFileName(i, false);
                 file_headers[i].dir_name = GetFileName(i, true);
+
+                if (!file_spans.ContainsKey(file_headers[i].dir_name))
+                    file_spans.Add(file_headers[i].dir_name, new Dictionary<string, SFPakFileSpan>());
+                file_spans[file_headers[i].dir_name].Add(file_headers[i].name, new SFPakFileSpan(file_headers[i].data_offset,
+                                                                                                 file_headers[i].size));
             }
 
             pak_stream.Close();
@@ -213,11 +234,33 @@ namespace SpellforceDataEditor.SFUnPak
             return 0;
         }
 
+        // returns filename of a file in pak, given by file index in pak
+        string GetFileName(int index, bool is_directory = false)
+        {
+            SFPakEntryHeader head = file_headers[index];
+            uint start = name_offset + (is_directory ? (uint)head.directory_name_offset : (uint)head.name_offset + 2);
+
+            pak_stream.BaseStream.Position = start;
+            string fname_str = "";
+
+            do
+            {
+                fname_str += pak_stream.ReadChar();
+            }
+            while (pak_stream.PeekChar() != '\0');
+
+            char[] charArray = fname_str.ToCharArray();
+            Array.Reverse(charArray);
+            fname_str = new string(charArray);
+            return fname_str;
+        }
+
         // opens pak file for reading
         public int Open()
         {
             //LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Open() called, filename: " + pak_fname);
-
+            if (pak_file != null)
+                return 0;
             try
             {
                 pak_file = new FileStream(pak_fname, FileMode.Open, FileAccess.Read);
@@ -235,42 +278,37 @@ namespace SpellforceDataEditor.SFUnPak
         public void Close()
         {
             //LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Close() called, filename: " + pak_fname);
-
+            if (pak_file == null)
+                return;
             pak_stream.Close();
             pak_file.Close();
+            pak_stream = null;
+            pak_file = null;
         }
 
-        // returns filename of a file in pak, given by file index in pak
-        string GetFileName(int index, bool is_directory = false)
+        MemoryStream GetFileBuffer(SFPakFileSpan fspan)
         {
-            SFPakEntryHeader head = file_headers[index];
-            uint start = name_offset + (is_directory ? (uint)head.directory_name_offset : (uint)head.name_offset + 2);
-
-            pak_stream.BaseStream.Position = start;
-            string fname_str = "";
-            
-            do
+            if (Open() != 0)
             {
-                fname_str += pak_stream.ReadChar();
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.GetFileBuffer(): Could not open pak file " + pak_fname);
+                throw new FileLoadException("Could not open pak file " + pak_fname);
             }
-            while (pak_stream.PeekChar() != '\0');
-            
-            char[] charArray = fname_str.ToCharArray();
-            Array.Reverse(charArray);
-            fname_str = new string(charArray);
-            return fname_str;
+
+            pak_stream.BaseStream.Position = data_offset + fspan.offset;
+            Byte[] mem_read = pak_stream.ReadBytes((int)fspan.size);
+            MemoryStream ms = new MemoryStream(mem_read);
+
+            return ms;
         }
 
         // returns a stream of bytes which constitute for a file given file index
-        // if managed_open, it will not try to open a pak, as it assumes the pak is already open
-        MemoryStream GetFileBuffer(int file_index, bool managed_open = false)
+        MemoryStream GetFileBuffer(int file_index)
         {
-            if (!managed_open)
-                if (Open() != 0)
-                {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.GetFileBuffer(): Could not open pak file "+pak_fname);
-                    throw new FileLoadException("Could not open pak file " + pak_fname);
-                }
+            if (Open() != 0)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.GetFileBuffer(): Could not open pak file "+pak_fname);
+                throw new FileLoadException("Could not open pak file " + pak_fname);
+            }
             SFPakEntryHeader head = file_headers[file_index];
             uint start = (uint)(data_offset + head.data_offset);
             int length = head.size;
@@ -278,23 +316,27 @@ namespace SpellforceDataEditor.SFUnPak
             pak_stream.BaseStream.Position = start;
             Byte[] mem_read = pak_stream.ReadBytes(length);
             MemoryStream ms = new MemoryStream(mem_read);
-
-            if(!managed_open)
-                Close();
+            
             return ms;
         }
 
         // returns a stream of bytes which constitute for a file given file name
-        // if managed_open, it will not try to open a pak, as it assumes the pak is already open
-        public MemoryStream GetFileBuffer(string fname, bool managed_open = false)
+        public MemoryStream GetFileBuffer(string fname)
         {
 	        string dir_name = GetPathDirectory(fname);
             string file_name = GetPathFilename(fname);
+
+            if (!file_spans.ContainsKey(dir_name))
+                return null;
+            if (!file_spans[dir_name].ContainsKey(file_name))
+                return null;
+            return GetFileBuffer(file_spans[dir_name][file_name]);
+
 	        for (int i = 0; i<file_headers.Count; i++)
 	        {
 		        if (file_headers[i].name == file_name && file_headers[i].dir_name == dir_name)
 		        {
-			        return GetFileBuffer(i, managed_open);
+			        return GetFileBuffer(i);
                 }
             }
 	        return null;
@@ -325,6 +367,10 @@ namespace SpellforceDataEditor.SFUnPak
                 SFPakEntryHeader eh = new SFPakEntryHeader();
                 eh.ReadFromFile(br);
                 file_headers.Add(eh);
+                if (!file_spans.ContainsKey(eh.dir_name))
+                    file_spans.Add(eh.dir_name, new Dictionary<string, SFPakFileSpan>());
+                file_spans[eh.dir_name].Add(eh.name, new SFPakFileSpan(eh.data_offset,
+                                                                       eh.size));
             }
             name_offset = br.ReadUInt32();
             data_offset = br.ReadUInt32();
