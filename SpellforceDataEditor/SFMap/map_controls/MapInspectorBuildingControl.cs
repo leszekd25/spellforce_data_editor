@@ -41,7 +41,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private string GetBuildingString(SFMapBuilding b)
         {
-            string ret = SFCFF.SFCategoryManager.get_building_name((ushort)b.game_id);
+            string ret = SFCFF.SFCategoryManager.GetBuildingName((ushort)b.game_id);
             ret += " " + b.grid_position.ToString();
             return ret;
         }
@@ -55,7 +55,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             ushort building_id = Utility.TryParseUInt16(BuildingToPlaceID.Text);
 
-            BuildingToPlaceName.Text = SFCFF.SFCategoryManager.get_building_name(building_id);
+            BuildingToPlaceName.Text = SFCFF.SFCategoryManager.GetBuildingName(building_id);
         }
 
         private void BuildingToPlaceID_MouseDown(object sender, MouseEventArgs e)
@@ -99,7 +99,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
                 SFMapBuilding building = map.building_manager.buildings[building_map_index];
                 SelectedBuildingID.Text = building.game_id.ToString();
-                SelectedBuildingName.Text = SFCFF.SFCategoryManager.get_building_name((ushort)building.game_id);
+                SelectedBuildingName.Text = SFCFF.SFCategoryManager.GetBuildingName((ushort)building.game_id);
                 SelectedBuildingNPCID.Text = building.npc_id.ToString();
                 SelectedBuildingX.Text = building.grid_position.x.ToString();
                 SelectedBuildingY.Text = building.grid_position.y.ToString();
@@ -124,12 +124,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             // check if new building exists
-            if (map.gamedata.categories[23].get_element_index(new_building_id) == -1)
+            if (map.gamedata[23].GetElementIndex(new_building_id) == -1)
                 return;
 
             map.ReplaceBuilding(selected_building, new_building_id);
 
-            SelectedBuildingName.Text = SFCFF.SFCategoryManager.get_building_name(new_building_id);
+            SelectedBuildingName.Text = SFCFF.SFCategoryManager.GetBuildingName(new_building_id);
             ListBuildings.Items[selected_building] = GetBuildingString(building);
             MainForm.mapedittool.update_render = true;
         }
@@ -221,7 +221,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             else
             {
                 // if new id does not exist in gamedata, return
-                if (SFCFF.SFCategoryManager.gamedata.categories[36].get_element_index(new_npc_id) == -1)
+                if (SFCFF.SFCategoryManager.gamedata[36].GetElementIndex(new_npc_id) == -1)
                 {
                     SelectedBuildingNPCID.Text = current_npc_id.ToString();
                     return;
@@ -278,7 +278,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                         //if (map.heightmap.CanMoveToPosition(fixed_pos))
                         //{
                         ushort new_building_id = Utility.TryParseUInt16(BuildingToPlaceID.Text);
-                        if (map.gamedata.categories[23].get_element_index(new_building_id) == -1)
+                        if (map.gamedata[23].GetElementIndex(new_building_id) == -1)
                             return;
                         // create new unit and drag it until mouse released
                         map.AddBuilding(new_building_id, fixed_pos, 0, 0, 0, 0);

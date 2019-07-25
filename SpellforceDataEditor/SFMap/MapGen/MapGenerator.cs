@@ -106,9 +106,19 @@ namespace SpellforceDataEditor.SFMap.MapGen
 
             // generate  height  map  from the  map
             ushort[] ret = new ushort[Width * Height];
-            for (int y = 0; y < Height; y++)
-                for (int x = 0; x < Width; x++)
-                    ret[y * Width + x] = (ushort)(BaseZ*base_map.Get(x, y));
+            ParallelOptions loop_options = new ParallelOptions();
+            loop_options.MaxDegreeOfParallelism = 4;
+            int height_per_task = Height / 4;
+            Parallel.For(0, 4, (i) =>
+            {
+                int end = height_per_task * (i + 1);
+                for (int y = height_per_task * i; y < end; y++)
+                    for (int x = 0; x < Width; x++)
+                        ret[y * Width + x] = (ushort)(BaseZ * base_map.Get(x, y));
+            });
+            //for (int y = 0; y < Height; y++)
+            //    for (int x = 0; x < Width; x++)
+            //        ret[y * Width + x] = (ushort)(BaseZ*base_map.Get(x, y));
 
             return ret;
         }

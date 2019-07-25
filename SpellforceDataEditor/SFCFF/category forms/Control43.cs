@@ -57,7 +57,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             tb_effID.Text = variant_repr(0);
             textBox1.Text = variant_repr(1);
-            checkBox1.Checked = ((Byte)category.get_element_variant(current_element, 2).value != 0);
+            checkBox1.Checked = ((Byte)category[current_element][2] != 0);
             textBox2.Text = variant_repr(3);
             textBox3.Text = variant_repr(4);
             textBox4.Text = variant_repr(5);

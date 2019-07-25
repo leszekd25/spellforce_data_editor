@@ -50,14 +50,14 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             ComboRaces.Items.Clear();
 
-            SFCFF.SFCategory races_cat = SFCFF.SFCategoryManager.gamedata.categories[15];
-            for(int i = 0; i < races_cat.get_element_count(); i++)
+            SFCFF.SFCategory races_cat = SFCFF.SFCategoryManager.gamedata[15];
+            for(int i = 0; i < races_cat.GetElementCount(); i++)
             {
-                ushort race_name_index = (ushort)(races_cat.get_element_variant(i, 7).value);
-                SFCFF.SFCategoryElement name_elem  = SFCFF.SFCategoryManager.find_element_text(race_name_index, Settings.LanguageID);
+                ushort race_name_index = (ushort)(races_cat[i][7]);
+                SFCFF.SFCategoryElement name_elem  = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
-                    race_name = Utility.CleanString(name_elem.get_single_variant(4));
+                    race_name = Utility.CleanString(name_elem[4]);
                 else
                     race_name = Utility.S_MISSING;
                 ComboRaces.Items.Add(race_name);
@@ -79,21 +79,21 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (!SFCFF.SFCategoryManager.ready)
                 return;
 
-            byte race_id = (byte)SFCFF.SFCategoryManager.gamedata.categories[15].get_element(ComboRaces.SelectedIndex).get_single_variant(0).value;
+            byte race_id = (byte)SFCFF.SFCategoryManager.gamedata[15][ComboRaces.SelectedIndex][0];
             List<int> unit_indices = new List<int>();
-            SFCFF.SFCategory units_cat = SFCFF.SFCategoryManager.gamedata.categories[17];
+            SFCFF.SFCategory units_cat = SFCFF.SFCategoryManager.gamedata[17];
 
-            for(int i  = 0; i < units_cat.get_element_count(); i++)
+            for(int i  = 0; i < units_cat.GetElementCount(); i++)
             {
-                ushort stats_id = (ushort)(units_cat.get_element(i).get_single_variant(2).value);
-                SFCFF.SFCategoryElement stats_elem = SFCFF.SFCategoryManager.gamedata.categories[3].find_binary_element(0, stats_id);
+                ushort stats_id = (ushort)(units_cat[i][2]);
+                SFCFF.SFCategoryElement stats_elem = SFCFF.SFCategoryManager.gamedata[3].FindElementBinary(0, stats_id);
                 if (stats_elem == null)
                     continue;
-                byte unit_race_id = (byte)stats_elem.get_single_variant(2).value;
+                byte unit_race_id = (byte)stats_elem[2];
                 if (race_id != unit_race_id)
                     continue;
 
-                unit_indices.Add((ushort)(units_cat.get_element(i).get_single_variant(0).value));
+                unit_indices.Add((ushort)(units_cat[i][0]));
             }
 
             //  TODO: sort by level
@@ -101,7 +101,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             unitcombo_to_unitindex = unit_indices;
 
             for (int i = 0; i < unitcombo_to_unitindex.Count; i++)
-                ComboUnit.Items.Add(SFCFF.SFCategoryManager.get_unit_name((ushort)unitcombo_to_unitindex[i], true));
+                ComboUnit.Items.Add(SFCFF.SFCategoryManager.GetUnitName((ushort)unitcombo_to_unitindex[i], true));
         }
 
         private void ComboUnit_SelectedIndexChanged(object sender, EventArgs e)
@@ -114,7 +114,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private string GetUnitString(SFMapUnit u)
         {
-            string ret = SFCFF.SFCategoryManager.get_unit_name((ushort)u.game_id, true);
+            string ret = SFCFF.SFCategoryManager.GetUnitName((ushort)u.game_id, true);
             ret += " " + u.grid_position.ToString();
             return ret;
         }
@@ -170,7 +170,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             {
                 SFMapUnit unit = map.unit_manager.units[unit_map_index];
                 SelectedUnitID.Text = unit.game_id.ToString();
-                SelectedUnitNameAndLevel.Text = SFCFF.SFCategoryManager.get_unit_name((ushort)unit.game_id, true);
+                SelectedUnitNameAndLevel.Text = SFCFF.SFCategoryManager.GetUnitName((ushort)unit.game_id, true);
                 SelectedUnitNPCID.Text = unit.npc_id.ToString();
                 SelectedUnitX.Text = unit.grid_position.x.ToString();
                 SelectedUnitY.Text = unit.grid_position.y.ToString();
@@ -196,12 +196,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             // check if new unit exists
-            if (map.gamedata.categories[17].get_element_index(new_unit_id) == -1)
+            if (map.gamedata[17].GetElementIndex(new_unit_id) == -1)
                 return;
 
             map.ReplaceUnit(selected_unit, new_unit_id);
 
-            SelectedUnitNameAndLevel.Text = SFCFF.SFCategoryManager.get_unit_name(new_unit_id, true);
+            SelectedUnitNameAndLevel.Text = SFCFF.SFCategoryManager.GetUnitName(new_unit_id, true);
             ListUnits.Items[selected_unit] = GetUnitString(unit);
             MainForm.mapedittool.update_render = true;
         }
@@ -301,7 +301,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                         if (map.heightmap.CanMoveToPosition(fixed_pos))
                         {
                             ushort new_unit_id = Utility.TryParseUInt16(UnitToPlaceID.Text);
-                            if (map.gamedata.categories[17].get_element_index(new_unit_id) == -1)
+                            if (map.gamedata[17].GetElementIndex(new_unit_id) == -1)
                                 return;
                             // create new unit and drag it until mouse released
                             map.AddUnit(new_unit_id, fixed_pos, 0, 0, 0, 0, 0);

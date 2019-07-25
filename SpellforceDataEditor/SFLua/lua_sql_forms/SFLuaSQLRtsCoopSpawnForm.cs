@@ -107,7 +107,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 foreach (int i in spawn_types[group_id].start_units)
                 {
                     if (SFCFF.SFCategoryManager.ready)
-                        GroupStartUnits.Items.Add(i.ToString() + " - " + SFCFF.SFCategoryManager.get_unit_name((ushort)i, true));
+                        GroupStartUnits.Items.Add(i.ToString() + " - " + SFCFF.SFCategoryManager.GetUnitName((ushort)i, true));
                     else
                         GroupStartUnits.Items.Add(i.ToString());
                 }
@@ -157,7 +157,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 foreach (int i in spawn_data[key].units)
                 {
                     if (SFCFF.SFCategoryManager.ready)
-                        SpawnDataUnits.Items.Add(i.ToString() + " - " + SFCFF.SFCategoryManager.get_unit_name((ushort)i, true));
+                        SpawnDataUnits.Items.Add(i.ToString() + " - " + SFCFF.SFCategoryManager.GetUnitName((ushort)i, true));
                     else
                         SpawnDataUnits.Items.Add(i.ToString());
                 }
@@ -234,7 +234,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].start_units[GroupStartUnits.SelectedIndex] = (int)unit_id;
 
             if (SFCFF.SFCategoryManager.ready)
-                GroupStartUnits.Items[GroupStartUnits.SelectedIndex] = (unit_id.ToString() + " - " + SFCFF.SFCategoryManager.get_unit_name(unit_id, true));
+                GroupStartUnits.Items[GroupStartUnits.SelectedIndex] = (unit_id.ToString() + " - " + SFCFF.SFCategoryManager.GetUnitName(unit_id, true));
             else
                 GroupStartUnits.Items[GroupStartUnits.SelectedIndex] = (unit_id.ToString());
         }
@@ -381,7 +381,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].data[key].units[SpawnDataUnits.SelectedIndex] = (int)unit_id;
 
             if (SFCFF.SFCategoryManager.ready)
-                SpawnDataUnits.Items[SpawnDataUnits.SelectedIndex] = (unit_id.ToString() + " - " + SFCFF.SFCategoryManager.get_unit_name(unit_id, true));
+                SpawnDataUnits.Items[SpawnDataUnits.SelectedIndex] = (unit_id.ToString() + " - " + SFCFF.SFCategoryManager.GetUnitName(unit_id, true));
             else
                 SpawnDataUnits.Items[SpawnDataUnits.SelectedIndex] = (unit_id.ToString());
         }
@@ -396,7 +396,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                     return;
 
                 ushort unit_id = Utility.TryParseUInt16(SelectedUnitID.Text);
-                int unit_index = SFCFF.SFCategoryManager.gamedata.categories[17].get_element_index(unit_id);
+                int unit_index = SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(unit_id);
                 if(unit_index != -1)
                     MainForm.data.Tracer_StepForward(17, unit_index, false);
             }
@@ -412,7 +412,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                     return;
 
                 ushort unit_id = Utility.TryParseUInt16(SelectedSpawnDataUnitID.Text);
-                int unit_index = SFCFF.SFCategoryManager.gamedata.categories[17].get_element_index(unit_id);
+                int unit_index = SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(unit_id);
                 if (unit_index != -1)
                     MainForm.data.Tracer_StepForward(17, unit_index, false);
             }
@@ -449,7 +449,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             spawn_type.start_units.Add(0);
 
             if (SFCFF.SFCategoryManager.ready)
-                GroupStartUnits.Items.Add("0 - " + SFCFF.SFCategoryManager.get_unit_name((ushort)0, true));
+                GroupStartUnits.Items.Add("0 - " + SFCFF.SFCategoryManager.GetUnitName((ushort)0, true));
             else
                 GroupStartUnits.Items.Add("0");
 
@@ -546,7 +546,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             spawn_type.data[selected_key].units.Add(0);
 
             if (SFCFF.SFCategoryManager.ready)
-                SpawnDataUnits.Items.Add("0 - " + SFCFF.SFCategoryManager.get_unit_name((ushort)0, true));
+                SpawnDataUnits.Items.Add("0 - " + SFCFF.SFCategoryManager.GetUnitName((ushort)0, true));
             else
                 SpawnDataUnits.Items.Add("0");
 

@@ -41,7 +41,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private string GetObjectString(SFMapObject o)
         {
-            string ret = SFCFF.SFCategoryManager.get_object_name((ushort)o.game_id);
+            string ret = SFCFF.SFCategoryManager.GetObjectName((ushort)o.game_id);
             ret += " " + o.grid_position.ToString();
             return ret;
         }
@@ -76,7 +76,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
                 SFMapObject obj = map.object_manager.objects[object_map_index];
                 SelectedObjectID.Text = obj.game_id.ToString();
-                SelectedObjectName.Text = SFCFF.SFCategoryManager.get_object_name((ushort)obj.game_id);
+                SelectedObjectName.Text = SFCFF.SFCategoryManager.GetObjectName((ushort)obj.game_id);
                 SelectedObjectNPCID.Text = obj.npc_id.ToString();
                 SelectedObjectX.Text = obj.grid_position.x.ToString();
                 SelectedObjectY.Text = obj.grid_position.y.ToString();
@@ -101,7 +101,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             // check if new object id exists in gamedata
-            if (map.gamedata.categories[33].get_element_index(new_object_id) == -1)
+            if (map.gamedata[33].GetElementIndex(new_object_id) == -1)
             {
                 SelectedObjectID.Text = obj.game_id.ToString();
                 return;
@@ -115,7 +115,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             map.ReplaceObject(selected_object, new_object_id);
 
-            SelectedObjectName.Text = SFCFF.SFCategoryManager.get_object_name(new_object_id);
+            SelectedObjectName.Text = SFCFF.SFCategoryManager.GetObjectName(new_object_id);
             ListObjects.Items[selected_object] = GetObjectString(obj);
             MainForm.mapedittool.update_render = true;
         }
@@ -197,7 +197,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                         //if (map.heightmap.CanMoveToPosition(fixed_pos))
                         //{
                         ushort new_object_id = Utility.TryParseUInt16(ObjectToPlaceID.Text);
-                        if (map.gamedata.categories[33].get_element_index(new_object_id) == -1)
+                        if (map.gamedata[33].GetElementIndex(new_object_id) == -1)
                             return;
                         // create new unit and drag it until mouse released
                         map.AddObject(new_object_id, fixed_pos, 0, 0, 0);
@@ -337,7 +337,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             ushort object_id = Utility.TryParseUInt16(ObjectToPlaceID.Text);
 
-            ObjectToPlaceName.Text = SFCFF.SFCategoryManager.get_object_name(object_id);
+            ObjectToPlaceName.Text = SFCFF.SFCategoryManager.GetObjectName(object_id);
         }
     }
 }

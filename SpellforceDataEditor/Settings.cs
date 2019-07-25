@@ -23,9 +23,6 @@ namespace SpellforceDataEditor
         public static bool LogWarning { get; private set; } = true;
         public static bool LogError { get; private set; } = true;
 
-        public static bool AllowLua { get; private set; } = true;
-        public static int EnableLuaRunWarning { get; private set; } = 3;  // 3- YES, 2 - ONCE, 1 - ONCE (warned), 0 - NO
-
         public static int Load()
         {
             LogUtils.Log.Info(LogUtils.LogSource.Main, "Settings.Load() called");
@@ -96,17 +93,6 @@ namespace SpellforceDataEditor
                             LogError = (words[1] == "YES");
                             if (LogError)
                                 LogUtils.Log.SetOption(LogUtils.LogOption.ERROR);
-                            break;
-                        case "AllowLua":
-                            AllowLua = (words[1] == "YES");
-                            break;
-                        case "EnableLuaRunWarning":
-                            if (words[1] == "YES")
-                                EnableLuaRunWarning = 3;
-                            else if (words[1] == "ONCE")
-                                EnableLuaRunWarning = 2;
-                            else
-                                EnableLuaRunWarning = 0;
                             break;
                         case "LanguageID":
                             LanguageID = Utility.TryParseUInt8(words[1], (byte)LanguageID);
@@ -184,12 +170,6 @@ namespace SpellforceDataEditor
                         case "LogError":
                             words = new string[] { words[0], LogError ? "YES" : "NO" };
                             break;
-                        case "AllowLua":
-                            words = new string[] { words[0], AllowLua ? "YES" : "NO" };
-                            break;
-                        case "EnableLuaRunWarning":
-                            words = new string[] { words[0], (EnableLuaRunWarning == 3 ? "YES" : (EnableLuaRunWarning == 0 ? "NO" : "ONCE")) };
-                            break;
                         case "LanguageID":
                             words = new string[] { words[0], LanguageID.ToString() };
                             break;
@@ -209,16 +189,6 @@ namespace SpellforceDataEditor
             {
                 LogUtils.Log.Error(LogUtils.LogSource.Main, "Settings.Save(): failed to save settings to config.txt");
             }
-        }
-
-        public static bool ConfirmRunLua(string fname)
-        {
-            if (EnableLuaRunWarning < 2)
-                return true;
-            if (EnableLuaRunWarning == 2)
-                EnableLuaRunWarning -= 1;
-            DialogResult dr = MessageBox.Show("Editor will now run Lua script '" + fname + "'. Press OK to continue, Cancel to abort.", "Allow running Lua script", MessageBoxButtons.OKCancel);
-            return dr == DialogResult.OK;
         }
     }
 }

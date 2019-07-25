@@ -64,7 +64,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         //updates data element and displayed description
         public void set_element_variant(int elem_index, int var_index, object obj)
         {
-            category.set_element_variant(elem_index, var_index, obj);
+            category[elem_index][var_index] = obj;
             ((special_forms.SpelllforceCFFEditor)ParentForm).external_set_element_select_string(category, elem_index);
         }
 
@@ -79,22 +79,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         //variant is numeric in this case
         public string variant_repr(int index)
         {
-            SFVariant v = category.get_element_variant(current_element, index);
-            if (v == null)
-                return "ERROR: index out of bounds";
-            return v.value.ToString();
+            return category[current_element][index].ToString();
         }
 
         //turns a given variant from current element into a text to display on text box
         //variant is a text in this case
         public string string_repr(int index)
         {
-            SFVariant v = category.get_element_variant(current_element, index);
-            if (v == null)
-                return "ERROR: index out of bounds";
-            if (v.vtype != SFVARIANT_TYPE.String)
-                return "ERROR: wrong data type";
-            return Encoding.UTF8.GetString((byte[])v.value);
+            return Encoding.UTF8.GetString((byte[])category[current_element][index]);
         }
 
         //turns a given variant from current element into a text to display on text box
@@ -103,14 +95,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             Byte[] bytes = new Byte[count];
             for(int i = 0; i < count; i++)
-            {
-                SFVariant v = category.get_element_variant(current_element, index + i);
-                if (v == null)
-                    return "ERROR: index out of bounds";
-                if (v.vtype != SFVARIANT_TYPE.UByte)
-                    return "ERROR: wrong data type";
-                bytes[i] = (Byte)category.get_element_variant(current_element, index + i).value;
-            }
+                bytes[i] = (Byte)category[current_element][index+i];
             return BitConverter.ToString(bytes).Replace('-', ' ');
         }
 
@@ -122,8 +107,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public void step_into(int cat_i, int elem_key)
         {
-            SFCategory cat = SFCategoryManager.get_category(cat_i);
-            int real_elem_id = cat.get_element_index(elem_key);
+            SFCategory cat = SFCategoryManager.gamedata[cat_i];
+            int real_elem_id = cat.GetElementIndex(elem_key);
             if (real_elem_id == -1)
                 return;
             MainForm.data.Tracer_StepForward(cat_i, real_elem_id);

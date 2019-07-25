@@ -23,15 +23,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void set_list_text(int i)
         {
-            Byte ui_index = (Byte)(category.get_element_variant(current_element, i * 4 + 1)).value;
+            Byte ui_index = (Byte)category[current_element][i * 4 + 1];
 
             ListUI.Items[i] = ui_index.ToString();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 4;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 4;
 
             for (int i = 0; i < elem_count; i++)
                 set_element_variant(current_element, i * 4 + 0, Utility.TryParseUInt16(textBox1.Text));
@@ -59,8 +59,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             current_element = index;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 4;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 4;
 
             ListUI.Items.Clear();
 
@@ -85,7 +85,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (cur_selected < 0)
                 return;
             textBox4.Text = string_repr(cur_selected * 4 + 2);
-            checkBox1.Checked = ((UInt16)(category.get_element_variant(current_element, cur_selected * 4 + 3)).value) == 1;
+            checkBox1.Checked = ((UInt16)(category[current_element][cur_selected * 4 + 3])) == 1;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -96,23 +96,23 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             else
                 new_index = ListUI.SelectedIndex;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int cur_elem_count = elem.get().Count / 4;
+            SFCategoryElement elem = category[current_element];
+            int cur_elem_count = elem.variants.Count / 4;
 
             Byte max_index = 0;
             for (int i = 0; i < cur_elem_count; i++)
             {
-                max_index = Math.Max(max_index, (Byte)(elem.get_single_variant(i * 4 + 1).value));
+                max_index = Math.Max(max_index, (Byte)elem[i * 4 + 1]);
             }
             max_index += 1;
 
             object[] paste_data = new object[4];
-            paste_data[0] = (UInt16)elem.get_single_variant(0).value;
+            paste_data[0] = (UInt16)elem[0];
             paste_data[1] = (Byte)max_index;
             paste_data[2] = Utility.FixedLengthString("", 64);
             paste_data[3] = (UInt16)0;
 
-            elem.paste_raw(paste_data, new_index * 4);
+            elem.PasteRaw(paste_data, new_index * 4);
 
             set_element(current_element);
         }
@@ -125,15 +125,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             int new_index = ListUI.SelectedIndex;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            Byte cur_spell_index = (Byte)(elem.get_single_variant(new_index * 4 + 1).value);
+            SFCategoryElement elem = category[current_element];
+            Byte cur_spell_index = (Byte)(elem[new_index * 4 + 1]);
 
-            elem.remove_raw(new_index * 4, 4);
+            elem.RemoveRaw(new_index * 4, 4);
 
-            int cur_elem_count = elem.get().Count / 4;
+            int cur_elem_count = elem.variants.Count / 4;
             for (int i = 0; i < cur_elem_count; i++)
-                if ((Byte)(elem.get_single_variant(i * 4 + 1).value) > cur_spell_index)
-                    elem.set_single_variant(i * 4 + 1, (Byte)((Byte)(elem.get_single_variant(i * 4 + 1).value) - (Byte)1));
+                if ((Byte)(elem[i * 4 + 1]) > cur_spell_index)
+                    elem[i * 4 + 1] = (Byte)((Byte)(elem[i * 4 + 1]) - (Byte)1);
 
             set_element(current_element);
         }

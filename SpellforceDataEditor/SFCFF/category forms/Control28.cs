@@ -28,8 +28,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 9;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 9;
 
             for (int i = 0; i < elem_count; i++)
                 set_element_variant(current_element, i * 9 + 0, Utility.TryParseUInt8(textBox1.Text));
@@ -76,8 +76,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             ListLevels.Items.Clear();
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 9;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 9;
 
             for(int i = 0; i < elem_count; i++)
             {
@@ -109,12 +109,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 9;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 9;
             int index = ListLevels.Items.Count;
 
             object[] paste_data = new object[9];
-            paste_data[0] = (Byte)elem.get_single_variant(0).value;
+            paste_data[0] = (Byte)elem[0];
             paste_data[1] = (Byte)(index+1);
             paste_data[2] = (Byte)0;
             paste_data[3] = (Byte)0;
@@ -124,21 +124,21 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             paste_data[7] = (Byte)0;
             paste_data[8] = (Byte)0;
 
-            elem.paste_raw(paste_data, index * 9);
+            elem.PasteRaw(paste_data, index * 9);
             ListLevels.Items.Add("Level " + (index + 1).ToString());
             ListLevels.SelectedIndex = index;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 9;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 9;
             if (elem_count == 1)
                 return;
 
             int index = ListLevels.Items.Count - 1;
 
-            elem.remove_raw(index * 9, 9);
+            elem.RemoveRaw(index * 9, 9);
             ListLevels.Items.RemoveAt(index);
             ListLevels.SelectedIndex = Math.Min(index, ListLevels.Items.Count - 1);
         }

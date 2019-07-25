@@ -1,8 +1,6 @@
 ﻿/*
- * SFSceneLoader is de facto a scene manager, it controls what is displayed in the window
- * Main functions are ParseSceneDescription and CatElemToScene
- * CatElemToScene generates scene description based on provided game data element
- * ParseSceneDescription generates visual data displayed in window, based on provided description
+ * SFScene holds all visual data (except resources) and is able to manipulate it
+ * CatElemToScene generates scene description based on provided game data element, useful for asset viewer
  */
 
 using System;
@@ -63,17 +61,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // helper function, returns item id given a gamedata element from category 19 and item slot
         private UInt16 GetItemID(SFCategoryElement el, Byte slot)
         {
-            int el_size = el.get().Count / 3;
+            int el_size = el.variants.Count / 3;
             for (int i = 0; i < el_size; i++)
             {
-                if ((Byte)el.get_single_variant(i * 3 + 1).value == slot)
-                    return (UInt16)el.get_single_variant(i * 3 + 2).value;
+                if ((Byte)el[i * 3 + 1] == slot)
+                    return (UInt16)el[i * 3 + 2];
             }
             return 0;
         }
             
 
-        // generates a scene description given gamedata element
+        // generates a scene given gamedata element
         public void CatElemToScene(int category, int element)
         {
             scene_meta.is_animated = false;
@@ -88,14 +86,14 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 12:
                 case 13:
                     //get item id
-                    SFCategoryElement item = SFCategoryManager.gamedata.categories[category].get_element(element);
+                    SFCategoryElement item = SFCategoryManager.gamedata[category][element];
                     if (item == null)
                     {
                         LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Item not found (category is " + category.ToString()
                             + ", element is " + element.ToString() + ")");
                         break;
                     }
-                    int item_id = (UInt16)item.get_single_variant(0).value;
+                    int item_id = (UInt16)item[0];
 
                     //find item mesh
                     string m_name = mesh_data.GetItemMesh(item_id, false);
@@ -114,7 +112,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 24:
                 case 25:
                     //get item id
-                    int building_id = (ushort)SFCategoryManager.gamedata.categories[category].get_element(element).get_single_variant(0).value;
+                    int building_id = (ushort)SFCategoryManager.gamedata[category][element][0];
                     SceneNode building_node = AddSceneBuilding(building_id, "building");
                     building_node.SetParent(root);
                     building_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
@@ -124,7 +122,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 34:
                 case 35:
                     //get item id
-                    int object_id = (ushort)SFCategoryManager.gamedata.categories[category].get_element(element).get_single_variant(0).value;
+                    int object_id = (ushort)SFCategoryManager.gamedata[category][element][0];
                     SceneNode object_node = AddSceneObject(object_id, "object", true);
                     object_node.SetParent(root);
                     object_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
@@ -137,7 +135,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 21:
                 case 22:
                     //get unit id
-                    int unit_id = (ushort)SFCategoryManager.gamedata.categories[category].get_element(element).get_single_variant(0).value;
+                    int unit_id = (ushort)SFCategoryManager.gamedata[category][element][0];
                     SceneNode unit_node = AddSceneUnit(unit_id, "unit");
                     unit_node.SetParent(root);
                     unit_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
@@ -148,8 +146,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     break;
             }
         }
-        // NEW SCENE SYSTEM STUFF!
 
+        // these functions manipulate scene cache, which is used by SFRenderEngine to render stuff
         public int AddUntexturedEntrySimple(TexturedGeometryListElementSimple elem)
         {
             return untextured_list_simple.Add(elem);
@@ -200,6 +198,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 tex_list_animated.Remove(tex);
         }
 
+        // these functions add basic node types to scene
         public SceneNode AddSceneNodeEmpty(SceneNode parent, string new_node_name)
         {
             SceneNode new_node = new SceneNode(new_node_name);
@@ -254,12 +253,14 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return new_node;
         }
 
+        // these functions create and return nodes which are used to display game elements (units, buildings,...)
+        // note that those don't assign parent to the nodes - it's done somewhere else
         public SceneNode AddSceneUnit(int unit_id, string object_name)
         {
             SceneNode unit_node = AddSceneNodeEmpty(null, object_name);    // parent to be assigned later, likely some of the cached mapchunk nodes
 
             //find unit data element (cat 18)
-            SFCategoryElement unit_data = SFCategoryManager.gamedata.categories[17].find_binary_element<UInt16>(0, (UInt16)unit_id);
+            SFCategoryElement unit_data = SFCategoryManager.gamedata[17].FindElementBinary<UInt16>(0, (UInt16)unit_id);
             if (unit_data == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): Unit does not exist (unit id = "
@@ -267,7 +268,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 return unit_node;
             }
             //find unit eq element (cat 19)
-            SFCategoryElement unit_eq = SFCategoryManager.gamedata.categories[18].find_binary_element<UInt16>(0, (UInt16)unit_id);
+            SFCategoryElement unit_eq = SFCategoryManager.gamedata[18].FindElementBinary<UInt16>(0, (UInt16)unit_id);
             if (unit_eq == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): Unit has no inventory assigned to it (unit id = "
@@ -276,11 +277,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
 
             //get unit gender
-            SFCategoryElement unit_stats = SFCategoryManager.gamedata.categories[3].find_binary_element<UInt16>
-                                                                        (0, (UInt16)unit_data.get_single_variant(2).value);
+            SFCategoryElement unit_stats = SFCategoryManager.gamedata[3].FindElementBinary<UInt16>(0, (UInt16)unit_data[2]);
             bool is_female = false;
             if (unit_stats != null)
-                is_female = ((Byte)unit_stats.get_single_variant(23).value % 2) == 1;
+                is_female = ((Byte)unit_stats[23] % 2) == 1;
 
             //get chest item (2) (animated)
             UInt16 chest_id = GetItemID(unit_eq, 2);
@@ -301,13 +301,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             string anim_name = mesh_data.GetItemAnimation(chest_id, is_female);
 
             //special case: monument unit, needs to be considered separately
-            string unit_handle = Utility.CleanString(unit_data.get_single_variant(10));
+            string unit_handle = Utility.CleanString(unit_data[10]);
             if ((unit_handle.StartsWith("Unit")) && (!unit_handle.Contains("Titan")))
             {
                 chest_name += "_cold";
             }
-
-
+            
             //add anim model to scene
             SceneNodeAnimated uo = AddSceneNodeAnimated(unit_node, chest_name, "Chest");
             // apply flat shade
@@ -332,8 +331,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             //special case: anim_name is of "figure_hero": need to also add human head (animated)
             if ((anim_name.Contains("figure_hero")) && (unit_stats != null))
             {
-
-                int head_id = (UInt16)unit_stats.get_single_variant(24).value;
+                int head_id = (UInt16)unit_stats[24];
                 string head_name = mesh_data.GetHeadMesh(head_id, is_female);
                 if (head_name != "")
                 {
@@ -393,10 +391,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 {
                     bool is_shield = false;
                     //check if it's a shield (type 9)
-                    SFCategoryElement item_data = SFCategoryManager.gamedata.categories[6].find_binary_element<UInt16>(0, lhand_id);
+                    SFCategoryElement item_data = SFCategoryManager.gamedata[6].FindElementBinary<UInt16>(0, lhand_id);
                     if (item_data != null)
                     {
-                        int item_type = (Byte)item_data.get_single_variant(2).value;
+                        int item_type = (Byte)item_data[2];
                         is_shield = item_type == 9;
                     }
                     //create bone attachment
@@ -463,6 +461,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return bld_node;
         }
         
+        // this removes the node, and if needed, disposes it
+        // use this to remove nodes from the scene!
         public void RemoveSceneNode(SceneNode node, bool dispose = true)
         {
             if(node == null)
@@ -485,6 +485,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             current_time = t;
         }
 
+        // updates root of the scene (and consequently, all children that need to be updated)
         public void Update(bool time_flow = true)
         {
             if (time_flow)

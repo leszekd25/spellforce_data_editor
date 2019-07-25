@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * (axis-aligned) BoundingBox is a minimal in volume axis-algned box a given geometric shape can fit into
+ * Operations for checking if a point lies inside the box, if a plane intersects the box,
+ * and if the box is outside of a convex hull are provided
+ * */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,11 +16,11 @@ namespace SpellforceDataEditor.SF3D.Physics
 {
     public class BoundingBox
     {
-        public Vector3 a;
-        public Vector3 b;
+        public Vector3 a;             // lesser of X, Y and Z coordinates are stored here
+        public Vector3 b;             // greater of X, Y and Z coordinates are stored here
         private Vector3[] vertices;
 
-        // makes sure that a is minimum and b is maximum
+        // automatically sets a and be to fit the definition
         public BoundingBox(Vector3 _a, Vector3 _b)
         {
             a = _a;
@@ -56,7 +62,8 @@ namespace SpellforceDataEditor.SF3D.Physics
             return new BoundingBox(ab.a - c, ab.b - c);
         }
 
-        // negative if bb contains p
+        // returns manhattan distance between a point and the box
+        // if point is inside of the box, returned value is less than 0
         public float DistanceIsotropic(Vector3 p)
         {
             float dx = Math.Max(a.X - p.X, p.X - b.X);
@@ -65,25 +72,26 @@ namespace SpellforceDataEditor.SF3D.Physics
             return Math.Max(dx, Math.Max(dy, dz));
         }
 
-        // on which side of the plane this aabb is (1 if outside, -1 if inside, 0 if intersects)
+        // returns -1 if the box is outside of the plane, 1 if inside, 0 if plane intersects the box
         public int IntersectPlane(Plane pl)
         {
             bool is_outside = pl.SideOf(a);
             bool side_changed = is_outside;
             bool is_intersecting = false;
 
-            is_outside = pl.SideOf(new Vector3(b.X, a.Y, a.Z)); is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(b.X, b.Y, a.Z)); is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(b.X, a.Y, b.Z)); is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(b.X, b.Y, b.Z)); is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(a.X, b.Y, a.Z)); is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(a.X, a.Y, b.Z)); is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(a.X, b.Y, b.Z)); is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(b.X, a.Y, a.Z));  is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(b.X, b.Y, a.Z));  is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(b.X, a.Y, b.Z));  is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(b.X, b.Y, b.Z));  is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(a.X, b.Y, a.Z));  is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(a.X, a.Y, b.Z));  is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(a.X, b.Y, b.Z));  is_intersecting |= is_outside ^ side_changed;
 
             return is_intersecting ? 0 : (is_outside ? 1 : -1);
         }
 
-        // does aabb intersect a convex hull
+        // returns true if the box is not contained within the convex hull described by a set of bounding planes
+        // useful for checking if a bounding box is visible in camera frustum (which is just that, a convex hull)
         public bool IsOutsideOfConvexHull(Plane[] planes)
         {
             byte outside = 0;
@@ -92,15 +100,15 @@ namespace SpellforceDataEditor.SF3D.Physics
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    byte vertex_test_result = (byte)((pl.SideOf(vertices[i]) ? 1 : 0) << i);    // is this branch really necessary?
+                    byte vertex_test_result = (byte)((pl.SideOf(vertices[i]) ? 1 : 0) << i);
+                    if (vertex_test_result == 0)
+                        break;
                     outside |= vertex_test_result;
                 }
                 if (outside == 255)
                     return true;
             }
             return false;
-
-
         }
     }
 }

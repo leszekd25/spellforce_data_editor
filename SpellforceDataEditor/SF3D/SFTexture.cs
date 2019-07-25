@@ -1,6 +1,6 @@
 ﻿/*
  * SFTexture is a resource which contains texture image data
- * It loads data from provided DDS file, and feeds it to the GPU
+ * It loads data from provided DDS/TGA file, and feeds it to the GPU
  * It has to be disposed upon removal, to remove any data from the GPU
  * */
 
@@ -38,6 +38,7 @@ namespace SpellforceDataEditor.SF3D
             Init();
         }
 
+        // returns whether provided mip map level is valid, considering user settings
         public bool IsValidMipMapLevel(int level)
         {
             bool ret = ((level >= Settings.IgnoredMipMapsCount) || (level == mipMapCount - 1) || (mipMapCount <= Settings.IgnoredMipMapsCount));

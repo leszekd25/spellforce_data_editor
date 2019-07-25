@@ -28,12 +28,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             List<int> offsets = new List<int>();
             int cur_variant = 0;
-            SFCategoryElement elem = category.get_element(current_element);
-            while (cur_variant < elem.get().Count)
+            SFCategoryElement elem = category[current_element];
+            while (cur_variant < elem.variants.Count)
             {
                 offsets.Add(cur_variant);
                 cur_variant += 4;
-                Byte vcount = (Byte)elem.get_single_variant(cur_variant - 1).value;
+                Byte vcount = (Byte)elem[cur_variant - 1];
                 cur_variant += (vcount * 2);
             }
             return offsets;
@@ -46,7 +46,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             List<int> offsets = GetOffsets();
 
             if (p_index == ListPolygons.Items.Count - 1)
-                return ((category.get_element(current_element).get().Count - offsets[ListPolygons.Items.Count - 1]) - 4) / 2;
+                return ((category[current_element].variants.Count - offsets[ListPolygons.Items.Count - 1]) - 4) / 2;
             else
                 return ((offsets[p_index + 1] - offsets[p_index] - 4) / 2);
         }
@@ -83,8 +83,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             for (int i = 0; i < vertex_count; i++)
             {
-                Int16 x = (Int16)category.get_element_variant(current_element, offsets[ListPolygons.SelectedIndex] + 4 + i * 2).value;
-                Int16 y = (Int16)category.get_element_variant(current_element, offsets[ListPolygons.SelectedIndex] + 4 + i * 2 + 1).value;
+                Int16 x = (Int16)category[current_element][offsets[ListPolygons.SelectedIndex] + 4 + i * 2];
+                Int16 y = (Int16)category[current_element][offsets[ListPolygons.SelectedIndex] + 4 + i * 2 + 1];
                 listBox1.Items.Add(x.ToString() + " | " + y.ToString());
             }
         }
@@ -128,18 +128,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (v_index == -1)
                 v_index = listBox1.Items.Count;
 
-            SFCategoryElement elem = category.get_element(current_element);
+            SFCategoryElement elem = category[current_element];
 
             object[] paste_data = new object[2];
             paste_data[0] = (Int16)0;
             paste_data[1] = (Int16)0;
 
             int vc_offset = GetOffsets()[p_index] + 3;
-            Byte vcount = (Byte)elem.get_single_variant(vc_offset).value;
+            Byte vcount = (Byte)elem[vc_offset];
 
-            elem.paste_raw(paste_data, GetOffsets()[p_index] + 4 + v_index * 2);
+            elem.PasteRaw(paste_data, GetOffsets()[p_index] + 4 + v_index * 2);
 
-            elem.set_single_variant(vc_offset, (Byte)(vcount + 1));
+            elem[vc_offset] = (Byte)(vcount + 1);
 
             listBox1_update();
 
@@ -156,14 +156,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (GetVertexCount(p_index) <= 1)
                 return;
 
-            SFCategoryElement elem = category.get_element(current_element);
+            SFCategoryElement elem = category[current_element];
 
             int vc_offset = GetOffsets()[p_index] + 3;
-            Byte vcount = (Byte)elem.get_single_variant(vc_offset).value;
+            Byte vcount = (Byte)elem[vc_offset];
 
-            elem.remove_raw(GetOffsets()[p_index] + 4 + v_index * 2, 2);
+            elem.RemoveRaw(GetOffsets()[p_index] + 4 + v_index * 2, 2);
 
-            elem.set_single_variant(vc_offset, (Byte)(vcount - 1));
+            elem[vc_offset] = (Byte)(vcount - 1);
 
             listBox1_update();
 
@@ -177,13 +177,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void ListPolygons_update()
         {
-            SFCategoryElement elem = category.get_element(current_element);
+            SFCategoryElement elem = category[current_element];
 
             ListPolygons.Items.Clear();
 
             foreach (int o in GetOffsets())
             {
-                Byte p_index = (Byte)elem.get_single_variant(o + 1).value;
+                Byte p_index = (Byte)elem[o + 1];
                 ListPolygons.Items.Add(p_index.ToString());
             }
         }
@@ -203,24 +203,24 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (p_index == -1)
                 p_index = ListPolygons.Items.Count;
 
-            SFCategoryElement elem = category.get_element(current_element);
+            SFCategoryElement elem = category[current_element];
 
             Byte max_index = 0;
             foreach (int o in GetOffsets())
             {
-                max_index = Math.Max(max_index, (Byte)(elem.get_single_variant(o + 1).value));
+                max_index = Math.Max(max_index, (Byte)(elem[o + 1]));
             }
             max_index = (Byte)(max_index + 1);
 
             object[] paste_data = new object[6];
-            paste_data[0] = (UInt16)elem.get_single_variant(0).value;
+            paste_data[0] = (UInt16)elem[0];
             paste_data[1] = (Byte)max_index;
             paste_data[2] = (Byte)1;
             paste_data[3] = (Byte)1;
             paste_data[4] = (Int16)0;
             paste_data[5] = (Int16)0;
 
-            elem.paste_raw(paste_data, GetOffsets()[p_index]);
+            elem.PasteRaw(paste_data, GetOffsets()[p_index]);
 
             set_element(current_element);
         }
@@ -233,11 +233,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (ListPolygons.Items.Count <= 1)
                 return;
 
-            SFCategoryElement elem = category.get_element(current_element);
+            SFCategoryElement elem = category[current_element];
 
             int count = 4 + (GetVertexCount(p_index) * 2);
 
-            elem.remove_raw(GetOffsets()[p_index], count);
+            elem.RemoveRaw(GetOffsets()[p_index], count);
 
             set_element(current_element);
         }

@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Ray is a high-level object which is used to calculate intersection between a line and other 3D primitives
+ * Ray is described similarly to a line (see Line), but stores additional info
+ * Ray has maximum length provided, if the intersection happens further than the length, it will not be registered
+ * */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +30,8 @@ namespace SpellforceDataEditor.SF3D.Physics
             nvector = v.Normalized();
         }
 
+        // calculates point of intersection between the ray and a plane
+        // returns true if intersection happened, and writes point of intersection to a given out parameter
         public bool Intersect(Plane pl, out Vector3 point)
         {
             float ln_prod = Vector3.Dot(vector, pl.normal);
@@ -43,32 +51,20 @@ namespace SpellforceDataEditor.SF3D.Physics
             }
         }
         
+        // calculates point of intersection between the ray and a triangle
+        // similar to plane intersection, but also must check if point lies inside of the given triangle
         public bool Intersect(Triangle tr, out Vector3 point)
         {
             float ln_prod = Vector3.Dot(vector, tr.normal);
-            if(ln_prod != 0)
+            if(ln_prod > 0)
             {
                 // intersection of ray and plane the triangle belongs to
                 float ray_d = Vector3.Dot(Vector3.Subtract(tr.v1, start), tr.normal) / ln_prod;
                 point = Vector3.Add(ray_d * vector, start);
                 if (Vector3.Subtract(point, start).Length > length)
                     return false;
-                // check if point is in triangle
-                // barycentric coordinates https://math.stackexchange.com/questions/4322/check-whether-a-point-is-within-a-3d-triangle
-                /*Line l1 = new Line(tr.v2, tr.v3);
-                Line l2 = new Line(tr.v3, tr.v1);
-                float alpha = (float)Math.Sqrt(l1.Distance2(point) / l1.Distance2(tr.v1));
-                float beta = (float)Math.Sqrt(l2.Distance2(point) / l2.Distance2(tr.v2));*/
-
-                /*float area = tr.area2;
-                float alpha = (float)Math.Sqrt(Triangle.GetArea2(point, tr.v2, tr.v3) / area);
-                float beta = (float)Math.Sqrt(Triangle.GetArea2(point, tr.v3, tr.v1) / area);*/
+                // check if point is in triangle using barycentric coordinates
                 return tr.ContainsPoint(point);
-
-                /*float gamma = 1 - alpha - beta;
-                return ((alpha >= 0) && (alpha <= 1)
-                    && (beta >= 0) && (beta <= 1)
-                    && (gamma >= 0) && (gamma <= 1));*/
             }
             else
             {
@@ -77,6 +73,7 @@ namespace SpellforceDataEditor.SF3D.Physics
             }
         }
 
+        // calculates whether the ray intersects a bounding  box, does NOT calculate the point of intersection
         public bool Intersect(BoundingBox ab)
         {
             // binary sampling of distance to the box
@@ -100,6 +97,8 @@ namespace SpellforceDataEditor.SF3D.Physics
             return false;
         }
 
+        // calculates point of intersection between a 3D model and the ray
+        // slow!
         public bool Intersect(SFModel3D mesh, Vector3 offset, out Vector3 point)
         {
             point = new Vector3(0, 0, 0);
@@ -125,16 +124,23 @@ namespace SpellforceDataEditor.SF3D.Physics
             return false;
         }
 
-        // sequence of triangles
-        public bool Intersect(Triangle[] triangles, Vector3 offset, out Vector3 point)
+        // calculates point of intersection between a collision mesh and the ray
+        // since the triangles are pre-cached, this is much faster than with the 3d model
+        public bool Intersect(CollisionMesh mesh, out Vector3 point)
         {
             point = new Vector3(0, 0, 0);
+            if (mesh == null)
+                return false;
+            
+            if (!Intersect(mesh.aabb))
+                return false;
+            
+            Ray r = this - mesh.offset;
 
-            Ray r = this - offset;
-            for (int i = 0; i < triangles.Length; i++)
+            for (int i = 0; i < mesh.triangles.Length; i++)
             {
                 // todo: use precalculated triangle normals
-                if (r.Intersect(triangles[i], out point))
+                if (r.Intersect(mesh.triangles[i], out point))
                     return true;
             }
 

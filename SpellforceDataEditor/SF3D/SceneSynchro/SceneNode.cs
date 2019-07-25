@@ -1,4 +1,11 @@
-﻿using System;
+﻿/* 
+ * SceneNode is the basic component of a scene
+ * Every component of the scene inherits from SceneNode
+ * SceneNode has one parent and many children
+ * Each node contains transform data which is updated only when needed
+ * */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,8 +23,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public string Name { get; private set; } = "";
         public SceneNode Parent { get; set; } = null;
         public List<SceneNode> Children { get; protected set; } = new List<SceneNode>();
-        
+
+        // if true, on the  next  update  local transform will be  updated
         public virtual bool NeedsUpdateLocalTransform { get; protected set; } = true;
+        public virtual bool NeedsUpdateResultTransform { get; protected set; } = true;
 
         protected bool visible = true;
         protected Vector3 position = new Vector3(0);
@@ -56,6 +65,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             Name = n;
         }
 
+        // adds a given node as a child of this node
         public void AddNode(SceneNode node)
         {
             if(node == null)
@@ -68,6 +78,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             node.Visible = Visible;
         }
 
+        // removes a given node from the children of this node
         public void RemoveNode(SceneNode node)
         {
             if(node == null)
@@ -80,6 +91,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             Children.Remove(node);
         }
 
+        // removes node from hierarchy based on provided path
         public void RemoveNode(string path)
         {
             SceneNode n = FindNode<SceneNode>(path);
@@ -87,6 +99,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 n.Parent.RemoveNode(n);
         }
 
+        // changes parent of this node from current parent to a given node
         public void SetParent(SceneNode node)
         {
             if (Parent != null)
@@ -97,21 +110,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 Visible = false;
         }
 
-        public static float DegToRad(int deg)
-        {
-            return 3.141526f * deg / 180.0f;
-        }
-
-        public static int RadToDeg(float rad)
-        {
-            return (int)(rad * 180 / 3.141526f);
-        }
-
-        // utility function
+        // utility function which sets rotation of this node to a given angle (degrees) around the UP axis (0,  1, 0)
         public void SetAnglePlane(int angle_deg)
         {
             Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2)
-                     * Quaternion.FromAxisAngle(new Vector3(0, 0, 1), DegToRad(angle_deg));
+                     * Quaternion.FromAxisAngle(new Vector3(0, 0, 1), MathUtils.DegToRad(angle_deg));
         }
 
         // if something requires updating, notify all parents about that, root including, so the engine knows to run update routine
@@ -122,23 +125,32 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 Parent.TouchParents();
         }
 
-        // if one local transform changes, so must all subsequent transforms
+        // if one local transform changes, so must the result transform
         protected void TouchLocalTransform()
         {
             NeedsUpdateLocalTransform = true;
-            foreach (SceneNode node in Children)
-                node.TouchLocalTransform();
+            TouchResultTransform();
         }
 
+        // if one result transform changes, so must all subsequent result transforms
+        protected void TouchResultTransform()
+        {
+            NeedsUpdateResultTransform = true;
+            foreach (SceneNode node in Children)
+                node.TouchResultTransform();
+        }
+
+        // updates the node and all children nodes
         public void Update(float t)
         {
-            UpdateTransform();
             UpdateTime(t);
+            UpdateTransform();
 
             foreach (SceneNode node in Children)
                 node.Update(t);
         }
 
+        // updates local transform if needed, and result transform if needed
         protected virtual void UpdateTransform()
         {
             if (NeedsUpdateLocalTransform)
@@ -148,19 +160,26 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 Matrix4 scale_matrix = Matrix4.CreateScale(scale);
                 local_transform = scale_matrix * rotation_matrix * translation_matrix;
 
+                NeedsUpdateLocalTransform = false;
+            }
+
+            if(NeedsUpdateResultTransform)
+            {
                 if (Parent != null)
                     result_transform = local_transform * Parent.ResultTransform;
                 else
                     result_transform = local_transform;
-                NeedsUpdateLocalTransform = false;
+                NeedsUpdateResultTransform = false;
             }
         }
 
+        // updates node according to the given time parameter
         protected virtual void UpdateTime(float t)
         {
 
         }
 
+        // finds a node of a given type, given a path to node
         public T FindNode<T>(string path) where T: SceneNode
         {
             string[] names = (Name+'.'+path).Split('.');
@@ -193,6 +212,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return Parent.GetFullPath() + '.' + this.Name;
         }
 
+        // disposes node and all resources its using
         public void Dispose()
         {
             InternalDispose();
@@ -215,6 +235,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
     }
 
+    // struct holds info on where in the scene cache an element of this mesh can be found
     public struct TexGeometryLinkSimple
     {
         public SFTexture texture;
@@ -251,11 +272,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 base.Visible = value;
             }
         }
+        // list of scene cache pointers
         public TexGeometryLinkSimple[] TextureGeometryIndex { get; private set; } = null;
 
         public SceneNodeSimple(string n) : base(n) { }
 
-        // also do this if transparent = true, let transparent object list deal with those
+        // clears scene cache of all elements drawn by this node
+        // todo: also do this if transparent = true, let transparent object list deal with those
         private void ClearTexGeometry()
         {
             if (TextureGeometryIndex == null)
@@ -280,7 +303,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             TextureGeometryIndex = null;
         }
 
-        // also do this if transparent = false, let transparent object list deal with those
+        // adds elements drawn by this node to scene cache
+        // todo: also do this if transparent = false, let transparent object list deal with those
         private void AddTexGeometry()
         {
             if (TextureGeometryIndex != null)
@@ -300,10 +324,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddUntexturedEntrySimple(elem);
                 else
                     TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntrySimple(mesh.materials[i].texture, elem);
-                // long name :^)
             }
         }
 
+        // disposes mesh used by this node (reference counted, dw)
         protected override void InternalDispose()
         {
             if(Mesh != null)
@@ -314,6 +338,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
     }
 
+    // struct holds info on where in the scene cache an element of this mesh can be found
     public struct TexGeometryLinkAnimated
     {
         public SFTexture texture;
@@ -356,11 +381,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 base.Visible = value;
             }
         }
-
+        // list of scene cache pointers
         public TexGeometryLinkAnimated[] TextureGeometryIndex { get; private set; } = null;
 
         public SceneNodeAnimated(string n) : base(n) { }
 
+        // this must be used
         public void SetSkeletonSkin(SFSkeleton _skeleton, SFModelSkin _skin)
         {
             if (_skeleton != null)
@@ -390,12 +416,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 return;
             if (t < Animation.max_time)
                 AnimCurrentTime = t;
-            else
+            else  // looping
                 AnimCurrentTime = t - (int)(t / Animation.max_time);
 
             UpdateBoneTransforms();
         }
 
+        // calculates bone transforms for this node
         private void UpdateBoneTransforms()
         {
             for (int i = 0; i < BoneTransforms.Length; i++)
@@ -410,6 +437,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             SetAnimationTime(t);
         }
 
+        // clears scene cache of all elements drawn by this node
         // also do this if transparent = true, let transparent object list deal with those
         private void ClearTexGeometry()
         {
@@ -426,6 +454,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 TextureGeometryIndex = null;
         }
 
+        // adds elements drawn by this node to scene cache
         // also do this if transparent = false, let transparent object list deal with those
         private void AddTexGeometry()
         {
@@ -447,6 +476,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
         }
 
+        // disposes skeleton and skin used by this node (reference counted)
         protected override void InternalDispose()
         {
             if (Skeleton != null)
@@ -462,6 +492,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
     }
 
+    //  this node should be attached to a SceneNodeAnimated node
     public class SceneNodeBone : SceneNode
     {
         // parent must be SceneNodeAnimated
@@ -486,6 +517,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             TouchLocalTransform();
         }
 
+        // sets to which bone this node should be attached
         public void SetBone(string name)
         {
             BoneIndex = -1;
@@ -506,7 +538,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
     }
     
-
+    // this is handled somewhere else
     public class SceneNodeMapChunk: SceneNode
     {
         public SFMap.SFMapHeightMapChunk MapChunk;
@@ -518,19 +550,18 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if(MapChunk != null)
                 MapChunk.Unload();
         }
-
-
     }
 
+    // camera node should not have any children or unexpected behavior might occur
     public class SceneNodeCamera: SceneNode
     {
         private Vector3 lookat = new Vector3(0, 1, 0);
         private Vector2 direction = new Vector2(0, 0);
         private Matrix4 proj_matrix = new Matrix4();
         private Matrix4 viewproj_matrix = new Matrix4();
-        private Vector3[] frustrum_vertices;// = camera.get_frustrum_vertices();
+        private Vector3[] frustum_vertices;// = camera.get_frustrum_vertices();
         // construct frustrum planes
-        private Physics.Plane[] frustrum_planes;// = new Physics.Plane[6];
+        private Physics.Plane[] frustum_planes;// = new Physics.Plane[6];
 
         public Vector3 Lookat
         {
@@ -574,16 +605,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // proj matrix: projmatrix
         public Matrix4 ViewProjMatrix { get { return viewproj_matrix; } }
         public Matrix4 ProjMatrix { get { return proj_matrix; } set { proj_matrix = value; viewproj_matrix = proj_matrix; } }
-        public Physics.Plane[] FrustrumPlanes { get { return frustrum_planes; } }
-        public Vector3[] FrustrumVertices { get { return frustrum_vertices; } }
+        public Physics.Plane[] FrustumPlanes { get { return frustum_planes; } }
+        public Vector3[] FrustumVertices { get { return frustum_vertices; } }
 
         public SceneNodeCamera(string s): base(s)
         {
-            frustrum_vertices = new Vector3[8];
-            frustrum_planes = new Physics.Plane[6];
+            frustum_vertices = new Vector3[8];
+            frustum_planes = new Physics.Plane[6];
             UpdateTransform();
         }
 
+        // todo: can be optimized
         protected override void UpdateTransform()
         {
             if (NeedsUpdateLocalTransform)
@@ -592,13 +624,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 viewproj_matrix = local_transform * ProjMatrix;
 
                 // calculate frustrum geometry
-                calculate_frustrum_vertices();
-                frustrum_planes[0] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[4], frustrum_vertices[1]));  // top plane
-                frustrum_planes[1] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[2], frustrum_vertices[3], frustrum_vertices[6]));  // bottom plane
-                frustrum_planes[2] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[2], frustrum_vertices[4]));  // left plane
-                frustrum_planes[3] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[1], frustrum_vertices[5], frustrum_vertices[3]));  // right plane
-                frustrum_planes[4] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[0], frustrum_vertices[1], frustrum_vertices[2]));  // near plane
-                frustrum_planes[5] = new Physics.Plane(new Physics.Triangle(frustrum_vertices[4], frustrum_vertices[6], frustrum_vertices[5]));  // far plane
+                CalculateFrustumVertices();
+                frustum_planes[0] = new Physics.Plane(frustum_vertices[0], frustum_vertices[4], frustum_vertices[1]);  // top plane
+                frustum_planes[1] = new Physics.Plane(frustum_vertices[2], frustum_vertices[3], frustum_vertices[6]);  // bottom plane
+                frustum_planes[2] = new Physics.Plane(frustum_vertices[0], frustum_vertices[2], frustum_vertices[4]);  // left plane
+                frustum_planes[3] = new Physics.Plane(frustum_vertices[1], frustum_vertices[5], frustum_vertices[3]);  // right plane
+                frustum_planes[4] = new Physics.Plane(frustum_vertices[0], frustum_vertices[1], frustum_vertices[2]);  // near plane
+                frustum_planes[5] = new Physics.Plane(frustum_vertices[4], frustum_vertices[6], frustum_vertices[5]);  // far plane
 
                 NeedsUpdateLocalTransform = false;
             }
@@ -612,7 +644,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
 
         // todo: this is wrong at certain angles?
-        private void calculate_frustrum_vertices()
+        private void CalculateFrustumVertices()
         {
             // get forward, up, right direction
             // mirrored in XZ plane...
@@ -624,17 +656,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             float deviation = (float)Math.Tan(Math.PI / 4) / 2;
             Vector3 center = position + forward * 0.1f;
             Vector3 center2 = position + forward * 100f;
-            frustrum_vertices[0] = center + (-right + up) * deviation * 0.1f;
-            frustrum_vertices[1] = center + (right + up) * deviation * 0.1f;
-            frustrum_vertices[2] = center + (-right - up) * deviation * 0.1f;
-            frustrum_vertices[3] = center + (right - up) * deviation * 0.1f;
-            frustrum_vertices[4] = center2 + (-right + up) * deviation * 100f;
-            frustrum_vertices[5] = center2 + (right + up) * deviation * 100f;
-            frustrum_vertices[6] = center2 + (-right - up) * deviation * 100f;
-            frustrum_vertices[7] = center2 + (right - up) * deviation * 100f;
+            frustum_vertices[0] = center + (-right + up) * deviation * 0.1f;
+            frustum_vertices[1] = center + (right + up) * deviation * 0.1f;
+            frustum_vertices[2] = center + (-right - up) * deviation * 0.1f;
+            frustum_vertices[3] = center + (right - up) * deviation * 0.1f;
+            frustum_vertices[4] = center2 + (-right + up) * deviation * 100f;
+            frustum_vertices[5] = center2 + (right + up) * deviation * 100f;
+            frustum_vertices[6] = center2 + (-right - up) * deviation * 100f;
+            frustum_vertices[7] = center2 + (right - up) * deviation * 100f;
             // reflection along XY plane at z = position.Z
             for (int i = 0; i < 8; i++)
-                frustrum_vertices[i].Z = 2 * position.Z - frustrum_vertices[i].Z;
+                frustum_vertices[i].Z = 2 * position.Z - frustum_vertices[i].Z;
         }
     }
 }

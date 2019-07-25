@@ -25,7 +25,8 @@ namespace SpellforceDataEditor.SFMap
         public Vector2[] uvs;
         public Vector3[] texture_id;
 
-        public SF3D.Physics.Triangle[] collision_cache;
+        public SF3D.Physics.CollisionMesh collision_cache = new SF3D.Physics.CollisionMesh();
+        //public SF3D.Physics.Triangle[] collision_cache;
 
         // lake
         public SFModel3D lake_model = null;    // generated here, but owned by ResourceManager
@@ -33,7 +34,7 @@ namespace SpellforceDataEditor.SFMap
         // overlays
         public Dictionary<string, MapEdit.MapOverlayChunk> overlays { get; private set; } = new Dictionary<string, MapEdit.MapOverlayChunk>();
 
-        public SF3D.Physics.BoundingBox aabb;
+        //public SF3D.Physics.BoundingBox aabb;
         public List<SFMapBuilding> buildings = new List<SFMapBuilding>();
         public List<SFMapObject> objects = new List<SFMapObject>();
         public List<SFMapInteractiveObject> int_objects = new List<SFMapInteractiveObject>();
@@ -157,13 +158,14 @@ namespace SpellforceDataEditor.SFMap
             
             for (int i = 0; i < vertices.Length; i++)
                 uvs[i] = vertices[i].Xz / 4;
-
-            GenerateAABB();
-            GenerateGeometryCache();
+            
+            collision_cache.Generate(new Vector3(ix*size,0,iy*size), vertices);
+            //GenerateAABB();
+            //GenerateGeometryCache();
             Init();
         }
 
-        public void GenerateAABB()
+        public void GenerateTemporaryAABB()
         {
             int size = width;
 
@@ -178,10 +180,10 @@ namespace SpellforceDataEditor.SFMap
                         max_height = h;
                 }
             }
-            aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, 0, iy * size), new Vector3((ix + 1) * size, max_height/100.0f, (iy * size) + size));
+            collision_cache.aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, 0, iy * size), new Vector3((ix + 1) * size, max_height/100.0f, (iy * size) + size));
         }
 
-        public void GenerateGeometryCache()
+        /*public void GenerateGeometryCache()
         {
             int triangle_count = vertices.Length / 3;
             collision_cache = new SF3D.Physics.Triangle[triangle_count];
@@ -189,7 +191,7 @@ namespace SpellforceDataEditor.SFMap
                 collision_cache[i] = new SF3D.Physics.Triangle(vertices[i * 3 + 0],
                                                                vertices[i * 3 + 1],
                                                                vertices[i * 3 + 2]);
-        }
+        }*/
 
         public void Init()
         {
@@ -240,7 +242,7 @@ namespace SpellforceDataEditor.SFMap
             normals = null;
             uvs = null;
             texture_id = null;
-            collision_cache = null;
+            collision_cache.triangles = null;
 
             vertex_array = -1;
         }
@@ -307,8 +309,10 @@ namespace SpellforceDataEditor.SFMap
                 }
             }
 
-            GenerateAABB();
-            GenerateGeometryCache();
+            collision_cache = new SF3D.Physics.CollisionMesh();
+            collision_cache.Generate(new Vector3(ix * size, 0, iy * size), vertices);
+            //GenerateAABB();
+            //GenerateGeometryCache();
 
             GL.BindVertexArray(vertex_array);
 
@@ -809,7 +813,7 @@ namespace SpellforceDataEditor.SFMap
                     chunk_node.MapChunk.iy = i;
                     chunk_node.MapChunk.width = chunk_size;
                     chunk_node.MapChunk.height = chunk_size;
-                    chunk_node.MapChunk.GenerateAABB();
+                    chunk_node.MapChunk.GenerateTemporaryAABB();
 
                     chunk_node.MapChunk.Generate();
                     chunk_node.Position = new Vector3(j * chunk_size, 0, i * chunk_size);

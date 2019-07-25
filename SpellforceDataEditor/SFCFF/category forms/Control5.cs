@@ -23,18 +23,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void set_list_text(int i)
         {
-            Byte skill_major = (Byte)(category.get_element_variant(current_element, i * 4 + 1)).value;
-            Byte skill_minor = (Byte)(category.get_element_variant(current_element, i * 4 + 2)).value;
-            Byte skill_level = (Byte)(category.get_element_variant(current_element, i * 4 + 3)).value;
+            Byte skill_major = (Byte)(category[current_element][i * 4 + 1]);
+            Byte skill_minor = (Byte)(category[current_element][i * 4 + 2]);
+            Byte skill_level = (Byte)(category[current_element][i * 4 + 3]);
 
-            string txt = SFCategoryManager.get_skill_name(skill_major, skill_minor, skill_level);
+            string txt = SFCategoryManager.GetSkillName(skill_major, skill_minor, skill_level);
             ListSkills.Items[i] = txt;
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 4;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 4;
 
             for (int i = 0; i < elem_count; i++)
                 set_element_variant(current_element, i * 4 + 0, Utility.TryParseUInt16(textBox1.Text));
@@ -81,18 +81,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             current_element = index;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 4;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 4;
 
             ListSkills.Items.Clear();
 
             for (int i = 0; i < elem_count; i++)
             {
-                Byte skill_major = (Byte)(elem.get_single_variant(i * 4 + 1)).value;
-                Byte skill_minor = (Byte)(elem.get_single_variant(i * 4 + 2)).value;
-                Byte skill_level = (Byte)(elem.get_single_variant(i * 4 + 3)).value;
+                Byte skill_major = (Byte)(elem[i * 4 + 1]);
+                Byte skill_minor = (Byte)(elem[i * 4 + 2]);
+                Byte skill_level = (Byte)(elem[i * 4 + 3]);
 
-                string txt = SFCategoryManager.get_skill_name(skill_major, skill_minor, skill_level);
+                string txt = SFCategoryManager.GetSkillName(skill_major, skill_minor, skill_level);
 
                 ListSkills.Items.Add(txt);
             }
@@ -114,15 +114,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             else
                 new_index = ListSkills.SelectedIndex;
 
-            SFCategoryElement elem = category.get_element(current_element);
+            SFCategoryElement elem = category[current_element];
 
             object[] paste_data = new object[4];
-            paste_data[0] = (UInt16)elem.get_single_variant(0).value;
+            paste_data[0] = (UInt16)elem[0];
             paste_data[1] = (Byte)0;
             paste_data[2] = (Byte)0;
             paste_data[3] = (Byte)0;
 
-            elem.paste_raw(paste_data, new_index * 4);
+            elem.PasteRaw(paste_data, new_index * 4);
             set_element(current_element);
         }
 
@@ -134,8 +134,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             int new_index = ListSkills.SelectedIndex;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            elem.remove_raw(new_index * 4, 4);
+            SFCategoryElement elem = category[current_element];
+            elem.RemoveRaw(new_index * 4, 4);
 
             set_element(current_element);
         }

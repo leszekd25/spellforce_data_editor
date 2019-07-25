@@ -74,7 +74,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             if ((i < 0) || (i >= 30))
                 return "";
-            return dec.dec_id[i].ToString() + " (" + SFCFF.SFCategoryManager.get_object_name(dec.dec_id[i]) + ")";
+            return dec.dec_id[i].ToString() + " (" + SFCFF.SFCategoryManager.GetObjectName(dec.dec_id[i]) + ")";
         }
 
         private void SelectGroup(int group_index)

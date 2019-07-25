@@ -43,38 +43,38 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
                 return;
 
             // unit stuff
-            int index = SFCategoryManager.get_category(17).get_element_index(unit_id);
+            int index = SFCategoryManager.gamedata[17].GetElementIndex(unit_id);
             if (index == -1)
                 return;
-            ushort stats_id = (ushort)SFCategoryManager.get_category(17).get_element(index).get_single_variant(2).value;
+            ushort stats_id = (ushort)SFCategoryManager.gamedata[17][index][2];
 
             // unit stats
-            int index2 = SFCategoryManager.get_category(3).get_element_index((int)stats_id);
+            int index2 = SFCategoryManager.gamedata[3].GetElementIndex((int)stats_id);
             if (index2 == -1)
                 return;
-            SFCategoryElement stats = SFCategoryManager.get_category(3).get_element(index2);
+            SFCategoryElement stats = SFCategoryManager.gamedata[3][index2];
             
-            int lvl = (int)(ushort)stats.get_single_variant(1).value;
-            int dex = (int)(ushort)stats.get_single_variant(4).value;
-            int agi = (int)(ushort)stats.get_single_variant(3).value;
+            int lvl = (int)(ushort)stats[1];
+            int dex = (int)(ushort)stats[4];
+            int agi = (int)(ushort)stats[3];
 
             // get unit eq
-            int index3 = SFCategoryManager.get_category(18).get_element_index(unit_id);
+            int index3 = SFCategoryManager.gamedata[18].GetElementIndex(unit_id);
             if (index3 != -1)
             {
-                SFCategoryElement items = SFCategoryManager.get_category(18).get_element(index);
-                int item_count = items.get().Count / 3;
+                SFCategoryElement items = SFCategoryManager.gamedata[18][index];
+                int item_count = items.variants.Count / 3;
                 for(int i = 0; i < item_count; i++)
                 {
                     //item stats
-                    ushort item_id = (ushort)items.get_single_variant(3 * i + 2).value;
-                    int index4 = SFCategoryManager.get_category(7).get_element_index((int)item_id);
+                    ushort item_id = (ushort)items[3 * i + 2];
+                    int index4 = SFCategoryManager.gamedata[7].GetElementIndex((int)item_id);
                     if (index4 == -1)
                         continue;
 
-                    SFCategoryElement item = SFCategoryManager.get_category(7).get_element(index4);
-                    dex += (short)item.get_single_variant(4).value;
-                    agi += (short)item.get_single_variant(3).value;
+                    SFCategoryElement item = SFCategoryManager.gamedata[7][index4];
+                    dex += (short)item[4];
+                    agi += (short)item[3];
                 }
             }
 
@@ -83,14 +83,14 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
                 textBox3.Text = lvl.ToString();
                 textBox4.Text = dex.ToString();
                 textBox5.Text = agi.ToString();
-                label10.Text = SFCategoryManager.get_unit_name((ushort)unit_id);
+                label10.Text = SFCategoryManager.GetUnitName((ushort)unit_id);
             }
             else
             {
                 textBox6.Text = lvl.ToString();
                 textBox7.Text = dex.ToString();
                 textBox8.Text = agi.ToString();
-                label11.Text = SFCategoryManager.get_unit_name((ushort)unit_id);
+                label11.Text = SFCategoryManager.GetUnitName((ushort)unit_id);
             }
         }
 

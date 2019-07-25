@@ -1,6 +1,6 @@
 ﻿/*
  * SFRenderEngine takes care of displaying 3D graphics in a window
- * It takes data from SFSceneManager and renders it using predefined shaders
+ * It takes data from SFScene and renders it using predefined shaders
  */
 
 using System;
@@ -260,10 +260,28 @@ namespace SpellforceDataEditor.SF3D.SFRender
             List<SceneNodeMapChunk> vis_chunks = new List<SceneNodeMapChunk>();
 
             // test visibility of each chunk
-            
-            foreach(SceneNodeMapChunk chunk_node in scene.heightmap.chunk_nodes)
-                if(!chunk_node.MapChunk.aabb.IsOutsideOfConvexHull(scene.camera.FrustrumPlanes))
-                    vis_chunks.Add(chunk_node);
+
+            ParallelOptions loop_options = new ParallelOptions();
+            loop_options.MaxDegreeOfParallelism = 4;
+            int chunks_per_task = scene.heightmap.chunk_nodes.Length/4;
+            List<SceneNodeMapChunk>[] vis_chunks_per_task = new List<SceneNodeMapChunk>[4];
+            Parallel.For(0, 4, (i) =>
+            {
+                vis_chunks_per_task[i] = new List<SceneNodeMapChunk>();
+                int end = chunks_per_task * (i + 1);
+                for (int j = chunks_per_task * i; j < end; j++)
+                {
+                    SceneNodeMapChunk chunk_node = scene.heightmap.chunk_nodes[j];
+                    if (!chunk_node.MapChunk.collision_cache.aabb.IsOutsideOfConvexHull(scene.camera.FrustumPlanes))
+                        vis_chunks_per_task[i].Add(chunk_node);
+                }
+            });
+            //foreach (SceneNodeMapChunk chunk_node in scene.heightmap.chunk_nodes)
+            //    if(!chunk_node.MapChunk.aabb.IsOutsideOfConvexHull(scene.camera.FrustrumPlanes))
+            //        vis_chunks.Add(chunk_node);
+            for (int i = 0; i < 4; i++)
+                for (int j = 0; j < vis_chunks_per_task[i].Count; j++)
+                    vis_chunks.Add(vis_chunks_per_task[i][j]);
             
             // NOTE: chunks are already sorted due to how lists operate
             // 2. compare with existing collection of visible chunks: march two lists at once
@@ -357,8 +375,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     ymin = pos.Z-16;
                 else if (pos.Z+32 > ymax)
                     ymax = pos.Z+32;
-                if (chunk_node.MapChunk.aabb.b.Y > zmax)
-                    zmax = chunk_node.MapChunk.aabb.b.Y;
+                if (chunk_node.MapChunk.collision_cache.aabb.b.Y > zmax)
+                    zmax = chunk_node.MapChunk.collision_cache.aabb.b.Y;
             }
             SF3D.Physics.BoundingBox aabb = new Physics.BoundingBox(new Vector3(xmin, 0, ymin), new Vector3(xmax, zmax+15, ymax));
             scene.sun_light.SetupLightView(aabb);
@@ -648,7 +666,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.BindVertexArray(FrameBuffer.screen_vao);
             GL.Disable(EnableCap.DepthTest);
             GL.BindTexture(TextureTarget.Texture2D, screenspace_intermediate.texture_color);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
 
             UseShader(null);
             current_pass = RenderPass.NONE;

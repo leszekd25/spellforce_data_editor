@@ -15,7 +15,7 @@ namespace SpellforceDataEditor.SFCFF
 {
     public class SFGameData
     {
-        public SFCategory[] categories;      //array of categories
+        private SFCategory[] categories;      //array of categories
         public const int categoryNumber = 49;
 
         public Byte[] mainHeader;            //gamedata.cff has a main header which is held here
@@ -31,6 +31,14 @@ namespace SpellforceDataEditor.SFCFF
             }
 
             mainHeader = new Byte[20];
+        }
+
+        public SFCategory this[int index]
+        {
+            get
+            {
+                return categories[index];
+            }
         }
 
         // load gamedata from given file
@@ -53,7 +61,7 @@ namespace SpellforceDataEditor.SFCFF
             mainHeader = br.ReadBytes(mainHeader.Length);
             for (int i = 0; i < categoryNumber; i++)
             {
-                int cat_status = categories[i].read(br);
+                int cat_status = categories[i].Read(br);
                 if (cat_status == -1)
                 {
                     //MessageBox.Show("Category '" + get_category(i).get_name() + "' has corrupted header, but it will fix itself upon the next data save.");
@@ -91,7 +99,7 @@ namespace SpellforceDataEditor.SFCFF
 
             for (int i = 0; i < categoryNumber; i++)
             {
-                categories[i].write(bw);
+                categories[i].Write(bw);
             }
 
             //bw.Close();
@@ -114,7 +122,7 @@ namespace SpellforceDataEditor.SFCFF
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFGameData.Unload() called");
             foreach (SFCategory cat in categories)
-                cat.unload();
+                cat.Unload();
 
             mainHeader = new Byte[20];
             for (int i = 0; i < 20; i++)

@@ -41,14 +41,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             RelationGrid.Refresh();
 
             current_element = index;
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
 
             for (int i = 0; i < elem_count; i++)
             {
-                Byte clan_id = (Byte)(elem.get_single_variant(i * 3 + 1)).value;
-                Byte relation = (Byte)(elem.get_single_variant(i * 3 + 2)).value;
+                Byte clan_id = (Byte)(elem[i * 3 + 1]);
+                Byte relation = (Byte)(elem[i * 3 + 2]);
 
                 string txt = "<MISSING!>";
                 if ((clan_id >= 1) && (clan_id <= (Byte)SFCategory17.clan_names.Length))
@@ -92,8 +92,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
             for (int i = 0; i < elem_count; i++)
                 set_element_variant(current_element, 0 + 3 * i, Utility.TryParseUInt8(textBox1.Text));

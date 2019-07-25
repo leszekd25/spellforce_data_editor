@@ -85,9 +85,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
             string ret = "";
             if(SFCFF.SFCategoryManager.ready)
             {
-                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.find_element_text(spawn.text_id, Settings.LanguageID);
+                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.FindElementText(spawn.text_id, Settings.LanguageID);
                 if (text_elem != null)
-                    ret += Utility.CleanString(text_elem.get_single_variant(4));
+                    ret += Utility.CleanString(text_elem[4]);
                 else
                     ret += Utility.S_MISSING;
                 ret += " ";
@@ -443,9 +443,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SelectedPlayerTextID.Text = tp.text_id.ToString();
             if (SFCFF.SFCategoryManager.ready)
             {
-                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.find_element_text(tp.text_id, Settings.LanguageID);
+                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.FindElementText(tp.text_id, Settings.LanguageID);
                 if (text_elem != null)
-                    LabelSelectedPlayerText.Text = Utility.CleanString(text_elem.get_single_variant(4));
+                    LabelSelectedPlayerText.Text = Utility.CleanString(text_elem[4]);
                 else
                     LabelSelectedPlayerText.Text = Utility.S_MISSING;
             }
@@ -469,9 +469,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
             tp.text_id = Utility.TryParseUInt16(SelectedPlayerTextID.Text);
             if (SFCFF.SFCategoryManager.ready)
             {
-                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.find_element_text(tp.text_id, Settings.LanguageID);
+                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.FindElementText(tp.text_id, Settings.LanguageID);
                 if (text_elem != null)
-                    LabelSelectedPlayerText.Text = Utility.CleanString(text_elem.get_single_variant(4));
+                    LabelSelectedPlayerText.Text = Utility.CleanString(text_elem[4]);
                 else
                     LabelSelectedPlayerText.Text = Utility.S_MISSING;
             }

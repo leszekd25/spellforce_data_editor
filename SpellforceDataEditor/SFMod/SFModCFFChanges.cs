@@ -41,7 +41,7 @@ namespace SpellforceDataEditor.SFMod
             celem.element = new SFCategoryElement();
             try
             {
-                celem.element.set(SFCategoryManager.get_category(celem.category_index).get_element(br));
+                celem.element.AddVariants(SFCategoryManager.gamedata[celem.category_index].GetElementFromBuffer(br));
             }
             catch(Exception)
             {
@@ -60,7 +60,7 @@ namespace SpellforceDataEditor.SFMod
                 return 0;
             if (element == null)
                 return -1;
-            SFCategoryManager.get_category(category_index).put_element(bw, element.get());
+            SFCategoryManager.gamedata[category_index].WriteElementToBuffer(bw, element.variants);
             return 0;
         }
     }
@@ -130,11 +130,11 @@ namespace SpellforceDataEditor.SFMod
             SFCategory new_data  = null;
             byte[] mainHeader_orig = br_orig.ReadBytes(20);
             byte[] mainHeader_new  = br_new.ReadBytes(20) ;
-            for(int i = 1; i <= SFCategoryManager.get_category_number(); i++)
+            for(int i = 1; i <= SFGameData.categoryNumber; i++)
             {
                 orig_data = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCFF.SFCategory" + i.ToString()) as SFCategory;
                 new_data  = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCFF.SFCategory" + i.ToString()) as SFCategory;
-                if(orig_data.read(br_orig) != 0)
+                if(orig_data.Read(br_orig) != 0)
                 {
                     changes.Clear();
                     br_new.Close();
@@ -142,7 +142,7 @@ namespace SpellforceDataEditor.SFMod
                     return -1;
                     // error
                 }
-                if(new_data.read(br_new)   != 0)
+                if(new_data.Read(br_new)   != 0)
                 {
                     changes.Clear();
                     br_new.Close();
@@ -161,16 +161,16 @@ namespace SpellforceDataEditor.SFMod
                     bool is_change = false;
                     SFModCFFChangeType change_type = SFModCFFChangeType.REPLACE;
 
-                    if (new_i == new_data.get_element_count())
+                    if (new_i == new_data.GetElementCount())
                         new_end = true;
-                    if (orig_i == orig_data.get_element_count())
+                    if (orig_i == orig_data.GetElementCount())
                         orig_end = true;
 
                     if (orig_end && new_end)
                         break;
 
-                    orig_id = orig_data.get_element_id(orig_i);
-                    new_id = new_data.get_element_id(new_i);
+                    orig_id = orig_data.GetElementID(orig_i);
+                    new_id = new_data.GetElementID(new_i);
 
                     if (orig_end)
                     {
@@ -186,7 +186,7 @@ namespace SpellforceDataEditor.SFMod
                     {
                         if (orig_id == new_id)
                         {
-                            if (orig_data.get_element(orig_i).same_as(new_data.get_element(new_i)))
+                            if (orig_data[orig_i].SameAs(new_data[new_i]))
                             {
                                 // no change, addition, or deletion
                             }
@@ -222,7 +222,7 @@ namespace SpellforceDataEditor.SFMod
                         change_elem.category_index = (Byte)(i - 1);
                         if (change_type != SFModCFFChangeType.REMOVE)
                         {
-                            change_elem.element = new_data.get_element(new_i).get_copy();
+                            change_elem.element = new_data[new_i].GetCopy();
                             change_elem.element_index = (UInt16)(new_id);
                         }
                         else
@@ -230,13 +230,13 @@ namespace SpellforceDataEditor.SFMod
                         changes.Add(change_elem);
                     }
 
-                    if (orig_i < orig_data.get_element_count())
+                    if (orig_i < orig_data.GetElementCount())
                         orig_i += 1;
-                    if (new_i < new_data.get_element_count())
+                    if (new_i < new_data.GetElementCount())
                         new_i += 1;
                 }
-                orig_data.unload();
-                new_data.unload();
+                orig_data.Unload();
+                new_data.Unload();
                 GC.Collect();
             }
             br_orig.Close();
@@ -251,30 +251,30 @@ namespace SpellforceDataEditor.SFMod
             for(int i = 0; i < changes.Count; i++)
             {
                 SFModCFFChangeElement change = changes[i];
-                SFCategory cat = gd.categories[change.category_index];
-                List<SFCategoryElement> elems = cat.get_elements();
+                SFCategory cat = gd[change.category_index];
+                List<SFCategoryElement> elems = cat.elements;
                 int index;
                 switch (change.type)
                 {
                     case SFModCFFChangeType.REPLACE:
-                        index = cat.get_element_index(change.element_index);
+                        index = cat.GetElementIndex(change.element_index);
                         if (index == -1)
                             elems.Insert(index, change.element);
                         else
                             elems[index] = change.element;
                         break;
                     case SFModCFFChangeType.REMOVE:
-                        index = cat.get_element_index(change.element_index);
+                        index = cat.GetElementIndex(change.element_index);
                         if (index == -1)
                             break;
                         elems.RemoveAt(index);
                         break;
                     case SFModCFFChangeType.INSERT:
                         // find suitable position for an element
-                        index = cat.get_new_element_index(change.element_index);
+                        index = cat.GetNewElementIndex(change.element_index);
                         if (index == -1)
                         {
-                            index = cat.get_element_index(change.element_index);
+                            index = cat.GetElementIndex(change.element_index);
                             elems[index] = change.element;
                         }
                         else

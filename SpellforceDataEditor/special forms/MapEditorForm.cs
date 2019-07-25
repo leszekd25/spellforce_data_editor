@@ -86,7 +86,6 @@ namespace SpellforceDataEditor.special_forms
         private void MapEditorForm_Load(object sender, EventArgs e)
         {
             SFResources.SFResourceManager.FindAllMeshes();
-            SFLua.SFLuaEnvironment.Init();
 
             LogUtils.Log.MemoryUsage();
         }
@@ -166,7 +165,7 @@ namespace SpellforceDataEditor.special_forms
                 }
             }
             else if (SFCFF.SFCategoryManager.ready)
-                SFCFF.SFCategoryManager.unload_all();
+                SFCFF.SFCategoryManager.UnloadAll();
 
             StatusText.Text = "Loading GameData.cff...";
             StatusText.GetCurrentParent().Refresh();
@@ -179,7 +178,7 @@ namespace SpellforceDataEditor.special_forms
             if (MainForm.data != null)
                 MainForm.data.mapeditor_set_gamedata(gamedata);
             else
-                SFCFF.SFCategoryManager.manual_set_gamedata(gamedata);
+                SFCFF.SFCategoryManager.manual_SetGamedata(gamedata);
 
             SFRenderEngine.scene.Init();
             CreateRenderWindow();
@@ -240,7 +239,7 @@ namespace SpellforceDataEditor.special_forms
                     }
                 }
                 else if (SFCFF.SFCategoryManager.ready)
-                    SFCFF.SFCategoryManager.unload_all();
+                    SFCFF.SFCategoryManager.UnloadAll();
 
                 StatusText.Text = "Loading GameData.cff...";
                 StatusText.GetCurrentParent().Refresh();
@@ -253,7 +252,7 @@ namespace SpellforceDataEditor.special_forms
                 if (MainForm.data != null)
                     MainForm.data.mapeditor_set_gamedata(gamedata);
                 else
-                    SFCFF.SFCategoryManager.manual_set_gamedata(gamedata);
+                    SFCFF.SFCategoryManager.manual_SetGamedata(gamedata);
 
                 SFRenderEngine.scene.Init();
                 CreateRenderWindow();
@@ -372,7 +371,7 @@ namespace SpellforceDataEditor.special_forms
                 MainForm.data.mapeditor_desynchronize();
             }
             else
-                SFCFF.SFCategoryManager.unload_all();
+                SFCFF.SFCategoryManager.UnloadAll();
             SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
             SFRenderEngine.scene.root = null;
             SFRenderEngine.scene.camera = null;
@@ -540,7 +539,7 @@ namespace SpellforceDataEditor.special_forms
                 float wx, wy;
                 wx = px / RenderWindow.Size.Width;  wx = (wx+0.09f)*0.84f;
                 wy = py / RenderWindow.Size.Height; wy = (wy+0.11f)*0.84f;
-                Vector3[] frustrum_vertices = SFRenderEngine.scene.camera.FrustrumVertices;
+                Vector3[] frustrum_vertices = SFRenderEngine.scene.camera.FrustumVertices;
                 Vector3 r_start = SFRenderEngine.scene.camera.Position;
                 Vector3 r_end = frustrum_vertices[4]
                     + wx * (frustrum_vertices[5] - frustrum_vertices[4])
@@ -558,7 +557,7 @@ namespace SpellforceDataEditor.special_forms
                     Vector3 local_result;
                     SFMapHeightMapChunk chunk = map.heightmap.visible_chunks[map.heightmap.visible_chunks.Count-i-1].MapChunk;
                     Vector3 offset = new Vector3(chunk.ix * 16, 0, chunk.iy * 16);
-                    if (ray.Intersect(chunk.collision_cache, offset, out local_result))
+                    if (ray.Intersect(chunk.collision_cache, out local_result))
                     {
                         breakState.Break();
                         result = local_result;

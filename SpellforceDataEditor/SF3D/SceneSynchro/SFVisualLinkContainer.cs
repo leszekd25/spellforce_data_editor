@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NLua;
 
 namespace SpellforceDataEditor.SF3D.SceneSynchro
 {
@@ -121,6 +120,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return meshes;
         }
 
+        // returns selection size of a given building (if it exists)
         public float GetBuildingSelectionSize(int building_id)
         {
             SFVisualLink building = FindVisualLink(buildings, building_id);
@@ -150,6 +150,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return obj.lines.Skip(1).ToList();
         }
 
+        // returns selection size of a given object (if it exists)
         public float GetObjectSelectionSize(int object_id)
         {
             SFVisualLink obj = FindVisualLink(objects, object_id);

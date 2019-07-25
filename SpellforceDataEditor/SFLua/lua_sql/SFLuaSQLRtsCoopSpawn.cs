@@ -12,25 +12,25 @@ namespace SpellforceDataEditor.SFLua.lua_sql
         public int seconds_per_tick;     // convert from double
         public List<int> units;
 
-        public void ParseLoad(NLua.LuaTable table)
+        public void ParseLoad(LuaParser.LuaTable table)
         {
             seconds_per_tick = 0;
             if (table["Seconds"] != null)
-                seconds_per_tick += (int)Utility.CastDouble(table["Seconds"]);
+                seconds_per_tick += (int)(double)table["Seconds"];
             if (table["Minutes"] != null)
-                seconds_per_tick += (int)(Utility.CastDouble(table["Minutes"]) * 60);
+                seconds_per_tick += (int)((double)table["Minutes"] * 60);
             if (table["Hours"] != null)
-                seconds_per_tick += (int)(Utility.CastDouble(table["Hours"]) * 3600);
+                seconds_per_tick += (int)((double)table["Hours"] * 3600);
             if (seconds_per_tick == 0)
                 seconds_per_tick = 60;
 
             if (table["Units"] != null)
             {
                 units = new List<int>();
-                NLua.LuaTable i_spawn_data_units_table = (NLua.LuaTable)table["Units"];
+                LuaParser.LuaTable i_spawn_data_units_table = (LuaParser.LuaTable)table["Units"];
 
-                for (long k = 1; k <= i_spawn_data_units_table.Values.Count; k++)
-                    units.Add((int)(long)i_spawn_data_units_table[k]);
+                for (int k = 1; k <= i_spawn_data_units_table.entries.Count; k++)
+                    units.Add((int)(double)i_spawn_data_units_table[k]);
             }
         }
 
@@ -53,12 +53,12 @@ namespace SpellforceDataEditor.SFLua.lua_sql
     {
         public string name;
         public string level_range;
-        public SFLua.LuaEnumAiGoal goal;
+        public LuaEnumAiGoal goal;
         public int max_units;
         public List<int> start_units;
         public Dictionary<int, SFMapCoopSpawnTypeDataInfo> data;
 
-        public void ParseLoad(NLua.LuaTable table)
+        public void ParseLoad(LuaParser.LuaTable table)
         {
             name = "";
             if (table["Name"] != null)
@@ -68,37 +68,42 @@ namespace SpellforceDataEditor.SFLua.lua_sql
             if (table["LevelRange"] != null)
                 level_range = (string)table["LevelRange"];
 
-            goal = SFLua.LuaEnumAiGoal.GoalDefault;
+            goal = LuaEnumAiGoal.GoalDefault;
             if (table["Goal"] != null)
-                goal = (SFLua.LuaEnumAiGoal)(long)table["Goal"];
+            {
+                string s = (string)table["Goal"];
+                bool success = Enum.TryParse(s, out goal);
+                if (!success)
+                    goal = LuaEnumAiGoal.GoalDefault;
+            }
 
             max_units = 0;
             if (table["MaxClanSize"] != null)
-                max_units = (int)(long)table["MaxClanSize"];
+                max_units = (int)(double)table["MaxClanSize"];
 
             if (table["Init"] != null)
             {
                 start_units = new List<int>();
-                NLua.LuaTable i_init_table = (NLua.LuaTable)table["Init"];
-                for (long j = 1; j <= i_init_table.Values.Count; j++)
-                    start_units.Add((int)(long)i_init_table[j]);
+                LuaParser.LuaTable i_init_table = (LuaParser.LuaTable)table["Init"];
+                for (int j = 1; j <= i_init_table.entries.Count; j++)
+                    start_units.Add((int)(double)i_init_table[j]);
             }
 
             if (table["SpawnData"] != null)
             {
                 data = new Dictionary<int, SFMapCoopSpawnTypeDataInfo>();
-                NLua.LuaTable i_spawn_table = (NLua.LuaTable)table["SpawnData"];
-                List<long> i_spawn_indices = new List<long>();
-                foreach (var key in i_spawn_table.Keys)
-                    i_spawn_indices.Add((long)key);
+                LuaParser.LuaTable i_spawn_table = (LuaParser.LuaTable)table["SpawnData"];
+                List<int> i_spawn_indices = new List<int>();
+                foreach (var key in i_spawn_table.entries.Keys)
+                    i_spawn_indices.Add((int)key);
 
                 i_spawn_indices.Sort();
-                foreach (long j in i_spawn_indices)
+                foreach (int j in i_spawn_indices)
                 {
-                    NLua.LuaTable i_spawn_data_table = (NLua.LuaTable)i_spawn_table[j];
+                    LuaParser.LuaTable i_spawn_data_table = (LuaParser.LuaTable)i_spawn_table[j];
                     SFMapCoopSpawnTypeDataInfo cstdi = new SFMapCoopSpawnTypeDataInfo();
                     cstdi.ParseLoad(i_spawn_data_table);
-                    data.Add((int)j, cstdi);
+                    data.Add(j, cstdi);
                 }
             }
         }
@@ -108,7 +113,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql
             string ret = "";
             ret += "Name = \"" + name.ToString() + "\",";
             ret += "\r\nLevelRange = \"" + level_range.ToString() + "\",";
-            if (goal != SFLua.LuaEnumAiGoal.GoalDefault)
+            if (goal != LuaEnumAiGoal.GoalDefault)
                 ret += "\r\nGoal = " + goal.ToString() + ",";
             if (max_units != 0)
                 ret += "\r\nMaxClanSize = " + max_units.ToString() + ",";
@@ -122,7 +127,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql
             if (data != null)
             {
                 ret += "\r\nSpawnData = \r\n";
-                ret += SFLua.SFLuaEnvironment.ParseDictToString(data);
+                ret += SFLuaEnvironment.ParseDictToString(data);
                 ret += ",";
             }
             return ret;
@@ -136,16 +141,6 @@ namespace SpellforceDataEditor.SFLua.lua_sql
         public int Load()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load() called");
-            if (SFLua.SFLuaEnvironment.state == null)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Lua is not initialized!");
-                return -100;
-            }
-            if(!Settings.AllowLua)
-            {
-                LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Lua is disabled. Check config.txt for AllowLua option");
-                return -4;
-            }
 
             // check if file exists
             string filename = SFUnPak.SFUnPak.game_directory_name;
@@ -154,21 +149,15 @@ namespace SpellforceDataEditor.SFLua.lua_sql
                 LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Game directory not found!");
                 return -1;
             }
-            filename += "\\script\\gdsrtscoopspawngroups.lua";
-            if (!File.Exists(filename))
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Spawn group file does not exist!");
-                return -2;
-            }
-            
-            if (!Settings.ConfirmRunLua(filename))
-            {
-                LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Script execution aborted by user.");
-                return -5;
-            }
 
-            string script_string = "import = function () end\r\n" + File.ReadAllText(filename);
-            object[] ret = SFLua.SFLuaEnvironment.state.DoString(script_string);
+            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Executing script "+filename);
+
+            object[] ret = SFLuaEnvironment.ExecuteGameScript("script\\gdsrtscoopspawngroups.lua");
+            if(ret==null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Could not execute spawn script!");
+                return -6;
+            }
 
             if (coop_spawn_types == null)
                 coop_spawn_types = new Dictionary<int, SFMapCoopSpawnTypeInfo>();
@@ -178,20 +167,20 @@ namespace SpellforceDataEditor.SFLua.lua_sql
             {
                 coop_spawn_types.Clear();
 
-                NLua.LuaTable table = (NLua.LuaTable)ret[0];
-                List<long> indices = new List<long>();
-                foreach (var key in table.Keys)
-                    indices.Add((long)key);
+                LuaParser.LuaTable table = (LuaParser.LuaTable)ret[0];
+                List<int> indices = new List<int>();
+                foreach (var key in table.entries.Keys)
+                    indices.Add((int)key);
 
                 indices.Sort();
                 // iterate over the rts coop spawn table
-                foreach (long i in indices)
+                foreach (int i in indices)
                 {
-                    log_current_spawn = (int)i;
-                    NLua.LuaTable i_table = (NLua.LuaTable)table[i];
+                    log_current_spawn = i;
+                    LuaParser.LuaTable i_table = (LuaParser.LuaTable)table[i];
                     SFMapCoopSpawnTypeInfo csti = new SFMapCoopSpawnTypeInfo();
                     csti.ParseLoad(i_table);
-                    coop_spawn_types.Add((int)i, csti);
+                    coop_spawn_types.Add(i, csti);
                 }
             }
             catch (Exception)
@@ -211,11 +200,6 @@ namespace SpellforceDataEditor.SFLua.lua_sql
         public int Save()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Save(): called");
-            if (SFLua.SFLuaEnvironment.state == null)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Save(): Lua is not initialized!");
-                return -100;
-            }
 
             if (coop_spawn_types == null)
             {
@@ -230,11 +214,11 @@ namespace SpellforceDataEditor.SFLua.lua_sql
                 LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Save(): Game directory not found!");
                 return -1;
             }
-            filename += "\\script\\gdsrtscoopspawngroups_new.lua";
+            filename += "\\script\\gdsrtscoopspawngroups.lua";
 
             try
             {
-                File.WriteAllText(filename, "return\r\n" + SFLua.SFLuaEnvironment.ParseDictToString(coop_spawn_types));
+                File.WriteAllText(filename, "return\r\n" + SFLuaEnvironment.ParseDictToString(coop_spawn_types));
             }
             catch (Exception)
             {

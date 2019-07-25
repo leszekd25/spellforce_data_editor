@@ -15,8 +15,6 @@ namespace SpellforceDataEditor.special_forms
         public SQLModifierForm()
         {
             InitializeComponent();
-
-            SFLua.SFLuaEnvironment.Init();
         }
 
         private void ButtonRtsCoopSpawnGroups_Click(object sender, EventArgs e)

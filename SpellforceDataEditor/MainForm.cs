@@ -28,7 +28,7 @@ namespace SpellforceDataEditor
             InitializeComponent();
             linkEditor.Links.Add(0, linkEditor.Text.Length, "https://github.com/leszekd25/spellforce_data_editor/tree/with_viewer/bin");
             linkEditor.Visible = false;
-            SFCFF.SFCategoryManager.init();
+            SFCFF.SFCategoryManager.Init();
             CheckNewVersionAvailable();
 
             // check if data loaded from settings
@@ -210,11 +210,6 @@ namespace SpellforceDataEditor
         {
             if (sqlmodify != null)
                 return;
-            if(!Settings.AllowLua)
-            {
-                MessageBox.Show("Lua interpreter is disabled. Close editor, set 'AllowLua' in settings to 'YES' and run editor again to enable Lua interpreter.");
-                return;
-            }
             if (!SFUnPak.SFUnPak.game_directory_specified)
             {
                 MessageBox.Show("Game directory is not specified!");
@@ -251,7 +246,7 @@ namespace SpellforceDataEditor
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            SFLua.SFLuaEnvironment.Unload();
+
         }
     }
 }

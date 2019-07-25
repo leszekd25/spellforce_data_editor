@@ -27,11 +27,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         int get_subelem_index_by_slot_id(int slot_id)
         {
             // get absolute index in element
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 7;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 7;
             for (int i = 0; i < elem_count; i++)
             {
-                if ((int)(byte)elem.get_single_variant(i * 7 + 1).value == slot_id)
+                if ((int)(byte)elem[i * 7 + 1] == slot_id)
                 {
                     return i;
                 }
@@ -41,8 +41,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 7;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 7;
             for (int i = 0; i < elem_count; i++)
                 set_element_variant(current_element, 0 + i * 7, Utility.TryParseUInt16(textBox1.Text));
         }
@@ -93,14 +93,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 ListSlots.SetItemChecked(i, false);
             }
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 7;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 7;
             for (int i = 0; i < elem_count; i++)
             {
-                Byte b = (Byte)elem.get_single_variant(i * 7 + 1).value;
+                Byte b = (Byte)elem[i * 7 + 1];
                 if((b < 1)||(b > 6))
                     continue;
-                ListSlots.SetItemChecked(((int)((Byte)elem.get_single_variant(i * 7 + 1).value)) - 1, true);
+                ListSlots.SetItemChecked(((int)((Byte)elem[i * 7 + 1])) - 1, true);
             }
 
             for (int i = 0; i < 6; i++)
@@ -181,8 +181,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             index = get_subelem_index_by_slot_id(index + 1);
 
             // if last checkbox unchecked, prevent
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 7;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 7;
             int checked_slots = 0;
             for (int i = 0; i < 6; i++)
                 checked_slots += (ListSlots.GetItemChecked(i)) ? 1 : 0;
@@ -202,18 +202,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 Object[] obj_array = new Object[(elem_count - 1) * 7];
                 for (int i = 0; i < elem_count; i++)
                 {
-                    if ((Byte)elem.get_single_variant(i * 7 + 1).value == old_item_slot)
+                    if ((Byte)elem[i * 7 + 1] == old_item_slot)
                     {
                         offset = 1;
                         continue;
                     }
                     for (int j = 0; j < 7; j++)
                     {
-                        obj_array[(i - offset) * 7 + j] = elem.get_single_variant(i * 7 + j).value;
+                        obj_array[(i - offset) * 7 + j] = elem[i * 7 + j];
                     }
                 }
-                new_elem.set(obj_array);
-                category.get_elements()[current_element] = new_elem;
+                new_elem.AddVariants(obj_array);
+                category[current_element] = new_elem;
                 set_element(current_element);
             }
             else if (e.NewValue == CheckState.Checked)
@@ -225,9 +225,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 Object[] obj_array = new Object[(elem_count + 1) * 7];
                 for (int i = 0; i < elem_count; i++)
                 {
-                    if ((offset == 0) && ((Byte)elem.get_single_variant(i * 7 + 1).value > new_item_slot))
+                    if ((offset == 0) && ((Byte)elem[i * 7 + 1] > new_item_slot))
                     {
-                        obj_array[(i + offset) * 7 + 0] = (UInt16)elem.get_single_variant(0).value;
+                        obj_array[(i + offset) * 7 + 0] = (UInt16)elem[0];
                         obj_array[(i + offset) * 7 + 1] = (Byte)(e.Index + 1);
                         obj_array[(i + offset) * 7 + 2] = (UInt16)0;
                         obj_array[(i + offset) * 7 + 3] = (Byte)0;
@@ -238,12 +238,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     }
                     for (int j = 0; j < 7; j++)
                     {
-                        obj_array[(i + offset) * 7 + j] = elem.get_single_variant(i * 7 + j).value;
+                        obj_array[(i + offset) * 7 + j] = elem[i * 7 + j];
                     }
                 }
                 if (offset == 0)
                 {
-                    obj_array[elem_count * 7 + 0] = (UInt16)elem.get_single_variant(0).value;
+                    obj_array[elem_count * 7 + 0] = (UInt16)elem[0];
                     obj_array[elem_count * 7 + 1] = (Byte)(e.Index + 1);
                     obj_array[elem_count * 7 + 2] = (UInt16)0;
                     obj_array[elem_count * 7 + 3] = (Byte)0;
@@ -251,8 +251,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     obj_array[elem_count * 7 + 5] = (Byte)0;
                     obj_array[elem_count * 7 + 6] = (UInt16)0;
                 }
-                new_elem.set(obj_array);
-                category.get_elements()[current_element] = new_elem;
+                new_elem.AddVariants(obj_array);
+                category[current_element] = new_elem;
                 set_element(current_element);
             }
 

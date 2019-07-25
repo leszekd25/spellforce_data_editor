@@ -55,26 +55,22 @@ namespace SpellforceDataEditor.SFMap.map_controls
             NPCType type = map.npc_manager.npc_info[npc_id].npc_type;
             string new_item = "";
             if (type == NPCType.BUILDING)
-                new_item += SFCFF.SFCategoryManager.get_building_name((ushort)((SFMapBuilding)map.npc_manager.npc_info[npc_id].npc_ref).game_id);
+                new_item += SFCFF.SFCategoryManager.GetBuildingName((ushort)((SFMapBuilding)map.npc_manager.npc_info[npc_id].npc_ref).game_id);
             else if (type == NPCType.OBJECT)
-                new_item += SFCFF.SFCategoryManager.get_object_name((ushort)((SFMapObject)map.npc_manager.npc_info[npc_id].npc_ref).game_id);
+                new_item += SFCFF.SFCategoryManager.GetObjectName((ushort)((SFMapObject)map.npc_manager.npc_info[npc_id].npc_ref).game_id);
             else if (type == NPCType.UNIT)
-                new_item += SFCFF.SFCategoryManager.get_unit_name((ushort)((SFMapUnit)map.npc_manager.npc_info[npc_id].npc_ref).game_id, true);
+                new_item += SFCFF.SFCategoryManager.GetUnitName((ushort)((SFMapUnit)map.npc_manager.npc_info[npc_id].npc_ref).game_id, true);
 
             return new_item;
         }
 
         private string GetNPCName(int npc_id)
         {
-            int npc_index = SFCFF.SFCategoryManager.gamedata.categories[36].get_element_index(npc_id);
+            int npc_index = SFCFF.SFCategoryManager.gamedata[36].GetElementIndex(npc_id);
             if (npc_index == -1)
                 return Utility.S_MISSING;
-            SFCFF.SFCategoryElement npc_data = SFCFF.SFCategoryManager.gamedata.categories[36].get_element(npc_index);
-            ushort text_id = (ushort)npc_data.get_single_variant(1).value;
-            SFCFF.SFCategoryElement text_data = SFCFF.SFCategoryManager.find_element_text(text_id, Settings.LanguageID);
-            if (text_data == null)
-                return Utility.S_NONAME;
-            return Utility.CleanString(text_data.get_single_variant(4));
+            SFCFF.SFCategoryElement npc_data = SFCFF.SFCategoryManager.gamedata[36][npc_index];
+            return SFCFF.SFCategoryManager.GetTextFromElement(npc_data, 1);
         }
 
         // assumes indices_to_keys are up-to-date
@@ -126,7 +122,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             }
 
             // test if given NPC ID exists
-            if(SFCFF.SFCategoryManager.gamedata.categories[36].get_element_index(npc_id) == -1)
+            if(SFCFF.SFCategoryManager.gamedata[36].GetElementIndex(npc_id) == -1)
             {
                 SelectedNPCID.Text = selected_npc.ToString();
                 return;
@@ -172,7 +168,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             int base_least_npcid = 1000001;
             for (int id = 12000; id < 1000000; id++)
             {
-                if (SFCFF.SFCategoryManager.gamedata.categories[36].get_element_index(id) == -1)
+                if (SFCFF.SFCategoryManager.gamedata[36].GetElementIndex(id) == -1)
                 {
                     base_least_npcid = id;
                     break;
@@ -187,18 +183,18 @@ namespace SpellforceDataEditor.SFMap.map_controls
         // assumes npc_id doesn't exist in gamedata
         public int AddNewNPCID(int npc_id)
         {
-            int new_elem_index = SFCFF.SFCategoryManager.gamedata.categories[36].get_new_element_index(npc_id);
+            int new_elem_index = SFCFF.SFCategoryManager.gamedata[36].GetNewElementIndex(npc_id);
             if (new_elem_index == -1)
                 return -1;
 
             SFCFF.SFCategoryElement new_elem = new SFCFF.SFCategoryElement();
-            new_elem.add_single_variant((uint)npc_id);
-            new_elem.add_single_variant((ushort)0);
+            new_elem.AddVariant((uint)npc_id);
+            new_elem.AddVariant((ushort)0);
 
             if (MainForm.data != null)
                 MainForm.data.mapeditor_insert_npc(new_elem_index, new_elem);
             else
-                SFCFF.SFCategoryManager.gamedata.categories[36].get_elements().Insert(new_elem_index, new_elem);
+                SFCFF.SFCategoryManager.gamedata[36].elements.Insert(new_elem_index, new_elem);
 
             created_npc_ids.Add(npc_id);
 
@@ -208,14 +204,14 @@ namespace SpellforceDataEditor.SFMap.map_controls
         // used when newly assigned NPC IDs are not used, before gamedata save
         public int RemoveNewNPCID(int npc_id)
         {
-            int new_elem_index = SFCFF.SFCategoryManager.gamedata.categories[36].get_new_element_index(npc_id);
+            int new_elem_index = SFCFF.SFCategoryManager.gamedata[36].GetNewElementIndex(npc_id);
             if (new_elem_index == -1)
                 return -1;
 
             if (MainForm.data != null)
                 MainForm.data.mapeditor_remove_npc(new_elem_index);
             else
-                SFCFF.SFCategoryManager.gamedata.categories[36].get_elements().RemoveAt(new_elem_index);
+                SFCFF.SFCategoryManager.gamedata[36].elements.RemoveAt(new_elem_index);
 
             return 0;
         }

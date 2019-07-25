@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace SpellforceDataEditor
 {
@@ -123,12 +124,12 @@ namespace SpellforceDataEditor
         }
 
         //turns string variant into actual string (all zeros are truncated)
-        static public string CleanString(SFCFF.SFVariant ch)
+        static public string CleanString(object ch)
         {
-            if (ch.vtype != SFCFF.SFVARIANT_TYPE.String)
+            if (ch.GetType() !=  typeof(byte[]))
                 return "";
 
-            byte[] bytearray = (byte[])ch.value;
+            byte[] bytearray = (byte[])ch;
             return (Encoding.Default.GetString(bytearray)).Replace("\0", string.Empty);
         }
 
@@ -225,15 +226,6 @@ namespace SpellforceDataEditor
             return (b << 16) | a;
         }
 
-        static public double CastDouble(object val)
-        {
-            if (val.GetType() == typeof(long))
-                return (double)(long)val;
-            else if (val.GetType() == typeof(double))
-                return (double)val;
-            throw new InvalidCastException("Utility.CastDouble(): Invalid value type!");
-        }
-
         static public string TabulateString(string s, int tabs)
         {
             string replacement = "\r\n";
@@ -248,6 +240,41 @@ namespace SpellforceDataEditor
                  + (tr * t1 * (1 - t2))
                  + (bl * (1 - t1) * t2)
                  + (br * t1 * t2);
+        }
+
+        static public byte[] ToByteArray<T>(T[] arr) where T: struct        // T: struct means you can copy the  contents
+        {
+            GCHandle handle = GCHandle.Alloc(arr, GCHandleType.Pinned);     // handle to an unmanaged object;
+                                                                            // pinned  means address wont change
+            try
+            {
+                IntPtr ptr = handle.AddrOfPinnedObject();
+                byte[] dst = new byte[arr.Length * Marshal.SizeOf(typeof(T))];
+                Marshal.Copy(ptr, dst, 0, dst.Length);                      // need to  use marshal copy  (unmanaged memory)
+                return dst;
+            }
+            finally
+            {
+                if (handle.IsAllocated)
+                    handle.Free();                                          // must free the allocated unmanaged memory asap
+            }
+        }
+
+        static public T[] FromByteArray<T>(byte[]  arr) where T:  struct
+        {
+            T[] destination = new T[arr.Length / Marshal.SizeOf(typeof(T))];
+            GCHandle handle = GCHandle.Alloc(destination, GCHandleType.Pinned);
+            try
+            {
+                IntPtr pointer = handle.AddrOfPinnedObject();
+                Marshal.Copy(arr, 0, pointer, arr.Length);
+                return destination;
+            }
+            finally
+            {
+                if (handle.IsAllocated)
+                    handle.Free();
+            }
         }
     }
 }

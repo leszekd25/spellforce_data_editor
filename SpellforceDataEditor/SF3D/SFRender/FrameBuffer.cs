@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+ * OpenGL renders everything to a framebuffer
+ * While device context already contains a framebuffer, users can create their own framebuffers to
+ * render temporary stuff on it to be used for subsequent render passes
+ * FrameBuffer provides simple interface for creating and destroying framebuffers of various types
+ * */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,8 +22,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
         [Flags]
         public enum TextureType { NONE = 0, COLOR = 1, DEPTH = 2, STENCIL = 4}
 
-        static float[] vertices = new float[] { -1, -1, -1, 1, 1, -1, -1, 1, 1, -1, 1, 1 };
-        static float[] uvs = new float[] { 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1 };
+        static float[] vertices = new float[] { -1, -3, -1, 1, 3, 1 };
+        static float[] uvs = new float[] { 0, -1, 0, 1, 2, 1 };
 
         public static int screen_vao { get; private set; } = -1;
 

@@ -344,6 +344,7 @@
             // 
             // ButtonCancelChanges
             // 
+            this.ButtonCancelChanges.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.ButtonCancelChanges.Location = new System.Drawing.Point(12, 341);
             this.ButtonCancelChanges.Name = "ButtonCancelChanges";
             this.ButtonCancelChanges.Size = new System.Drawing.Size(75, 23);
@@ -392,8 +393,10 @@
             // 
             // SFLuaSQLRtsCoopSpawnForm
             // 
+            this.AcceptButton = this.ButtonSaveChanges;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.ButtonCancelChanges;
             this.ClientSize = new System.Drawing.Size(929, 373);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.SpawnDataActivation);

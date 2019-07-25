@@ -32,7 +32,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void SetRenderFlag(int f, bool s)
         {
-            int flags = (Byte)category.get_element_variant(current_element, 2).value;
+            int flags = (Byte)category[current_element][2];
             if (s)
                 flags |= (1 << f);
             else
@@ -62,7 +62,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             tb_effID.Text = variant_repr(0);
             textBox1.Text = variant_repr(1);
-            int flags = (Byte)category.get_element_variant(current_element, 2).value;
+            int flags = (Byte)category[current_element][2];
             flagDepthWrite.Checked = ((flags & 1) != 0);
             flagDepthReadOn.Checked = ((flags & 2) != 0);
             flagCulling.Checked = ((flags & 4) != 0);

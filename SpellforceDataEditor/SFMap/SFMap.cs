@@ -1174,8 +1174,7 @@ namespace SpellforceDataEditor.SFMap
             // load map flags
 
             // load metadata
-            metadata = new SFMapMetaData();
-            metadata.map_type = SFMapType.COOP;
+            metadata = new SFMapMetaData { map_type = SFMapType.COOP };
 
             byte[] image_data = new byte[128 * 128 * 3];
             for (int i = 0; i < 128 * 128 * 3; i++)
@@ -1186,10 +1185,12 @@ namespace SpellforceDataEditor.SFMap
             metadata.minimap.texture_data = image_data;
             metadata.minimap.GenerateTexture();
 
-            metadata.coop_spawn_params = new List<SFMapCoopSpawnParameters>();
-            metadata.coop_spawn_params.Add(new SFMapCoopSpawnParameters());
-            metadata.coop_spawn_params.Add(new SFMapCoopSpawnParameters());
-            metadata.coop_spawn_params.Add(new SFMapCoopSpawnParameters());
+            metadata.coop_spawn_params = new List<SFMapCoopSpawnParameters>
+            {
+                new SFMapCoopSpawnParameters(),
+                new SFMapCoopSpawnParameters(),
+                new SFMapCoopSpawnParameters()
+            };
             metadata.coop_spawn_params[0].param1 = 1; metadata.coop_spawn_params[1].param1 = 1.5f; metadata.coop_spawn_params[2].param1 = 2;
             metadata.coop_spawn_params[0].param2 = 1; metadata.coop_spawn_params[1].param2 = 1.5f; metadata.coop_spawn_params[2].param2 = 2;
             metadata.coop_spawn_params[0].param3 = 1; metadata.coop_spawn_params[1].param3 = 0.7f; metadata.coop_spawn_params[2].param3 = 0.5f;
@@ -1740,21 +1741,21 @@ namespace SpellforceDataEditor.SFMap
             obj.Position = heightmap.GetFixedPosition(pos);
             obj.SetAnglePlane(angle);
             // find unit scale
-            int unit_index = gamedata.categories[17].get_element_index(game_id);
+            int unit_index = gamedata[17].GetElementIndex(game_id);
             if (unit_index == -1)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit with given id does not exist! Unit id = "+game_id.ToString());
                 throw new InvalidDataException("SFMap.AddUnit(): Invalid unit ID!");
             }
-            SFCFF.SFCategoryElement unit_data = gamedata.categories[17].get_element(unit_index);
-            unit_index = gamedata.categories[3].get_element_index((ushort)unit_data.get_single_variant(2).value);
+            SFCFF.SFCategoryElement unit_data = gamedata[17][unit_index];
+            unit_index = gamedata[3].GetElementIndex((ushort)unit_data[2]);
             if (unit_index == -1)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit stats with given id does not exist! Unit stats id = " + unit_data.get_single_variant(2).value.ToString());
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit stats with given id does not exist! Unit stats id = " + unit_data[2].ToString());
                 throw new InvalidDataException("SFMap.AddUnit(): Invalid unit data!");
             }
-            unit_data = gamedata.categories[3].get_element(unit_index);
-            float unit_size = Math.Max(((ushort)unit_data.get_single_variant(19).value), (ushort)40) / 100.0f;
+            unit_data = gamedata[3][unit_index];
+            float unit_size = Math.Max(((ushort)unit_data[19]), (ushort)40) / 100.0f;
             obj.Scale = new OpenTK.Vector3(unit_size*100/128);
         }
 
@@ -1847,21 +1848,21 @@ namespace SpellforceDataEditor.SFMap
             obj.Position = heightmap.GetFixedPosition(unit.grid_position);
             obj.SetAnglePlane(unit.angle);
             // unit scale
-            int unit_index = gamedata.categories[17].get_element_index(unit.game_id);
+            int unit_index = gamedata[17].GetElementIndex(unit.game_id);
             if (unit_index == -1)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Unit with given id does not exist! Unit id = " + unit.game_id.ToString());
                 throw new InvalidDataException("SFMap.ReplaceUnit(): Invalid unit ID!");
             }
-            SFCFF.SFCategoryElement unit_data = gamedata.categories[17].get_element(unit_index);
-            unit_index = gamedata.categories[3].get_element_index((ushort)unit_data.get_single_variant(2).value);
+            SFCFF.SFCategoryElement unit_data = gamedata[17][unit_index];
+            unit_index = gamedata[3].GetElementIndex((ushort)unit_data[2]);
             if (unit_index == -1)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit stats with given id does not exist! Unit stats id = " + unit_data.get_single_variant(2).value.ToString());
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit stats with given id does not exist! Unit stats id = " + unit_data[2].ToString());
                 throw new InvalidDataException("SFMap.ReplaceUnit(): Invalid unit data!");
             }
-            unit_data = gamedata.categories[3].get_element(unit_index);
-            float unit_size = Math.Max(((ushort)unit_data.get_single_variant(19).value), (ushort)40) / 100.0f;
+            unit_data = gamedata[3][unit_index];
+            float unit_size = Math.Max(((ushort)unit_data[19]), (ushort)40) / 100.0f;
             obj.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
 
             return 0;

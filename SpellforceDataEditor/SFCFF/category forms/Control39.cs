@@ -59,7 +59,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox1.Text = variant_repr(1);
             tb_rng_min.Text = variant_repr(2);
             tb_rng_max.Text = variant_repr(3);
-            checkBox1.Checked = ((Byte)category.get_element_variant(current_element, 4).value != 0);
+            checkBox1.Checked = ((Byte)category[current_element][4] != 0);
             tb_req4_1.Text = variant_repr(5);
         }
 

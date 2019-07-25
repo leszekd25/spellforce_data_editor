@@ -106,7 +106,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox12.Text = variant_repr(9);
             textBox13.Text = string_repr(10);
             textBox10.Text = variant_repr(11);
-            spelltrace_id = SFCategoryManager.get_category(19).find_element_index<UInt16>(0, Utility.TryParseUInt16(textBox1.Text));
+            spelltrace_id = SFCategoryManager.gamedata[19].FindElementIndex<UInt16>(0, Utility.TryParseUInt16(textBox1.Text));
             if (spelltrace_id == -1)
             {
                 label_SpellTrace.Visible = false;

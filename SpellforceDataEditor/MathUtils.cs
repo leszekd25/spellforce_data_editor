@@ -79,5 +79,15 @@ namespace SpellforceDataEditor
         {
             return 1 / (1 + Math.Pow(b, -t));
         }
+
+        public static float DegToRad(int deg)
+        {
+            return 3.141526f * deg / 180.0f;
+        }
+
+        public static int RadToDeg(float rad)
+        {
+            return (int)(rad * 180 / 3.141526f);
+        }
     }
 }

@@ -71,14 +71,14 @@ namespace SpellforceDataEditor.SFLua.lua_controls
                 LuaValue_GameDataStruct l = ((LuaValue_GameDataStruct)Value.Value);
                 int elem_key = (int)l.id;
                 int real_elem_id;
-                SFCFF.SFCategory cat = SFCFF.SFCategoryManager.get_category(l.category);
-                char format = cat.get_element_format()[0];
+                SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[l.category];
+                char format = cat.GetElementFormat()[0];
                 if (format == 'B')
-                    real_elem_id = cat.find_element_index<Byte>(0, (Byte)elem_key);
+                    real_elem_id = cat.FindElementIndex<Byte>(0, (Byte)elem_key);
                 else if (format == 'H')
-                    real_elem_id = cat.find_element_index<UInt16>(0, (UInt16)elem_key);
+                    real_elem_id = cat.FindElementIndex<UInt16>(0, (UInt16)elem_key);
                 else if (format == 'I')
-                    real_elem_id = cat.find_element_index<UInt32>(0, (UInt32)elem_key);
+                    real_elem_id = cat.FindElementIndex<UInt32>(0, (UInt32)elem_key);
                 else
                     return;
                 if (real_elem_id == -1)

@@ -31,12 +31,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             ListSkills.Items.Clear();
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
             for (int i = 0; i < elem_count; i++)
             {
-                string txt = category.get_text_from_element(elem, i * 3 + 2);
+                string txt = SFCategoryManager.GetTextFromElement(elem, i * 3 + 2);
                 ListSkills.Items.Add(txt);
             }
 
@@ -69,30 +69,30 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
             int index = ListSkills.Items.Count;
 
             object[] paste_data = new object[3];
-            paste_data[0] = (Byte)elem.get_single_variant(0).value;
+            paste_data[0] = (Byte)elem[0];
             paste_data[1] = (Byte)index;
             paste_data[2] = (UInt16)0;
 
-            elem.paste_raw(paste_data, index * 3);
-            ListSkills.Items.Add(category.get_text_from_element(elem, index*3+2));
+            elem.PasteRaw(paste_data, index * 3);
+            ListSkills.Items.Add(SFCategoryManager.GetTextFromElement(elem, index*3+2));
             ListSkills.SelectedIndex = index;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
             if (elem_count == 1)
                 return;
 
             int index = ListSkills.Items.Count -1;
 
-            elem.remove_raw(index * 3, 3);
+            elem.RemoveRaw(index * 3, 3);
             ListSkills.Items.RemoveAt(index);
             ListSkills.SelectedIndex = Math.Min(index, ListSkills.Items.Count-1);
         }

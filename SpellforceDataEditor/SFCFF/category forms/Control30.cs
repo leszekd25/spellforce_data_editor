@@ -25,8 +25,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
             for (int i = 0; i < elem_count; i++)
                 set_element_variant(current_element, 0 + 3 * i, Utility.TryParseUInt16(textBox1.Text));
@@ -42,26 +42,26 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             current_element = index;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
             for (int i = 0; i < elem_count; i++)
             {
-                UInt16 item_id = (UInt16)(elem.get_single_variant(i * 3 + 1)).value;
-                UInt16 item_count = (UInt16)(elem.get_single_variant(i * 3 + 2)).value;
+                UInt16 item_id = (UInt16)(elem[i * 3 + 1]);
+                UInt16 item_count = (UInt16)(elem[i * 3 + 2]);
 
                 MerchantGrid.Rows.Add();
                 MerchantGrid.Rows[i].Cells[0].Value = item_id;
                 MerchantGrid.Rows[i].Cells[1].Value = item_count;
 
-                SFCategoryElement item_elem = SFCategoryManager.get_category(6).find_binary_element<UInt16>(0, item_id);
+                SFCategoryElement item_elem = SFCategoryManager.gamedata[6].FindElementBinary<UInt16>(0, item_id);
                 if (item_elem == null)
                 {
                     MerchantGrid.Rows[i].Cells[2].Value = "<no name>";
                 }
                 else
                 {
-                    MerchantGrid.Rows[i].Cells[2].Value = SFCategoryManager.get_item_name(item_id);
+                    MerchantGrid.Rows[i].Cells[2].Value = SFCategoryManager.GetItemName(item_id);
                 }
             }
 
@@ -92,7 +92,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if(cell.ColumnIndex == 0)
             {
                 UInt16 item_id = Utility.TryParseUInt16(cell.Value.ToString());
-                SFCategoryElement item_elem = SFCategoryManager.get_category(6).find_binary_element(0, item_id);
+                SFCategoryElement item_elem = SFCategoryManager.gamedata[6].FindElementBinary(0, item_id);
                 if (item_elem == null)
                 {
                     cell.Value = variant_repr(i * 3 + 1);
@@ -100,7 +100,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 else
                 {
                     set_element_variant(current_element, i * 3 + 1, item_id);
-                    MerchantGrid.Rows[i].Cells[2].Value = SFCategoryManager.get_item_name(item_id);
+                    MerchantGrid.Rows[i].Cells[2].Value = SFCategoryManager.GetItemName(item_id);
                 }
             }
             else if(cell.ColumnIndex == 1)
@@ -114,18 +114,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void button1_Click(object sender, EventArgs e)
         {
             MerchantGrid.ClearSelection();
-            SFCategoryElement elem = category.get_element(current_element);
+            SFCategoryElement elem = category[current_element];
 
             int new_index = MerchantGrid.Rows.Count;
             UInt16 item_id = Utility.TryParseUInt16(textBox2.Text);
 
             for(int i = 0; i < new_index; i++)
             {
-                UInt16 current_item_id = (UInt16)(elem.get_single_variant(i * 3 + 1).value);
+                UInt16 current_item_id = (UInt16)(elem[i * 3 + 1]);
                 if(item_id == current_item_id)
                 {
-                    elem.set_single_variant(i * 3 + 2, (UInt16)((UInt16)(elem.get_single_variant(i * 3 + 2).value) + 1));
-                    MerchantGrid.Rows[i].Cells[1].Value = (UInt16)(elem.get_single_variant(i * 3 + 2).value);
+                    elem[i * 3 + 2] = (UInt16)((UInt16)(elem[i * 3 + 2]) + 1);
+                    MerchantGrid.Rows[i].Cells[1].Value = (UInt16)(elem[i * 3 + 2]);
                     return;
                 }
             }
@@ -137,15 +137,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    obj_array[i *3 + j] = elem.get_single_variant(i * 3 + j).value;
+                    obj_array[i *3 + j] = elem[i * 3 + j];
                 }
             }
-            obj_array[new_index * 3 + 0] = (UInt16)elem.get_single_variant(0).value;
+            obj_array[new_index * 3 + 0] = (UInt16)elem[0];
             obj_array[new_index * 3 + 1] = Utility.TryParseUInt16(textBox2.Text);
             obj_array[new_index * 3 + 2] = (UInt16)1;
 
-            new_elem.set(obj_array);
-            category.get_elements()[current_element] = new_elem;
+            new_elem.AddVariants(obj_array);
+            category[current_element] = new_elem;
             set_element(current_element);
         }
 
@@ -157,8 +157,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             int selected = MerchantGrid.SelectedCells[0].RowIndex;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int cur_elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int cur_elem_count = elem.variants.Count / 3;
             int offset = 0;
             SFCategoryElement new_elem = new SFCategoryElement();
             Object[] obj_array = new Object[(cur_elem_count - 1) * 3];
@@ -171,11 +171,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 }
                 for (int j = 0; j < 3; j++)
                 {
-                    obj_array[(i - offset) * 3 + j] = elem.get_single_variant(i * 3 + j).value;
+                    obj_array[(i - offset) * 3 + j] = elem[i * 3 + j];
                 }
             }
-            new_elem.set(obj_array);
-            category.get_elements()[current_element] = new_elem;
+            new_elem.AddVariants(obj_array);
+            category[current_element] = new_elem;
             set_element(current_element);
         }
 

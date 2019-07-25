@@ -66,8 +66,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
             for (int i = 0; i < elem_count; i++)
                 set_element_variant(current_element, 0 + 3 * i, Utility.TryParseUInt16(textBox1.Text));
@@ -88,8 +88,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 }
             }
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
             SFCategoryElement new_elem = new SFCategoryElement();
             Object[] obj_array;
 
@@ -100,7 +100,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 check_to_text[ch].Enabled = true;
                 for(int i = 0; i < elem_count; i++)
                 {
-                    Byte item_slot = (Byte)(elem.get_single_variant(i * 3 + 1)).value;
+                    Byte item_slot = (Byte)(elem[i * 3 + 1]);
                     if(flag == item_slot)
                     {
                         return;
@@ -114,12 +114,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 for (int i = 0; i < elem_count; i++)
                 {
                     {
-                        obj_array[i * 3 + 0] = (UInt16)elem.get_single_variant(i * 3 + 0).value;
-                        obj_array[i * 3 + 1] = (Byte)elem.get_single_variant(i * 3 + 1).value;
-                        obj_array[i * 3 + 2] = (UInt16)elem.get_single_variant(i * 3 + 2).value;
+                        obj_array[i * 3 + 0] = (UInt16)elem[i * 3 + 0];
+                        obj_array[i * 3 + 1] = (Byte)elem[i * 3 + 1];
+                        obj_array[i * 3 + 2] = (UInt16)elem[i * 3 + 2];
                     }
                 }
-                obj_array[elem_count * 3 + 0] = (UInt16)elem.get_single_variant(0).value;
+                obj_array[elem_count * 3 + 0] = (UInt16)elem[0];
                 obj_array[elem_count * 3 + 1] = (Byte)flag;
                 obj_array[elem_count * 3 + 2] = Utility.TryParseUInt16(check_to_text[ch].Text);
             }
@@ -134,7 +134,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 bool found = false;
                 for (int i = 0; i < elem_count; i++)
                 {
-                    Byte item_slot = (Byte)(elem.get_single_variant(i * 3 + 1)).value;
+                    Byte item_slot = (Byte)(elem[i * 3 + 1]);
                     if (flag == item_slot)
                     {
                         found = true;
@@ -151,7 +151,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 obj_array = new Object[(elem_count - 1) * 3];
                 for (int i = 0; i < elem_count; i++)
                 {
-                    Byte item_slot = (Byte)(elem.get_single_variant(i * 3 + 1)).value;
+                    Byte item_slot = (Byte)(elem[i * 3 + 1]);
                     if (item_slot == (Byte)flag)
                     {
                         offset = 1;
@@ -159,13 +159,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     }
                     for (int j = 0; j < 3; j++)
                     {
-                        obj_array[(i - offset) * 3 + j] = elem.get_single_variant(i * 3 + j).value;
+                        obj_array[(i - offset) * 3 + j] = elem[i * 3 + j];
                     }
                 }
             }
 
-            new_elem.set(obj_array);
-            category.get_elements()[current_element] = new_elem;
+            new_elem.AddVariants(obj_array);
+            category[current_element] = new_elem;
             //set_element(current_element);
         }
 
@@ -214,15 +214,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void set_single_variant(TextBox item_id, Byte item_slot)
         {
             //find element by item slot and (if exists) modify its item id
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
             for (int i = 0; i < elem_count; i++)
             {
-                if (((Byte)(elem.get_single_variant(i * 3 + 1)).value) == item_slot)
+                if (((Byte)(elem[i * 3 + 1])) == item_slot)
                 {
                     UInt16 id = Utility.TryParseUInt16(item_id.Text);
-                    elem.set_single_variant(i * 3 + 2, id);
-                    text_to_name[item_id].Text = SFCategoryManager.get_item_name(id);
+                    elem[i * 3 + 2] = id;
+                    text_to_name[item_id].Text = SFCategoryManager.GetItemName(id);
                     return;
                 }
             }
@@ -295,18 +295,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             foreach (Label lb in text_to_name.Values)
                 lb.Text = "<no name>";
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
             for (int i = 0; i < elem_count; i++)
             {
-                Byte item_slot = (Byte)(elem.get_single_variant(i * 3 + 1)).value;
-                UInt16 item_id = (UInt16)(elem.get_single_variant(i * 3 + 2)).value;
+                Byte item_slot = (Byte)(elem[i * 3 + 1]);
+                UInt16 item_id = (UInt16)(elem[i * 3 + 2]);
 
                 CheckBox ch = flag_to_check[(int)item_slot];
                 check_to_text[ch].Enabled = true;
                 check_to_text[ch].Text = item_id.ToString();
-                text_to_name[check_to_text[ch]].Text = SFCategoryManager.get_item_name(item_id);
+                text_to_name[check_to_text[ch]].Text = SFCategoryManager.GetItemName(item_id);
                 ch.Checked = true;
                 item_flags |= (uint)(0x1 << item_slot);
             }

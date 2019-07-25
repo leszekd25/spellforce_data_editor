@@ -24,18 +24,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void set_list_text(int i)
         {
-            Byte skill_major = (Byte)(category.get_element_variant(current_element, i * 5 + 2)).value;
-            Byte skill_minor = (Byte)(category.get_element_variant(current_element, i * 5 + 3)).value;
-            Byte skill_level = (Byte)(category.get_element_variant(current_element, i * 5 + 4)).value;
+            Byte skill_major = (Byte)(category[current_element][i * 5 + 2]);
+            Byte skill_minor = (Byte)(category[current_element][i * 5 + 3]);
+            Byte skill_level = (Byte)(category[current_element][i * 5 + 4]);
 
-            string txt = SFCategoryManager.get_skill_name(skill_major, skill_minor, skill_level);
+            string txt = SFCategoryManager.GetSkillName(skill_major, skill_minor, skill_level);
             ListRequirements.Items[i] = txt;
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 5;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 5;
 
             for (int i = 0; i < elem_count; i++)
                 set_element_variant(current_element, i * 5 + 0, Utility.TryParseUInt16(textBox1.Text));
@@ -72,8 +72,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             current_element = index;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 5;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 5;
 
             ListRequirements.Items.Clear();
 
@@ -105,24 +105,24 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             else
                 new_index = ListRequirements.SelectedIndex;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int cur_elem_count = elem.get().Count / 5;
+            SFCategoryElement elem = category[current_element];
+            int cur_elem_count = elem.variants.Count / 5;
 
             Byte max_index = 0;
             for (int i = 0; i < cur_elem_count; i++)
             {
-                max_index = Math.Max(max_index, (Byte)(elem.get_single_variant(i * 5 + 1).value));
+                max_index = Math.Max(max_index, (Byte)(elem[i * 5 + 1]));
             }
             max_index += 1;
 
             object[] paste_data = new object[5];
-            paste_data[0] = (UInt16)elem.get_single_variant(0).value;
+            paste_data[0] = (UInt16)elem[0];
             paste_data[1] = (Byte)max_index;
             paste_data[2] = (Byte)0;
             paste_data[3] = (Byte)0;
             paste_data[4] = (Byte)0;
 
-            elem.paste_raw(paste_data, new_index * 5);
+            elem.PasteRaw(paste_data, new_index * 5);
 
             set_element(current_element);
         }
@@ -135,15 +135,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             int new_index = ListRequirements.SelectedIndex;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            Byte cur_spell_index = (Byte)(elem.get_single_variant(new_index * 5 + 1).value);
+            SFCategoryElement elem = category[current_element];
+            Byte cur_spell_index = (Byte)(elem[new_index * 5 + 1]);
 
-            elem.remove_raw(new_index * 5, 5);
+            elem.RemoveRaw(new_index * 5, 5);
 
-            int cur_elem_count = elem.get().Count / 5;
+            int cur_elem_count = elem.variants.Count / 5;
             for (int i = 0; i < cur_elem_count; i++)
-                if ((Byte)(elem.get_single_variant(i * 5 + 1).value) > cur_spell_index)
-                    elem.set_single_variant(i * 5 + 1, (Byte)((Byte)(elem.get_single_variant(i * 5 + 1).value) - (Byte)1));
+                if ((Byte)(elem[i * 5 + 1]) > cur_spell_index)
+                    elem[i * 5 + 1] = (Byte)((Byte)(elem[i * 5 + 1]) - 1);
 
             set_element(current_element);
         }

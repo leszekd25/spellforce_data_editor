@@ -36,8 +36,7 @@ namespace SpellforceDataEditor.special_forms
                 column = co;
             }
         }
-
-        special_forms.SpelllforceCFFEditor sf_form;
+        
         CatElem referenced;
         private List<CatElem> elements = new List<CatElem>();
         private static CatColumn[][] ReferenceCategoryTable;
@@ -98,10 +97,9 @@ namespace SpellforceDataEditor.special_forms
             ReferenceCategoryTable[48] = new CatColumn[] { new CatColumn(6, 10) };
         }
 
-        public void set_referenced_element(special_forms.SpelllforceCFFEditor form, int c, int e)
+        public void set_referenced_element(int c, int e)
         {
             referenced = new CatElem(c, e);
-            sf_form = form;
 
             labelRefElemName.Text = get_catelement_string(referenced);
 
@@ -110,13 +108,24 @@ namespace SpellforceDataEditor.special_forms
 
         private string get_catelement_string(CatElem ce)
         {
-            return "Category " + (ce.category + 1).ToString() + " | " + SFCategoryManager.get_category(ce.category).get_element_string(ce.element);
+            return "Category " + (ce.category + 1).ToString() + " | " + SFCategoryManager.gamedata[ce.category].GetElementString(ce.element);
+        }
+
+        private void find_all_references()
+        {
+            elements.Clear();
+            int category = referenced.category;
+
+            foreach (CatColumn column in ReferenceCategoryTable[category])
+                add_entries(elements, referenced, column);
+
+            fill_listbox(listBox1, elements);
         }
 
         private void add_entries(List<CatElem> elements_so_far, CatElem element_looked_for, CatColumn column_looked_at)
         {
             List<int> preload_indices = new List<int>();
-            for (int i = 0; i < SFCategoryManager.get_category(column_looked_at.category).get_element_count(); i++)
+            for (int i = 0; i < SFCategoryManager.gamedata[column_looked_at.category].GetElementCount(); i++)
                 preload_indices.Add(i);
 
             List<int> results_intermediate = new List<int>();
@@ -124,26 +133,26 @@ namespace SpellforceDataEditor.special_forms
             {
                 case -1:    //spell id in category 1 (0)
                     //search for all spell references in category 0
-                    SFCategory ctg = SFCategoryManager.get_category(0);
-                    int id_looked_for = (int)((UInt16)SFCategoryManager.get_category(element_looked_for.category).get_element(element_looked_for.element).get_single_variant(0).value);
-                    for(int i = 0; i < ctg.get_element_count(); i++)
+                    SFCategory ctg = SFCategoryManager.gamedata[0];
+                    int id_looked_for = (int)((UInt16)SFCategoryManager.gamedata[element_looked_for.category][element_looked_for.element][0]);
+                    for(int i = 0; i < ctg.GetElementCount(); i++)
                     {
-                        SFCategoryElement elem = ctg.get_element(i);
+                        SFCategoryElement elem = ctg[i];
 
                         int searched_id = -1;
-                        UInt16 spell_type = (UInt16)elem.get_single_variant(1).value;
+                        UInt16 spell_type = (UInt16)elem[1];
                         switch (spell_type)
                         {
                             case 176: //elemental essence
                             case 180: //elemental almightness
-                                searched_id = (int)((UInt32)elem.get_single_variant(21).value);   //parameter #1
+                                searched_id = (int)((UInt32)elem[21]);   //parameter #1
                                 break;
                             case 12:  //fireshield (cast)
                             case 15:  //iceshield (cast)
                             case 47:  //thornshield
                             case 175: //white essence
                             case 179: //white almightness
-                                searched_id = (int)((UInt32)elem.get_single_variant(22).value);   //parameter #2
+                                searched_id = (int)((UInt32)elem[22]);   //parameter #2
                                 break;
                             case 13:  //fireball (cast)
                             case 73:  //rain of fire
@@ -163,7 +172,7 @@ namespace SpellforceDataEditor.special_forms
                             case 212: //chain charm
                             case 214: //chain shock
                             case 217: //chain manatap
-                                searched_id = (int)((UInt32)elem.get_single_variant(24).value);   //parameter #4
+                                searched_id = (int)((UInt32)elem[24]);   //parameter #4
                                 break;
                             case 88:  //aura of weakness
                             case 89:  //aura of suffocation
@@ -190,7 +199,7 @@ namespace SpellforceDataEditor.special_forms
                             case 226: //aura siege orc
                             case 227: //aura siege troll
                             case 228: //aura siege darkelf
-                                searched_id = (int)((UInt32)elem.get_single_variant(27).value);   //parameter #7
+                                searched_id = (int)((UInt32)elem[27]);   //parameter #7
                                 break;
                             default:
                                 break;
@@ -202,14 +211,14 @@ namespace SpellforceDataEditor.special_forms
 
                 case -2:    //unit id in category 1 (0)
                     //search for all spell references in category 0
-                    SFCategory ctg2 = SFCategoryManager.get_category(0);
-                    int id_looked_for2 = (int)((UInt16)SFCategoryManager.get_category(element_looked_for.category).get_element(element_looked_for.element).get_single_variant(0).value);
-                    for (int i = 0; i < ctg2.get_element_count(); i++)
+                    SFCategory ctg2 = SFCategoryManager.gamedata[0];
+                    int id_looked_for2 = (int)((UInt16)SFCategoryManager.gamedata[element_looked_for.category][element_looked_for.element][0]);
+                    for (int i = 0; i < ctg2.GetElementCount(); i++)
                     {
-                        SFCategoryElement elem = ctg2.get_element(i);
+                        SFCategoryElement elem = ctg2[i];
 
                         int searched_id = -1;
-                        UInt16 spell_type = (UInt16)elem.get_single_variant(1).value;
+                        UInt16 spell_type = (UInt16)elem[1];
                         switch (spell_type)
                         {
                             case 20:  //summon undead goblin
@@ -225,7 +234,7 @@ namespace SpellforceDataEditor.special_forms
                             case 203: //summon fire golem
                             case 206: //summon ice golem
                             case 209: //summon stonee golem
-                                searched_id = (int)((UInt32)elem.get_single_variant(23).value);   //parameter #3
+                                searched_id = (int)((UInt32)elem[23]);   //parameter #3
                                 break;
                             default:
                                 break;
@@ -236,9 +245,9 @@ namespace SpellforceDataEditor.special_forms
                     break;
 
                 default:    //literally everything else
-                    results_intermediate = SFSearchModule.Search(SFCategoryManager.get_category(column_looked_at.category), 
+                    results_intermediate = SFSearchModule.Search(SFCategoryManager.gamedata[column_looked_at.category], 
                                                                  preload_indices, 
-                                                                 SFCategoryManager.get_category(element_looked_for.category).get_element_variant(element_looked_for.element, 0).value.ToString(), 
+                                                                 SFCategoryManager.gamedata[element_looked_for.category][element_looked_for.element][0].ToString(), 
                                                                  SearchType.TYPE_NUMBER, 
                                                                  column_looked_at.column, 
                                                                  null);
@@ -256,20 +265,6 @@ namespace SpellforceDataEditor.special_forms
                 lb.Items.Add(get_catelement_string(elem));
         }
 
-        private void find_all_references()
-        {
-            if (sf_form == null)
-                return;
-
-            elements.Clear();
-            int category = referenced.category;
-
-            foreach(CatColumn column in ReferenceCategoryTable[category])
-                add_entries(elements, referenced, column);
-
-            fill_listbox(listBox1, elements);
-        }
-
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listBox1.SelectedIndex == -1)
@@ -277,7 +272,7 @@ namespace SpellforceDataEditor.special_forms
 
             CatElem elem = elements[listBox1.SelectedIndex];
 
-            sf_form.Tracer_StepForward(elem.category, elem.element);
+            MainForm.data.Tracer_StepForward(elem.category, elem.element);
         }
     }
 }

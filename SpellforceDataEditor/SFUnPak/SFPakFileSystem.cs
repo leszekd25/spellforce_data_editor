@@ -331,15 +331,6 @@ namespace SpellforceDataEditor.SFUnPak
             if (!file_spans[dir_name].ContainsKey(file_name))
                 return null;
             return GetFileBuffer(file_spans[dir_name][file_name]);
-
-	        for (int i = 0; i<file_headers.Count; i++)
-	        {
-		        if (file_headers[i].name == file_name && file_headers[i].dir_name == dir_name)
-		        {
-			        return GetFileBuffer(i);
-                }
-            }
-	        return null;
         }
 
         // writes all pak filedata to a file for later use

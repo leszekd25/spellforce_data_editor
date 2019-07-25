@@ -48,9 +48,9 @@ namespace SpellforceDataEditor.SFCFF
         //connects diff tool to a SFCategoryManager it operates on
         public void init()
         {
-            diff_data = new List<SFDiffElement>[SFCategoryManager.get_category_number()];
-            diff_current_index = new int[SFCategoryManager.get_category_number()];
-            for (int i = 0; i < SFCategoryManager.get_category_number(); i++)
+            diff_data = new List<SFDiffElement>[SFGameData.categoryNumber];
+            diff_current_index = new int[SFGameData.categoryNumber];
+            for (int i = 0; i < SFGameData.categoryNumber; i++)
             {
                 diff_current_index[i] = -1;
                 diff_data[i] = new List<SFDiffElement>();
@@ -60,7 +60,7 @@ namespace SpellforceDataEditor.SFCFF
         //clear all diff datal usually called in tandem with SFCategoryManager.unload_all()
         public void clear_data()
         {
-            for (int i = 0; i < SFCategoryManager.get_category_number(); i++)
+            for (int i = 0; i < SFGameData.categoryNumber; i++)
             {
                 diff_data[i].Clear();
                 diff_current_index[i] = -1;
@@ -74,20 +74,20 @@ namespace SpellforceDataEditor.SFCFF
             switch (elem.difference_type)
             {
                 case SFDiffElement.DIFF_TYPE.MD5:
-                    bw.Write(SFCategoryManager.get_data_md5().ToCharArray());
+                    bw.Write(SFCategoryManager.gamedata.gamedata_md5.ToCharArray());
                     break;
                 case SFDiffElement.DIFF_TYPE.REPLACE:
                     bw.Write(elem.difference_index);
-                    cat.put_element(bw, elem.elem_old.get());
-                    cat.put_element(bw, elem.elem_new.get());
+                    cat.WriteElementToBuffer(bw, elem.elem_old.variants);
+                    cat.WriteElementToBuffer(bw, elem.elem_new.variants);
                     break;
                 case SFDiffElement.DIFF_TYPE.INSERT:
                     bw.Write(elem.difference_index);
-                    cat.put_element(bw, elem.elem_new.get());
+                    cat.WriteElementToBuffer(bw, elem.elem_new.variants);
                     break;
                 case SFDiffElement.DIFF_TYPE.REMOVE:
                     bw.Write(elem.difference_index);
-                    cat.put_element(bw, elem.elem_old.get());
+                    cat.WriteElementToBuffer(bw, elem.elem_old.variants);
                     break;
                 case SFDiffElement.DIFF_TYPE.CATEGORY:
                 case SFDiffElement.DIFF_TYPE.LASTINDEX:
@@ -114,18 +114,18 @@ namespace SpellforceDataEditor.SFCFF
                     elem.difference_index = br.ReadInt32();
                     elem.elem_old = new SFCategoryElement();
                     elem.elem_new = new SFCategoryElement();
-                    elem.elem_old.set(cat.get_element(br));
-                    elem.elem_new.set(cat.get_element(br));
+                    elem.elem_old.AddVariants(cat.GetElementFromBuffer(br));
+                    elem.elem_new.AddVariants(cat.GetElementFromBuffer(br));
                     break;
                 case SFDiffElement.DIFF_TYPE.INSERT:
                     elem.difference_index = br.ReadInt32();
                     elem.elem_new = new SFCategoryElement();
-                    elem.elem_new.set(cat.get_element(br));
+                    elem.elem_new.AddVariants(cat.GetElementFromBuffer(br));
                     break;
                 case SFDiffElement.DIFF_TYPE.REMOVE:
                     elem.difference_index = br.ReadInt32();
                     elem.elem_old = new SFCategoryElement();
-                    elem.elem_old.set(cat.get_element(br));
+                    elem.elem_old.AddVariants(cat.GetElementFromBuffer(br));
                     break;
                 case SFDiffElement.DIFF_TYPE.CATEGORY:
                 case SFDiffElement.DIFF_TYPE.LASTINDEX:
@@ -146,11 +146,11 @@ namespace SpellforceDataEditor.SFCFF
             BinaryWriter bw = new BinaryWriter(fs, Encoding.Default);
 
             bw.Write((Byte)SFDiffElement.DIFF_TYPE.MD5);
-            bw.Write(SFCategoryManager.get_data_md5().ToCharArray());
+            bw.Write(SFCategoryManager.gamedata.gamedata_md5.ToCharArray());
 
-            for (int i = 0; i < SFCategoryManager.get_category_number(); i++)
+            for (int i = 0; i < SFGameData.categoryNumber; i++)
             {
-                SFCategory cat = SFCategoryManager.get_category(i);
+                SFCategory cat = SFCategoryManager.gamedata[i];
                 write_diff_element(bw, null, new SFDiffElement(SFDiffElement.DIFF_TYPE.CATEGORY, i));
                 for (int j = 0; j < diff_data[i].Count; j++)
                 {
@@ -193,7 +193,7 @@ namespace SpellforceDataEditor.SFCFF
 
             while (br.PeekChar() != -1)
             {
-                elem = read_diff_element(br, SFCategoryManager.get_category(current_category));
+                elem = read_diff_element(br, SFCategoryManager.gamedata[current_category]);
                 if (elem.difference_type == SFDiffElement.DIFF_TYPE.CATEGORY)
                     current_category = elem.difference_index;
                 else if (elem.difference_type == SFDiffElement.DIFF_TYPE.LASTINDEX)
@@ -202,7 +202,7 @@ namespace SpellforceDataEditor.SFCFF
                     break;
                 else if (elem.difference_type == SFDiffElement.DIFF_TYPE.MD5)   //should be right at the beginning of the file
                 {
-                    if (presumed_md5 != SFCategoryManager.get_data_md5())
+                    if (presumed_md5 != SFCategoryManager.gamedata.gamedata_md5)
                     {
                         clear_data();
                         LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFDiffTols.load_diff_data(): MD5 hashes don't match!");
@@ -222,7 +222,7 @@ namespace SpellforceDataEditor.SFCFF
         //this function modifies the category data depending on what needs to be done
         public void commit_change(SFCategory cat, SFDiffElement elem)
         {
-            List<SFCategoryElement> elem_list = cat.get_elements();
+            List<SFCategoryElement> elem_list = cat.elements;
             switch (elem.difference_type)
             {
                 case SFDiffElement.DIFF_TYPE.REPLACE:
@@ -240,7 +240,7 @@ namespace SpellforceDataEditor.SFCFF
         //reverted commit_change
         public void revert_change(SFCategory cat, SFDiffElement elem)
         {
-            List<SFCategoryElement> elem_list = cat.get_elements();
+            List<SFCategoryElement> elem_list = cat.elements;
             switch (elem.difference_type)
             {
                 case SFDiffElement.DIFF_TYPE.REPLACE:
@@ -259,9 +259,9 @@ namespace SpellforceDataEditor.SFCFF
         //BROKEN! do not use for the time being
         public void merge_changes()
         {
-            for(int i = 0; i < SFCategoryManager.get_category_number(); i++)
+            for(int i = 0; i < SFGameData.categoryNumber; i++)
             {
-                SFCategory cat = SFCategoryManager.get_category(i);
+                SFCategory cat = SFCategoryManager.gamedata[i];
                 for(int j = 0; j <= diff_current_index[i]; j++)
                 {
                     SFDiffElement elem = diff_data[i][j];
@@ -301,7 +301,7 @@ namespace SpellforceDataEditor.SFCFF
             if (current_change < 0)
                 return;
 
-            SFCategory cat = SFCategoryManager.get_category(cat_index);
+            SFCategory cat = SFCategoryManager.gamedata[cat_index];
             revert_change(cat, diff_data[cat_index][current_change]);
             diff_current_index[cat_index]--;
         }
@@ -314,7 +314,7 @@ namespace SpellforceDataEditor.SFCFF
             if (current_change >= diff_data[cat_index].Count-1)
                 return;
 
-            SFCategory cat = SFCategoryManager.get_category(cat_index);
+            SFCategory cat = SFCategoryManager.gamedata[cat_index];
             commit_change(cat, diff_data[cat_index][current_change+1]);
             diff_current_index[cat_index]++;
         }

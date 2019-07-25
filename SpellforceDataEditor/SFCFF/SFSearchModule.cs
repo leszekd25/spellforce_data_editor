@@ -31,7 +31,7 @@ namespace SpellforceDataEditor.SFCFF
             else
                 query = Regex.Replace(query, "[^0-9+-]", "");
 
-            string format = category.get_element_format();
+            string format = category.GetElementFormat();
             int elem_length = format.Length;
             int query_val = Utility.TryParseInt32(query);
             List<int> target = new List<int>();
@@ -41,7 +41,7 @@ namespace SpellforceDataEditor.SFCFF
             if(source == null)
             {
                 source = new List<int>();
-                for (int i = 0; i < category.get_element_count(); i++)
+                for (int i = 0; i < category.GetElementCount(); i++)
                     source.Add(i);
             }
 
@@ -54,10 +54,10 @@ namespace SpellforceDataEditor.SFCFF
                     pbar.GetCurrentParent().Refresh();
                 }
 
-                SFCategoryElement elem = category.get_element(i);
+                SFCategoryElement elem = category[i];
                 if (elem == null)
                     continue;
-                int elem_count = elem.get().Count / elem_length;
+                int elem_count = elem.variants.Count / elem_length;
 
                 bool success = false;
 
@@ -71,7 +71,7 @@ namespace SpellforceDataEditor.SFCFF
                                 continue;
                             if ((column_i != -1) && (column_i != k))
                                 continue;
-                            int val = elem.get_single_variant(j * elem_length + k).to_int();
+                            int val = elem.ToInt(j * elem_length + k);
                             if (val == query_val)
                             {
                                 success = true;
@@ -85,7 +85,7 @@ namespace SpellforceDataEditor.SFCFF
 
                 else if (type == SearchType.TYPE_STRING)
                 {
-                    if(category.get_element_string(i).ToLower().Contains(query))
+                    if(category.GetElementString(i).ToLower().Contains(query))
                     {
                         target.Add(i);
                         continue;
@@ -98,7 +98,7 @@ namespace SpellforceDataEditor.SFCFF
                             {
                                 if ((column_i != -1) && (column_i != k))
                                     continue;
-                                string val = Utility.CleanString(elem.get_single_variant(j * elem_length + k));
+                                string val = Utility.CleanString(elem[j * elem_length + k]);
                                 if (val.ToLower().Contains(query))
                                 {
                                     success = true;
@@ -121,7 +121,7 @@ namespace SpellforceDataEditor.SFCFF
                                 continue;
                             if ((column_i != -1) && (column_i != k))
                                 continue;
-                            UInt32 val = (UInt32)elem.get_single_variant(j * elem_length + k).to_int();
+                            UInt32 val = (UInt32)elem.ToInt(j * elem_length + k);
                             if ((val & query_val) == query_val)
                             {
                                 success = true;

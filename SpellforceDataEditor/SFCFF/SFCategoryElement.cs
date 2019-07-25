@@ -3,212 +3,182 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace SpellforceDataEditor.SFCFF
 {
-    //enmu describing type of data a variant possesses
-    public enum SFVARIANT_TYPE { UByte, Byte, UShort, Short, UInt, Int, String, Unknown };
-
-    //this class can hold any type you can read from gamedata.cff file
-    public class SFVariant
-    {
-        public static int[] TYPE_SIZE = { 1, 1, 2, 2, 4, 4, 0, -1 };
-        static Type[] types = { typeof(Byte), typeof(SByte), typeof(UInt16), typeof(Int16), typeof(UInt32), typeof(Int32), typeof(byte[]) };
-        public Object value;
-        public SFVARIANT_TYPE vtype;
-
-        //variant constructor
-        public SFVariant()
-        {
-            vtype = SFVARIANT_TYPE.Unknown;
-            value = null;
-        }
-
-        //sets variant to a given object and handles its type
-        //couldn't find a better way to do this : /
-        public void set(Object obj)
-        {
-            value = obj;
-            Type t = obj.GetType();
-            for (int i = 0; i < types.Length; i++)
-            {
-                if (t.Equals(types[i]))
-                {
-                    vtype = (SFVARIANT_TYPE)i;
-                    return;
-                }
-            }
-            vtype = SFVARIANT_TYPE.Unknown;
-        }
-
-        //returns int value of a variant (or 0 if can't represent it as an integer)
-        public int to_int()
-        {
-            switch(vtype)
-            {
-                case SFVARIANT_TYPE.Byte:
-                    return (int)(SByte)value;
-                case SFVARIANT_TYPE.UByte:
-                    return (int)(Byte)value;
-                case SFVARIANT_TYPE.Short:
-                    return (int)(Int16)value;
-                case SFVARIANT_TYPE.UShort:
-                    return (int)(UInt16)value;
-                case SFVARIANT_TYPE.Int:
-                    return (int)(Int32)value;
-                case SFVARIANT_TYPE.UInt:
-                    return (int)(UInt32)value;
-                default:
-                    LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFVariant.to_int(): Type is not a number");
-                    return 0;
-            }
-        }
-
-        //returns whether two variants are identical
-        public bool same_as(SFVariant v)
-        {
-            if (vtype != v.vtype)
-                return false;
-            switch (vtype)
-            {
-                case SFVARIANT_TYPE.Byte:
-                    return (SByte)value == (SByte)v.value;
-                case SFVARIANT_TYPE.UByte:
-                    return (Byte)value == (Byte)v.value;
-                case SFVARIANT_TYPE.Short:
-                    return (Int16)value == (Int16)v.value;
-                case SFVARIANT_TYPE.UShort:
-                    return (UInt16)value == (UInt16)v.value;
-                case SFVARIANT_TYPE.Int:
-                    return (Int32)value == (Int32)v.value;
-                case SFVARIANT_TYPE.UInt:
-                    return (UInt32)value == (UInt32)v.value;
-                case SFVARIANT_TYPE.String:
-                    return ((byte[])value).SequenceEqual((byte[])v.value);
-                default:
-                    return value.Equals(v.value);
-            }
-        }
-    }
-
     //category element is a single entry from a category
     //this entry can hold different types of data depending on which category it belongs to
+    // supported  types:  byte, sbyte,  ushort, short,  uint,  int, string(byte[])
     public class SFCategoryElement
     {
-        protected List<SFVariant> properties;
+        public List<object> variants = new List<object>();
 
-        //element constructor
-        public SFCategoryElement()
+        public object this[int index]
         {
-            properties = new List<SFVariant>();
+            get
+            {
+                return variants[index];
+            }
+            set
+            {
+                variants[index] = value;
+            }
         }
 
         //adds a single variant (specified by an object) to the property list
-        public void add_single_variant(Object obj)
+        public void AddVariant(Object obj)
         {
-            SFVariant v = new SFVariant();
-            v.set(obj);
-            properties.Add(v);
+            variants.Add(obj);
         }
 
         //adds a single variant (specified by an object) to the property list
-        public void insert_single_variant(Object obj, int pos)
+        public void InsertVariant(Object obj, int pos)
         {
-            SFVariant v = new SFVariant();
-            v.set(obj);
-            properties.Insert(pos, v);
+            variants.Insert(pos, obj);
         }
 
         //adds variants from a list of objects
-        public void set(Object[] objs)
+        public void AddVariants(Object[] objs)
         {
             foreach (Object obj in objs)
-                add_single_variant(obj);
-        }
-
-        //sets variant specified by an index
-        public void set_single_variant(int index, Object obj)
-        {
-            properties[index].set(obj);
-        }
-
-        //returns property list
-        public List<SFVariant> get()
-        {
-            return properties;
-        }
-
-        //returns a single variant specified by an index
-        public SFVariant get_single_variant(int index)
-        {
-            if (index >= properties.Count)
-                return null;
-            return properties[index];
+                variants.Add(obj);
         }
 
         //returns size (in bytes) of an element, depending of variant types
-        //unspecified behavior for TYPE.Unknown variant
-        public int get_size()
+        public int GetSize()
         {
             int s = 0;
-            foreach(SFVariant v in properties)
+            foreach(object v in variants)
             {
-                if (v.vtype == SFVARIANT_TYPE.String)
-                {
-                    s += ((byte[])v.value).Length;
-                }
-                else
-                    s += SFVariant.TYPE_SIZE[(int)v.vtype];
+                Type t = v.GetType();
+                if ((t == typeof(SByte)) || (t == typeof(Byte)))
+                    s += 1;
+                else if ((t == typeof(Int16)) || (t == typeof(UInt16)))
+                    s += 2;
+                else if ((t == typeof(Int32)) || (t == typeof(UInt32)))
+                    s += 4;
+                else if (t == typeof(byte[]))
+                    s += ((byte[])v).Length;
             }
             return s;
         }
 
         //creates a new element with identical contents as the original
-        public SFCategoryElement get_copy()
+        public SFCategoryElement GetCopy()
         {
             SFCategoryElement elem = new SFCategoryElement();
-            foreach (SFVariant v in properties)
-                elem.add_single_variant(v.value);
+            foreach (object v in variants)
+            {
+                Type t = v.GetType();
+                if (t == typeof(byte[]))
+                {
+                    byte[] barr = new byte[((byte[])v).Length];
+                    Array.Copy(((byte[])v), barr, barr.Length);
+                    elem.AddVariant(barr);
+                }
+                else if (t == typeof(SByte))
+                    elem.AddVariant((SByte)v);
+                else if (t == typeof(Byte))
+                    elem.AddVariant((Byte)v);
+                else if (t == typeof(Int16))
+                    elem.AddVariant((Int16)v);
+                else if (t == typeof(UInt16))
+                    elem.AddVariant((UInt16)v);
+                else if (t == typeof(Int32))
+                    elem.AddVariant((Int32)v);
+                else if (t == typeof(UInt32))
+                    elem.AddVariant((UInt32)v);
+            }
 
             return elem;
         }
 
         //returns whether the contents in compared elements are identical
-        public bool same_as(SFCategoryElement elem)
+        public bool SameAs(SFCategoryElement elem)
         {
-            if (properties.Count != elem.get().Count)
+            if (variants.Count != elem.variants.Count)
                 return false;
 
-            for(int i = 0; i < properties.Count; i++)
+            for(int i = 0; i < variants.Count; i++)
             {
-                if (!properties[i].same_as(elem.get_single_variant(i)))
+                if (variants[i].GetType() != elem.variants[i].GetType())
+                    return false;
+                if(variants[i].GetType()==typeof(byte[]))
+                {
+                    if (!((byte[])variants[i]).SequenceEqual((byte[])elem.variants[i]))
+                        return false;
+                }
+                else if (!variants[i].Equals(elem.variants[i]))
                     return false;
             }
 
             return true;
         }
 
+        //returns int value of a variant (or 0 if can't represent it as an integer)
+        // todo: why is this  here? move somewhere else, more fitting
+        public int ToInt(int index)
+        {
+            Type t = variants[index].GetType();
+            if (t == typeof(SByte))
+                return (int)(SByte)variants[index];
+            if (t == typeof(Byte))
+                return (int)(Byte)variants[index];
+            if (t == typeof(Int16))
+                return (int)(Int16)variants[index];
+            if (t == typeof(UInt16))
+                return (int)(UInt16)variants[index];
+            if (t == typeof(int))
+                return (int)variants[index];
+            if (t == typeof(UInt32))
+                return (int)(UInt32)variants[index];
+            LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFVariant.to_int(): Type is not a number");
+            return 0;
+        }
+
         // returns a specified range of objects variants represent
-        public object[] copy_raw(int index_start, int count)
+        public object[] CopyRaw(int index_start, int count)
         {
             object[] res = new object[count];
             for (int i = 0; i < count; i++)
-                res[i] = properties[i + index_start].value;
+            {
+                object v = variants[i + index_start];
+                Type t = v.GetType();
+                if (t == typeof(byte[]))
+                {
+                    byte[] barr = new byte[((byte[])v).Length];
+                    Array.Copy(((byte[])v), barr, barr.Length);
+                    res[i] = barr;
+                }
+                else if (t == typeof(SByte))
+                    res[i] = (SByte)v;
+                else if (t == typeof(Byte))
+                    res[i] = (Byte)v;
+                else if (t == typeof(Int16))
+                    res[i] = (Int16)v;
+                else if (t == typeof(UInt16))
+                    res[i] = (UInt16)v;
+                else if (t == typeof(Int32))
+                    res[i] = (Int32)v;
+                else if (t == typeof(UInt32))
+                    res[i] = (UInt32)v;
+            }
             return res;
         }
 
         // removes a range of variants from this element
-        public void remove_raw(int index_start, int count)
+        public void RemoveRaw(int index_start, int count)
         {
             for (int i = 0; i < count; i++)
-                properties.RemoveAt(index_start);
+                variants.RemoveAt(index_start);
         }
 
         // inserts a range of objects as variants at specified position
-        public void paste_raw(object[] data, int index_start)
+        public void PasteRaw(object[] data, int index_start)
         {
             for (int i = 0; i < data.Length; i++)
-                insert_single_variant(data[i], index_start + i);
+                variants.Insert(index_start + i, data[i]);
         }
     }
 }

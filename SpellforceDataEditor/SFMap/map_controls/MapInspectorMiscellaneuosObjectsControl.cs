@@ -84,16 +84,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (SFCFF.SFCategoryManager.ready)
             {
                 int portal_id = p.game_id;
-                int portal_index = SFCFF.SFCategoryManager.gamedata.categories[38].get_element_index(portal_id);
+                int portal_index = SFCFF.SFCategoryManager.gamedata[38].GetElementIndex(portal_id);
                 if (portal_index != -1)
                 {
-                    SFCFF.SFCategoryElement portal_data = SFCFF.SFCategoryManager.gamedata.categories[38].get_element(portal_index);
-                    ushort text_id = (ushort)portal_data.get_single_variant(5).value;
-                    SFCFF.SFCategoryElement text_data = SFCFF.SFCategoryManager.find_element_text(text_id, Settings.LanguageID);
-                    if (text_data != null)
-                        ret += Utility.CleanString(text_data.get_single_variant(4)) + " ";
-                    else
-                        ret += Utility.S_MISSING + " ";
+                    SFCFF.SFCategoryElement portal_data = SFCFF.SFCategoryManager.gamedata[38][portal_index];
+                    ret += SFCFF.SFCategoryManager.GetTextFromElement(portal_data, 5);
                 }
             }
             ret += p.grid_position.ToString();
@@ -112,18 +107,13 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             string ret = "";
             if (SFCFF.SFCategoryManager.ready)
-                ret += SFCFF.SFCategoryManager.get_object_name((ushort)io.game_id) + " ";
+                ret += SFCFF.SFCategoryManager.GetObjectName((ushort)io.game_id) + " ";
             ret += io.grid_position.ToString();
             return ret;
         }
 
         private void ButtonChangeSelectedCampType_Click(object sender, EventArgs e)
         {
-            if (!Settings.AllowLua)
-            {
-                MessageBox.Show("Lua interpreter is disabled. Close editor, set 'AllowLua' in settings to 'YES' and run editor again to enable Lua interpreter.");
-                return;
-            }
             SFLua.SFLuaEnvironment.ShowRtsCoopSpawnGroupsForm();
             ReloadCoopCampList();
         }
@@ -289,7 +279,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                                 //if (map.heightmap.CanMoveToPosition(fixed_pos))
                                 //{
                                 ushort new_object_id = 2541;
-                                if (map.gamedata.categories[33].get_element_index(new_object_id) == -1)
+                                if (map.gamedata[33].GetElementIndex(new_object_id) == -1)
                                     return;
                                 // create new spawn and drag it until mouse released
                                 map.AddObject(new_object_id, fixed_pos, 0, 0, 0);

@@ -87,28 +87,65 @@ namespace SpellforceDataEditor.SFMap.MapGen
 
         public void SetAll(float f)
         {
-            for (int i = 0; i < map.Length; i++)
-                map[i] = f;
+            ParallelOptions loop_options = new ParallelOptions();
+            loop_options.MaxDegreeOfParallelism = 4;
+            int cells_per_task = map.Length / 4;
+            Parallel.For(0, 4, (i) =>
+            {
+                int end = cells_per_task * (i + 1);
+                for (int j = cells_per_task * i; j < end; j++)
+                    map[j] = f;
+            });
+            //for (int i = 0; i < map.Length; i++)
+            //    map[i] = f;
         }
 
         public void AddAll(float f)
         {
-            for (int i = 0; i < map.Length; i++)
-                map[i] += f;
+            ParallelOptions loop_options = new ParallelOptions();
+            loop_options.MaxDegreeOfParallelism = 4;
+            int cells_per_task = map.Length / 4;
+            Parallel.For(0, 4, (i) =>
+            {
+                int end = cells_per_task * (i + 1);
+                for (int j = cells_per_task * i; j < end; j++)
+                    map[j] += f;
+            });
+            //for (int i = 0; i < map.Length; i++)
+            //    map[i] += f;
         }
 
         public void MultiplyAll(float f)
         {
-            for (int i = 0; i < map.Length; i++)
-                map[i] *= f;
+            ParallelOptions loop_options = new ParallelOptions();
+            loop_options.MaxDegreeOfParallelism = 4;
+            int cells_per_task = map.Length / 4;
+            Parallel.For(0, 4, (i) =>
+            {
+                int end = cells_per_task * (i + 1);
+                for (int j = cells_per_task * i; j < end; j++)
+                    map[j] *= f;
+            });
+            //for (int i = 0; i < map.Length; i++)
+            //    map[i] *= f;
         }
 
         public void ClampAll(float min, float max)
         {
-            for (int i = 0; i < map.Length; i++)
-                map[i] = Math.Max(Math.Min(max, map[i]), min);
+            ParallelOptions loop_options = new ParallelOptions();
+            loop_options.MaxDegreeOfParallelism = 4;
+            int cells_per_task = map.Length / 4;
+            Parallel.For(0, 4, (i) =>
+            {
+                int end = cells_per_task * (i + 1);
+                for (int j = cells_per_task * i; j < end; j++)
+                    map[j] = Math.Max(Math.Min(max, map[j]), min);
+            });
+            //for (int i = 0; i < map.Length; i++)
+            //    map[i] = Math.Max(Math.Min(max, map[i]), min);
         }
 
+        // not multithreaded
         public void Normalize()
         {
             float min = map[0];
@@ -129,43 +166,92 @@ namespace SpellforceDataEditor.SFMap.MapGen
 
         public void ApplyFunction(Func<float, float> f)
         {
-            for (int i = 0; i < map.Length; i++)
-                map[i] = f(map[i]);
+            ParallelOptions loop_options = new ParallelOptions();
+            loop_options.MaxDegreeOfParallelism = 4;
+            int cells_per_task = map.Length / 4;
+            Parallel.For(0, 4, (i) =>
+            {
+                int end = cells_per_task * (i + 1);
+                for (int j = cells_per_task * i; j < end; j++)
+                    map[j] = f(map[j]);
+            });
+            //for (int i = 0; i < map.Length; i++)
+                //map[i] = f(map[i]);
         }
 
         public void SetMap(GradientMap m, FilteringType f_type)
         {
             float rx = m.Width / Width;
             float ry = m.Height / Height;
-            for (int y = 0; y < Height; y++)
-                for (int x = 0; x < Width; x++)
-                    Set(x, y, m.GetFiltered(x * rx, y * ry, f_type));
+            ParallelOptions loop_options = new ParallelOptions();
+            loop_options.MaxDegreeOfParallelism = 4;
+            int height_per_task = Height / 4;
+            Parallel.For(0, 4, (i) =>
+            {
+                int end = height_per_task * (i + 1);
+                for (int y = height_per_task * i; y < end; y++)
+                    for (int x = 0; x < Width; x++)
+                        Set(x, y, m.GetFiltered(x * rx, y * ry, f_type));
+            });
+
+            //for (int y = 0; y < Height; y++)
+            //    for (int x = 0; x < Width; x++)
+            //        Set(x, y, m.GetFiltered(x * rx, y * ry, f_type));
         }
 
         public void AddMap(GradientMap m, FilteringType f_type)
         {
             float rx = m.Width / Width;
-            float ry = m.Height / Height;
-            for (int y = 0; y < Height; y++)
-                for (int x = 0; x < Width; x++)
-                    Set(x, y, Get(x,y)+m.GetFiltered(x * rx, y * ry, f_type));
+            float ry = m.Height / Height; ParallelOptions loop_options = new ParallelOptions();
+            loop_options.MaxDegreeOfParallelism = 4;
+            int height_per_task = Height / 4;
+            Parallel.For(0, 4, (i) =>
+            {
+                int end = height_per_task * (i + 1);
+                for (int y = height_per_task * i; y < end; y++)
+                    for (int x = 0; x < Width; x++)
+                        Set(x, y, Get(x,y)+m.GetFiltered(x * rx, y * ry, f_type));
+            });
+            //for (int y = 0; y < Height; y++)
+            //    for (int x = 0; x < Width; x++)
+            //        Set(x, y, Get(x,y)+m.GetFiltered(x * rx, y * ry, f_type));
         }
 
         public void MultiplyMap(GradientMap m, FilteringType f_type)
         {
             float rx = (float)m.Width / Width;
             float ry = (float)m.Height / Height;
-            for (int y = 0; y < Height; y++)
-                for (int x = 0; x < Width; x++)
-                    Set(x, y, Get(x,y)*m.GetFiltered(x * rx, y * ry, f_type));
+            ParallelOptions loop_options = new ParallelOptions();
+            loop_options.MaxDegreeOfParallelism = 4;
+            int height_per_task = Height / 4;
+            Parallel.For(0, 4, (i) =>
+            {
+                int end = height_per_task * (i + 1);
+                for (int y = height_per_task * i; y < end; y++)
+                    for (int x = 0; x < Width; x++)
+                        Set(x, y, Get(x,y)*m.GetFiltered(x * rx, y * ry, f_type));
+            });
+            //for (int y = 0; y < Height; y++)
+            //    for (int x = 0; x < Width; x++)
+            //        Set(x, y, Get(x,y)*m.GetFiltered(x * rx, y * ry, f_type));
         }
 
         public void ApplyKernel(LatticeKernel k)
         {
             float[] new_map = new float[Width * Height];
-            for (int y = 0; y < Height; y++)
-                for (int x = 0; x < Width; x++)
-                    new_map[y * Width + x] = k.Get(this, x, y);
+            ParallelOptions loop_options = new ParallelOptions();
+            loop_options.MaxDegreeOfParallelism = 4;
+            int height_per_task = Height / 4;
+            Parallel.For(0, 4, (i) =>
+            {
+                int end = height_per_task * (i + 1);
+                for (int y = height_per_task * i; y < end; y++)
+                    for (int x = 0; x < Width; x++)
+                        new_map[y * Width + x] = k.Get(this, x, y);
+            });
+            //for (int y = 0; y < Height; y++)
+            //    for (int x = 0; x < Width; x++)
+            //        new_map[y * Width + x] = k.Get(this, x, y);
             map = new_map;
         }
     }

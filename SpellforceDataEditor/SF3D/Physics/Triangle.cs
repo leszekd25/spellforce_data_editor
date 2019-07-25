@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * Triangle is the simplest two-dimensional bounded shape
+ * Operations for retrieving triangle area and checking is a point lies inside of the triangle are provided
+ * */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,7 +43,8 @@ namespace SpellforceDataEditor.SF3D.Physics
             return (float)Math.Sqrt(area2);
         }
 
-        //  assuming p belongs to  the same  plane as  triangle
+        // returns true if a point lies inside of the triangle
+        //  assuming p belongs to the same plane as triangle
         public bool ContainsPoint(Vector3 p)
         {
             Vector3 v = Vector3.Subtract(p, v1);
@@ -50,16 +56,6 @@ namespace SpellforceDataEditor.SF3D.Physics
             return ((alpha >= 0) && (alpha <= 1)
                     && (beta >= 0) && (beta <= 1)
                     && (gamma >= 0) && (gamma <= 1));
-        }
-
-        public static float GetArea(Vector3 v1, Vector3 v2, Vector3 v3)
-        {
-            return (Vector3.Cross(v2 - v1, v3 - v1).Length) / 2;
-        }
-
-        public static float GetArea2(Vector3  v1, Vector3  v2, Vector3  v3)
-        {
-            return Vector3.Cross(v2 - v1, v3 - v1).LengthSquared / 4;
         }
     }
 }

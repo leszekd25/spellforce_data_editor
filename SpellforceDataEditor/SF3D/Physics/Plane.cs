@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+ * Plane describes a 2D plane in a 3D space using a point and a normal to the plane
+ * Normal also describes sides of the plane, which is important for certain operations
+ * Operations for calculating distance from a point to the plane and determining the side a point is on in relation to he plane
+ * are provided
+ * */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,13 +29,25 @@ namespace SpellforceDataEditor.SF3D.Physics
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "Plane(): Normal is zero length (point: "+p.ToString()+")");
         }
 
+        // creates a plane to which a given triangle belongs
         public Plane(Triangle t)
         {
             point = t.v1;
             normal = t.normal;
         }
 
-        // NOTE: positive result is outside of the plane, negative result is inside of the plane
+        // creates a plane  to which given  3  points  belong
+        public Plane(Vector3 p1, Vector3 p2, Vector3  p3)
+        {
+            point = p1;
+            normal = Vector3.Cross(p3 - p1, p2 - p1).Normalized();
+
+            if (normal == Vector3.Zero)
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "Plane(): Malformed plane, normal is zero length!");
+        }
+
+        // returns distance from a given point to the plane
+        // depending on the side of the plane the point is on, result will be positive or negative
         public float DistanceTo(Vector3 v)
         {
             float d = -normal.X * point.X - normal.Y * point.Y - normal.Z * point.Z;
@@ -36,6 +55,8 @@ namespace SpellforceDataEditor.SF3D.Physics
                  / (float)Math.Sqrt(normal.X * normal.X + normal.Y * normal.Y + normal.Z * normal.Z);
         }
 
+        // returns true if a point lies on positive side of the plane, false otherwise
+        // faster than above
         public bool SideOf(Vector3 v)
         {
             float d = -normal.X * point.X - normal.Y * point.Y - normal.Z * point.Z;

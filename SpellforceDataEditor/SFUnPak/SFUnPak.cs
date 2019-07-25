@@ -187,16 +187,19 @@ namespace SpellforceDataEditor.SFUnPak
             }
 
             string dir = Path.GetDirectoryName(new_name);
-            if (!Directory.Exists(dir))
+            if (dir != "")
             {
-                try
+                if (!Directory.Exists(dir))
                 {
-                    Directory.CreateDirectory(dir);
-                }
-                catch(Exception)
-                {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.ExtractFileFind(): Could not create directory " + dir + " to store extracted data!");
-                    return -3;
+                    try
+                    {
+                        Directory.CreateDirectory(dir);
+                    }
+                    catch (Exception)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.ExtractFileFind(): Could not create directory " + dir + " to store extracted data!");
+                        return -3;
+                    }
                 }
             }
 

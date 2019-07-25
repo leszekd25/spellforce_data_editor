@@ -22,16 +22,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void set_list_text(int i)
         {
-            UInt16 building_id = (UInt16)(category.get_element_variant(current_element, i * 3 + 2)).value;
+            UInt16 building_id = (UInt16)(category[current_element][i * 3 + 2]);
 
-            string txt = SFCategoryManager.get_building_name(building_id);
+            string txt = SFCategoryManager.GetBuildingName(building_id);
             ListBuildings.Items[i] = txt;
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
             for (int i = 0; i < elem_count; i++)
                 set_element_variant(current_element, i * 3 + 0, Utility.TryParseUInt16(textBox1.Text));
@@ -50,17 +50,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             current_element = index;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
             ListBuildings.Items.Clear();
 
             for (int i = 0; i < elem_count; i++)
             {
-                Byte spell_order = (Byte)(elem.get_single_variant(i * 3 + 1)).value;
-                UInt16 building_id = (UInt16)(elem.get_single_variant(i * 3 + 2)).value;
+                Byte spell_order = (Byte)(elem[i * 3 + 1]);
+                UInt16 building_id = (UInt16)(elem[i * 3 + 2]);
 
-                string txt = SFCategoryManager.get_building_name(building_id);
+                string txt = SFCategoryManager.GetBuildingName(building_id);
 
                 ListBuildings.Items.Add(txt);
             }
@@ -89,22 +89,22 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             else
                 new_index = ListBuildings.SelectedIndex;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int cur_elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int cur_elem_count = elem.variants.Count / 3;
 
             Byte max_index = 0;
             for (int i = 0; i < cur_elem_count; i++)
             {
-                max_index = Math.Max(max_index, (Byte)(elem.get_single_variant(i * 3 + 1).value));
+                max_index = Math.Max(max_index, (Byte)(elem[i * 3 + 1]));
             }
             max_index += 1;
 
             object[] paste_data = new object[3];
-            paste_data[0] = (UInt16)elem.get_single_variant(0).value;
+            paste_data[0] = (UInt16)elem[0];
             paste_data[1] = (Byte)max_index;
             paste_data[2] = (UInt16)0;
 
-            elem.paste_raw(paste_data, new_index * 3);
+            elem.PasteRaw(paste_data, new_index * 3);
 
             set_element(current_element);
         }
@@ -117,15 +117,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             int new_index = ListBuildings.SelectedIndex;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            Byte cur_spell_index = (Byte)(elem.get_single_variant(new_index * 3 + 1).value);
+            SFCategoryElement elem = category[current_element];
+            Byte cur_spell_index = (Byte)(elem[new_index * 3 + 1]);
 
-            elem.remove_raw(new_index * 3, 3);
+            elem.RemoveRaw(new_index * 3, 3);
 
-            int cur_elem_count = elem.get().Count / 3;
+            int cur_elem_count = elem.variants.Count / 3;
             for (int i = 0; i < cur_elem_count; i++)
-                if ((Byte)(elem.get_single_variant(i * 3 + 1).value) > cur_spell_index)
-                    elem.set_single_variant(i * 3 + 1, (Byte)((Byte)(elem.get_single_variant(i * 3 + 1).value) - (Byte)1));
+                if ((Byte)(elem[i * 3 + 1]) > cur_spell_index)
+                    elem[i * 3 + 1] = (Byte)((Byte)(elem[i * 3 + 1]) - 1);
 
             set_element(current_element);
         }

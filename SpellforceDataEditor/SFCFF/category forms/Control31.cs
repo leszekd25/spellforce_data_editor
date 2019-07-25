@@ -23,8 +23,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void load_item_types()
         {
             comboItemType.Items.Clear();
-
-            SFCategory cat_res = SFCategoryManager.get_category(31);
+            
             int elem_count = SFCategory7.item_types.Length;
             for (int i = 1; i < elem_count; i++)
             {
@@ -34,8 +33,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
             for (int i = 0; i < elem_count; i++)
                 set_element_variant(current_element, i * 3 + 0, Utility.TryParseUInt16(textBox5.Text));
@@ -46,12 +45,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             ListItemTypes.Items.Clear();
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
             for (int i = 0; i < elem_count; i++)
             {
-                int res_index = (int)(Byte)elem.get_single_variant(i * 3 + 1).value;
+                int res_index = (int)(Byte)elem[i * 3 + 1];
                 string res_name = "";
                 if (res_index == 0)
                     res_name = Utility.S_NONE;
@@ -90,7 +89,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             int index = ListItemTypes.SelectedIndex;
 
-            comboItemType.SelectedIndex = (Byte)category.get_element_variant(current_element, index * 3 + 1).value - 1;
+            comboItemType.SelectedIndex = (Byte)category[current_element][index * 3 + 1] - 1;
             textBox4.Text = variant_repr(index * 3 + 2);
         }
 
@@ -99,11 +98,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (comboItemType.SelectedIndex == -1)
                 return;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
             int cur_index = ListItemTypes.SelectedIndex;
-            Byte current_res = (Byte)elem.get_single_variant(cur_index * 3 + 1).value;
+            Byte current_res = (Byte)elem[cur_index * 3 + 1];
             Byte new_res = (Byte)(comboItemType.SelectedIndex + 1);
             if (current_res == new_res)
                 return;
@@ -111,7 +110,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             // check if resource like this already exists
             for (int i = 0; i < elem_count; i++)
             {
-                Byte res_id = (Byte)elem.get_single_variant(i * 3 + 1).value;
+                Byte res_id = (Byte)elem[i * 3 + 1];
                 if (res_id == new_res)
                 {
                     new_res = 0;
@@ -120,19 +119,19 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             // generate new element with reordered resources by resource id, ascending order
-            object[] cur_data = elem.copy_raw(cur_index * 3, 3);
-            elem.remove_raw(cur_index * 3, 3);
+            object[] cur_data = elem.CopyRaw(cur_index * 3, 3);
+            elem.RemoveRaw(cur_index * 3, 3);
             int new_index = elem_count - 1;
             for (int i = 0; i < elem_count - 1; i++)
             {
-                if ((Byte)elem.get_single_variant(i * 3 + 1).value > new_res)
+                if ((Byte)elem[i * 3 + 1] > new_res)
                 {
                     new_index = i;
                     break;
                 }
             }
-            elem.paste_raw(cur_data, new_index * 3);
-            elem.set_single_variant(new_index * 3 + 1, new_res);
+            elem.PasteRaw(cur_data, new_index * 3);
+            elem[new_index * 3 + 1] = new_res;
             RefreshListItemTypes();
             ListItemTypes.SelectedIndex = new_index;
         }
@@ -148,15 +147,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
             object[] paste_data = new object[3];
-            paste_data[0] = (UInt16)elem.get_single_variant(0).value;
+            paste_data[0] = (UInt16)elem[0];
             paste_data[1] = (Byte)0;
             paste_data[2] = (UInt16)0;
 
-            elem.paste_raw(paste_data, 0);
+            elem.PasteRaw(paste_data, 0);
 
             RefreshListItemTypes();
             ListItemTypes.SelectedIndex = 0;
@@ -167,12 +166,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (ListItemTypes.Items.Count == 1)
                 return;
 
-            SFCategoryElement elem = category.get_element(current_element);
-            int elem_count = elem.get().Count / 3;
+            SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 3;
 
             int index = ListItemTypes.SelectedIndex;
 
-            elem.remove_raw(index * 3, 3);
+            elem.RemoveRaw(index * 3, 3);
 
             RefreshListItemTypes();
             ListItemTypes.SelectedIndex = Math.Max(index, ListItemTypes.Items.Count - 1);

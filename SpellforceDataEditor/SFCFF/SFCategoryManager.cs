@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor.SFCFF
 {
-    //helper class which provides nice interface for retrieving spell parameter description
+    //helper class which provides "nice" interface for retrieving spell parameter description
     public class SFSpellDescriptor
     {
         static public string[] get(UInt16 spell_id)
@@ -662,28 +662,14 @@ namespace SpellforceDataEditor.SFCFF
         public static bool ready { get; private set; } = false;
 
         //constructor, it creates categories
-        public static void init()
+        public static void Init()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategoryManager.init() called");
             categorySpecial_RuneHeroes = new SFCategoryRuneHeroes();
             //categorySpecial_RuneHeroes.set_manager(this);
         }
 
-        //returns category, given its index
-        public static SFCategory get_category(int index)
-        {
-            if((index > -1)&&(index < SFGameData.categoryNumber))
-                return gamedata.categories[index];
-            return null;
-        }
-
-        //returns string representation of file's MD5
-        public static string get_data_md5()
-        {
-            return gamedata.gamedata_md5;
-        }
-
-        public static void manual_set_gamedata(SFGameData gd)
+        public static void manual_SetGamedata(SFGameData gd)
         {
             if (gamedata == gd)
             {
@@ -698,7 +684,7 @@ namespace SpellforceDataEditor.SFCFF
         }
 
         //loads gamedata.cff file
-        public static int load_cff(string filename)
+        public static int Load(string filename)
         {
             int result = gamedata.Load(filename);
 
@@ -712,7 +698,7 @@ namespace SpellforceDataEditor.SFCFF
         }
 
         //saves gamedata.cff file
-        public static void save_cff(string filename)
+        public static void Save(string filename)
         {
             gamedata.Save(filename);
 
@@ -725,19 +711,13 @@ namespace SpellforceDataEditor.SFCFF
             //fs2.Close();
         }
 
-        //returns category count
-        public static int get_category_number()
-        {
-            return SFGameData.categoryNumber;
-        }
-
         //using the fact that all text data is saved in category 15 (ind 14)
         //searches for a text with a given ID and in a given language
         //returns a sub-element in a given language which contains text data looked for (or null if it doesnt exist)
         //this is quite fast (O(log n))
-        public static SFCategoryElement find_element_text(int t_index, int t_lang)
+        public static SFCategoryElement FindElementText(int t_index, int t_lang)
         {
-            int index = gamedata.categories[14].find_binary_element_index<UInt16>(0, (UInt16)t_index);
+            int index = gamedata[14].FindElementIndexBinary<UInt16>(0, (UInt16)t_index);
             if (index == -1)
                 return null;
 
@@ -745,17 +725,17 @@ namespace SpellforceDataEditor.SFCFF
             int safe_index = -1;   //will fail if there's no language id 0
 
             SFCategoryElement e = new SFCategoryElement();
-            SFCategoryElement e_found = gamedata.categories[14].get_element(index);
-            int elem_num = e_found.get().Count / 5;
+            SFCategoryElement e_found = gamedata[14][index];
+            int elem_num = e_found.variants.Count / 5;
 
             for(int i = 0; i < elem_num; i++)
             {
-                if((Byte)e_found.get_single_variant(i*5+1).value == (Byte)t_lang)
+                if((Byte)e_found[i*5+1] == (Byte)t_lang)
                 {
                     lang_index = i;
                     break;
                 }
-                else if((Byte)e_found.get_single_variant(i*5+1).value == 0)
+                else if((Byte)e_found[i*5+1] == 0)
                 {
                     safe_index = i;
                 }
@@ -766,63 +746,62 @@ namespace SpellforceDataEditor.SFCFF
             if (lang_index == -1)
                 return null;
 
-            Object[] vs = new Object[5];
-            for (int i = 0; i < 5; i++)
-                vs[i] = e_found.get_single_variant(lang_index * 5 + i).value;
-            e.set(vs);
+            e.variants = e_found.CopyRaw(lang_index * 5, 5).ToList();
 
             return e;
         }
 
+        //finds text string given element and column index where the element holds text IDs
+        public static string GetTextFromElement(SFCategoryElement elem, int cat_index)
+        {
+            if (elem == null)
+                return Utility.S_NONAME;
+            else
+            {
+                int text_id = (int)(UInt16)elem.variants[cat_index];
+                SFCategoryElement txt_elem = FindElementText(text_id, Settings.LanguageID);
+                if (txt_elem != null)
+                    return Utility.CleanString(txt_elem.variants[4]);
+                else
+                    return Utility.S_MISSING;
+            }
+        }
+
         //returns a name of a given effect
         //optionally with effect level
-        public static string get_effect_name(UInt16 effect_id, bool effect_level = false)
+        public static string GetEffectName(UInt16 effect_id, bool effect_level = false)
         {
-            SFCategoryElement effect_elem = get_category(0).find_binary_element<UInt16>(0, effect_id);
+            SFCategoryElement effect_elem = gamedata[0].FindElementBinary<UInt16>(0, effect_id);
             if (effect_elem == null)
                 return Utility.S_NONAME;
 
-            UInt16 spell_type = (UInt16)effect_elem.get_single_variant(1).value;
-            SFCategoryElement spell_elem = get_category(1).find_binary_element<UInt16>(0, spell_type);
-            if (spell_elem == null)
-                return Utility.S_NONAME;
-
-            int text_id = (int)(UInt16)spell_elem.get_single_variant(1).value;
-            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
-            if (text_elem == null)
-                return Utility.S_MISSING;
-
-            string txt = Utility.CleanString(text_elem.get_single_variant(4));
+            UInt16 spell_type = (UInt16)effect_elem[1];
+            SFCategoryElement spell_elem = gamedata[1].FindElementBinary<UInt16>(0, spell_type);
+            string txt = SFCategoryManager.GetTextFromElement(spell_elem, 1);
             if (effect_level)
-                txt += " level " + effect_elem.get_single_variant(4).value.ToString();
+                txt += " level " + effect_elem[4].ToString();
 
             return txt;
         }
 
         //returns a name of a given unit
-        public static string get_unit_name(UInt16 unit_id, bool include_level = false)
+        public static string GetUnitName(UInt16 unit_id, bool include_level = false)
         {
-            SFCategoryElement unit_elem = get_category(17).find_binary_element<UInt16>(0, unit_id);
-            if (unit_elem == null)
-                return Utility.S_NONAME; ;
-
-            int text_id = (int)(UInt16)unit_elem.get_single_variant(1).value;
-            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
-            if (text_elem == null)
-                return Utility.S_MISSING; ;
-
-            string txt = Utility.CleanString(text_elem.get_single_variant(4));
+            SFCategoryElement unit_elem = gamedata[17].FindElementBinary<UInt16>(0, unit_id);
+            if (unit_elem==null)
+                return Utility.S_NONAME;
+            string txt = SFCategoryManager.GetTextFromElement(unit_elem, 1);
 
             if(include_level)
             {
-                ushort stats_id = (ushort)unit_elem.get_single_variant(2).value;
-                SFCategoryElement unit_stats_elem = get_category(3).find_binary_element<UInt16>(0, stats_id);
+                ushort stats_id = (ushort)unit_elem[2];
+                SFCategoryElement unit_stats_elem = gamedata[3].FindElementBinary<UInt16>(0, stats_id);
                 if (unit_stats_elem == null)
                 {
                     txt += " (<MISSING_LVL>)";
                     return txt;
                 }
-                ushort ustats_lvl = (ushort)unit_stats_elem.get_single_variant(1).value;
+                ushort ustats_lvl = (ushort)unit_stats_elem[1];
                 txt += " (level " + ustats_lvl.ToString() + ")";
             }
 
@@ -830,7 +809,7 @@ namespace SpellforceDataEditor.SFCFF
         }
 
         //used for determining skill name
-        private static string get_resource_gather(Byte ind)
+        private static string GetResourceGather(Byte ind)
         {
             switch (ind)
             {
@@ -858,166 +837,99 @@ namespace SpellforceDataEditor.SFCFF
         }
 
         //returns a name of a given skill
-        public static string get_skill_name(Byte skill_major, Byte skill_minor, Byte skill_lvl)
+        public static string GetSkillName(Byte skill_major, Byte skill_minor, Byte skill_lvl)
         {
             string txt_major = "";
             string txt_minor = "";
             SFCategoryElement skill_elem;
-            try
+            try     // yuck!
             {
-                skill_elem = get_category(26).get_element(skill_major);
+                skill_elem = gamedata[26][skill_major];
             }
             catch(Exception)
             {
                 return Utility.S_UNKNOWN;
             }
 
-            int text_id_major = (int)(UInt16)skill_elem.get_single_variant(2).value;
-            SFCategoryElement txt_elem_major = find_element_text(text_id_major, Settings.LanguageID);
-            if (txt_elem_major != null)
-                txt_major = Utility.CleanString(txt_elem_major.get_single_variant(4));
+            txt_major = SFCategoryManager.GetTextFromElement(skill_elem, 2);
 
             if ((skill_major == 0) && (skill_minor != 0))
             {
                 txt_major = "";
-                txt_minor = get_resource_gather(skill_minor) + " gathering";
+                txt_minor = GetResourceGather(skill_minor) + " gathering";
             }
             else if (skill_minor != 101)
             {
-                int text_id_minor = (int)(UInt16)skill_elem.get_single_variant(skill_minor*3+2).value;
-                if (text_id_minor != 0)
-                {
-                    SFCategoryElement txt_elem_minor = find_element_text(text_id_minor, Settings.LanguageID);
-                    if (txt_elem_minor != null)
-                        txt_minor = Utility.CleanString(txt_elem_minor.get_single_variant(4));
-                }
+                txt_minor = SFCategoryManager.GetTextFromElement(skill_elem, skill_minor * 3 + 2);
             }
 
             return txt_major + " " + txt_minor + " " + skill_lvl.ToString();
         }
 
         //returns a name of a given race
-        public static string get_race_name(Byte race_id)
+        public static string GetRaceName(Byte race_id)
         {
-            SFCategoryElement race_elem = get_category(15).find_binary_element<Byte>(0, race_id);
-            if (race_elem == null)
-                return Utility.S_NONAME;
-
-            int text_id = (int)(UInt16)race_elem.get_single_variant(7).value;
-            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
-            if (text_elem == null)
-                return Utility.S_MISSING;
-
-            string txt = Utility.CleanString(text_elem.get_single_variant(4));
-
-            return txt;
+            SFCategoryElement race_elem = gamedata[15].FindElementBinary<Byte>(0, race_id);
+            return SFCategoryManager.GetTextFromElement(race_elem, 7);
         }
 
         //returns a name of a given item
-        public static string get_item_name(UInt16 item_id)
+        public static string GetItemName(UInt16 item_id)
         {
-            SFCategoryElement item_elem = get_category(6).find_binary_element<UInt16>(0, item_id);
-            if (item_elem == null)
-                return Utility.S_NONAME;
-
-            int text_id = (int)(UInt16)item_elem.get_single_variant(3).value;
-            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
-            if (text_elem == null)
-                return Utility.S_MISSING;
-
-            string txt = Utility.CleanString(text_elem.get_single_variant(4));
-
-            return txt;
+            SFCategoryElement item_elem = gamedata[6].FindElementBinary<UInt16>(0, item_id);
+            return SFCategoryManager.GetTextFromElement(item_elem, 3);
         }
 
         //returns a name of a given building
-        public static string get_building_name(UInt16 building_id)
+        public static string GetBuildingName(UInt16 building_id)
         {
-            SFCategoryElement building_elem = get_category(23).find_binary_element<UInt16>(0, building_id);
-            if (building_elem == null)
-                return Utility.S_NONAME;
-
-            int text_id = (int)(UInt16)building_elem.get_single_variant(5).value;
-            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
-            if (text_elem == null)
-                return Utility.S_MISSING;
-
-            string txt = Utility.CleanString(text_elem.get_single_variant(4));
-
-            return txt;
+            SFCategoryElement building_elem = gamedata[23].FindElementBinary<UInt16>(0, building_id);
+            return SFCategoryManager.GetTextFromElement(building_elem, 5);
         }
 
         //returns a name of a given merchant
-        public static string get_merchant_name(UInt16 merchant_id)
+        public static string GetMerchantName(UInt16 merchant_id)
         {
-            SFCategoryElement merchant_elem = get_category(28).find_binary_element<UInt16>(0, merchant_id);
+            SFCategoryElement merchant_elem = gamedata[28].FindElementBinary<UInt16>(0, merchant_id);
             if (merchant_elem == null)
                 return Utility.S_NONAME;
 
-            return get_unit_name((UInt16)merchant_elem.get_single_variant(1).value);
+            return GetUnitName((UInt16)merchant_elem[1]);
         }
 
         //returns a name of a given object
-        public static string get_object_name(UInt16 object_id)
+        public static string GetObjectName(UInt16 object_id)
         {
-            SFCategoryElement object_elem = get_category(33).find_binary_element<UInt16>(0, object_id);
-            if (object_elem == null)
-                return Utility.S_NONAME;
-
-            int text_id = (int)(UInt16)object_elem.get_single_variant(1).value;
-            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
-            if (text_elem == null)
-                return Utility.S_MISSING;
-
-            string txt = Utility.CleanString(text_elem.get_single_variant(4));
-
-            return txt;
+            SFCategoryElement object_elem = gamedata[33].FindElementBinary<UInt16>(0, object_id);
+            return SFCategoryManager.GetTextFromElement(object_elem, 1);
         }
 
         //returns a description given its id
-        public static string get_description_name(UInt16 desc_id)
+        public static string GetDescriptionName(UInt16 desc_id)
         {
-            SFCategoryElement desc_elem = get_category(40).find_binary_element<UInt16>(0, desc_id);
-            if (desc_elem == null)
-                return Utility.S_NONAME;
-
-            int text_id = (int)(UInt16)desc_elem.get_single_variant(1).value;
-            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
-            if (text_elem == null)
-                return Utility.S_MISSING;
-
-            string txt = Utility.CleanString(text_elem.get_single_variant(4));
-
-            return txt;
+            SFCategoryElement desc_elem = gamedata[40].FindElementBinary<UInt16>(0, desc_id);
+            return SFCategoryManager.GetTextFromElement(desc_elem, 1);
         }
 
         //returns a rune hero/worker's name given its stats ID
         //this connection is not found in gamedata.cff and instead has to be pre-processed
-        public static string get_runehero_name(UInt16 stats_id)
+        public static string GetRuneheroName(UInt16 stats_id)
         {
-            SFCategoryElement rune_elem = categorySpecial_RuneHeroes.find_binary_element<UInt16>(0, stats_id);
-            if (rune_elem == null)
-                return Utility.S_NONAME;
-
-            int text_id = (int)(UInt16)rune_elem.get_single_variant(1).value;
-            SFCategoryElement text_elem = find_element_text(text_id, Settings.LanguageID);
-            if (text_elem == null)
-                return Utility.S_MISSING;
-
-            return Utility.CleanString(text_elem.get_single_variant(4));
+            SFCategoryElement rune_elem = categorySpecial_RuneHeroes.FindElementBinary<UInt16>(0, stats_id);
+            return SFCategoryManager.GetTextFromElement(rune_elem, 1);
         }
 
-        //returns data value given its address
+        /*//returns data value given its address
         public static object get_variant(int cat, int elem, int ind)
         {
-            return get_category(cat).get_element_variant(elem, ind).value;
-        }
+            return gamedata[cat][elem][ind];
+        }*/
 
         //frees all data, only empty categories remain
-        public static void unload_all()
+        public static void UnloadAll()
         {
             gamedata.Unload();
-            categorySpecial_RuneHeroes.unload();
+            categorySpecial_RuneHeroes.Unload();
 
             ready = false;
         }

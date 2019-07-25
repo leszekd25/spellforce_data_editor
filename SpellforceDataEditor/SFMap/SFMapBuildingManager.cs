@@ -115,31 +115,30 @@ namespace SpellforceDataEditor.SFMap
                 SFMapCollisionBoundary cb = new SFMapCollisionBoundary();
                 // load building origin vector
                 Vector2 org = new Vector2(0, 0);
-                int org_index = map.gamedata.categories[23].get_element_index(id);
+                int org_index = map.gamedata[23].GetElementIndex(id);
                 if(org_index != -1)
                 {
-                    SFCFF.SFCategoryElement org_data = map.gamedata.categories[23].get_element(org_index); // 6, 7
-                    org.X = ((short)org_data.get_single_variant(6).value) / 100.0f;
-                    org.Y = ((short)org_data.get_single_variant(7).value) / 100.0f;
+                    SFCFF.SFCategoryElement org_data = map.gamedata[23][org_index]; // 6, 7
+                    org.X = ((short)org_data[6]) / 100.0f;
+                    org.Y = ((short)org_data[7]) / 100.0f;
                 }
                 // load building collision data from gamedata
-                int col_index = map.gamedata.categories[24].get_element_index(id);
+                int col_index = map.gamedata[24].GetElementIndex(id);
                 if (col_index != -1)
                 {
-                    SFCFF.SFCategoryElement col_data = map.gamedata.categories[24].get_element(col_index);
-                    List<SFCFF.SFVariant> col_raw = col_data.get();
+                    SFCFF.SFCategoryElement col_data = map.gamedata[24][col_index];
 
                     int current_col_offset = 0;
-                    while (current_col_offset < col_raw.Count)
+                    while (current_col_offset < col_data.variants.Count)
                     {
-                        int vertex_count = (byte)col_raw[current_col_offset + 3].value;
+                        int vertex_count = (byte)col_data.variants[current_col_offset + 3];
 
                         Vector2[] vertex_list = new Vector2[vertex_count];
                         for (int i = 0; i < vertex_count; i++)
                         {
                             vertex_list[i] = new Vector2();
-                            vertex_list[i].X = (float)((short)(col_raw[current_col_offset + 4 + i * 2 + 0].value)) / 128;
-                            vertex_list[i].Y = -(float)((short)(col_raw[current_col_offset + 4 + i * 2 + 1].value)) / 128;
+                            vertex_list[i].X = (float)((short)(col_data.variants[current_col_offset + 4 + i * 2 + 0])) / 128;
+                            vertex_list[i].Y = -(float)((short)(col_data.variants[current_col_offset + 4 + i * 2 + 1])) / 128;
                         }
                         cb.AddPolygon(new SFMapCollisionPolygon2D(vertex_list, org));
 
