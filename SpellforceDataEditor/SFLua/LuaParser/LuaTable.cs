@@ -62,7 +62,10 @@ namespace SpellforceDataEditor.SFLua.LuaParser
                             LuaTable t = new LuaTable();
                             if (!t.Parse(scr))
                                 return false;
-                            entries.Add(next_key, t);
+                            if (entries.ContainsKey(next_key))
+                                entries[next_key] = t;
+                            else
+                                entries.Add(next_key, t);
                             next_key = null;
                             state = ParseState.READ_COMMA;
                         }
@@ -91,7 +94,10 @@ namespace SpellforceDataEditor.SFLua.LuaParser
                         if(state == ParseState.READ_EQUAL_SIGN)
                         {
                             max_index += 1;
-                            entries.Add(max_index, next_key);   // named constants, named functions etc. (handle differently, todo) 
+                            if (entries.ContainsKey(max_index))
+                                entries[max_index] = next_key;
+                            else
+                                entries.Add(max_index, next_key);   // named constants, named functions etc. (handle differently, todo) 
                             next_key = null;
                             state = ParseState.READ_COMMA;
                         }
@@ -109,7 +115,10 @@ namespace SpellforceDataEditor.SFLua.LuaParser
                         if(state == ParseState.READ_VALUE)
                         {
                             string str = scr.ReadString();
-                            entries.Add(next_key, str);
+                            if (entries.ContainsKey(next_key))
+                                entries[next_key] = str;
+                            else
+                                entries.Add(next_key, str);
                             next_key = null;
                             state = ParseState.READ_COMMA;
                         }
@@ -136,7 +145,10 @@ namespace SpellforceDataEditor.SFLua.LuaParser
                             if(state == ParseState.READ_VALUE)
                             {
                                 string val = scr.ReadIdentifier();
-                                entries.Add(next_key, val);
+                                if (entries.ContainsKey(next_key))
+                                    entries[next_key] = val;
+                                else
+                                    entries.Add(next_key, val);
                                 next_key = null;
                                 state = ParseState.READ_COMMA;
                             }
@@ -152,7 +164,10 @@ namespace SpellforceDataEditor.SFLua.LuaParser
                             if(state == ParseState.READ_VALUE)
                             {
                                 double val = scr.ReadNumber();
-                                entries.Add(next_key, val);
+                                if (entries.ContainsKey(next_key))
+                                    entries[next_key] = val;
+                                else
+                                    entries.Add(next_key, val);
                                 next_key = null;
                                 state = ParseState.READ_COMMA;
                             }
