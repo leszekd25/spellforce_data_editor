@@ -172,7 +172,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SFMapObject obj = null;
             foreach (SFMapObject o in map.object_manager.objects)
             {
-                float sel_scale = (float)Math.Max(2, SF3D.SFRender.SFRenderEngine.scene.mesh_data.GetObjectSelectionSize(o.game_id))/2;
+                float sel_scale = 0.0f;
+                SFLua.lua_sql.SFLuaSQLObjectData obj_data = SFLua.SFLuaEnvironment.objects[o.game_id];
+                if (obj_data != null)
+                    sel_scale = (float)(obj_data.SelectionScaling / 2);
                 if (SFCoord.Distance(o.grid_position, fixed_pos) <= sel_scale)
                 {
                     obj = o;

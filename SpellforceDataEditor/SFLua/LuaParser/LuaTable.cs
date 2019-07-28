@@ -21,7 +21,7 @@ namespace SpellforceDataEditor.SFLua.LuaParser
         public Dictionary<object, object> entries = new Dictionary<object, object>();
         ParseState state = ParseState.READ_START;
 
-        public object this[object  key]
+        public object this[object key]
         {
             get
             {
@@ -54,7 +54,7 @@ namespace SpellforceDataEditor.SFLua.LuaParser
                         if (state == ParseState.READ_IDENTIFIER)
                         {
                             max_index += 1;
-                            next_key = max_index;
+                            next_key = (double)max_index;
                             state = ParseState.READ_VALUE;
                         }
                         if (state == ParseState.READ_VALUE)
@@ -82,7 +82,7 @@ namespace SpellforceDataEditor.SFLua.LuaParser
                         if(state == ParseState.READ_IDENTIFIER)
                         {
                             int index = scr.ReadIndex();
-                            next_key = index;
+                            next_key = (double)index;
                             state = ParseState.READ_EQUAL_SIGN;
                         }
                         break;
@@ -94,10 +94,10 @@ namespace SpellforceDataEditor.SFLua.LuaParser
                         if(state == ParseState.READ_EQUAL_SIGN)
                         {
                             max_index += 1;
-                            if (entries.ContainsKey(max_index))
-                                entries[max_index] = next_key;
+                            if (entries.ContainsKey((double)max_index))
+                                entries[(double)max_index] = next_key;
                             else
-                                entries.Add(max_index, next_key);   // named constants, named functions etc. (handle differently, todo) 
+                                entries.Add((double)max_index, next_key);   // named constants, named functions etc. (handle differently, todo) 
                             next_key = null;
                             state = ParseState.READ_COMMA;
                         }
@@ -109,7 +109,7 @@ namespace SpellforceDataEditor.SFLua.LuaParser
                         if (state == ParseState.READ_IDENTIFIER)
                         {
                             max_index += 1;
-                            next_key = max_index;
+                            next_key = (double)max_index;
                             state = ParseState.READ_VALUE;
                         }
                         if(state == ParseState.READ_VALUE)
@@ -158,7 +158,7 @@ namespace SpellforceDataEditor.SFLua.LuaParser
                             if(state == ParseState.READ_IDENTIFIER)
                             {
                                 max_index += 1;
-                                next_key = max_index;
+                                next_key = (double)max_index;
                                 state = ParseState.READ_VALUE;
                             }
                             if(state == ParseState.READ_VALUE)

@@ -43,6 +43,15 @@ namespace SpellforceDataEditor.special_forms
         public MapEditorForm()
         {
             InitializeComponent();
+
+            SFLua.SFLuaEnvironment.LoadSQL(false);
+            if (!SFLua.SFLuaEnvironment.data_loaded)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "MapEditorForm(): Failed to load SQL data!");
+                Close();
+                return;
+            }
+
             TimerAnimation.Enabled = true;
             TimerAnimation.Interval = 1000 / SFRenderEngine.scene.frames_per_second;
             TimerAnimation.Start();
@@ -85,8 +94,6 @@ namespace SpellforceDataEditor.special_forms
         
         private void MapEditorForm_Load(object sender, EventArgs e)
         {
-            SFResources.SFResourceManager.FindAllMeshes();
-
             LogUtils.Log.MemoryUsage();
         }
 

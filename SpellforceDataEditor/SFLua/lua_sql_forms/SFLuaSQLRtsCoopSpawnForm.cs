@@ -39,12 +39,6 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             ReloadSpawnTypeList();
         }
 
-        private void SFLuaSQLRtsCoopSpawnForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if(can_load)
-                SFLuaEnvironment.coop_spawns.Load();
-        }
-
         private void ReloadSpawnTypeList()
         {
             ListSpawnTypes.Items.Clear();

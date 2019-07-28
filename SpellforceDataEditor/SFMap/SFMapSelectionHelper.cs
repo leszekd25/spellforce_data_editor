@@ -133,7 +133,12 @@ namespace SpellforceDataEditor.SFMap
             CancelSelection();
             selection_type = SelectionType.BUILDING;
             selected_building = building;
-            SetSelectionScale(SF3D.SFRender.SFRenderEngine.scene.mesh_data.GetBuildingSelectionSize(building.game_id));
+
+            float sel_scale = 0.0f;
+            SFLua.lua_sql.SFLuaSQLBuildingData data = SFLua.SFLuaEnvironment.buildings[building.game_id];
+            if (data != null)
+                sel_scale = (float)(data.SelectionScaling / 2);
+            SetSelectionScale(sel_scale);
         }
 
         public void SelectObject(SFMapObject obj)
@@ -141,7 +146,12 @@ namespace SpellforceDataEditor.SFMap
             CancelSelection();
             selection_type = SelectionType.OBJECT;
             selected_object = obj;
-            SetSelectionScale(SF3D.SFRender.SFRenderEngine.scene.mesh_data.GetObjectSelectionSize(obj.game_id));
+
+            float sel_scale = 0.0f;
+            SFLua.lua_sql.SFLuaSQLObjectData data = SFLua.SFLuaEnvironment.objects[obj.game_id];
+            if (data != null)
+                sel_scale = (float)(data.SelectionScaling / 2);
+            SetSelectionScale(sel_scale);
         }
 
         public void SelectInteractiveObject(SFMapInteractiveObject io)
@@ -149,7 +159,12 @@ namespace SpellforceDataEditor.SFMap
             CancelSelection();
             selection_type = SelectionType.INTERACTIVE_OBJECT;
             selected_interactive_object = io;
-            SetSelectionScale(SF3D.SFRender.SFRenderEngine.scene.mesh_data.GetObjectSelectionSize(io.game_id));
+
+            float sel_scale = 0.0f;
+            SFLua.lua_sql.SFLuaSQLObjectData data = SFLua.SFLuaEnvironment.objects[io.game_id];
+            if (data != null)
+                sel_scale = (float)(data.SelectionScaling / 2);
+            SetSelectionScale(sel_scale);
         }
 
         public void SelectPortal(SFMapPortal p)
@@ -157,7 +172,12 @@ namespace SpellforceDataEditor.SFMap
             CancelSelection();
             selection_type = SelectionType.PORTAL;
             selected_portal = p;
-            SetSelectionScale(SF3D.SFRender.SFRenderEngine.scene.mesh_data.GetObjectSelectionSize(778));
+
+            float sel_scale = 0.0f;
+            SFLua.lua_sql.SFLuaSQLObjectData data = SFLua.SFLuaEnvironment.objects[778];
+            if (data != null)
+                sel_scale = (float)(data.SelectionScaling / 2);
+            SetSelectionScale(sel_scale);
         }
 
         // should be run once per render tick

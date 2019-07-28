@@ -38,6 +38,14 @@ namespace SpellforceDataEditor.special_forms
         {
             SFResourceManager.FindAllMeshes();
 
+            SFLua.SFLuaEnvironment.LoadSQL(false);
+            if (!SFLua.SFLuaEnvironment.data_loaded)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFAssetManagerForm(): Failed to load SQL data!");
+                Close();
+                return;
+            }
+
             SFRenderEngine.scene.Init();
             SFRenderEngine.Initialize(new Vector2(glControl1.ClientSize.Width, glControl1.ClientSize.Height));
             SFRenderEngine.scene.camera.Position = new Vector3(0, 1, 6);

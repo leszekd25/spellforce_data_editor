@@ -414,8 +414,6 @@
     <Compile Include="SF3D\CompressedMatrix.cs" />
     <Compile Include="SF3D\InterpolatedValue.cs" />
     <Compile Include="SF3D\SceneSynchro\SFScene.cs" />
-    <Compile Include="SF3D\SceneSynchro\SFVisualLink.cs" />
-    <Compile Include="SF3D\SceneSynchro\SFVisualLinkContainer.cs" />
     <Compile Include="SF3D\SFAnimation.cs" />
     <Compile Include="SF3D\SFBoneIndex.cs" />
     <Compile Include="SF3D\SFMaterial.cs" />
@@ -429,6 +427,9 @@
     <Compile Include="SFLua\LuaAction.cs" />
     <Compile Include="SFLua\LuaCinematic.cs" />
     <Compile Include="SFLua\LuaCondition.cs" />
+    <Compile Include="SFLua\LuaDecompiler\LuaBinaryScript.cs" />
+    <Compile Include="SFLua\LuaDecompiler\LuaInstruction.cs" />
+    <Compile Include="SFLua\LuaDecompiler\LuaState.cs" />
     <Compile Include="SFLua\LuaDialog.cs" />
     <Compile Include="SFLua\LuaEvent.cs" />
     <Compile Include="SFLua\LuaParser\LuaScript.cs" />
@@ -513,7 +514,35 @@
       <DependentUpon>LuaDialogSayControl.cs</DependentUpon>
     </Compile>
     <Compile Include="SFLua\lua_sql\ILuaSQL.cs" />
+    <Compile Include="SFLua\lua_sql\SFLuaSQLBuilding.cs" />
+    <Compile Include="SFLua\lua_sql\SFLuaSQLHead.cs" />
+    <Compile Include="SFLua\lua_sql\SFLuaSQLItem.cs" />
+    <Compile Include="SFLua\lua_sql\SFLuaSQLObject.cs" />
     <Compile Include="SFLua\lua_sql\SFLuaSQLRtsCoopSpawn.cs" />
+    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLBuildingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLBuildingForm.Designer.cs">
+      <DependentUpon>SFLuaSQLBuildingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLHeadForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLHeadForm.Designer.cs">
+      <DependentUpon>SFLuaSQLHeadForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLItemForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLItemForm.Designer.cs">
+      <DependentUpon>SFLuaSQLItemForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLObjectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLObjectForm.Designer.cs">
+      <DependentUpon>SFLuaSQLObjectForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFLua\lua_sql_forms\SFLuaSQLRtsCoopSpawnForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -982,6 +1011,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFLua\lua_dialog\LuaDialogSayControl.resx">
       <DependentUpon>LuaDialogSayControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_sql_forms\SFLuaSQLBuildingForm.resx">
+      <DependentUpon>SFLuaSQLBuildingForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_sql_forms\SFLuaSQLHeadForm.resx">
+      <DependentUpon>SFLuaSQLHeadForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_sql_forms\SFLuaSQLItemForm.resx">
+      <DependentUpon>SFLuaSQLItemForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_sql_forms\SFLuaSQLObjectForm.resx">
+      <DependentUpon>SFLuaSQLObjectForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFLua\lua_sql_forms\SFLuaSQLRtsCoopSpawnForm.resx">
       <DependentUpon>SFLuaSQLRtsCoopSpawnForm.cs</DependentUpon>

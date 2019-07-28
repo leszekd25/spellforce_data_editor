@@ -15,6 +15,9 @@ using OpenTK.Graphics.OpenGL;
 using SpellforceDataEditor.SFCFF;
 using SpellforceDataEditor.SFResources;
 
+using SpellforceDataEditor.SFLua;
+using SpellforceDataEditor.SFLua.lua_sql;
+
 namespace SpellforceDataEditor.SF3D.SceneSynchro
 {
     public class SFSceneMeta
@@ -33,8 +36,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public System.Diagnostics.Stopwatch delta_timer { get; private set; } = new System.Diagnostics.Stopwatch();     // timer which manages delta time
         private float deltatime = 0f;       // current delta time value in seconds
         public float current_time { get; private set; } = 0f;        // current scene time in seconds
-
-        public SFVisualLinkContainer mesh_data { get; private set; } = new SFVisualLinkContainer();
 
         public SceneNode root;   // tree with all visible objects; invisible objects are not connected to root
         public SFMap.SFMapHeightMap heightmap = null;  // contains heightmap chunk scene nodes
@@ -96,7 +97,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     int item_id = (UInt16)item[0];
 
                     //find item mesh
-                    string m_name = mesh_data.GetItemMesh(item_id, false);
+                    string m_name = SFLuaEnvironment.GetItemMesh(item_id, false);
                     if (m_name == "")
                     {
                         LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Item mesh not found (item id = " + item_id.ToString() + ")");
@@ -291,14 +292,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 return unit_node;
             }
             //find chest skin/animations
-            string chest_name = mesh_data.GetItemMesh(chest_id, is_female);
-            if (chest_name == "")
+            SFLuaSQLItemData chest_data = SFLuaEnvironment.items[chest_id];
+            if(chest_data == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): Undefined chestpiece mesh (unit id = "
                     + unit_id + ")");
                 return unit_node;
             }
-            string anim_name = mesh_data.GetItemAnimation(chest_id, is_female);
+            string chest_name = SFLuaEnvironment.GetItemMesh(chest_id, is_female);
+            string anim_name = chest_data.AnimSet;
+            if (anim_name == "")
+                anim_name = "figure_hero";
 
             //special case: monument unit, needs to be considered separately
             string unit_handle = Utility.CleanString(unit_data[10]);
@@ -319,7 +323,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (legs_id != 0)
             {
                 //find chest skin/animations
-                string legs_name = mesh_data.GetItemMesh(legs_id, is_female);
+                string legs_name = SFLuaEnvironment.GetItemMesh(legs_id, is_female);
                 if (legs_name != "")
                 {
                     uo = AddSceneNodeAnimated(unit_node, legs_name, "Legs");
@@ -329,21 +333,26 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 }
             }
             //special case: anim_name is of "figure_hero": need to also add human head (animated)
-            if ((anim_name.Contains("figure_hero")) && (unit_stats != null))
+            if ((anim_name == "figure_hero") && (unit_stats != null))
             {
                 int head_id = (UInt16)unit_stats[24];
-                string head_name = mesh_data.GetHeadMesh(head_id, is_female);
-                if (head_name != "")
+                SFLuaSQLHeadData head_data = SFLuaEnvironment.heads[head_id];
+                if (head_data == null)
                 {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): Unit head has undefined mesh (unit id = "
+                        + unit_id.ToString() + ", head id = " + head_id.ToString() + ")");
+                }
+                else
+                {
+                    string head_name = "";
+                    if (is_female)
+                        head_name = head_data.MeshFemale;
+                    else
+                        head_name = head_data.MeshMale;
                     uo = AddSceneNodeAnimated(unit_node, head_name, "Head");
                     if (uo.Skin != null)
                         foreach (SFModelSkinChunk msc in uo.Skin.submodels)
                             msc.material.flat_shade = true;
-                }
-                else
-                {
-                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): Unit head has undefined mesh (unit id = "
-                        + unit_id.ToString() + ", head id = " + head_id.ToString() + ")");
                 }
             }
 
@@ -352,7 +361,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (helmet_id != 0)
             {
                 //find item mesh
-                string helmet_name = mesh_data.GetItemMesh(helmet_id, is_female);
+                string helmet_name = SFLuaEnvironment.GetItemMesh(helmet_id, is_female);
                 if (helmet_name != "")
                 {
                     //create bone attachment
@@ -369,7 +378,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (rhand_id != 0)
             {
                 //find item mesh
-                string rhand_name = mesh_data.GetItemMesh(rhand_id, is_female);
+                string rhand_name = SFLuaEnvironment.GetItemMesh(rhand_id, is_female);
                 if (rhand_name != "")
                 {
                     //create bone attachment
@@ -386,7 +395,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (lhand_id != 0)
             {
                 //find item mesh
-                string lhand_name = mesh_data.GetItemMesh(lhand_id, is_female);
+                string lhand_name = SFLuaEnvironment.GetItemMesh(lhand_id, is_female);
                 if (lhand_name != "")
                 {
                     bool is_shield = false;
@@ -411,17 +420,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         public SceneNode AddSceneObject(int object_id, string object_name, bool apply_shading)
         {
-            List<string> m_lst = mesh_data.GetObjectMeshes(object_id);
-
             // create root
             SceneNode obj_node = AddSceneNodeEmpty(null, object_name);
 
-            if (m_lst == null)
+            SFLuaSQLObjectData obj_data = SFLuaEnvironment.objects[object_id];
+            if(obj_data==null)
             {
-                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneObject(): Object mesh is usassigned (object id = "
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneObject(): Can't find object data (object id = "
                     + object_id + ")");
                 return obj_node;
             }
+            List<string> m_lst = obj_data.Mesh;
 
             // add meshes
             for (int i = 0; i < m_lst.Count; i++)
@@ -439,17 +448,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         public SceneNode AddSceneBuilding(int building_id, string building_name)
         {
-            List<string> m_lst = mesh_data.GetBuildingMeshes(building_id);
-
             // create root
             SceneNode bld_node = AddSceneNodeEmpty(null, building_name);
 
-            if (m_lst == null)
+            SFLuaSQLBuildingData bld_data = SFLuaEnvironment.buildings[building_id];
+            if (bld_data == null)
             {
-                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneBuilding(): Building mesh is usassigned (building id = "
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneBuilding(): Can't find building data (object id = "
                     + building_id + ")");
                 return bld_node;
             }
+            List<string> m_lst = bld_data.Mesh;
 
             // add meshes
             for (int i = 0; i < m_lst.Count; i++)

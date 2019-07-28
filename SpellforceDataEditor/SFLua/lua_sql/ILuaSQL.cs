@@ -11,5 +11,6 @@ namespace SpellforceDataEditor.SFLua.lua_sql
     {
         int Load();
         int Save();
+        void Unload();
     }
 }

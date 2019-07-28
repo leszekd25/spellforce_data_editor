@@ -21,5 +21,25 @@ namespace SpellforceDataEditor.special_forms
         {
             SFLua.SFLuaEnvironment.ShowRtsCoopSpawnGroupsForm();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SFLua.SFLuaEnvironment.ShowSQLItemForm();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            SFLua.SFLuaEnvironment.ShowSQLObjectForm();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            SFLua.SFLuaEnvironment.ShowSQLBuildingForm();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            SFLua.SFLuaEnvironment.ShowSQLHeadForm();
+        }
     }
 }

@@ -6,17 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace SpellforceDataEditor
 {
     //helper class providing with useful functions
-    public class Utility
+    public static class Utility
     {
         public const string S_NONAME = "<no name>";
         public const string S_MISSING = "<missing>";
         public const string S_UNKNOWN = "<unknown>";
         public const string S_NONE = "<none>";
+        public static CultureInfo ci { get; } = CultureInfo.CreateSpecificCulture("en-GB");
         
         //functions which try to convert a string to the respective type
         static public SByte TryParseInt8(string s, SByte def = 0)
@@ -69,6 +71,7 @@ namespace SpellforceDataEditor
 
         static public Single TryParseFloat(string s, Single def = 0)
         {
+            s = s.Replace('.', ',');
             if (Single.TryParse(s, out float val))
                 return val;
             else
@@ -77,6 +80,7 @@ namespace SpellforceDataEditor
 
         static public Double TryParseDouble(string s, Double def = 0)
         {
+            s = s.Replace('.', ',');
             if (Double.TryParse(s, out double val))
                 return val;
             else
@@ -275,6 +279,30 @@ namespace SpellforceDataEditor
                 if (handle.IsAllocated)
                     handle.Free();
             }
+        }
+
+        // returns an index of the value if it were to be inserted into the index list such that ascending order is preserved
+        // returns -1 if value exists in the list
+        // assumes list is sorted in ascending order
+        static public int FindNewIndexOf(List<int> list, int id)
+        {
+            int current_start = 0;
+            int current_end = list.Count - 1;
+            int current_center;
+            int val;
+            while (current_start <= current_end)
+            {
+
+                current_center = (current_start + current_end) / 2;    //care about overflow (though its not happening in this case)
+                val = list[current_center];
+                if (val.CompareTo(id) == 0)
+                    return -1;
+                if (val.CompareTo(id) < 0)
+                    current_start = current_center + 1;
+                else
+                    current_end = current_center - 1;
+            }
+            return current_start;
         }
     }
 }

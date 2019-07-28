@@ -31,7 +31,7 @@ namespace SpellforceDataEditor.SFUnPak
         }
 
         // generates pak data given game directory to retrieve pak files from
-        // returns if succeeded
+        // returns 0 if succeeded
         static public int SpecifyGameDirectory(string dname)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory() called, directory: "+dname);
@@ -107,9 +107,7 @@ namespace SpellforceDataEditor.SFUnPak
                 LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Failed to load pak map, generating new one");
 
                 foreach (string file in files)
-                {
                     pak_map.AddPak(file);
-                }
                 pak_map.SaveData("pakdata.dat");
             }
             game_directory_specified = true;

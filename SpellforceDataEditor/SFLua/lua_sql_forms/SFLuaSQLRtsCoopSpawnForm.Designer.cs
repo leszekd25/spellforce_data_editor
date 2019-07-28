@@ -436,7 +436,6 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "SFLuaSQLRtsCoopSpawnForm";
             this.Text = "GdsRtsCoopSpawnGroups";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SFLuaSQLRtsCoopSpawnForm_FormClosing);
             this.Load += new System.EventHandler(this.SFLuaSQLRtsCoopSpawnForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

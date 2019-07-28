@@ -30,7 +30,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql
                 LuaParser.LuaTable i_spawn_data_units_table = (LuaParser.LuaTable)table["Units"];
 
                 for (int k = 1; k <= i_spawn_data_units_table.entries.Count; k++)
-                    units.Add((int)(double)i_spawn_data_units_table[k]);
+                    units.Add((int)(double)i_spawn_data_units_table[(double)k]);
             }
         }
 
@@ -86,24 +86,25 @@ namespace SpellforceDataEditor.SFLua.lua_sql
                 start_units = new List<int>();
                 LuaParser.LuaTable i_init_table = (LuaParser.LuaTable)table["Init"];
                 for (int j = 1; j <= i_init_table.entries.Count; j++)
-                    start_units.Add((int)(double)i_init_table[j]);
+                    start_units.Add((int)(double)i_init_table[(double)j]);
             }
 
             if (table["SpawnData"] != null)
             {
                 data = new Dictionary<int, SFMapCoopSpawnTypeDataInfo>();
                 LuaParser.LuaTable i_spawn_table = (LuaParser.LuaTable)table["SpawnData"];
-                List<int> i_spawn_indices = new List<int>();
+                List<double> i_spawn_indices = new List<double>();
                 foreach (var key in i_spawn_table.entries.Keys)
-                    i_spawn_indices.Add((int)key);
+                    i_spawn_indices.Add((double)key);
 
                 i_spawn_indices.Sort();
-                foreach (int j in i_spawn_indices)
+                foreach (double j in i_spawn_indices)
                 {
+                    int _j = (int)j;
                     LuaParser.LuaTable i_spawn_data_table = (LuaParser.LuaTable)i_spawn_table[j];
                     SFMapCoopSpawnTypeDataInfo cstdi = new SFMapCoopSpawnTypeDataInfo();
                     cstdi.ParseLoad(i_spawn_data_table);
-                    data.Add(j, cstdi);
+                    data.Add(_j, cstdi);
                 }
             }
         }
@@ -150,7 +151,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql
                 return -1;
             }
 
-            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Executing script "+filename);
+            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Executing script script\\gdsrtscoopspawngroups.lua");
 
             object[] ret = SFLuaEnvironment.ExecuteGameScript("script\\gdsrtscoopspawngroups.lua");
             if(ret==null)
@@ -168,25 +169,25 @@ namespace SpellforceDataEditor.SFLua.lua_sql
                 coop_spawn_types.Clear();
 
                 LuaParser.LuaTable table = (LuaParser.LuaTable)ret[0];
-                List<int> indices = new List<int>();
+                List<double> indices = new List<double>();
                 foreach (var key in table.entries.Keys)
-                    indices.Add((int)key);
+                    indices.Add((double)key);
 
                 indices.Sort();
                 // iterate over the rts coop spawn table
-                foreach (int i in indices)
+                foreach (double i in indices)
                 {
-                    log_current_spawn = i;
+                    int _i = (int)i;
+                    log_current_spawn = _i;
                     LuaParser.LuaTable i_table = (LuaParser.LuaTable)table[i];
                     SFMapCoopSpawnTypeInfo csti = new SFMapCoopSpawnTypeInfo();
                     csti.ParseLoad(i_table);
-                    coop_spawn_types.Add(i, csti);
+                    coop_spawn_types.Add(_i, csti);
                 }
             }
             catch (Exception)
             {
-                coop_spawn_types.Clear();
-                coop_spawn_types = null;
+                Unload();
                 LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLRtsCoopSpawn.Load(): Error reading spawn file! Spawn ID = " + log_current_spawn.ToString());
                 return -3;
             }
@@ -227,6 +228,15 @@ namespace SpellforceDataEditor.SFLua.lua_sql
             }
 
             return 0;
+        }
+
+        public void Unload()
+        {
+            if (coop_spawn_types != null)
+            {
+                coop_spawn_types.Clear();
+                coop_spawn_types = null;
+            }
         }
     }
 }
