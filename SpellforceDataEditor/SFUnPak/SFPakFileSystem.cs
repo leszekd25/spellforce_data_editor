@@ -372,10 +372,23 @@ namespace SpellforceDataEditor.SFUnPak
         public List<String> ListAllWithExtension(string path, string extname)
         {
             List<String> names = new List<string>();
-            foreach(SFPakEntryHeader eh in file_headers)
+            if (path == "")
             {
-                if ((eh.dir_name == path)&&(GetPathExtension(eh.name) == extname))
-                    names.Add(eh.name);
+                foreach (SFPakEntryHeader eh in file_headers)
+                     names.Add(eh.dir_name + "\\" + eh.name);
+            }
+            else
+            {
+                foreach (SFPakEntryHeader eh in file_headers)
+                {
+                    if ((eh.dir_name.StartsWith(path)) && (GetPathExtension(eh.name) == extname))
+                    {
+                        if (path != eh.dir_name)
+                            names.Add(eh.dir_name.Substring(path.Length + 1, eh.dir_name.Length - path.Length - 1) + "\\" + eh.name);
+                        else
+                            names.Add(eh.name);
+                    }
+                }
             }
             return names;
         }

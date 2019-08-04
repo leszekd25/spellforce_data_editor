@@ -260,6 +260,11 @@ namespace SpellforceDataEditor.SFUnPak
             return result;
         }
 
+        static public SFPakFileSystem GetPak(string pak)
+        {
+            return pak_map.GetPak(pak);
+        }
+
         static public void CloseAllPaks()
         {
             pak_map.CloseAllPaks();

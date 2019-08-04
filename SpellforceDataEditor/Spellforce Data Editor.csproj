@@ -427,8 +427,10 @@
     <Compile Include="SFLua\LuaAction.cs" />
     <Compile Include="SFLua\LuaCinematic.cs" />
     <Compile Include="SFLua\LuaCondition.cs" />
+    <Compile Include="SFLua\LuaDecompiler\DecompileNode.cs" />
     <Compile Include="SFLua\LuaDecompiler\LuaBinaryScript.cs" />
     <Compile Include="SFLua\LuaDecompiler\LuaInstruction.cs" />
+    <Compile Include="SFLua\LuaDecompiler\LuaStack.cs" />
     <Compile Include="SFLua\LuaDecompiler\LuaState.cs" />
     <Compile Include="SFLua\LuaDialog.cs" />
     <Compile Include="SFLua\LuaEvent.cs" />
@@ -440,6 +442,12 @@
     <Compile Include="SFLua\LuaEnumDefines.cs" />
     <Compile Include="SFLua\LuaParameter.cs" />
     <Compile Include="SFLua\LuaVariable.cs" />
+    <Compile Include="SFLua\lua_controls\LuaDecTestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaDecTestForm.Designer.cs">
+      <DependentUpon>LuaDecTestForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFLua\lua_controls\LuaValueBoolControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -979,6 +987,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SFLua\lua_controls\LuaDecTestForm.resx">
+      <DependentUpon>LuaDecTestForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SFLua\lua_controls\LuaValueBoolControl.resx">
       <DependentUpon>LuaValueBoolControl.cs</DependentUpon>
     </EmbeddedResource>

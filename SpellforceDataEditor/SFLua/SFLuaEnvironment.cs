@@ -32,7 +32,7 @@ namespace SpellforceDataEditor.SFLua
             foreach (int key in keys)
             {
                 sw.Write("\r\n\t[" + key.ToString() + "] = \r\n\t{");
-                sw.Write(Utility.TabulateString(dict[key].ParseToString(), 2));
+                sw.Write(Utility.TabulateStringNewline(dict[key].ParseToString(), 2));
                 sw.Write("\r\n\t},");
             }
             sw.Write("\r\n}");

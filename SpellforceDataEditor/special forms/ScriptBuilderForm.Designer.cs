@@ -54,10 +54,11 @@
             this.TabEvents = new System.Windows.Forms.TabPage();
             this.TabConditions = new System.Windows.Forms.TabPage();
             this.TabActions = new System.Windows.Forms.TabPage();
-            this.TabParameters = new System.Windows.Forms.TabPage();
-            this.TabVariables = new System.Windows.Forms.TabPage();
-            this.TabCinematics = new System.Windows.Forms.TabPage();
             this.TabDialogs = new System.Windows.Forms.TabPage();
+            this.TabVariables = new System.Windows.Forms.TabPage();
+            this.TabRtsSpawnSystems = new System.Windows.Forms.TabPage();
+            this.TabParameters = new System.Windows.Forms.TabPage();
+            this.TabCinematics = new System.Windows.Forms.TabPage();
             this.ListCodeEntries = new System.Windows.Forms.ListBox();
             this.LabelProject = new System.Windows.Forms.Label();
             this.TabScripts = new System.Windows.Forms.TabControl();
@@ -71,7 +72,8 @@
             this.LabelScriptName = new System.Windows.Forms.Label();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
             this.StatusText = new System.Windows.Forms.ToolStripStatusLabel();
-            this.TabRtsSpawnSystems = new System.Windows.Forms.TabPage();
+            this.goodiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eXPERIMENTALDecompilerStuffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.TabDragCode.SuspendLayout();
             this.PanelScriptInfo.SuspendLayout();
@@ -86,7 +88,8 @@
             this.platformToolStripMenuItem,
             this.scriptToolStripMenuItem,
             this.exportToolStripMenuItem,
-            this.settingsToolStripMenuItem});
+            this.settingsToolStripMenuItem,
+            this.goodiesToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(923, 24);
@@ -108,35 +111,35 @@
             // newProjectToolStripMenuItem
             // 
             this.newProjectToolStripMenuItem.Name = "newProjectToolStripMenuItem";
-            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newProjectToolStripMenuItem.Text = "New project...";
             this.newProjectToolStripMenuItem.Click += new System.EventHandler(this.newProjectToolStripMenuItem_Click);
             // 
             // loadProjectToolStripMenuItem
             // 
             this.loadProjectToolStripMenuItem.Name = "loadProjectToolStripMenuItem";
-            this.loadProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadProjectToolStripMenuItem.Text = "Load project...";
             this.loadProjectToolStripMenuItem.Click += new System.EventHandler(this.loadProjectToolStripMenuItem_Click);
             // 
             // saveProjectToolStripMenuItem
             // 
             this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
-            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveProjectToolStripMenuItem.Text = "Save project...";
             this.saveProjectToolStripMenuItem.Click += new System.EventHandler(this.saveProjectToolStripMenuItem_Click);
             // 
             // closeProjectToolStripMenuItem
             // 
             this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
-            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.closeProjectToolStripMenuItem.Text = "Close project...";
             this.closeProjectToolStripMenuItem.Click += new System.EventHandler(this.closeProjectToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -152,14 +155,14 @@
             // addPlatformToolStripMenuItem
             // 
             this.addPlatformToolStripMenuItem.Name = "addPlatformToolStripMenuItem";
-            this.addPlatformToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.addPlatformToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addPlatformToolStripMenuItem.Text = "Add Platform";
             this.addPlatformToolStripMenuItem.Click += new System.EventHandler(this.addPlatformToolStripMenuItem_Click);
             // 
             // renameProjectToolStripMenuItem
             // 
             this.renameProjectToolStripMenuItem.Name = "renameProjectToolStripMenuItem";
-            this.renameProjectToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.renameProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.renameProjectToolStripMenuItem.Text = "Rename Project";
             this.renameProjectToolStripMenuItem.Click += new System.EventHandler(this.renameProjectToolStripMenuItem_Click);
             // 
@@ -175,14 +178,14 @@
             // addScriptToolStripMenuItem
             // 
             this.addScriptToolStripMenuItem.Name = "addScriptToolStripMenuItem";
-            this.addScriptToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.addScriptToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addScriptToolStripMenuItem.Text = "Add Script...";
             this.addScriptToolStripMenuItem.Click += new System.EventHandler(this.addScriptToolStripMenuItem_Click);
             // 
             // renamePlatformToolStripMenuItem
             // 
             this.renamePlatformToolStripMenuItem.Name = "renamePlatformToolStripMenuItem";
-            this.renamePlatformToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.renamePlatformToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.renamePlatformToolStripMenuItem.Text = "Rename Platform";
             this.renamePlatformToolStripMenuItem.Click += new System.EventHandler(this.renamePlatformToolStripMenuItem_Click);
             // 
@@ -281,32 +284,31 @@
             // 
             // TabConditions
             // 
-            this.TabConditions.Location = new System.Drawing.Point(4, 22);
+            this.TabConditions.Location = new System.Drawing.Point(4, 40);
             this.TabConditions.Name = "TabConditions";
             this.TabConditions.Padding = new System.Windows.Forms.Padding(3);
-            this.TabConditions.Size = new System.Drawing.Size(256, 168);
+            this.TabConditions.Size = new System.Drawing.Size(256, 150);
             this.TabConditions.TabIndex = 1;
             this.TabConditions.Text = "Conditions";
             this.TabConditions.UseVisualStyleBackColor = true;
             // 
             // TabActions
             // 
-            this.TabActions.Location = new System.Drawing.Point(4, 22);
+            this.TabActions.Location = new System.Drawing.Point(4, 40);
             this.TabActions.Name = "TabActions";
-            this.TabActions.Size = new System.Drawing.Size(256, 168);
+            this.TabActions.Size = new System.Drawing.Size(256, 150);
             this.TabActions.TabIndex = 2;
             this.TabActions.Text = "Actions";
             this.TabActions.UseVisualStyleBackColor = true;
             // 
-            // TabParameters
+            // TabDialogs
             // 
-            this.TabParameters.Location = new System.Drawing.Point(4, 40);
-            this.TabParameters.Name = "TabParameters";
-            this.TabParameters.Padding = new System.Windows.Forms.Padding(3);
-            this.TabParameters.Size = new System.Drawing.Size(256, 150);
-            this.TabParameters.TabIndex = 3;
-            this.TabParameters.Text = "Parameters";
-            this.TabParameters.UseVisualStyleBackColor = true;
+            this.TabDialogs.Location = new System.Drawing.Point(4, 40);
+            this.TabDialogs.Name = "TabDialogs";
+            this.TabDialogs.Size = new System.Drawing.Size(256, 150);
+            this.TabDialogs.TabIndex = 0;
+            this.TabDialogs.Text = "Dialogs";
+            this.TabDialogs.UseVisualStyleBackColor = true;
             // 
             // TabVariables
             // 
@@ -318,6 +320,26 @@
             this.TabVariables.Text = "Variables";
             this.TabVariables.UseVisualStyleBackColor = true;
             // 
+            // TabRtsSpawnSystems
+            // 
+            this.TabRtsSpawnSystems.Location = new System.Drawing.Point(4, 40);
+            this.TabRtsSpawnSystems.Name = "TabRtsSpawnSystems";
+            this.TabRtsSpawnSystems.Padding = new System.Windows.Forms.Padding(3);
+            this.TabRtsSpawnSystems.Size = new System.Drawing.Size(256, 150);
+            this.TabRtsSpawnSystems.TabIndex = 6;
+            this.TabRtsSpawnSystems.Text = "RtsSpawnSystems";
+            this.TabRtsSpawnSystems.UseVisualStyleBackColor = true;
+            // 
+            // TabParameters
+            // 
+            this.TabParameters.Location = new System.Drawing.Point(4, 40);
+            this.TabParameters.Name = "TabParameters";
+            this.TabParameters.Padding = new System.Windows.Forms.Padding(3);
+            this.TabParameters.Size = new System.Drawing.Size(256, 150);
+            this.TabParameters.TabIndex = 3;
+            this.TabParameters.Text = "Parameters";
+            this.TabParameters.UseVisualStyleBackColor = true;
+            // 
             // TabCinematics
             // 
             this.TabCinematics.Location = new System.Drawing.Point(4, 40);
@@ -327,15 +349,6 @@
             this.TabCinematics.TabIndex = 5;
             this.TabCinematics.Text = "Cinematics";
             this.TabCinematics.UseVisualStyleBackColor = true;
-            // 
-            // TabDialogs
-            // 
-            this.TabDialogs.Location = new System.Drawing.Point(4, 40);
-            this.TabDialogs.Name = "TabDialogs";
-            this.TabDialogs.Size = new System.Drawing.Size(256, 150);
-            this.TabDialogs.TabIndex = 0;
-            this.TabDialogs.Text = "Dialogs";
-            this.TabDialogs.UseVisualStyleBackColor = true;
             // 
             // ListCodeEntries
             // 
@@ -450,15 +463,20 @@
             this.StatusText.Name = "StatusText";
             this.StatusText.Size = new System.Drawing.Size(0, 17);
             // 
-            // TabRtsSpawnSystems
+            // goodiesToolStripMenuItem
             // 
-            this.TabRtsSpawnSystems.Location = new System.Drawing.Point(4, 40);
-            this.TabRtsSpawnSystems.Name = "TabRtsSpawnSystems";
-            this.TabRtsSpawnSystems.Padding = new System.Windows.Forms.Padding(3);
-            this.TabRtsSpawnSystems.Size = new System.Drawing.Size(256, 150);
-            this.TabRtsSpawnSystems.TabIndex = 6;
-            this.TabRtsSpawnSystems.Text = "RtsSpawnSystems";
-            this.TabRtsSpawnSystems.UseVisualStyleBackColor = true;
+            this.goodiesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.eXPERIMENTALDecompilerStuffToolStripMenuItem});
+            this.goodiesToolStripMenuItem.Name = "goodiesToolStripMenuItem";
+            this.goodiesToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
+            this.goodiesToolStripMenuItem.Text = "Goodies";
+            // 
+            // eXPERIMENTALDecompilerStuffToolStripMenuItem
+            // 
+            this.eXPERIMENTALDecompilerStuffToolStripMenuItem.Name = "eXPERIMENTALDecompilerStuffToolStripMenuItem";
+            this.eXPERIMENTALDecompilerStuffToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.eXPERIMENTALDecompilerStuffToolStripMenuItem.Text = "(EXPERIMENTAL) Decompiler stuff";
+            this.eXPERIMENTALDecompilerStuffToolStripMenuItem.Click += new System.EventHandler(this.eXPERIMENTALDecompilerStuffToolStripMenuItem_Click);
             // 
             // ScriptBuilderForm
             // 
@@ -536,5 +554,7 @@
         private System.Windows.Forms.StatusStrip StatusStrip;
         private System.Windows.Forms.ToolStripStatusLabel StatusText;
         private System.Windows.Forms.TabPage TabRtsSpawnSystems;
+        private System.Windows.Forms.ToolStripMenuItem goodiesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eXPERIMENTALDecompilerStuffToolStripMenuItem;
     }
 }

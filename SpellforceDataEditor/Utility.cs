@@ -232,6 +232,14 @@ namespace SpellforceDataEditor
 
         static public string TabulateString(string s, int tabs)
         {
+            string replacement = "";
+            for (int i = 0; i < tabs; i++)
+                replacement += "\t";
+            return replacement + s;
+        }
+
+        static public string TabulateStringNewline(string s, int tabs)
+        {
             string replacement = "\r\n";
             for (int i = 0; i < tabs; i++)
                 replacement += "\t";
