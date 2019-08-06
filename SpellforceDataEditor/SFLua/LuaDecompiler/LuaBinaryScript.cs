@@ -294,9 +294,14 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
         public string GetLocal(int i)
         {
             if (i < NumParams)
-                return "arg" + i.ToString();
+                return "__arg" + i.ToString();
             else
                 return "__local" + (i - NumParams).ToString();
+        }
+
+        public string GetUpValue(int i)    // those are readonly, so its gucci
+        {
+            return "__upvalue" + i.ToString();
         }
 
         public DecompileNode GetLocalValue(LuaStack stack, int b, int i)
@@ -355,6 +360,71 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     case DecompileNodeType.VARIABLE:
                         c = 'V';
                         break;
+                    case DecompileNodeType.WHILE:
+                        c = 'W';
+                        break;
+                    default:
+                        break;
+                }
+                ret = c + ret;
+            }
+            return ret;
+        }
+
+        public string VisualiseNode(DecompileNode n)
+        {
+            string ret = "";
+            for (int i = 0; i < n.Children.Count; i++)
+            {
+                DecompileNode n2 = n.Children[i];
+                char c = ' ';
+                switch (n2.nodetype)
+                {
+                    case DecompileNodeType.CHUNK:
+                        c = '#';
+                        break;
+                    case DecompileNodeType.COND:
+                        c = 'C';
+                        break;
+                    case DecompileNodeType.FOREACHLOOP:
+                        c = 'L';
+                        break;
+                    case DecompileNodeType.FORLOOP:
+                        c = 'l';
+                        break;
+                    case DecompileNodeType.FUNCDEF:
+                        c = 'F';
+                        break;
+                    case DecompileNodeType.FUNCTION:
+                        c = 'f';
+                        break;
+                    case DecompileNodeType.IDENTIFIER:
+                        c = 'I';
+                        break;
+                    case DecompileNodeType.INDEXED_VALUE:
+                        c = 'X';
+                        break;
+                    case DecompileNodeType.MULTOPERATOR:
+                        c = 'O';
+                        break;
+                    case DecompileNodeType.RETURN:
+                        c = 'R';
+                        break;
+                    case DecompileNodeType.TABLE:
+                        c = 'T';
+                        break;
+                    case DecompileNodeType.UNOPERATOR:
+                        c = 'o';
+                        break;
+                    case DecompileNodeType.VALUE:
+                        c = 'v';
+                        break;
+                    case DecompileNodeType.VARIABLE:
+                        c = 'V';
+                        break;
+                    case DecompileNodeType.WHILE:
+                        c = 'W';
+                        break;
                     default:
                         break;
                 }
@@ -381,17 +451,17 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
         {
             int start_pos = stack.Pos;
             for (int i = 0; i < NumParams; i++)
-                stack.Push(new DecompileNode(DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, GetLocal(i)));
+                stack.Push(new DecompileNode(-1, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, GetLocal(i)));
             if (IsVarArg)
-                stack.Push(new DecompileNode(DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, "..."));
+                stack.Push(new DecompileNode(-1, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, "..."));
 
             bool done = false;
             int local_count = NumParams;
 
-            DecompileNode root = new DecompileNode(DecompileNodeType.CHUNK, DecompileDataType.NIL, null);
+            DecompileNode root = new DecompileNode(-1, DecompileNodeType.CHUNK, DecompileDataType.NIL, null);
             List<LabelInfo> label_stack = new List<LabelInfo>();
             // workaround for X or Y value issue
-            DecompileNode andor_operator_helper = null;    // can change for a stack if ever needed
+            List<DecompileNode> andor_operator_helper = new List<DecompileNode>();
 
             for(int i=0;i<Instructions.Count;i++)
             {
@@ -402,9 +472,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     {
                         if (label_stack[label_stack.Count - 1].type == LabelType.ANDOR)
                         {
-                            andor_operator_helper.AddNode((DecompileNode)stack.Pop());
-                            stack.Push(andor_operator_helper);
-                            andor_operator_helper = null;
+                            andor_operator_helper[andor_operator_helper.Count-1].AddNode((DecompileNode)stack.Pop());
+                            stack.Push(andor_operator_helper[andor_operator_helper.Count-1]);
+                            andor_operator_helper.RemoveAt(andor_operator_helper.Count-1);
                         }
                         else if (label_stack[label_stack.Count - 1].type == LabelType.IFEND)
                         {
@@ -418,9 +488,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                             DecompileNode forloop_step = (DecompileNode)stack.Pop();
                             DecompileNode forloop_to = (DecompileNode)stack.Pop();
                             DecompileNode forloop_from = (DecompileNode)stack.Pop();
-                            DecompileNode forloop_localnum = new DecompileNode(DecompileNodeType.VALUE, DecompileDataType.STRING,
+                            DecompileNode forloop_localnum = new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.STRING,
                                 GetLocal(local_count));
-                            DecompileNode forloop_table = new DecompileNode(DecompileNodeType.TABLE, DecompileDataType.LIST, null);
+                            DecompileNode forloop_table = new DecompileNode(i, DecompileNodeType.TABLE, DecompileDataType.LIST, null);
                             forloop_table.AddNode(forloop_from);
                             forloop_table.AddNode(forloop_to);
                             forloop_table.AddNode(forloop_step);
@@ -448,22 +518,10 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         if (label_stack.Count == 0)
                             break;
                     }
-
-                    if(Instructions[i-1].OpCode == LuaOpCode.OP_JMP)   // can be moved to switch?
-                    {
-                        if(Instructions[i - 1].ArgS < 0)
-                        {
-                            LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaFunction.Decompile(): Unsupported jump index " + Instructions[i - 1].ArgS.ToString());
-                            return null;
-                        }
-                        label_stack.Add(new LabelInfo(i + Instructions[i - 1].ArgS+1, LabelType.IFEND));
-                        DecompileNode n = root.Children[root.Children.Count-1];
-                        root = n.Children[1];
-                    }
                 }
 
-                //System.Diagnostics.Debug.WriteLine(" | STACK: " + VisualiseDecompileStack(stack));
-                //System.Diagnostics.Debug.Write(i.ToString().PadRight(4)+" | "+instr.ToString().PadRight(20));
+                //System.Diagnostics.Debug.WriteLine(" | STACK: " + VisualiseDecompileStack(stack).PadRight(40)+" | ROOT: "+VisualiseNode(root));
+                //System.Diagnostics.Debug.WriteLine(i.ToString().PadRight(4)+" | "+instr.ToString().PadRight(20));
 
                 switch (instr.OpCode)
                 {
@@ -472,21 +530,14 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         break;
                     case LuaOpCode.OP_RETURN:
                         int ret_base = instr.ArgU;
-                        DecompileNode ret_n = new DecompileNode(DecompileNodeType.RETURN);
+                        DecompileNode ret_n = new DecompileNode(i, DecompileNodeType.RETURN);
                         while (stack.Pos > start_pos + ret_base)
                             ret_n.AddNode((DecompileNode)stack.Pop());
                         root.AddNode(ret_n);
                         break;
                     case LuaOpCode.OP_CALL:
                         int stack_base = instr.ArgA;
-                        if((instr.ArgB > 1)&&(instr.ArgB!=255))
-                        {
-                            LogUtils.Log.Error(LogUtils.LogSource.SFLua, 
-                                "LuaBinaryScript.Decompile(): unsupported function return values (return values number: " 
-                                + instr.ArgB.ToString() + ")");
-                            return null;
-                        }
-                        DecompileNode call_n = new DecompileNode(DecompileNodeType.FUNCTION);
+                        DecompileNode call_n = new DecompileNode(i, DecompileNodeType.FUNCTION);
 
                         while(stack.Pos > stack_base+start_pos+1)
                             call_n.AddNode((DecompileNode)stack.Pop(), 0);
@@ -495,67 +546,95 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
 
                         if (instr.ArgB == 0)
                             root.AddNode(call_n);
-                        else
+                        else if((instr.ArgB == 1)||(instr.ArgB == 255))
                             stack.Push(call_n);
+                        else     // temporary workaround for multireturn values
+                        {
+                            for(int j=0;j<instr.ArgB; j++)
+                            {
+                                DecompileNode call_multiret = new DecompileNode(i, DecompileNodeType.INDEXED_VALUE, DecompileDataType.STRING,
+                                    call_n);
+                                call_multiret.AddNode(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.NUMBER, j));
+                                stack.Push(call_multiret);
+                            }
+                        }
 
+                        break;
+                    case LuaOpCode.OP_TAILCALL:
+                        int tailcall_ret_base = instr.ArgB;
+                        int tailcall_call_base = instr.ArgA;
+                        DecompileNode tailcall_n = new DecompileNode(i, DecompileNodeType.RETURN);
+                        DecompileNode tailcall_call = new DecompileNode(i, DecompileNodeType.FUNCTION);
+                        while (stack.Pos > tailcall_call_base + start_pos + 1)
+                            tailcall_call.AddNode((DecompileNode)stack.Pop(), 0);
+                        tailcall_call.data = stack.Pop();
+                        stack.Push(tailcall_call);
+                        while (stack.Pos > start_pos + tailcall_ret_base)
+                            tailcall_n.AddNode((DecompileNode)stack.Pop());
+                        root.AddNode(tailcall_n);
                         break;
                     case LuaOpCode.OP_PUSHNIL:
                         for(int k=0;k<instr.ArgU; k++)
-                            stack.Push(new DecompileNode(DecompileNodeType.VALUE, DecompileDataType.NIL, null));
+                            stack.Push(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.NIL, null));
                         break;
                     case LuaOpCode.OP_PUSHINT:
-                        stack.Push(new DecompileNode(DecompileNodeType.VALUE, DecompileDataType.NUMBER, instr.ArgS));
+                        stack.Push(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.NUMBER, instr.ArgS));
                         break;
                     case LuaOpCode.OP_PUSHSTRING:
-                        stack.Push(new DecompileNode(DecompileNodeType.VALUE, DecompileDataType.STRING, Strings[instr.ArgU]));
+                        stack.Push(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.STRING, Strings[instr.ArgU]));
                         break;
                     case LuaOpCode.OP_PUSHNUM:
-                        stack.Push(new DecompileNode(DecompileNodeType.VALUE, DecompileDataType.NUMBER, Numbers[instr.ArgU]));
+                        stack.Push(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.NUMBER, Numbers[instr.ArgU]));
                         break;
                     case LuaOpCode.OP_PUSHNEGNUM:
-                        stack.Push(new DecompileNode(DecompileNodeType.VALUE, DecompileDataType.NUMBER, -Numbers[instr.ArgU]));
+                        stack.Push(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.NUMBER, -Numbers[instr.ArgU]));
                         break;
                     case LuaOpCode.OP_PUSHSELF:
                         DecompileNode pushself_n = (DecompileNode)stack.Pop();
-                        DecompileNode pushself_n2 = new DecompileNode(DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
+                        DecompileNode pushself_n2 = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
                             pushself_n.data.ToString() + ":" + Strings[instr.ArgU]);
                         stack.Push(pushself_n2);
                         break;
+                    case LuaOpCode.OP_PUSHUPVALUE:
+                        stack.Push(new DecompileNode(i, DecompileNodeType.UPIDENTIFIER, DecompileDataType.STRING, GetUpValue(instr.ArgU)));
+                        break;
                     case LuaOpCode.OP_GETGLOBAL:                   // todo: rework
-                        stack.Push(new DecompileNode(DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, Strings[instr.ArgU]));
+                        stack.Push(new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, Strings[instr.ArgU]));
                         break;
                     case LuaOpCode.OP_GETLOCAL:
-                        stack.Push(new DecompileNode(DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, GetLocal(instr.ArgU)));
+                        stack.Push(new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, GetLocal(instr.ArgU)));
                         break;
                     case LuaOpCode.OP_GETTABLE:
                         DecompileNode gettable_key = (DecompileNode)stack.Pop();
                         DecompileNode gettable_table = (DecompileNode)stack.Pop();
-                        DecompileNode gettable_var = new DecompileNode(DecompileNodeType.INDEXED_VALUE, DecompileDataType.STRING,
-                            gettable_table.data.ToString());
+                        DecompileNode gettable_var = new DecompileNode(i, DecompileNodeType.INDEXED_VALUE, DecompileDataType.STRING,
+                            gettable_table.data);
                         gettable_var.AddNode(gettable_key);
                         stack.Push(gettable_var);
                         break;
                     case LuaOpCode.OP_GETINDEXED:
-                        DecompileNode getindexed_key = new DecompileNode(DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
+                        DecompileNode getindexed_key = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
                             GetLocal(instr.ArgU));
                         DecompileNode getindexed_table = (DecompileNode)stack.Pop();
-                        DecompileNode getindexed_var = new DecompileNode(DecompileNodeType.INDEXED_VALUE, DecompileDataType.STRING,
-                            getindexed_table.data.ToString());
+                        DecompileNode getindexed_var = new DecompileNode(i, DecompileNodeType.INDEXED_VALUE, DecompileDataType.STRING,
+                            getindexed_table);
                         getindexed_var.AddNode(getindexed_key);
                         stack.Push(getindexed_var);
                         break;
                     case LuaOpCode.OP_GETDOTTED:
                         DecompileNode getdotted_n = (DecompileNode)stack.Pop();
-                        DecompileNode getdotted_n2 = new DecompileNode(DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
+                        DecompileNode getdotted_n2 = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
                             getdotted_n.data.ToString() + "." + Strings[instr.ArgU]);
                         stack.Push(getdotted_n2);
                         break;
                     case LuaOpCode.OP_CREATETABLE:
-                        stack.Push(new DecompileNode(DecompileNodeType.TABLE));
+                        stack.Push(new DecompileNode(i, DecompileNodeType.TABLE, DecompileDataType.LIST, instr.ArgU));
                         break;
                     case LuaOpCode.OP_SETGLOBAL:                   // set global value to last thing on stack
-                        DecompileNode setglobal_n = new DecompileNode(DecompileNodeType.VARIABLE, DecompileDataType.STRING,
+                        DecompileNode setglobal_name = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
                             Strings[instr.ArgU]);
+                        DecompileNode setglobal_n = new DecompileNode(i, DecompileNodeType.VARIABLE, DecompileDataType.USERDATA,
+                            setglobal_name);
                         DecompileNode setglobal_n2 = (DecompileNode)stack.Pop();
                         if (setglobal_n2.nodetype == DecompileNodeType.FUNCDEF)
                         {
@@ -567,8 +646,10 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         root.AddNode(setglobal_n);                 // misses many valid use cases...
                         break;
                     case LuaOpCode.OP_SETLOCAL:
-                        DecompileNode setlocal_n = new DecompileNode(DecompileNodeType.VARIABLE, DecompileDataType.STRING,
+                        DecompileNode setlocal_name = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
                             GetLocal(instr.ArgU));
+                        DecompileNode setlocal_n = new DecompileNode(i, DecompileNodeType.VARIABLE, DecompileDataType.USERDATA,
+                            setlocal_name);
                         DecompileNode setlocal_n2 = (DecompileNode)stack.Pop();
                         if (setlocal_n2.nodetype == DecompileNodeType.FUNCDEF)
                         {
@@ -584,40 +665,47 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         DecompileNode settable_key = (DecompileNode)stack.Pop();
                         DecompileNode settable_table = (DecompileNode)stack.Pop();
 
-                        DecompileNode settable_var = new DecompileNode(DecompileNodeType.VARIABLE, DecompileDataType.DICT,
+                        DecompileNode settable_ind = new DecompileNode(i, DecompileNodeType.INDEXED_VALUE, DecompileDataType.USERDATA,
                             settable_table.data);
-                        settable_var.AddNode(settable_key);
+                        settable_ind.AddNode(settable_key);
+
+                        DecompileNode settable_var = new DecompileNode(i, DecompileNodeType.VARIABLE, DecompileDataType.USERDATA, settable_ind);
                         settable_var.AddNode(settable_val);
+
                         root.AddNode(settable_var);
                         break;
                     case LuaOpCode.OP_SETMAP:
                         int elems_d_count = instr.ArgU*2;
                         DecompileNode setmap_n = (DecompileNode)stack.Get(elems_d_count);
+                        int setmap_cur_elems = setmap_n.Children.Count;
                         setmap_n.datatype = DecompileDataType.DICT;
                         while(elems_d_count != 0)
                         {
                             DecompileNode val = (DecompileNode)stack.Pop();
                             DecompileNode key = (DecompileNode)stack.Pop();
-                            key.AddNode(val);
-                            setmap_n.AddNode(key, 0);
+                            DecompileNode var = new DecompileNode(i, DecompileNodeType.VARIABLE, DecompileDataType.USERDATA, key);
+                            var.AddNode(val);
+                            setmap_n.AddNode(var, setmap_cur_elems);
                             elems_d_count -= 2;
                         }
                         break;
                     case LuaOpCode.OP_SETLIST:
                         int elems_l_count = instr.ArgB;
                         DecompileNode setlist_n = (DecompileNode)stack.Get(elems_l_count);
-                        setlist_n.datatype = DecompileDataType.LIST;
+                        int setlist_cur_elems = setlist_n.Children.Count;
                         while (elems_l_count != 0)
                         {
                             DecompileNode val = (DecompileNode)stack.Pop();
-                            setlist_n.AddNode(val, 0);
+                            DecompileNode var = new DecompileNode(i, DecompileNodeType.VARIABLE, DecompileDataType.NIL, null);
+                            var.AddNode(val);
+                            setlist_n.AddNode(var, setlist_cur_elems);
                             elems_l_count -= 1;
                         }
                         break;
                     case LuaOpCode.OP_ADD:
                         DecompileNode add_n = (DecompileNode)stack.Pop();
                         DecompileNode add_n2 = (DecompileNode)stack.Pop();
-                        DecompileNode add_n3 = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "+");
+                        DecompileNode add_n3 = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "+");
                         add_n3.AddNode(add_n2);
                         add_n3.AddNode(add_n);
                         stack.Push(add_n3);
@@ -628,16 +716,16 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         bool addi_positive = addi_val >= 0;
                         if (!addi_positive)
                             addi_val = -addi_val;
-                        DecompileNode addi_n2 = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING,
+                        DecompileNode addi_n2 = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING,
                             addi_positive ? "+" : "-");
                         addi_n2.AddNode(addi_n);
-                        addi_n2.AddNode(new DecompileNode(DecompileNodeType.VALUE, DecompileDataType.NUMBER, addi_val));
+                        addi_n2.AddNode(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.NUMBER, addi_val));
                         stack.Push(addi_n2);
                         break;
                     case LuaOpCode.OP_SUB:
                         DecompileNode sub_n = (DecompileNode)stack.Pop();
                         DecompileNode sub_n2 = (DecompileNode)stack.Pop();
-                        DecompileNode sub_n3 = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "-");
+                        DecompileNode sub_n3 = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "-");
                         sub_n3.AddNode(sub_n2);
                         sub_n3.AddNode(sub_n);
                         stack.Push(sub_n3);
@@ -645,7 +733,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     case LuaOpCode.OP_MULT:
                         DecompileNode mult_n = (DecompileNode)stack.Pop();
                         DecompileNode mult_n2 = (DecompileNode)stack.Pop();
-                        DecompileNode mult_n3 = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "*");
+                        DecompileNode mult_n3 = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "*");
                         mult_n3.AddNode(mult_n2);
                         mult_n3.AddNode(mult_n);
                         stack.Push(mult_n3);
@@ -653,7 +741,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     case LuaOpCode.OP_DIV:
                         DecompileNode div_n = (DecompileNode)stack.Pop();
                         DecompileNode div_n2 = (DecompileNode)stack.Pop();
-                        DecompileNode div_n3 = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "/");
+                        DecompileNode div_n3 = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "/");
                         div_n3.AddNode(div_n2);
                         div_n3.AddNode(div_n);
                         stack.Push(div_n3);
@@ -661,7 +749,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     case LuaOpCode.OP_POW:
                         DecompileNode pow_n = (DecompileNode)stack.Pop();
                         DecompileNode pow_n2 = (DecompileNode)stack.Pop();
-                        DecompileNode pow_n3 = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "^");
+                        DecompileNode pow_n3 = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "^");
                         pow_n3.AddNode(pow_n2);
                         pow_n3.AddNode(pow_n);
                         stack.Push(pow_n3);
@@ -675,7 +763,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         int nodes_to_pop = instr.ArgU;
                         for (int k = 0; k < nodes_to_pop; k++)
                             concat_nodes.Add((DecompileNode)stack.Pop());
-                        DecompileNode concat_n = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "..");
+                        DecompileNode concat_n = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "..");
                         while (concat_nodes.Count != 0)
                         {
                             concat_n.AddNode(concat_nodes[concat_nodes.Count-1]);
@@ -685,180 +773,327 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         break;
                     case LuaOpCode.OP_MINUS:
                         DecompileNode minus_n = (DecompileNode)stack.Pop();
-                        DecompileNode minus_n2 = new DecompileNode(DecompileNodeType.UNOPERATOR, DecompileDataType.STRING, "-");
+                        DecompileNode minus_n2 = new DecompileNode(i, DecompileNodeType.UNOPERATOR, DecompileDataType.STRING, "-");
                         minus_n2.AddNode(minus_n);
                         stack.Push(minus_n2);
                         break;
+                    case LuaOpCode.OP_NOT:
+                        DecompileNode not_n = (DecompileNode)stack.Pop();
+                        DecompileNode not_n2 = new DecompileNode(i, DecompileNodeType.UNOPERATOR, DecompileDataType.STRING, "not ");
+                        not_n2.AddNode(not_n);
+                        stack.Push(not_n2);
+                        break;
+                    case LuaOpCode.OP_PUSHNILJMP:     // is it good?
+                        DecompileNode pushniljump_control = root.Parent;
+                        root = pushniljump_control.Parent;
+                        root.RemoveNode(pushniljump_control);
+                        DecompileNode pushniljump_op = (DecompileNode)pushniljump_control.data;
+                        pushniljump_op.ReverseLogicalOperator();
+                        stack.Push(pushniljump_op);
+                        i++;
+                        break;
                     case LuaOpCode.OP_JMP:        // taken care of on start of loop : )
+                        if (instr.ArgS < 0)   // while/continue
+                        {
+                            root.AddNode(new DecompileNode(i, DecompileNodeType.CONTINUELOOP));
+                            DecompileNode control_n = root.Parent;
+                            if (control_n.nodetype == DecompileNodeType.COND)
+                            {
+                                control_n.nodetype = DecompileNodeType.WHILE;
+                            }
+                        }
+                        else // else/break
+                        {
+                            DecompileNode control_n = root.Parent;
+                            if(control_n == null)   // if nil then
+                            {
+                                DecompileNode jmp_n = new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.NIL, null);
+                                DecompileNode jmp_op = new DecompileNode(i, DecompileNodeType.UNOPERATOR, DecompileDataType.STRING, "");
+                                jmp_op.AddNode(jmp_n);
+                                DecompileNode jmp_cond = new DecompileNode(i, DecompileNodeType.COND, DecompileDataType.USERDATA, jmp_op);// skip block if false
+                                DecompileNode jmp_nojump = new DecompileNode(i, DecompileNodeType.CHUNK);
+                                DecompileNode jmp_jump = new DecompileNode(i, DecompileNodeType.CHUNK);
+                                root.AddNode(jmp_cond);
+                                jmp_cond.AddNode(jmp_nojump);
+                                jmp_cond.AddNode(jmp_jump);
+                                root = jmp_nojump;
+                                if (instr.ArgS < 0)
+                                {
+                                    LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaFunction.Decompile(): Unsupported jump index "
+                                        + instr.ArgS.ToString());
+                                    return null;
+                                }
+                                label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
+                                break;
+                            }
+                            else if (control_n.nodetype == DecompileNodeType.COND)  // else in if-else block
+                            {
+                                if (root.Children.Count == 0)   // empty if - delete if block
+                                {
+                                    root = control_n.Parent;
+                                    root.RemoveNode(control_n);
+                                    label_stack.RemoveAt(label_stack.Count - 1);
+                                    break;
+                                }
+                                else if (instr.ArgS == 0)  // empty else - skip
+                                    break;
+                                label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
+                                root = control_n.Children[1];
+                            }
+                            else   // while/for/foreach loop
+                            {
+                                root.AddNode(new DecompileNode(i, DecompileNodeType.BREAKLOOP));
+                            }
+                        }
                         break;
                     case LuaOpCode.OP_JMPF:
                         DecompileNode jmpf_n = (DecompileNode)stack.Pop();
-                        DecompileNode jmpf_op = new DecompileNode(DecompileNodeType.UNOPERATOR, DecompileDataType.STRING, "");
+                        DecompileNode jmpf_op = new DecompileNode(i, DecompileNodeType.UNOPERATOR, DecompileDataType.STRING, "");
                         jmpf_op.AddNode(jmpf_n);
-                        DecompileNode jmpf_cond = new DecompileNode(DecompileNodeType.COND, DecompileDataType.USERDATA, jmpf_op);// skip block if false
-                        DecompileNode jmpf_nojump = new DecompileNode(DecompileNodeType.CHUNK);
-                        DecompileNode jmpf_jump = new DecompileNode(DecompileNodeType.CHUNK);
+                        if (instr.ArgS < 0)
+                        {
+                            DecompileNode jmpf_repeat = new DecompileNode(i, DecompileNodeType.REPEATLOOP, DecompileDataType.USERDATA, jmpf_op);
+                            DecompileNode jmpf_repeat_chunk = new DecompileNode(i, DecompileNodeType.CHUNK);
+                            jmpf_repeat.AddNode(jmpf_repeat_chunk);
+                            for (int k = 0; k < root.Children.Count; k++)
+                            {
+                                if (root.Children[k].instruction_id >= i + instr.ArgS + 1)
+                                {
+                                    jmpf_repeat_chunk.AddNode(root.Children[k]);
+                                    root.RemoveNode(root.Children[k]);
+                                }
+                            }
+                            root.AddNode(jmpf_repeat);
+                            break;
+                        }
+                        DecompileNode jmpf_cond = new DecompileNode(i, DecompileNodeType.COND, DecompileDataType.USERDATA, jmpf_op);// skip block if false
+                        DecompileNode jmpf_nojump = new DecompileNode(i, DecompileNodeType.CHUNK);
+                        DecompileNode jmpf_jump = new DecompileNode(i, DecompileNodeType.CHUNK);
                         root.AddNode(jmpf_cond);
                         jmpf_cond.AddNode(jmpf_nojump);
                         jmpf_cond.AddNode(jmpf_jump);
                         root = jmpf_nojump;
-                        if (instr.ArgS < 0)
-                        {
-                            LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaFunction.Decompile(): Unsupported jump index "
-                                + instr.ArgS.ToString());
-                            return null;
-                        }
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPT:
                         DecompileNode jmpt_n = (DecompileNode)stack.Pop();
-                        DecompileNode jmpt_op = new DecompileNode(DecompileNodeType.UNOPERATOR, DecompileDataType.STRING, "not ");
+                        DecompileNode jmpt_op = new DecompileNode(i, DecompileNodeType.UNOPERATOR, DecompileDataType.STRING, "not ");
                         jmpt_op.AddNode(jmpt_n);
-                        DecompileNode jmpt_cond = new DecompileNode(DecompileNodeType.COND, DecompileDataType.USERDATA, jmpt_op);// skip block if false
-                        DecompileNode jmpt_nojump = new DecompileNode(DecompileNodeType.CHUNK);
-                        DecompileNode jmpt_jump = new DecompileNode(DecompileNodeType.CHUNK);
+                        if (instr.ArgS < 0)
+                        {
+                            DecompileNode jmpt_repeat = new DecompileNode(i, DecompileNodeType.REPEATLOOP, DecompileDataType.USERDATA, jmpt_op);
+                            DecompileNode jmpt_repeat_chunk = new DecompileNode(i, DecompileNodeType.CHUNK);
+                            jmpt_repeat.AddNode(jmpt_repeat_chunk);
+                            for (int k = 0; k < root.Children.Count; k++)
+                            {
+                                if (root.Children[k].instruction_id >= i + instr.ArgS + 1)
+                                {
+                                    jmpt_repeat_chunk.AddNode(root.Children[k]);
+                                    root.RemoveNode(root.Children[k]);
+                                }
+                            }
+                            root.AddNode(jmpt_repeat);
+                            break;
+                        }
+                        DecompileNode jmpt_cond = new DecompileNode(i, DecompileNodeType.COND, DecompileDataType.USERDATA, jmpt_op);// skip block if false
+                        DecompileNode jmpt_nojump = new DecompileNode(i, DecompileNodeType.CHUNK);
+                        DecompileNode jmpt_jump = new DecompileNode(i, DecompileNodeType.CHUNK);
                         root.AddNode(jmpt_cond);
                         jmpt_cond.AddNode(jmpt_nojump);
                         jmpt_cond.AddNode(jmpt_jump);
                         root = jmpt_nojump;
-                        if (instr.ArgS < 0)
-                        {
-                            LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaFunction.Decompile(): Unsupported jump index "
-                                + instr.ArgS.ToString());
-                            return null;
-                        }
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPNE:
                         DecompileNode jmpne_n2 = (DecompileNode)stack.Pop();
                         DecompileNode jmpne_n1 = (DecompileNode)stack.Pop();
-                        DecompileNode jmpne_op = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "==");
+                        DecompileNode jmpne_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "==");
                         jmpne_op.AddNode(jmpne_n1);
                         jmpne_op.AddNode(jmpne_n2);
-                        DecompileNode jmpne_cond = new DecompileNode(DecompileNodeType.COND, DecompileDataType.USERDATA, jmpne_op);// skip block if not equal
-                        DecompileNode jmpne_nojump = new DecompileNode(DecompileNodeType.CHUNK);
-                        DecompileNode jmpne_jump = new DecompileNode(DecompileNodeType.CHUNK);
+                        if (instr.ArgS < 0)
+                        {
+                            DecompileNode jmpne_repeat = new DecompileNode(i, DecompileNodeType.REPEATLOOP, DecompileDataType.USERDATA, jmpne_op);
+                            DecompileNode jmpne_repeat_chunk = new DecompileNode(i, DecompileNodeType.CHUNK);
+                            jmpne_repeat.AddNode(jmpne_repeat_chunk);
+                            for (int k = 0; k < root.Children.Count; k++)
+                            {
+                                if (root.Children[k].instruction_id >= i + instr.ArgS + 1)
+                                {
+                                    jmpne_repeat_chunk.AddNode(root.Children[k]);
+                                    root.RemoveNode(root.Children[k]);
+                                }
+                            }
+                            root.AddNode(jmpne_repeat);
+                            break;
+                        }
+                        DecompileNode jmpne_cond = new DecompileNode(i, DecompileNodeType.COND, DecompileDataType.USERDATA, jmpne_op);// skip block if not equal
+                        DecompileNode jmpne_nojump = new DecompileNode(i, DecompileNodeType.CHUNK);
+                        DecompileNode jmpne_jump = new DecompileNode(i, DecompileNodeType.CHUNK);
                         root.AddNode(jmpne_cond);
                         jmpne_cond.AddNode(jmpne_nojump);
                         jmpne_cond.AddNode(jmpne_jump);
                         root = jmpne_nojump;
-                        if (instr.ArgS < 0)
-                        {
-                            LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaFunction.Decompile(): Unsupported jump index " 
-                                + instr.ArgS.ToString());
-                            return null;
-                        }
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPEQ:
                         DecompileNode jmpeq_n2 = (DecompileNode)stack.Pop();
                         DecompileNode jmpeq_n1 = (DecompileNode)stack.Pop();
-                        DecompileNode jmpeq_op = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "~=");
+                        DecompileNode jmpeq_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "~=");
                         jmpeq_op.AddNode(jmpeq_n1);
                         jmpeq_op.AddNode(jmpeq_n2);
-                        DecompileNode jmpeq_cond = new DecompileNode(DecompileNodeType.COND, DecompileDataType.USERDATA, jmpeq_op);// skip block if not equal
-                        DecompileNode jmpeq_nojump = new DecompileNode(DecompileNodeType.CHUNK);
-                        DecompileNode jmpeq_jump = new DecompileNode(DecompileNodeType.CHUNK);
+                        if (instr.ArgS < 0)
+                        {
+                            DecompileNode jmpeq_repeat = new DecompileNode(i, DecompileNodeType.REPEATLOOP, DecompileDataType.USERDATA, jmpeq_op);
+                            DecompileNode jmpeq_repeat_chunk = new DecompileNode(i, DecompileNodeType.CHUNK);
+                            jmpeq_repeat.AddNode(jmpeq_repeat_chunk);
+                            for (int k = 0; k < root.Children.Count; k++)
+                            {
+                                if (root.Children[k].instruction_id >= i + instr.ArgS + 1)
+                                {
+                                    jmpeq_repeat_chunk.AddNode(root.Children[k]);
+                                    root.RemoveNode(root.Children[k]);
+                                }
+                            }
+                            root.AddNode(jmpeq_repeat);
+                            break;
+                        }
+                        DecompileNode jmpeq_cond = new DecompileNode(i, DecompileNodeType.COND, DecompileDataType.USERDATA, jmpeq_op);// skip block if not equal
+                        DecompileNode jmpeq_nojump = new DecompileNode(i, DecompileNodeType.CHUNK);
+                        DecompileNode jmpeq_jump = new DecompileNode(i, DecompileNodeType.CHUNK);
                         root.AddNode(jmpeq_cond);
                         jmpeq_cond.AddNode(jmpeq_nojump);
                         jmpeq_cond.AddNode(jmpeq_jump);
                         root = jmpeq_nojump;
-                        if (instr.ArgS < 0)
-                        {
-                            LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaFunction.Decompile(): Unsupported jump index " 
-                                + instr.ArgS.ToString());
-                            return null;
-                        }
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPGE:
                         DecompileNode jmpge_n2 = (DecompileNode)stack.Pop();
                         DecompileNode jmpge_n1 = (DecompileNode)stack.Pop();
-                        DecompileNode jmpge_op = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "<");
+                        DecompileNode jmpge_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "<");
                         jmpge_op.AddNode(jmpge_n1);
                         jmpge_op.AddNode(jmpge_n2);
-                        DecompileNode jmpge_cond = new DecompileNode(DecompileNodeType.COND, DecompileDataType.USERDATA, jmpge_op);// skip block if not equal
-                        DecompileNode jmpge_nojump = new DecompileNode(DecompileNodeType.CHUNK);
-                        DecompileNode jmpge_jump = new DecompileNode(DecompileNodeType.CHUNK);
+                        if (instr.ArgS < 0)
+                        {
+                            DecompileNode jmpge_repeat = new DecompileNode(i, DecompileNodeType.REPEATLOOP, DecompileDataType.USERDATA, jmpge_op);
+                            DecompileNode jmpge_repeat_chunk = new DecompileNode(i, DecompileNodeType.CHUNK);
+                            jmpge_repeat.AddNode(jmpge_repeat_chunk);
+                            for (int k = 0; k < root.Children.Count; k++)
+                            {
+                                if (root.Children[k].instruction_id >= i + instr.ArgS + 1)
+                                {
+                                    jmpge_repeat_chunk.AddNode(root.Children[k]);
+                                    root.RemoveNode(root.Children[k]);
+                                }
+                            }
+                            root.AddNode(jmpge_repeat);
+                            break;
+                        }
+                        DecompileNode jmpge_cond = new DecompileNode(i, DecompileNodeType.COND, DecompileDataType.USERDATA, jmpge_op);// skip block if not equal
+                        DecompileNode jmpge_nojump = new DecompileNode(i, DecompileNodeType.CHUNK);
+                        DecompileNode jmpge_jump = new DecompileNode(i, DecompileNodeType.CHUNK);
                         root.AddNode(jmpge_cond);
                         jmpge_cond.AddNode(jmpge_nojump);
                         jmpge_cond.AddNode(jmpge_jump);
                         root = jmpge_nojump;
-                        if (instr.ArgS < 0)
-                        {
-                            LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaFunction.Decompile(): Unsupported jump index " 
-                                + instr.ArgS.ToString());
-                            return null;
-                        }
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPGT:
                         DecompileNode jmpgt_n2 = (DecompileNode)stack.Pop();
                         DecompileNode jmpgt_n1 = (DecompileNode)stack.Pop();
-                        DecompileNode jmpgt_op = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "<=");
+                        DecompileNode jmpgt_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "<=");
                         jmpgt_op.AddNode(jmpgt_n1);
                         jmpgt_op.AddNode(jmpgt_n2);
-                        DecompileNode jmpgt_cond = new DecompileNode(DecompileNodeType.COND, DecompileDataType.USERDATA, jmpgt_op);// skip block if not equal
-                        DecompileNode jmpgt_nojump = new DecompileNode(DecompileNodeType.CHUNK);
-                        DecompileNode jmpgt_jump = new DecompileNode(DecompileNodeType.CHUNK);
+                        if (instr.ArgS < 0)
+                        {
+                            DecompileNode jmpgt_repeat = new DecompileNode(i, DecompileNodeType.REPEATLOOP, DecompileDataType.USERDATA, jmpgt_op);
+                            DecompileNode jmpgt_repeat_chunk = new DecompileNode(i, DecompileNodeType.CHUNK);
+                            jmpgt_repeat.AddNode(jmpgt_repeat_chunk);
+                            for (int k = 0; k < root.Children.Count; k++)
+                            {
+                                if (root.Children[k].instruction_id >= i + instr.ArgS + 1)
+                                {
+                                    jmpgt_repeat_chunk.AddNode(root.Children[k]);
+                                    root.RemoveNode(root.Children[k]);
+                                }
+                            }
+                            root.AddNode(jmpgt_repeat);
+                            break;
+                        }
+                        DecompileNode jmpgt_cond = new DecompileNode(i, DecompileNodeType.COND, DecompileDataType.USERDATA, jmpgt_op);// skip block if not equal
+                        DecompileNode jmpgt_nojump = new DecompileNode(i, DecompileNodeType.CHUNK);
+                        DecompileNode jmpgt_jump = new DecompileNode(i, DecompileNodeType.CHUNK);
                         root.AddNode(jmpgt_cond);
                         jmpgt_cond.AddNode(jmpgt_nojump);
                         jmpgt_cond.AddNode(jmpgt_jump);
                         root = jmpgt_nojump;
-                        if (instr.ArgS < 0)
-                        {
-                            LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaFunction.Decompile(): Unsupported jump index " 
-                                + instr.ArgS.ToString());
-                            return null;
-                        }
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPLE:
                         DecompileNode jmple_n2 = (DecompileNode)stack.Pop();
                         DecompileNode jmple_n1 = (DecompileNode)stack.Pop();
-                        DecompileNode jmple_op = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, ">");
+                        DecompileNode jmple_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, ">");
+                        if (instr.ArgS < 0)
+                        {
+                            DecompileNode jmple_repeat = new DecompileNode(i, DecompileNodeType.REPEATLOOP, DecompileDataType.USERDATA, jmple_op);
+                            DecompileNode jmple_repeat_chunk = new DecompileNode(i, DecompileNodeType.CHUNK);
+                            jmple_repeat.AddNode(jmple_repeat_chunk);
+                            for (int k = 0; k < root.Children.Count; k++)
+                            {
+                                if (root.Children[k].instruction_id >= i + instr.ArgS + 1)
+                                {
+                                    jmple_repeat_chunk.AddNode(root.Children[k]);
+                                    root.RemoveNode(root.Children[k]);
+                                }
+                            }
+                            root.AddNode(jmple_repeat);
+                            break;
+                        }
                         jmple_op.AddNode(jmple_n1);
                         jmple_op.AddNode(jmple_n2);
-                        DecompileNode jmple_cond = new DecompileNode(DecompileNodeType.COND, DecompileDataType.USERDATA, jmple_op);// skip block if not equal
-                        DecompileNode jmple_nojump = new DecompileNode(DecompileNodeType.CHUNK);
-                        DecompileNode jmple_jump = new DecompileNode(DecompileNodeType.CHUNK);
+                        DecompileNode jmple_cond = new DecompileNode(i, DecompileNodeType.COND, DecompileDataType.USERDATA, jmple_op);// skip block if not equal
+                        DecompileNode jmple_nojump = new DecompileNode(i, DecompileNodeType.CHUNK);
+                        DecompileNode jmple_jump = new DecompileNode(i, DecompileNodeType.CHUNK);
                         root.AddNode(jmple_cond);
                         jmple_cond.AddNode(jmple_nojump);
                         jmple_cond.AddNode(jmple_jump);
                         root = jmple_nojump;
-                        if (instr.ArgS < 0)
-                        {
-                            LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaFunction.Decompile(): Unsupported jump index " 
-                                + instr.ArgS.ToString());
-                            return null;
-                        }
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPLT:
                         DecompileNode jmplt_n2 = (DecompileNode)stack.Pop();
                         DecompileNode jmplt_n1 = (DecompileNode)stack.Pop();
-                        DecompileNode jmplt_op = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, ">=");
+                        DecompileNode jmplt_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, ">=");
                         jmplt_op.AddNode(jmplt_n1);
                         jmplt_op.AddNode(jmplt_n2);
-                        DecompileNode jmplt_cond = new DecompileNode(DecompileNodeType.COND, DecompileDataType.USERDATA, jmplt_op);// skip block if not equal
-                        DecompileNode jmplt_nojump = new DecompileNode(DecompileNodeType.CHUNK);
-                        DecompileNode jmplt_jump = new DecompileNode(DecompileNodeType.CHUNK);
+                        if (instr.ArgS < 0)
+                        {
+                            DecompileNode jmplt_repeat = new DecompileNode(i, DecompileNodeType.REPEATLOOP, DecompileDataType.USERDATA, jmplt_op);
+                            DecompileNode jmplt_repeat_chunk = new DecompileNode(i, DecompileNodeType.CHUNK);
+                            jmplt_repeat.AddNode(jmplt_repeat_chunk);
+                            for (int k = 0; k < root.Children.Count; k++)
+                            {
+                                if (root.Children[k].instruction_id >= i + instr.ArgS + 1)
+                                {
+                                    jmplt_repeat_chunk.AddNode(root.Children[k]);
+                                    root.RemoveNode(root.Children[k]);
+                                }
+                            }
+                            root.AddNode(jmplt_repeat);
+                            break;
+                        }
+                        DecompileNode jmplt_cond = new DecompileNode(i, DecompileNodeType.COND, DecompileDataType.USERDATA, jmplt_op);// skip block if not equal
+                        DecompileNode jmplt_nojump = new DecompileNode(i, DecompileNodeType.CHUNK);
+                        DecompileNode jmplt_jump = new DecompileNode(i, DecompileNodeType.CHUNK);
                         root.AddNode(jmplt_cond);
                         jmplt_cond.AddNode(jmplt_nojump);
                         jmplt_cond.AddNode(jmplt_jump);
                         root = jmplt_nojump;
-                        if (instr.ArgS < 0)
-                        {
-                            LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaFunction.Decompile(): Unsupported jump index " 
-                                + instr.ArgS.ToString());
-                            return null;
-                        }
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPONT:
                         DecompileNode jmpont_n = (DecompileNode)stack.Pop();
-                        DecompileNode jmpont_op = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "or");
-                        andor_operator_helper = jmpont_op;
+                        DecompileNode jmpont_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "or");
+                        andor_operator_helper.Add(jmpont_op);
                         jmpont_op.AddNode(jmpont_n);
                         if (instr.ArgS < 0)
                         {
@@ -870,8 +1105,8 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         break;
                     case LuaOpCode.OP_JMPONF:
                         DecompileNode jmponf_n = (DecompileNode)stack.Pop();
-                        DecompileNode jmponf_op = new DecompileNode(DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "and");
-                        andor_operator_helper = jmponf_op;
+                        DecompileNode jmponf_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "and");
+                        andor_operator_helper.Add(jmponf_op);
                         jmponf_op.AddNode(jmponf_n);
                         if (instr.ArgS < 0)
                         {
@@ -883,9 +1118,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         break;
                     case LuaOpCode.OP_FORPREP:
                         int forprep_local = stack.Pos - start_pos;
-                        DecompileNode forprep_for = new DecompileNode(DecompileNodeType.FORLOOP, DecompileDataType.NUMBER, null);
+                        DecompileNode forprep_for = new DecompileNode(i, DecompileNodeType.FORLOOP, DecompileDataType.NUMBER, null);
                         root.AddNode(forprep_for);
-                        forprep_for.AddNode(new DecompileNode(DecompileNodeType.CHUNK));
+                        forprep_for.AddNode(new DecompileNode(i, DecompileNodeType.CHUNK));
                         root = forprep_for.Children[0];
                         local_count += 3;
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.FOR));
@@ -893,12 +1128,12 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     case LuaOpCode.OP_FORLOOP:   // handled separately
                         break;
                     case LuaOpCode.OP_LFORPREP:
-                        DecompileNode lforprep_for = new DecompileNode(DecompileNodeType.FOREACHLOOP);
-                        lforprep_for.AddNode(new DecompileNode(DecompileNodeType.CHUNK));
+                        DecompileNode lforprep_for = new DecompileNode(i, DecompileNodeType.FOREACHLOOP);
+                        lforprep_for.AddNode(new DecompileNode(i, DecompileNodeType.CHUNK));
                         root.AddNode(lforprep_for);
                         root = lforprep_for.Children[0];
-                        DecompileNode lforprep_key = new DecompileNode(DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, GetLocal(stack.Pos));
-                        DecompileNode lforprep_val = new DecompileNode(DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, GetLocal(stack.Pos + 1));
+                        DecompileNode lforprep_key = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, GetLocal(stack.Pos));
+                        DecompileNode lforprep_val = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, GetLocal(stack.Pos + 1));
                         stack.Push(lforprep_key);
                         stack.Push(lforprep_val);
                         local_count += 3;
@@ -907,10 +1142,11 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     case LuaOpCode.OP_LFORLOOP:  // handled separately
                         break;
                     case LuaOpCode.OP_CLOSURE:                     // function definition
-                        DecompileNode n = new DecompileNode(DecompileNodeType.FUNCDEF, DecompileDataType.STRING, null);
+                        DecompileNode n = new DecompileNode(i, DecompileNodeType.FUNCDEF, DecompileDataType.STRING, null);
+                        int cur_pos = stack.Pos+1;
                         stack.Push(n);
                         n.AddNode(Functions[instr.ArgA].Decompile(stack));
-                        while (stack.Pos != instr.ArgB)
+                        while (stack.Pos != cur_pos)
                             stack.Pop();
                         break;
                     default:
@@ -921,7 +1157,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                 if (done)
                     break;
             }
-            DecompileNode root_args = new DecompileNode(DecompileNodeType.TABLE, DecompileDataType.LIST, null);
+            DecompileNode root_args = new DecompileNode(Int32.MaxValue, DecompileNodeType.TABLE, DecompileDataType.LIST, null);
             if(IsVarArg)
                 root_args.AddNode((DecompileNode)stack.PopAt(stack.Pos - start_pos - 1));
             for (int i = 0; i < NumParams; i++)

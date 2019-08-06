@@ -36,6 +36,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.ButtonNPCMapProperties = new System.Windows.Forms.Button();
             this.ButtonCreateNPC = new System.Windows.Forms.Button();
+            this.ButtonOpenScript = new System.Windows.Forms.Button();
+            this.ButtonPlatformScripts = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // ListNPCs
@@ -114,9 +116,31 @@
             this.ButtonCreateNPC.UseVisualStyleBackColor = false;
             this.ButtonCreateNPC.Click += new System.EventHandler(this.ButtonCreateNPC_Click);
             // 
+            // ButtonOpenScript
+            // 
+            this.ButtonOpenScript.Location = new System.Drawing.Point(238, 98);
+            this.ButtonOpenScript.Name = "ButtonOpenScript";
+            this.ButtonOpenScript.Size = new System.Drawing.Size(109, 23);
+            this.ButtonOpenScript.TabIndex = 14;
+            this.ButtonOpenScript.Text = "Open NPC script";
+            this.ButtonOpenScript.UseVisualStyleBackColor = true;
+            this.ButtonOpenScript.Click += new System.EventHandler(this.ButtonOpenScript_Click);
+            // 
+            // ButtonPlatformScripts
+            // 
+            this.ButtonPlatformScripts.Location = new System.Drawing.Point(238, 11);
+            this.ButtonPlatformScripts.Name = "ButtonPlatformScripts";
+            this.ButtonPlatformScripts.Size = new System.Drawing.Size(109, 23);
+            this.ButtonPlatformScripts.TabIndex = 15;
+            this.ButtonPlatformScripts.Text = "Open platform script";
+            this.ButtonPlatformScripts.UseVisualStyleBackColor = true;
+            this.ButtonPlatformScripts.Click += new System.EventHandler(this.ButtonPlatformScripts_Click);
+            // 
             // MapInspectorNPCControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.Controls.Add(this.ButtonPlatformScripts);
+            this.Controls.Add(this.ButtonOpenScript);
             this.Controls.Add(this.ButtonCreateNPC);
             this.Controls.Add(this.ButtonNPCMapProperties);
             this.Controls.Add(this.label2);
@@ -142,5 +166,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button ButtonNPCMapProperties;
         private System.Windows.Forms.Button ButtonCreateNPC;
+        private System.Windows.Forms.Button ButtonOpenScript;
+        private System.Windows.Forms.Button ButtonPlatformScripts;
     }
 }

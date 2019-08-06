@@ -40,6 +40,7 @@ namespace SpellforceDataEditor.SFLua
             return sw.ToString();
         }
 
+        // only used in SQL stuff
         public static object[] ExecuteGameScript(string fname)
         {
             if (!SFUnPak.SFUnPak.game_directory_specified)
@@ -48,7 +49,7 @@ namespace SpellforceDataEditor.SFLua
                 return null;
             }
 
-            if(File.Exists(SFUnPak.SFUnPak.game_directory_name+"\\"+fname))
+            if (File.Exists(SFUnPak.SFUnPak.game_directory_name+"\\"+fname))
             {
                 LuaParser.LuaTable test = new LuaParser.LuaTable();
                 LuaParser.LuaScript scr = new  LuaParser.LuaScript(File.ReadAllText(SFUnPak.SFUnPak.game_directory_name + "\\" + fname));
@@ -69,6 +70,150 @@ namespace SpellforceDataEditor.SFLua
                 br.Close();
                 return ret;
             }
+        }
+
+        static public int GetDecompiledString(string fname, ref string result)
+        {
+            if (!SFUnPak.SFUnPak.game_directory_specified)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaEnvironment.GetDecompiledString(): Game directory is not specified!");
+                return -1;
+            }
+
+            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", fname);
+            if (ms == null)
+                return -2;
+            else
+            {
+                BinaryReader br = new BinaryReader(ms);
+                LuaDecompiler.LuaBinaryScript scr = null;
+                try
+                {
+                    scr = new LuaDecompiler.LuaBinaryScript(br);
+                }
+                catch (Exception)
+                {
+                    return -3;
+                }
+                br.Close();
+
+                LuaDecompiler.LuaStack stack = new LuaDecompiler.LuaStack();
+                LuaDecompiler.DecompileNode res;
+                try
+                {
+                    res = scr.func.Decompile(stack);
+                }
+                catch (Exception)
+                {
+                    return -4;
+                }
+
+                string ret = "";
+                try
+                {
+                    ret = res.ToScript();
+                }
+                catch (Exception)
+                {
+                    return -5;
+                }
+
+                result = ret;
+            }
+
+            return 0;
+        }
+
+        // general version, likely still bad...
+        static public int OpenScript(string fname)
+        {
+            if (!SFUnPak.SFUnPak.game_directory_specified)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaEnvironment.OpenScript(): Game directory is not specified!");
+                return -1;
+            }
+
+            if (!File.Exists(SFUnPak.SFUnPak.game_directory_name + "\\" + fname))
+            {
+                string ret = "";
+
+                int result = GetDecompiledString(fname, ref ret);
+                if (result == -2)
+                {
+                    if (MessageBox.Show("Script does not exist. Create a new script?", "Script not found", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        FileInfo fo = new FileInfo(SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
+                        fo.Directory.Create();
+                        File.Create("@" + SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
+                    }
+                    else
+                        return -2;
+                }
+                else if (result == 0)
+                {
+                    FileInfo fo = new FileInfo(SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
+                    fo.Directory.Create();
+                    File.WriteAllText(SFUnPak.SFUnPak.game_directory_name + "\\" + fname, ret);
+                }
+                else
+                    return -3;
+            }
+
+            System.Diagnostics.Process.Start(SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
+
+            return 0;
+        }
+
+        // specialized version; arguments are named
+        static public int OpenNPCScript(int platform_id, int npc_id)
+        {
+            string fname = "script\\p" + platform_id.ToString() + "\\n" + npc_id.ToString() + ".lua";
+            if (!SFUnPak.SFUnPak.game_directory_specified)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaEnvironment.OpenNPCScript(): Game directory is not specified!");
+                return -1;
+            }
+            if (!File.Exists(SFUnPak.SFUnPak.game_directory_name + "\\" + fname))
+            {
+                string ret = "";
+
+                int result = GetDecompiledString(fname, ref ret);
+                if (result == -2)
+                {
+                    if (MessageBox.Show("Script does not exist. Create a new script?", "Script not found", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        if (!Directory.Exists(SFUnPak.SFUnPak.game_directory_name + "\\script"))
+                            Directory.CreateDirectory(SFUnPak.SFUnPak.game_directory_name + "\\script");
+                        if (!Directory.Exists(SFUnPak.SFUnPak.game_directory_name + "\\script\\p" + platform_id.ToString()))
+                            Directory.CreateDirectory(SFUnPak.SFUnPak.game_directory_name + "\\script\\p" + platform_id.ToString());
+
+                        File.Create("@" + SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
+                    }
+                    else
+                        return -2;
+                }
+                else if (result == 0)
+                {
+                    if (!Directory.Exists(SFUnPak.SFUnPak.game_directory_name + "\\script"))
+                        Directory.CreateDirectory(SFUnPak.SFUnPak.game_directory_name + "\\script");
+                    if (!Directory.Exists(SFUnPak.SFUnPak.game_directory_name + "\\script\\p" + platform_id.ToString()))
+                        Directory.CreateDirectory(SFUnPak.SFUnPak.game_directory_name + "\\script\\p" + platform_id.ToString());
+
+                    ret = ret.Replace("__arg0", "_Type");
+                    ret = ret.Replace("__arg1", "_PlatformId");
+                    ret = ret.Replace("__arg2", "_NpcId");
+                    ret = ret.Replace("__arg3", "_X");
+                    ret = ret.Replace("__arg4", "_Y");
+
+                    File.WriteAllText(SFUnPak.SFUnPak.game_directory_name + "\\" + fname, ret);
+                }
+                else
+                    return -3;
+            }
+
+            System.Diagnostics.Process.Start(SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
+            
+            return 0;
         }
 
         public static void ShowRtsCoopSpawnGroupsForm()

@@ -30,6 +30,7 @@ namespace SpellforceDataEditor.SFMap
         public SFMapSelectionHelper selection_helper { get; private set; } = new SFMapSelectionHelper();
         public SFMapNPCManager npc_manager { get; private set; } = null;
         public SFCFF.SFGameData gamedata { get; private set; } = null;
+        public uint PlatformID { get; private set; } = 6666;
 
         public int Load(string filename, SFCFF.SFGameData gd, ToolStripLabel tx)
         {
@@ -674,6 +675,8 @@ namespace SpellforceDataEditor.SFMap
 
             // selection helper stuff
             selection_helper.AssignToMap(this);
+
+            FindPlatformID(filename);
 
             // done
 
@@ -1866,6 +1869,30 @@ namespace SpellforceDataEditor.SFMap
             obj.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
 
             return 0;
+        }
+
+        private void FindPlatformID(string fname)
+        {
+            PlatformID = 6666;
+
+            if (!SFCFF.SFCategoryManager.ready)
+                return;
+
+            int li = fname.LastIndexOf("map\\");
+            if (li < 0)
+                return;
+
+            fname = fname.Substring(li + 4, fname.Length - li - 8);
+            fname = fname.ToUpper();
+
+            foreach(SFCFF.SFCategoryElement e in SFCFF.SFCategoryManager.gamedata[37].elements)
+            {
+                if(Utility.CleanString(e[2]).ToUpper() == fname)
+                {
+                    PlatformID = (uint)e[0];
+                    break;
+                }
+            }
         }
     }
 }

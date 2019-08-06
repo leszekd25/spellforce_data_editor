@@ -129,6 +129,19 @@ namespace SpellforceDataEditor.SFUnPak
             return names;
         }
 
+        public List<string> ListAllInDirectory(string path, string[] pak_filter)
+        {
+            List<String> names = new List<String>();
+            if (pak_filter == null)
+                pak_filter = pak_map.Keys.ToArray();
+            foreach (string pak in pak_filter)
+            {
+                SFPakFileSystem fs = pak_map[pak];
+                names = names.Union(fs.ListAllInDirectory(path)).ToList();
+            }
+            return names;
+        }
+
         public void  CloseAllPaks()
         {
             foreach (SFPakFileSystem sys in pak_map.Values)

@@ -272,5 +272,29 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 new_selected -= 1;
             ListNPCs.SelectedIndex = new_selected;
         }
+
+        private void ButtonOpenScript_Click(object sender, EventArgs e)
+        {
+            if (selected_npc_index == -1)
+                return;
+
+            string fname = "script\\p" + map.PlatformID.ToString() + "\\n" + selected_npc.ToString() + ".lua";
+            if (SFLua.SFLuaEnvironment.OpenNPCScript((int)map.PlatformID, selected_npc) != 0)
+                MessageBox.Show("Could not open " + fname);
+        }
+
+        private void ButtonPlatformScripts_Click(object sender, EventArgs e)
+        {
+            map_dialog.MapSelectPlatformScriptDialog scr = new map_dialog.MapSelectPlatformScriptDialog();
+            scr.PlatformID = map.PlatformID;
+            scr.ShowDialog();
+            string res = scr.result;
+            if (res == null)
+                return;
+
+            string fname = "script\\p" + map.PlatformID.ToString() + "\\" + res;
+            if (SFLua.SFLuaEnvironment.OpenScript(fname) != 0)
+                MessageBox.Show("Could not open " + fname);
+        }
     }
 }

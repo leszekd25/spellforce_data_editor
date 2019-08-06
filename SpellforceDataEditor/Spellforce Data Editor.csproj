@@ -653,6 +653,12 @@
     <Compile Include="SFMap\map_dialog\MapPromptNewMap.Designer.cs">
       <DependentUpon>MapPromptNewMap.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFMap\map_dialog\MapSelectPlatformScriptDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapSelectPlatformScriptDialog.Designer.cs">
+      <DependentUpon>MapSelectPlatformScriptDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFMap\SFCoord.cs" />
     <Compile Include="SFMap\SFMap.cs" />
     <Compile Include="SFMap\SFMapBuildingManager.cs" />
@@ -1082,6 +1088,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_dialog\MapPromptNewMap.resx">
       <DependentUpon>MapPromptNewMap.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_dialog\MapSelectPlatformScriptDialog.resx">
+      <DependentUpon>MapSelectPlatformScriptDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMod\mod_controls\ModInfoForm.resx">
       <DependentUpon>ModInfoForm.cs</DependentUpon>

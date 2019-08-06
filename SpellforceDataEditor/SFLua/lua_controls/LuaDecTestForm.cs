@@ -66,7 +66,7 @@ namespace SpellforceDataEditor.SFLua.lua_controls
                 {
                     br.Close();
                 }
-                if(i%10 == 0)
+                if(i%100 == 0)
                 {
                     ScriptsFailed.Text = (unparsed_scripts + failed_scripts).ToString();
                     ScriptsDecompiled.Text = decompiled_scripts.ToString();
@@ -74,6 +74,9 @@ namespace SpellforceDataEditor.SFLua.lua_controls
                     Application.DoEvents();
                 }
             }
+            ScriptsFailed.Text = (unparsed_scripts + failed_scripts).ToString();
+            ScriptsDecompiled.Text = decompiled_scripts.ToString();
+            Progress.Value = Progress.Maximum;
             // write failed scripts to a file
             FileStream scr_dump = new FileStream("scripts_dump.txt", FileMode.Create, FileAccess.Write);
             StreamWriter sw = new StreamWriter(scr_dump);

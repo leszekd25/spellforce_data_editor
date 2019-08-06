@@ -260,6 +260,13 @@ namespace SpellforceDataEditor.SFUnPak
             return result;
         }
 
+        static public List<String> ListAllInDirectory(string path, string[] pak_filter)
+        {
+            List<String> result = pak_map.ListAllInDirectory(path, pak_filter);
+            result.Sort();
+            return result;
+        }
+
         static public SFPakFileSystem GetPak(string pak)
         {
             return pak_map.GetPak(pak);

@@ -9,9 +9,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
 {
     public enum DecompileNodeType
     {
-        CHUNK, COND, IDENTIFIER, FUNCDEF, FOREACHLOOP,
+        CHUNK, COND, IDENTIFIER, FUNCDEF, FOREACHLOOP, UPIDENTIFIER, REPEATLOOP,
         UNOPERATOR, MULTOPERATOR, VALUE, INDEXED_VALUE, FUNCTION,
-        TABLE, VARIABLE, FORLOOP, RETURN
+        TABLE, VARIABLE, FORLOOP, RETURN, WHILE, CONTINUELOOP, BREAKLOOP
     }
     public enum DecompileDataType { NIL, NUMBER, STRING, LIST, DICT, FUNCTION, USERDATA }
     public class DecompileNode
@@ -21,9 +21,11 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
         public object data;
         public DecompileNode Parent = null;
         public List<DecompileNode> Children = new List<DecompileNode>();
+        public int instruction_id = -1;
 
-        public DecompileNode(DecompileNodeType nt, DecompileDataType dt = DecompileDataType.NIL, object d = null)
+        public DecompileNode(int id, DecompileNodeType nt, DecompileDataType dt = DecompileDataType.NIL, object d = null)
         {
+            instruction_id = id;
             nodetype = nt;
             datatype = dt;
             data = d;
@@ -63,6 +65,48 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
             return sw.ToString();
         }
 
+        public void ReverseLogicalOperator()
+        {
+            if(nodetype == DecompileNodeType.MULTOPERATOR)
+            {
+                string s = data.ToString();
+                switch (s)
+                {
+                    case "==":
+                        data = "~=";
+                        break;
+                    case "~=":
+                        data = "==";
+                        break;
+                    case ">=":
+                        data = "<";
+                        break;
+                    case "<=":
+                        data = ">";
+                        break;
+                    case ">":
+                        data = "<=";
+                        break;
+                    case "<":
+                        data = ">=";
+                        break;
+                }
+            }
+            else if(nodetype == DecompileNodeType.UNOPERATOR)
+            {
+                string s = data.ToString();
+                switch(s)
+                {
+                    case "":
+                        data = "not ";
+                        break;
+                    case "not ":
+                        data = "";
+                        break;
+                }
+            }
+        }
+
         public void WriteLuaString(StringWriter sw, int tab_count = 0)
         {
             //System.Diagnostics.Debug.WriteLine(ToString()+" TABC "+tab_count.ToString());
@@ -86,7 +130,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     }
                     break;
                 case DecompileNodeType.FUNCDEF:
-                    sw.Write(Utility.TabulateString("function " + data.ToString() + "(",  tab_count));
+                    sw.Write(Utility.TabulateString("function ", tab_count));
+                    ((DecompileNode)data).WriteLuaString(sw, tab_count);
+                    sw.Write("(", tab_count);
                     DecompileNode funcdef_args = (DecompileNode)Children[0].data;
                     for(int i=0;i<funcdef_args.Children.Count; i++)
                     {
@@ -99,32 +145,44 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     sw.Write(Utility.TabulateString("end", tab_count));
                     break;
                 case DecompileNodeType.FUNCTION:
-                    if ((Parent.nodetype == DecompileNodeType.CHUNK)||(Parent.nodetype == DecompileNodeType.TABLE))
-                        for (int i = 0; i < tab_count; i++)
-                            sw.Write("\t");
+                    if (Parent != null)  // workaround...
+                    {
+                        if ((Parent.nodetype == DecompileNodeType.CHUNK) || (Parent.nodetype == DecompileNodeType.TABLE))
+                            for (int i = 0; i < tab_count; i++)
+                                sw.Write("\t");
+                    }
 
                     ((DecompileNode)data).WriteLuaString(sw, tab_count);
-                    if(Children.Count==0)
+                    if (Children.Count == 0)
                     {
                         sw.Write("()");
                         break;
                     }
-
-                    if(Children[0].nodetype == DecompileNodeType.TABLE)
+                    else if (Children.Count == 1)
                     {
-                        if (Children[0].datatype == DecompileDataType.LIST)
+                        if (Children[0].nodetype == DecompileNodeType.TABLE)
                         {
-                            sw.Write("(");
-                            foreach (DecompileNode n in Children[0].Children)
+
+                            if (Children[0].datatype == DecompileDataType.LIST)
                             {
-                                n.WriteLuaString(sw, tab_count);
-                                sw.Write(", ");
+                                sw.Write("(");
+                                foreach (DecompileNode n in Children[0].Children)
+                                {
+                                    n.WriteLuaString(sw, tab_count);
+                                    sw.Write(", ");
+                                }
+                                sw.Write(")");
                             }
-                            sw.Write(")");
+                            else
+                            {
+                                Children[0].WriteLuaString(sw, tab_count);
+                            }
                         }
                         else
                         {
+                            sw.Write("(");
                             Children[0].WriteLuaString(sw, tab_count);
+                            sw.Write(")");
                         }
                     }
                     else
@@ -143,19 +201,23 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                 case DecompileNodeType.TABLE:
                     sw.WriteLine(Utility.TabulateString("", tab_count));
                     sw.WriteLine(Utility.TabulateString("{", tab_count));
-                    if (datatype == DecompileDataType.DICT)
+                    if (datatype == DecompileDataType.DICT)   // mixed values and variables
                     {
-                        foreach (DecompileNode n in Children)
+                        for(int i=0;i<Children.Count;i++)
                         {
-                            if (n.datatype == DecompileDataType.NUMBER)
-                                sw.Write(Utility.TabulateString("[" + n.data.ToString() + "] = ", tab_count + 1));
-                            else
-                                sw.Write(Utility.TabulateString(n.data.ToString() + " = ", tab_count + 1));
-                            n.Children[0].WriteLuaString(sw, tab_count + 1);
-                            sw.WriteLine(", ");
+                            DecompileNode n = Children[i];
+                            n.WriteLuaString(sw, tab_count + 1);
+                            if(i!=Children.Count-1)
+                            {
+                                if ((n.data == null) ^ (Children[i + 1].data == null))     // if variable data is null, its a plain value
+                                    sw.WriteLine(';');
+                                else
+                                    sw.WriteLine(',');
+                            }
                         }
+                        sw.WriteLine("");
                     }
-                    else
+                    else   // only values
                     {
                         foreach (DecompileNode n in Children)
                         {
@@ -167,33 +229,52 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     break;
                 case DecompileNodeType.VALUE:
                     string val_s = "";
-                    if (data.GetType() == typeof(string))
-                        val_s = '"' + data.ToString() + '"';
+                    if (data == null)
+                        val_s = "nil";
+                    else if (data.GetType() == typeof(string))
+                    {
+                        string s = data.ToString();
+                        if (s.Contains('\n'))
+                            val_s = "[[" + s + "]]";
+                        else
+                            val_s = '"' + s + '"';
+                    }
                     else
                         val_s = data.ToString();
                     sw.Write(val_s);
                     break;
                 case DecompileNodeType.INDEXED_VALUE:
-                    sw.Write(data.ToString()+"[");
+                    ((DecompileNode)data).WriteLuaString(sw, tab_count);
+                    sw.Write("[");
                     Children[0].WriteLuaString(sw, tab_count);
                     sw.Write("]");
                     break;
                 case DecompileNodeType.IDENTIFIER:
                     sw.Write(data.ToString());
                     break;
+                case DecompileNodeType.UPIDENTIFIER:
+                    sw.Write("%" + data.ToString());
+                    break;
                 case DecompileNodeType.VARIABLE:
-                    if (datatype == DecompileDataType.STRING)
+                    for (int i = 0; i < tab_count; i++)
+                        sw.Write("\t");
+                    if (data != null)
                     {
-                        sw.Write(Utility.TabulateString(data.ToString() + " = ", tab_count));
-                        Children[0].WriteLuaString(sw, tab_count);
+                        DecompileNode key = (DecompileNode)data;
+                        if (key.nodetype == DecompileNodeType.VALUE)
+                        {
+                            if (key.datatype == DecompileDataType.STRING)
+                                sw.Write(key.data.ToString());
+                            else if (key.datatype == DecompileDataType.NUMBER)
+                                sw.Write("[" + key.data.ToString() + "]");
+                            else
+                                key.WriteLuaString(sw, tab_count);
+                        }
+                        else
+                            key.WriteLuaString(sw, tab_count);
+                        sw.Write(" = ");
                     }
-                    else if(datatype == DecompileDataType.DICT)
-                    {
-                        sw.Write(Utility.TabulateString(data.ToString() + "[", tab_count));
-                        Children[0].WriteLuaString(sw, tab_count);
-                        sw.Write("] = ");
-                        Children[1].WriteLuaString(sw, tab_count);
-                    }
+                    Children[0].WriteLuaString(sw, tab_count);
                     break;
                 case DecompileNodeType.FORLOOP:
                     DecompileNode forloop_table = (DecompileNode)data;
@@ -208,6 +289,14 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     sw.WriteLine(" do");
                     Children[0].WriteLuaString(sw, tab_count + 1);
                     sw.WriteLine(Utility.TabulateString("end", tab_count));
+                    break;
+                case DecompileNodeType.REPEATLOOP:
+                    DecompileNode repeat_cond = (DecompileNode)data;
+                    sw.WriteLine(Utility.TabulateString("repeat", tab_count));
+                    Children[0].WriteLuaString(sw, tab_count + 1);
+                    sw.Write("until ");
+                    repeat_cond.WriteLuaString(sw, tab_count);
+                    sw.WriteLine("");
                     break;
                 case DecompileNodeType.FOREACHLOOP:
                     DecompileNode foreachloop_table = (DecompileNode)data;
@@ -239,12 +328,25 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     ((DecompileNode)data).WriteLuaString(sw, tab_count);
                     sw.WriteLine(" then");
                     Children[0].WriteLuaString(sw, tab_count + 1);
-                    if(Children[1].Children.Count!=0)
+                    if (Children[1].Children.Count != 0)
                     {
                         sw.WriteLine(Utility.TabulateString("else", tab_count));
                         Children[1].WriteLuaString(sw, tab_count + 1);
                     }
                     sw.Write(Utility.TabulateString("end", tab_count));
+                    break;
+                case DecompileNodeType.WHILE:
+                    sw.Write(Utility.TabulateString("while ", tab_count));
+                    ((DecompileNode)data).WriteLuaString(sw, tab_count);
+                    sw.WriteLine(" do");
+                    Children[0].WriteLuaString(sw, tab_count + 1);
+                    sw.Write(Utility.TabulateString("end", tab_count));
+                    break;
+                case DecompileNodeType.CONTINUELOOP:
+                    sw.Write(Utility.TabulateString("continue", tab_count));
+                    break;
+                case DecompileNodeType.BREAKLOOP:
+                    sw.Write(Utility.TabulateString("break", tab_count));
                     break;
                 default:
                     break;

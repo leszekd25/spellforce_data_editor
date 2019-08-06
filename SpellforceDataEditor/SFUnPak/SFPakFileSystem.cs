@@ -403,5 +403,16 @@ namespace SpellforceDataEditor.SFUnPak
             }
             return names;
         }
+
+        public List<string> ListAllInDirectory(string dir)
+        {
+            List<String> names = new List<string>();
+            foreach (SFPakEntryHeader eh in file_headers)
+            {
+                if (eh.dir_name == dir)
+                    names.Add(eh.name);
+            }
+            return names;
+        }
     }
 }

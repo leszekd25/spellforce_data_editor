@@ -24,18 +24,18 @@ namespace SpellforceDataEditor
 
         public MainForm()
         {
-            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", "script\\uidebugshortcuts.lua");
+            /*MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", "script\\p63\\n2861.lua");
             BinaryReader br = new BinaryReader(ms);
             SFLua.LuaDecompiler.LuaBinaryScript scr = new SFLua.LuaDecompiler.LuaBinaryScript(br);
+            scr.func.DumpAll();
+            br.Close();
+
             SFLua.LuaDecompiler.LuaStack stack = new SFLua.LuaDecompiler.LuaStack();
             SFLua.LuaDecompiler.DecompileNode n = scr.func.Decompile(stack);
             if (n != null)
                 Clipboard.SetText(n.ToScript());
             else
-                Clipboard.SetText("<FAILED>");
-            scr.func.DumpAll();
-            br.Close();
-            
+                Clipboard.SetText("<FAILED>");*/
 
             LogUtils.Log.Info(LogUtils.LogSource.Main, "MainForm() called");
             InitializeComponent();
