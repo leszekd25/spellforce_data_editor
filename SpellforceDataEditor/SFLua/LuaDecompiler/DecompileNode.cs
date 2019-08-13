@@ -10,7 +10,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
     public enum DecompileNodeType
     {
         CHUNK, COND, IDENTIFIER, FUNCDEF, FOREACHLOOP, UPIDENTIFIER, REPEATLOOP,
-        UNOPERATOR, MULTOPERATOR, VALUE, INDEXED_VALUE, FUNCTION,
+        UNOPERATOR, MULTOPERATOR, VALUE, INDEXED_VALUE, FUNCTION, SELFIDENTIFIER,
         TABLE, VARIABLE, FORLOOP, RETURN, WHILE, CONTINUELOOP, BREAKLOOP
     }
     public enum DecompileDataType { NIL, NUMBER, STRING, LIST, DICT, FUNCTION, USERDATA }
@@ -109,7 +109,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
 
         public void WriteLuaString(StringWriter sw, int tab_count = 0)
         {
-            //System.Diagnostics.Debug.WriteLine(ToString()+" TABC "+tab_count.ToString());
+            System.Diagnostics.Debug.WriteLine(ToString()+" TABC "+tab_count.ToString());
             switch(nodetype)
             {
                 case DecompileNodeType.CHUNK:
@@ -120,7 +120,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     }
                     break;
                 case DecompileNodeType.RETURN:
-                    sw.Write("return ");
+                    sw.Write(Utility.TabulateString("return ", tab_count));
                     for(int i=0;i<Children.Count; i++)
                     {
                         DecompileNode n = Children[i];
@@ -255,6 +255,11 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                 case DecompileNodeType.UPIDENTIFIER:
                     sw.Write("%" + data.ToString());
                     break;
+                case DecompileNodeType.SELFIDENTIFIER:
+                    Children[0].WriteLuaString(sw, tab_count);
+                    sw.Write(":");
+                    Children[1].WriteLuaString(sw, tab_count);
+                    break;
                 case DecompileNodeType.VARIABLE:
                     for (int i = 0; i < tab_count; i++)
                         sw.Write("\t");
@@ -279,7 +284,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                 case DecompileNodeType.FORLOOP:
                     DecompileNode forloop_table = (DecompileNode)data;
                     sw.Write(Utility.TabulateString("for ", tab_count));
-                    sw.Write(forloop_table.Children[3].data.ToString());
+                    forloop_table.Children[3].WriteLuaString(sw, tab_count);
                     sw.Write(" = ");
                     forloop_table.Children[0].WriteLuaString(sw, tab_count);
                     sw.Write(", ");
@@ -301,10 +306,12 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                 case DecompileNodeType.FOREACHLOOP:
                     DecompileNode foreachloop_table = (DecompileNode)data;
                     sw.Write(Utility.TabulateString("for ", tab_count));
-                    foreachloop_table.Children[0].WriteLuaString(sw, tab_count);
+                    foreachloop_table.Children[1].WriteLuaString(sw, 0);
                     sw.Write(", ");
-                    foreachloop_table.Children[1].WriteLuaString(sw, tab_count);
-                    sw.WriteLine(" in " + foreachloop_table.data.ToString() + " do");
+                    foreachloop_table.Children[2].WriteLuaString(sw, 0);
+                    sw.Write(" in ");
+                    foreachloop_table.Children[0].WriteLuaString(sw, 0);
+                    sw.WriteLine(" do");
                     Children[0].WriteLuaString(sw, tab_count + 1);
                     sw.WriteLine(Utility.TabulateString("end", tab_count));
                     break;

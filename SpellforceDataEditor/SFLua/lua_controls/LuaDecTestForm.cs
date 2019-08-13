@@ -45,8 +45,12 @@ namespace SpellforceDataEditor.SFLua.lua_controls
                 try
                 {
                     LuaDecompiler.LuaBinaryScript scr = new LuaDecompiler.LuaBinaryScript(br);
-                    LuaDecompiler.LuaStack stack = new LuaDecompiler.LuaStack();
-                    LuaDecompiler.DecompileNode n = scr.func.Decompile(stack);
+
+                    LuaDecompiler.Decompiler dec = new LuaDecompiler.Decompiler();
+                    LuaDecompiler.Node n = dec.Decompile(scr.func);
+
+                    //LuaDecompiler.LuaStack stack = new LuaDecompiler.LuaStack();
+                    //LuaDecompiler.DecompileNode n = scr.func.Decompile(stack);
                     if (n == null)
                     {
                         fs_names.Add(s + " FAILED (SIZE "+br.BaseStream.Length.ToString()+")");

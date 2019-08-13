@@ -91,18 +91,18 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
 
     public class LuaBinaryFunction
     {
-        string Source = "";
-        int LineDefined;
-        int NumParams;
-        bool IsVarArg;
-        int MaxStackSize;
+        public string Source = "";
+        public int LineDefined;
+        public int NumParams;
+        public bool IsVarArg;
+        public int MaxStackSize;
 
-        List<LuaLocVar> LocVars;
-        List<int> LinesInfo;
-        List<double> Numbers;
-        List<string> Strings;
-        List<LuaBinaryFunction> Functions;
-        List<LuaInstruction> Instructions;
+        public List<LuaLocVar> LocVars;
+        public List<int> LinesInfo;
+        public List<double> Numbers;
+        public List<string> Strings;
+        public List<LuaBinaryFunction> Functions;
+        public List<LuaInstruction> Instructions;
 
         public LuaBinaryFunction(BinaryReader br)
         {
@@ -296,7 +296,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
             if (i < NumParams)
                 return "__arg" + i.ToString();
             else
-                return "__local" + (i - NumParams).ToString();
+                return "__local" + i.ToString();
         }
 
         public string GetUpValue(int i)    // those are readonly, so its gucci
@@ -347,6 +347,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         break;
                     case DecompileNodeType.RETURN:
                         c = 'R';
+                        break;
+                    case DecompileNodeType.SELFIDENTIFIER:
+                        c = 'S';
                         break;
                     case DecompileNodeType.TABLE:
                         c = 'T';
@@ -410,6 +413,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     case DecompileNodeType.RETURN:
                         c = 'R';
                         break;
+                    case DecompileNodeType.SELFIDENTIFIER:
+                        c = 'S';
+                        break;
                     case DecompileNodeType.TABLE:
                         c = 'T';
                         break;
@@ -447,23 +453,30 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
             }
         }
 
-        public DecompileNode Decompile(LuaStack stack)
+        public DecompileNode Decompile(LuaStack stack, List<string> upvalues = null)
         {
+            LuaLocalVariableRegistry locals = new LuaLocalVariableRegistry();
             int start_pos = stack.Pos;
+            // these dont need to be updated in registry
             for (int i = 0; i < NumParams; i++)
+            {
                 stack.Push(new DecompileNode(-1, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, GetLocal(i)));
+                locals.RegisterLocal(i, GetLocal(i));
+            }
             if (IsVarArg)
+            {
                 stack.Push(new DecompileNode(-1, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, "..."));
+                locals.RegisterLocal(NumParams, "arg");
+            }
 
             bool done = false;
-            int local_count = NumParams;
 
             DecompileNode root = new DecompileNode(-1, DecompileNodeType.CHUNK, DecompileDataType.NIL, null);
             List<LabelInfo> label_stack = new List<LabelInfo>();
             // workaround for X or Y value issue
             List<DecompileNode> andor_operator_helper = new List<DecompileNode>();
 
-            for(int i=0;i<Instructions.Count;i++)
+            for (int i = 0; i < Instructions.Count; i++)
             {
                 LuaInstruction instr = Instructions[i];
                 if (label_stack.Count != 0)
@@ -472,9 +485,14 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     {
                         if (label_stack[label_stack.Count - 1].type == LabelType.ANDOR)
                         {
-                            andor_operator_helper[andor_operator_helper.Count-1].AddNode((DecompileNode)stack.Pop());
-                            stack.Push(andor_operator_helper[andor_operator_helper.Count-1]);
-                            andor_operator_helper.RemoveAt(andor_operator_helper.Count-1);
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
+                            andor_operator_helper[andor_operator_helper.Count - 1].AddNode((DecompileNode)stack.Pop());
+
+                            andor_operator_helper[andor_operator_helper.Count - 1].instruction_id = i;
+                            stack.Push(andor_operator_helper[andor_operator_helper.Count - 1]);
+                            locals.UpdateLocal(stack.Pos - start_pos - 1, i);   // likely to be wrong
+
+                            andor_operator_helper.RemoveAt(andor_operator_helper.Count - 1);
                         }
                         else if (label_stack[label_stack.Count - 1].type == LabelType.IFEND)
                         {
@@ -484,12 +502,14 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         {
                             DecompileNode forloop_for = root.Parent;
                             root = forloop_for.Parent;
-                            local_count -= 3;
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             DecompileNode forloop_step = (DecompileNode)stack.Pop();
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             DecompileNode forloop_to = (DecompileNode)stack.Pop();
+                            DecompileNode forloop_localnum = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
+                                locals.GetLocal(stack.Pos - start_pos - 1));
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             DecompileNode forloop_from = (DecompileNode)stack.Pop();
-                            DecompileNode forloop_localnum = new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.STRING,
-                                GetLocal(local_count));
                             DecompileNode forloop_table = new DecompileNode(i, DecompileNodeType.TABLE, DecompileDataType.LIST, null);
                             forloop_table.AddNode(forloop_from);
                             forloop_table.AddNode(forloop_to);
@@ -501,15 +521,19 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         {
                             DecompileNode lforloop_for = root.Parent;
                             root = lforloop_for.Parent;
-                            local_count -= 3;
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             DecompileNode lforloop_val = (DecompileNode)stack.Pop();
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             DecompileNode lforloop_key = (DecompileNode)stack.Pop();
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             DecompileNode lforloop_table = (DecompileNode)stack.Pop();
-                            lforloop_table.AddNode(lforloop_key);
-                            lforloop_table.AddNode(lforloop_val);
-                            lforloop_for.data = lforloop_table;
+                            DecompileNode lforloop_desc = new DecompileNode(i, DecompileNodeType.TABLE);
+                            lforloop_desc.AddNode(lforloop_table);
+                            lforloop_desc.AddNode(lforloop_key);
+                            lforloop_desc.AddNode(lforloop_val);
+                            lforloop_for.data = lforloop_desc;
                         }
-                        else 
+                        else
                         {
                             LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaBinaryScript.Decompile(): Unknown error (wrong label type)!");
                         }
@@ -520,8 +544,8 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     }
                 }
 
-                //System.Diagnostics.Debug.WriteLine(" | STACK: " + VisualiseDecompileStack(stack).PadRight(40)+" | ROOT: "+VisualiseNode(root));
-                //System.Diagnostics.Debug.WriteLine(i.ToString().PadRight(4)+" | "+instr.ToString().PadRight(20));
+                System.Diagnostics.Debug.WriteLine(" | STACK: " + VisualiseDecompileStack(stack).PadRight(40) + " | ROOT: " + VisualiseNode(root));
+                System.Diagnostics.Debug.Write(i.ToString().PadRight(4) + " | " + instr.ToString().PadRight(20));
 
                 switch (instr.OpCode)
                 {
@@ -532,30 +556,38 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         int ret_base = instr.ArgU;
                         DecompileNode ret_n = new DecompileNode(i, DecompileNodeType.RETURN);
                         while (stack.Pos > start_pos + ret_base)
+                        {
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             ret_n.AddNode((DecompileNode)stack.Pop());
+                        }
                         root.AddNode(ret_n);
                         break;
                     case LuaOpCode.OP_CALL:
                         int stack_base = instr.ArgA;
                         DecompileNode call_n = new DecompileNode(i, DecompileNodeType.FUNCTION);
 
-                        while(stack.Pos > stack_base+start_pos+1)
+                        while (stack.Pos > stack_base + start_pos + 1)
+                        {
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             call_n.AddNode((DecompileNode)stack.Pop(), 0);
+                        }
 
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         call_n.data = stack.Pop();
 
                         if (instr.ArgB == 0)
                             root.AddNode(call_n);
-                        else if((instr.ArgB == 1)||(instr.ArgB == 255))
+                        else if ((instr.ArgB == 1) || (instr.ArgB == 255))
                             stack.Push(call_n);
                         else     // temporary workaround for multireturn values
                         {
-                            for(int j=0;j<instr.ArgB; j++)
+                            for (int j = 0; j < instr.ArgB; j++)
                             {
                                 DecompileNode call_multiret = new DecompileNode(i, DecompileNodeType.INDEXED_VALUE, DecompileDataType.STRING,
                                     call_n);
                                 call_multiret.AddNode(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.NUMBER, j));
                                 stack.Push(call_multiret);
+                                locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                             }
                         }
 
@@ -566,76 +598,168 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         DecompileNode tailcall_n = new DecompileNode(i, DecompileNodeType.RETURN);
                         DecompileNode tailcall_call = new DecompileNode(i, DecompileNodeType.FUNCTION);
                         while (stack.Pos > tailcall_call_base + start_pos + 1)
+                        {
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             tailcall_call.AddNode((DecompileNode)stack.Pop(), 0);
+                        }
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         tailcall_call.data = stack.Pop();
                         stack.Push(tailcall_call);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         while (stack.Pos > start_pos + tailcall_ret_base)
+                        {
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             tailcall_n.AddNode((DecompileNode)stack.Pop());
+                        }
                         root.AddNode(tailcall_n);
                         break;
                     case LuaOpCode.OP_PUSHNIL:
-                        for(int k=0;k<instr.ArgU; k++)
+                        for (int k = 0; k < instr.ArgU; k++)
+                        {
                             stack.Push(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.NIL, null));
+                            locals.UpdateLocal(stack.Pos - start_pos - 1, i);
+                        }
                         break;
                     case LuaOpCode.OP_PUSHINT:
                         stack.Push(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.NUMBER, instr.ArgS));
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_PUSHSTRING:
                         stack.Push(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.STRING, Strings[instr.ArgU]));
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_PUSHNUM:
                         stack.Push(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.NUMBER, Numbers[instr.ArgU]));
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_PUSHNEGNUM:
                         stack.Push(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.NUMBER, -Numbers[instr.ArgU]));
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_PUSHSELF:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode pushself_n = (DecompileNode)stack.Pop();
-                        DecompileNode pushself_n2 = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
-                            pushself_n.data.ToString() + ":" + Strings[instr.ArgU]);
-                        stack.Push(pushself_n2);
+                        DecompileNode pushself_n2 = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, Strings[instr.ArgU]);
+                        DecompileNode pushself_n3 = new DecompileNode(i, DecompileNodeType.SELFIDENTIFIER);
+                        pushself_n3.AddNode(pushself_n);
+                        pushself_n3.AddNode(pushself_n2);
+
+                        stack.Push(pushself_n3);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_PUSHUPVALUE:
-                        stack.Push(new DecompileNode(i, DecompileNodeType.UPIDENTIFIER, DecompileDataType.STRING, GetUpValue(instr.ArgU)));
+                        stack.Push(new DecompileNode(i, DecompileNodeType.UPIDENTIFIER, DecompileDataType.STRING, upvalues[instr.ArgU]));
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_GETGLOBAL:                   // todo: rework
                         stack.Push(new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, Strings[instr.ArgU]));
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_GETLOCAL:
-                        stack.Push(new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, GetLocal(instr.ArgU)));
+                        if (!locals.IsLocalRegistered(instr.ArgU))
+                        {
+                            int last_update = locals.GetLastUpdated(instr.ArgU);
+
+                            locals.RegisterLocal(instr.ArgU, GetLocal(instr.ArgU));
+                            DecompileNode getlocal_name = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
+                                "local " + locals.GetLocal(instr.ArgU));
+                            DecompileNode getlocal_var = new DecompileNode(last_update, DecompileNodeType.VARIABLE, DecompileDataType.USERDATA,
+                                getlocal_name);
+
+                            DecompileNode getlocal_findnode = root;
+                            int node_pos = root.Children.Count - 1;
+                            bool break_all = false;
+                            while (true)
+                            {
+                                if ((getlocal_findnode.Children.Count != 0)
+                                && (getlocal_findnode.Children[node_pos].instruction_id <= last_update))
+                                    break;
+                                else
+                                {
+                                    node_pos -= 1;
+                                    if (node_pos < 0)
+                                    {
+                                        // check if the root was made before updating local
+                                        if (getlocal_findnode.instruction_id <= last_update)
+                                            break;
+                                        // search for next root, stop if no root found
+                                        while (node_pos < 0)
+                                        {
+                                            bool parent_found = false;
+                                            while (getlocal_findnode.Parent != null)
+                                            {
+                                                getlocal_findnode = getlocal_findnode.Parent;
+                                                if (getlocal_findnode.nodetype == DecompileNodeType.CHUNK)
+                                                {
+                                                    parent_found = true;
+                                                    break;
+                                                }
+                                            }
+                                            if (parent_found)
+                                                node_pos = getlocal_findnode.Children.Count - 1;
+
+                                            if ((node_pos < 0) && (getlocal_findnode.instruction_id <= last_update))
+                                            {
+                                                break_all = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (break_all)
+                                    break;
+                            }
+                            if (node_pos < 0)
+                                node_pos = -1;
+
+                            getlocal_findnode.AddNode(getlocal_var, node_pos + 1);
+                            getlocal_var.AddNode((DecompileNode)stack.Get((stack.Pos - start_pos - 1) - instr.ArgU));
+                        }
+                        stack.Push(new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, locals.GetLocal(instr.ArgU)));
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_GETTABLE:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode gettable_key = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode gettable_table = (DecompileNode)stack.Pop();
                         DecompileNode gettable_var = new DecompileNode(i, DecompileNodeType.INDEXED_VALUE, DecompileDataType.STRING,
-                            gettable_table.data);
+                            gettable_table);
                         gettable_var.AddNode(gettable_key);
                         stack.Push(gettable_var);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_GETINDEXED:
                         DecompileNode getindexed_key = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
-                            GetLocal(instr.ArgU));
+                            locals.GetLocal(instr.ArgU));
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode getindexed_table = (DecompileNode)stack.Pop();
                         DecompileNode getindexed_var = new DecompileNode(i, DecompileNodeType.INDEXED_VALUE, DecompileDataType.STRING,
                             getindexed_table);
                         getindexed_var.AddNode(getindexed_key);
                         stack.Push(getindexed_var);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_GETDOTTED:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode getdotted_n = (DecompileNode)stack.Pop();
                         DecompileNode getdotted_n2 = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
                             getdotted_n.data.ToString() + "." + Strings[instr.ArgU]);
                         stack.Push(getdotted_n2);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_CREATETABLE:
                         stack.Push(new DecompileNode(i, DecompileNodeType.TABLE, DecompileDataType.LIST, instr.ArgU));
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_SETGLOBAL:                   // set global value to last thing on stack
                         DecompileNode setglobal_name = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
                             Strings[instr.ArgU]);
                         DecompileNode setglobal_n = new DecompileNode(i, DecompileNodeType.VARIABLE, DecompileDataType.USERDATA,
                             setglobal_name);
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode setglobal_n2 = (DecompileNode)stack.Pop();
+
                         if (setglobal_n2.nodetype == DecompileNodeType.FUNCDEF)
                         {
                             setglobal_n2.data = setglobal_n.data;
@@ -646,11 +770,72 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         root.AddNode(setglobal_n);                 // misses many valid use cases...
                         break;
                     case LuaOpCode.OP_SETLOCAL:
+                        if (!locals.IsLocalRegistered(instr.ArgU))
+                        {
+                            int last_update = locals.GetLastUpdated(instr.ArgU);
+                            locals.RegisterLocal(instr.ArgU, GetLocal(instr.ArgU));
+                            DecompileNode getlocal_name = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
+                                "local " + locals.GetLocal(instr.ArgU));
+                            DecompileNode getlocal_var = new DecompileNode(last_update, DecompileNodeType.VARIABLE, DecompileDataType.USERDATA,
+                                getlocal_name);
+
+                            DecompileNode getlocal_findnode = root;
+                            int node_pos = root.Children.Count - 1;
+                            bool break_all = false;
+                            while (true)
+                            {
+                                if ((getlocal_findnode.Children.Count != 0)
+                                && (getlocal_findnode.Children[node_pos].instruction_id <= last_update))
+                                    break;
+                                else
+                                {
+                                    node_pos -= 1;
+                                    if (node_pos < 0)
+                                    {
+                                        // check if the root was made before updating local
+                                        if (getlocal_findnode.instruction_id <= last_update)
+                                            break;
+                                        // search for next root, stop if no root found
+                                        while (node_pos < 0)
+                                        {
+                                            bool parent_found = false;
+                                            while (getlocal_findnode.Parent != null)
+                                            {
+                                                getlocal_findnode = getlocal_findnode.Parent;
+                                                if (getlocal_findnode.nodetype == DecompileNodeType.CHUNK)
+                                                {
+                                                    parent_found = true;
+                                                    break;
+                                                }
+                                            }
+                                            if (parent_found)
+                                                node_pos = getlocal_findnode.Children.Count - 1;
+
+                                            if ((node_pos < 0)&& (getlocal_findnode.instruction_id <= last_update))
+                                            {
+                                                break_all = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (break_all)
+                                    break;
+                            }
+                            if (node_pos < 0)
+                                node_pos = -1;
+
+                            getlocal_findnode.AddNode(getlocal_var, node_pos + 1);
+                            getlocal_var.AddNode((DecompileNode)stack.Get((stack.Pos - start_pos - 1) - instr.ArgU));
+                        }
+                        
                         DecompileNode setlocal_name = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
-                            GetLocal(instr.ArgU));
+                           locals.GetLocal(instr.ArgU));
                         DecompileNode setlocal_n = new DecompileNode(i, DecompileNodeType.VARIABLE, DecompileDataType.USERDATA,
                             setlocal_name);
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode setlocal_n2 = (DecompileNode)stack.Pop();
+
                         if (setlocal_n2.nodetype == DecompileNodeType.FUNCDEF)
                         {
                             setlocal_n2.data = setlocal_n.data;
@@ -661,12 +846,15 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         root.AddNode(setlocal_n);                 // misses many valid use cases...
                         break;
                     case LuaOpCode.OP_SETTABLE:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode settable_val = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode settable_key = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode settable_table = (DecompileNode)stack.Pop();
 
                         DecompileNode settable_ind = new DecompileNode(i, DecompileNodeType.INDEXED_VALUE, DecompileDataType.USERDATA,
-                            settable_table.data);
+                            settable_table);
                         settable_ind.AddNode(settable_key);
 
                         DecompileNode settable_var = new DecompileNode(i, DecompileNodeType.VARIABLE, DecompileDataType.USERDATA, settable_ind);
@@ -681,7 +869,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         setmap_n.datatype = DecompileDataType.DICT;
                         while(elems_d_count != 0)
                         {
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             DecompileNode val = (DecompileNode)stack.Pop();
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             DecompileNode key = (DecompileNode)stack.Pop();
                             DecompileNode var = new DecompileNode(i, DecompileNodeType.VARIABLE, DecompileDataType.USERDATA, key);
                             var.AddNode(val);
@@ -695,6 +885,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         int setlist_cur_elems = setlist_n.Children.Count;
                         while (elems_l_count != 0)
                         {
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             DecompileNode val = (DecompileNode)stack.Pop();
                             DecompileNode var = new DecompileNode(i, DecompileNodeType.VARIABLE, DecompileDataType.NIL, null);
                             var.AddNode(val);
@@ -703,14 +894,18 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         }
                         break;
                     case LuaOpCode.OP_ADD:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode add_n = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode add_n2 = (DecompileNode)stack.Pop();
                         DecompileNode add_n3 = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "+");
                         add_n3.AddNode(add_n2);
                         add_n3.AddNode(add_n);
                         stack.Push(add_n3);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_ADDI:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode addi_n = (DecompileNode)stack.Pop();
                         int addi_val = instr.ArgS;
                         bool addi_positive = addi_val >= 0;
@@ -721,48 +916,67 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         addi_n2.AddNode(addi_n);
                         addi_n2.AddNode(new DecompileNode(i, DecompileNodeType.VALUE, DecompileDataType.NUMBER, addi_val));
                         stack.Push(addi_n2);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_SUB:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode sub_n = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode sub_n2 = (DecompileNode)stack.Pop();
                         DecompileNode sub_n3 = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "-");
                         sub_n3.AddNode(sub_n2);
                         sub_n3.AddNode(sub_n);
                         stack.Push(sub_n3);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_MULT:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode mult_n = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode mult_n2 = (DecompileNode)stack.Pop();
                         DecompileNode mult_n3 = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "*");
                         mult_n3.AddNode(mult_n2);
                         mult_n3.AddNode(mult_n);
                         stack.Push(mult_n3);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_DIV:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode div_n = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode div_n2 = (DecompileNode)stack.Pop();
                         DecompileNode div_n3 = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "/");
                         div_n3.AddNode(div_n2);
                         div_n3.AddNode(div_n);
                         stack.Push(div_n3);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_POW:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode pow_n = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode pow_n2 = (DecompileNode)stack.Pop();
                         DecompileNode pow_n3 = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "^");
                         pow_n3.AddNode(pow_n2);
                         pow_n3.AddNode(pow_n);
                         stack.Push(pow_n3);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_POP:
-                        for(int k=0;k<instr.ArgU;k++)
+                        for (int k = 0; k < instr.ArgU; k++)
+                        {
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             stack.Pop();
+                        }
                         break;
                     case LuaOpCode.OP_CONCAT:
                         List<DecompileNode> concat_nodes = new List<DecompileNode>();
                         int nodes_to_pop = instr.ArgU;
                         for (int k = 0; k < nodes_to_pop; k++)
+                        {
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             concat_nodes.Add((DecompileNode)stack.Pop());
+                        }
                         DecompileNode concat_n = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "..");
                         while (concat_nodes.Count != 0)
                         {
@@ -770,18 +984,23 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                             concat_nodes.RemoveAt(concat_nodes.Count-1);
                         }
                         stack.Push(concat_n);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_MINUS:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode minus_n = (DecompileNode)stack.Pop();
                         DecompileNode minus_n2 = new DecompileNode(i, DecompileNodeType.UNOPERATOR, DecompileDataType.STRING, "-");
                         minus_n2.AddNode(minus_n);
                         stack.Push(minus_n2);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_NOT:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode not_n = (DecompileNode)stack.Pop();
                         DecompileNode not_n2 = new DecompileNode(i, DecompileNodeType.UNOPERATOR, DecompileDataType.STRING, "not ");
                         not_n2.AddNode(not_n);
                         stack.Push(not_n2);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         break;
                     case LuaOpCode.OP_PUSHNILJMP:     // is it good?
                         DecompileNode pushniljump_control = root.Parent;
@@ -790,6 +1009,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         DecompileNode pushniljump_op = (DecompileNode)pushniljump_control.data;
                         pushniljump_op.ReverseLogicalOperator();
                         stack.Push(pushniljump_op);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         i++;
                         break;
                     case LuaOpCode.OP_JMP:        // taken care of on start of loop : )
@@ -837,8 +1057,11 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                                 }
                                 else if (instr.ArgS == 0)  // empty else - skip
                                     break;
+
+                                label_stack.RemoveAt(label_stack.Count - 1);    // testing a workaround...
                                 label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                                 root = control_n.Children[1];
+                                root.instruction_id = i;
                             }
                             else   // while/for/foreach loop
                             {
@@ -847,6 +1070,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         }
                         break;
                     case LuaOpCode.OP_JMPF:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmpf_n = (DecompileNode)stack.Pop();
                         DecompileNode jmpf_op = new DecompileNode(i, DecompileNodeType.UNOPERATOR, DecompileDataType.STRING, "");
                         jmpf_op.AddNode(jmpf_n);
@@ -876,6 +1100,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPT:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmpt_n = (DecompileNode)stack.Pop();
                         DecompileNode jmpt_op = new DecompileNode(i, DecompileNodeType.UNOPERATOR, DecompileDataType.STRING, "not ");
                         jmpt_op.AddNode(jmpt_n);
@@ -905,7 +1130,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPNE:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmpne_n2 = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmpne_n1 = (DecompileNode)stack.Pop();
                         DecompileNode jmpne_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "==");
                         jmpne_op.AddNode(jmpne_n1);
@@ -936,7 +1163,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPEQ:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmpeq_n2 = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmpeq_n1 = (DecompileNode)stack.Pop();
                         DecompileNode jmpeq_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "~=");
                         jmpeq_op.AddNode(jmpeq_n1);
@@ -967,7 +1196,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPGE:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmpge_n2 = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmpge_n1 = (DecompileNode)stack.Pop();
                         DecompileNode jmpge_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "<");
                         jmpge_op.AddNode(jmpge_n1);
@@ -998,7 +1229,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPGT:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmpgt_n2 = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmpgt_n1 = (DecompileNode)stack.Pop();
                         DecompileNode jmpgt_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "<=");
                         jmpgt_op.AddNode(jmpgt_n1);
@@ -1029,7 +1262,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPLE:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmple_n2 = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmple_n1 = (DecompileNode)stack.Pop();
                         DecompileNode jmple_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, ">");
                         if (instr.ArgS < 0)
@@ -1060,7 +1295,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPLT:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmplt_n2 = (DecompileNode)stack.Pop();
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmplt_n1 = (DecompileNode)stack.Pop();
                         DecompileNode jmplt_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, ">=");
                         jmplt_op.AddNode(jmplt_n1);
@@ -1091,6 +1328,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.IFEND));
                         break;
                     case LuaOpCode.OP_JMPONT:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmpont_n = (DecompileNode)stack.Pop();
                         DecompileNode jmpont_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "or");
                         andor_operator_helper.Add(jmpont_op);
@@ -1104,6 +1342,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.ANDOR));
                         break;
                     case LuaOpCode.OP_JMPONF:
+                        locals.UnregisterLocal(stack.Pos - start_pos - 1);
                         DecompileNode jmponf_n = (DecompileNode)stack.Pop();
                         DecompileNode jmponf_op = new DecompileNode(i, DecompileNodeType.MULTOPERATOR, DecompileDataType.STRING, "and");
                         andor_operator_helper.Add(jmponf_op);
@@ -1120,9 +1359,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         int forprep_local = stack.Pos - start_pos;
                         DecompileNode forprep_for = new DecompileNode(i, DecompileNodeType.FORLOOP, DecompileDataType.NUMBER, null);
                         root.AddNode(forprep_for);
+                        locals.RegisterLocal(stack.Pos - start_pos - 3, "i_" + (stack.Pos-3).ToString());
                         forprep_for.AddNode(new DecompileNode(i, DecompileNodeType.CHUNK));
                         root = forprep_for.Children[0];
-                        local_count += 3;
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.FOR));
                         break;
                     case LuaOpCode.OP_FORLOOP:   // handled separately
@@ -1132,22 +1371,42 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         lforprep_for.AddNode(new DecompileNode(i, DecompileNodeType.CHUNK));
                         root.AddNode(lforprep_for);
                         root = lforprep_for.Children[0];
-                        DecompileNode lforprep_key = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, GetLocal(stack.Pos));
-                        DecompileNode lforprep_val = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, GetLocal(stack.Pos + 1));
+                        locals.RegisterLocal(stack.Pos - start_pos, "i_" + (stack.Pos).ToString());
+                        locals.RegisterLocal(stack.Pos - start_pos + 1, "v_" + (stack.Pos+1).ToString());
+                        DecompileNode lforprep_key = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING,
+                            locals.GetLocal(stack.Pos - start_pos));
+                        DecompileNode lforprep_val = new DecompileNode(i, DecompileNodeType.IDENTIFIER, DecompileDataType.STRING, 
+                            locals.GetLocal(stack.Pos - start_pos + 1));
                         stack.Push(lforprep_key);
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
                         stack.Push(lforprep_val);
-                        local_count += 3;
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
+
                         label_stack.Add(new LabelInfo(i + instr.ArgS + 1, LabelType.FOREACH));
                         break;
                     case LuaOpCode.OP_LFORLOOP:  // handled separately
                         break;
                     case LuaOpCode.OP_CLOSURE:                     // function definition
                         DecompileNode n = new DecompileNode(i, DecompileNodeType.FUNCDEF, DecompileDataType.STRING, null);
+                        List<string> _upvalues = null;
+                        if (instr.ArgB > 0)
+                        {
+                            _upvalues = new List<string>();
+                            for (int k = 0; k < instr.ArgB; k++)
+                            {
+                                locals.UnregisterLocal(stack.Pos - start_pos - 1);
+                                _upvalues.Add(((DecompileNode)stack.Pop()).data.ToString());
+                            }
+                        }
                         int cur_pos = stack.Pos+1;
                         stack.Push(n);
-                        n.AddNode(Functions[instr.ArgA].Decompile(stack));
+                        locals.UpdateLocal(stack.Pos - start_pos - 1, i);
+                        n.AddNode(Functions[instr.ArgA].Decompile(stack, _upvalues));
                         while (stack.Pos != cur_pos)
+                        {
+                            locals.UnregisterLocal(stack.Pos - start_pos - 1);
                             stack.Pop();
+                        }
                         break;
                     default:
                         LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaFunction.Decompile(): Unsupported opcode " 
@@ -1157,6 +1416,8 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                 if (done)
                     break;
             }
+
+            // no need for local registry anymore :^)
             DecompileNode root_args = new DecompileNode(Int32.MaxValue, DecompileNodeType.TABLE, DecompileDataType.LIST, null);
             if(IsVarArg)
                 root_args.AddNode((DecompileNode)stack.PopAt(stack.Pos - start_pos - 1));
