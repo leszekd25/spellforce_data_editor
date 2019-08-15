@@ -24,13 +24,13 @@ namespace SpellforceDataEditor
 
         public MainForm()
         {
-            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", "script\\gdsactions.lua");
+            /*MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", "script\\gdsactions.lua");
             BinaryReader br = new BinaryReader(ms);
             SFLua.LuaDecompiler.LuaBinaryScript scr = new SFLua.LuaDecompiler.LuaBinaryScript(br);
             scr.func.DumpAll();
-            br.Close();
+            br.Close();*/
 
-            SFLua.LuaDecompiler.Decompiler dec = new SFLua.LuaDecompiler.Decompiler();
+            /*SFLua.LuaDecompiler.Decompiler dec = new SFLua.LuaDecompiler.Decompiler();
             SFLua.LuaDecompiler.Node n = dec.Decompile(scr.func);
             if(n != null)
             {
@@ -39,7 +39,7 @@ namespace SpellforceDataEditor
                 Clipboard.SetText(sw.ToString());
             }
             else
-                Clipboard.SetText("<FAILED>");
+                Clipboard.SetText("<FAILED>");*/
 
             LogUtils.Log.Info(LogUtils.LogSource.Main, "MainForm() called");
             InitializeComponent();
