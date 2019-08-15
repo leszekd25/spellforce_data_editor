@@ -97,11 +97,12 @@ namespace SpellforceDataEditor.SFLua
                 }
                 br.Close();
 
-                LuaDecompiler.LuaStack stack = new LuaDecompiler.LuaStack();
-                LuaDecompiler.DecompileNode res;
+                LuaDecompiler.Decompiler dec = new LuaDecompiler.Decompiler();
+                LuaDecompiler.Node res;
+                
                 try
                 {
-                    res = scr.func.Decompile(stack);
+                    res = dec.Decompile(scr.func);
                 }
                 catch (Exception)
                 {
@@ -111,7 +112,8 @@ namespace SpellforceDataEditor.SFLua
                 string ret = "";
                 try
                 {
-                    ret = res.ToScript();
+                    StringWriter sw = new StringWriter();
+                    res.WriteLuaString(sw);
                 }
                 catch (Exception)
                 {

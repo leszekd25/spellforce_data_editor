@@ -28,6 +28,11 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
             }
             ctype = t;
         }
+
+        public override string ToString()
+        {
+            return "(" + start.ToString() + ", " + end.ToString() + ") | " + ctype.ToString();
+        }
     }
 
     public class Decompiler
@@ -51,7 +56,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
             return val;
         }
 
-        // three passes: find repeat loops, find for/foreach loops and ifs, find while loops
+        // three passes: find repeat/for/foreach loops, find ifs, find while loops
         public List<ChunkInterval> PreloadChunks(LuaBinaryFunction fnc)
         {
             List<ChunkInterval> chunks = new List<ChunkInterval>();
@@ -146,7 +151,6 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                     case LuaOpCode.OP_JMPF:
                         if (instr.ArgS >= 0)
                         {
-                            // fit AND here
                             interval = new ChunkInterval(i, i + instr.ArgS, ChunkType.IF);
                         }
                         break;
@@ -189,9 +193,18 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                             // change if to while, if jump opcode is found, else create while loop
                             if (instr.ArgS < 0)
                             {
-                                if (chunk_stack[chunk_stack.Count - 1].ctype == ChunkType.IF)
-                                    chunk_stack[chunk_stack.Count - 1].ctype = ChunkType.WHILE;
-                                else
+                                // find a chunk on stack which points to this
+                                bool found_chunk = false;
+                                for (int k = 0; k < chunk_stack.Count; k++)
+                                    if ((chunk_stack[k].ctype == ChunkType.IF)
+                                        && (chunk_stack[k].end == i)
+                                        && (chunk_stack[k].start > i+instr.ArgS))
+                                    {
+                                        chunk_stack[k].ctype = ChunkType.WHILE;
+                                        found_chunk = true;
+                                        break;
+                                    }
+                                if(!found_chunk)
                                     interval = new ChunkInterval(i, i + instr.ArgS + 1, ChunkType.WHILE);
                             }
 
@@ -311,7 +324,12 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                                 call_proc.Arguments = (Table)call_proc_table.Items[0].value;
                             call_proc.Name = (ILValue)Pop();
                             if (call_proc.Name is SelfIdentifier)        // special case...
-                                call_proc.Arguments.Items.RemoveAt(0);   // this will be nil
+                            {
+                                if (call_proc.Arguments.Items[0].value is Nil)
+                                    call_proc.Arguments.Items.RemoveAt(0);   // this will be nil
+                                else
+                                    throw new Exception("Invalid argument type for function");
+                            }
 
                             root.Items.Add(call_proc);
                         }
@@ -651,9 +669,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         break;
 
                     case LuaOpCode.OP_SETLIST:
-                        Table setlist_table = (Table)stack[stack.Count - instr.ArgU - 1];
+                        Table setlist_table = (Table)stack[stack.Count - instr.ArgB - 1];
                         int setlist_table_c = setlist_table.Items.Count;
-                        for (int setlist_elems = instr.ArgU; setlist_elems > 0; setlist_elems--)
+                        for (int setlist_elems = instr.ArgB; setlist_elems > 0; setlist_elems--)
                             setlist_table.Items.Insert(setlist_table_c, new TableAssignment()
                             {
                                 value = Pop(),
@@ -854,7 +872,6 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
 
                     default:
                         throw new Exception("Invalid opcode!");
-                        return null;
                 }
 
                 // check andor stack form and/or operator to push into main stacl
@@ -916,6 +933,66 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                                 break;
 
                             case ChunkType.IF:    // get condition
+                                // check if it qualifies for AND/OR condition
+                                if(root.parent != null)
+                                {
+                                    if(root.parent is Fork)
+                                    {
+                                        if(root.Items.Count == 0)
+                                        {
+                                            // check if this chunk and previous chunk end at the same spot and are both IFS
+                                            if(chunks[next_chunk-1].ctype == ChunkType.IF)
+                                            {
+                                                // fit AND here
+                                                if (chunks[next_chunk].end == chunks[next_chunk - 1].end)
+                                                {
+                                                    Fork cur_fork = (Fork)root.parent;
+                                                    OperatorBinaryLogic and_cond = new OperatorBinaryLogic()
+                                                    {
+                                                        op_type = OperatorType.AND
+                                                    };
+                                                    and_cond.Values.Add((IRValue)cur_fork.IfCondition);
+                                                    if (stack[stack.Count - 1] is IOperatorLogic)
+                                                        and_cond.Values.Add(Pop());
+                                                    else
+                                                        throw new Exception("Unexpected item on stack");
+                                                    cur_fork.IfCondition = and_cond;
+
+                                                    chunks.RemoveAt(next_chunk);
+                                                    chunk_stack.RemoveAt(chunk_stack.Count - 1);
+                                                    next_chunk -= 1;
+
+                                                    break;
+                                                }
+                                                // fit OR here
+                                                else if (chunks[next_chunk - 1].end == chunks[next_chunk].start)
+                                                {
+                                                    Fork cur_fork = (Fork)root.parent;
+                                                    OperatorBinaryLogic or_cond = new OperatorBinaryLogic()
+                                                    {
+                                                        op_type = OperatorType.OR
+                                                    };
+                                                    cur_fork.IfCondition.ReverseOperator();
+                                                    or_cond.Values.Add((IRValue)cur_fork.IfCondition);
+                                                    if (stack[stack.Count - 1] is IOperatorLogic)
+                                                        or_cond.Values.Add(Pop());
+                                                    else
+                                                        throw new Exception("Unexpected item on stack");
+                                                    cur_fork.IfCondition = or_cond;
+
+                                                    chunks[next_chunk - 1].end = chunks[next_chunk].end;
+                                                    chunks.RemoveAt(next_chunk);
+                                                    chunk_stack.RemoveAt(chunk_stack.Count - 1);
+                                                    next_chunk -= 1;
+
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // else 
                                 Fork if_fork = new Fork()
                                 {
                                     InstructionID = instr_ids[instr_ids.Count - 1],
@@ -1037,11 +1114,54 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
 
         public void Simplify(Chunk node)
         {
+            //System.Diagnostics.Debug.WriteLine("SIMPLIFY " + node.ToString() 
+            //    + " | PARENT: " + (node.parent != null?node.parent.ToString():"null")
+            //    + " | INSTR ID: "+(node.parent != null?((IStatement)node.parent).InstructionID:-1).ToString());
+            // simplfy IF ELSE IF ELSE IF ELSE END END END into IF ELSEIF ELSEIF ELSE END
+            // O(n^2), n - elseif branches
+            if(node.parent != null)
+            {
+                if(node.parent is Fork)
+                {
+                    if(node.parent.parent.parent != null)
+                    {
+                        if(node.parent.parent.parent is Fork)
+                        {
+                            Fork mainfork = (Fork)node.parent.parent.parent;
+                            Fork secfork = (Fork)node.parent;
+
+                            if (secfork.parent == mainfork.ElseChunk)
+                            {
+                                if(mainfork.ElseChunk.Items.Count == 1)
+                                {
+                                    // recursive folding
+                                    if ((secfork.ElseChunk.Items.Count == 1) && (secfork.ElseChunk.Items[0] is Fork))
+                                    {
+                                        Simplify(((Fork)secfork.ElseChunk.Items[0]).ElseChunk);
+                                        foreach (IOperatorLogic io in secfork.ElseifConditions)
+                                            mainfork.ElseifConditions.Add(io);
+                                        secfork.ElseifConditions.Clear();
+                                        foreach (Chunk c in secfork.ElseifChunks)
+                                            mainfork.ElseifChunks.Add(c);
+                                        secfork.ElseifChunks.Clear();
+                                    }
+                                    mainfork.ElseifConditions.Insert(0, secfork.IfCondition);
+                                    mainfork.ElseifChunks.Insert(0, secfork.IfChunk);
+                                    mainfork.ElseChunk = secfork.ElseChunk;
+                                    secfork.ElseChunk.parent = mainfork;
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             int npos = 0;
             // assignment pass
             while(true)
             {
-                if(node.Items.Count == npos)
+                if(node.Items.Count <= npos)
                     break;
 
                 IStatement current_statement = node.Items[npos];
@@ -1073,6 +1193,10 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                             }
                         }
                     }
+
+                    // local X = nil -> local X
+                    if ((n1.Left is LocalIdentifier) && (n1.Right is Nil))
+                        n1.Right = null;
                 }
                 else if (current_statement is MultiAssignment)
                 {

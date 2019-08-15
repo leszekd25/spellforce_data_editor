@@ -199,6 +199,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                 default:
                     throw new Exception("OperatorBinaryLogic.ReverseOperator(): Invalid operator type!");
             }
+            foreach (IRValue v in Values)
+                if (v is IOperatorLogic)
+                    ((IOperatorLogic)v).ReverseOperator();
         }
     }
 
@@ -241,6 +244,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                 default:
                     throw new Exception("OperatorUnaryLogic.ReverseOperator(): Invalid operator type!");
             }
+
+            if (Value is IOperatorLogic)
+                ((IOperatorLogic)Value).ReverseOperator();
         }
     }
 }

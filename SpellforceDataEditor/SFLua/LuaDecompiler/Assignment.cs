@@ -16,8 +16,11 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
         public override void WriteLuaString(StringWriter sw)
         {
             Left.WriteLuaString(sw);
-            sw.Write(" = ");
-            Right.WriteLuaString(sw);
+            if (Right != null) 
+            {
+                sw.Write(" = ");
+                Right.WriteLuaString(sw);
+            }
         }
     }
 

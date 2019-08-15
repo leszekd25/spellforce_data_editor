@@ -429,7 +429,6 @@
     <Compile Include="SFLua\LuaCondition.cs" />
     <Compile Include="SFLua\LuaDecompiler\Assignment.cs" />
     <Compile Include="SFLua\LuaDecompiler\Chunk.cs" />
-    <Compile Include="SFLua\LuaDecompiler\DecompileNode.cs" />
     <Compile Include="SFLua\LuaDecompiler\Decompiler.cs" />
     <Compile Include="SFLua\LuaDecompiler\Executable.cs" />
     <Compile Include="SFLua\LuaDecompiler\Fork.cs" />
