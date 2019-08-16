@@ -11,95 +11,103 @@ using System.IO;
 
 namespace SpellforceDataEditor.SFLua.lua_controls
 {
-    public partial class LuaDecTestForm : Form
+    public partial class LuaDecompilerForm : Form
     {
-        public LuaDecTestForm()
+        public LuaDecompilerForm()
         {
             InitializeComponent();
         }
+        
 
-        public void DecompilerTest()
+        // assumes all files exist
+        private void DecompileFiles(string[] fnames)
         {
-            button1.Enabled = false;
+            ButtonDecSingle.Enabled = false;
+            ButtonDecDirectory.Enabled = false;
             ButtonOK.Enabled = false;
 
-            int found_scripts = 0;
+            ScriptsFound.Text = fnames.Length.ToString();
+            Progress.Maximum = fnames.Length;
+            Progress.Value = 0;
+            ScriptsFound.Refresh();
+            Progress.Refresh();
+
             int decompiled_scripts = 0;
             int failed_scripts = 0;
-            int unparsed_scripts = 0;
 
-            List<string> scripts = SFUnPak.SFUnPak.ListAllWithExtension("", ".lua", new string[] { "sf34.pak" });
-            List<string> fs_names = new List<string>();
-            found_scripts = scripts.Count;
-            ScriptsFound.Text = found_scripts.ToString();
-            ScriptsFound.Refresh();
-            Progress.Maximum = found_scripts;
-
-            // decompile all scripts
-            SFUnPak.SFPakFileSystem fs = SFUnPak.SFUnPak.GetPak("sf34.pak");
-            for(int i = 0; i < found_scripts; i++)
+            for (int i = 0; i < fnames.Length; i++)
             {
-                string s = scripts[i];
-                MemoryStream ms = fs.GetFileBuffer(s);
-                BinaryReader br = new BinaryReader(ms);
+                string fname = fnames[i];
+                FileInfo fo = new FileInfo(fname);
+                string file_dir = fo.DirectoryName;
+                string new_fname = Path.GetFileNameWithoutExtension(fo.Name) + "_d.lua";
+
+                FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
+                BinaryReader br = new BinaryReader(fs);
                 try
                 {
                     LuaDecompiler.LuaBinaryScript scr = new LuaDecompiler.LuaBinaryScript(br);
-
                     LuaDecompiler.Decompiler dec = new LuaDecompiler.Decompiler();
                     LuaDecompiler.Node n = dec.Decompile(scr.func);
 
-                    //LuaDecompiler.LuaStack stack = new LuaDecompiler.LuaStack();
-                    //LuaDecompiler.DecompileNode n = scr.func.Decompile(stack);
-                    if (n == null)
-                    {
-                        fs_names.Add(s + " FAILED (SIZE "+br.BaseStream.Length.ToString()+")");
-                        failed_scripts += 1;
-                    }
-                    else
-                    {
-                        decompiled_scripts += 1;
-                    }
+                    StringWriter sw = new StringWriter();
+                    n.WriteLuaString(sw);
+                    File.WriteAllText(file_dir + "\\" + new_fname, sw.ToString());
+
+                    decompiled_scripts += 1;
                 }
-                catch(Exception e)
+                catch (Exception)
                 {
-                    unparsed_scripts += 1;
-                    fs_names.Add(s + " UNPARSED (SIZE " + br.BaseStream.Length.ToString() + ")");
+                    failed_scripts += 1;
+                    LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaDecompilerForm.DecompileFiles(): Failed to decompile script "
+                        +fo.Name+"!");
                 }
                 finally
                 {
                     br.Close();
                 }
-                if(i%100 == 0)
+                if (i % 5 == 0)
                 {
-                    ScriptsFailed.Text = (unparsed_scripts + failed_scripts).ToString();
                     ScriptsDecompiled.Text = decompiled_scripts.ToString();
+                    ScriptsFailed.Text = failed_scripts.ToString();
                     Progress.Value = i;
                     Application.DoEvents();
                 }
             }
-            ScriptsFailed.Text = (unparsed_scripts + failed_scripts).ToString();
-            ScriptsDecompiled.Text = decompiled_scripts.ToString();
-            Progress.Value = Progress.Maximum;
-            // write failed scripts to a file
-            FileStream scr_dump = new FileStream("scripts_dump.txt", FileMode.Create, FileAccess.Write);
-            StreamWriter sw = new StreamWriter(scr_dump);
-            foreach (string s in fs_names)
-                sw.WriteLine(s);
-            sw.Close();
 
-            button1.Enabled = true;
+            ScriptsDecompiled.Text = decompiled_scripts.ToString();
+            ScriptsFailed.Text = failed_scripts.ToString();
+            Progress.Value = Progress.Maximum;
+
+            ButtonDecSingle.Enabled = true;
+            ButtonDecDirectory.Enabled = true;
             ButtonOK.Enabled = true;
+
+            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "LuaDecompilerForm.DecompileFiles(): Decompiled files: "
+                +decompiled_scripts.ToString()+", failed to decompile: "+failed_scripts.ToString());
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void DecompileDirectory(string dname)
         {
-            DecompilerTest();
+            string[] list_items = Directory.GetFiles(dname, "*.lua", SearchOption.AllDirectories);
+            DecompileFiles(list_items);
         }
 
         private void ButtonOK_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void ButtonDecSingle_Click(object sender, EventArgs e)
+        {
+            if (DecFileDialog.ShowDialog() == DialogResult.OK)
+                DecompileFiles(DecFileDialog.FileNames);
+        }
+
+        private void ButtonDecDirectory_Click(object sender, EventArgs e)
+        {
+            if (DecDirectoryDialog.ShowDialog() == DialogResult.OK)
+                DecompileDirectory(DecDirectoryDialog.SelectedPath);
         }
     }
 }

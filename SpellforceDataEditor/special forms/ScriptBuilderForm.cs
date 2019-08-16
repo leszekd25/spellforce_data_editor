@@ -753,7 +753,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void eXPERIMENTALDecompilerStuffToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            LuaDecTestForm f = new LuaDecTestForm();
+            LuaDecompilerForm f = new LuaDecompilerForm();
             f.ShowDialog();
         }
     }
