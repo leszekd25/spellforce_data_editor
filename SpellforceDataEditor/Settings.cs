@@ -23,6 +23,8 @@ namespace SpellforceDataEditor
         public static bool LogWarning { get; private set; } = true;
         public static bool LogError { get; private set; } = true;
 
+        public static string GameRunArguments { get; set; } = "";
+
         public static int Load()
         {
             LogUtils.Log.Info(LogUtils.LogSource.Main, "Settings.Load() called");
@@ -99,6 +101,12 @@ namespace SpellforceDataEditor
                             if (LanguageID > 4)
                                 LanguageID = 1;
                             break;
+                        case "GameRunArguments":
+                            string s3 = words[1];
+                            for (int i = 2; i < words.Length; i++)
+                                s3 += " " + words[i];
+                            GameRunArguments = s3;
+                            break;
                     }
                     if (ignore_rest)
                         break;
@@ -172,6 +180,9 @@ namespace SpellforceDataEditor
                             break;
                         case "LanguageID":
                             words = new string[] { words[0], LanguageID.ToString() };
+                            break;
+                        case "GameRunArguments":
+                            words = new string[] { words[0], GameRunArguments };
                             break;
                         default:
                             new_settings.Add(s);

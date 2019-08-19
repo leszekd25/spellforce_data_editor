@@ -13,6 +13,8 @@ using System.IO;
 
 namespace SpellforceDataEditor.SFMod
 {
+    public delegate void SFModAssetUpdate(string fname);
+
     public class SFModAssetElement
     {
         public string fname;
@@ -77,7 +79,6 @@ namespace SpellforceDataEditor.SFMod
                 abw.Write(chunk);
             }
             abw.Close();
-            GC.Collect(1);
 
             return 0;
         }
@@ -88,6 +89,7 @@ namespace SpellforceDataEditor.SFMod
         public string unpacked_asset_directory;  // only for saving
         public string sfmd_filename;
         public List<SFModAssetElement> assets = new List<SFModAssetElement>();
+        public event SFModAssetUpdate update_event = null;
 
         // loads all asset descriptions from a file
         public int Load(BinaryReader br, string fname)
@@ -111,6 +113,7 @@ namespace SpellforceDataEditor.SFMod
         public void Unload()
         {
             assets.Clear();
+            update_event = null;
         }
 
         // saves all assets, including actual game files, to the mod file
@@ -171,6 +174,8 @@ namespace SpellforceDataEditor.SFMod
                 SFModAssetElement e = new SFModAssetElement();
                 e.Load(br);
                 e.ExtractFile(br);
+                if (i % 10 == 9)
+                    update_event?.Invoke(e.fname);    // same as if(update_event != null) update_event(e.fname)
             }
             return 0;
         }

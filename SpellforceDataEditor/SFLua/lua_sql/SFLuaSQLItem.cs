@@ -9,29 +9,39 @@ namespace SpellforceDataEditor.SFLua.lua_sql
 {
     public class SFLuaSQLItemData: ILuaParsable
     {
-        public string MeshMaleCold;
-        public string MeshFemaleCold;
-        public string MeshMaleWarm;
-        public string MeshFemaleWarm;
-        public double ShadowRNG;
-        public double SelectionSize;
-        public string AnimSet;
-        public int Race;
-        public int Category;
-        public int SubCategory;
+        public string MeshMaleCold = "<undefined>";
+        public string MeshFemaleCold = "<undefined>";
+        public string MeshMaleWarm = "<undefined>";
+        public string MeshFemaleWarm = "<undefined>";
+        public double ShadowRNG = 0;
+        public double SelectionSize = 0;
+        public string AnimSet = "";
+        public int Race = 0;
+        public int Category = 0;
+        public int SubCategory = 0;
 
         public void ParseLoad(LuaParser.LuaTable table)
         {
-            MeshMaleCold = (string)table["meshmalecold"];
-            MeshFemaleCold = (string)table["meshfemalecold"];
-            MeshMaleWarm = (string)table["meshmalewarm"];
-            MeshFemaleWarm = (string)table["meshfemalewarm"];
-            ShadowRNG = (double)table["shadowrng"];
-            SelectionSize = (double)table["selectionsize"];
-            AnimSet = (string)table["animset"];
-            Race = (int)(double)table["race"];
-            Category = (int)(double)table["cat"];
-            SubCategory = (int)(double)table["subcat"];
+            if(table.entries.ContainsKey("meshmalecold"))
+                MeshMaleCold = (string)table["meshmalecold"];
+            if (table.entries.ContainsKey("meshfemalecold"))
+                MeshFemaleCold = (string)table["meshfemalecold"];
+            if (table.entries.ContainsKey("meshmalewarm"))
+                MeshMaleWarm = (string)table["meshmalewarm"];
+            if (table.entries.ContainsKey("meshfemalewarm"))
+                MeshFemaleWarm = (string)table["meshfemalewarm"];
+            if (table.entries.ContainsKey("shadowrng"))
+                ShadowRNG = (double)table["shadowrng"];
+            if (table.entries.ContainsKey("selectionsize"))
+                SelectionSize = (double)table["selectionsize"];
+            if (table.entries.ContainsKey("animset"))
+                AnimSet = (string)table["animset"];
+            if (table.entries.ContainsKey("race"))
+                Race = (int)(double)table["race"];
+            if (table.entries.ContainsKey("cat"))
+                Category = (int)(double)table["cat"];
+            if (table.entries.ContainsKey("subcat"))
+                SubCategory = (int)(double)table["subcat"];
         }
 
         public string ParseToString()

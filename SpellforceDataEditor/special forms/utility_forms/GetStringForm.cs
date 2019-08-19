@@ -20,10 +20,11 @@ namespace SpellforceDataEditor.special_forms.utility_forms
             InitializeComponent();
         }
 
-        public void SetDescription(string title, string label)
+        public void SetDescription(string title, string label, string default_str)
         {
             Text = title;
             LabelInput.Text = label;
+            TextBoxString.Text = default_str;
         }
 
         private void TextBoxString_TextChanged(object sender, EventArgs e)

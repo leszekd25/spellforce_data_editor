@@ -24,23 +24,6 @@ namespace SpellforceDataEditor
 
         public MainForm()
         {
-            /*MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", "script\\gdsactions.lua");
-            BinaryReader br = new BinaryReader(ms);
-            SFLua.LuaDecompiler.LuaBinaryScript scr = new SFLua.LuaDecompiler.LuaBinaryScript(br);
-            scr.func.DumpAll();
-            br.Close();*/
-
-            /*SFLua.LuaDecompiler.Decompiler dec = new SFLua.LuaDecompiler.Decompiler();
-            SFLua.LuaDecompiler.Node n = dec.Decompile(scr.func);
-            if(n != null)
-            {
-                StringWriter sw = new StringWriter();
-                n.WriteLuaString(sw);
-                Clipboard.SetText(sw.ToString());
-            }
-            else
-                Clipboard.SetText("<FAILED>");*/
-
             LogUtils.Log.Info(LogUtils.LogSource.Main, "MainForm() called");
             InitializeComponent();
             linkEditor.Links.Add(0, linkEditor.Text.Length, "https://github.com/leszekd25/spellforce_data_editor/tree/with_viewer/bin");

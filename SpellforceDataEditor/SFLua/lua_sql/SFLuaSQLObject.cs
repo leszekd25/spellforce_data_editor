@@ -9,26 +9,34 @@ namespace SpellforceDataEditor.SFLua.lua_sql
 {
     public class SFLuaSQLObjectData: ILuaParsable
     {
-        public string Name;
+        public string Name = "";
         public List<string> Mesh;
-        public bool Shadow;
-        public bool Billboarded;
-        public double Scale;
-        public double SelectionScaling;
+        public bool Shadow = false;
+        public bool Billboarded = false;
+        public double Scale = 1;
+        public double SelectionScaling = 0;
 
         public void ParseLoad(LuaParser.LuaTable table)
         {
-            Name = (string)table["name"];
+            if(table.entries.ContainsKey("name"))
+                Name = (string)table["name"];
 
             Mesh = new List<string>();
-            LuaParser.LuaTable mesh_table = (LuaParser.LuaTable)table["mesh"];
-            for (int k = 1; k <= mesh_table.entries.Count; k++)
-                Mesh.Add((string)mesh_table[(double)k]);
+            if (table.entries.ContainsKey("mesh"))
+            {
+                LuaParser.LuaTable mesh_table = (LuaParser.LuaTable)table["mesh"];
+                for (int k = 1; k <= mesh_table.entries.Count; k++)
+                    Mesh.Add((string)mesh_table[(double)k]);
+            }
 
-            Shadow = ((double)table["shadow"] != 0);
-            Billboarded = ((double)table["billboarded"] != 0);
-            Scale = (double)table["scale"];
-            SelectionScaling = (double)table["selectionscaling"];
+            if (table.entries.ContainsKey("shadow"))
+                Shadow = ((double)table["shadow"] != 0);
+            if (table.entries.ContainsKey("billboarded"))
+                Billboarded = ((double)table["billboarded"] != 0);
+            if (table.entries.ContainsKey("scale"))
+                Scale = (double)table["scale"];
+            if (table.entries.ContainsKey("selectionscaling"))
+                SelectionScaling = (double)table["selectionscaling"];
         }
 
         public string ParseToString()

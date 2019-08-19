@@ -15,11 +15,17 @@ namespace SpellforceDataEditor.SFLua.lua_sql
         public void ParseLoad(LuaParser.LuaTable table)
         {
             Mesh = new List<string>();
-            LuaParser.LuaTable mesh_table = (LuaParser.LuaTable)table["mesh"];
-            for (int k = 1; k <= mesh_table.entries.Count; k++)
-                Mesh.Add((string)mesh_table[(double)k]);
+            if (table.entries.ContainsKey("mesh"))
+            {
+                LuaParser.LuaTable mesh_table = (LuaParser.LuaTable)table["mesh"];
+                for (int k = 1; k <= mesh_table.entries.Count; k++)
+                    Mesh.Add((string)mesh_table[(double)k]);
+            }
 
-            SelectionScaling = (double)table["selectionscaling"];
+            if (table.entries.ContainsKey("selectionscaling"))
+                SelectionScaling = (double)table["selectionscaling"];
+            else
+                SelectionScaling = 0;
         }
 
         public string ParseToString()

@@ -13,6 +13,10 @@ using System.IO;
 
 namespace SpellforceDataEditor.SFMod
 {
+    [Flags]
+    public enum ModLoadOption { NONE = 0, INFO = 1, DATA = 2, ASSETS = 4, PATCHES = 8, ALL = 15}
+
+
     public class SFMod
     {
         public SFModInfo info = new SFModInfo();
@@ -20,27 +24,39 @@ namespace SpellforceDataEditor.SFMod
         public SFModAssetManager assets = new SFModAssetManager();
         public SFModBytePatchManager patches = new SFModBytePatchManager();
 
-        // loads mod data from a file, but only loads mod info
-        public int LoadOnlyInfo(string fname)
+        public void SkipChunk(BinaryReader br)
         {
-            FileStream fs = File.Open(fname, FileMode.Open, FileAccess.Read);
-            BinaryReader br = new BinaryReader(fs);
-            int mod_toolversion = br.ReadInt32();
-            info.Load(br);
-            br.Close();
-            return 0;
+            long shift = br.ReadInt64();
+            br.BaseStream.Position += shift-8;
         }
 
         // loads all mod data from a file (excluding actual assets)
-        public int Load(string fname)
+        public int Load(string fname, ModLoadOption options)
         {
             FileStream fs = File.Open(fname, FileMode.Open, FileAccess.Read);
             BinaryReader br = new BinaryReader(fs);
             int mod_toolversion = br.ReadInt32();
-            info.Load(br);
-            data.Load(br);
-            assets.Load(br, fname);
-            //patches.Load(br);
+
+            if ((options & ModLoadOption.INFO) != 0)
+                info.Load(br);
+            else
+                SkipChunk(br);
+
+            if ((options & ModLoadOption.DATA) != 0)
+                data.Load(br);
+            else
+                SkipChunk(br);
+
+            if ((options & ModLoadOption.ASSETS) != 0)
+                assets.Load(br, fname);
+            else
+                SkipChunk(br);
+
+            /*if ((options & ModLoadOption.PATCHES) != 0)
+                patches.Load(br);
+            else
+                SkipChunk(br);*/
+
             br.Close();
             return 0;
         }
@@ -57,8 +73,9 @@ namespace SpellforceDataEditor.SFMod
         // saves mod data, including assets, to a specified file
         public int Save(string fname)
         {
-            FileStream fs = File.Open(fname+".tmp", FileMode.OpenOrCreate, FileAccess.Write);
-            BinaryWriter bw = new BinaryWriter(fs);
+
+            MemoryStream ms = new MemoryStream();
+            BinaryWriter bw = new BinaryWriter(ms);
             bw.Write(special_forms.ModManagerForm.ModToolVersion);
             int result = 0;
             if(info.Save(bw) != 0)
@@ -69,8 +86,17 @@ namespace SpellforceDataEditor.SFMod
                 result = -1;
             // else if(patches.Save(bw) != 0)    // not for this version!
             //     result = -1;
-            bw.Flush();
-            bw.Close();
+
+            FileStream fs = File.Open(fname + ".tmp", FileMode.OpenOrCreate, FileAccess.Write);
+            BinaryWriter fbw = new BinaryWriter(fs);
+
+            ms.Position = 0;
+            BinaryReader mbr = new BinaryReader(ms);
+            fbw.Write(mbr.ReadBytes((int)mbr.BaseStream.Length));
+            
+            fbw.Flush();
+            fbw.Close();
+            mbr.Close();
             if(result == 0)
             {
                 File.Copy(fname + ".tmp", fname);

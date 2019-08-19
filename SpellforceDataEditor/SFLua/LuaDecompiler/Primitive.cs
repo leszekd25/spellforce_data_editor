@@ -33,7 +33,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
 
         public override void WriteLuaString(StringWriter sw)
         {
-            sw.Write('"'+value.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t")+'"');
+            sw.Write('"'+value.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t").Replace("\"", "\\\"")+'"');
         }
 
         public override string ToString()

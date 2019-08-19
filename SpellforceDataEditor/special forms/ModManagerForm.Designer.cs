@@ -39,6 +39,8 @@
             this.restoreToOriginalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadModListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.makeYourOwnModToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.specifySpellforceexeArgumentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.StatusProgreessBar = new System.Windows.Forms.ToolStripProgressBar();
@@ -50,6 +52,8 @@
             this.SelectOrigCFF = new System.Windows.Forms.OpenFileDialog();
             this.SelectGameDirectory = new System.Windows.Forms.FolderBrowserDialog();
             this.SelectOrigEXE = new System.Windows.Forms.OpenFileDialog();
+            this.RestoreButton = new System.Windows.Forms.Button();
+            this.ButtonApplyAndRun = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelInfo.SuspendLayout();
@@ -68,7 +72,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.modsToolStripMenuItem});
+            this.modsToolStripMenuItem,
+            this.settingsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(496, 24);
@@ -89,28 +94,28 @@
             // specifyOriginalGamedatacffToolStripMenuItem
             // 
             this.specifyOriginalGamedatacffToolStripMenuItem.Name = "specifyOriginalGamedatacffToolStripMenuItem";
-            this.specifyOriginalGamedatacffToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.specifyOriginalGamedatacffToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.specifyOriginalGamedatacffToolStripMenuItem.Text = "Specify original Gamedata.cff";
             this.specifyOriginalGamedatacffToolStripMenuItem.Click += new System.EventHandler(this.specifyOriginalGamedatacffToolStripMenuItem_Click);
             // 
             // specifyOriginalSpellforceexeToolStripMenuItem
             // 
             this.specifyOriginalSpellforceexeToolStripMenuItem.Name = "specifyOriginalSpellforceexeToolStripMenuItem";
-            this.specifyOriginalSpellforceexeToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.specifyOriginalSpellforceexeToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.specifyOriginalSpellforceexeToolStripMenuItem.Text = "Specify original Spellforce.exe";
             this.specifyOriginalSpellforceexeToolStripMenuItem.Click += new System.EventHandler(this.specifyOriginalSpellforceexeToolStripMenuItem_Click);
             // 
             // loadTemplateToolStripMenuItem
             // 
             this.loadTemplateToolStripMenuItem.Name = "loadTemplateToolStripMenuItem";
-            this.loadTemplateToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.loadTemplateToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.loadTemplateToolStripMenuItem.Text = "Load template";
             this.loadTemplateToolStripMenuItem.Click += new System.EventHandler(this.loadTemplateToolStripMenuItem_Click);
             // 
             // saveTemplateToolStripMenuItem
             // 
             this.saveTemplateToolStripMenuItem.Name = "saveTemplateToolStripMenuItem";
-            this.saveTemplateToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.saveTemplateToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.saveTemplateToolStripMenuItem.Text = "Save template";
             this.saveTemplateToolStripMenuItem.Click += new System.EventHandler(this.saveTemplateToolStripMenuItem_Click);
             // 
@@ -145,11 +150,26 @@
             this.makeYourOwnModToolStripMenuItem.Text = "Make your own mod...";
             this.makeYourOwnModToolStripMenuItem.Click += new System.EventHandler(this.makeYourOwnModToolStripMenuItem_Click);
             // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.specifySpellforceexeArgumentsToolStripMenuItem});
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            // 
+            // specifySpellforceexeArgumentsToolStripMenuItem
+            // 
+            this.specifySpellforceexeArgumentsToolStripMenuItem.Name = "specifySpellforceexeArgumentsToolStripMenuItem";
+            this.specifySpellforceexeArgumentsToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
+            this.specifySpellforceexeArgumentsToolStripMenuItem.Text = "Specify Spellforce.exe arguments";
+            this.specifySpellforceexeArgumentsToolStripMenuItem.Click += new System.EventHandler(this.specifySpellforceexeArgumentsToolStripMenuItem_Click);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.StatusText,
             this.StatusProgreessBar,
+            this.StatusText,
             this.StatusGameInfo});
             this.statusStrip1.Location = new System.Drawing.Point(0, 451);
             this.statusStrip1.Name = "statusStrip1";
@@ -200,11 +220,11 @@
             // 
             // ButtonApplyMods
             // 
-            this.ButtonApplyMods.Location = new System.Drawing.Point(409, 425);
+            this.ButtonApplyMods.Location = new System.Drawing.Point(294, 425);
             this.ButtonApplyMods.Name = "ButtonApplyMods";
-            this.ButtonApplyMods.Size = new System.Drawing.Size(75, 23);
+            this.ButtonApplyMods.Size = new System.Drawing.Size(71, 23);
             this.ButtonApplyMods.TabIndex = 6;
-            this.ButtonApplyMods.Text = "Apply mods";
+            this.ButtonApplyMods.Text = "Apply mods ";
             this.ButtonApplyMods.UseVisualStyleBackColor = true;
             this.ButtonApplyMods.Click += new System.EventHandler(this.ButtonApplyMods_Click);
             // 
@@ -219,11 +239,33 @@
             this.SelectOrigEXE.FileName = "SpellForce.exe";
             this.SelectOrigEXE.Filter = "Executable files|*.exe";
             // 
+            // RestoreButton
+            // 
+            this.RestoreButton.Location = new System.Drawing.Point(12, 425);
+            this.RestoreButton.Name = "RestoreButton";
+            this.RestoreButton.Size = new System.Drawing.Size(125, 23);
+            this.RestoreButton.TabIndex = 7;
+            this.RestoreButton.Text = "Restore to original";
+            this.RestoreButton.UseVisualStyleBackColor = true;
+            this.RestoreButton.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // ButtonApplyAndRun
+            // 
+            this.ButtonApplyAndRun.Location = new System.Drawing.Point(371, 425);
+            this.ButtonApplyAndRun.Name = "ButtonApplyAndRun";
+            this.ButtonApplyAndRun.Size = new System.Drawing.Size(113, 23);
+            this.ButtonApplyAndRun.TabIndex = 8;
+            this.ButtonApplyAndRun.Text = "Apply mods and run";
+            this.ButtonApplyAndRun.UseVisualStyleBackColor = true;
+            this.ButtonApplyAndRun.Click += new System.EventHandler(this.ButtonApplyAndRun_Click);
+            // 
             // ModManagerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(496, 473);
+            this.Controls.Add(this.ButtonApplyAndRun);
+            this.Controls.Add(this.RestoreButton);
             this.Controls.Add(this.ButtonApplyMods);
             this.Controls.Add(this.PanelInfo);
             this.Controls.Add(this.PanelParameters);
@@ -268,5 +310,9 @@
         private System.Windows.Forms.OpenFileDialog SelectOrigEXE;
         private System.Windows.Forms.Label LabelModInfo;
         private System.Windows.Forms.ToolStripMenuItem reloadModListToolStripMenuItem;
+        private System.Windows.Forms.Button RestoreButton;
+        private System.Windows.Forms.Button ButtonApplyAndRun;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem specifySpellforceexeArgumentsToolStripMenuItem;
     }
 }

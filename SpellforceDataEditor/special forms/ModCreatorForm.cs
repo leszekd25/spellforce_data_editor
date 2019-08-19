@@ -92,7 +92,7 @@ namespace SpellforceDataEditor.special_forms
             if(File.Exists("mods\\" + mod_name + ".sfmd"))
             {
                 SFMod.SFMod prev_mod = new SFMod.SFMod();
-                prev_mod.LoadOnlyInfo("mods\\" + mod_name + ".sfmd");
+                prev_mod.Load("mods\\" + mod_name + ".sfmd", ModLoadOption.INFO);
                 DialogResult result = MessageBox.Show("There already exists a mod by this name. Press Yes to save changes and increase revision number by 1, No to save changes AND revision number, or Cancel to abort.", "Confirm to replace", MessageBoxButtons.YesNoCancel);
                 if(result == DialogResult.Cancel)
                 {

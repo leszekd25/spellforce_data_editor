@@ -52,6 +52,11 @@ namespace SpellforceDataEditor.special_forms
                     // assumes file exits in game files
                     File.Copy(SFUnPak.SFUnPak.game_directory_name + "\\SpellForce.exe", "backup\\SpellForce.exe");
                 }
+                if(!Directory.Exists("backup\\map"))
+                {
+                    // assumes directory exists in game files
+                    Utility.CopyDirectory(SFUnPak.SFUnPak.game_directory_name + "\\map", "backup\\map");
+                }
             }
             catch(UnauthorizedAccessException)
             {
@@ -81,6 +86,8 @@ namespace SpellforceDataEditor.special_forms
             RefreshModList();
 
             SelectedModsRefresh();
+
+            ready = true;
         }
 
         // reloads mod list
@@ -122,12 +129,13 @@ namespace SpellforceDataEditor.special_forms
                 if (result != DialogResult.OK)
                     return;
             }
-            StatusText.Text = "Processing...";
+            LogUtils.Log.Info(LogUtils.LogSource.SFMod, "ModManagerForm.RestoreGameFiles() called");
+            StatusText.Text = "Restoring game to original state...";
             statusStrip1.Refresh();
             foreach(string s in ModList.Items)
             {
                 SFMod.SFMod mod = new SFMod.SFMod();
-                mod.Load("mods\\"+s+".sfmd");
+                mod.Load("mods\\"+s+".sfmd", SFMod.ModLoadOption.ASSETS);
                 foreach(string f in mod.assets.GetFileNames())
                 {
                     string fname = SFUnPak.SFUnPak.game_directory_name + "\\" + f;
@@ -140,6 +148,8 @@ namespace SpellforceDataEditor.special_forms
 
             File.Copy("backup\\GameData.cff", SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff", true);
             File.Copy("backup\\SpellForce.exe", SFUnPak.SFUnPak.game_directory_name + "\\SpellForce.exe", true);
+            Utility.CopyDirectory(AppDomain.CurrentDomain.BaseDirectory + "backup\\map",
+                SFUnPak.SFUnPak.game_directory_name + "\\map");
             StatusText.Text = "Done";
         }
 
@@ -156,37 +166,58 @@ namespace SpellforceDataEditor.special_forms
             RefreshModList();
             SelectedModsRefresh();
 
+            GC.Collect();
         }
 
-        // applies selected mods to a game
-        private void ButtonApplyMods_Click(object sender, EventArgs e)
+        private void UpdateUsedMods(SFMod.SFModTemplate tmpl)
+        {
+            tmpl.mod_names.Clear();
+            for (int i = 0; i < ModList.CheckedItems.Count; i++)
+                tmpl.mod_names.Add(ModList.CheckedItems[i].ToString());
+        }
+
+        private bool ApplyMods()
         {
             if (!ready)
-                return;
+                return false;
             // prompt to confirm
             DialogResult result = MessageBox.Show("Doing this will modify your game files. You can undo the process with the Restore option in the Mods menu. Press OK to proceed.", "Confirm to apply mods", MessageBoxButtons.OKCancel);
             if (result != DialogResult.OK)
-                return;
+                return false;
             // restore to original
-            StatusText.Text = "Applying changes...";
+            LogUtils.Log.Info(LogUtils.LogSource.SFMod, "ModManagerForm.ApplyMods() called");
             RestoreGameFiles(false);
             // modify files according to selected mods and save template as last used
             SFCFF.SFGameData gd_to_modify = new SFCFF.SFGameData();
+            StatusText.Text = "Loading gamedata to modify...";
+            statusStrip1.Refresh();
             gd_to_modify.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff");
             List<string> failed_mods = new List<string>();
-            for(int i = 0; i < ModList.Items.Count; i++)
+            for (int i = 0; i < ModList.Items.Count; i++)
             {
-                if(ModList.GetItemChecked(i))
+                if (ModList.GetItemChecked(i))
                 {
                     SFMod.SFMod mod = new SFMod.SFMod();
                     string mod_name = ModList.Items[i].ToString();
-                    int result_load = mod.Load("mods\\"+mod_name+".sfmd");
+                    LogUtils.Log.Info(LogUtils.LogSource.SFMod, "ModManagerForm.ApplyMods(): Applying mod " + mod_name);
+                    StatusText.Text = "Loading mod "+mod_name+"...";
+                    statusStrip1.Refresh();
+                    int result_load = mod.Load("mods\\" + mod_name + ".sfmd", SFMod.ModLoadOption.DATA | SFMod.ModLoadOption.ASSETS);
                     if (result_load != 0)
                     {
                         failed_mods.Add(mod_name);
                         continue;
                     }
+                    StatusProgreessBar.Value = 0;
+                    StatusProgreessBar.Maximum = mod.assets.assets.Count;
+
+                    StatusText.Text = "Modifying gamedata...";
+                    statusStrip1.Refresh();
+                    mod.assets.update_event += new SFMod.SFModAssetUpdate(OnAssetUpdateEvent);
                     result_load = mod.Apply(gd_to_modify);
+                    mod.assets.update_event -= new SFMod.SFModAssetUpdate(OnAssetUpdateEvent);
+                    StatusProgreessBar.Visible = false;
+
                     if (result_load != 0)
                     {
                         failed_mods.Add(mod_name);
@@ -194,7 +225,11 @@ namespace SpellforceDataEditor.special_forms
                     }
                 }
             }
+
+            StatusText.Text = "Saving modified gamedata...";
+            statusStrip1.Refresh();
             gd_to_modify.Save(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff");
+
             // if some mods were not applied, show a box with all failed mods
             if (failed_mods.Count != 0)
             {
@@ -203,20 +238,30 @@ namespace SpellforceDataEditor.special_forms
                     mod_list += m + "\r\n";
                 result = MessageBox.Show("The following mods could not be applied:\r\n" + mod_list + "Press OK to restore to original, or Cancel to continue normally.", "Could not apply mods", MessageBoxButtons.OKCancel);
                 if (result == DialogResult.OK)
-                {
                     RestoreGameFiles(false);
-                }
+                else
+                    StatusText.Text = "Mods applied";
             }
             else
             {
+                // save used mods to file
+                UpdateUsedMods(cur_used);
                 last_used.CopyFrom(cur_used);
                 last_used.name = "last_used";
                 last_used.Save();
+                StatusText.Text = "Mods applied";
             }
             gd_to_modify.Unload();
 
             GC.Collect();
-            StatusText.Text = "Changes saved";
+
+            return true;
+        }
+
+        // applies selected mods to a game
+        private void ButtonApplyMods_Click(object sender, EventArgs e)
+        {
+            ApplyMods();
         }
 
         private void ModList_SelectedIndexChanged(object sender, EventArgs e)
@@ -226,7 +271,7 @@ namespace SpellforceDataEditor.special_forms
             // load mod into memory (excluding assets ofc), display info
             current_mod.Unload();
             string mod_fname = "mods\\"+ModList.SelectedItem.ToString()+".sfmd";
-            int result = current_mod.Load(mod_fname);
+            int result = current_mod.Load(mod_fname, SFMod.ModLoadOption.INFO);
             if(result != 0)
             {
                 StatusText.Text = "Error: Can't load mod " + ModList.SelectedItem.ToString();
@@ -294,6 +339,52 @@ namespace SpellforceDataEditor.special_forms
         private void reloadModListToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshModList();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            RestoreGameFiles(true);
+        }
+        
+        // it doesn't matter if game can't be run, we just want to attempt to run it
+        private void RunGame()
+        {
+            try
+            {
+                System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo(
+                   SFUnPak.SFUnPak.game_directory_name + "\\SpellForce.exe");
+
+                psi.Arguments = Settings.GameRunArguments;
+                psi.WorkingDirectory = SFUnPak.SFUnPak.game_directory_name + "\\";
+                System.Diagnostics.Process.Start(psi);
+            }
+            catch(Exception)
+            {
+                return;
+            }
+        }
+
+        private void ButtonApplyAndRun_Click(object sender, EventArgs e)
+        {
+            if(ApplyMods())
+                RunGame();
+        }
+
+        private void specifySpellforceexeArgumentsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Settings.GameRunArguments = Utility.GetString("Input SpellForce.exe arguments", 
+                                                          "Input arguments to run the game with:", 
+                                                          Settings.GameRunArguments);
+        }
+
+        private void OnAssetUpdateEvent(string fname)
+        {
+            StatusProgreessBar.Visible = true;
+            if (fname.Length > 39)
+                fname = "..." + fname.Substring(fname.Length - 37, 37);
+            StatusText.Text = "Extracting " + fname + "...";
+            StatusProgreessBar.Value += 10;
+            statusStrip1.Refresh();
         }
     }
 }

@@ -32,6 +32,8 @@ namespace SpellforceDataEditor.SFMod
         static public SFModCFFChangeElement Load(BinaryReader br)
         {
             SFModCFFChangeElement celem = new SFModCFFChangeElement();
+            if (br.ReadUInt32() != 0)
+                throw new Exception("Invalid data in stream!");
             celem.type = (SFModCFFChangeType)br.ReadInt16();
             celem.category_index = br.ReadByte();
             celem.element_index = br.ReadUInt16();
@@ -53,6 +55,7 @@ namespace SpellforceDataEditor.SFMod
         // saves a change to a stream
         public int Save(BinaryWriter bw)
         {
+            bw.Write((UInt32)0);
             bw.Write((Int16)type);
             bw.Write(category_index);
             bw.Write(element_index);
@@ -62,6 +65,11 @@ namespace SpellforceDataEditor.SFMod
                 return -1;
             SFCategoryManager.gamedata[category_index].WriteElementToBuffer(bw, element.variants);
             return 0;
+        }
+
+        public override string ToString()
+        {
+            return type.ToString() + " | " + category_index.ToString() + ", " + element_index.ToString();
         }
     }
 

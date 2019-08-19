@@ -9,13 +9,16 @@ namespace SpellforceDataEditor.SFLua.lua_sql
 {
     public class SFLuaSQLHeadData: ILuaParsable
     {
-        public string MeshMale;
-        public string MeshFemale;
+        public string MeshMale = "<undefined>";
+        public string MeshFemale = "<undefined>";
 
         public void ParseLoad(LuaParser.LuaTable table)
         {
-            MeshMale = (string)table["meshmale"];
-            MeshFemale = (string)table["meshfemale"];
+
+            if(table.entries.ContainsKey("meshmale"))
+                MeshMale = (string)table["meshmale"];
+            if(table.entries.ContainsKey("meshfemale"))
+                MeshFemale = (string)table["meshfemale"];
         }
 
         public string ParseToString()

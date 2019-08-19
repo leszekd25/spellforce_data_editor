@@ -187,13 +187,13 @@ namespace SpellforceDataEditor
             return false;
         }
 
-        static public string GetString(string  caption, string label)
+        static public string GetString(string caption, string label, string default_str = "")
         {
             special_forms.utility_forms.GetStringForm form = new special_forms.utility_forms.GetStringForm();
-            form.SetDescription(caption, label);
+            form.SetDescription(caption, label, default_str);
             form.ShowDialog();
             if (form.Result == DialogResult.Cancel)
-                return null;
+                return default_str;
             return form.ResultString;
         }
 
@@ -311,6 +311,76 @@ namespace SpellforceDataEditor
                     current_end = current_center - 1;
             }
             return current_start;
+        }
+
+        // copies source file to destination, creates directories when needed
+        static public int CopyFile(string src_file, string dst_file)
+        {
+            if (!File.Exists(src_file))
+                return -1;
+
+            try
+            {
+                FileInfo fo = new FileInfo(dst_file);
+                if (!fo.Directory.Exists)
+                    fo.Directory.Create();
+                if (File.Exists(dst_file))
+                    File.Delete(dst_file);
+                File.Copy(src_file, dst_file);
+            }
+            catch(Exception)
+            {
+                return -2;
+            }
+
+            return 0;
+        }
+
+        // GetRelativePath("C:\\dir1", "C:\\dir1\\dir4\\file.txt") -> "\\dir4\\file.txt")
+        static public bool GetRelativePath(string src_dir, string f, out string result)
+        {
+            result = "";
+
+            int occ = f.IndexOf(src_dir);
+            if (occ >= 0)
+            {
+                result = f.Substring(occ + src_dir.Length, f.Length - occ - src_dir.Length);
+                return true;
+            }
+
+            return false;
+        }
+
+        static public int CopyDirectory(string src_dir, string dst_dir)
+        {
+            if (!Directory.Exists(src_dir))
+                return -1;
+
+            try
+            {
+                Directory.CreateDirectory(dst_dir);
+                string[] files = Directory.GetFiles(src_dir);
+                string f_rel;
+                foreach (string f in files)
+                {
+                    GetRelativePath(src_dir, f, out f_rel);
+                    CopyFile(f, dst_dir + f_rel);
+                }
+
+                string[] directories = Directory.GetDirectories(src_dir);
+                string d_rel;
+                foreach(string d in directories)
+                {
+                    GetRelativePath(src_dir, d, out d_rel);
+                    CopyDirectory(d, dst_dir + d_rel);
+                }
+            }
+            catch(Exception)
+            {
+                return -2;
+            }
+
+            return 0;
         }
     }
 }
