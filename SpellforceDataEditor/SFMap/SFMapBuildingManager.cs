@@ -203,6 +203,12 @@ namespace SpellforceDataEditor.SFMap
             bld.npc_id = npc_id;
             bld.level = level;
             bld.race_id = race_id;
+            if(race_id == -1)
+            {
+                // find race ID in gamedata
+                int bld_id = SFCFF.SFCategoryManager.gamedata[23].GetElementIndex(id);
+                bld.race_id = (byte)SFCFF.SFCategoryManager.gamedata[23][bld_id][1];
+            }
             buildings.Add(bld);
 
             // todo: this is broken and MUST be fixed

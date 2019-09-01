@@ -28,78 +28,39 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.BrushControl = new SpellforceDataEditor.SFMap.map_controls.MapBrushControl();
-            this.TypeCombo = new System.Windows.Forms.ComboBox();
+            this.SelectedLakeType = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.DepthTextBox = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.SlopeTextBox = new System.Windows.Forms.TextBox();
             this.LabelError = new System.Windows.Forms.Label();
+            this.SelectedLakePanel = new System.Windows.Forms.Panel();
+            this.SelectedLakeInternalDepth = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.SelectedLakePanel.SuspendLayout();
             this.SuspendLayout();
             // 
-            // BrushControl
+            // SelectedLakeType
             // 
-            this.BrushControl.Location = new System.Drawing.Point(3, 82);
-            this.BrushControl.Name = "BrushControl";
-            this.BrushControl.Size = new System.Drawing.Size(310, 124);
-            this.BrushControl.TabIndex = 0;
-            // 
-            // TypeCombo
-            // 
-            this.TypeCombo.FormattingEnabled = true;
-            this.TypeCombo.Items.AddRange(new object[] {
+            this.SelectedLakeType.FormattingEnabled = true;
+            this.SelectedLakeType.Items.AddRange(new object[] {
             "Water",
+            "Swamp",
             "Lava",
-            "Swamp"});
-            this.TypeCombo.Location = new System.Drawing.Point(115, 3);
-            this.TypeCombo.Name = "TypeCombo";
-            this.TypeCombo.Size = new System.Drawing.Size(77, 21);
-            this.TypeCombo.TabIndex = 1;
-            this.TypeCombo.Text = "Water";
+            "Ice"});
+            this.SelectedLakeType.Location = new System.Drawing.Point(106, 33);
+            this.SelectedLakeType.Name = "SelectedLakeType";
+            this.SelectedLakeType.Size = new System.Drawing.Size(77, 21);
+            this.SelectedLakeType.TabIndex = 1;
+            this.SelectedLakeType.Text = "Water";
+            this.SelectedLakeType.SelectedIndexChanged += new System.EventHandler(this.SelectedLakeType_SelectedIndexChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(15, 6);
+            this.label1.Location = new System.Drawing.Point(12, 36);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(54, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "Lake type";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 33);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(61, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Lake depth";
-            // 
-            // DepthTextBox
-            // 
-            this.DepthTextBox.Location = new System.Drawing.Point(115, 30);
-            this.DepthTextBox.Name = "DepthTextBox";
-            this.DepthTextBox.Size = new System.Drawing.Size(77, 20);
-            this.DepthTextBox.TabIndex = 4;
-            this.DepthTextBox.Text = "150";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 59);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(75, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Slope strength";
-            // 
-            // SlopeTextBox
-            // 
-            this.SlopeTextBox.Location = new System.Drawing.Point(115, 56);
-            this.SlopeTextBox.Name = "SlopeTextBox";
-            this.SlopeTextBox.Size = new System.Drawing.Size(77, 20);
-            this.SlopeTextBox.TabIndex = 6;
-            this.SlopeTextBox.Text = "50";
             // 
             // LabelError
             // 
@@ -109,33 +70,65 @@
             this.LabelError.Size = new System.Drawing.Size(0, 13);
             this.LabelError.TabIndex = 7;
             // 
+            // SelectedLakePanel
+            // 
+            this.SelectedLakePanel.Controls.Add(this.SelectedLakeInternalDepth);
+            this.SelectedLakePanel.Controls.Add(this.label1);
+            this.SelectedLakePanel.Controls.Add(this.label6);
+            this.SelectedLakePanel.Controls.Add(this.SelectedLakeType);
+            this.SelectedLakePanel.Enabled = false;
+            this.SelectedLakePanel.Location = new System.Drawing.Point(18, 35);
+            this.SelectedLakePanel.Name = "SelectedLakePanel";
+            this.SelectedLakePanel.Size = new System.Drawing.Size(403, 170);
+            this.SelectedLakePanel.TabIndex = 8;
+            // 
+            // SelectedLakeInternalDepth
+            // 
+            this.SelectedLakeInternalDepth.Enabled = false;
+            this.SelectedLakeInternalDepth.Location = new System.Drawing.Point(106, 7);
+            this.SelectedLakeInternalDepth.Name = "SelectedLakeInternalDepth";
+            this.SelectedLakeInternalDepth.Size = new System.Drawing.Size(77, 20);
+            this.SelectedLakeInternalDepth.TabIndex = 11;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 10);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(72, 13);
+            this.label6.TabIndex = 1;
+            this.label6.Text = "Internal depth";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(15, 19);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(75, 13);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "Selected lake:";
+            // 
             // MapInspectorLakeControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.SelectedLakePanel);
             this.Controls.Add(this.LabelError);
-            this.Controls.Add(this.SlopeTextBox);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.DepthTextBox);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.TypeCombo);
-            this.Controls.Add(this.BrushControl);
             this.Name = "MapInspectorLakeControl";
-            this.VisibleChanged += new System.EventHandler(this.MapInspectorLakeControl_VisibleChanged);
+            this.SelectedLakePanel.ResumeLayout(false);
+            this.SelectedLakePanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private MapBrushControl BrushControl;
-        private System.Windows.Forms.ComboBox TypeCombo;
+        private System.Windows.Forms.ComboBox SelectedLakeType;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox DepthTextBox;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox SlopeTextBox;
         private System.Windows.Forms.Label LabelError;
+        private System.Windows.Forms.Panel SelectedLakePanel;
+        private System.Windows.Forms.TextBox SelectedLakeInternalDepth;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label4;
     }
 }

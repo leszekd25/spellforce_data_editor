@@ -38,14 +38,14 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             generator.Height = MapSize;
             generator.GradientCellSizeX = (int)Utility.TryParseUInt32(ErosionCellSizeX.Text);
             generator.GradientOffsetX = (int)Utility.TryParseUInt32(ErosionOffsetX.Text);
-            generator.GradientErosionMeanX = (int)Utility.TryParseUInt32(ErosionStrengthX.Text);
-            generator.GradientErosionSigmaX = Utility.TryParseFloat(ErosionVarianceX.Text.Replace('.',','));
+            generator.GradientErosionMeanX = Utility.TryParseFloat(ErosionStrengthX.Text);
+            generator.GradientErosionSigmaX = Utility.TryParseFloat(ErosionVarianceX.Text);
             generator.GradientCellSizeY = (int)Utility.TryParseUInt32(ErosionCellSizeY.Text);
             generator.GradientOffsetY = (int)Utility.TryParseUInt32(ErosionOffsetY.Text);
-            generator.GradientErosionMeanY = (int)Utility.TryParseUInt32(ErosionStrengthY.Text);
-            generator.GradientErosionSigmaY = Utility.TryParseFloat(ErosionVarianceY.Text.Replace('.', ','));
+            generator.GradientErosionMeanY = Utility.TryParseFloat(ErosionStrengthY.Text);
+            generator.GradientErosionSigmaY = Utility.TryParseFloat(ErosionVarianceY.Text);
             generator.GradientBlurSize = (int)Utility.TryParseUInt32(ErosionBlurSize.Text);
-            generator.GradientBlurSigma = Utility.TryParseFloat(ErosionBlurStrength.Text.Replace('.', ','));
+            generator.GradientBlurSigma = Utility.TryParseFloat(ErosionBlurStrength.Text);
             generator.BaseZ = Utility.TryParseUInt16(BaseTerrainHeight.Text);
         }
     }

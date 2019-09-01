@@ -210,7 +210,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.SlopeValueTrackbar);
             this.Name = "MapAutoTextureDialog";
-            this.Text = "MapAutoTextureDialog";
+            this.Text = "Slope-based paint";
             ((System.ComponentModel.ISupportInitialize)(this.SlopeValueTrackbar)).EndInit();
             this.PanelBelowThreshold.ResumeLayout(false);
             this.PanelBelowThreshold.PerformLayout();

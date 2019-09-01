@@ -40,7 +40,6 @@
             this.undoCtrlZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redoCtrlYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.specialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.changeDataLanguageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findAllReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.calculatorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -166,34 +165,25 @@
             // specialToolStripMenuItem
             // 
             this.specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.changeDataLanguageToolStripMenuItem,
             this.findAllReferencesToolStripMenuItem,
             this.calculatorsToolStripMenuItem});
             this.specialToolStripMenuItem.Name = "specialToolStripMenuItem";
             this.specialToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.specialToolStripMenuItem.Text = "Special";
             // 
-            // changeDataLanguageToolStripMenuItem
-            // 
-            this.changeDataLanguageToolStripMenuItem.Enabled = false;
-            this.changeDataLanguageToolStripMenuItem.Name = "changeDataLanguageToolStripMenuItem";
-            this.changeDataLanguageToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.changeDataLanguageToolStripMenuItem.Text = "Change data language...";
-            this.changeDataLanguageToolStripMenuItem.Click += new System.EventHandler(this.changeDataLanguageToolStripMenuItem_Click);
-            // 
             // findAllReferencesToolStripMenuItem
             // 
             this.findAllReferencesToolStripMenuItem.Name = "findAllReferencesToolStripMenuItem";
             this.findAllReferencesToolStripMenuItem.ShortcutKeyDisplayString = "";
             this.findAllReferencesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.findAllReferencesToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.findAllReferencesToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.findAllReferencesToolStripMenuItem.Text = "Find all references...";
             this.findAllReferencesToolStripMenuItem.Click += new System.EventHandler(this.findAllReferencesToolStripMenuItem_Click);
             // 
             // calculatorsToolStripMenuItem
             // 
             this.calculatorsToolStripMenuItem.Name = "calculatorsToolStripMenuItem";
-            this.calculatorsToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.calculatorsToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.calculatorsToolStripMenuItem.Text = "Calculators...";
             this.calculatorsToolStripMenuItem.Click += new System.EventHandler(this.calculatorsToolStripMenuItem_Click);
             // 
@@ -509,7 +499,7 @@
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "SpelllforceCFFEditor";
-            this.Text = "SpellforceDataEditor";
+            this.Text = "GameData Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AskBeforeExit);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -569,7 +559,6 @@
         private System.Windows.Forms.Button ButtonElemCopy;
         private System.Windows.Forms.Button ClearSearchButton;
         private System.Windows.Forms.ToolStripMenuItem specialToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem changeDataLanguageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findAllReferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem calculatorsToolStripMenuItem;
     }

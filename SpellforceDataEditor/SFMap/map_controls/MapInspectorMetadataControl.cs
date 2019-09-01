@@ -44,8 +44,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 case SFMapType.CAMPAIGN:
                     break;
                 case SFMapType.COOP:
-                case SFMapType.MULTIPLAYER:
                     PanelCoopParameters.Enabled = true;
+                    PanelMultiplayerCompositions.Enabled = true;
+                    break;
+                case SFMapType.MULTIPLAYER:
                     PanelMultiplayerCompositions.Enabled = true;
                     break;
                 default:
@@ -481,32 +483,31 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             if (map.metadata.map_type == SFMapType.CAMPAIGN)
                 return;
-
-            int max_teamcomp_teams = 0;
-            if (map.metadata.multi_teams != null)
-            {
-                int start = (map.metadata.map_type == SFMapType.COOP ? 1 : 2);
-                for (int i = start; i <= 4; i++)
-                {
-                    bool success = false;
-                    foreach (SFMapMultiplayerTeamComposition t_comp in map.metadata.multi_teams)
-                        if (t_comp.team_count == i)
-                        {
-                            success = true;
-                            break;
-                        }
-                    if(!success)
-                    {
-                        max_teamcomp_teams = i;
-                        break;
-                    }
-                }
-            }
-            if (max_teamcomp_teams == 0)
-                return;
-
+            
             if (map.metadata.multi_teams == null)
                 map.metadata.multi_teams = new List<SFMapMultiplayerTeamComposition>();
+
+            int max_teamcomp_teams = 0;
+
+            int start = (map.metadata.map_type == SFMapType.COOP ? 1 : 2);
+            for (int i = start; i <= 4; i++)
+            {
+                bool success = false;
+                foreach (SFMapMultiplayerTeamComposition t_comp in map.metadata.multi_teams)
+                    if (t_comp.team_count == i)
+                    {
+                        success = true;
+                        break;
+                    }
+                if(!success)
+                {
+                    max_teamcomp_teams = i;
+                    break;
+                }
+            }
+
+            if (max_teamcomp_teams == 0)
+                return;
 
             SFMapMultiplayerTeamComposition tc = new SFMapMultiplayerTeamComposition();
             tc.team_count = max_teamcomp_teams;

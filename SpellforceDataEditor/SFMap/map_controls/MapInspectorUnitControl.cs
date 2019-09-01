@@ -216,8 +216,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     return;
 
                 ushort unit_id = Utility.TryParseUInt16(SelectedUnitID.Text);
+                int real_unit_id = SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(unit_id);
+                if (real_unit_id == -1)
+                    return;
 
-                MainForm.data.Tracer_StepForward(17, unit_id, false);
+                MainForm.data.Tracer_StepForward(17, real_unit_id, false);
             }
         }
 
@@ -366,19 +369,31 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 if (npc_id != 0)
                 {
                     MainForm.mapedittool.SetEditMode(special_forms.MAPEDIT_MODE.NPC);
+                    
                     int npc_index = npc_control.indices_to_keys.IndexOf(npc_id);
+                    if(npc_index == -1)
+                    {
+                        map.npc_manager.AddNPCRef(npc_id, map.unit_manager.units[selected_unit]);
+                        npc_control.AddNewNPCID(npc_id);
+                        map.unit_manager.units[selected_unit].npc_id = npc_id;
+                        SelectedUnitNPCID.Text = npc_id.ToString();
+                        npc_control.ReloadNPCList();
+                        npc_index = npc_control.indices_to_keys.IndexOf(npc_id);
+                    }
+
                     npc_control.SelectNPC(npc_index, false);
-                    return;
                 }
+                else
+                {
+                    npc_id = npc_control.FindLastUnusedNPCID();
+                    if (npc_id == -1)
+                        return;
 
-                npc_id = npc_control.FindLastUnusedNPCID();
-                if (npc_id == -1)
-                    return;
-
-                map.npc_manager.AddNPCRef(npc_id, map.unit_manager.units[selected_unit]);
-                npc_control.AddNewNPCID(npc_id);
-                map.unit_manager.units[selected_unit].npc_id = npc_id;
-                SelectedUnitNPCID.Text = npc_id.ToString();
+                    map.npc_manager.AddNPCRef(npc_id, map.unit_manager.units[selected_unit]);
+                    npc_control.AddNewNPCID(npc_id);
+                    map.unit_manager.units[selected_unit].npc_id = npc_id;
+                    SelectedUnitNPCID.Text = npc_id.ToString();
+                }
             }
         }
 

@@ -148,7 +148,7 @@
             this.Controls.Add(this.ButtonCancelChanges);
             this.Controls.Add(this.ListHeads);
             this.Name = "SFLuaSQLHeadForm";
-            this.Text = "SFLuaSQLHeadForm";
+            this.Text = "sql_head";
             this.Load += new System.EventHandler(this.SFLuaSQLHeadForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

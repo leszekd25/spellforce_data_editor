@@ -23,7 +23,6 @@ namespace SpellforceDataEditor.special_forms
         public static string GameVersion = "";
         bool ready = false;
         SFMod.SFModTemplate last_used = new SFMod.SFModTemplate();
-        SFMod.SFModTemplate cur_used = new SFMod.SFModTemplate();
         SFMod.SFMod current_mod = new SFMod.SFMod();
 
 
@@ -37,36 +36,23 @@ namespace SpellforceDataEditor.special_forms
         // prepares the manager for use
         private void Prepare()
         {
+            int status = 0;
             // if no files in backup folder, add them from the game dir
             if (!Directory.Exists("backup"))
+            {
+                LogUtils.Log.Info(LogUtils.LogSource.SFMod, "ModManagerForm.Prepare(): Creating backup of important game files");
                 Directory.CreateDirectory("backup");
-            try
-            {
-                if (!File.Exists("backup\\GameData.cff"))
-                {
-                    // assumes file exists in game files
-                    File.Copy(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff", "backup\\GameData.cff");
-                }
-                if (!File.Exists("backup\\SpellForce.exe"))
-                {
-                    // assumes file exits in game files
-                    File.Copy(SFUnPak.SFUnPak.game_directory_name + "\\SpellForce.exe", "backup\\SpellForce.exe");
-                }
-                if(!Directory.Exists("backup\\map"))
-                {
-                    // assumes directory exists in game files
-                    Utility.CopyDirectory(SFUnPak.SFUnPak.game_directory_name + "\\map", "backup\\map");
-                }
             }
-            catch(UnauthorizedAccessException)
+            if (!File.Exists("backup\\GameData.cff"))
+                status += Utility.CopyFile(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff", "backup\\GameData.cff");
+            if (!File.Exists("backup\\SpellForce.exe"))
+                status += Utility.CopyFile(SFUnPak.SFUnPak.game_directory_name + "\\SpellForce.exe", "backup\\SpellForce.exe");
+            if(!Directory.Exists("backup\\map"))
+                status += Utility.CopyDirectory(SFUnPak.SFUnPak.game_directory_name + "\\map", "backup\\map");
+            if(status != 0)
             {
-                StatusText.Text = "Can't access game files. Try running in administrator mode";
-                ready = false;
-                return;
-            }
-            catch(FileNotFoundException)
-            {
-                StatusText.Text = "Can't find game files. Make sure you selected a valid game directory";
+                LogUtils.Log.Error(LogUtils.LogSource.SFMod, "ModManagerForm.Prepare(): Can't access game files!");
+                StatusText.Text = "Can't access game files. Try running in administrator mode and make sure game files aren't missing.";
                 ready = false;
                 return;
             }
@@ -80,8 +66,6 @@ namespace SpellforceDataEditor.special_forms
             if (!File.Exists("modtemplates\\last_used.tmpl"))
                 File.Create("modtemplates\\last_used.tmpl");
             last_used.Load("last_used");
-            cur_used.Load("last_used");
-            cur_used.name = "";
 
             RefreshModList();
 
@@ -97,7 +81,10 @@ namespace SpellforceDataEditor.special_forms
 
             // load mod names
             if (!Directory.Exists("mods"))
+            {
+                LogUtils.Log.Info(LogUtils.LogSource.SFMod, "ModManagerForm.RefreshModList(): Creating directory mods");
                 Directory.CreateDirectory("mods");
+            }
             else
             {
                 List<string> modfiles = Directory.EnumerateFiles("mods").ToList();
@@ -114,15 +101,32 @@ namespace SpellforceDataEditor.special_forms
         {
             for (int i = 0; i < ModList.Items.Count; i++)
                 ModList.SetItemChecked(i, false);
-            foreach(string name in cur_used.mod_names)
+            for(int i = 0; i < last_used.mod_names.Count; i++)
             {
-                ModList.SetItemChecked(ModList.Items.IndexOf(name), true);
+                string name = last_used.mod_names[i];
+                if (ModList.Items.Contains(name))
+                    ModList.SetItemChecked(ModList.Items.IndexOf(name), true);
+                else
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFMod, "ModManagerForm.SelectedModsRefresh(): Mod " + name + " not found!");
+                    last_used.mod_names.RemoveAt(i);
+                    i -= 1;
+                }
             }
+        }
+
+        private bool IsGameRunning()
+        {
+            return System.Diagnostics.Process.GetProcessesByName("spellforce").Length != 0;
         }
 
         // tries to restore game files to original state
         private void RestoreGameFiles(bool ask_confirm)
         {
+            if (!ready)
+                return;
+            if (IsGameRunning())
+                return;
             if (ask_confirm)
             {
                 DialogResult result = MessageBox.Show("Doing this will restore your game files to their original state. Press OK to proceed.", "Confirm to restore", MessageBoxButtons.OKCancel);
@@ -140,16 +144,19 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string fname = SFUnPak.SFUnPak.game_directory_name + "\\" + f;
                     if (File.Exists(fname))
+                    {
+                        LogUtils.Log.Info(LogUtils.LogSource.SFMod, "ModManagerForm.RestoreGameFiles(): Removing file "+fname);
                         File.Delete(fname);
+                    }
                 }
 
                 mod.Unload();
             }
+            
+            Utility.CopyFile("backup\\GameData.cff", SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff");
+            Utility.CopyFile("backup\\SpellForce.exe", SFUnPak.SFUnPak.game_directory_name + "\\SpellForce.exe");
+            Utility.CopyDirectory("backup\\map", SFUnPak.SFUnPak.game_directory_name + "\\map");
 
-            File.Copy("backup\\GameData.cff", SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff", true);
-            File.Copy("backup\\SpellForce.exe", SFUnPak.SFUnPak.game_directory_name + "\\SpellForce.exe", true);
-            Utility.CopyDirectory(AppDomain.CurrentDomain.BaseDirectory + "backup\\map",
-                SFUnPak.SFUnPak.game_directory_name + "\\map");
             StatusText.Text = "Done";
         }
 
@@ -179,6 +186,8 @@ namespace SpellforceDataEditor.special_forms
         private bool ApplyMods()
         {
             if (!ready)
+                return false;
+            if (IsGameRunning())
                 return false;
             // prompt to confirm
             DialogResult result = MessageBox.Show("Doing this will modify your game files. You can undo the process with the Restore option in the Mods menu. Press OK to proceed.", "Confirm to apply mods", MessageBoxButtons.OKCancel);
@@ -245,8 +254,7 @@ namespace SpellforceDataEditor.special_forms
             else
             {
                 // save used mods to file
-                UpdateUsedMods(cur_used);
-                last_used.CopyFrom(cur_used);
+                UpdateUsedMods(last_used);
                 last_used.name = "last_used";
                 last_used.Save();
                 StatusText.Text = "Mods applied";
@@ -274,66 +282,12 @@ namespace SpellforceDataEditor.special_forms
             int result = current_mod.Load(mod_fname, SFMod.ModLoadOption.INFO);
             if(result != 0)
             {
-                StatusText.Text = "Error: Can't load mod " + ModList.SelectedItem.ToString();
+                if(!ready)
+                    StatusText.Text = "Error: Can't load mod " + ModList.SelectedItem.ToString();
                 return;
             }
 
             LabelModInfo.Text = current_mod.info.ToString();
-            StatusText.Text = "Mod info loaded";
-        }
-
-        private void loadTemplateToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SFMod.mod_controls.TemplateSelectForm select_tmpl = new SFMod.mod_controls.TemplateSelectForm();
-            DialogResult result = select_tmpl.ShowDialog();
-            if (result != DialogResult.OK)
-                return;
-
-            cur_used.Load(select_tmpl.result);
-
-            SelectedModsRefresh();
-
-            StatusText.Text = "Template loaded";
-        }
-
-        private void saveTemplateToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string name = Utility.GetString("Choose a name", "Enter the name of your template:");
-            cur_used.name = name;
-            cur_used.Save();
-            StatusText.Text = "Template saved";
-        }
-
-        private void specifyOriginalGamedatacffToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (SelectOrigCFF.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    File.Copy(SelectOrigCFF.FileName, "backup\\GameData.cff");
-                    StatusText.Text = "Done";
-                }
-                catch (Exception)
-                {
-                    StatusText.Text = "Could not choose this file!";
-                }
-            }
-        }
-
-        private void specifyOriginalSpellforceexeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (SelectOrigEXE.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    File.Copy(SelectOrigEXE.FileName, "backup\\SpellForce.exe");
-                    StatusText.Text = "Done";
-                }
-                catch (Exception)
-                {
-                    StatusText.Text = "Could not choose this file!";
-                }
-            }
         }
 
         private void reloadModListToolStripMenuItem_Click(object sender, EventArgs e)

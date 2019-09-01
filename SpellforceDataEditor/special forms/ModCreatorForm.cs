@@ -49,25 +49,23 @@ namespace SpellforceDataEditor.special_forms
             LabelModInfo.Text = "Mod info as it appears on mod selection screen:\r\n" + mod.info.ToString();
         }
 
-        private void ButtonChooseData_Click(object sender, EventArgs e)
-        {
-            if (OpenCFFFile.ShowDialog() == DialogResult.OK)
-            {
-                StatusText.Text = "Processing... Please wait";
-                StatusBar.Refresh();
-                mod.data.GenerateDiff("backup\\GameData.cff", OpenCFFFile.FileName);
-                UpdateDataInfo();
-                StatusText.Text = "Ready";
-            }
-        }
-
         private void ButtonChooseAssets_Click(object sender, EventArgs e)
         {
             if(OpenAssetDirectory.ShowDialog() == DialogResult.OK)
             {
+                StatusText.Text = "Processing... Please wait";
+                StatusBar.Refresh();
+
+                if (File.Exists(OpenAssetDirectory.SelectedPath + "\\data\\GameData.cff"))
+                {
+                    mod.data.GenerateDiff("backup\\GameData.cff", OpenAssetDirectory.SelectedPath + "\\data\\GameData.cff");
+                    UpdateDataInfo();
+                }
                 mod.assets.unpacked_asset_directory = OpenAssetDirectory.SelectedPath;
                 mod.assets.GenerateAssetInfo();
                 UpdateAssetsInfo();
+
+                StatusText.Text = "Ready";
             }
         }
 

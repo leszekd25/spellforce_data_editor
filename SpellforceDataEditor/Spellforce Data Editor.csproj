@@ -695,15 +695,8 @@
     <Compile Include="SFMod\mod_controls\ModInfoForm.Designer.cs">
       <DependentUpon>ModInfoForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFMod\mod_controls\TemplateSelectForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFMod\mod_controls\TemplateSelectForm.Designer.cs">
-      <DependentUpon>TemplateSelectForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="SFMod\SFMod.cs" />
     <Compile Include="SFMod\SFModAssetManager.cs" />
-    <Compile Include="SFMod\SFModBytePatchManager.cs" />
     <Compile Include="SFMod\SFModCFFChanges.cs" />
     <Compile Include="SFCFF\SFGameData.cs" />
     <Compile Include="SFMod\SFModInfo.cs" />
@@ -1110,9 +1103,6 @@
     <EmbeddedResource Include="SFMod\mod_controls\ModInfoForm.resx">
       <DependentUpon>ModInfoForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SFMod\mod_controls\TemplateSelectForm.resx">
-      <DependentUpon>TemplateSelectForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="special forms\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -1223,7 +1213,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SFCFF\data_controls\" />
-    <Folder Include="SFMod\mod_patch_params\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

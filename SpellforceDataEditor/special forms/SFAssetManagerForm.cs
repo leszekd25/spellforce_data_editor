@@ -173,7 +173,7 @@ namespace SpellforceDataEditor.special_forms
                     string model_name = ListEntries.SelectedItem.ToString();
                     model_name = model_name.Substring(0, model_name.Length - 4);
                     int result = SFResourceManager.Models.Load(model_name);
-                    if(result != 0)
+                    if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load model " + model_name;
                         return;
@@ -197,7 +197,7 @@ namespace SpellforceDataEditor.special_forms
                     string skin_name = ListEntries.SelectedItem.ToString();
                     skin_name = skin_name.Substring(0, skin_name.Length - 4);
                     int result = SFResourceManager.Skins.Load(skin_name);
-                    if (result != 0)
+                    if ((result != 0)&&(result != -1))
                     {
                         StatusText.Text = "Failed to load skin " + skin_name + ", status code "+result.ToString();
                         obj_d1.SetSkeletonSkin(null, null);
@@ -209,7 +209,7 @@ namespace SpellforceDataEditor.special_forms
 
                     string skel_name = skin_name;
                     result = SFResourceManager.Skeletons.Load(skel_name);
-                    if (result != 0)
+                    if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load skeleton " + skel_name;
                         obj_d1.SetSkeletonSkin(null, null);
@@ -235,7 +235,7 @@ namespace SpellforceDataEditor.special_forms
                     s_n = s_n.Substring(0, s_n.Length - 4);
 
                     int result = SFResourceManager.Musics.Load(s_n);
-                    if (result != 0)
+                    if ((result != 0)&&(result != -1))
                     {
                         StatusText.Text = "Failed to load music " + s_n;
                         return;
@@ -256,7 +256,7 @@ namespace SpellforceDataEditor.special_forms
                     s_n = s_n.Substring(0, s_n.Length - 4);
 
                     int result = SFResourceManager.Sounds.Load(s_n);
-                    if (result != 0)
+                    if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load sound " + s_n;
                         return;
@@ -278,7 +278,7 @@ namespace SpellforceDataEditor.special_forms
                     s_n = s_n.Substring(0, s_n.Length - 4);
 
                     int result = SFResourceManager.Messages.Load(s_n);
-                    if (result != 0)
+                    if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load message " + s_n;
                         return;

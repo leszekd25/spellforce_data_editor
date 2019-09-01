@@ -220,6 +220,8 @@ namespace SpellforceDataEditor.special_forms
                 MessageBox.Show("Note: Editor now operates on gamedata file in your Spellforce directory. Modifying in-editor gamedata and saving results will result in permanent change to your gamedata in your Spellforce directory.");
             }
 
+            this.Text = "Map Editor - new map";
+
             LogUtils.Log.MemoryUsage();
             return 0;
         }
@@ -307,6 +309,8 @@ namespace SpellforceDataEditor.special_forms
                     MessageBox.Show("Note: Editor now operates on gamedata file in your Spellforce directory. Modifying in-editor gamedata and saving results will result in permanent change to your gamedata in your Spellforce directory.");
                 }
 
+                this.Text = "Map Editor - " + OpenMap.FileName;
+
                 LogUtils.Log.MemoryUsage();
                 return 0;
             }
@@ -360,6 +364,8 @@ namespace SpellforceDataEditor.special_forms
 
             if (map == null)
                 return 0;
+            
+            Focus();
 
             DialogResult dr = MessageBox.Show(
                 "Do you want to save the map before quitting? This will also overwrite gamedata if modified", "Save before quit?", MessageBoxButtons.YesNoCancel);
@@ -370,6 +376,9 @@ namespace SpellforceDataEditor.special_forms
                 if (SaveMap() == DialogResult.Cancel)
                     return -2;
             }
+
+            if (autotexture_form != null)
+                autotexture_form.Close();
 
             map.Unload();
             if (MainForm.data != null)
@@ -395,6 +404,7 @@ namespace SpellforceDataEditor.special_forms
             // for good measure (bad! bad!) (TODO: make this do nothing since all resources should be properly disposed at this point)                for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
             SFResources.SFResourceManager.DisposeAll();
             DestroyRenderWindow();
+            this.Text = "Map Editor";
             GC.Collect();
 
             LogUtils.Log.MemoryUsage();
@@ -598,10 +608,11 @@ namespace SpellforceDataEditor.special_forms
                         switch (edit_mode)
                         {
                             case MAPEDIT_MODE.HMAP:
+                            case MAPEDIT_MODE.LAKE:
                                 SpecificText.Text = "Height: " + map.heightmap.GetZ(inv_cursor_coord).ToString();
                                 break;
                             case MAPEDIT_MODE.TEXTURE:
-                                SpecificText.Text = "Tile ID: " + map.heightmap.GetTile(inv_cursor_coord).ToString();
+                                SpecificText.Text = "Tile ID: " + map.heightmap.GetTileFixed(inv_cursor_coord).ToString();
                                 break;
                             case MAPEDIT_MODE.DECAL:
                                 SpecificText.Text = "Decoration group ID: " + map.decoration_manager.GetFixedDecAssignment(inv_cursor_coord).ToString();
@@ -702,10 +713,10 @@ namespace SpellforceDataEditor.special_forms
             switch(mode)
             {
                 case MAPEDIT_MODE.HMAP:
-                    LabelMode.Text = "Edit Heightmap";
+                    LabelMode.Text = "Edit heightmap";
                     break;
                 case MAPEDIT_MODE.TEXTURE:
-                    LabelMode.Text = "Edit terrain textures";
+                    LabelMode.Text = "Edit textures";
                     break;
                 case MAPEDIT_MODE.FLAG:
                     LabelMode.Text = "Edit terrain flags";

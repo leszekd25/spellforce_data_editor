@@ -860,6 +860,13 @@ namespace SpellforceDataEditor.SFMap
             return tile_data[pos.y * width + pos.x];
         }
 
+        // an ugly hack... todo: move it to texture manager
+        public byte GetTileFixed(SFCoord pos)
+        {
+            byte b = tile_data[pos.y * width + pos.x];
+            return (b > 223 ? (byte)(b - 223) : b);
+        }
+
         public void ResetMask()
         {
             for (int i = 0; i < width * height; i++)

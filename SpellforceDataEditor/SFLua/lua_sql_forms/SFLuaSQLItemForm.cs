@@ -210,6 +210,8 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             ListItems.Items.RemoveAt(previous_index);
 
             int new_index = Utility.FindNewIndexOf(index_to_key, new_id);
+
+            // check if the item with provided ID already exists
             if (new_index == -1)
             {
                 new_index = previous_index;

@@ -129,13 +129,13 @@
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.slopebasedPaintToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
             // slopebasedPaintToolStripMenuItem
             // 
             this.slopebasedPaintToolStripMenuItem.Name = "slopebasedPaintToolStripMenuItem";
-            this.slopebasedPaintToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.slopebasedPaintToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.slopebasedPaintToolStripMenuItem.Text = "Slope-based paint";
             this.slopebasedPaintToolStripMenuItem.Click += new System.EventHandler(this.slopebasedPaintToolStripMenuItem_Click);
             // 
@@ -357,7 +357,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(1005, 706);
             this.Name = "MapEditorForm";
-            this.Text = "MapEditorForm";
+            this.Text = "Map Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MapEditorForm_FormClosing);
             this.Shown += new System.EventHandler(this.MapEditorForm_Load);
             this.Resize += new System.EventHandler(this.MapEditorForm_Resize);

@@ -92,7 +92,7 @@ namespace SpellforceDataEditor.SFMod
         public event SFModAssetUpdate update_event = null;
 
         // loads all asset descriptions from a file
-        public int Load(BinaryReader br, string fname)
+        public void Load(BinaryReader br, string fname)
         {
             assets.Clear();
             sfmd_filename = fname;
@@ -106,7 +106,7 @@ namespace SpellforceDataEditor.SFMod
 
                 br.BaseStream.Position += size;
             }
-            return 0;
+            return;
         }
 
         // frees memory*
@@ -148,6 +148,9 @@ namespace SpellforceDataEditor.SFMod
                 asset.dname = Path.GetDirectoryName(s).Replace(unpacked_asset_directory + "\\", "").Replace(unpacked_asset_directory, "");
                 asset.fname = Path.GetFileName(s);
                 asset.size = new FileInfo(s).Length;
+                // skip GameData.cff, it's handled separately
+                if (asset.fname.ToLower()=="gamedata.cff")
+                    continue;
                 assets.Add(asset);
             }
             return 0;

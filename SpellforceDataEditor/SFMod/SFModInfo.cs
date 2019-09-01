@@ -22,14 +22,14 @@ namespace SpellforceDataEditor.SFMod
         //up to here is mod version 1
 
         // load game info from a stream
-        public int Load(BinaryReader br)
+        public void Load(BinaryReader br)
         {
             br.ReadInt64();
             Name = br.ReadString();
             Author = br.ReadString();
             Revision = br.ReadInt32();
             Description = br.ReadString();
-            return 0;
+            return;
         }
 
         // save game info to a stream

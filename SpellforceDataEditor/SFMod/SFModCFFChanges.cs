@@ -33,7 +33,7 @@ namespace SpellforceDataEditor.SFMod
         {
             SFModCFFChangeElement celem = new SFModCFFChangeElement();
             if (br.ReadUInt32() != 0)
-                throw new Exception("Invalid data in stream!");
+                throw new Exception("SFModCFFChanges.Load(): Invalid data in stream!");
             celem.type = (SFModCFFChangeType)br.ReadInt16();
             celem.category_index = br.ReadByte();
             celem.element_index = br.ReadUInt16();
@@ -78,23 +78,16 @@ namespace SpellforceDataEditor.SFMod
         public List<SFModCFFChangeElement> changes { get; private set; } = new List<SFModCFFChangeElement>();
 
         // loads list of changes from a stream
-        public int Load(BinaryReader br)
+        public void Load(BinaryReader br)
         {
             changes.Clear();
             br.ReadInt64();
             int change_count = br.ReadInt32();
             for(int i = 0; i < change_count; i++)
             {
-                try
-                {
-                    changes.Add(SFModCFFChangeElement.Load(br));
-                }
-                catch(InvalidDataException)
-                {
-                    return -1;
-                }
+                changes.Add(SFModCFFChangeElement.Load(br));
             }
-            return 0;
+            return;
         }
 
         // frees memory*

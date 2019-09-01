@@ -317,7 +317,10 @@ namespace SpellforceDataEditor
         static public int CopyFile(string src_file, string dst_file)
         {
             if (!File.Exists(src_file))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.Main, "Utility.CopyFile(): "+src_file+" doesn't exist!");
                 return -1;
+            }
 
             try
             {
@@ -325,11 +328,15 @@ namespace SpellforceDataEditor
                 if (!fo.Directory.Exists)
                     fo.Directory.Create();
                 if (File.Exists(dst_file))
-                    File.Delete(dst_file);
-                File.Copy(src_file, dst_file);
+                    LogUtils.Log.Info(LogUtils.LogSource.Main, "Utility.CopyFile(): Overwriting file " + dst_file + " with " + src_file);
+                else
+                    LogUtils.Log.Info(LogUtils.LogSource.Main, "Utility.CopyFile(): Copying file " + src_file + " to " + dst_file);
+                File.Copy(src_file, dst_file, true);
             }
             catch(Exception)
             {
+                LogUtils.Log.Error(LogUtils.LogSource.Main, "Utility.CopyFile(): Can't copy file " + src_file + " to " + dst_file);
+
                 return -2;
             }
 
@@ -354,7 +361,11 @@ namespace SpellforceDataEditor
         static public int CopyDirectory(string src_dir, string dst_dir)
         {
             if (!Directory.Exists(src_dir))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.Main, "Utility.CopyDirectory: " + src_dir + " doesn't exist!");
                 return -1;
+            }
+            LogUtils.Log.Info(LogUtils.LogSource.Main, "Utility.CopyDirectory: Copying directory " + src_dir + " to " + dst_dir);
 
             try
             {
@@ -377,6 +388,7 @@ namespace SpellforceDataEditor
             }
             catch(Exception)
             {
+                LogUtils.Log.Info(LogUtils.LogSource.Main, "Utility.CopyDirectory: Can't copy " + src_dir + " to " + dst_dir);
                 return -2;
             }
 

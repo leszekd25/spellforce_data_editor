@@ -68,7 +68,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             activation_keys.Sort();
 
             foreach (int i in activation_keys)
-                GroupSpawnData.Items.Add("At " + i.ToString() + " minutes");
+                GroupSpawnData.Items.Add("Wave starting at " + i.ToString() + " minutes");
         }
 
         private void ListSpawnTypes_SelectedIndexChanged(object sender, EventArgs e)

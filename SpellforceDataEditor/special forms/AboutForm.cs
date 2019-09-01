@@ -21,7 +21,7 @@ namespace SpellforceDataEditor.special_forms
             InitializeComponent();
 
             link_wiki = new LinkLabel();
-            link_wiki.Text = "SpellforceDataEditor wiki";
+            link_wiki.Text = "SpellForce Editor wiki";
             link_wiki.LinkClicked += new LinkLabelLinkClickedEventHandler(this.link_wiki_Clicked);
             LinkLabel.Link data = new LinkLabel.Link();
             data.LinkData = "https://github.com/leszekd25/spellforce_data_editor/wiki";
@@ -30,7 +30,7 @@ namespace SpellforceDataEditor.special_forms
             link_wiki.Padding = new Padding(0);
 
             link_discord = new LinkLabel();
-            link_discord.Text = "Spellforce Community Discord";
+            link_discord.Text = "SpellForce Community Discord";
             link_discord.LinkClicked += new LinkLabelLinkClickedEventHandler(this.link_discord_Clicked);
             data = new LinkLabel.Link();
             data.LinkData = "https://discordapp.com/invite/spellforce";
@@ -49,11 +49,11 @@ namespace SpellforceDataEditor.special_forms
 
             TextBoxAbout.SelectionAlignment = HorizontalAlignment.Left;
             TextBoxAbout.SelectionFont = new Font("Arial", 12, FontStyle.Bold);
-            TextBoxAbout.AppendText("SpellforceDataEditor");
+            TextBoxAbout.AppendText("Spellforce Editor");
             
             TextBoxAbout.SelectionAlignment = HorizontalAlignment.Left;
             TextBoxAbout.SelectionFont = new Font("Arial", 8, FontStyle.Regular);
-            TextBoxAbout.AppendText("\r\n\r\n...is only one of the components of this application, which grew over time to include asset viewer, visual script editor, map editor, and more.\r\n"+
+            TextBoxAbout.AppendText("\r\n\r\n...is a set of tools which allow you to modify SpellForce to your liking. It includes gamedata editor, map editor, and much more.\r\n"+
                                     "Originally created by Insigar from spellforcefanforum, completely redone and currently maintained by me, creator of this tool.");
 
             TextBoxContactInfo.SelectionAlignment = HorizontalAlignment.Left;

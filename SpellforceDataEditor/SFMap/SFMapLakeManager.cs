@@ -13,7 +13,6 @@ namespace SpellforceDataEditor.SFMap
         static int max_id = 0;
 
         public HashSet<SFCoord> cells = new HashSet<SFCoord>();
-        public HashSet<SFCoord> boundary = new HashSet<SFCoord>();   // boundary is all cells exactly 1 cell away from lake
         public SFCoord start;
         public short z_diff;
         public int type;
@@ -35,30 +34,17 @@ namespace SpellforceDataEditor.SFMap
             return GetObjectName();
         }
 
-
-        // the closest cells which do NOT belong to lake
-        public void RecalculateBoundary()
+        public void CalculateDepth(SFMapHeightMap hmap, ushort lake_level)
         {
-            boundary = new HashSet<SFCoord>();
+            z_diff = (short)(lake_level - hmap.GetZ(cells.ElementAt(0)));
             foreach(SFCoord p in cells)
             {
-                if (!cells.Contains(new SFCoord(p.x + 1, p.y)))
-                    boundary.Add(new SFCoord(p.x + 1, p.y));
-                if (!cells.Contains(new SFCoord(p.x - 1, p.y)))
-                    boundary.Add(new SFCoord(p.x - 1, p.y));
-                if (!cells.Contains(new SFCoord(p.x, p.y + 1)))
-                    boundary.Add(new SFCoord(p.x, p.y + 1));
-                if (!cells.Contains(new SFCoord(p.x, p.y - 1)))
-                    boundary.Add(new SFCoord(p.x, p.y - 1));
+                if (z_diff < (short)(lake_level - hmap.GetZ(p)))
+                {
+                    z_diff = (short)(lake_level - hmap.GetZ(p));
+                    start = p;
+                }
             }
-        }
-        
-        public int GetDistanceFromBoundary(SFCoord pos)
-        {
-            int min_dist = 30000;  // arbitrary big number
-            foreach (SFCoord p in boundary)
-                min_dist = (int)Math.Min(min_dist, SFCoord.DistanceManhattan(pos, p));
-            return min_dist;
         }
     }
     
@@ -69,27 +55,23 @@ namespace SpellforceDataEditor.SFMap
 
         public SFMapLake AddLake(SFCoord start, short z_diff, int type)
         {
+            ushort lake_level = (ushort)(map.heightmap.GetZ(start) + z_diff);
+
             SFMapLake lake = new SFMapLake();
             lakes.Add(lake);
             lake.start = start;
             lake.z_diff = z_diff;
             lake.type = type;
-            lake.cells = map.heightmap.GetIslandByHeight(start, z_diff);
-            foreach(SFCoord p in lake.cells)
+
+            UpdateLake(lake);
+
+            if(lake.cells.Count == 0)
             {
-                map.heightmap.lake_data[p.y * map.width + p.x] = (byte)(lakes.Count);   // position of lake on the list + 1
+                RemoveLake(lake);
+                return null;
             }
-
-            var map_nodes = map.heightmap.GetAreaMapNodes(lake.cells);
-            foreach (var node in map_nodes)
-                node.MapChunk.RebuildLake();
-
-            lake.RecalculateBoundary();
-            
-            string obj_name = lake.GetObjectName();
-            // TODO: make lake meshes per chunk
-            //SF3D.SFRender.SFRenderEngine.scene.AddObjectStatic(obj_name, "", obj_name);
-            return lake;
+            else
+                return lake;
         }
 
         public void RemoveLake(SFMapLake lake)
@@ -129,6 +111,8 @@ namespace SpellforceDataEditor.SFMap
             return tex_name;
         }
 
+        // should be updated after lake_start or lake_depth was modified
+        // this method further modifies lake_start and lake_depth
         public void UpdateLake(SFMapLake lake)
         {
             int lake_index = lakes.IndexOf(lake);
@@ -138,10 +122,29 @@ namespace SpellforceDataEditor.SFMap
                 return;
             }
 
+            ushort lake_level = (ushort)(map.heightmap.GetZ(lake.start) + lake.z_diff);
+
             lake.cells = map.heightmap.GetIslandByHeight(lake.start, lake.z_diff);
+            lake.CalculateDepth(map.heightmap, lake_level);
+
             for (int i = 0; i < map.width * map.height; i++)
                 if (map.heightmap.lake_data[i] == lake_index + 1)
                     map.heightmap.lake_data[i] = 0;
+
+            // check if lake collides with other lakes
+            List<SFMapLake> lakes_to_remove = new List<SFMapLake>();
+            foreach(SFMapLake l in lakes)
+            {
+                if (l == lake)
+                    continue;
+
+                // if overlap is detected, this MUST mean that l is fully contained in lake
+                if (l.cells.Overlaps(lake.cells))
+                    lakes_to_remove.Add(l);
+            }
+            foreach (SFMapLake l in lakes_to_remove)
+                RemoveLake(l);
+            lake_index = lakes.IndexOf(lake);
 
             foreach (SFCoord p in lake.cells)
                 map.heightmap.lake_data[p.y * map.width + p.x] = (byte)(lake_index+1);
@@ -149,8 +152,6 @@ namespace SpellforceDataEditor.SFMap
             var map_nodes = map.heightmap.GetAreaMapNodes(lake.cells);
             foreach (var node in map_nodes)
                 node.MapChunk.RebuildLake();
-
-            lake.RecalculateBoundary();
         }
     }
 }

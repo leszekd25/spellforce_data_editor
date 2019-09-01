@@ -76,7 +76,7 @@
             // 
             // SpawnDataUnitRemove
             // 
-            this.SpawnDataUnitRemove.Location = new System.Drawing.Point(842, 223);
+            this.SpawnDataUnitRemove.Location = new System.Drawing.Point(914, 276);
             this.SpawnDataUnitRemove.Name = "SpawnDataUnitRemove";
             this.SpawnDataUnitRemove.Size = new System.Drawing.Size(75, 23);
             this.SpawnDataUnitRemove.TabIndex = 67;
@@ -86,7 +86,7 @@
             // 
             // SpawnDataUnitAdd
             // 
-            this.SpawnDataUnitAdd.Location = new System.Drawing.Point(735, 223);
+            this.SpawnDataUnitAdd.Location = new System.Drawing.Point(807, 276);
             this.SpawnDataUnitAdd.Name = "SpawnDataUnitAdd";
             this.SpawnDataUnitAdd.Size = new System.Drawing.Size(75, 23);
             this.SpawnDataUnitAdd.TabIndex = 66;
@@ -97,7 +97,7 @@
             // SelectedSpawnDataUnitID
             // 
             this.SelectedSpawnDataUnitID.BackColor = System.Drawing.Color.DarkOrange;
-            this.SelectedSpawnDataUnitID.Location = new System.Drawing.Point(735, 197);
+            this.SelectedSpawnDataUnitID.Location = new System.Drawing.Point(807, 250);
             this.SelectedSpawnDataUnitID.Name = "SelectedSpawnDataUnitID";
             this.SelectedSpawnDataUnitID.Size = new System.Drawing.Size(100, 20);
             this.SelectedSpawnDataUnitID.TabIndex = 65;
@@ -107,7 +107,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(638, 56);
+            this.label10.Location = new System.Drawing.Point(770, 56);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(31, 13);
             this.label10.TabIndex = 64;
@@ -116,9 +116,9 @@
             // SpawnDataUnits
             // 
             this.SpawnDataUnits.FormattingEnabled = true;
-            this.SpawnDataUnits.Location = new System.Drawing.Point(735, 56);
+            this.SpawnDataUnits.Location = new System.Drawing.Point(807, 56);
             this.SpawnDataUnits.Name = "SpawnDataUnits";
-            this.SpawnDataUnits.Size = new System.Drawing.Size(182, 134);
+            this.SpawnDataUnits.Size = new System.Drawing.Size(182, 186);
             this.SpawnDataUnits.TabIndex = 63;
             this.SpawnDataUnits.SelectedIndexChanged += new System.EventHandler(this.SpawnDataUnits_SelectedIndexChanged);
             // 
@@ -126,7 +126,7 @@
             // 
             this.label9.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(832, 34);
+            this.label9.Location = new System.Drawing.Point(904, 34);
             this.label9.Margin = new System.Windows.Forms.Padding(0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(15, 13);
@@ -137,7 +137,7 @@
             // 
             this.label8.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(777, 34);
+            this.label8.Location = new System.Drawing.Point(849, 34);
             this.label8.Margin = new System.Windows.Forms.Padding(0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(13, 13);
@@ -146,7 +146,7 @@
             // 
             // SpawnDataSeconds
             // 
-            this.SpawnDataSeconds.Location = new System.Drawing.Point(850, 31);
+            this.SpawnDataSeconds.Location = new System.Drawing.Point(922, 31);
             this.SpawnDataSeconds.Name = "SpawnDataSeconds";
             this.SpawnDataSeconds.Size = new System.Drawing.Size(39, 20);
             this.SpawnDataSeconds.TabIndex = 60;
@@ -154,7 +154,7 @@
             // 
             // SpawnDataMinutes
             // 
-            this.SpawnDataMinutes.Location = new System.Drawing.Point(790, 31);
+            this.SpawnDataMinutes.Location = new System.Drawing.Point(862, 31);
             this.SpawnDataMinutes.Name = "SpawnDataMinutes";
             this.SpawnDataMinutes.Size = new System.Drawing.Size(39, 20);
             this.SpawnDataMinutes.TabIndex = 59;
@@ -162,7 +162,7 @@
             // 
             // SpawnDataHours
             // 
-            this.SpawnDataHours.Location = new System.Drawing.Point(735, 31);
+            this.SpawnDataHours.Location = new System.Drawing.Point(807, 31);
             this.SpawnDataHours.Name = "SpawnDataHours";
             this.SpawnDataHours.Size = new System.Drawing.Size(39, 20);
             this.SpawnDataHours.TabIndex = 58;
@@ -171,17 +171,17 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(638, 34);
+            this.label7.Location = new System.Drawing.Point(733, 34);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(91, 13);
+            this.label7.Size = new System.Drawing.Size(68, 13);
             this.label7.TabIndex = 57;
-            this.label7.Text = "Time of activation";
+            this.label7.Text = "Wave period";
             // 
             // SpawnDataRemove
             // 
-            this.SpawnDataRemove.Location = new System.Drawing.Point(509, 252);
+            this.SpawnDataRemove.Location = new System.Drawing.Point(509, 276);
             this.SpawnDataRemove.Name = "SpawnDataRemove";
-            this.SpawnDataRemove.Size = new System.Drawing.Size(104, 23);
+            this.SpawnDataRemove.Size = new System.Drawing.Size(203, 23);
             this.SpawnDataRemove.TabIndex = 56;
             this.SpawnDataRemove.Text = "Remove";
             this.SpawnDataRemove.UseVisualStyleBackColor = true;
@@ -189,9 +189,9 @@
             // 
             // SpawnDataAdd
             // 
-            this.SpawnDataAdd.Location = new System.Drawing.Point(509, 223);
+            this.SpawnDataAdd.Location = new System.Drawing.Point(509, 247);
             this.SpawnDataAdd.Name = "SpawnDataAdd";
-            this.SpawnDataAdd.Size = new System.Drawing.Size(104, 23);
+            this.SpawnDataAdd.Size = new System.Drawing.Size(203, 23);
             this.SpawnDataAdd.TabIndex = 55;
             this.SpawnDataAdd.Text = "Add";
             this.SpawnDataAdd.UseVisualStyleBackColor = true;
@@ -202,7 +202,7 @@
             this.GroupSpawnData.FormattingEnabled = true;
             this.GroupSpawnData.Location = new System.Drawing.Point(509, 31);
             this.GroupSpawnData.Name = "GroupSpawnData";
-            this.GroupSpawnData.Size = new System.Drawing.Size(104, 160);
+            this.GroupSpawnData.Size = new System.Drawing.Size(203, 186);
             this.GroupSpawnData.TabIndex = 54;
             this.GroupSpawnData.SelectedIndexChanged += new System.EventHandler(this.GroupSpawnData_SelectedIndexChanged);
             // 
@@ -211,9 +211,9 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(506, 9);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(94, 13);
+            this.label6.Size = new System.Drawing.Size(104, 13);
             this.label6.TabIndex = 53;
-            this.label6.Text = "Group spawn data";
+            this.label6.Text = "Group spawn waves";
             // 
             // GroupUnitRemove
             // 
@@ -334,7 +334,7 @@
             // 
             // ButtonSaveChanges
             // 
-            this.ButtonSaveChanges.Location = new System.Drawing.Point(843, 341);
+            this.ButtonSaveChanges.Location = new System.Drawing.Point(915, 341);
             this.ButtonSaveChanges.Name = "ButtonSaveChanges";
             this.ButtonSaveChanges.Size = new System.Drawing.Size(75, 23);
             this.ButtonSaveChanges.TabIndex = 39;
@@ -374,9 +374,9 @@
             // 
             // SpawnDataActivation
             // 
-            this.SpawnDataActivation.Location = new System.Drawing.Point(509, 197);
+            this.SpawnDataActivation.Location = new System.Drawing.Point(509, 221);
             this.SpawnDataActivation.Name = "SpawnDataActivation";
-            this.SpawnDataActivation.Size = new System.Drawing.Size(104, 20);
+            this.SpawnDataActivation.Size = new System.Drawing.Size(203, 20);
             this.SpawnDataActivation.TabIndex = 69;
             this.SpawnDataActivation.Validated += new System.EventHandler(this.SpawnDataActivation_Validated);
             // 
@@ -384,7 +384,7 @@
             // 
             this.label12.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(892, 34);
+            this.label12.Location = new System.Drawing.Point(964, 34);
             this.label12.Margin = new System.Windows.Forms.Padding(0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(12, 13);
@@ -397,7 +397,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.ButtonCancelChanges;
-            this.ClientSize = new System.Drawing.Size(929, 373);
+            this.ClientSize = new System.Drawing.Size(1000, 373);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.SpawnDataActivation);
             this.Controls.Add(this.label11);

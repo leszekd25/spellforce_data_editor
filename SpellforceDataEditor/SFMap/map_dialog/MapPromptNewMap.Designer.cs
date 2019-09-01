@@ -34,28 +34,28 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.CheckGenerateTerrain = new System.Windows.Forms.CheckBox();
             this.PanelTerrainGenerator = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.ErosionCellSizeX = new System.Windows.Forms.TextBox();
-            this.ErosionOffsetX = new System.Windows.Forms.TextBox();
-            this.ErosionStrengthX = new System.Windows.Forms.TextBox();
-            this.ErosionVarianceX = new System.Windows.Forms.TextBox();
-            this.ErosionVarianceY = new System.Windows.Forms.TextBox();
-            this.ErosionStrengthY = new System.Windows.Forms.TextBox();
-            this.ErosionOffsetY = new System.Windows.Forms.TextBox();
-            this.ErosionCellSizeY = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.BaseTerrainHeight = new System.Windows.Forms.TextBox();
             this.ErosionBlurStrength = new System.Windows.Forms.TextBox();
             this.ErosionBlurSize = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
+            this.ErosionVarianceY = new System.Windows.Forms.TextBox();
+            this.ErosionStrengthY = new System.Windows.Forms.TextBox();
+            this.ErosionOffsetY = new System.Windows.Forms.TextBox();
+            this.ErosionCellSizeY = new System.Windows.Forms.TextBox();
+            this.ErosionVarianceX = new System.Windows.Forms.TextBox();
+            this.ErosionStrengthX = new System.Windows.Forms.TextBox();
+            this.ErosionOffsetX = new System.Windows.Forms.TextBox();
+            this.ErosionCellSizeX = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.PanelTerrainGenerator.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -143,105 +143,41 @@
             this.PanelTerrainGenerator.Size = new System.Drawing.Size(422, 190);
             this.PanelTerrainGenerator.TabIndex = 8;
             // 
-            // label2
+            // label6
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 6);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(92, 13);
-            this.label2.TabIndex = 9;
-            this.label2.Text = "Erosion cell size X";
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(211, 84);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(96, 13);
+            this.label6.TabIndex = 34;
+            this.label6.Text = "Erosion variance Y";
             // 
-            // label3
+            // label7
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 32);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(81, 13);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "Erosion offset X";
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(211, 58);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(93, 13);
+            this.label7.TabIndex = 33;
+            this.label7.Text = "Erosion strength Y";
             // 
-            // label4
+            // label8
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 58);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(93, 13);
-            this.label4.TabIndex = 11;
-            this.label4.Text = "Erosion strength X";
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(211, 32);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(81, 13);
+            this.label8.TabIndex = 32;
+            this.label8.Text = "Erosion offset Y";
             // 
-            // label5
+            // label9
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 84);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(96, 13);
-            this.label5.TabIndex = 12;
-            this.label5.Text = "Erosion variance X";
-            // 
-            // ErosionCellSizeX
-            // 
-            this.ErosionCellSizeX.Location = new System.Drawing.Point(105, 3);
-            this.ErosionCellSizeX.Name = "ErosionCellSizeX";
-            this.ErosionCellSizeX.Size = new System.Drawing.Size(100, 20);
-            this.ErosionCellSizeX.TabIndex = 17;
-            this.ErosionCellSizeX.Text = "16";
-            // 
-            // ErosionOffsetX
-            // 
-            this.ErosionOffsetX.Location = new System.Drawing.Point(105, 29);
-            this.ErosionOffsetX.Name = "ErosionOffsetX";
-            this.ErosionOffsetX.Size = new System.Drawing.Size(100, 20);
-            this.ErosionOffsetX.TabIndex = 18;
-            this.ErosionOffsetX.Text = "1";
-            // 
-            // ErosionStrengthX
-            // 
-            this.ErosionStrengthX.Location = new System.Drawing.Point(105, 55);
-            this.ErosionStrengthX.Name = "ErosionStrengthX";
-            this.ErosionStrengthX.Size = new System.Drawing.Size(100, 20);
-            this.ErosionStrengthX.TabIndex = 19;
-            this.ErosionStrengthX.Text = "3";
-            // 
-            // ErosionVarianceX
-            // 
-            this.ErosionVarianceX.Location = new System.Drawing.Point(105, 81);
-            this.ErosionVarianceX.Name = "ErosionVarianceX";
-            this.ErosionVarianceX.Size = new System.Drawing.Size(100, 20);
-            this.ErosionVarianceX.TabIndex = 20;
-            this.ErosionVarianceX.Text = "1.0";
-            // 
-            // ErosionVarianceY
-            // 
-            this.ErosionVarianceY.Location = new System.Drawing.Point(319, 81);
-            this.ErosionVarianceY.Name = "ErosionVarianceY";
-            this.ErosionVarianceY.Size = new System.Drawing.Size(100, 20);
-            this.ErosionVarianceY.TabIndex = 24;
-            this.ErosionVarianceY.Text = "1.0";
-            // 
-            // ErosionStrengthY
-            // 
-            this.ErosionStrengthY.Location = new System.Drawing.Point(319, 55);
-            this.ErosionStrengthY.Name = "ErosionStrengthY";
-            this.ErosionStrengthY.Size = new System.Drawing.Size(100, 20);
-            this.ErosionStrengthY.TabIndex = 23;
-            this.ErosionStrengthY.Text = "3";
-            // 
-            // ErosionOffsetY
-            // 
-            this.ErosionOffsetY.Location = new System.Drawing.Point(319, 29);
-            this.ErosionOffsetY.Name = "ErosionOffsetY";
-            this.ErosionOffsetY.Size = new System.Drawing.Size(100, 20);
-            this.ErosionOffsetY.TabIndex = 22;
-            this.ErosionOffsetY.Text = "1";
-            // 
-            // ErosionCellSizeY
-            // 
-            this.ErosionCellSizeY.Location = new System.Drawing.Point(319, 3);
-            this.ErosionCellSizeY.Name = "ErosionCellSizeY";
-            this.ErosionCellSizeY.Size = new System.Drawing.Size(100, 20);
-            this.ErosionCellSizeY.TabIndex = 21;
-            this.ErosionCellSizeY.Text = "16";
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(211, 6);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(92, 13);
+            this.label9.TabIndex = 31;
+            this.label9.Text = "Erosion cell size Y";
             // 
             // BaseTerrainHeight
             // 
@@ -294,41 +230,105 @@
             this.label12.TabIndex = 25;
             this.label12.Text = "Erosion blur size";
             // 
-            // label6
+            // ErosionVarianceY
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(211, 84);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(96, 13);
-            this.label6.TabIndex = 34;
-            this.label6.Text = "Erosion variance Y";
+            this.ErosionVarianceY.Location = new System.Drawing.Point(319, 81);
+            this.ErosionVarianceY.Name = "ErosionVarianceY";
+            this.ErosionVarianceY.Size = new System.Drawing.Size(100, 20);
+            this.ErosionVarianceY.TabIndex = 24;
+            this.ErosionVarianceY.Text = "1.0";
             // 
-            // label7
+            // ErosionStrengthY
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(211, 58);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(93, 13);
-            this.label7.TabIndex = 33;
-            this.label7.Text = "Erosion strength Y";
+            this.ErosionStrengthY.Location = new System.Drawing.Point(319, 55);
+            this.ErosionStrengthY.Name = "ErosionStrengthY";
+            this.ErosionStrengthY.Size = new System.Drawing.Size(100, 20);
+            this.ErosionStrengthY.TabIndex = 23;
+            this.ErosionStrengthY.Text = "3.0";
             // 
-            // label8
+            // ErosionOffsetY
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(211, 32);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(81, 13);
-            this.label8.TabIndex = 32;
-            this.label8.Text = "Erosion offset Y";
+            this.ErosionOffsetY.Location = new System.Drawing.Point(319, 29);
+            this.ErosionOffsetY.Name = "ErosionOffsetY";
+            this.ErosionOffsetY.Size = new System.Drawing.Size(100, 20);
+            this.ErosionOffsetY.TabIndex = 22;
+            this.ErosionOffsetY.Text = "1";
             // 
-            // label9
+            // ErosionCellSizeY
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(211, 6);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(92, 13);
-            this.label9.TabIndex = 31;
-            this.label9.Text = "Erosion cell size Y";
+            this.ErosionCellSizeY.Location = new System.Drawing.Point(319, 3);
+            this.ErosionCellSizeY.Name = "ErosionCellSizeY";
+            this.ErosionCellSizeY.Size = new System.Drawing.Size(100, 20);
+            this.ErosionCellSizeY.TabIndex = 21;
+            this.ErosionCellSizeY.Text = "16";
+            // 
+            // ErosionVarianceX
+            // 
+            this.ErosionVarianceX.Location = new System.Drawing.Point(105, 81);
+            this.ErosionVarianceX.Name = "ErosionVarianceX";
+            this.ErosionVarianceX.Size = new System.Drawing.Size(100, 20);
+            this.ErosionVarianceX.TabIndex = 20;
+            this.ErosionVarianceX.Text = "1.0";
+            // 
+            // ErosionStrengthX
+            // 
+            this.ErosionStrengthX.Location = new System.Drawing.Point(105, 55);
+            this.ErosionStrengthX.Name = "ErosionStrengthX";
+            this.ErosionStrengthX.Size = new System.Drawing.Size(100, 20);
+            this.ErosionStrengthX.TabIndex = 19;
+            this.ErosionStrengthX.Text = "3.0";
+            // 
+            // ErosionOffsetX
+            // 
+            this.ErosionOffsetX.Location = new System.Drawing.Point(105, 29);
+            this.ErosionOffsetX.Name = "ErosionOffsetX";
+            this.ErosionOffsetX.Size = new System.Drawing.Size(100, 20);
+            this.ErosionOffsetX.TabIndex = 18;
+            this.ErosionOffsetX.Text = "1";
+            // 
+            // ErosionCellSizeX
+            // 
+            this.ErosionCellSizeX.Location = new System.Drawing.Point(105, 3);
+            this.ErosionCellSizeX.Name = "ErosionCellSizeX";
+            this.ErosionCellSizeX.Size = new System.Drawing.Size(100, 20);
+            this.ErosionCellSizeX.TabIndex = 17;
+            this.ErosionCellSizeX.Text = "16";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 84);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(96, 13);
+            this.label5.TabIndex = 12;
+            this.label5.Text = "Erosion variance X";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 58);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(93, 13);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "Erosion strength X";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(3, 32);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(81, 13);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "Erosion offset X";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 6);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(92, 13);
+            this.label2.TabIndex = 9;
+            this.label2.Text = "Erosion cell size X";
             // 
             // MapPromptNewMap
             // 

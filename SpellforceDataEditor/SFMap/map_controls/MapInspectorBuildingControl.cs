@@ -284,7 +284,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                         if (map.gamedata[23].GetElementIndex(new_building_id) == -1)
                             return;
                         // create new unit and drag it until mouse released
-                        map.AddBuilding(new_building_id, fixed_pos, 0, 0, 0, 0);
+                        map.AddBuilding(new_building_id, fixed_pos, 0, 0, 1, -1);
                         ListBuildings.Items.Add(GetBuildingString(map.building_manager.buildings[map.building_manager.buildings.Count - 1]));
                         SelectBuilding(map.building_manager.buildings.Count - 1, false);
                         drag_enabled = true;
@@ -346,19 +346,30 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 if (npc_id != 0)
                 {
                     MainForm.mapedittool.SetEditMode(special_forms.MAPEDIT_MODE.NPC);
+
                     int npc_index = npc_control.indices_to_keys.IndexOf(npc_id);
+                    if (npc_index == -1)
+                    {
+                        map.npc_manager.AddNPCRef(npc_id, map.building_manager.buildings[selected_building]);
+                        npc_control.AddNewNPCID(npc_id);
+                        map.building_manager.buildings[selected_building].npc_id = npc_id;
+                        SelectedBuildingNPCID.Text = npc_id.ToString();
+                        npc_control.ReloadNPCList();
+                        npc_index = npc_control.indices_to_keys.IndexOf(npc_id);
+                    }
                     npc_control.SelectNPC(npc_index, false);
-                    return;
                 }
+                else
+                {
+                    npc_id = npc_control.FindLastUnusedNPCID();
+                    if (npc_id == -1)
+                        return;
 
-                npc_id = npc_control.FindLastUnusedNPCID();
-                if (npc_id == -1)
-                    return;
-
-                map.npc_manager.AddNPCRef(npc_id, map.building_manager.buildings[selected_building]);
-                npc_control.AddNewNPCID(npc_id);
-                map.building_manager.buildings[selected_building].npc_id = npc_id;
-                SelectedBuildingNPCID.Text = npc_id.ToString();
+                    map.npc_manager.AddNPCRef(npc_id, map.building_manager.buildings[selected_building]);
+                    npc_control.AddNewNPCID(npc_id);
+                    map.building_manager.buildings[selected_building].npc_id = npc_id;
+                    SelectedBuildingNPCID.Text = npc_id.ToString();
+                }
             }
         }
 

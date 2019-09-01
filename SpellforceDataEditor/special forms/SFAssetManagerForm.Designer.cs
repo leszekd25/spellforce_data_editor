@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.glControl1 = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(32), 24, 8, 4));
+            this.glControl1 = new OpenTK.GLControl();
             this.ListEntries = new System.Windows.Forms.ListBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.GameDirDialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -108,7 +108,7 @@
             this.ComboBrowseMode.Items.AddRange(new object[] {
             "Meshes",
             "Animations",
-            "Synchronize with editor",
+            "Synchronize with GameData Editor",
             "Music",
             "Sounds",
             "Messages"});
@@ -244,7 +244,7 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "SFAssetManagerForm";
-            this.Text = "SF3DManagerForm";
+            this.Text = "Asset Viewer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SF3DManagerForm_FormClosing);
             this.Load += new System.EventHandler(this.SF3DManagerForm_Load);
             this.statusStrip1.ResumeLayout(false);

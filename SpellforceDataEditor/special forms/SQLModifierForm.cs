@@ -41,5 +41,11 @@ namespace SpellforceDataEditor.special_forms
         {
             SFLua.SFLuaEnvironment.ShowSQLHeadForm();
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            SFLua.lua_controls.LuaDecompilerForm f = new SFLua.lua_controls.LuaDecompilerForm();
+            f.ShowDialog();
+        }
     }
 }

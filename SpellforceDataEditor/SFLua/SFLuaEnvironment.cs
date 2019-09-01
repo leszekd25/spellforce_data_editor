@@ -114,6 +114,7 @@ namespace SpellforceDataEditor.SFLua
                 {
                     StringWriter sw = new StringWriter();
                     res.WriteLuaString(sw);
+                    ret = sw.ToString();
                 }
                 catch (Exception)
                 {
@@ -340,6 +341,10 @@ namespace SpellforceDataEditor.SFLua
                     return item_data.MeshFemaleCold;
                 else if (item_data.MeshFemaleWarm != "<undefined>")
                     return item_data.MeshFemaleWarm;
+                else if (item_data.MeshMaleCold != "<undefined>")
+                    return item_data.MeshMaleCold;
+                else if (item_data.MeshMaleWarm != "<undefined>")
+                    return item_data.MeshMaleWarm;
                 return "";
             }
             else
@@ -348,6 +353,10 @@ namespace SpellforceDataEditor.SFLua
                     return item_data.MeshMaleCold;
                 else if (item_data.MeshMaleWarm != "<undefined>")
                     return item_data.MeshMaleWarm;
+                else if (item_data.MeshFemaleCold != "<undefined>")
+                    return item_data.MeshFemaleCold;
+                else if (item_data.MeshFemaleWarm != "<undefined>")
+                    return item_data.MeshFemaleWarm;
                 return "";
             }
         }

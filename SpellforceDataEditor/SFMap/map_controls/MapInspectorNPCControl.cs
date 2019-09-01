@@ -32,7 +32,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             }
         }
 
-        private void ReloadNPCList()
+        public void ReloadNPCList()
         {
             selected_npc = 0;
             selected_npc_index = -1;

@@ -49,6 +49,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             info = GL.GetProgramInfoLog(programID);
             System.Diagnostics.Debug.WriteLine(info);
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "ShaderCompiler.Compile(): Shader id " + programID.ToString() + " compile log: ");
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, info);
 
             GL.DetachShader(programID, VertexShaderID);
             GL.DetachShader(programID, FragmentShaderID);

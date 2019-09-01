@@ -47,7 +47,7 @@ namespace SpellforceDataEditor.SF3D
             while((_w > Settings.MaximumAllowedTextureSize)||(_h > Settings.MaximumAllowedTextureSize))
             { size_skip += 1; _w /= 2; _h /= 2; }
 
-            return (ret) && (size_skip <= level);
+            return (ret) && ((size_skip <= level)||(mipMapCount == 1));
         }
 
         public void Init()
@@ -61,8 +61,7 @@ namespace SpellforceDataEditor.SF3D
             int w = width;
             int h = height;
             int min_allowed_level = 1000;
-
-
+            
             /* load the mipmaps */
             if (format != InternalFormat.Rgba)
             {
@@ -199,7 +198,10 @@ namespace SpellforceDataEditor.SF3D
                 }
             }
             else
+            {
+                mipMapCount = 1;
                 buf_size = size;
+            }
 
             br.BaseStream.Position += skip_size;
             data = br.ReadBytes((int)buf_size);

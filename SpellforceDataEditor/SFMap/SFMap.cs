@@ -482,7 +482,7 @@ namespace SpellforceDataEditor.SFMap
                     metadata.multi_teams = new List<SFMapMultiplayerTeamComposition>();
                     if (c53.header.ChunkDataType == 2)
                     {
-                        LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Found team composition data, assuming multiplayer map type");
+                        LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Found team composition data");
                         metadata.map_type = SFMapType.MULTIPLAYER;
                         int cur_teamcount = 2;
                         int p_num = br.ReadInt32();
@@ -516,8 +516,8 @@ namespace SpellforceDataEditor.SFMap
                     }
                     else if (c53.header.ChunkDataType == 4)
                     {
-                        LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Found team composition data, assuming coop map type");
-                        metadata.map_type = SFMapType.COOP;
+                        LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Found team composition data");
+                        metadata.map_type = SFMapType.MULTIPLAYER;
                         int cur_teamcount = 1;
                         int p_num = br.ReadInt32();
                         while (cur_teamcount <= 4)
@@ -612,6 +612,8 @@ namespace SpellforceDataEditor.SFMap
             {
                 using (BinaryReader br = c59.Open())
                 {
+                    LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Found coop spawn parameters, assuming coop map type");
+                    metadata.map_type = SFMapType.COOP;
                     metadata.coop_spawn_params = new List<SFMapCoopSpawnParameters>();
                     for (int i = 0; i < 3; i++)
                     {
@@ -623,6 +625,10 @@ namespace SpellforceDataEditor.SFMap
                     }
                 }
                 c59.Close();
+            }
+            else if(metadata.map_type == SFMapType.MULTIPLAYER)
+            {
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Coop parameters not found, assuming multiplayer mode");
             }
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Creating overlays");
@@ -641,16 +647,6 @@ namespace SpellforceDataEditor.SFMap
             //foreach (SFCoord p in heightmap.chunk56_data)
             //    heightmap.OverlayAdd("ManualVisionBlock", p);
 
-            heightmap.OverlayCreate("LakeTile", new OpenTK.Vector4(0.4f, 0.4f, 0.9f, 0.7f));
-            //for (int i = 0; i < heightmap.lake_data.Length; i++)
-            //{
-            //    SFCoord p = new SFCoord(i % width, i / width);
-            //    if(heightmap.lake_data[i] > 0)
-            //        heightmap.OverlayAdd("LakeTile", p);
-            //}
-
-            heightmap.OverlayCreate("ManualLakeTile", new OpenTK.Vector4(0.6f, 0.6f, 1.0f, 0.7f));
-
             heightmap.OverlayCreate("BuildingBlock", new OpenTK.Vector4(0.3f, 1f, 0.3f, 0.7f));
             for (int i = 0; i < height; i++)
                 for (int j = 0; j < width; j++)
@@ -665,8 +661,6 @@ namespace SpellforceDataEditor.SFMap
                 chunk_node.MapChunk.OverlayUpdate("TileMovementBlock");
                 chunk_node.MapChunk.OverlayUpdate("ManualMovementBlock");
                 chunk_node.MapChunk.OverlayUpdate("ManualVisionBlock");
-                chunk_node.MapChunk.OverlayUpdate("LakeTile");
-                chunk_node.MapChunk.OverlayUpdate("ManualLakeTile");
                 chunk_node.MapChunk.OverlayUpdate("BuildingBlock");
                 chunk_node.MapChunk.OverlayUpdate("DecorationTile");
             }
@@ -1204,8 +1198,6 @@ namespace SpellforceDataEditor.SFMap
             heightmap.OverlayCreate("TileMovementBlock", new OpenTK.Vector4(0.5f, 0, 0, 0.7f));
             heightmap.OverlayCreate("ManualMovementBlock", new OpenTK.Vector4(1, 0, 0, 0.7f));
             heightmap.OverlayCreate("ManualVisionBlock", new OpenTK.Vector4(1, 1, 0, 0.7f));
-            heightmap.OverlayCreate("LakeTile", new OpenTK.Vector4(0.4f, 0.4f, 0.9f, 0.7f));
-            heightmap.OverlayCreate("ManualLakeTile", new OpenTK.Vector4(0.6f, 0.6f, 1.0f, 0.7f));
 
             // debug
             heightmap.OverlayCreate("BuildingBlock", new OpenTK.Vector4(0.3f, 1f, 0.3f, 0.7f));
@@ -1222,8 +1214,6 @@ namespace SpellforceDataEditor.SFMap
                 chunk_node.MapChunk.OverlayUpdate("TileMovementBlock");
                 chunk_node.MapChunk.OverlayUpdate("ManualMovementBlock");
                 chunk_node.MapChunk.OverlayUpdate("ManualVisionBlock");
-                chunk_node.MapChunk.OverlayUpdate("LakeTile");
-                chunk_node.MapChunk.OverlayUpdate("ManualLakeTile");
                 chunk_node.MapChunk.OverlayUpdate("BuildingBlock");
                 chunk_node.MapChunk.OverlayUpdate("DecorationTile");
             }

@@ -31,7 +31,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.bGDEditor = new System.Windows.Forms.Button();
             this.bAssets = new System.Windows.Forms.Button();
-            this.bScripting = new System.Windows.Forms.Button();
             this.bMods = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.labelVersion = new System.Windows.Forms.Label();
@@ -74,17 +73,6 @@
             this.bAssets.UseVisualStyleBackColor = true;
             this.bAssets.Click += new System.EventHandler(this.bAssets_Click);
             // 
-            // bScripting
-            // 
-            this.bScripting.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.bScripting.Location = new System.Drawing.Point(131, 67);
-            this.bScripting.Name = "bScripting";
-            this.bScripting.Size = new System.Drawing.Size(115, 23);
-            this.bScripting.TabIndex = 3;
-            this.bScripting.Text = "Script Builder";
-            this.bScripting.UseVisualStyleBackColor = true;
-            this.bScripting.Click += new System.EventHandler(this.bScripting_Click);
-            // 
             // bMods
             // 
             this.bMods.ForeColor = System.Drawing.Color.Crimson;
@@ -114,7 +102,7 @@
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(108, 13);
             this.labelVersion.TabIndex = 6;
-            this.labelVersion.Text = "Version 19.08.2019.1";
+            this.labelVersion.Text = "Version 01.09.2019.1";
             // 
             // linkEditor
             // 
@@ -133,7 +121,7 @@
             // bMap
             // 
             this.bMap.ForeColor = System.Drawing.Color.Crimson;
-            this.bMap.Location = new System.Drawing.Point(252, 96);
+            this.bMap.Location = new System.Drawing.Point(131, 67);
             this.bMap.Name = "bMap";
             this.bMap.Size = new System.Drawing.Size(115, 23);
             this.bMap.TabIndex = 8;
@@ -167,7 +155,7 @@
             this.ButtonAbout.Name = "ButtonAbout";
             this.ButtonAbout.Size = new System.Drawing.Size(115, 23);
             this.ButtonAbout.TabIndex = 11;
-            this.ButtonAbout.Text = "About...";
+            this.ButtonAbout.Text = "About";
             this.ButtonAbout.UseVisualStyleBackColor = true;
             this.ButtonAbout.Click += new System.EventHandler(this.ButtonAbout_Click);
             // 
@@ -206,12 +194,11 @@
             this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.bMods);
-            this.Controls.Add(this.bScripting);
             this.Controls.Add(this.bAssets);
             this.Controls.Add(this.bGDEditor);
             this.Controls.Add(this.label1);
             this.Name = "MainForm";
-            this.Text = "All-in-one Tool Manager";
+            this.Text = "SpellForce Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -223,7 +210,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button bGDEditor;
         private System.Windows.Forms.Button bAssets;
-        private System.Windows.Forms.Button bScripting;
         private System.Windows.Forms.Button bMods;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label labelVersion;

@@ -55,6 +55,8 @@ namespace SpellforceDataEditor.special_forms
         //load game data
         private void loadGameDatacffToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (synchronized_with_mapeditor)
+                return;
             if (OpenGameData.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 load_data();
@@ -85,12 +87,11 @@ namespace SpellforceDataEditor.special_forms
             //string diff_filename = OpenGameData.FileName.Replace(".cff", ".dff");
             //bool diff_loaded = diff.load_diff_data(diff_filename);
 
-            this.Text = "SpellforceDataEditor - " + OpenGameData.FileName;
+            this.Text = "GameData Editor - " + OpenGameData.FileName;
             labelStatus.Text = "Ready";
             //if (!diff_loaded)
             //    labelStatus.Text = "Ready (diff file not found)";
-
-            changeDataLanguageToolStripMenuItem.Enabled = true;
+            
             CategorySelect.Enabled = true;
             for (int i = 0; i < SFGameData.categoryNumber; i++)
                 CategorySelect.Items.Add(SFCategoryManager.gamedata[i].GetName());
@@ -111,12 +112,11 @@ namespace SpellforceDataEditor.special_forms
         {
             SFCategoryManager.manual_SetGamedata(gd);
 
-            this.Text = "SpellforceDataEditor - synchronized with MapEditor";
+            this.Text = "GameData Editor - synchronized with MapEditor";
             labelStatus.Text = "Ready";
             //if (!diff_loaded)
             //    labelStatus.Text = "Ready (diff file not found)";
-
-            changeDataLanguageToolStripMenuItem.Enabled = true;
+            
             CategorySelect.Enabled = true;
             for (int i = 0; i < SFGameData.categoryNumber; i++)
                 CategorySelect.Items.Add(SFCategoryManager.gamedata[i].GetName());
@@ -608,8 +608,7 @@ namespace SpellforceDataEditor.special_forms
                     panelElemManipulate.Visible = true;
                 }
                 panelElemCopy.Visible = true;
-
-                changeDataLanguageToolStripMenuItem.Enabled = true;
+                
                 System.Diagnostics.Debug.WriteLine("Elements: " + ElementSelect.Items.Count.ToString());
             }
             ElementSelect.EndUpdate();
@@ -627,13 +626,14 @@ namespace SpellforceDataEditor.special_forms
 
             ProgressBar_Main.Visible = true;
             ProgressBar_Main.Value = 0;
-
-            changeDataLanguageToolStripMenuItem.Enabled = false;
+            
         }
 
         //close gamedata.cff
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (synchronized_with_mapeditor)
+                return;
             if (data_loaded)
                 close_data();
         }
@@ -652,7 +652,7 @@ namespace SpellforceDataEditor.special_forms
             else
                 result = MessageBox.Show("Do you want to save gamedata before quitting? (Recommended when synchronized with Map Editor)", "Save before quit?", MessageBoxButtons.YesNoCancel);
 
-            if (result == DialogResult.Yes)
+            if ((result == DialogResult.Yes)&&(!synchronized_with_mapeditor))
             {
                 if (!save_data())
                     return DialogResult.Cancel;
@@ -697,19 +697,18 @@ namespace SpellforceDataEditor.special_forms
 
             undoCtrlZToolStripMenuItem.Enabled = false;
             redoCtrlYToolStripMenuItem.Enabled = false;
-            changeDataLanguageToolStripMenuItem.Enabled = false;
 
             diff_current_element = null;
 
-            SFCategoryManager.UnloadAll();
+            if(!synchronized_with_mapeditor)
+                SFCategoryManager.UnloadAll();
             diff.clear_data();
             Tracer_Clear();
 
             data_loaded = false;
             data_changed = false;
-            synchronized_with_mapeditor = false;
 
-            this.Text = "SpellforceDataEditor";
+            this.Text = "GameData Editor";
 
             GC.Collect();
 

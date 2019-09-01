@@ -14,11 +14,11 @@ namespace SpellforceDataEditor.SFMap.MapGen
 
         public int GradientCellSizeX;
         public int GradientOffsetX;
-        public int GradientErosionMeanX;
+        public float GradientErosionMeanX;
         public float GradientErosionSigmaX;
         public int GradientCellSizeY;
         public int GradientOffsetY;
-        public int GradientErosionMeanY;
+        public float GradientErosionMeanY;
         public float GradientErosionSigmaY;
         public int GradientBlurSize;
         public float GradientBlurSigma;
