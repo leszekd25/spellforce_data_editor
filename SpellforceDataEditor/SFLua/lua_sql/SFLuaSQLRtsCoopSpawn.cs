@@ -7,6 +7,19 @@ using System.IO;
 
 namespace SpellforceDataEditor.SFLua.lua_sql
 {
+    public enum LuaEnumAiGoal
+    {
+        GoalDefault = 0,
+        GoalIdle = 1,
+        GoalNomadic = 3,
+        GoalAggressive = 4,
+        GoalDefensive = 5,
+        GoalScript = 6,
+        GoalCoopAggressive = 7,
+        GoalCoopDefensive = 8,
+        GoalNone = 9
+    }
+
     public class SFMapCoopSpawnTypeDataInfo : ILuaParsable
     {
         public int seconds_per_tick;     // convert from double

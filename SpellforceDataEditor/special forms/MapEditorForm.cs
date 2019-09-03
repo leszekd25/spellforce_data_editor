@@ -27,10 +27,14 @@ namespace SpellforceDataEditor.special_forms
         MouseButtons mouse_last_pressed = MouseButtons.Left;  // last mouse button pressed
 
         bool mouse_on_view = false;      // if true, mouse is in render window
-        public bool update_render = false;
         Vector2 scroll_mouse_start = new Vector2(0, 0);
         bool mouse_scroll = false;
         float zoom_level = 1.0f;
+
+        bool[] arrows_pressed = new bool[] { false, false, false, false };  // left, right, up, down
+        bool[] rotation_pressed = new bool[] { false, false, false, false };// left, right, up, down
+
+        public bool update_render = false;                // whenever this is true, window will be repainted, and this switched to false
         int gc_timer = 0;
 
         MAPEDIT_MODE edit_mode = MAPEDIT_MODE.HMAP;
@@ -142,6 +146,7 @@ namespace SpellforceDataEditor.special_forms
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap() called");
 
+            // get new map parameters
             ushort map_size = 0;
             SFMap.MapGen.MapGenerator generator = null;
             SFMap.map_dialog.MapPromptNewMap newmap = new SFMap.map_dialog.MapPromptNewMap();
@@ -157,6 +162,7 @@ namespace SpellforceDataEditor.special_forms
             else
                 return -1;
 
+            // close current gamedata
             if (MainForm.data != null)
             {
                 if (MainForm.data.data_loaded)
@@ -174,6 +180,7 @@ namespace SpellforceDataEditor.special_forms
             else if (SFCFF.SFCategoryManager.ready)
                 SFCFF.SFCategoryManager.UnloadAll();
 
+            // load in gamedata from game directory
             StatusText.Text = "Loading GameData.cff...";
             StatusText.GetCurrentParent().Refresh();
             if (gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
@@ -187,14 +194,17 @@ namespace SpellforceDataEditor.special_forms
             else
                 SFCFF.SFCategoryManager.manual_SetGamedata(gamedata);
 
+            // display init
             SFRenderEngine.scene.Init();
             CreateRenderWindow();
 
+            // create and generate map
             map = new SFMap.SFMap();
             map.CreateDefault(map_size, generator, gamedata, StatusText);
 
             SFRenderEngine.scene.heightmap = map.heightmap;
-
+            
+            // ui initialization
             for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
                 if (edit_controls[i] != null)
                 {
@@ -202,7 +212,6 @@ namespace SpellforceDataEditor.special_forms
                     edit_controls[i].Enabled = true;
                 }
 
-            // ui initialization
             ((SFMap.map_controls.MapInspectorTerrainTextureControl)(edit_controls[1])).GenerateBaseTexturePreviews();
             ((SFMap.map_controls.MapInspectorTerrainTextureControl)(edit_controls[1])).GenerateTileListEntries();
             ((SFMap.map_controls.MapInspectorUnitControl)(edit_controls[4])).InitializeComboRaces();
@@ -211,8 +220,11 @@ namespace SpellforceDataEditor.special_forms
             map.selection_helper.SetCursorVisibility(true);
 
             SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
+            ResetCamera();
 
             RenderWindow.Invalidate();
+
+            PanelDisplaySettings.Visible = true;
 
             if (MainForm.data != null)
             {
@@ -300,8 +312,11 @@ namespace SpellforceDataEditor.special_forms
                 map.selection_helper.SetCursorVisibility(true);
 
                 SetCameraViewPoint(new SFCoord(map.width/2, map.height/2));
+                ResetCamera();
 
                 RenderWindow.Invalidate();
+
+                PanelDisplaySettings.Visible = true;
 
                 if (MainForm.data != null)
                 {
@@ -404,6 +419,7 @@ namespace SpellforceDataEditor.special_forms
             // for good measure (bad! bad!) (TODO: make this do nothing since all resources should be properly disposed at this point)                for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
             SFResources.SFResourceManager.DisposeAll();
             DestroyRenderWindow();
+            PanelDisplaySettings.Visible = false;
             this.Text = "Map Editor";
             GC.Collect();
 
@@ -508,11 +524,6 @@ namespace SpellforceDataEditor.special_forms
             mouse_on_view = true;
         }
 
-        private void RenderWindow_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
-        {
-
-        }
-
         private void RenderWindow_MouseWheel(object sender, MouseEventArgs e)
         {
             if(e.Delta < 0)
@@ -524,10 +535,11 @@ namespace SpellforceDataEditor.special_forms
             else if(e.Delta > 0)
             {
                 zoom_level *= 0.9f;
-                if (zoom_level < 0.3f)
-                    zoom_level = 0.3f;
+                if (zoom_level < 0.1f)
+                    zoom_level = 0.1f;
             }
             AdjustCameraZ();
+            update_render = true;
         }
 
         private void EnableAnimation()
@@ -547,6 +559,7 @@ namespace SpellforceDataEditor.special_forms
             if (map == null)
                 return;
 
+            // find point which mouse hovers at
             if (mouse_on_view)
             {
                 // generate ray
@@ -582,22 +595,16 @@ namespace SpellforceDataEditor.special_forms
                         result += offset;
                     }
                 });
-                /*for (int i = map.heightmap.visible_chunks.Count-1; i >= 0; i--)
-                {
-                    SFMapHeightMapChunk chunk = map.heightmap.visible_chunks[i].MapChunk;
-                    offset = new Vector3(chunk.ix * 16, 0, chunk.iy * 16);
-                    if (ray.Intersect(chunk.collision_cache, offset, out result))
-                    {
-                        ray_success = true;
-                        result += offset;
-                        break;
-                    }
-                }*/
-
 
                 if (ray_success)
                 {
-                    SFCoord cursor_coord = new SFCoord((int)(Math.Max(0, Math.Min(result.X, map.width-1))), (int)(Math.Max(0,Math.Min(result.Z, map.height-1))));
+                    SFCoord cursor_coord = new SFCoord(
+                        (int)(Math.Max
+                            (0, Math.Min
+                                (result.X, map.width-1))),
+                        (int)(Math.Max
+                            (0,Math.Min
+                                (result.Z, map.height-1))));
                     SFCoord inv_cursor_coord = new SFCoord(cursor_coord.x, map.height - cursor_coord.y - 1);
 
                     if (map.selection_helper.SetCursorPosition(cursor_coord))
@@ -632,15 +639,56 @@ namespace SpellforceDataEditor.special_forms
                 }
             }
 
+            // rotating view by mouse
             if(mouse_scroll)
             {
-                float mouse_scroll_factor = 0.01f;
                 Vector2 scroll_mouse_end = new Vector2(Cursor.Position.X, Cursor.Position.Y);
-                Vector2 scroll_translation = (scroll_mouse_end - scroll_mouse_start)*mouse_scroll_factor;
-                SFRenderEngine.scene.camera.translate(new Vector3(scroll_translation.X, 0, scroll_translation.Y));
+                Vector2 scroll_translation = (scroll_mouse_end - scroll_mouse_start) * RotationStrength.Value / 250000f;
+
+                SFRenderEngine.scene.camera.Direction += new Vector2(scroll_translation.X, -scroll_translation.Y);
+
                 update_render = true;
             }
 
+            // moving view by arrow keys
+            Vector2 movement_vector = new Vector2(0, 0);
+            if (arrows_pressed[0])
+                movement_vector += new Vector2(-1, 0);
+            if (arrows_pressed[1])
+                movement_vector += new Vector2(1, 0);
+            if (arrows_pressed[2])
+                movement_vector += new Vector2(0, -1);
+            if (arrows_pressed[3])
+                movement_vector += new Vector2(0, 1);
+
+            if(movement_vector != new Vector2(0, 0))
+            {
+                float angle = SFRenderEngine.scene.camera.Direction.X-(float)(Math.PI*3/2);
+                movement_vector = MathUtils.RotateVec2(movement_vector, angle);
+                SFRenderEngine.scene.camera.translate(new Vector3(movement_vector.X, 0, movement_vector.Y)
+                    * MovementStrength.Value / 50f);
+                update_render = true;
+            }
+
+            // rotating view by home/end/pageup/pagedown
+            movement_vector = new Vector2(0, 0);
+            if (rotation_pressed[0])
+                movement_vector += new Vector2(-1, 0);
+            if (rotation_pressed[1])
+                movement_vector += new Vector2(1, 0);
+            if (rotation_pressed[2])
+                movement_vector += new Vector2(0, -1);
+            if (rotation_pressed[3])
+                movement_vector += new Vector2(0, 1);
+
+            if(movement_vector != new Vector2(0, 0))
+            {
+                SFRenderEngine.scene.camera.Direction += new Vector2(movement_vector.X, -movement_vector.Y)
+                    * RotationStrength.Value / 2000f;
+                update_render = true;
+            }
+
+            // render time
             if ((dynamic_render)||(update_render))
             {
                 map.selection_helper.UpdateSelection();
@@ -651,6 +699,7 @@ namespace SpellforceDataEditor.special_forms
                 update_render = false;
             }
 
+            // garbage collector
             gc_timer += 1;
             if (gc_timer == 200)
             {
@@ -675,11 +724,20 @@ namespace SpellforceDataEditor.special_forms
         public void SetCameraViewPoint(SFCoord pos)
         {
             // these two decide camera angle
+            Vector2 cam_dir = SFRenderEngine.scene.camera.Direction;
             SFRenderEngine.scene.camera.Position = new Vector3(0, 25, 12);
-            SFRenderEngine.scene.camera.Lookat = new Vector3(0, 0, 0);
+            SFRenderEngine.scene.camera.Direction = cam_dir;
 
-            Vector3 new_camera_pos = new Vector3(pos.x+0.03f, 0, map.heightmap.height - pos.y - 1 + 12+0.03f);
+            Vector3 new_camera_pos = new Vector3(pos.x, 0, map.heightmap.height - pos.y - 1 + 12);
             SFRenderEngine.scene.camera.translate(new_camera_pos - SFRenderEngine.scene.camera.Position);
+            AdjustCameraZ();
+            update_render = true;
+        }
+
+        public void ResetCamera()
+        {
+            SFRenderEngine.scene.camera.Direction = new Vector2((float)(Math.PI * 3 / 2), -1.2f);
+            zoom_level = 1;
             AdjustCameraZ();
             update_render = true;
         }
@@ -847,6 +905,129 @@ namespace SpellforceDataEditor.special_forms
         {
             autotexture_form.FormClosing -= new FormClosingEventHandler(autotextureform_FormClosing);
             autotexture_form = null;
+        }
+
+        // keyboard control of the 3d camera
+        protected override bool ProcessDialogKey(Keys keyData)
+        {
+            switch(keyData)
+            {
+                case Keys.Left:
+                    arrows_pressed[0] = true;
+                    return true;
+                case Keys.Right:
+                    arrows_pressed[1] = true;
+                    return true;
+                case Keys.Up:
+                    arrows_pressed[2] = true;
+                    return true;
+                case Keys.Down:
+                    arrows_pressed[3] = true;
+                    return true;
+                case Keys.Home:
+                    rotation_pressed[0] = true;
+                    return true;
+                case Keys.End:
+                    rotation_pressed[1] = true;
+                    return true;
+                case Keys.PageUp:
+                    rotation_pressed[2] = true;
+                    return true;
+                case Keys.PageDown:
+                    rotation_pressed[3] = true;
+                    return true;
+                default:
+                    return base.ProcessDialogKey(keyData);
+            }
+        }
+
+        protected override bool ProcessKeyPreview(ref Message msg)
+        {
+            if (msg.Msg == 0x101)
+            {
+                if ((int)msg.WParam == 0x25)      // left
+                    arrows_pressed[0] = false;
+                else if ((int)msg.WParam == 0x27) // right
+                    arrows_pressed[1] = false;
+                else if ((int)msg.WParam == 0x26) // up
+                    arrows_pressed[2] = false;
+                else if ((int)msg.WParam == 0x28) // down
+                    arrows_pressed[3] = false;
+                else if ((int)msg.WParam == 0x24) // home
+                    rotation_pressed[0] = false;
+                else if ((int)msg.WParam == 0x23) // end
+                    rotation_pressed[1] = false;
+                else if ((int)msg.WParam == 0x21) // pageup
+                    rotation_pressed[2] = false;
+                else if ((int)msg.WParam == 0x22) // pagedown
+                    rotation_pressed[3] = false;
+            }
+            return base.ProcessKeyPreview(ref msg);
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.H | Keys.Alt))
+            {
+                SetEditMode(MAPEDIT_MODE.HMAP);
+                return true;
+            }
+            if (keyData == (Keys.T | Keys.Alt))
+            {
+                SetEditMode(MAPEDIT_MODE.TEXTURE);
+                return true;
+            }
+            if (keyData == (Keys.F | Keys.Alt))
+            {
+                SetEditMode(MAPEDIT_MODE.FLAG);
+                return true;
+            }
+            if (keyData == (Keys.L | Keys.Alt))
+            {
+                SetEditMode(MAPEDIT_MODE.LAKE);
+                return true;
+            }
+            if (keyData == (Keys.U | Keys.Alt))
+            {
+                SetEditMode(MAPEDIT_MODE.UNIT);
+                return true;
+            }
+            if (keyData == (Keys.O | Keys.Alt))
+            {
+                SetEditMode(MAPEDIT_MODE.OBJECT);
+                return true;
+            }
+            if (keyData == (Keys.B | Keys.Alt))
+            {
+                SetEditMode(MAPEDIT_MODE.BUILDING);
+                return true;
+            }
+            if (keyData == (Keys.D | Keys.Alt))
+            {
+                SetEditMode(MAPEDIT_MODE.DECAL);
+                return true;
+            }
+            if (keyData == (Keys.N | Keys.Alt))
+            {
+                SetEditMode(MAPEDIT_MODE.NPC);
+                return true;
+            }
+            if (keyData == (Keys.M | Keys.Alt))
+            {
+                SetEditMode(MAPEDIT_MODE.MISC_OBJECT);
+                return true;
+            }
+            if (keyData == (Keys.E | Keys.Alt))
+            {
+                SetEditMode(MAPEDIT_MODE.META);
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void ResetRotation_Click(object sender, EventArgs e)
+        {
+            ResetCamera();
         }
     }
 }

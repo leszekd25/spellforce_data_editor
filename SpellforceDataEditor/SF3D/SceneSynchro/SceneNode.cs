@@ -647,26 +647,22 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         private void CalculateFrustumVertices()
         {
             // get forward, up, right direction
-            // mirrored in XZ plane...
-            Vector3 forward = local_transform.Row2.Xyz;
-            Vector3 up = local_transform.Row1.Xyz;
-            Vector3 right = local_transform.Row0.Xyz;
+            Vector3 forward = (lookat - Position).Normalized();
+            Vector3 right = Vector3.Cross(forward, new Vector3(0, 1, 0)).Normalized();
+            Vector3 up = Vector3.Cross(forward, right);
 
             // 100f, Math.Pi/4 are magic for now.....
             float deviation = (float)Math.Tan(Math.PI / 4) / 2;
             Vector3 center = position + forward * 0.1f;
             Vector3 center2 = position + forward * 100f;
-            frustum_vertices[0] = center + (-right + up) * deviation * 0.1f;
-            frustum_vertices[1] = center + (right + up) * deviation * 0.1f;
-            frustum_vertices[2] = center + (-right - up) * deviation * 0.1f;
-            frustum_vertices[3] = center + (right - up) * deviation * 0.1f;
-            frustum_vertices[4] = center2 + (-right + up) * deviation * 100f;
-            frustum_vertices[5] = center2 + (right + up) * deviation * 100f;
-            frustum_vertices[6] = center2 + (-right - up) * deviation * 100f;
-            frustum_vertices[7] = center2 + (right - up) * deviation * 100f;
-            // reflection along XY plane at z = position.Z
-            for (int i = 0; i < 8; i++)
-                frustum_vertices[i].Z = 2 * position.Z - frustum_vertices[i].Z;
+            frustum_vertices[0] = center + (-right - up) * deviation * 0.1f;
+            frustum_vertices[1] = center + (right - up) * deviation * 0.1f;
+            frustum_vertices[2] = center + (-right + up) * deviation * 0.1f;
+            frustum_vertices[3] = center + (right + up) * deviation * 0.1f;
+            frustum_vertices[4] = center2 + (-right - up) * deviation * 100f;
+            frustum_vertices[5] = center2 + (right - up) * deviation * 100f;
+            frustum_vertices[6] = center2 + (-right + up) * deviation * 100f;
+            frustum_vertices[7] = center2 + (right + up) * deviation * 100f;
         }
     }
 }

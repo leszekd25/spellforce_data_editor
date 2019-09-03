@@ -89,5 +89,13 @@ namespace SpellforceDataEditor
         {
             return (int)(rad * 180 / 3.141526f);
         }
+
+        // counterclockwise
+        public static Vector2 RotateVec2(Vector2 v, float angle)
+        {
+            float s = (float)Math.Sin(angle);
+            float c = (float)Math.Cos(angle);
+            return new Vector2(v.X * c - v.Y * s, v.X * s + v.Y * c);
+        }
     }
 }

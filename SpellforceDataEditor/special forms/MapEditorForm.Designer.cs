@@ -54,16 +54,24 @@
             this.ButtonFlag = new System.Windows.Forms.Button();
             this.ButtonTerrainTexture = new System.Windows.Forms.Button();
             this.ButtonHeightmap = new System.Windows.Forms.Button();
-            this.ToolbarStrip = new System.Windows.Forms.ToolStrip();
             this.StatusStrip = new System.Windows.Forms.ToolStrip();
             this.StatusText = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.SpecificText = new System.Windows.Forms.ToolStripLabel();
             this.InspectorPanel = new System.Windows.Forms.Panel();
             this.LabelMode = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.MovementStrength = new System.Windows.Forms.TrackBar();
+            this.PanelDisplaySettings = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.RotationStrength = new System.Windows.Forms.TrackBar();
+            this.ResetRotation = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.PanelModes.SuspendLayout();
             this.StatusStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.MovementStrength)).BeginInit();
+            this.PanelDisplaySettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationStrength)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -292,14 +300,6 @@
             this.ButtonHeightmap.UseVisualStyleBackColor = true;
             this.ButtonHeightmap.Click += new System.EventHandler(this.ButtonHeightmap_Click);
             // 
-            // ToolbarStrip
-            // 
-            this.ToolbarStrip.Location = new System.Drawing.Point(0, 24);
-            this.ToolbarStrip.Name = "ToolbarStrip";
-            this.ToolbarStrip.Size = new System.Drawing.Size(1100, 25);
-            this.ToolbarStrip.TabIndex = 5;
-            this.ToolbarStrip.Text = "toolStrip1";
-            // 
             // StatusStrip
             // 
             this.StatusStrip.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -343,17 +343,83 @@
             this.LabelMode.Size = new System.Drawing.Size(0, 13);
             this.LabelMode.TabIndex = 0;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(3, 5);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(98, 13);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "Movement strength";
+            // 
+            // MovementStrength
+            // 
+            this.MovementStrength.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
+            this.MovementStrength.AutoSize = false;
+            this.MovementStrength.Location = new System.Drawing.Point(107, 3);
+            this.MovementStrength.Maximum = 100;
+            this.MovementStrength.Name = "MovementStrength";
+            this.MovementStrength.Size = new System.Drawing.Size(106, 20);
+            this.MovementStrength.TabIndex = 10;
+            this.MovementStrength.TickFrequency = 10;
+            this.MovementStrength.Value = 50;
+            // 
+            // PanelDisplaySettings
+            // 
+            this.PanelDisplaySettings.Controls.Add(this.ResetRotation);
+            this.PanelDisplaySettings.Controls.Add(this.label2);
+            this.PanelDisplaySettings.Controls.Add(this.RotationStrength);
+            this.PanelDisplaySettings.Controls.Add(this.label1);
+            this.PanelDisplaySettings.Controls.Add(this.MovementStrength);
+            this.PanelDisplaySettings.Location = new System.Drawing.Point(559, 27);
+            this.PanelDisplaySettings.Name = "PanelDisplaySettings";
+            this.PanelDisplaySettings.Size = new System.Drawing.Size(541, 26);
+            this.PanelDisplaySettings.TabIndex = 11;
+            this.PanelDisplaySettings.Visible = false;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(239, 5);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(88, 13);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Rotation strength";
+            // 
+            // RotationStrength
+            // 
+            this.RotationStrength.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
+            this.RotationStrength.AutoSize = false;
+            this.RotationStrength.Location = new System.Drawing.Point(333, 3);
+            this.RotationStrength.Maximum = 100;
+            this.RotationStrength.Name = "RotationStrength";
+            this.RotationStrength.Size = new System.Drawing.Size(103, 20);
+            this.RotationStrength.TabIndex = 12;
+            this.RotationStrength.TickFrequency = 10;
+            this.RotationStrength.Value = 50;
+            // 
+            // ResetRotation
+            // 
+            this.ResetRotation.Location = new System.Drawing.Point(451, 0);
+            this.ResetRotation.Name = "ResetRotation";
+            this.ResetRotation.Size = new System.Drawing.Size(87, 23);
+            this.ResetRotation.TabIndex = 12;
+            this.ResetRotation.Text = "Reset camera";
+            this.ResetRotation.UseVisualStyleBackColor = true;
+            this.ResetRotation.Click += new System.EventHandler(this.ResetRotation_Click);
+            // 
             // MapEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1100, 667);
+            this.Controls.Add(this.PanelDisplaySettings);
             this.Controls.Add(this.LabelMode);
             this.Controls.Add(this.InspectorPanel);
             this.Controls.Add(this.StatusStrip);
-            this.Controls.Add(this.ToolbarStrip);
             this.Controls.Add(this.PanelModes);
             this.Controls.Add(this.menuStrip1);
+            this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(1005, 706);
             this.Name = "MapEditorForm";
@@ -366,6 +432,10 @@
             this.PanelModes.ResumeLayout(false);
             this.StatusStrip.ResumeLayout(false);
             this.StatusStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.MovementStrength)).EndInit();
+            this.PanelDisplaySettings.ResumeLayout(false);
+            this.PanelDisplaySettings.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationStrength)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -381,7 +451,6 @@
         private System.Windows.Forms.ToolStripMenuItem saveMapToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog DialogSaveMap;
         private System.Windows.Forms.Panel PanelModes;
-        private System.Windows.Forms.ToolStrip ToolbarStrip;
         private System.Windows.Forms.ToolStrip StatusStrip;
         private System.Windows.Forms.ToolStripLabel StatusText;
         private System.Windows.Forms.Button ButtonHeightmap;
@@ -404,5 +473,11 @@
         private System.Windows.Forms.ToolStripMenuItem createNewMapToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem slopebasedPaintToolStripMenuItem;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TrackBar MovementStrength;
+        private System.Windows.Forms.Panel PanelDisplaySettings;
+        private System.Windows.Forms.Button ResetRotation;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TrackBar RotationStrength;
     }
 }

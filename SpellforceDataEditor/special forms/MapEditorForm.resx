@@ -718,10 +718,7 @@
         qX7FEiIfdLNIodVNneprLfc+cSsienoo43IMSqref+w7Dly2rCv9D4BWTdfBm1J8AAAAAElFTkSuQmCC
 </value>
   </data>
-  <metadata name="ToolbarStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>594, 17</value>
-  </metadata>
   <metadata name="StatusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>713, 17</value>
+    <value>123, 13</value>
   </metadata>
 </root>

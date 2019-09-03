@@ -16,7 +16,6 @@ namespace SpellforceDataEditor
         // form control
         public static special_forms.SpelllforceCFFEditor data = null;
         public static special_forms.SFAssetManagerForm viewer = null;
-        public static special_forms.ScriptBuilderForm scripts = null;
         public static special_forms.SQLModifierForm sqlmodify = null;
         public static special_forms.ModManagerForm modmanager = null;
         public static special_forms.MapEditorForm mapedittool = null;
@@ -137,22 +136,6 @@ namespace SpellforceDataEditor
             GC.Collect();
         }
 
-        private void bScripting_Click(object sender, EventArgs e)
-        {
-            if (scripts != null)
-                return;
-            scripts = new special_forms.ScriptBuilderForm();
-            scripts.FormClosed += new FormClosedEventHandler(this.scripts_FormClosed);
-            scripts.Link(data);
-            scripts.Show();
-        }
-
-        private void scripts_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            scripts.FormClosed -= new FormClosedEventHandler(this.scripts_FormClosed);
-            scripts = null;
-            GC.Collect();
-        }
 
         private void bMods_Click(object sender, EventArgs e)
         {
