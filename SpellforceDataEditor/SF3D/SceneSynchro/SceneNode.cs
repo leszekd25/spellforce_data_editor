@@ -145,6 +145,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             UpdateTime(t);
             UpdateTransform();
+            OnGatherSceneInstances();
 
             foreach (SceneNode node in Children)
                 node.Update(t);
@@ -212,6 +213,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return Parent.GetFullPath() + '.' + this.Name;
         }
 
+        public virtual void OnGatherSceneInstances()
+        {
+
+        }
+
         // disposes node and all resources its using
         public void Dispose()
         {
@@ -254,10 +260,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             set
             {
                 mesh = value;
-                if (mesh == null)
-                    ClearTexGeometry();
-                else if(Visible)
-                    AddTexGeometry();
             }
         }
         public override bool Visible
@@ -265,66 +267,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             get => base.Visible;
             set
             {
-                if (value == false)
-                    ClearTexGeometry();
-                else
-                    AddTexGeometry();
                 base.Visible = value;
             }
         }
-        // list of scene cache pointers
-        public TexGeometryLinkSimple[] TextureGeometryIndex { get; private set; } = null;
 
         public SceneNodeSimple(string n) : base(n) { }
 
-        // clears scene cache of all elements drawn by this node
-        // todo: also do this if transparent = true, let transparent object list deal with those
-        private void ClearTexGeometry()
+        public override void OnGatherSceneInstances()
         {
-            if (TextureGeometryIndex == null)
-                return;
-
-            foreach (TexGeometryLinkSimple link in TextureGeometryIndex)
-            {
-                if (link.texture == null)
-                {
-                    SFRender.SFRenderEngine.scene.untextured_list_simple.RemoveAt(link.index);
-                    if (SFRender.SFRenderEngine.scene.untextured_list_simple.used_count == 0)
-                        SFRender.SFRenderEngine.scene.untextured_list_simple.Clear();
-                }
-                else
-                {
-                    SFRender.SFRenderEngine.scene.tex_list_simple[link.texture].RemoveAt(link.index);
-                    if (SFRender.SFRenderEngine.scene.tex_list_simple[link.texture].used_count == 0)
-                        SFRender.SFRenderEngine.scene.tex_list_simple.Remove(link.texture);
-                }
-            }
-
-            TextureGeometryIndex = null;
-        }
-
-        // adds elements drawn by this node to scene cache
-        // todo: also do this if transparent = false, let transparent object list deal with those
-        private void AddTexGeometry()
-        {
-            if (TextureGeometryIndex != null)
-                ClearTexGeometry();
-            if (mesh == null)
-                return;
-
-            TextureGeometryIndex = new TexGeometryLinkSimple[mesh.materials.Length];
-
-            for(int i = 0; i < Mesh.materials.Length; i++)
-            {
-                TexturedGeometryListElementSimple elem = new TexturedGeometryListElementSimple();
-                elem.node = this;
-                elem.submodel_index = i;
-                TextureGeometryIndex[i].texture = mesh.materials[i].texture;
-                if (mesh.materials[i].texture == null)
-                    TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddUntexturedEntrySimple(elem);
-                else
-                    TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntrySimple(mesh.materials[i].texture, elem);
-            }
+            if(Mesh != null)
+                for (int i = 0; i < Mesh.submodels.Length; i++)
+                    Mesh.submodels[i].instance_matrices.AddElem(this.ResultTransform);
         }
 
         // disposes mesh used by this node (reference counted, dw)
@@ -463,9 +416,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (skin == null)
                 return;
 
-            TextureGeometryIndex = new TexGeometryLinkAnimated[skin.submodels.Count];
+            TextureGeometryIndex = new TexGeometryLinkAnimated[skin.submodels.Length];
 
-            for (int i = 0; i < Skin.submodels.Count; i++)
+            for (int i = 0; i < Skin.submodels.Length; i++)
             {
                 TextureGeometryIndex[i].texture = skin.submodels[i].material.texture;
                 // long name :^)
@@ -542,6 +495,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
     public class SceneNodeMapChunk: SceneNode
     {
         public SFMap.SFMapHeightMapChunk MapChunk;
+        public float DistanceToCamera { get; set; } = 0;
 
         public SceneNodeMapChunk(string n) : base(n) { }
 
@@ -558,6 +512,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         private Vector3 lookat = new Vector3(0, 1, 0);
         private Vector2 direction = new Vector2(0, 0);
         private Matrix4 proj_matrix = new Matrix4();
+        private float aspect_ratio = 1;
         private Matrix4 viewproj_matrix = new Matrix4();
         private Vector3[] frustum_vertices;// = camera.get_frustrum_vertices();
         // construct frustrum planes
@@ -607,6 +562,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public Matrix4 ProjMatrix { get { return proj_matrix; } set { proj_matrix = value; viewproj_matrix = proj_matrix; } }
         public Physics.Plane[] FrustumPlanes { get { return frustum_planes; } }
         public Vector3[] FrustumVertices { get { return frustum_vertices; } }
+        public float AspectRatio { get { return aspect_ratio; } set { aspect_ratio = value; } }
 
         public SceneNodeCamera(string s): base(s)
         {
@@ -650,19 +606,20 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             Vector3 forward = (lookat - Position).Normalized();
             Vector3 right = Vector3.Cross(forward, new Vector3(0, 1, 0)).Normalized();
             Vector3 up = Vector3.Cross(forward, right);
+            right *= aspect_ratio;
 
             // 100f, Math.Pi/4 are magic for now.....
             float deviation = (float)Math.Tan(Math.PI / 4) / 2;
             Vector3 center = position + forward * 0.1f;
-            Vector3 center2 = position + forward * 100f;
+            Vector3 center2 = position + forward * 200f;
             frustum_vertices[0] = center + (-right - up) * deviation * 0.1f;
             frustum_vertices[1] = center + (right - up) * deviation * 0.1f;
             frustum_vertices[2] = center + (-right + up) * deviation * 0.1f;
             frustum_vertices[3] = center + (right + up) * deviation * 0.1f;
-            frustum_vertices[4] = center2 + (-right - up) * deviation * 100f;
-            frustum_vertices[5] = center2 + (right - up) * deviation * 100f;
-            frustum_vertices[6] = center2 + (-right + up) * deviation * 100f;
-            frustum_vertices[7] = center2 + (right + up) * deviation * 100f;
+            frustum_vertices[4] = center2 + (-right - up) * deviation * 200f;
+            frustum_vertices[5] = center2 + (right - up) * deviation * 200f;
+            frustum_vertices[6] = center2 + (-right + up) * deviation * 200f;
+            frustum_vertices[7] = center2 + (right + up) * deviation * 200f;
         }
     }
 }

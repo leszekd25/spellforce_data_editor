@@ -16,17 +16,218 @@ using SpellforceDataEditor.SFResources;
 
 namespace SpellforceDataEditor.SF3D
 {
-    public class SFModel3D: SFResource
+    public class SFSubModel3D: SFResource
     {
+        public int submodel_id = -1;
         public Vector3[] vertices = null;
         public Vector2[] uvs = null;
         public Vector4[] colors = null;
         public Vector3[] normals = null;
         public uint[] face_indices = null;
-        public SFMaterial[] materials = null;
+
+        public ArrayPool<Matrix4> instance_matrices = new ArrayPool<Matrix4>();
+        //public bool needs_matrix_reload = false;
+
+        public SFMaterial material = null;
         public Physics.BoundingBox aabb;
         public int vertex_array = -1;
-        public int vertex_buffer, uv_buffer, color_buffer, normal_buffer, element_buffer;
+        public int vertex_buffer, uv_buffer, normal_buffer, color_buffer, element_buffer, instance_matrix_buffer;
+
+        public void Init()
+        {
+            vertex_array = GL.GenVertexArray();
+            vertex_buffer = GL.GenBuffer();
+            uv_buffer = GL.GenBuffer();
+            normal_buffer = GL.GenBuffer();
+            color_buffer = GL.GenBuffer();
+            element_buffer = GL.GenBuffer();
+            instance_matrix_buffer = GL.GenBuffer();
+
+            GL.BindVertexArray(vertex_array);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
+            GL.EnableVertexAttribArray(0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Length * 12, normals, BufferUsageHint.StaticDraw);
+            GL.EnableVertexAttribArray(1);
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
+            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, uvs.Length * 8, uvs, BufferUsageHint.StaticDraw);
+            GL.EnableVertexAttribArray(2);
+            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, color_buffer);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, colors.Length * 16, colors, BufferUsageHint.StaticDraw);
+            GL.EnableVertexAttribArray(3);
+            GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, 0, 0);
+
+            // matrix takes 4 registers
+            GL.BindBuffer(BufferTarget.ArrayBuffer, instance_matrix_buffer);
+            GL.BufferData<Matrix4>(BufferTarget.ArrayBuffer, instance_matrices.Count * 64, instance_matrices.GetData(), BufferUsageHint.StreamDraw);
+            for (int i = 0; i < 4; i++)
+            {
+                GL.EnableVertexAttribArray(4 + i);
+                GL.VertexAttribPointer(4 + i, 4, VertexAttribPointerType.Float, false, 64, 16 * i);
+                GL.VertexAttribDivisor(4 + i, 1);
+            }
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
+            GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, face_indices.Length * 4, face_indices, BufferUsageHint.StaticDraw);
+
+            GL.BindVertexArray(0);
+        }
+
+        // ASSUMES VAO IS ALREADY BOUND!!
+        public void ReloadInstanceMatrices()
+        {
+            GL.BindBuffer(BufferTarget.ArrayBuffer, instance_matrix_buffer);
+            GL.BufferData<Matrix4>(BufferTarget.ArrayBuffer, instance_matrices.Count * 64, instance_matrices.GetData(), BufferUsageHint.StreamDraw);
+            //needs_matrix_reload = false;
+        }
+
+        public int Load(MemoryStream ms)
+        {
+            return 0;
+        }
+
+        public int Load(BinaryReader br)
+        {
+            int vcount, fcount;
+            vcount = br.ReadInt32();
+            fcount = br.ReadInt32();
+
+            vertices = new Vector3[vcount]; normals = new Vector3[vcount]; uvs = new Vector2[vcount]; colors = new Vector4[vcount];
+            face_indices = new uint[fcount * 3];
+            material = new SFMaterial();
+
+            for (int j = 0; j < vcount; j++)
+            {
+                Vector3 pos = new Vector3();
+                pos.X = br.ReadSingle(); pos.Y = br.ReadSingle(); pos.Z = br.ReadSingle();
+                Vector3 nor = new Vector3();
+                nor.X = br.ReadSingle(); nor.Y = br.ReadSingle(); nor.Z = br.ReadSingle();
+                Vector4 col = new Vector4();
+                for (int k = 0; k < 4; k++)
+                    col[k] = (float)((int)(br.ReadByte())) / 255.0f;
+                Vector2 uv = new Vector2();
+                uv.X = br.ReadSingle(); uv.Y = br.ReadSingle();
+                br.ReadInt32();
+                vertices[j] = pos; normals[j] = nor; uvs[j] = uv; colors[j] = col;
+            }
+
+            for (int j = 0; j < fcount; j++)
+            {
+                for (int k = 0; k < 3; k++)
+                    face_indices[j * 3 + k] = br.ReadUInt16();
+                br.ReadUInt16();
+            }
+
+            br.ReadUInt16();
+
+            material = new SFMaterial();
+            material.indexStart = (uint)0;
+            material.indexCount = (uint)face_indices.Length;
+
+            string matname;
+
+            material._texID = br.ReadInt32();
+            material.unused_uchar = br.ReadByte();
+            material.uv_mode = br.ReadByte();
+            material.unused_short2 = br.ReadUInt16();
+            material.texRenderMode = br.ReadByte();
+            material.texAlpha = br.ReadByte();
+            material.matFlags = br.ReadByte();
+            material.matDepthBias = br.ReadByte();
+            material.texTiling = br.ReadSingle();
+            char[] chars = br.ReadChars(64);
+            matname = new string(chars).ToLower();
+            matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
+            //System.Diagnostics.Debug.WriteLine(matname + " " + mat.ToString());
+
+            SFTexture tex = null;
+            int tex_code = SFResourceManager.Textures.Load(matname);
+            if ((tex_code != 0) && (tex_code != -1))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModel3D.Load(): Could not load texture (texture name = " + matname + ")");
+                return tex_code;
+            }
+            tex = SFResourceManager.Textures.Get(matname);
+            tex.FreeMemory();
+
+            material.texture = tex;
+            //System.Diagnostics.Debug.WriteLine(tex.ToString());
+
+            // secondary material
+            br.BaseStream.Position += 80;
+            // colors
+            br.BaseStream.Position += 12;
+            // other unneeded data (chunk bbox)
+            br.BaseStream.Position += 32;
+
+            return 0;
+        }
+
+        public int CreateRaw(Vector3[] _vertices, Vector2[] _uvs, Vector4[] _colors, Vector3[] _normals, uint[] _indices, SFMaterial _material)
+        {
+            // reset first
+            Dispose();
+            instance_matrices = new ArrayPool<Matrix4>();
+
+            vertices = _vertices;
+            uvs = _uvs;
+            colors = _colors;
+            normals = _normals;
+            face_indices = _indices;
+            if (_material == null)
+            {
+                material = new SFMaterial();
+                material.indexStart = 0;
+                material.indexCount = (uint)face_indices.Length;
+                material.texture = null;
+            }
+            else
+                material = _material;
+
+            return 0;
+        }
+
+        public void SetName(string s)
+        {
+
+        }
+
+        public string GetName()
+        {
+            return "SUBMODEL " + submodel_id.ToString();
+        }
+
+        public void Dispose()
+        {
+            instance_matrices.Dispose();
+            if (vertex_array != -1)
+            {
+                GL.DeleteBuffer(vertex_buffer);
+                GL.DeleteBuffer(normal_buffer);
+                GL.DeleteBuffer(uv_buffer);
+                GL.DeleteBuffer(color_buffer);
+                GL.DeleteBuffer(element_buffer);
+                GL.DeleteBuffer(instance_matrix_buffer);
+                GL.DeleteVertexArray(vertex_array);
+                vertex_array = -1;
+            }
+            if ((material != null) && (material.texture != null))
+                SFResourceManager.Textures.Dispose(material.texture.GetName());
+        }
+    }
+
+    public class SFModel3D: SFResource
+    {
+        public SFSubModel3D[] submodels = null;
+        public Physics.BoundingBox aabb;
         string name = "";
 
         public SFModel3D()
@@ -49,155 +250,42 @@ namespace SpellforceDataEditor.SF3D
                 header[i] = br.ReadUInt16();
 
             int modelnum = (int)header[1];
-            int total_v = 0;
-            int total_f = 0;
 
-            Vector3[][] vbuf = new Vector3[modelnum][];
-            Vector3[][] nbuf = new Vector3[modelnum][];
-            Vector4[][] cbuf = new Vector4[modelnum][];
-            Vector2[][] ubuf = new Vector2[modelnum][];
-
-            uint[][] ebuf = new uint[modelnum][];
-
-            materials = new SFMaterial[modelnum];
-
-            for(int i = 0; i < modelnum; i++)
+            submodels = new SFSubModel3D[modelnum];
+            for(int i=0; i<modelnum; i++)
             {
-                int cur_v, cur_f;
-                cur_v = br.ReadInt32();
-                cur_f = br.ReadInt32();
-
-                vbuf[i] = new Vector3[cur_v]; nbuf[i] = new Vector3[cur_v]; cbuf[i] = new Vector4[cur_v]; ubuf[i] = new Vector2[cur_v];
-                ebuf[i] = new uint[cur_f * 3];
-
-                for(int j = 0; j < cur_v; j++)
+                SFSubModel3D sbm = new SFSubModel3D();
+                submodels[i] = sbm;
+                sbm.submodel_id = i;
+                int return_code = sbm.Load(br);
+                if (return_code != 0)
                 {
-                    Vector3 pos = new Vector3();
-                    pos.X = br.ReadSingle(); pos.Y = br.ReadSingle(); pos.Z = br.ReadSingle();
-                    Vector3 nor = new Vector3();
-                    nor.X = br.ReadSingle(); nor.Y = br.ReadSingle(); nor.Z = br.ReadSingle();
-                    Vector4 col = new Vector4();
-                    for (int k = 0; k < 4; k++)
-                        col[k] = (float)((int)(br.ReadByte())) / 255.0f;
-                    Vector2 uv = new Vector2();
-                    uv.X = br.ReadSingle(); uv.Y = br.ReadSingle();
-                    br.ReadInt32();
-                    vbuf[i][j] = pos; nbuf[i][j] = nor; cbuf[i][j] = col; ubuf[i][j] = uv;
+                    LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModel3D.Load(): Could not load submodel (submodel ID = " + i.ToString() + ")");
+                    return return_code;
                 }
-
-                for (int j = 0; j < cur_f; j++)
-                {
-                    for (int k = 0; k < 3; k++)
-                        ebuf[i][j * 3 + k] = br.ReadUInt16();
-                    br.ReadUInt16();
-                }
-
-                SFMaterial mat = new SFMaterial();
-                mat.indexStart = (uint)total_f * 3;
-                mat.indexCount = (uint)cur_f * 3;
-
-                total_f += cur_f;
-                total_v += cur_v;
-
-                br.ReadUInt16();
-
-                
-                string matname;
-
-                mat._texID = br.ReadInt32();
-                mat.unused_uchar = br.ReadByte();
-                mat.uv_mode = br.ReadByte();
-                mat.unused_short2 = br.ReadUInt16();
-                mat.texRenderMode = br.ReadByte();
-                mat.texAlpha = br.ReadByte();
-                mat.matFlags = br.ReadByte();
-                mat.matDepthBias = br.ReadByte();
-                mat.texTiling = br.ReadSingle();
-                char[] chars = br.ReadChars(64);
-                matname = new string(chars).ToLower();
-                matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
-                //System.Diagnostics.Debug.WriteLine(matname + " " + mat.ToString());
-
-                SFTexture tex = null;
-                int tex_code = SFResourceManager.Textures.Load(matname);
-                if ((tex_code != 0)&&(tex_code != -1))
-                {
-                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModel3D.Load(): Could not load texture (texture name = "+matname+")");
-                    return tex_code;
-                }
-                tex = SFResourceManager.Textures.Get(matname);
-                tex.FreeMemory();
-
-                mat.texture = tex;
-                //System.Diagnostics.Debug.WriteLine(tex.ToString());
-
-                materials[i] = mat;
-                // secondary material
-                br.BaseStream.Position += 80;
-                // colors
-                br.BaseStream.Position += 12;
-                // other unneeded data (chunk bbox)
-                br.BaseStream.Position += 32;
-                if(i != modelnum-1)
+                if (i != modelnum - 1)
                     br.BaseStream.Position += 2;
-                else
-                {
-                    float x1, x2, y1, y2, z1, z2;
-                    x1 = br.ReadSingle();
-                    y1 = br.ReadSingle();
-                    z1 = br.ReadSingle();
-                    x2 = br.ReadSingle();
-                    y2 = br.ReadSingle();
-                    z2 = br.ReadSingle();
-                    aabb = new Physics.BoundingBox(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2));
-                }
             }
-            //join tables
-            vertices = new Vector3[total_v]; normals = new Vector3[total_v]; colors = new Vector4[total_v]; uvs = new Vector2[total_v];
-            face_indices = new uint[total_f * 3];
-            total_v = 0; total_f = 0;
-            for(int i = 0; i < modelnum; i++)
-            {
-                for(int j = 0; j < vbuf[i].Length; j++)
-                {
-                    vertices[total_v + j] = vbuf[i][j];
-                    normals[total_v + j] = nbuf[i][j];
-                    colors[total_v + j] = cbuf[i][j];
-                    uvs[total_v + j] = ubuf[i][j];
-                }
-                for (int j = 0; j < ebuf[i].Length; j++)
-                {
-                    face_indices[total_f + j] = ebuf[i][j]+(uint)total_v;
-                }
-
-                total_v += vbuf[i].Length;
-                total_f += ebuf[i].Length;
-            }
-
             
+            // bbox
+            float x1, x2, y1, y2, z1, z2;
+            x1 = br.ReadSingle();
+            y1 = br.ReadSingle();
+            z1 = br.ReadSingle();
+            x2 = br.ReadSingle();
+            y2 = br.ReadSingle();
+            z2 = br.ReadSingle();
+            aabb = new Physics.BoundingBox(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2));
+
             return 0;
         }
 
-        public int CreateRaw(Vector3[] _vertices, Vector2[] _uvs, Vector4[] _colors, Vector3[] _normals, uint[] _indices, SFMaterial[] _materials)
+        public int CreateRaw(SFSubModel3D[] _submodels)
         {
             // reset first
             Dispose();
 
-            vertices = _vertices;
-            uvs = _uvs;
-            colors = _colors;
-            normals = _normals;
-            face_indices = _indices;
-            if (_materials == null)
-            {
-                materials = new SFMaterial[1];
-                materials[0] = new SFMaterial();
-                materials[0].indexStart = 0;
-                materials[0].indexCount = (uint)face_indices.Length;
-                materials[0].texture = null;
-            }
-            else
-                materials = _materials;
+            submodels = _submodels;
 
             // aabb
             RecalculateBoundingBox();
@@ -207,40 +295,8 @@ namespace SpellforceDataEditor.SF3D
 
         public void Init()
         {
-            vertex_array = GL.GenVertexArray();
-            vertex_buffer = GL.GenBuffer();
-            uv_buffer = GL.GenBuffer();
-            normal_buffer = GL.GenBuffer();
-            color_buffer = GL.GenBuffer();
-            element_buffer = GL.GenBuffer();
-
-            GL.BindVertexArray(vertex_array);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length*12, vertices, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Length*12, normals, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
-            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, uvs.Length * 8, uvs, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(2);
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, color_buffer);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, colors.Length * 16, colors, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(3);
-            GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
-            GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, face_indices.Length * 4, face_indices, BufferUsageHint.StaticDraw);
-
-            GL.BindVertexArray(0);
-            
+            foreach (SFSubModel3D sbm in submodels)
+                sbm.Init();
         }
 
         public void RecalculateBoundingBox()
@@ -252,14 +308,17 @@ namespace SpellforceDataEditor.SF3D
             y2 = -10000;
             z1 = 10000;
             z2 = -10000;
-            foreach(Vector3 v in vertices)
+            foreach (SFSubModel3D sbm in submodels)
             {
-                x1 = Math.Min(x1, v.X);
-                x2 = Math.Max(x2, v.X);
-                y1 = Math.Min(y1, v.Y);
-                y2 = Math.Max(y2, v.Y);
-                z1 = Math.Min(z1, v.Z);
-                z2 = Math.Max(z2, v.Z);
+                foreach (Vector3 v in sbm.vertices)
+                {
+                    x1 = Math.Min(x1, v.X);
+                    x2 = Math.Max(x2, v.X);
+                    y1 = Math.Min(y1, v.Y);
+                    y2 = Math.Max(y2, v.Y);
+                    z1 = Math.Min(z1, v.Z);
+                    z2 = Math.Max(z2, v.Z);
+                }
             }
             aabb = new Physics.BoundingBox(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2));
         }
@@ -276,26 +335,15 @@ namespace SpellforceDataEditor.SF3D
 
         public void Dispose()
         {
-            if(vertex_array != -1)
-            {
-                GL.DeleteBuffer(vertex_buffer);
-                GL.DeleteBuffer(normal_buffer);
-                GL.DeleteBuffer(color_buffer);
-                GL.DeleteBuffer(uv_buffer);
-                GL.DeleteBuffer(element_buffer);
-                GL.DeleteVertexArray(vertex_array);
-                vertex_array = -1;
-            }
-
-            if(materials != null)
-                foreach (SFMaterial mat in materials)
-                    if(mat.texture != null)
-                        SFResourceManager.Textures.Dispose(mat.texture.GetName());
+            if(submodels != null)
+                foreach (SFSubModel3D submodel in submodels)
+                    submodel.Dispose();
+            submodels = null;
         }
 
         new public string ToString()
         {
-            return "VCOUNT " + vertices.Length.ToString() + " FCOUNT " + (face_indices.Length / 3).ToString();
+            return "SUBMODEL COUNT: " + (submodels.Length).ToString();
         }
     }
 }

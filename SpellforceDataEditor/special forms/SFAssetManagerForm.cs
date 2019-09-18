@@ -635,8 +635,8 @@ namespace SpellforceDataEditor.special_forms
                 SFResourceManager.Models.Extract(item);
                 List<string> tx = SFResourceManager.Textures.GetNames();
                 foreach (string t in tx)
-                    foreach (SFMaterial mat in mod.materials)
-                        if (mat.texture == SFResourceManager.Textures.Get(t))
+                    foreach (SFSubModel3D sbm in mod.submodels)
+                        if (sbm.material.texture == SFResourceManager.Textures.Get(t))
                             SFResourceManager.Textures.Extract(t);
 
                 StatusText.Text = "Extracted " + item;

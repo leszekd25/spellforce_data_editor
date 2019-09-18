@@ -302,7 +302,7 @@ namespace SpellforceDataEditor.SFMap
                         {
                             decoration_manager.dec_groups[i].weight[j] = br.ReadByte();
                             if (decoration_manager.dec_groups[i].weight[j] != 0)
-                                decoration_manager.dec_groups[i].dec_used += 1;
+                                decoration_manager.dec_groups[i].random_cache.Add(j);
                         }
                     }
                 }
@@ -576,6 +576,14 @@ namespace SpellforceDataEditor.SFMap
                                                     object_manager.objects[obj_i],
                                                     spawn_id,
                                                     spawn_certain));
+
+                                                // add mesh to the object
+                                                SF3D.SceneSynchro.SceneNode obj_node =
+                                                    heightmap.GetChunkNode(object_manager.objects[obj_i].grid_position)
+                                                    .FindNode<SF3D.SceneSynchro.SceneNode>(object_manager.objects[obj_i].GetObjectName());
+                                                
+                                                string m = "editor_dummy_spawnpoint";
+                                                SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name+"_SPAWNCIRCLE");
                                             }
                                             if ((object_id >= 65) && (object_id <= 67))    // editor only
                                                 obj_i--;
@@ -891,6 +899,10 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(30, 0, true, 1, c30_data);
 
             // chunk 11
+            short bld_chunk_type = 3;
+            if (metadata.map_type == SFMapType.COOP)
+                bld_chunk_type = 2;
+
             byte[] c11_data = new byte[building_manager.buildings.Count * 11];
             using (MemoryStream ms = new MemoryStream(c11_data))
             {
@@ -904,11 +916,12 @@ namespace SpellforceDataEditor.SFMap
                         bw.Write((short)building_manager.buildings[i].npc_id);
                         bw.Write((byte)building_manager.buildings[i].game_id);
                         bw.Write((byte)building_manager.buildings[i].level);
-                        bw.Write((byte)building_manager.buildings[i].race_id);
+                        if(bld_chunk_type > 2)
+                            bw.Write((byte)building_manager.buildings[i].race_id);
                     }
                 }
             }
-            f.AddChunk(11, 0, true, (short)3, c11_data);
+            f.AddChunk(11, 0, true, bld_chunk_type, c11_data);
 
             // chunk 12
             byte[] c12_data = new byte[unit_manager.units.Count * 14];
@@ -1883,6 +1896,62 @@ namespace SpellforceDataEditor.SFMap
                     break;
                 }
             }
+        }
+
+        public SFMapUnit FindUnit(SFCoord pos)
+        {
+            SFMapUnit unit = null;
+            SFMapHeightMapChunk chunk = heightmap.GetChunk(pos);
+            foreach (SFMapUnit u in chunk.units)
+            {
+                if (u.grid_position == pos)
+                {
+                    unit = u;
+                    break;
+                }
+            }
+
+            return unit;
+        }
+
+        public SFMapBuilding FindBuildingApprox(SFCoord pos)
+        {
+            foreach (SFMapBuilding b in building_manager.buildings)
+            {
+                float sel_scale = 0.0f;
+                SFLua.lua_sql.SFLuaSQLBuildingData bld_data = SFLua.SFLuaEnvironment.buildings[b.game_id];
+                if (bld_data != null)
+                    sel_scale = (float)(bld_data.SelectionScaling / 2);
+
+                OpenTK.Vector2 off = building_manager.building_collision[(ushort)b.game_id].collision_mesh.origin;
+                float angle = (float)(b.angle * Math.PI / 180);
+                OpenTK.Vector2 r_off = new OpenTK.Vector2(off.X, off.Y);
+                r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
+                r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
+                SFCoord offset_pos = new SFCoord((int)r_off.X, (int)r_off.Y);
+
+                if (SFCoord.Distance(b.grid_position - offset_pos, pos) <= sel_scale)
+                    return b;
+            }
+
+            return null;
+        }
+
+        public SFMapObject FindObjectApprox(SFCoord pos)
+        {
+            foreach (SFMapObject o in object_manager.objects)
+            {
+                float sel_scale = 0.0f;
+                SFLua.lua_sql.SFLuaSQLObjectData obj_data = SFLua.SFLuaEnvironment.objects[o.game_id];
+                if (obj_data != null)
+                    sel_scale = (float)(obj_data.SelectionScaling / 2);
+
+                if (SFCoord.Distance(o.grid_position, pos) <= sel_scale)
+                    return o;
+            }
+
+            return null;
+
         }
     }
 }

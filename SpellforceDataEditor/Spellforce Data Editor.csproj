@@ -81,6 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArrayPool.cs" />
     <Compile Include="LinearPool.cs" />
     <Compile Include="LogUtils\Log.cs" />
     <Compile Include="MathUtils.cs" />
@@ -490,93 +491,99 @@
     </Compile>
     <Compile Include="SFLua\SFLuaEnvironment.cs" />
     <Compile Include="SFMap\MapEdit\MapBrush.cs" />
+    <Compile Include="SFMap\MapEdit\MapBindstoneEditor.cs" />
+    <Compile Include="SFMap\MapEdit\MapPortalEditor.cs" />
+    <Compile Include="SFMap\MapEdit\MapCoopCampEditor.cs" />
+    <Compile Include="SFMap\MapEdit\MapDecorationEditor.cs" />
+    <Compile Include="SFMap\MapEdit\MapObjectEditor.cs" />
+    <Compile Include="SFMap\MapEdit\MapEditor.cs" />
+    <Compile Include="SFMap\MapEdit\MapBuildingEditor.cs" />
+    <Compile Include="SFMap\MapEdit\MapUnitEditor.cs" />
+    <Compile Include="SFMap\MapEdit\MapHeightMapEditor.cs" />
+    <Compile Include="SFMap\MapEdit\MapLakesEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapOverlayChunk.cs" />
+    <Compile Include="SFMap\MapEdit\MapTerrainFlagsEditor.cs" />
+    <Compile Include="SFMap\MapEdit\MapTerrainTextureEditor.cs" />
     <Compile Include="SFMap\MapGen\GradientMap.cs" />
     <Compile Include="SFMap\MapGen\LatticeKernel.cs" />
     <Compile Include="SFMap\MapGen\MapGenerator.cs" />
-    <Compile Include="SFMap\map_controls\MapBrushControl.cs">
+    <Compile Include="SFMap\map_controls\MapBindstoneInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapBrushControl.Designer.cs">
-      <DependentUpon>MapBrushControl.cs</DependentUpon>
+    <Compile Include="SFMap\map_controls\MapBindstoneInspector.Designer.cs">
+      <DependentUpon>MapBindstoneInspector.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorBaseControl.cs">
+    <Compile Include="SFMap\map_controls\MapPortalInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorBaseControl.Designer.cs">
-      <DependentUpon>MapInspectorBaseControl.cs</DependentUpon>
+    <Compile Include="SFMap\map_controls\MapPortalInspector.Designer.cs">
+      <DependentUpon>MapPortalInspector.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorBuildingControl.cs">
+    <Compile Include="SFMap\map_controls\MapCoopCampInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorBuildingControl.Designer.cs">
-      <DependentUpon>MapInspectorBuildingControl.cs</DependentUpon>
+    <Compile Include="SFMap\map_controls\MapCoopCampInspector.Designer.cs">
+      <DependentUpon>MapCoopCampInspector.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorDecorationControl.cs">
+    <Compile Include="SFMap\map_controls\MapDecorationInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorDecorationControl.Designer.cs">
-      <DependentUpon>MapInspectorDecorationControl.cs</DependentUpon>
+    <Compile Include="SFMap\map_controls\MapDecorationInspector.Designer.cs">
+      <DependentUpon>MapDecorationInspector.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorFlagControl.cs">
+    <Compile Include="SFMap\map_controls\MapObjectInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorFlagControl.Designer.cs">
-      <DependentUpon>MapInspectorFlagControl.cs</DependentUpon>
+    <Compile Include="SFMap\map_controls\MapObjectInspector.Designer.cs">
+      <DependentUpon>MapObjectInspector.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorHeightMapControl.cs">
+    <Compile Include="SFMap\map_controls\MapInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorHeightMapControl.Designer.cs">
-      <DependentUpon>MapInspectorHeightMapControl.cs</DependentUpon>
+    <Compile Include="SFMap\map_controls\MapInspector.Designer.cs">
+      <DependentUpon>MapInspector.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorLakeControl.cs">
+    <Compile Include="SFMap\map_controls\MapLakeInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorLakeControl.Designer.cs">
-      <DependentUpon>MapInspectorLakeControl.cs</DependentUpon>
+    <Compile Include="SFMap\map_controls\MapLakeInspector.Designer.cs">
+      <DependentUpon>MapLakeInspector.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorMetadataControl.cs">
+    <Compile Include="SFMap\map_controls\MapTerrainTextureControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorMetadataControl.Designer.cs">
-      <DependentUpon>MapInspectorMetadataControl.cs</DependentUpon>
+    <Compile Include="SFMap\map_controls\MapTerrainTextureControl.Designer.cs">
+      <DependentUpon>MapTerrainTextureControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorMiscellaneuosObjectsControl.cs">
+    <Compile Include="SFMap\map_controls\MapTerrainTextureInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorMiscellaneuosObjectsControl.Designer.cs">
-      <DependentUpon>MapInspectorMiscellaneuosObjectsControl.cs</DependentUpon>
+    <Compile Include="SFMap\map_controls\MapTerrainTextureInspector.Designer.cs">
+      <DependentUpon>MapTerrainTextureInspector.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorNPCControl.cs">
+    <Compile Include="SFMap\map_controls\MapBuildingInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorNPCControl.Designer.cs">
-      <DependentUpon>MapInspectorNPCControl.cs</DependentUpon>
+    <Compile Include="SFMap\map_controls\MapBuildingInspector.Designer.cs">
+      <DependentUpon>MapBuildingInspector.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorObjectControl.cs">
+    <Compile Include="SFMap\map_controls\MapUnitInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorObjectControl.Designer.cs">
-      <DependentUpon>MapInspectorObjectControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorTerrainTextureControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorTerrainTextureControl.Designer.cs">
-      <DependentUpon>MapInspectorTerrainTextureControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorUnitControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapInspectorUnitControl.Designer.cs">
-      <DependentUpon>MapInspectorUnitControl.cs</DependentUpon>
+    <Compile Include="SFMap\map_controls\MapUnitInspector.Designer.cs">
+      <DependentUpon>MapUnitInspector.cs</DependentUpon>
     </Compile>
     <Compile Include="SFMap\map_dialog\MapAutoTextureDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SFMap\map_dialog\MapAutoTextureDialog.Designer.cs">
       <DependentUpon>MapAutoTextureDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapModifyTextureSet.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapModifyTextureSet.Designer.cs">
+      <DependentUpon>MapModifyTextureSet.cs</DependentUpon>
     </Compile>
     <Compile Include="SFMap\map_dialog\MapPromptNewMap.cs">
       <SubType>Form</SubType>
@@ -589,6 +596,12 @@
     </Compile>
     <Compile Include="SFMap\map_dialog\MapSelectPlatformScriptDialog.Designer.cs">
       <DependentUpon>MapSelectPlatformScriptDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapSelectTile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapSelectTile.Designer.cs">
+      <DependentUpon>MapSelectTile.cs</DependentUpon>
     </Compile>
     <Compile Include="SFMap\SFCoord.cs" />
     <Compile Include="SFMap\SFMap.cs" />
@@ -896,53 +909,50 @@
     <EmbeddedResource Include="SFLua\lua_sql_forms\SFLuaSQLRtsCoopSpawnForm.resx">
       <DependentUpon>SFLuaSQLRtsCoopSpawnForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapBrushControl.resx">
-      <DependentUpon>MapBrushControl.cs</DependentUpon>
+    <EmbeddedResource Include="SFMap\map_controls\MapBindstoneInspector.resx">
+      <DependentUpon>MapBindstoneInspector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapInspectorBaseControl.resx">
-      <DependentUpon>MapInspectorBaseControl.cs</DependentUpon>
+    <EmbeddedResource Include="SFMap\map_controls\MapPortalInspector.resx">
+      <DependentUpon>MapPortalInspector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapInspectorBuildingControl.resx">
-      <DependentUpon>MapInspectorBuildingControl.cs</DependentUpon>
+    <EmbeddedResource Include="SFMap\map_controls\MapCoopCampInspector.resx">
+      <DependentUpon>MapCoopCampInspector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapInspectorDecorationControl.resx">
-      <DependentUpon>MapInspectorDecorationControl.cs</DependentUpon>
+    <EmbeddedResource Include="SFMap\map_controls\MapDecorationInspector.resx">
+      <DependentUpon>MapDecorationInspector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapInspectorFlagControl.resx">
-      <DependentUpon>MapInspectorFlagControl.cs</DependentUpon>
+    <EmbeddedResource Include="SFMap\map_controls\MapObjectInspector.resx">
+      <DependentUpon>MapObjectInspector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapInspectorHeightMapControl.resx">
-      <DependentUpon>MapInspectorHeightMapControl.cs</DependentUpon>
+    <EmbeddedResource Include="SFMap\map_controls\MapLakeInspector.resx">
+      <DependentUpon>MapLakeInspector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapInspectorLakeControl.resx">
-      <DependentUpon>MapInspectorLakeControl.cs</DependentUpon>
+    <EmbeddedResource Include="SFMap\map_controls\MapTerrainTextureControl.resx">
+      <DependentUpon>MapTerrainTextureControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapInspectorMetadataControl.resx">
-      <DependentUpon>MapInspectorMetadataControl.cs</DependentUpon>
+    <EmbeddedResource Include="SFMap\map_controls\MapTerrainTextureInspector.resx">
+      <DependentUpon>MapTerrainTextureInspector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapInspectorMiscellaneuosObjectsControl.resx">
-      <DependentUpon>MapInspectorMiscellaneuosObjectsControl.cs</DependentUpon>
+    <EmbeddedResource Include="SFMap\map_controls\MapBuildingInspector.resx">
+      <DependentUpon>MapBuildingInspector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapInspectorNPCControl.resx">
-      <DependentUpon>MapInspectorNPCControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapInspectorObjectControl.resx">
-      <DependentUpon>MapInspectorObjectControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapInspectorTerrainTextureControl.resx">
-      <DependentUpon>MapInspectorTerrainTextureControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapInspectorUnitControl.resx">
-      <DependentUpon>MapInspectorUnitControl.cs</DependentUpon>
+    <EmbeddedResource Include="SFMap\map_controls\MapUnitInspector.resx">
+      <DependentUpon>MapUnitInspector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_dialog\MapAutoTextureDialog.resx">
       <DependentUpon>MapAutoTextureDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_dialog\MapModifyTextureSet.resx">
+      <DependentUpon>MapModifyTextureSet.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_dialog\MapPromptNewMap.resx">
       <DependentUpon>MapPromptNewMap.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_dialog\MapSelectPlatformScriptDialog.resx">
       <DependentUpon>MapSelectPlatformScriptDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_dialog\MapSelectTile.resx">
+      <DependentUpon>MapSelectTile.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMod\mod_controls\ModInfoForm.resx">
       <DependentUpon>ModInfoForm.cs</DependentUpon>

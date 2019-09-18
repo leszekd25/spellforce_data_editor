@@ -35,7 +35,7 @@ namespace SpellforceDataEditor.SFMap
     {
         public Byte[] weight = new byte[30];
         public ushort[] dec_id = new ushort[30];
-        public int dec_used = 0;
+        public List<int> random_cache = new List<int>();
 
         public SFMapDecorationGroup()
         {
@@ -45,56 +45,19 @@ namespace SpellforceDataEditor.SFMap
 
         public ushort ChooseRandom()
         {
-            if (dec_used == 0)
+            if (random_cache.Count == 0)
                 return 0;
-            return dec_id[1+MathUtils.Rand() % dec_used];
+            return dec_id[random_cache[MathUtils.Rand() % random_cache.Count]];
         }
 
-        public int AddDecoration(ushort d_id, byte d_w)
+        public void SetDecoration(int dec_index, ushort d_id, byte d_w = 255)
         {
-            if (dec_used == 29)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapDecorationManager.AddDecoration(): Maximum decoration capacity reached!");
-                return -1;
-            }
-            if (d_w == 0)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapDecorationManager.AddDecoration(): Invalid weight specified! Weight = 0");
-
-                return -2;
-            }
-
-
-            dec_used += 1;
-            dec_id[dec_used] = d_id;
-            weight[dec_used] = d_w;
-
-            return 0;
-        }
-
-        public int RemoveDecoration(int dec_index)
-        {
-            if ((dec_index < 0) || (dec_index >= 30))
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMapDecorationManager.RemoveDecoration(): Invalid decoration index specified! Decoration index = "+dec_index.ToString());
-                return -1;
-            }
-            if (weight[dec_index] == 0)
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMapDecorationManager.RemoveDecoration(): Decoration with specified index does not exist! Decoration index = "+dec_index.ToString());
-                return -2;
-            }
-
-            for(int i = dec_index; i < dec_used; i++)
-            {
-                dec_id[i] = dec_id[i+1];
-                weight[i] = weight[i+1];
-            }
-            dec_id[dec_used] = 0;
-            weight[dec_used] = 0;
-            dec_used -= 1;
-
-            return 0;
+            if ((dec_id[dec_index] == 0) && (d_id != 0))
+                random_cache.Add(dec_index);
+            if ((dec_id[dec_index] != 0) && (d_id == 0))
+                random_cache.Remove(dec_index);
+            dec_id[dec_index] = d_id;
+            weight[dec_index] = d_w;
         }
     }
 
@@ -143,7 +106,14 @@ namespace SpellforceDataEditor.SFMap
             SF3D.SceneSynchro.SceneNode dec_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName());
             if(dec_node != null)
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(dec_node);
-            SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(new_id, d.GetObjectName(), false).SetParent(chunk_node);
+
+            SF3D.SceneSynchro.SceneNode dec_node2 = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(new_id, d.GetObjectName(), false);
+            dec_node2.SetParent(chunk_node);
+            dec_node2.Position = map.heightmap.GetFixedPosition(d.grid_position);
+            dec_node2.Rotation = OpenTK.Quaternion.FromAxisAngle(new OpenTK.Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+            dec_node2.Scale = new OpenTK.Vector3(100 / 128f);
+
+            d.game_id = new_id;
         }
 
         public byte GetDecAssignment(SFCoord pos)
@@ -208,15 +178,7 @@ namespace SpellforceDataEditor.SFMap
                         dec = d;
                         break;
                     }
-                /*if (dec != null)
-                    RemoveDecoration(dec);
-                SetFixedDecAssignment(p, (byte)dec_type);
-                if(dec_type != 0)
-                {
-                    ushort dec_id = dec_groups[GetFixedDecAssignment(p)].ChooseRandom();
-                    if (dec_id != 0)
-                        map.AddDecoration(dec_id, p);
-                }*/
+
                 if (dec != null)    // if there exists a decoration at position
                 {
 

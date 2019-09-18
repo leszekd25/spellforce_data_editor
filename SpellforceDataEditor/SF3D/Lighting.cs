@@ -29,4 +29,11 @@ namespace SpellforceDataEditor.SF3D
             LightMatrix = Matrix4.LookAt(camera_pos, camera_pos-Direction+new Vector3(0, 0, 0.05f), new Vector3(0, 1, 0)) * LightProjection;
         }
     }
+
+    public class Atmosphere
+    {
+        public Vector4 FogColor = new Vector4(100, 100, 100, 255) / 255f;
+        public float FogStart = 100.0f;
+        public float FogEnd = 200.0f;
+    }
 }

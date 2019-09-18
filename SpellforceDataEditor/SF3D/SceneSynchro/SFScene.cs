@@ -43,8 +43,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         public LightingAmbient ambient_light { get; } = new LightingAmbient();
         public LightingSun sun_light { get; } = new LightingSun();
+        public Atmosphere atmosphere { get; } = new Atmosphere();
         // render engine takes these lists and renders stuff from the lists, one list for each texture for each shader
-        public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>> tex_list_simple { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>>();
+        public Dictionary<SFTexture, HashSet<SFSubModel3D>> tex_entries_simple = new Dictionary<SFTexture, HashSet<SFSubModel3D>>();
         public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>> tex_list_animated { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>>();
         public LinearPool<TexturedGeometryListElementSimple> untextured_list_simple { get; private set; } = new LinearPool<TexturedGeometryListElementSimple>();
 
@@ -161,25 +162,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 untextured_list_simple.Clear();
         }
 
-        public int AddTextureEntrySimple(SFTexture tex, TexturedGeometryListElementSimple elem)
-        {
-            if (!tex_list_simple.ContainsKey(tex))
-                tex_list_simple.Add(tex, new LinearPool<TexturedGeometryListElementSimple>());
-
-            return tex_list_simple[tex].Add(elem);
-        }
-
-        public void ClearTextureEntrySimple(SFTexture tex, TexturedGeometryListElementSimple elem)
-        {
-            if (!tex_list_simple.ContainsKey(tex))
-                return;
-
-            tex_list_simple[tex].Remove(elem);
-
-            if (tex_list_simple[tex].used_count == 0)
-                tex_list_simple.Remove(tex);
-        }
-
         public int AddTextureEntryAnimated(SFTexture tex, TexturedGeometryListElementAnimated elem)
         {
             if (!tex_list_animated.ContainsKey(tex))
@@ -199,6 +181,18 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 tex_list_animated.Remove(tex);
         }
 
+        // instanced versions of simple tex entry
+        // they dont return anything, since they're rebuilt every frame...
+        public void AddTextureEntrySimpleInstanced(TexturedGeometryListElementSimple elem)
+        {
+            elem.node.Mesh.submodels[elem.submodel_index].instance_matrices.AddElem(elem.node.ResultTransform);
+        }
+
+        public void ClearTextureEntriesSimpleInstanced(TexturedGeometryListElementSimple elem)
+        {
+            elem.node.Mesh.submodels[elem.submodel_index].instance_matrices.Clear();
+        }
+
         // these functions add basic node types to scene
         public SceneNode AddSceneNodeEmpty(SceneNode parent, string new_node_name)
         {
@@ -215,7 +209,20 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
             bool loaded_model = SFResourceManager.LoadModel(model_name);
             if (loaded_model)
+            {
                 new_node.Mesh = SFResourceManager.Models.Get(model_name);
+                for (int i = 0; i < new_node.Mesh.submodels.Length; i++)
+                {
+                    SFSubModel3D sbm = new_node.Mesh.submodels[i];
+                    if (sbm.material.texture != null)
+                    {
+                        if (!tex_entries_simple.ContainsKey(sbm.material.texture))
+                            tex_entries_simple.Add(sbm.material.texture, new HashSet<SFSubModel3D>());
+                        if (!tex_entries_simple[sbm.material.texture].Contains(sbm))
+                            tex_entries_simple[sbm.material.texture].Add(sbm);
+                    }
+                }
+            }
 
             return new_node;
         }
@@ -368,8 +375,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     SceneNodeBone bo = AddSceneNodeBone(unit_node.FindNode<SceneNodeAnimated>("Chest"), "Head", "Headbone");
                     SceneNodeSimple ho = AddSceneNodeSimple(bo, helmet_name, "Helmet");
                     if (ho.Mesh != null)
-                        foreach (SFMaterial mat in ho.Mesh.materials)
-                            mat.flat_shade = true;
+                        foreach (SFSubModel3D sbm in ho.Mesh.submodels)
+                            sbm.material.flat_shade = true;
                 }
             }
 
@@ -385,8 +392,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     SceneNodeBone bo = AddSceneNodeBone(unit_node.FindNode<SceneNodeAnimated>("Chest"), "R Hand weapon", "Rhandbone");
                     SceneNodeSimple ho = AddSceneNodeSimple(bo, rhand_name, "Rhand");
                     if (ho.Mesh != null)
-                        foreach (SFMaterial mat in ho.Mesh.materials)
-                            mat.flat_shade = true;
+                        foreach (SFSubModel3D sbm in ho.Mesh.submodels)
+                            sbm.material.flat_shade = true;
                 }
             }
 
@@ -410,8 +417,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     SceneNodeBone bo = AddSceneNodeBone(unit_node.FindNode<SceneNodeAnimated>("Chest"), (is_shield ? "L Forearm shield" : "L Hand weapon"), "Lhandbone");
                     SceneNodeSimple ho = AddSceneNodeSimple(bo, lhand_name, "Lhand");
                     if (ho.Mesh != null)
-                        foreach (SFMaterial mat in ho.Mesh.materials)
-                            mat.flat_shade = true;
+                        foreach (SFSubModel3D sbm in ho.Mesh.submodels)
+                            sbm.material.flat_shade = true;
                 }
             }
 
@@ -439,8 +446,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 string mesh_obj_name = object_name + "_" + i.ToString();
                 SceneNodeSimple n = AddSceneNodeSimple(obj_node, m, i.ToString());
                 if (n.Mesh != null)
-                    foreach (SFMaterial mat in n.Mesh.materials)
-                        mat.apply_shading = apply_shading;
+                    foreach (SFSubModel3D sbm in n.Mesh.submodels)
+                        sbm.material.apply_shading = apply_shading;
             }
 
             return obj_node;
@@ -505,6 +512,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
             else
                 deltatime = 0f;
+
+            // for instanced rendering
+            foreach (var tex_entry in tex_entries_simple.Values)
+                foreach (SFSubModel3D sbm in tex_entry)
+                    sbm.instance_matrices.Clear();
 
             root.Update(current_time);
 

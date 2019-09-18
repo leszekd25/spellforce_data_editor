@@ -165,6 +165,7 @@ namespace SpellforceDataEditor.SFResources
                 cont[rname].Dispose();
                 cont.Remove(rname);
                 reference_count.Remove(rname);
+                return 1;
             }
             //System.Diagnostics.Debug.WriteLine("DISPOSED " + rname + suffix_extension);
             return 0;

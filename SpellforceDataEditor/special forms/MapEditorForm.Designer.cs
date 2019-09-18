@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapEditorForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createNewMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,36 +41,113 @@
             this.OpenMap = new System.Windows.Forms.OpenFileDialog();
             this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
             this.DialogSaveMap = new System.Windows.Forms.SaveFileDialog();
-            this.PanelModes = new System.Windows.Forms.Panel();
-            this.button11 = new System.Windows.Forms.Button();
-            this.button10 = new System.Windows.Forms.Button();
-            this.button9 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.ButtonLake = new System.Windows.Forms.Button();
-            this.ButtonFlag = new System.Windows.Forms.Button();
-            this.ButtonTerrainTexture = new System.Windows.Forms.Button();
-            this.ButtonHeightmap = new System.Windows.Forms.Button();
             this.StatusStrip = new System.Windows.Forms.ToolStrip();
             this.StatusText = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.SpecificText = new System.Windows.Forms.ToolStripLabel();
-            this.InspectorPanel = new System.Windows.Forms.Panel();
-            this.LabelMode = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.MovementStrength = new System.Windows.Forms.TrackBar();
-            this.PanelDisplaySettings = new System.Windows.Forms.Panel();
+            this.PanelInspector = new System.Windows.Forms.Panel();
+            this.TabPageDecorations = new System.Windows.Forms.TabPage();
+            this.label14 = new System.Windows.Forms.Label();
+            this.PanelDecalGroups = new System.Windows.Forms.Panel();
+            this.TabPageEntities = new System.Windows.Forms.TabPage();
+            this.EditCoopCampTypes = new System.Windows.Forms.Button();
+            this.PanelEntityPlacementSelect = new System.Windows.Forms.Panel();
+            this.PanelUnitPlacementSelect = new System.Windows.Forms.Panel();
+            this.label12 = new System.Windows.Forms.Label();
+            this.UnitName = new System.Windows.Forms.ComboBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.UnitRace = new System.Windows.Forms.ComboBox();
+            this.EntityID = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.RadioModeMonuments = new System.Windows.Forms.RadioButton();
+            this.label6 = new System.Windows.Forms.Label();
+            this.RadioEntityModeUnit = new System.Windows.Forms.RadioButton();
+            this.RadioEntityModeBuilding = new System.Windows.Forms.RadioButton();
+            this.RadioModeCoopCamps = new System.Windows.Forms.RadioButton();
+            this.RadioModeBindstones = new System.Windows.Forms.RadioButton();
+            this.RadioEntityModeObject = new System.Windows.Forms.RadioButton();
+            this.RadioModePortals = new System.Windows.Forms.RadioButton();
+            this.TabPageTextures = new System.Windows.Forms.TabPage();
+            this.ButtonSlopePaint = new System.Windows.Forms.Button();
+            this.TTexMatchMovementFlags = new System.Windows.Forms.CheckBox();
+            this.ButtonModifyTextureSet = new System.Windows.Forms.Button();
+            this.PanelTileType = new System.Windows.Forms.Panel();
+            this.RadioTileTypeCustom = new System.Windows.Forms.RadioButton();
+            this.RadioTileTypeBase = new System.Windows.Forms.RadioButton();
+            this.label9 = new System.Windows.Forms.Label();
+            this.TabPageTerrain = new System.Windows.Forms.TabPage();
+            this.PanelFlags = new System.Windows.Forms.Panel();
+            this.CheckDisplayFlags = new System.Windows.Forms.CheckBox();
+            this.RadioFlagVision = new System.Windows.Forms.RadioButton();
+            this.RadioFlagMovement = new System.Windows.Forms.RadioButton();
+            this.label8 = new System.Windows.Forms.Label();
+            this.PanelBrushShape = new System.Windows.Forms.Panel();
+            this.BrushSizeVal = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.RadioDiamond = new System.Windows.Forms.RadioButton();
+            this.RadioCircle = new System.Windows.Forms.RadioButton();
+            this.RadioSquare = new System.Windows.Forms.RadioButton();
+            this.label4 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.RotationStrength = new System.Windows.Forms.TrackBar();
-            this.ResetRotation = new System.Windows.Forms.Button();
+            this.BrushSizeTrackbar = new System.Windows.Forms.TrackBar();
+            this.PanelTerrainSettings = new System.Windows.Forms.Panel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.RadioIntSinusoidal = new System.Windows.Forms.RadioButton();
+            this.RadioIntSquare = new System.Windows.Forms.RadioButton();
+            this.RadioIntLinear = new System.Windows.Forms.RadioButton();
+            this.RadioIntConstant = new System.Windows.Forms.RadioButton();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.RadioModeSmooth = new System.Windows.Forms.RadioButton();
+            this.RadioModeSet = new System.Windows.Forms.RadioButton();
+            this.RadioModeRaise = new System.Windows.Forms.RadioButton();
+            this.label7 = new System.Windows.Forms.Label();
+            this.PanelStrength = new System.Windows.Forms.Panel();
+            this.TerrainValueLabel = new System.Windows.Forms.Label();
+            this.TerrainValue = new System.Windows.Forms.TextBox();
+            this.TerrainTrackbar = new System.Windows.Forms.TrackBar();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.RadioHMap = new System.Windows.Forms.RadioButton();
+            this.RadioFlags = new System.Windows.Forms.RadioButton();
+            this.RadioLakes = new System.Windows.Forms.RadioButton();
+            this.TabEditorModes = new System.Windows.Forms.TabControl();
+            this.TabPageScripting = new System.Windows.Forms.TabPage();
+            this.TabPageMetadata = new System.Windows.Forms.TabPage();
+            this.PanelMonumentType = new System.Windows.Forms.Panel();
+            this.MonumentHero = new System.Windows.Forms.RadioButton();
+            this.label15 = new System.Windows.Forms.Label();
+            this.MonumentHuman = new System.Windows.Forms.RadioButton();
+            this.MonumentElf = new System.Windows.Forms.RadioButton();
+            this.MonumentOrc = new System.Windows.Forms.RadioButton();
+            this.MonumentTroll = new System.Windows.Forms.RadioButton();
+            this.MonumentDwarf = new System.Windows.Forms.RadioButton();
+            this.MonumentDarkElf = new System.Windows.Forms.RadioButton();
             this.menuStrip1.SuspendLayout();
-            this.PanelModes.SuspendLayout();
             this.StatusStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.MovementStrength)).BeginInit();
-            this.PanelDisplaySettings.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RotationStrength)).BeginInit();
+            this.TabPageDecorations.SuspendLayout();
+            this.TabPageEntities.SuspendLayout();
+            this.PanelEntityPlacementSelect.SuspendLayout();
+            this.PanelUnitPlacementSelect.SuspendLayout();
+            this.panel5.SuspendLayout();
+            this.TabPageTextures.SuspendLayout();
+            this.PanelTileType.SuspendLayout();
+            this.TabPageTerrain.SuspendLayout();
+            this.PanelFlags.SuspendLayout();
+            this.PanelBrushShape.SuspendLayout();
+            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BrushSizeTrackbar)).BeginInit();
+            this.PanelTerrainSettings.SuspendLayout();
+            this.panel3.SuspendLayout();
+            this.panel4.SuspendLayout();
+            this.PanelStrength.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TerrainTrackbar)).BeginInit();
+            this.panel1.SuspendLayout();
+            this.TabEditorModes.SuspendLayout();
+            this.PanelMonumentType.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -161,145 +237,6 @@
             this.DialogSaveMap.DefaultExt = "map";
             this.DialogSaveMap.Filter = "Map file | *.map";
             // 
-            // PanelModes
-            // 
-            this.PanelModes.Controls.Add(this.button11);
-            this.PanelModes.Controls.Add(this.button10);
-            this.PanelModes.Controls.Add(this.button9);
-            this.PanelModes.Controls.Add(this.button8);
-            this.PanelModes.Controls.Add(this.button7);
-            this.PanelModes.Controls.Add(this.button6);
-            this.PanelModes.Controls.Add(this.button5);
-            this.PanelModes.Controls.Add(this.ButtonLake);
-            this.PanelModes.Controls.Add(this.ButtonFlag);
-            this.PanelModes.Controls.Add(this.ButtonTerrainTexture);
-            this.PanelModes.Controls.Add(this.ButtonHeightmap);
-            this.PanelModes.Location = new System.Drawing.Point(0, 52);
-            this.PanelModes.Name = "PanelModes";
-            this.PanelModes.Size = new System.Drawing.Size(54, 589);
-            this.PanelModes.TabIndex = 4;
-            // 
-            // button11
-            // 
-            this.button11.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button11.Image = ((System.Drawing.Image)(resources.GetObject("button11.Image")));
-            this.button11.Location = new System.Drawing.Point(3, 541);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(48, 48);
-            this.button11.TabIndex = 17;
-            this.button11.UseVisualStyleBackColor = true;
-            this.button11.Click += new System.EventHandler(this.button11_Click);
-            // 
-            // button10
-            // 
-            this.button10.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button10.Image = ((System.Drawing.Image)(resources.GetObject("button10.Image")));
-            this.button10.Location = new System.Drawing.Point(3, 487);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(48, 48);
-            this.button10.TabIndex = 16;
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.button10_Click);
-            // 
-            // button9
-            // 
-            this.button9.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button9.Image = ((System.Drawing.Image)(resources.GetObject("button9.Image")));
-            this.button9.Location = new System.Drawing.Point(3, 433);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(48, 48);
-            this.button9.TabIndex = 15;
-            this.button9.UseVisualStyleBackColor = true;
-            this.button9.Click += new System.EventHandler(this.button9_Click);
-            // 
-            // button8
-            // 
-            this.button8.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button8.Image = ((System.Drawing.Image)(resources.GetObject("button8.Image")));
-            this.button8.Location = new System.Drawing.Point(3, 381);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(48, 48);
-            this.button8.TabIndex = 14;
-            this.button8.UseVisualStyleBackColor = true;
-            this.button8.Click += new System.EventHandler(this.button8_Click);
-            // 
-            // button7
-            // 
-            this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button7.Image = ((System.Drawing.Image)(resources.GetObject("button7.Image")));
-            this.button7.Location = new System.Drawing.Point(3, 327);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(48, 48);
-            this.button7.TabIndex = 13;
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
-            // 
-            // button6
-            // 
-            this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button6.Image = ((System.Drawing.Image)(resources.GetObject("button6.Image")));
-            this.button6.Location = new System.Drawing.Point(3, 273);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(48, 48);
-            this.button6.TabIndex = 12;
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
-            // 
-            // button5
-            // 
-            this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button5.Image = ((System.Drawing.Image)(resources.GetObject("button5.Image")));
-            this.button5.Location = new System.Drawing.Point(3, 219);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(48, 48);
-            this.button5.TabIndex = 11;
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // ButtonLake
-            // 
-            this.ButtonLake.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ButtonLake.Image = ((System.Drawing.Image)(resources.GetObject("ButtonLake.Image")));
-            this.ButtonLake.Location = new System.Drawing.Point(3, 165);
-            this.ButtonLake.Name = "ButtonLake";
-            this.ButtonLake.Size = new System.Drawing.Size(48, 48);
-            this.ButtonLake.TabIndex = 10;
-            this.ButtonLake.UseVisualStyleBackColor = true;
-            this.ButtonLake.Click += new System.EventHandler(this.ButtonLake_Click);
-            // 
-            // ButtonFlag
-            // 
-            this.ButtonFlag.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ButtonFlag.Image = ((System.Drawing.Image)(resources.GetObject("ButtonFlag.Image")));
-            this.ButtonFlag.Location = new System.Drawing.Point(3, 111);
-            this.ButtonFlag.Name = "ButtonFlag";
-            this.ButtonFlag.Size = new System.Drawing.Size(48, 48);
-            this.ButtonFlag.TabIndex = 9;
-            this.ButtonFlag.UseVisualStyleBackColor = true;
-            this.ButtonFlag.Click += new System.EventHandler(this.ButtonFlag_Click);
-            // 
-            // ButtonTerrainTexture
-            // 
-            this.ButtonTerrainTexture.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ButtonTerrainTexture.Image = ((System.Drawing.Image)(resources.GetObject("ButtonTerrainTexture.Image")));
-            this.ButtonTerrainTexture.Location = new System.Drawing.Point(3, 57);
-            this.ButtonTerrainTexture.Name = "ButtonTerrainTexture";
-            this.ButtonTerrainTexture.Size = new System.Drawing.Size(48, 48);
-            this.ButtonTerrainTexture.TabIndex = 8;
-            this.ButtonTerrainTexture.UseVisualStyleBackColor = true;
-            this.ButtonTerrainTexture.Click += new System.EventHandler(this.ButtonTerrainTexture_Click);
-            // 
-            // ButtonHeightmap
-            // 
-            this.ButtonHeightmap.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ButtonHeightmap.Image = ((System.Drawing.Image)(resources.GetObject("ButtonHeightmap.Image")));
-            this.ButtonHeightmap.Location = new System.Drawing.Point(3, 3);
-            this.ButtonHeightmap.Name = "ButtonHeightmap";
-            this.ButtonHeightmap.Size = new System.Drawing.Size(48, 48);
-            this.ButtonHeightmap.TabIndex = 7;
-            this.ButtonHeightmap.UseVisualStyleBackColor = true;
-            this.ButtonHeightmap.Click += new System.EventHandler(this.ButtonHeightmap_Click);
-            // 
             // StatusStrip
             // 
             this.StatusStrip.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -328,114 +265,947 @@
             this.SpecificText.Name = "SpecificText";
             this.SpecificText.Size = new System.Drawing.Size(0, 22);
             // 
-            // InspectorPanel
+            // PanelInspector
             // 
-            this.InspectorPanel.Location = new System.Drawing.Point(60, 80);
-            this.InspectorPanel.Name = "InspectorPanel";
-            this.InspectorPanel.Size = new System.Drawing.Size(443, 561);
-            this.InspectorPanel.TabIndex = 7;
+            this.PanelInspector.Location = new System.Drawing.Point(822, 172);
+            this.PanelInspector.Name = "PanelInspector";
+            this.PanelInspector.Size = new System.Drawing.Size(274, 467);
+            this.PanelInspector.TabIndex = 8;
             // 
-            // LabelMode
+            // TabPageDecorations
             // 
-            this.LabelMode.AutoSize = true;
-            this.LabelMode.Location = new System.Drawing.Point(60, 55);
-            this.LabelMode.Name = "LabelMode";
-            this.LabelMode.Size = new System.Drawing.Size(0, 13);
-            this.LabelMode.TabIndex = 0;
+            this.TabPageDecorations.Controls.Add(this.label14);
+            this.TabPageDecorations.Controls.Add(this.PanelDecalGroups);
+            this.TabPageDecorations.Location = new System.Drawing.Point(4, 25);
+            this.TabPageDecorations.Name = "TabPageDecorations";
+            this.TabPageDecorations.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPageDecorations.Size = new System.Drawing.Size(1092, 114);
+            this.TabPageDecorations.TabIndex = 4;
+            this.TabPageDecorations.Text = "Decorations";
+            this.TabPageDecorations.UseVisualStyleBackColor = true;
             // 
-            // label1
+            // label14
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 5);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(98, 13);
-            this.label1.TabIndex = 8;
-            this.label1.Text = "Movement strength";
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(582, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(94, 13);
+            this.label14.TabIndex = 0;
+            this.label14.Text = "Decoration groups";
             // 
-            // MovementStrength
+            // PanelDecalGroups
             // 
-            this.MovementStrength.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
-            this.MovementStrength.AutoSize = false;
-            this.MovementStrength.Location = new System.Drawing.Point(107, 3);
-            this.MovementStrength.Maximum = 100;
-            this.MovementStrength.Name = "MovementStrength";
-            this.MovementStrength.Size = new System.Drawing.Size(106, 20);
-            this.MovementStrength.TabIndex = 10;
-            this.MovementStrength.TickFrequency = 10;
-            this.MovementStrength.Value = 50;
+            this.PanelDecalGroups.AutoScroll = true;
+            this.PanelDecalGroups.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PanelDecalGroups.Location = new System.Drawing.Point(366, 15);
+            this.PanelDecalGroups.Name = "PanelDecalGroups";
+            this.PanelDecalGroups.Size = new System.Drawing.Size(512, 99);
+            this.PanelDecalGroups.TabIndex = 0;
             // 
-            // PanelDisplaySettings
+            // TabPageEntities
             // 
-            this.PanelDisplaySettings.Controls.Add(this.ResetRotation);
-            this.PanelDisplaySettings.Controls.Add(this.label2);
-            this.PanelDisplaySettings.Controls.Add(this.RotationStrength);
-            this.PanelDisplaySettings.Controls.Add(this.label1);
-            this.PanelDisplaySettings.Controls.Add(this.MovementStrength);
-            this.PanelDisplaySettings.Location = new System.Drawing.Point(559, 27);
-            this.PanelDisplaySettings.Name = "PanelDisplaySettings";
-            this.PanelDisplaySettings.Size = new System.Drawing.Size(541, 26);
-            this.PanelDisplaySettings.TabIndex = 11;
-            this.PanelDisplaySettings.Visible = false;
+            this.TabPageEntities.Controls.Add(this.PanelMonumentType);
+            this.TabPageEntities.Controls.Add(this.EditCoopCampTypes);
+            this.TabPageEntities.Controls.Add(this.PanelEntityPlacementSelect);
+            this.TabPageEntities.Controls.Add(this.panel5);
+            this.TabPageEntities.Location = new System.Drawing.Point(4, 25);
+            this.TabPageEntities.Name = "TabPageEntities";
+            this.TabPageEntities.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPageEntities.Size = new System.Drawing.Size(1092, 114);
+            this.TabPageEntities.TabIndex = 2;
+            this.TabPageEntities.Text = "Entities";
+            this.TabPageEntities.UseVisualStyleBackColor = true;
+            // 
+            // EditCoopCampTypes
+            // 
+            this.EditCoopCampTypes.Location = new System.Drawing.Point(486, 3);
+            this.EditCoopCampTypes.Name = "EditCoopCampTypes";
+            this.EditCoopCampTypes.Size = new System.Drawing.Size(88, 108);
+            this.EditCoopCampTypes.TabIndex = 11;
+            this.EditCoopCampTypes.Text = "Edit coop camp types...";
+            this.EditCoopCampTypes.UseVisualStyleBackColor = true;
+            this.EditCoopCampTypes.Click += new System.EventHandler(this.EditCoopCampTypes_Click);
+            // 
+            // PanelEntityPlacementSelect
+            // 
+            this.PanelEntityPlacementSelect.Controls.Add(this.PanelUnitPlacementSelect);
+            this.PanelEntityPlacementSelect.Controls.Add(this.EntityID);
+            this.PanelEntityPlacementSelect.Controls.Add(this.label11);
+            this.PanelEntityPlacementSelect.Controls.Add(this.label10);
+            this.PanelEntityPlacementSelect.Location = new System.Drawing.Point(187, 3);
+            this.PanelEntityPlacementSelect.Name = "PanelEntityPlacementSelect";
+            this.PanelEntityPlacementSelect.Size = new System.Drawing.Size(293, 108);
+            this.PanelEntityPlacementSelect.TabIndex = 10;
+            // 
+            // PanelUnitPlacementSelect
+            // 
+            this.PanelUnitPlacementSelect.Controls.Add(this.label12);
+            this.PanelUnitPlacementSelect.Controls.Add(this.UnitName);
+            this.PanelUnitPlacementSelect.Controls.Add(this.label13);
+            this.PanelUnitPlacementSelect.Controls.Add(this.UnitRace);
+            this.PanelUnitPlacementSelect.Location = new System.Drawing.Point(5, 41);
+            this.PanelUnitPlacementSelect.Name = "PanelUnitPlacementSelect";
+            this.PanelUnitPlacementSelect.Size = new System.Drawing.Size(288, 55);
+            this.PanelUnitPlacementSelect.TabIndex = 11;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(3, 7);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(33, 13);
+            this.label12.TabIndex = 14;
+            this.label12.Text = "Race";
+            // 
+            // UnitName
+            // 
+            this.UnitName.FormattingEnabled = true;
+            this.UnitName.Location = new System.Drawing.Point(50, 30);
+            this.UnitName.Name = "UnitName";
+            this.UnitName.Size = new System.Drawing.Size(235, 21);
+            this.UnitName.TabIndex = 18;
+            this.UnitName.SelectedIndexChanged += new System.EventHandler(this.UnitName_SelectedIndexChanged);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(3, 33);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(26, 13);
+            this.label13.TabIndex = 15;
+            this.label13.Text = "Unit";
+            // 
+            // UnitRace
+            // 
+            this.UnitRace.FormattingEnabled = true;
+            this.UnitRace.Location = new System.Drawing.Point(50, 4);
+            this.UnitRace.Name = "UnitRace";
+            this.UnitRace.Size = new System.Drawing.Size(235, 21);
+            this.UnitRace.TabIndex = 17;
+            this.UnitRace.SelectedIndexChanged += new System.EventHandler(this.UnitRace_SelectedIndexChanged);
+            // 
+            // EntityID
+            // 
+            this.EntityID.BackColor = System.Drawing.Color.DarkOrange;
+            this.EntityID.Location = new System.Drawing.Point(55, 20);
+            this.EntityID.Name = "EntityID";
+            this.EntityID.Size = new System.Drawing.Size(71, 20);
+            this.EntityID.TabIndex = 16;
+            this.EntityID.Validated += new System.EventHandler(this.EntityID_Validated);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(8, 23);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(18, 13);
+            this.label11.TabIndex = 13;
+            this.label11.Text = "ID";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(100, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(74, 13);
+            this.label10.TabIndex = 12;
+            this.label10.Text = "Entity to place";
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.RadioModeMonuments);
+            this.panel5.Controls.Add(this.label6);
+            this.panel5.Controls.Add(this.RadioEntityModeUnit);
+            this.panel5.Controls.Add(this.RadioEntityModeBuilding);
+            this.panel5.Controls.Add(this.RadioModeCoopCamps);
+            this.panel5.Controls.Add(this.RadioModeBindstones);
+            this.panel5.Controls.Add(this.RadioEntityModeObject);
+            this.panel5.Controls.Add(this.RadioModePortals);
+            this.panel5.Location = new System.Drawing.Point(8, 3);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(173, 108);
+            this.panel5.TabIndex = 9;
+            // 
+            // RadioModeMonuments
+            // 
+            this.RadioModeMonuments.AutoSize = true;
+            this.RadioModeMonuments.ForeColor = System.Drawing.Color.Green;
+            this.RadioModeMonuments.Location = new System.Drawing.Point(79, 85);
+            this.RadioModeMonuments.Name = "RadioModeMonuments";
+            this.RadioModeMonuments.Size = new System.Drawing.Size(80, 17);
+            this.RadioModeMonuments.TabIndex = 12;
+            this.RadioModeMonuments.Text = "Monuments";
+            this.RadioModeMonuments.UseVisualStyleBackColor = true;
+            this.RadioModeMonuments.CheckedChanged += new System.EventHandler(this.RadioModeMonuments_CheckedChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(43, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(63, 13);
+            this.label6.TabIndex = 11;
+            this.label6.Text = "Editor mode";
+            // 
+            // RadioEntityModeUnit
+            // 
+            this.RadioEntityModeUnit.AutoSize = true;
+            this.RadioEntityModeUnit.Checked = true;
+            this.RadioEntityModeUnit.Location = new System.Drawing.Point(3, 16);
+            this.RadioEntityModeUnit.Name = "RadioEntityModeUnit";
+            this.RadioEntityModeUnit.Size = new System.Drawing.Size(49, 17);
+            this.RadioEntityModeUnit.TabIndex = 8;
+            this.RadioEntityModeUnit.TabStop = true;
+            this.RadioEntityModeUnit.Text = "Units";
+            this.RadioEntityModeUnit.UseVisualStyleBackColor = true;
+            this.RadioEntityModeUnit.CheckedChanged += new System.EventHandler(this.RadioEntityModeUnit_CheckedChanged);
+            // 
+            // RadioEntityModeBuilding
+            // 
+            this.RadioEntityModeBuilding.AutoSize = true;
+            this.RadioEntityModeBuilding.Location = new System.Drawing.Point(3, 39);
+            this.RadioEntityModeBuilding.Name = "RadioEntityModeBuilding";
+            this.RadioEntityModeBuilding.Size = new System.Drawing.Size(67, 17);
+            this.RadioEntityModeBuilding.TabIndex = 9;
+            this.RadioEntityModeBuilding.Text = "Buildings";
+            this.RadioEntityModeBuilding.UseVisualStyleBackColor = true;
+            this.RadioEntityModeBuilding.CheckedChanged += new System.EventHandler(this.RadioEntityModeBuilding_CheckedChanged);
+            // 
+            // RadioModeCoopCamps
+            // 
+            this.RadioModeCoopCamps.AutoSize = true;
+            this.RadioModeCoopCamps.ForeColor = System.Drawing.Color.Green;
+            this.RadioModeCoopCamps.Location = new System.Drawing.Point(79, 16);
+            this.RadioModeCoopCamps.Name = "RadioModeCoopCamps";
+            this.RadioModeCoopCamps.Size = new System.Drawing.Size(84, 17);
+            this.RadioModeCoopCamps.TabIndex = 8;
+            this.RadioModeCoopCamps.Text = "Coop camps";
+            this.RadioModeCoopCamps.UseVisualStyleBackColor = true;
+            this.RadioModeCoopCamps.CheckedChanged += new System.EventHandler(this.RadioModeCoopCamps_CheckedChanged);
+            // 
+            // RadioModeBindstones
+            // 
+            this.RadioModeBindstones.AutoSize = true;
+            this.RadioModeBindstones.ForeColor = System.Drawing.Color.Green;
+            this.RadioModeBindstones.Location = new System.Drawing.Point(79, 39);
+            this.RadioModeBindstones.Name = "RadioModeBindstones";
+            this.RadioModeBindstones.Size = new System.Drawing.Size(77, 17);
+            this.RadioModeBindstones.TabIndex = 9;
+            this.RadioModeBindstones.Text = "Bindstones";
+            this.RadioModeBindstones.UseVisualStyleBackColor = true;
+            this.RadioModeBindstones.CheckedChanged += new System.EventHandler(this.RadioModeBindstones_CheckedChanged);
+            // 
+            // RadioEntityModeObject
+            // 
+            this.RadioEntityModeObject.AutoSize = true;
+            this.RadioEntityModeObject.Location = new System.Drawing.Point(3, 62);
+            this.RadioEntityModeObject.Name = "RadioEntityModeObject";
+            this.RadioEntityModeObject.Size = new System.Drawing.Size(61, 17);
+            this.RadioEntityModeObject.TabIndex = 10;
+            this.RadioEntityModeObject.Text = "Objects";
+            this.RadioEntityModeObject.UseVisualStyleBackColor = true;
+            this.RadioEntityModeObject.CheckedChanged += new System.EventHandler(this.RadioEntityModeObject_CheckedChanged);
+            // 
+            // RadioModePortals
+            // 
+            this.RadioModePortals.AutoSize = true;
+            this.RadioModePortals.ForeColor = System.Drawing.Color.Green;
+            this.RadioModePortals.Location = new System.Drawing.Point(79, 62);
+            this.RadioModePortals.Name = "RadioModePortals";
+            this.RadioModePortals.Size = new System.Drawing.Size(57, 17);
+            this.RadioModePortals.TabIndex = 10;
+            this.RadioModePortals.Text = "Portals";
+            this.RadioModePortals.UseVisualStyleBackColor = true;
+            this.RadioModePortals.CheckedChanged += new System.EventHandler(this.RadioModePortals_CheckedChanged);
+            // 
+            // TabPageTextures
+            // 
+            this.TabPageTextures.Controls.Add(this.ButtonSlopePaint);
+            this.TabPageTextures.Controls.Add(this.TTexMatchMovementFlags);
+            this.TabPageTextures.Controls.Add(this.ButtonModifyTextureSet);
+            this.TabPageTextures.Controls.Add(this.PanelTileType);
+            this.TabPageTextures.Location = new System.Drawing.Point(4, 25);
+            this.TabPageTextures.Name = "TabPageTextures";
+            this.TabPageTextures.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPageTextures.Size = new System.Drawing.Size(1092, 114);
+            this.TabPageTextures.TabIndex = 1;
+            this.TabPageTextures.Text = "Textures";
+            this.TabPageTextures.UseVisualStyleBackColor = true;
+            // 
+            // ButtonSlopePaint
+            // 
+            this.ButtonSlopePaint.Location = new System.Drawing.Point(444, 6);
+            this.ButtonSlopePaint.Name = "ButtonSlopePaint";
+            this.ButtonSlopePaint.Size = new System.Drawing.Size(90, 102);
+            this.ButtonSlopePaint.TabIndex = 20;
+            this.ButtonSlopePaint.Text = "Slope-based paint...";
+            this.ButtonSlopePaint.UseVisualStyleBackColor = true;
+            this.ButtonSlopePaint.Click += new System.EventHandler(this.ButtonSlopePaint_Click);
+            // 
+            // TTexMatchMovementFlags
+            // 
+            this.TTexMatchMovementFlags.AutoSize = true;
+            this.TTexMatchMovementFlags.Location = new System.Drawing.Point(102, 91);
+            this.TTexMatchMovementFlags.Name = "TTexMatchMovementFlags";
+            this.TTexMatchMovementFlags.Size = new System.Drawing.Size(133, 17);
+            this.TTexMatchMovementFlags.TabIndex = 18;
+            this.TTexMatchMovementFlags.Text = "Match movement flags";
+            this.TTexMatchMovementFlags.UseVisualStyleBackColor = true;
+            this.TTexMatchMovementFlags.CheckedChanged += new System.EventHandler(this.TTexMatchMovementFlags_CheckedChanged);
+            // 
+            // ButtonModifyTextureSet
+            // 
+            this.ButtonModifyTextureSet.Location = new System.Drawing.Point(6, 6);
+            this.ButtonModifyTextureSet.Name = "ButtonModifyTextureSet";
+            this.ButtonModifyTextureSet.Size = new System.Drawing.Size(90, 102);
+            this.ButtonModifyTextureSet.TabIndex = 19;
+            this.ButtonModifyTextureSet.Text = "Modify texture set...";
+            this.ButtonModifyTextureSet.UseVisualStyleBackColor = true;
+            this.ButtonModifyTextureSet.Click += new System.EventHandler(this.ButtonModifyTextureSet_Click);
+            // 
+            // PanelTileType
+            // 
+            this.PanelTileType.Controls.Add(this.RadioTileTypeCustom);
+            this.PanelTileType.Controls.Add(this.RadioTileTypeBase);
+            this.PanelTileType.Controls.Add(this.label9);
+            this.PanelTileType.Location = new System.Drawing.Point(366, 6);
+            this.PanelTileType.Name = "PanelTileType";
+            this.PanelTileType.Size = new System.Drawing.Size(72, 102);
+            this.PanelTileType.TabIndex = 18;
+            // 
+            // RadioTileTypeCustom
+            // 
+            this.RadioTileTypeCustom.AutoSize = true;
+            this.RadioTileTypeCustom.Location = new System.Drawing.Point(6, 45);
+            this.RadioTileTypeCustom.Name = "RadioTileTypeCustom";
+            this.RadioTileTypeCustom.Size = new System.Drawing.Size(60, 17);
+            this.RadioTileTypeCustom.TabIndex = 16;
+            this.RadioTileTypeCustom.Text = "Custom";
+            this.RadioTileTypeCustom.UseVisualStyleBackColor = true;
+            this.RadioTileTypeCustom.CheckedChanged += new System.EventHandler(this.RadioTileTypeCustom_CheckedChanged);
+            // 
+            // RadioTileTypeBase
+            // 
+            this.RadioTileTypeBase.AutoSize = true;
+            this.RadioTileTypeBase.Checked = true;
+            this.RadioTileTypeBase.Location = new System.Drawing.Point(6, 22);
+            this.RadioTileTypeBase.Name = "RadioTileTypeBase";
+            this.RadioTileTypeBase.Size = new System.Drawing.Size(49, 17);
+            this.RadioTileTypeBase.TabIndex = 15;
+            this.RadioTileTypeBase.TabStop = true;
+            this.RadioTileTypeBase.Text = "Base";
+            this.RadioTileTypeBase.UseVisualStyleBackColor = true;
+            this.RadioTileTypeBase.CheckedChanged += new System.EventHandler(this.RadioTileTypeBase_CheckedChanged);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(3, 6);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(47, 13);
+            this.label9.TabIndex = 14;
+            this.label9.Text = "Tile type";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // TabPageTerrain
+            // 
+            this.TabPageTerrain.Controls.Add(this.PanelFlags);
+            this.TabPageTerrain.Controls.Add(this.PanelBrushShape);
+            this.TabPageTerrain.Controls.Add(this.PanelTerrainSettings);
+            this.TabPageTerrain.Controls.Add(this.PanelStrength);
+            this.TabPageTerrain.Controls.Add(this.panel1);
+            this.TabPageTerrain.Location = new System.Drawing.Point(4, 25);
+            this.TabPageTerrain.Name = "TabPageTerrain";
+            this.TabPageTerrain.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPageTerrain.Size = new System.Drawing.Size(1092, 114);
+            this.TabPageTerrain.TabIndex = 0;
+            this.TabPageTerrain.Text = "Terrain";
+            this.TabPageTerrain.UseVisualStyleBackColor = true;
+            // 
+            // PanelFlags
+            // 
+            this.PanelFlags.Controls.Add(this.CheckDisplayFlags);
+            this.PanelFlags.Controls.Add(this.RadioFlagVision);
+            this.PanelFlags.Controls.Add(this.RadioFlagMovement);
+            this.PanelFlags.Controls.Add(this.label8);
+            this.PanelFlags.Location = new System.Drawing.Point(675, 3);
+            this.PanelFlags.Name = "PanelFlags";
+            this.PanelFlags.Size = new System.Drawing.Size(207, 73);
+            this.PanelFlags.TabIndex = 8;
+            this.PanelFlags.Visible = false;
+            // 
+            // CheckDisplayFlags
+            // 
+            this.CheckDisplayFlags.AutoSize = true;
+            this.CheckDisplayFlags.Location = new System.Drawing.Point(59, 41);
+            this.CheckDisplayFlags.Name = "CheckDisplayFlags";
+            this.CheckDisplayFlags.Size = new System.Drawing.Size(85, 17);
+            this.CheckDisplayFlags.TabIndex = 4;
+            this.CheckDisplayFlags.Text = "Display flags";
+            this.CheckDisplayFlags.UseVisualStyleBackColor = true;
+            this.CheckDisplayFlags.CheckedChanged += new System.EventHandler(this.CheckDisplayFlags_CheckedChanged);
+            // 
+            // RadioFlagVision
+            // 
+            this.RadioFlagVision.AutoSize = true;
+            this.RadioFlagVision.Location = new System.Drawing.Point(140, 16);
+            this.RadioFlagVision.Name = "RadioFlagVision";
+            this.RadioFlagVision.Size = new System.Drawing.Size(53, 17);
+            this.RadioFlagVision.TabIndex = 2;
+            this.RadioFlagVision.Text = "Vision";
+            this.RadioFlagVision.UseVisualStyleBackColor = true;
+            this.RadioFlagVision.CheckedChanged += new System.EventHandler(this.RadioFlagVision_CheckedChanged);
+            // 
+            // RadioFlagMovement
+            // 
+            this.RadioFlagMovement.AutoSize = true;
+            this.RadioFlagMovement.Checked = true;
+            this.RadioFlagMovement.Location = new System.Drawing.Point(59, 16);
+            this.RadioFlagMovement.Name = "RadioFlagMovement";
+            this.RadioFlagMovement.Size = new System.Drawing.Size(75, 17);
+            this.RadioFlagMovement.TabIndex = 1;
+            this.RadioFlagMovement.TabStop = true;
+            this.RadioFlagMovement.Text = "Movement";
+            this.RadioFlagMovement.UseVisualStyleBackColor = true;
+            this.RadioFlagMovement.CheckedChanged += new System.EventHandler(this.RadioFlagMovement_CheckedChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(3, 18);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(50, 13);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "Flag type";
+            // 
+            // PanelBrushShape
+            // 
+            this.PanelBrushShape.Controls.Add(this.BrushSizeVal);
+            this.PanelBrushShape.Controls.Add(this.label3);
+            this.PanelBrushShape.Controls.Add(this.panel2);
+            this.PanelBrushShape.Controls.Add(this.label4);
+            this.PanelBrushShape.Controls.Add(this.label2);
+            this.PanelBrushShape.Controls.Add(this.BrushSizeTrackbar);
+            this.PanelBrushShape.Location = new System.Drawing.Point(102, 3);
+            this.PanelBrushShape.Name = "PanelBrushShape";
+            this.PanelBrushShape.Size = new System.Drawing.Size(261, 73);
+            this.PanelBrushShape.TabIndex = 8;
+            // 
+            // BrushSizeVal
+            // 
+            this.BrushSizeVal.Location = new System.Drawing.Point(62, 18);
+            this.BrushSizeVal.Name = "BrushSizeVal";
+            this.BrushSizeVal.Size = new System.Drawing.Size(42, 20);
+            this.BrushSizeVal.TabIndex = 12;
+            this.BrushSizeVal.Text = "3";
+            this.BrushSizeVal.Validated += new System.EventHandler(this.BrushSizeVal_Validated);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(29, 21);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(27, 13);
+            this.label3.TabIndex = 9;
+            this.label3.Text = "Size";
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.RadioDiamond);
+            this.panel2.Controls.Add(this.RadioCircle);
+            this.panel2.Controls.Add(this.RadioSquare);
+            this.panel2.Location = new System.Drawing.Point(62, 44);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(196, 28);
+            this.panel2.TabIndex = 8;
+            // 
+            // RadioDiamond
+            // 
+            this.RadioDiamond.AutoSize = true;
+            this.RadioDiamond.Location = new System.Drawing.Point(125, 5);
+            this.RadioDiamond.Name = "RadioDiamond";
+            this.RadioDiamond.Size = new System.Drawing.Size(67, 17);
+            this.RadioDiamond.TabIndex = 2;
+            this.RadioDiamond.Text = "Diamond";
+            this.RadioDiamond.UseVisualStyleBackColor = true;
+            this.RadioDiamond.CheckedChanged += new System.EventHandler(this.RadioDiamond_CheckedChanged);
+            // 
+            // RadioCircle
+            // 
+            this.RadioCircle.AutoSize = true;
+            this.RadioCircle.Checked = true;
+            this.RadioCircle.Location = new System.Drawing.Point(68, 5);
+            this.RadioCircle.Name = "RadioCircle";
+            this.RadioCircle.Size = new System.Drawing.Size(51, 17);
+            this.RadioCircle.TabIndex = 1;
+            this.RadioCircle.TabStop = true;
+            this.RadioCircle.Text = "Circle";
+            this.RadioCircle.UseVisualStyleBackColor = true;
+            this.RadioCircle.CheckedChanged += new System.EventHandler(this.RadioCircle_CheckedChanged);
+            // 
+            // RadioSquare
+            // 
+            this.RadioSquare.AutoSize = true;
+            this.RadioSquare.Location = new System.Drawing.Point(3, 5);
+            this.RadioSquare.Name = "RadioSquare";
+            this.RadioSquare.Size = new System.Drawing.Size(59, 17);
+            this.RadioSquare.TabIndex = 0;
+            this.RadioSquare.Text = "Square";
+            this.RadioSquare.UseVisualStyleBackColor = true;
+            this.RadioSquare.CheckedChanged += new System.EventHandler(this.RadioSquare_CheckedChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(18, 51);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(38, 13);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "Shape";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(239, 5);
+            this.label2.Location = new System.Drawing.Point(80, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(88, 13);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "Rotation strength";
+            this.label2.Size = new System.Drawing.Size(73, 13);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Brush settings";
             // 
-            // RotationStrength
+            // BrushSizeTrackbar
             // 
-            this.RotationStrength.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
-            this.RotationStrength.AutoSize = false;
-            this.RotationStrength.Location = new System.Drawing.Point(333, 3);
-            this.RotationStrength.Maximum = 100;
-            this.RotationStrength.Name = "RotationStrength";
-            this.RotationStrength.Size = new System.Drawing.Size(103, 20);
-            this.RotationStrength.TabIndex = 12;
-            this.RotationStrength.TickFrequency = 10;
-            this.RotationStrength.Value = 50;
+            this.BrushSizeTrackbar.AutoSize = false;
+            this.BrushSizeTrackbar.Location = new System.Drawing.Point(110, 18);
+            this.BrushSizeTrackbar.Maximum = 15;
+            this.BrushSizeTrackbar.Minimum = 1;
+            this.BrushSizeTrackbar.Name = "BrushSizeTrackbar";
+            this.BrushSizeTrackbar.Size = new System.Drawing.Size(104, 20);
+            this.BrushSizeTrackbar.TabIndex = 8;
+            this.BrushSizeTrackbar.TickFrequency = 2;
+            this.BrushSizeTrackbar.Value = 3;
+            this.BrushSizeTrackbar.ValueChanged += new System.EventHandler(this.BrushSizeTrackbar_ValueChanged);
             // 
-            // ResetRotation
+            // PanelTerrainSettings
             // 
-            this.ResetRotation.Location = new System.Drawing.Point(451, 0);
-            this.ResetRotation.Name = "ResetRotation";
-            this.ResetRotation.Size = new System.Drawing.Size(87, 23);
-            this.ResetRotation.TabIndex = 12;
-            this.ResetRotation.Text = "Reset camera";
-            this.ResetRotation.UseVisualStyleBackColor = true;
-            this.ResetRotation.Click += new System.EventHandler(this.ResetRotation_Click);
+            this.PanelTerrainSettings.Controls.Add(this.label5);
+            this.PanelTerrainSettings.Controls.Add(this.panel3);
+            this.PanelTerrainSettings.Controls.Add(this.panel4);
+            this.PanelTerrainSettings.Controls.Add(this.label7);
+            this.PanelTerrainSettings.Location = new System.Drawing.Point(366, 3);
+            this.PanelTerrainSettings.Name = "PanelTerrainSettings";
+            this.PanelTerrainSettings.Size = new System.Drawing.Size(303, 108);
+            this.PanelTerrainSettings.TabIndex = 8;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(13, 18);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(65, 13);
+            this.label5.TabIndex = 11;
+            this.label5.Text = "Interpolation";
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.RadioIntSinusoidal);
+            this.panel3.Controls.Add(this.RadioIntSquare);
+            this.panel3.Controls.Add(this.RadioIntLinear);
+            this.panel3.Controls.Add(this.RadioIntConstant);
+            this.panel3.Location = new System.Drawing.Point(84, 12);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(177, 54);
+            this.panel3.TabIndex = 9;
+            // 
+            // RadioIntSinusoidal
+            // 
+            this.RadioIntSinusoidal.AutoSize = true;
+            this.RadioIntSinusoidal.Checked = true;
+            this.RadioIntSinusoidal.Location = new System.Drawing.Point(76, 28);
+            this.RadioIntSinusoidal.Name = "RadioIntSinusoidal";
+            this.RadioIntSinusoidal.Size = new System.Drawing.Size(73, 17);
+            this.RadioIntSinusoidal.TabIndex = 3;
+            this.RadioIntSinusoidal.TabStop = true;
+            this.RadioIntSinusoidal.Text = "Sinusoidal";
+            this.RadioIntSinusoidal.UseVisualStyleBackColor = true;
+            this.RadioIntSinusoidal.CheckedChanged += new System.EventHandler(this.RadioIntSinusoidal_CheckedChanged);
+            // 
+            // RadioIntSquare
+            // 
+            this.RadioIntSquare.AutoSize = true;
+            this.RadioIntSquare.Location = new System.Drawing.Point(3, 28);
+            this.RadioIntSquare.Name = "RadioIntSquare";
+            this.RadioIntSquare.Size = new System.Drawing.Size(59, 17);
+            this.RadioIntSquare.TabIndex = 2;
+            this.RadioIntSquare.Text = "Square";
+            this.RadioIntSquare.UseVisualStyleBackColor = true;
+            this.RadioIntSquare.CheckedChanged += new System.EventHandler(this.RadioIntSquare_CheckedChanged);
+            // 
+            // RadioIntLinear
+            // 
+            this.RadioIntLinear.AutoSize = true;
+            this.RadioIntLinear.Location = new System.Drawing.Point(76, 5);
+            this.RadioIntLinear.Name = "RadioIntLinear";
+            this.RadioIntLinear.Size = new System.Drawing.Size(54, 17);
+            this.RadioIntLinear.TabIndex = 1;
+            this.RadioIntLinear.Text = "Linear";
+            this.RadioIntLinear.UseVisualStyleBackColor = true;
+            this.RadioIntLinear.CheckedChanged += new System.EventHandler(this.RadioIntLinear_CheckedChanged);
+            // 
+            // RadioIntConstant
+            // 
+            this.RadioIntConstant.AutoSize = true;
+            this.RadioIntConstant.Location = new System.Drawing.Point(3, 5);
+            this.RadioIntConstant.Name = "RadioIntConstant";
+            this.RadioIntConstant.Size = new System.Drawing.Size(67, 17);
+            this.RadioIntConstant.TabIndex = 0;
+            this.RadioIntConstant.Text = "Constant";
+            this.RadioIntConstant.UseVisualStyleBackColor = true;
+            this.RadioIntConstant.CheckedChanged += new System.EventHandler(this.RadioIntConstant_CheckedChanged);
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.RadioModeSmooth);
+            this.panel4.Controls.Add(this.RadioModeSet);
+            this.panel4.Controls.Add(this.RadioModeRaise);
+            this.panel4.Location = new System.Drawing.Point(84, 75);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(177, 28);
+            this.panel4.TabIndex = 9;
+            // 
+            // RadioModeSmooth
+            // 
+            this.RadioModeSmooth.AutoSize = true;
+            this.RadioModeSmooth.Location = new System.Drawing.Point(108, 5);
+            this.RadioModeSmooth.Name = "RadioModeSmooth";
+            this.RadioModeSmooth.Size = new System.Drawing.Size(61, 17);
+            this.RadioModeSmooth.TabIndex = 2;
+            this.RadioModeSmooth.Text = "Smooth";
+            this.RadioModeSmooth.UseVisualStyleBackColor = true;
+            this.RadioModeSmooth.CheckedChanged += new System.EventHandler(this.RadioModeSmooth_CheckedChanged);
+            // 
+            // RadioModeSet
+            // 
+            this.RadioModeSet.AutoSize = true;
+            this.RadioModeSet.Location = new System.Drawing.Point(61, 5);
+            this.RadioModeSet.Name = "RadioModeSet";
+            this.RadioModeSet.Size = new System.Drawing.Size(41, 17);
+            this.RadioModeSet.TabIndex = 1;
+            this.RadioModeSet.Text = "Set";
+            this.RadioModeSet.UseVisualStyleBackColor = true;
+            this.RadioModeSet.CheckedChanged += new System.EventHandler(this.RadioModeSet_CheckedChanged);
+            // 
+            // RadioModeRaise
+            // 
+            this.RadioModeRaise.AutoSize = true;
+            this.RadioModeRaise.Checked = true;
+            this.RadioModeRaise.Location = new System.Drawing.Point(3, 5);
+            this.RadioModeRaise.Name = "RadioModeRaise";
+            this.RadioModeRaise.Size = new System.Drawing.Size(52, 17);
+            this.RadioModeRaise.TabIndex = 0;
+            this.RadioModeRaise.TabStop = true;
+            this.RadioModeRaise.Text = "Raise";
+            this.RadioModeRaise.UseVisualStyleBackColor = true;
+            this.RadioModeRaise.CheckedChanged += new System.EventHandler(this.RadioModeRaise_CheckedChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(44, 82);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(34, 13);
+            this.label7.TabIndex = 16;
+            this.label7.Text = "Mode";
+            // 
+            // PanelStrength
+            // 
+            this.PanelStrength.Controls.Add(this.TerrainValueLabel);
+            this.PanelStrength.Controls.Add(this.TerrainValue);
+            this.PanelStrength.Controls.Add(this.TerrainTrackbar);
+            this.PanelStrength.Location = new System.Drawing.Point(102, 79);
+            this.PanelStrength.Name = "PanelStrength";
+            this.PanelStrength.Size = new System.Drawing.Size(261, 29);
+            this.PanelStrength.TabIndex = 17;
+            // 
+            // TerrainValueLabel
+            // 
+            this.TerrainValueLabel.AutoSize = true;
+            this.TerrainValueLabel.Location = new System.Drawing.Point(9, 6);
+            this.TerrainValueLabel.Name = "TerrainValueLabel";
+            this.TerrainValueLabel.Size = new System.Drawing.Size(47, 13);
+            this.TerrainValueLabel.TabIndex = 14;
+            this.TerrainValueLabel.Text = "Strength";
+            this.TerrainValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // TerrainValue
+            // 
+            this.TerrainValue.Location = new System.Drawing.Point(62, 3);
+            this.TerrainValue.Name = "TerrainValue";
+            this.TerrainValue.Size = new System.Drawing.Size(42, 20);
+            this.TerrainValue.TabIndex = 15;
+            this.TerrainValue.Text = "20";
+            this.TerrainValue.Validated += new System.EventHandler(this.TerrainValue_Validated);
+            // 
+            // TerrainTrackbar
+            // 
+            this.TerrainTrackbar.AutoSize = false;
+            this.TerrainTrackbar.Location = new System.Drawing.Point(110, 3);
+            this.TerrainTrackbar.Maximum = 100;
+            this.TerrainTrackbar.Name = "TerrainTrackbar";
+            this.TerrainTrackbar.Size = new System.Drawing.Size(104, 20);
+            this.TerrainTrackbar.TabIndex = 13;
+            this.TerrainTrackbar.TickFrequency = 10;
+            this.TerrainTrackbar.Value = 20;
+            this.TerrainTrackbar.ValueChanged += new System.EventHandler(this.TerrainTrackbar_ValueChanged);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.RadioHMap);
+            this.panel1.Controls.Add(this.RadioFlags);
+            this.panel1.Controls.Add(this.RadioLakes);
+            this.panel1.Location = new System.Drawing.Point(6, 3);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(93, 108);
+            this.panel1.TabIndex = 8;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(16, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(63, 13);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Editor mode";
+            // 
+            // RadioHMap
+            // 
+            this.RadioHMap.AutoSize = true;
+            this.RadioHMap.Checked = true;
+            this.RadioHMap.Location = new System.Drawing.Point(3, 16);
+            this.RadioHMap.Name = "RadioHMap";
+            this.RadioHMap.Size = new System.Drawing.Size(76, 17);
+            this.RadioHMap.TabIndex = 8;
+            this.RadioHMap.TabStop = true;
+            this.RadioHMap.Text = "Heightmap";
+            this.RadioHMap.UseVisualStyleBackColor = true;
+            this.RadioHMap.CheckedChanged += new System.EventHandler(this.RadioHMap_CheckedChanged);
+            // 
+            // RadioFlags
+            // 
+            this.RadioFlags.AutoSize = true;
+            this.RadioFlags.Location = new System.Drawing.Point(3, 39);
+            this.RadioFlags.Name = "RadioFlags";
+            this.RadioFlags.Size = new System.Drawing.Size(83, 17);
+            this.RadioFlags.TabIndex = 9;
+            this.RadioFlags.Text = "Terrain flags";
+            this.RadioFlags.UseVisualStyleBackColor = true;
+            this.RadioFlags.CheckedChanged += new System.EventHandler(this.RadioFlags_CheckedChanged);
+            // 
+            // RadioLakes
+            // 
+            this.RadioLakes.AutoSize = true;
+            this.RadioLakes.Location = new System.Drawing.Point(3, 62);
+            this.RadioLakes.Name = "RadioLakes";
+            this.RadioLakes.Size = new System.Drawing.Size(49, 17);
+            this.RadioLakes.TabIndex = 10;
+            this.RadioLakes.Text = "Lake";
+            this.RadioLakes.UseVisualStyleBackColor = true;
+            this.RadioLakes.CheckedChanged += new System.EventHandler(this.RadioLakes_CheckedChanged);
+            // 
+            // TabEditorModes
+            // 
+            this.TabEditorModes.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
+            this.TabEditorModes.Controls.Add(this.TabPageTerrain);
+            this.TabEditorModes.Controls.Add(this.TabPageTextures);
+            this.TabEditorModes.Controls.Add(this.TabPageEntities);
+            this.TabEditorModes.Controls.Add(this.TabPageDecorations);
+            this.TabEditorModes.Controls.Add(this.TabPageScripting);
+            this.TabEditorModes.Controls.Add(this.TabPageMetadata);
+            this.TabEditorModes.Enabled = false;
+            this.TabEditorModes.Location = new System.Drawing.Point(0, 27);
+            this.TabEditorModes.Name = "TabEditorModes";
+            this.TabEditorModes.Padding = new System.Drawing.Point(55, 3);
+            this.TabEditorModes.SelectedIndex = 0;
+            this.TabEditorModes.Size = new System.Drawing.Size(1100, 143);
+            this.TabEditorModes.TabIndex = 7;
+            this.TabEditorModes.SelectedIndexChanged += new System.EventHandler(this.TabEditorModes_SelectedIndexChanged);
+            // 
+            // TabPageScripting
+            // 
+            this.TabPageScripting.Location = new System.Drawing.Point(4, 25);
+            this.TabPageScripting.Name = "TabPageScripting";
+            this.TabPageScripting.Size = new System.Drawing.Size(1092, 114);
+            this.TabPageScripting.TabIndex = 5;
+            this.TabPageScripting.Text = "NPCs & Scripting";
+            this.TabPageScripting.UseVisualStyleBackColor = true;
+            // 
+            // TabPageMetadata
+            // 
+            this.TabPageMetadata.Location = new System.Drawing.Point(4, 25);
+            this.TabPageMetadata.Name = "TabPageMetadata";
+            this.TabPageMetadata.Size = new System.Drawing.Size(1092, 114);
+            this.TabPageMetadata.TabIndex = 6;
+            this.TabPageMetadata.Text = "Metadata";
+            this.TabPageMetadata.UseVisualStyleBackColor = true;
+            // 
+            // PanelMonumentType
+            // 
+            this.PanelMonumentType.Controls.Add(this.MonumentHero);
+            this.PanelMonumentType.Controls.Add(this.label15);
+            this.PanelMonumentType.Controls.Add(this.MonumentHuman);
+            this.PanelMonumentType.Controls.Add(this.MonumentElf);
+            this.PanelMonumentType.Controls.Add(this.MonumentOrc);
+            this.PanelMonumentType.Controls.Add(this.MonumentTroll);
+            this.PanelMonumentType.Controls.Add(this.MonumentDwarf);
+            this.PanelMonumentType.Controls.Add(this.MonumentDarkElf);
+            this.PanelMonumentType.Location = new System.Drawing.Point(580, 3);
+            this.PanelMonumentType.Name = "PanelMonumentType";
+            this.PanelMonumentType.Size = new System.Drawing.Size(144, 108);
+            this.PanelMonumentType.TabIndex = 13;
+            this.PanelMonumentType.Visible = false;
+            // 
+            // MonumentHero
+            // 
+            this.MonumentHero.AutoSize = true;
+            this.MonumentHero.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.MonumentHero.Location = new System.Drawing.Point(79, 85);
+            this.MonumentHero.Name = "MonumentHero";
+            this.MonumentHero.Size = new System.Drawing.Size(48, 17);
+            this.MonumentHero.TabIndex = 12;
+            this.MonumentHero.Text = "Hero";
+            this.MonumentHero.UseVisualStyleBackColor = true;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(28, 0);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(80, 13);
+            this.label15.TabIndex = 11;
+            this.label15.Text = "Monument type";
+            // 
+            // MonumentHuman
+            // 
+            this.MonumentHuman.AutoSize = true;
+            this.MonumentHuman.Checked = true;
+            this.MonumentHuman.Location = new System.Drawing.Point(3, 16);
+            this.MonumentHuman.Name = "MonumentHuman";
+            this.MonumentHuman.Size = new System.Drawing.Size(59, 17);
+            this.MonumentHuman.TabIndex = 8;
+            this.MonumentHuman.TabStop = true;
+            this.MonumentHuman.Text = "Human";
+            this.MonumentHuman.UseVisualStyleBackColor = true;
+            // 
+            // MonumentElf
+            // 
+            this.MonumentElf.AutoSize = true;
+            this.MonumentElf.Location = new System.Drawing.Point(3, 39);
+            this.MonumentElf.Name = "MonumentElf";
+            this.MonumentElf.Size = new System.Drawing.Size(37, 17);
+            this.MonumentElf.TabIndex = 9;
+            this.MonumentElf.Text = "Elf";
+            this.MonumentElf.UseVisualStyleBackColor = true;
+            // 
+            // MonumentOrc
+            // 
+            this.MonumentOrc.AutoSize = true;
+            this.MonumentOrc.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.MonumentOrc.Location = new System.Drawing.Point(79, 16);
+            this.MonumentOrc.Name = "MonumentOrc";
+            this.MonumentOrc.Size = new System.Drawing.Size(42, 17);
+            this.MonumentOrc.TabIndex = 8;
+            this.MonumentOrc.Text = "Orc";
+            this.MonumentOrc.UseVisualStyleBackColor = true;
+            // 
+            // MonumentTroll
+            // 
+            this.MonumentTroll.AutoSize = true;
+            this.MonumentTroll.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.MonumentTroll.Location = new System.Drawing.Point(79, 39);
+            this.MonumentTroll.Name = "MonumentTroll";
+            this.MonumentTroll.Size = new System.Drawing.Size(45, 17);
+            this.MonumentTroll.TabIndex = 9;
+            this.MonumentTroll.Text = "Troll";
+            this.MonumentTroll.UseVisualStyleBackColor = true;
+            // 
+            // MonumentDwarf
+            // 
+            this.MonumentDwarf.AutoSize = true;
+            this.MonumentDwarf.Location = new System.Drawing.Point(3, 62);
+            this.MonumentDwarf.Name = "MonumentDwarf";
+            this.MonumentDwarf.Size = new System.Drawing.Size(53, 17);
+            this.MonumentDwarf.TabIndex = 10;
+            this.MonumentDwarf.Text = "Dwarf";
+            this.MonumentDwarf.UseVisualStyleBackColor = true;
+            // 
+            // MonumentDarkElf
+            // 
+            this.MonumentDarkElf.AutoSize = true;
+            this.MonumentDarkElf.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.MonumentDarkElf.Location = new System.Drawing.Point(79, 62);
+            this.MonumentDarkElf.Name = "MonumentDarkElf";
+            this.MonumentDarkElf.Size = new System.Drawing.Size(62, 17);
+            this.MonumentDarkElf.TabIndex = 10;
+            this.MonumentDarkElf.Text = "Dark elf";
+            this.MonumentDarkElf.UseVisualStyleBackColor = true;
             // 
             // MapEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1100, 667);
-            this.Controls.Add(this.PanelDisplaySettings);
-            this.Controls.Add(this.LabelMode);
-            this.Controls.Add(this.InspectorPanel);
+            this.Controls.Add(this.PanelInspector);
+            this.Controls.Add(this.TabEditorModes);
             this.Controls.Add(this.StatusStrip);
-            this.Controls.Add(this.PanelModes);
             this.Controls.Add(this.menuStrip1);
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(1005, 706);
             this.Name = "MapEditorForm";
             this.Text = "Map Editor";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MapEditorForm_FormClosing);
             this.Shown += new System.EventHandler(this.MapEditorForm_Load);
             this.Resize += new System.EventHandler(this.MapEditorForm_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.PanelModes.ResumeLayout(false);
             this.StatusStrip.ResumeLayout(false);
             this.StatusStrip.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.MovementStrength)).EndInit();
-            this.PanelDisplaySettings.ResumeLayout(false);
-            this.PanelDisplaySettings.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RotationStrength)).EndInit();
+            this.TabPageDecorations.ResumeLayout(false);
+            this.TabPageDecorations.PerformLayout();
+            this.TabPageEntities.ResumeLayout(false);
+            this.PanelEntityPlacementSelect.ResumeLayout(false);
+            this.PanelEntityPlacementSelect.PerformLayout();
+            this.PanelUnitPlacementSelect.ResumeLayout(false);
+            this.PanelUnitPlacementSelect.PerformLayout();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
+            this.TabPageTextures.ResumeLayout(false);
+            this.TabPageTextures.PerformLayout();
+            this.PanelTileType.ResumeLayout(false);
+            this.PanelTileType.PerformLayout();
+            this.TabPageTerrain.ResumeLayout(false);
+            this.PanelFlags.ResumeLayout(false);
+            this.PanelFlags.PerformLayout();
+            this.PanelBrushShape.ResumeLayout(false);
+            this.PanelBrushShape.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BrushSizeTrackbar)).EndInit();
+            this.PanelTerrainSettings.ResumeLayout(false);
+            this.PanelTerrainSettings.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
+            this.PanelStrength.ResumeLayout(false);
+            this.PanelStrength.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TerrainTrackbar)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.TabEditorModes.ResumeLayout(false);
+            this.PanelMonumentType.ResumeLayout(false);
+            this.PanelMonumentType.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -450,22 +1220,8 @@
         private System.Windows.Forms.Timer TimerAnimation;
         private System.Windows.Forms.ToolStripMenuItem saveMapToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog DialogSaveMap;
-        private System.Windows.Forms.Panel PanelModes;
         private System.Windows.Forms.ToolStrip StatusStrip;
         private System.Windows.Forms.ToolStripLabel StatusText;
-        private System.Windows.Forms.Button ButtonHeightmap;
-        private System.Windows.Forms.Button button11;
-        private System.Windows.Forms.Button button10;
-        private System.Windows.Forms.Button button9;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button ButtonLake;
-        private System.Windows.Forms.Button ButtonFlag;
-        private System.Windows.Forms.Button ButtonTerrainTexture;
-        private System.Windows.Forms.Panel InspectorPanel;
-        private System.Windows.Forms.Label LabelMode;
         private System.Windows.Forms.ToolStripMenuItem closeMapToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
@@ -473,11 +1229,86 @@
         private System.Windows.Forms.ToolStripMenuItem createNewMapToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem slopebasedPaintToolStripMenuItem;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TrackBar MovementStrength;
-        private System.Windows.Forms.Panel PanelDisplaySettings;
-        private System.Windows.Forms.Button ResetRotation;
+        private System.Windows.Forms.Panel PanelInspector;
+        private System.Windows.Forms.TabPage TabPageDecorations;
+        private System.Windows.Forms.TabPage TabPageEntities;
+        private System.Windows.Forms.Panel PanelEntityPlacementSelect;
+        private System.Windows.Forms.Panel PanelUnitPlacementSelect;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.ComboBox UnitName;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.ComboBox UnitRace;
+        private System.Windows.Forms.TextBox EntityID;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.RadioButton RadioEntityModeUnit;
+        private System.Windows.Forms.RadioButton RadioEntityModeBuilding;
+        private System.Windows.Forms.RadioButton RadioEntityModeObject;
+        private System.Windows.Forms.TabPage TabPageTextures;
+        private System.Windows.Forms.Button ButtonSlopePaint;
+        private System.Windows.Forms.CheckBox TTexMatchMovementFlags;
+        private System.Windows.Forms.Button ButtonModifyTextureSet;
+        private System.Windows.Forms.Panel PanelTileType;
+        private System.Windows.Forms.RadioButton RadioTileTypeCustom;
+        private System.Windows.Forms.RadioButton RadioTileTypeBase;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TabPage TabPageTerrain;
+        private System.Windows.Forms.Panel PanelFlags;
+        private System.Windows.Forms.CheckBox CheckDisplayFlags;
+        private System.Windows.Forms.RadioButton RadioFlagVision;
+        private System.Windows.Forms.RadioButton RadioFlagMovement;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Panel PanelBrushShape;
+        private System.Windows.Forms.TextBox BrushSizeVal;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.RadioButton RadioDiamond;
+        private System.Windows.Forms.RadioButton RadioCircle;
+        private System.Windows.Forms.RadioButton RadioSquare;
+        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TrackBar RotationStrength;
+        private System.Windows.Forms.TrackBar BrushSizeTrackbar;
+        private System.Windows.Forms.Panel PanelTerrainSettings;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.RadioButton RadioIntSinusoidal;
+        private System.Windows.Forms.RadioButton RadioIntSquare;
+        private System.Windows.Forms.RadioButton RadioIntLinear;
+        private System.Windows.Forms.RadioButton RadioIntConstant;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.RadioButton RadioModeSmooth;
+        private System.Windows.Forms.RadioButton RadioModeSet;
+        private System.Windows.Forms.RadioButton RadioModeRaise;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Panel PanelStrength;
+        private System.Windows.Forms.Label TerrainValueLabel;
+        private System.Windows.Forms.TextBox TerrainValue;
+        private System.Windows.Forms.TrackBar TerrainTrackbar;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.RadioButton RadioHMap;
+        private System.Windows.Forms.RadioButton RadioFlags;
+        private System.Windows.Forms.RadioButton RadioLakes;
+        private System.Windows.Forms.TabControl TabEditorModes;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Panel PanelDecalGroups;
+        private System.Windows.Forms.TabPage TabPageScripting;
+        private System.Windows.Forms.TabPage TabPageMetadata;
+        private System.Windows.Forms.RadioButton RadioModeMonuments;
+        private System.Windows.Forms.RadioButton RadioModeCoopCamps;
+        private System.Windows.Forms.RadioButton RadioModeBindstones;
+        private System.Windows.Forms.RadioButton RadioModePortals;
+        private System.Windows.Forms.Button EditCoopCampTypes;
+        private System.Windows.Forms.Panel PanelMonumentType;
+        private System.Windows.Forms.RadioButton MonumentHero;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.RadioButton MonumentHuman;
+        private System.Windows.Forms.RadioButton MonumentElf;
+        private System.Windows.Forms.RadioButton MonumentOrc;
+        private System.Windows.Forms.RadioButton MonumentTroll;
+        private System.Windows.Forms.RadioButton MonumentDwarf;
+        private System.Windows.Forms.RadioButton MonumentDarkElf;
     }
 }

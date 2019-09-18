@@ -70,9 +70,11 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 k++;
             }
 
+            SF3D.SFSubModel3D sbm = new SF3D.SFSubModel3D();
+            sbm.CreateRaw(vertices, uvs, colors, normals, elements, null);
             
             mesh = new SF3D.SFModel3D();
-            mesh.CreateRaw(vertices, uvs, colors, normals, elements, null);
+            mesh.CreateRaw(new SF3D.SFSubModel3D[] { sbm });
             SFResources.SFResourceManager.Models.AddManually(mesh, "OVERLAY_" + name + "_" + hmap_chunk.ix.ToString() + "_" + hmap_chunk.iy.ToString());
         }
 

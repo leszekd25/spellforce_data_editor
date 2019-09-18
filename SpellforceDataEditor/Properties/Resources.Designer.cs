@@ -98,10 +98,10 @@ namespace SpellforceDataEditor.Properties {
         ///in vec2 UV;
         ///in vec4 fragmentColor;
         ///in vec4 fragmentPositionLightSpace;
+        ///in mat4 M;
         ///
         ///out vec4 color;
         ///
-        ///uniform mat4 M;
         ///uniform float SunStrength;
         ///uniform vec3 SunDirection;
         ///uniform vec4 SunColor;
@@ -111,9 +111,11 @@ namespace SpellforceDataEditor.Properties {
         ///uniform sampler2D ShadowMap;
         ///uniform bool texture_used;
         ///uniform bool apply_shading;
+        ///uniform vec4 FogColor;
+        ///uniform float FogStart;
+        ///uniform float FogEnd;
         ///
-        ///vec2 poissonDisk[4] = vec2[](
-        ///  vec2( -0.94201624, -0.39906216 ),        /// [rest of string was truncated]&quot;;.
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader {
             get {
@@ -168,13 +170,14 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 SunColor;
         ///uniform float AmbientStrength;
         ///uniform vec4 AmbientColor;
+        ///uniform vec4 FogColor;
+        ///uniform float FogStart;
+        ///uniform float FogEnd;
         ///uniform sampler2DArray myTextureSampler;
         ///uniform sampler2D ShadowMap;
         ///
         ///
-        ///vec2 poissonDisk[4] = vec2[](
-        ///  vec2( -0.94201624, -0.39906216 ),
-        ///  vec2( 0.94558609 [rest of string was truncated]&quot;;.
+        ///vec2 poissonDi [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_hmap {
             get {
@@ -237,11 +240,12 @@ namespace SpellforceDataEditor.Properties {
         ///uniform sampler2D DiffuseTex;
         ///uniform sampler2D ShadowMap;
         ///uniform bool apply_shading;
+        ///uniform vec4 FogColor;
+        ///uniform float FogStart;
+        ///uniform float FogEnd;
         ///
         ///vec2 poissonDisk[4] = vec2[](
-        ///  vec2( -0.94201624, -0.39906216 ),
-        ///  vec2( 0.94558609, -0.76890725 ),
-        ///  vec2( -0.0941 [rest of string was truncated]&quot;;.
+        ///  vec2( -0.94201 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_skel {
             get {
@@ -337,17 +341,16 @@ namespace SpellforceDataEditor.Properties {
         ///layout(location = 1) in vec3 vertexNormal;
         ///layout(location = 2) in vec2 vertexUV;
         ///layout(location = 3) in vec4 vertexColor;
+        ///layout(location = 4) in mat4 instanceMatrix;
         ///
         ///out vec3 fragmentPosition;
         ///out vec3 fragmentNormal;
         ///out vec2 UV;
         ///out vec4 fragmentColor;
         ///out vec4 fragmentPositionLightSpace;
+        ///out mat4 M;
         ///
-        ///// Values that stay constant for the whole mesh.
-        ///uniform mat4 MVP;
-        ///uniform mat4 LSM;
-        ///uniform mat4 M;        /// [rest of string was truncated]&quot;;.
+        ///// Values that stay constant for the whole me [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader {
             get {
@@ -429,15 +432,15 @@ namespace SpellforceDataEditor.Properties {
         ///layout(location = 1) in vec3 vertexNormal;
         ///layout(location = 2) in vec2 vertexUV;
         ///layout(location = 3) in vec4 vertexColor;
+        ///layout(location = 4) in mat4 instanceMatrix;
         ///
         ///out vec2 UV;
         ///
         ///uniform mat4 LSM;  // light space matrix
-        ///uniform mat4 M;  // model matrix
         ///
         ///void main()
         ///{
-        ///    gl_Position = LSM * M * vec4(vertexPosition_modelspace, 1.0);
+        ///    gl_Position = LSM * instanceMatrix * vec4(vertexPosition_modelspace, 1.0);
         ///    UV = vertexUV;
         ///}.
         /// </summary>
@@ -516,8 +519,8 @@ namespace SpellforceDataEditor.Properties {
         ///out vec4 fragmentPositionLightSpace;
         ///
         ///// Values that stay constant for the whole mesh.
-        ///uniform mat4 MVP;
-        ///uniform  [rest of string was truncated]&quot;;.
+        ///uniform mat4 VP;
+        ///uniform m [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_skel {
             get {

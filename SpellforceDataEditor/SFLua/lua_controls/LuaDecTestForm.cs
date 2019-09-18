@@ -50,6 +50,7 @@ namespace SpellforceDataEditor.SFLua.lua_controls
                     LuaDecompiler.Decompiler dec = new LuaDecompiler.Decompiler();
                     LuaDecompiler.Node n = dec.Decompile(scr.func);
 
+
                     StringWriter sw = new StringWriter();
                     n.WriteLuaString(sw);
                     File.WriteAllText(file_dir + "\\" + new_fname, sw.ToString());

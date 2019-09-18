@@ -136,6 +136,9 @@ uniform vec4 AmbientColor;
 uniform sampler2D DiffuseTex;
 uniform sampler2D ShadowMap;
 uniform bool apply_shading;
+uniform vec4 FogColor;
+uniform float FogStart;
+uniform float FogEnd;
 
 vec2 poissonDisk[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
@@ -186,6 +189,11 @@ void main(){
   color.a = 1.0;
   color = color*temp_c;
   color = clamp(color, 0.0, 1.0);
+
+  // fog calculation
+  float dist = gl_FragCoord.z / gl_FragCoord.w;
+  float fog_factor = clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0);
+  color = mix(color, FogColor, fog_factor);
 }</value>
   </data>
   <data name="vshader_skel" xml:space="preserve">
@@ -204,7 +212,7 @@ out vec3 fragmentNormal;
 out vec4 fragmentPositionLightSpace;
 
 // Values that stay constant for the whole mesh.
-uniform mat4 MVP;
+uniform mat4 VP;
 uniform mat4 LSM;
 uniform mat4 M;
 uniform mat4 boneTransforms[20];
@@ -248,7 +256,7 @@ void main(){
 
   
   // Output position of the vertex, in clip space : MVP * position
-  gl_Position =  MVP * vec4(newVertex.xyz, 1.0);
+  gl_Position =  VP * M * vec4(newVertex.xyz, 1.0);
   fragmentPositionLightSpace = LSM * M * vec4(newVertex.xyz, 1);
   fragmentPosition = newVertex.xyz;
   UV = vertexUV;
@@ -263,21 +271,23 @@ layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec2 vertexUV;
 layout(location = 3) in vec4 vertexColor;
+layout(location = 4) in mat4 instanceMatrix;
 
 out vec3 fragmentPosition;
 out vec3 fragmentNormal;
 out vec2 UV;
 out vec4 fragmentColor;
 out vec4 fragmentPositionLightSpace;
+out mat4 M;
 
 // Values that stay constant for the whole mesh.
-uniform mat4 MVP;
+uniform mat4 VP;
 uniform mat4 LSM;
-uniform mat4 M;
   
 void main(){
+  M = instanceMatrix;
   // Output position of the vertex, in clip space : MVP * position
-  gl_Position = MVP * vec4(vertexPosition_modelspace,1);
+  gl_Position = VP * M * vec4(vertexPosition_modelspace,1);
   fragmentPositionLightSpace = LSM * M * vec4(vertexPosition_modelspace, 1);
   fragmentPosition = vec3(M * vec4(vertexPosition_modelspace, 1));
   UV = vertexUV;
@@ -311,10 +321,10 @@ in vec3 fragmentNormal;
 in vec2 UV;
 in vec4 fragmentColor;
 in vec4 fragmentPositionLightSpace;
+in mat4 M;
 
 out vec4 color;
 
-uniform mat4 M;
 uniform float SunStrength;
 uniform vec3 SunDirection;
 uniform vec4 SunColor;
@@ -324,6 +334,9 @@ uniform sampler2D DiffuseTex;
 uniform sampler2D ShadowMap;
 uniform bool texture_used;
 uniform bool apply_shading;
+uniform vec4 FogColor;
+uniform float FogStart;
+uniform float FogEnd;
 
 vec2 poissonDisk[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
@@ -379,6 +392,11 @@ void main(){
   color.a = 1.0;
   color = color*temp_c;
   color = clamp(color, 0.0, 1.0);
+
+  // fog calculation
+  float dist = gl_FragCoord.z / gl_FragCoord.w;
+  float fog_factor = clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0);
+  color = mix(color, FogColor, fog_factor);
 }</value>
   </data>
   <data name="fshader_overlay" xml:space="preserve">
@@ -410,6 +428,9 @@ uniform vec3 SunDirection;
 uniform vec4 SunColor;
 uniform float AmbientStrength;
 uniform vec4 AmbientColor;
+uniform vec4 FogColor;
+uniform float FogStart;
+uniform float FogEnd;
 uniform sampler2DArray myTextureSampler;
 uniform sampler2D ShadowMap;
 
@@ -463,6 +484,11 @@ void main(){
   color.a = 1.0;
   color = color*temp_c;
   color = clamp(color, 0.0, 1.0);
+
+  // fog calculation
+  float dist = gl_FragCoord.z / gl_FragCoord.w;
+  float fog_factor = clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0);
+  color = mix(color, FogColor, fog_factor);
 }</value>
   </data>
   <data name="vshader_hmap" xml:space="preserve">
@@ -483,7 +509,7 @@ out vec3 textureWeight;
 out vec4 fragmentPositionLightSpace;
 
 // Values that stay constant for the whole mesh.
-uniform mat4 MVP;
+uniform mat4 VP;
 uniform mat4 LSM;
 uniform mat4 M;
 
@@ -495,7 +521,7 @@ vec3 texW[3] = vec3[] (
   
 void main(){
   // Output position of the vertex, in clip space : MVP * position
-  gl_Position = MVP * vec4(vertexPosition_modelspace,1);
+  gl_Position = VP * M * vec4(vertexPosition_modelspace,1);
   fragmentPositionLightSpace = LSM * M * vec4(vertexPosition_modelspace, 1);
   UV = vertexUV;
   fragmentPosition = vertexPosition_modelspace;
@@ -594,15 +620,15 @@ layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec2 vertexUV;
 layout(location = 3) in vec4 vertexColor;
+layout(location = 4) in mat4 instanceMatrix;
 
 out vec2 UV;
 
 uniform mat4 LSM;  // light space matrix
-uniform mat4 M;  // model matrix
 
 void main()
 {
-    gl_Position = LSM * M * vec4(vertexPosition_modelspace, 1.0);
+    gl_Position = LSM * instanceMatrix * vec4(vertexPosition_modelspace, 1.0);
     UV = vertexUV;
 }</value>
   </data>

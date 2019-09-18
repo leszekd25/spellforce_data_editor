@@ -110,15 +110,18 @@ namespace SpellforceDataEditor.SF3D.Physics
                 return false;
 
             Ray r = this - offset;
-            int triangle_count = mesh.face_indices.Length / 3;
-            for(int i = 0; i < triangle_count; i++)
+            foreach (SFSubModel3D sbm in mesh.submodels)
             {
-                // todo: use precalculated triangle normals
-                Triangle t = new Triangle(mesh.vertices[mesh.face_indices[i * 3 + 2]],
-                    mesh.vertices[mesh.face_indices[i * 3 + 0]],
-                    mesh.vertices[mesh.face_indices[i * 3 + 1]]);
-                if (r.Intersect(t, out point))
-                    return true;
+                int triangle_count = sbm.face_indices.Length / 3;
+                for (int i = 0; i < triangle_count; i++)
+                {
+                    // todo: use precalculated triangle normals
+                    Triangle t = new Triangle(sbm.vertices[sbm.face_indices[i * 3 + 2]],
+                        sbm.vertices[sbm.face_indices[i * 3 + 0]],
+                        sbm.vertices[sbm.face_indices[i * 3 + 1]]);
+                    if (r.Intersect(t, out point))
+                        return true;
+                }
             }
 
             return false;

@@ -57,7 +57,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.Initialize() called");
             ResizeView(view_size);
 
-            GL.ClearColor(Color.MidnightBlue);
+            GL.ClearColor(scene.atmosphere.FogColor.X, scene.atmosphere.FogColor.Y, 
+                          scene.atmosphere.FogColor.Z, scene.atmosphere.FogColor.W);
 
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.StencilTest);
@@ -66,7 +67,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             shader_simple.CompileShader(Properties.Resources.vshader, Properties.Resources.fshader);
-            shader_simple.AddParameter("MVP");
+            shader_simple.AddParameter("VP");
             shader_simple.AddParameter("M");
             shader_simple.AddParameter("LSM");
             shader_simple.AddParameter("DiffuseTexture");
@@ -78,9 +79,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_simple.AddParameter("SunColor");
             shader_simple.AddParameter("AmbientStrength");
             shader_simple.AddParameter("AmbientColor");
+            shader_simple.AddParameter("FogColor");
+            shader_simple.AddParameter("FogStart");
+            shader_simple.AddParameter("FogEnd");
 
             shader_animated.CompileShader(Properties.Resources.vshader_skel, Properties.Resources.fshader_skel);
-            shader_animated.AddParameter("MVP");
+            shader_animated.AddParameter("VP");
             shader_animated.AddParameter("M");
             shader_animated.AddParameter("LSM");
             shader_animated.AddParameter("DiffuseTexture");
@@ -93,9 +97,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_animated.AddParameter("SunColor");
             shader_animated.AddParameter("AmbientStrength");
             shader_animated.AddParameter("AmbientColor");
+            shader_animated.AddParameter("FogColor");
+            shader_animated.AddParameter("FogStart");
+            shader_animated.AddParameter("FogEnd");
 
             shader_heightmap.CompileShader(Properties.Resources.vshader_hmap, Properties.Resources.fshader_hmap);
-            shader_heightmap.AddParameter("MVP");
+            shader_heightmap.AddParameter("VP");
             shader_heightmap.AddParameter("M");
             shader_heightmap.AddParameter("LSM");
             shader_heightmap.AddParameter("ShadowMap");
@@ -104,6 +111,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_heightmap.AddParameter("SunColor");
             shader_heightmap.AddParameter("AmbientStrength");
             shader_heightmap.AddParameter("AmbientColor");
+            shader_heightmap.AddParameter("FogColor");
+            shader_heightmap.AddParameter("FogStart");
+            shader_heightmap.AddParameter("FogEnd");
 
             if (Settings.EnableShadows)
             {
@@ -128,9 +138,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             scene.sun_light.Direction = -(new Vector3(0, -1, 0).Normalized());
             scene.sun_light.Color = new Vector4(1, 1, 1, 1);
-            scene.sun_light.Strength = 1.3f;
-            scene.ambient_light.Strength = 1.0f;
-            scene.ambient_light.Color = new Vector4(0.6f, 0.6f, 1.0f, 1.0f);
+            scene.sun_light.Strength = 1.5f;
+            scene.ambient_light.Color = new Vector4(1f, 1f, 1f, 1.0f);
+            scene.ambient_light.Strength = 0.8f;
+            scene.atmosphere.FogColor = new Vector4(0.55f, 0.55f, 0.85f, 1.0f);
+            scene.atmosphere.FogStart = 100f;
+            scene.atmosphere.FogEnd = 200f;
 
             if (screenspace_framebuffer != null)
             {
@@ -168,7 +181,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.ResizeView() called (view_size = " + view_size.ToString() + ")");
             render_size = view_size;
             scene.camera.ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
-                (float)Math.PI / 4, view_size.X / view_size.Y, 0.1f, 100f);
+                (float)Math.PI / 4, view_size.X / view_size.Y, 0.1f, 200f);
+            scene.camera.AspectRatio = (float)(view_size.X) / view_size.Y;
             GL.Viewport(0, 0, (int)view_size.X, (int)view_size.Y);
             if (screenspace_framebuffer != null)
             {
@@ -185,6 +199,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Uniform4(shader_simple["SunColor"], scene.sun_light.Color);
             GL.Uniform1(shader_simple["AmbientStrength"], scene.ambient_light.Strength);
             GL.Uniform4(shader_simple["AmbientColor"], scene.ambient_light.Color);
+            GL.Uniform4(shader_simple["FogColor"], scene.atmosphere.FogColor);
+            GL.Uniform1(shader_simple["FogStart"], scene.atmosphere.FogStart);
+            GL.Uniform1(shader_simple["FogEnd"], scene.atmosphere.FogEnd);
 
             GL.UseProgram(shader_animated.ProgramID);
             GL.Uniform1(shader_animated["SunStrength"], scene.sun_light.Strength);
@@ -192,6 +209,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Uniform4(shader_animated["SunColor"], scene.sun_light.Color);
             GL.Uniform1(shader_animated["AmbientStrength"], scene.ambient_light.Strength);
             GL.Uniform4(shader_animated["AmbientColor"], scene.ambient_light.Color);
+            GL.Uniform4(shader_animated["FogColor"], scene.atmosphere.FogColor);
+            GL.Uniform1(shader_animated["FogStart"], scene.atmosphere.FogStart);
+            GL.Uniform1(shader_animated["FogEnd"], scene.atmosphere.FogEnd);
 
             GL.UseProgram(shader_heightmap.ProgramID);
             GL.Uniform1(shader_heightmap["SunStrength"], scene.sun_light.Strength);
@@ -199,6 +219,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Uniform4(shader_heightmap["SunColor"], scene.sun_light.Color);
             GL.Uniform1(shader_heightmap["AmbientStrength"], scene.ambient_light.Strength);
             GL.Uniform4(shader_heightmap["AmbientColor"], scene.ambient_light.Color);
+            GL.Uniform4(shader_heightmap["FogColor"], scene.atmosphere.FogColor);
+            GL.Uniform1(shader_heightmap["FogStart"], scene.atmosphere.FogStart);
+            GL.Uniform1(shader_heightmap["FogEnd"], scene.atmosphere.FogEnd);
 
             GL.UseProgram(0);
         }
@@ -272,6 +295,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 for (int j = chunks_per_task * i; j < end; j++)
                 {
                     SceneNodeMapChunk chunk_node = scene.heightmap.chunk_nodes[j];
+                    chunk_node.DistanceToCamera = Vector2.Distance(
+                        new Vector2(chunk_node.MapChunk.collision_cache.aabb.center.X, 
+                                    chunk_node.MapChunk.collision_cache.aabb.center.Z),
+                        new Vector2(scene.camera.Position.X, scene.camera.Position.Z));
+                    if (chunk_node.DistanceToCamera > 224)  // magic number: zFar+aspect_ratio*sqrt2*chunk size
+                        continue;
                     if (!chunk_node.MapChunk.collision_cache.aabb.IsOutsideOfConvexHull(scene.camera.FrustumPlanes))
                         vis_chunks_per_task[i].Add(chunk_node);
                 }
@@ -361,7 +390,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
             scene.heightmap.visible_chunks = vis_chunks;
 
-            // set light matrix
+            // set light matrix and check decoration visibility
+            /*
             float xmin, xmax, ymin, ymax, zmax;
             xmin = 9999; ymin = 9999; xmax = -9999; ymax = -9999; zmax = -9999;
             foreach(SceneNodeMapChunk chunk_node in vis_chunks)
@@ -377,8 +407,19 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     ymax = pos.Z+32;
                 if (chunk_node.MapChunk.collision_cache.aabb.b.Y > zmax)
                     zmax = chunk_node.MapChunk.collision_cache.aabb.b.Y;
+
+                chunk_node.MapChunk.UpdateDecorationVisible(chunk_node.DistanceToCamera);
             }
             SF3D.Physics.BoundingBox aabb = new Physics.BoundingBox(new Vector3(xmin, 0, ymin), new Vector3(xmax, zmax+15, ymax));
+            scene.sun_light.SetupLightView(aabb);*/
+
+            // set light matrix and check decoration visibility
+            
+            foreach(SceneNodeMapChunk chunk_node in vis_chunks)
+                chunk_node.MapChunk.UpdateDecorationVisible(chunk_node.DistanceToCamera);
+            SF3D.Physics.BoundingBox aabb = new Physics.BoundingBox(
+                new Vector3(scene.camera.Position.X - 64, 0, scene.camera.Position.Z - 64),
+                new Vector3(scene.camera.Position.X + 64, scene.camera.Position.Y, scene.camera.Position.Z + 64));
             scene.sun_light.SetupLightView(aabb);
         }
 
@@ -387,7 +428,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
             Matrix4 lsm_mat = scene.sun_light.LightMatrix;
             GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
             if (current_pass == RenderPass.SCENE)
+            {
                 GL.BindTexture(TextureTarget.Texture2DArray, scene.heightmap.texture_manager.terrain_texture);
+                Matrix4 vp_mat = scene.camera.ViewProjMatrix;
+                GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+            }
             else if (current_pass == RenderPass.SHADOWMAP)
                 GL.BindTexture(TextureTarget.Texture2D, opaque_tex.tex_id);
             foreach(SceneNodeMapChunk chunk_node in scene.heightmap.visible_chunks)
@@ -398,13 +443,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                 Matrix4 model_mat = chunk_node.ResultTransform;
                 GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
-
-                Matrix4 mvp_mat = model_mat;
-                if (current_pass == RenderPass.SCENE)
-                {
-                    mvp_mat *= scene.camera.ViewProjMatrix;
-                    GL.UniformMatrix4(active_shader["MVP"], false, ref mvp_mat);
-                }
 
                 GL.BindVertexArray(chunk.vertex_array);
                 GL.DrawArrays(PrimitiveType.Triangles, 0, chunk.vertices.Length);
@@ -418,6 +456,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
         {
             GL.Uniform1(active_shader["apply_shading"], 0);
             GL.Uniform1(active_shader["texture_used"], 1);
+            Matrix4 VP_mat = scene.camera.ViewProjMatrix;
+            GL.UniformMatrix4(active_shader["VP"], false, ref VP_mat);
+
             foreach (SceneNodeMapChunk chunk_node in scene.heightmap.visible_chunks)
             {
                 SFMapHeightMapChunk chunk = chunk_node.MapChunk;
@@ -425,19 +466,15 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 if (chunk.lake_model == null)
                     continue;
 
-                GL.BindVertexArray(chunk.lake_model.vertex_array);
-
                 // get chunk position
                 Matrix4 chunk_matrix = chunk_node.ResultTransform;
-                Matrix4 MVP_mat = chunk_matrix * scene.camera.ViewProjMatrix;
-
-                GL.UniformMatrix4(active_shader["MVP"], false, ref MVP_mat);
                 GL.UniformMatrix4(active_shader["M"], false, ref chunk_matrix);
 
-                foreach (SFMaterial mat in chunk.lake_model.materials)
+                foreach (SFSubModel3D sbm in chunk.lake_model.submodels)
                 {
-                    GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
-                    GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
+                    GL.BindVertexArray(sbm.vertex_array);
+                    GL.BindTexture(TextureTarget.Texture2D, sbm.material.texture.tex_id);
+                    GL.DrawElements(PrimitiveType.Triangles, (int)sbm.material.indexCount, DrawElementsType.UnsignedInt, (int)sbm.material.indexStart * 4);
                 }
             }
         }
@@ -447,13 +484,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
         {
             GL.Uniform1(active_shader["texture_used"], 0);
             GL.Uniform1(active_shader["apply_shading"], 0);
+            Matrix4 VP_mat = scene.camera.ViewProjMatrix;
+            GL.UniformMatrix4(active_shader["VP"], false, ref VP_mat);
+
             foreach (SceneNodeMapChunk chunk_node in scene.heightmap.visible_chunks)
             {
                 Matrix4 chunk_matrix = chunk_node.ResultTransform;
-                Matrix4 MVP_mat = chunk_matrix * scene.camera.ViewProjMatrix;
-
-                GL.UniformMatrix4(active_shader["MVP"], false, ref MVP_mat);
                 GL.UniformMatrix4(active_shader["M"], false, ref chunk_matrix);
+
                 foreach (string o in scene.heightmap.visible_overlays)
                 {
                     SFMap.MapEdit.MapOverlayChunk overlay = chunk_node.MapChunk.overlays[o];
@@ -461,10 +499,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         continue;
                     // get chunk position
 
-                    SFMaterial mat = overlay.mesh.materials[0];
+                    SFSubModel3D sbm = overlay.mesh.submodels[0];
 
-                    GL.BindVertexArray(overlay.mesh.vertex_array);
-                    GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart*4);
+                    GL.BindVertexArray(sbm.vertex_array);
+                    GL.DrawElements(PrimitiveType.Triangles, (int)sbm.material.indexCount, DrawElementsType.UnsignedInt, (int)sbm.material.indexStart*4);
                 }
             }
         }
@@ -481,6 +519,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.Uniform1(active_shader["texture_used"], 0);
                 GL.Uniform1(active_shader["apply_shading"], 0);
                 GL.BindTexture(TextureTarget.Texture2D, 0);
+
+                Matrix4 vp_mat = scene.camera.ViewProjMatrix;
+                GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
             }
             else
             {
@@ -496,19 +537,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 Matrix4 model_mat = elem.node.ResultTransform;
                 GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
 
-                Matrix4 mvp_mat = model_mat;
-                if (current_pass == RenderPass.SCENE)
-                {
-                    mvp_mat *= scene.camera.ViewProjMatrix;
-                    GL.UniformMatrix4(active_shader["MVP"], false, ref mvp_mat);
-                }
+                SFSubModel3D sbm = elem.node.Mesh.submodels[0];
 
-                SFMaterial mat = elem.node.Mesh.materials[elem.submodel_index];
-
-                GL.BindVertexArray(elem.node.Mesh.vertex_array);
+                GL.BindVertexArray(sbm.vertex_array);
                 //GL.Uniform1(active_shader["apply_shading"], (mat.apply_shading ? 1 : 0));
 
-                GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
+                GL.DrawElements(PrimitiveType.Triangles, (int)sbm.material.indexCount, DrawElementsType.UnsignedInt, (int)sbm.material.indexStart * 4);
             }
 
             // textured next
@@ -517,33 +551,25 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.Uniform1(active_shader["texture_used"], 1);
                 GL.Uniform1(active_shader["apply_shading"], 1);
             }
-            foreach (SFTexture tex in scene.tex_list_simple.Keys)
+            foreach(SFTexture tex in scene.tex_entries_simple.Keys)
             {
-                //if(current_pass == RenderPass.SCENE)
-                    GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
-                LinearPool<TexturedGeometryListElementSimple> elem_list = scene.tex_list_simple[tex];
-                for(int i = 0; i < elem_list.elements.Count; i++)
-                { 
-                    if (!elem_list.elem_active[i])
-                        continue;
-                    TexturedGeometryListElementSimple elem = elem_list.elements[i];
+                HashSet<SFSubModel3D> submodels = scene.tex_entries_simple[tex];
 
-                    Matrix4 model_mat = elem.node.ResultTransform;
-                    GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
+                // count all instances using this texture
+                int inst_count = 0;
+                foreach (SFSubModel3D sbm in submodels)
+                    inst_count += sbm.instance_matrices.Count;
+                if (inst_count == 0)
+                    continue;
 
-                    Matrix4 mvp_mat = model_mat;
-                    if (current_pass == RenderPass.SCENE)
-                    {
-                        mvp_mat *= scene.camera.ViewProjMatrix;
-                        GL.UniformMatrix4(active_shader["MVP"], false, ref mvp_mat);
-                    }
-
-                    SFMaterial mat = elem.node.Mesh.materials[elem.submodel_index];
-                    
-                    GL.BindVertexArray(elem.node.Mesh.vertex_array);
+                GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
+                foreach (SFSubModel3D sbm in submodels)
+                {
+                    GL.BindVertexArray(sbm.vertex_array);
+                    sbm.ReloadInstanceMatrices();
                     //GL.Uniform1(active_shader["apply_shading"], (mat.apply_shading ? 1 : 0));
 
-                    GL.DrawElements(PrimitiveType.Triangles, (int)mat.indexCount, DrawElementsType.UnsignedInt, (int)mat.indexStart * 4);
+                    GL.DrawElementsInstanced(PrimitiveType.Triangles, (int)sbm.face_indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero, sbm.instance_matrices.Count);
                 }
             }
         }
@@ -554,7 +580,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
             //UseShader(shader_animated);
             if (current_pass == RenderPass.SCENE)
+            {
                 GL.Uniform1(active_shader["apply_shading"], 1);
+                Matrix4 vp_mat = scene.camera.ViewProjMatrix;
+                GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+            }
 
             foreach (SFTexture tex in scene.tex_list_animated.Keys)
             {
@@ -571,13 +601,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     
                     Matrix4 model_mat = elem.node.ResultTransform;
                     GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
-
-                    Matrix4 mvp_mat = model_mat;
-                    if (current_pass == RenderPass.SCENE)
-                    {
-                        mvp_mat *= scene.camera.ViewProjMatrix;
-                        GL.UniformMatrix4(active_shader["MVP"], false, ref mvp_mat);
-                    }
 
                     SFModelSkinChunk chunk = elem.node.Skin.submodels[elem.submodel_index];
                     
@@ -621,7 +644,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             current_pass = RenderPass.SCENE;
             //draw everything to a texture
             SetFramebuffer(screenspace_framebuffer);
-            GL.ClearColor(Color.MidnightBlue);
+            GL.ClearColor(scene.atmosphere.FogColor.X, scene.atmosphere.FogColor.Y,
+                          scene.atmosphere.FogColor.Z, scene.atmosphere.FogColor.W);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
             GL.Enable(EnableCap.DepthTest);
 
@@ -665,7 +689,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             UseShader(shader_framebuffer_simple);
             GL.BindVertexArray(FrameBuffer.screen_vao);
             GL.Disable(EnableCap.DepthTest);
-            GL.BindTexture(TextureTarget.Texture2D, screenspace_intermediate.texture_color);
+            GL.BindTexture(TextureTarget.Texture2D,screenspace_intermediate.texture_color);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
 
             UseShader(null);

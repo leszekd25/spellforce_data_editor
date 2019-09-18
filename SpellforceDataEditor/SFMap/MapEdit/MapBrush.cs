@@ -6,18 +6,16 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
-    public enum BrushInterpolationMode { CONSTANT = 0, LINEAR, QUADRATIC, SINUSOIDAL };
-
     public enum BrushShape { SQUARE = 0, CIRCLE, DIAMOND };
 
     public class MapBrush
     {
         public float size;
-        public BrushInterpolationMode interpolation_mode;
         public BrushShape shape;
-        public SFCoord center; 
+        public SFCoord center;
 
-        public float GetStrengthAt(SFCoord pos)
+        // 0 at center, 1 outside of brush
+        public float GetInvertedDistanceNormalized(SFCoord pos)
         {
             float distance;
             switch (shape)
@@ -35,21 +33,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     distance = 0;
                     break;
             }
-            if (distance > (size-1))
-                return 0;
-            float k = distance / (size-1);
-            switch (interpolation_mode)
-            {
-                case BrushInterpolationMode.CONSTANT:
-                    return 1;
-                case BrushInterpolationMode.LINEAR:
-                    return 1 - k;
-                case BrushInterpolationMode.QUADRATIC:
-                    return 1 - (float)Math.Pow(k, 2);
-                case BrushInterpolationMode.SINUSOIDAL:
-                    return (float)(Math.Sin(Math.PI * (0.5 - k))+1)/2;
-            }
-            return 0;
+            if (distance > (size - 1))
+                return 1;
+            float k = distance / (size - 1);
+            return k;
         }
     }
 }

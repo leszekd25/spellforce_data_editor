@@ -19,6 +19,7 @@ namespace SpellforceDataEditor.SF3D.Physics
         public Vector3 a;             // lesser of X, Y and Z coordinates are stored here
         public Vector3 b;             // greater of X, Y and Z coordinates are stored here
         private Vector3[] vertices;
+        public Vector3 center { get; private set; }
 
         // automatically sets a and be to fit the definition
         public BoundingBox(Vector3 _a, Vector3 _b)
@@ -50,6 +51,8 @@ namespace SpellforceDataEditor.SF3D.Physics
             vertices[1] = new Vector3(a.X, a.Y, b.Z); vertices[2] = new Vector3(a.X, b.Y, a.Z); vertices[3] = new Vector3(a.X, b.Y, b.Z);
             vertices[4] = new Vector3(b.X, a.Y, a.Z); vertices[5] = new Vector3(b.X, a.Y, b.Z); vertices[6] = new Vector3(b.X, b.Y, a.Z);
             vertices[7] = new Vector3(b);
+
+            center = (a + b) / 2;
         }
 
         public static BoundingBox operator +(BoundingBox ab, Vector3 c)

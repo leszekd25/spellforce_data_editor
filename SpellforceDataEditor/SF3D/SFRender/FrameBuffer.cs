@@ -138,6 +138,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     texture_depth = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2DMultisample, texture_depth);
                     GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, 4, PixelInternalFormat.DepthComponent24, width, height, true);
+                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+                    float[] col = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureBorderColor, col);
                     GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int)All.Nearest);
                     GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int)All.Nearest);
                     GL.BindTexture(TextureTarget.Texture2DMultisample, 0);
@@ -184,6 +188,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     texture_depth = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2D, texture_depth);
                     GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, new IntPtr(0));
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+                    float[] col = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, col);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
                     GL.BindTexture(TextureTarget.Texture2D, 0);

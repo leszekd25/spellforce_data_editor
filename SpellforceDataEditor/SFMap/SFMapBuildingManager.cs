@@ -93,8 +93,10 @@ namespace SpellforceDataEditor.SFMap
                 uvs[i] = new Vector2(0, 0);
                 colors[i] = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
             }
+            SF3D.SFSubModel3D sbm = new SF3D.SFSubModel3D();
+            sbm.CreateRaw(vertices, uvs, colors, normals, indices, null);
 
-            b_outline.CreateRaw(vertices, uvs, colors, normals, indices, null);
+            b_outline.CreateRaw(new SF3D.SFSubModel3D[] { sbm });
         }
     }
 

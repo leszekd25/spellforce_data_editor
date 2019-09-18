@@ -207,7 +207,7 @@ namespace SpellforceDataEditor.SF3D
 
     public class SFModelSkin: SFResource
     {
-        public List<SFModelSkinChunk> submodels { get; private set; } = new List<SFModelSkinChunk>();
+        public SFModelSkinChunk[] submodels { get; private set; } = null;
         string name = "";
 
         public void Init()
@@ -224,10 +224,12 @@ namespace SpellforceDataEditor.SF3D
             int modelnum = br.ReadInt16();
             br.ReadInt32();
 
+            submodels = new SFModelSkinChunk[modelnum];
+
             for(int i = 0; i < modelnum; i++)
             {
                 SFModelSkinChunk chunk = new SFModelSkinChunk();
-                submodels.Add(chunk);
+                submodels[i] = chunk;
                 chunk.chunk_id = i;
                 int return_code = chunk.Load(ms);
                 if (return_code != 0)
@@ -251,8 +253,10 @@ namespace SpellforceDataEditor.SF3D
 
         public void Dispose()
         {
-            foreach (SFModelSkinChunk submodel in submodels)
-                submodel.Dispose();
+            if(submodels!=null)
+                foreach (SFModelSkinChunk submodel in submodels)
+                 submodel.Dispose();
+            submodels = null;
         }
     }
 }

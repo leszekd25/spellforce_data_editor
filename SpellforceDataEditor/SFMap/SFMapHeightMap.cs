@@ -17,6 +17,7 @@ namespace SpellforceDataEditor.SFMap
         public int width, height;
         public int id, ix, iy;
         public bool visible = false;
+        public bool decoration_visible = false;
         
         // heightmap
         public byte[] material_id;
@@ -26,7 +27,6 @@ namespace SpellforceDataEditor.SFMap
         public Vector3[] texture_id;
 
         public SF3D.Physics.CollisionMesh collision_cache = new SF3D.Physics.CollisionMesh();
-        //public SF3D.Physics.Triangle[] collision_cache;
 
         // lake
         public SFModel3D lake_model = null;    // generated here, but owned by ResourceManager
@@ -160,8 +160,6 @@ namespace SpellforceDataEditor.SFMap
                 uvs[i] = vertices[i].Xz / 4;
             
             collision_cache.Generate(new Vector3(ix*size,0,iy*size), vertices);
-            //GenerateAABB();
-            //GenerateGeometryCache();
             Init();
         }
 
@@ -182,16 +180,6 @@ namespace SpellforceDataEditor.SFMap
             }
             collision_cache.aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, 0, iy * size), new Vector3((ix + 1) * size, max_height/100.0f, (iy * size) + size));
         }
-
-        /*public void GenerateGeometryCache()
-        {
-            int triangle_count = vertices.Length / 3;
-            collision_cache = new SF3D.Physics.Triangle[triangle_count];
-            for (int i = 0; i < triangle_count; i++)
-                collision_cache[i] = new SF3D.Physics.Triangle(vertices[i * 3 + 0],
-                                                               vertices[i * 3 + 1],
-                                                               vertices[i * 3 + 2]);
-        }*/
 
         public void Init()
         {
@@ -311,8 +299,6 @@ namespace SpellforceDataEditor.SFMap
 
             collision_cache = new SF3D.Physics.CollisionMesh();
             collision_cache.Generate(new Vector3(ix * size, 0, iy * size), vertices);
-            //GenerateAABB();
-            //GenerateGeometryCache();
 
             GL.BindVertexArray(vertex_array);
 
@@ -429,12 +415,6 @@ namespace SpellforceDataEditor.SFMap
                 }
             }
 
-            for (int i = 0; i < vertices.Length; i++)
-            {
-                // color (debug heightmap)
-                float h = vertices[i].Y;
-            }
-
             GL.BindVertexArray(vertex_array);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, tex_id_buffer);
@@ -459,7 +439,6 @@ namespace SpellforceDataEditor.SFMap
                 return;
             // these are lake ids... different lake ids != different lake types
             // one material dedicated to each lake type on the chunk!
-            // LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFMapHeightMap.RebuildLake() called, lake name LAKE_" + ix.ToString() + "_" + iy.ToString());
             Dictionary<SFCoord, SFMapLakeCellInfo> lake_info = new Dictionary<SFCoord, SFMapLakeCellInfo>();
             Dictionary<short, int> lake_types = new Dictionary<short, int>();
 
@@ -499,19 +478,19 @@ namespace SpellforceDataEditor.SFMap
                 total_cell_count += lake_types[t];
             if (total_cell_count == 0)
                 return;
-
-            // generate geometry
-            Vector3[] vertices = new Vector3[total_cell_count * 4];
-            Vector2[] uvs = new Vector2[total_cell_count * 4];
-            Vector4[] colors = new Vector4[total_cell_count * 4];
-            Vector3[] normals = new Vector3[total_cell_count * 4];
-            uint[] indices = new uint[total_cell_count * 6];
-            SFMaterial[] materials = new SFMaterial[lake_types.Count];
-
-            int k = 0;
-            int mat_index = 0;
+            
+            // generate submodels
+            SFSubModel3D[] submodels = new SFSubModel3D[lake_types.Count];
+            
+            int submodel_index = 0;
             foreach (short t in lake_types.Keys)
             {
+                int k = 0;
+                Vector3[] vertices = new Vector3[lake_info.Keys.Count * 4];
+                Vector2[] uvs = new Vector2[lake_info.Keys.Count * 4];
+                Vector4[] colors = new Vector4[lake_info.Keys.Count * 4];
+                Vector3[] normals = new Vector3[lake_info.Keys.Count * 4];
+                uint[] indices = new uint[lake_info.Keys.Count * 6];
                 // generate geometry for each lake type
                 foreach (SFCoord pos in lake_info.Keys)
                 {
@@ -547,9 +526,9 @@ namespace SpellforceDataEditor.SFMap
                     k += 1;
                 }
                 // generate material for this geometry
-                materials[mat_index] = new SFMaterial();
-                materials[mat_index].indexStart = (uint)((k - lake_types[t]) * 6);
-                materials[mat_index].indexCount = (uint)(lake_types[t] * 6);
+                SFMaterial material = new SFMaterial();
+                material.indexStart = (uint)0;
+                material.indexCount = (uint)(lake_info.Keys.Count * 6);
 
                 string tex_name = hmap.map.lake_manager.GetLakeTextureName(t);
                 SFTexture tex = null;
@@ -561,13 +540,16 @@ namespace SpellforceDataEditor.SFMap
                     tex = SFResources.SFResourceManager.Textures.Get(tex_name);
                     tex.FreeMemory();
                 }
-                materials[mat_index].texture = tex;
+                material.texture = tex;
 
-                mat_index += 1;
+                SFSubModel3D sbm = new SFSubModel3D();
+                sbm.CreateRaw(vertices, uvs, colors, normals, indices, material);
+                submodels[submodel_index] = sbm;
+                submodel_index += 1;
             }
-
+            
             lake_model = new SFModel3D();
-            lake_model.CreateRaw(vertices, uvs, colors, normals, indices, materials);
+            lake_model.CreateRaw(submodels);
             SFResources.SFResourceManager.Models.AddManually(lake_model, "LAKE_" + ix.ToString() + "_" + iy.ToString());
         }
 
@@ -601,6 +583,28 @@ namespace SpellforceDataEditor.SFMap
                     RebuildLake();
                     foreach (string o_name in overlays.Keys)
                         OverlayUpdate(o_name);
+                }
+            }
+        }
+
+        public void UpdateDecorationVisible(float camera_dist)
+        {
+            if(decoration_visible)
+            {
+                if(camera_dist > 71)  // magic number...
+                {
+                    decoration_visible = false;
+                    foreach (SFMapDecoration d in decorations)
+                        owner.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName()).Visible = false;
+                }
+            }
+            else
+            {
+                if(camera_dist <= 71)
+                {
+                    decoration_visible = true;
+                    foreach (SFMapDecoration d in decorations)
+                        owner.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName()).Visible = true;
                 }
             }
         }
@@ -923,8 +927,8 @@ namespace SpellforceDataEditor.SFMap
 
         public void RebuildGeometry(SFCoord topleft, SFCoord bottomright)
         {
-            int chunk_size = 16;
             int chunk_count_x = width / chunk_size;
+            int chunk_count_y = height / chunk_size;
 
             int topchunkx = topleft.x / 16;
             int topchunky = topleft.y / 16;
@@ -933,13 +937,13 @@ namespace SpellforceDataEditor.SFMap
 
             for (int i = topchunkx; i <= botchunkx; i++)
                 for (int j = topchunky; j <= botchunky; j++)
-                    chunk_nodes[j * chunk_count_x + i].MapChunk.RebuildGeometry();
+                    chunk_nodes[(chunk_count_y - j - 1) * chunk_count_x + i].MapChunk.RebuildGeometry();
         }
 
         public void RebuildTerrainTexture(SFCoord topleft, SFCoord bottomright)
         {
-            int chunk_size = 16;
             int chunk_count_x = width / chunk_size;
+            int chunk_count_y = height / chunk_size;
 
             int topchunkx = topleft.x / 16;
             int topchunky = topleft.y / 16;
@@ -948,7 +952,7 @@ namespace SpellforceDataEditor.SFMap
 
             for (int i = topchunkx; i <= botchunkx; i++)
                 for (int j = topchunky; j <= botchunky; j++)
-                    chunk_nodes[j * chunk_count_x + i].MapChunk.RebuildTerrainTexture();
+                    chunk_nodes[(chunk_count_y - j - 1) * chunk_count_x + i].MapChunk.RebuildTerrainTexture();
         }
 
         public void OverlayCreate(string o_name, Vector4 col)
@@ -1005,6 +1009,7 @@ namespace SpellforceDataEditor.SFMap
         public void RebuildOverlay(SFCoord topleft, SFCoord bottomright, string o_name)
         {
             int chunk_count_x = width / chunk_size;
+            int chunk_count_y = height / chunk_size;
 
             int topchunkx = topleft.x / chunk_size;
             int topchunky = topleft.y / chunk_size;
@@ -1013,7 +1018,7 @@ namespace SpellforceDataEditor.SFMap
 
             for (int i = topchunkx; i <= botchunkx; i++)
                 for (int j = topchunky; j <= botchunky; j++)
-                    chunk_nodes[j * chunk_count_x + i].MapChunk.OverlayUpdate(o_name);
+                    chunk_nodes[(chunk_count_y - j - 1) * chunk_count_x + i].MapChunk.OverlayUpdate(o_name);
         }
 
         public List<HashSet<SFCoord>> GetSeparateIslands(HashSet<SFCoord> src)

@@ -51,7 +51,10 @@ namespace SpellforceDataEditor.SFMap
             uint[] indices = { 4, 0, 1,   1, 5, 4,   5, 1, 3,   3, 7, 5,
                                7, 3, 2,   2, 6, 7,   6, 2, 0,   0, 4, 2 };
 
-            selection_mesh.CreateRaw(vertices, uvs, colors, normals, indices, null);
+            SF3D.SFSubModel3D sbm1 = new SF3D.SFSubModel3D();
+            sbm1.CreateRaw(vertices, uvs, colors, normals, indices, null);
+
+            selection_mesh.CreateRaw(new SF3D.SFSubModel3D[] { sbm1 });
             SFResources.SFResourceManager.Models.AddManually(selection_mesh, "_SELECTION_");
 
             // generate mouse cursor selected position gizmo
@@ -75,7 +78,10 @@ namespace SpellforceDataEditor.SFMap
                                    0, 1, 4,   1, 4, 5,   1, 3, 5,   3, 5, 7,
                                    3, 2, 7,   2, 7, 6,   2, 0, 6,   0, 6, 4};
 
-            cursor_mesh.CreateRaw(vertices, uvs, colors, normals, indices, null);
+            SF3D.SFSubModel3D sbm2 = new SF3D.SFSubModel3D();
+            sbm2.CreateRaw(vertices, uvs, colors, normals, indices, null);
+
+            cursor_mesh.CreateRaw(new SF3D.SFSubModel3D[] { sbm2 });
             SFResources.SFResourceManager.Models.AddManually(cursor_mesh, "_CURSOR_");
         }
 
