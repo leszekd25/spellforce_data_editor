@@ -88,9 +88,22 @@ namespace SpellforceDataEditor.SFMap
         public int player_count = 0;   // actually spawn points for players, each bound to exactly one bindstone
         public List<SFMapSpawn> spawns = new List<SFMapSpawn>();
         public SFMapMinimap minimap = null;
-        public List<SFMapCoopSpawnParameters> coop_spawn_params = null;
+        public List<SFMapCoopSpawnParameters> coop_spawn_params = new List<SFMapCoopSpawnParameters>()
+            {
+                new SFMapCoopSpawnParameters(),
+                new SFMapCoopSpawnParameters(),
+                new SFMapCoopSpawnParameters()
+            };
         public List<SFMapCoopAISpawn> coop_spawns = null;
         public List<SFMapMultiplayerTeamComposition> multi_teams = null;
+
+        public SFMapMetaData()
+        {
+            coop_spawn_params[0].param1 = 1; coop_spawn_params[1].param1 = 1.5f; coop_spawn_params[2].param1 = 2;
+            coop_spawn_params[0].param2 = 1; coop_spawn_params[1].param2 = 1.5f; coop_spawn_params[2].param2 = 2;
+            coop_spawn_params[0].param3 = 1; coop_spawn_params[1].param3 = 0.7f; coop_spawn_params[2].param3 = 0.5f;
+            coop_spawn_params[0].param4 = 1; coop_spawn_params[1].param4 = 0.7f; coop_spawn_params[2].param4 = 0.5f;
+        }
 
         public void Unload()
         {

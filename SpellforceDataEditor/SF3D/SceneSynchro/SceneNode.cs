@@ -145,7 +145,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             UpdateTime(t);
             UpdateTransform();
-            OnGatherSceneInstances();
+            if(Visible)
+                OnGatherSceneInstances();
 
             foreach (SceneNode node in Children)
                 node.Update(t);
@@ -213,7 +214,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return Parent.GetFullPath() + '.' + this.Name;
         }
 
-        public virtual void OnGatherSceneInstances()
+        protected virtual void OnGatherSceneInstances()
         {
 
         }
@@ -273,7 +274,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         public SceneNodeSimple(string n) : base(n) { }
 
-        public override void OnGatherSceneInstances()
+        protected override void OnGatherSceneInstances()
         {
             if(Mesh != null)
                 for (int i = 0; i < Mesh.submodels.Length; i++)
@@ -496,6 +497,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
     {
         public SFMap.SFMapHeightMapChunk MapChunk;
         public float DistanceToCamera { get; set; } = 0;
+        public float CameraHeightDifference { get; set; } = 0;
 
         public SceneNodeMapChunk(string n) : base(n) { }
 

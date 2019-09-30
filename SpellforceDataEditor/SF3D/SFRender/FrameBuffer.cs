@@ -125,7 +125,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 {
                     texture_color = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2DMultisample, texture_color);
-                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, 4, PixelInternalFormat.Rgb, width, height, true);
+                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, PixelInternalFormat.Rgb, width, height, true);
                     GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int)All.Linear);
                     GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int)All.Linear);
                     GL.BindTexture(TextureTarget.Texture2DMultisample, 0);
@@ -137,7 +137,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 {
                     texture_depth = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2DMultisample, texture_depth);
-                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, 4, PixelInternalFormat.DepthComponent24, width, height, true);
+                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, PixelInternalFormat.DepthComponent24, width, height, true);
                     GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
                     GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
                     float[] col = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -153,7 +153,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 {
                     texture_stencil = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2DMultisample, texture_stencil);
-                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, 4, PixelInternalFormat.R8, width, height, true);
+                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, PixelInternalFormat.R8, width, height, true);
                     GL.BindTexture(TextureTarget.Texture2DMultisample, 0);
 
                     GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, texture_stencil, 0);
@@ -163,7 +163,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 {
                     rbo = GL.GenRenderbuffer();
                     GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rbo);
-                    GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, 4, buff_st_type, width, height);
+                    GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, sample_count, buff_st_type, width, height);
                     GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
 
                     GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, buff_fba_type, RenderbufferTarget.Renderbuffer, rbo);

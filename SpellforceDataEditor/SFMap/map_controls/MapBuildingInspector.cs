@@ -64,6 +64,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             if (ListBuildings.SelectedIndex == index)
                 PanelProperties.Enabled = false;
+
             ListBuildings.Items.RemoveAt(index);
         }
 
@@ -93,6 +94,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (o == null)
             {
                 map.selection_helper.CancelSelection();
+                ((MapEdit.MapBuildingEditor)MainForm.mapedittool.selected_editor).selected_building = -1;
                 PanelProperties.Enabled = false;
             }
             else
@@ -111,6 +113,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             if (ListBuildings.SelectedIndex == -1)
                 return;
+            ((MapEdit.MapBuildingEditor)MainForm.mapedittool.selected_editor).selected_building = ListBuildings.SelectedIndex;
 
             PanelProperties.Enabled = true;
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
@@ -151,7 +154,41 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 + map.building_manager.buildings[ListBuildings.SelectedIndex].grid_position.ToString();
             MainForm.mapedittool.update_render = true;
         }
-        
+
+        private void NPCID_Validated(object sender, EventArgs e)
+        {
+            if (ListBuildings.SelectedIndex == -1)
+                return;
+
+            SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
+
+            int npc_id = Utility.TryParseInt32(NPCID.Text);
+
+            // find if any npc exists
+            object entity = map.FindNPCEntity(npc_id);
+            if (entity != null)
+            {
+                MessageBox.Show("Duplicate NPC ID " + npc_id + " found. Unable to change selected building ID.");
+                NPCID.Text = building.npc_id.ToString();
+            }
+
+            building.npc_id = npc_id;
+        }
+
+        private void NPCScript_Click(object sender, EventArgs e)
+        {
+            if (ListBuildings.SelectedIndex == -1)
+                return;
+
+            SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
+            if (building.npc_id == 0)
+                return;
+
+            string fname = "script\\p" + map.PlatformID.ToString() + "\\n" + building.npc_id.ToString() + ".lua";
+            if (SFLua.SFLuaEnvironment.OpenNPCScript((int)map.PlatformID, building.npc_id) != 0)
+                MessageBox.Show("Could not open " + fname);
+        }
+
         private void Angle_Validated(object sender, EventArgs e)
         {
             if (ListBuildings.SelectedIndex == -1)
@@ -246,6 +283,20 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     ListBuildings.SelectedIndex = i;
                     return;
                 }
+        }
+
+        private void BuildingID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (MainForm.data == null)
+                return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                int elem_id = Utility.TryParseUInt8(BuildingID.Text);
+                int real_elem_id = SFCFF.SFCategoryManager.gamedata[23].GetElementIndex(elem_id);
+                if (real_elem_id != -1)
+                    MainForm.data.Tracer_StepForward(23, real_elem_id);
+            }
         }
     }
 }

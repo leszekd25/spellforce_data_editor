@@ -64,6 +64,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 selection.Clear();
                 is_adding = false;
 
+                if(selected_dec_group == 0)
+                    map.heightmap.OverlayClear("DecorationTile");
+
                 MainForm.mapedittool.update_render = true;
             }
         }

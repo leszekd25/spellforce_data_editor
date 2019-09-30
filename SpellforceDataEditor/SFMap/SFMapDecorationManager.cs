@@ -52,10 +52,16 @@ namespace SpellforceDataEditor.SFMap
 
         public void SetDecoration(int dec_index, ushort d_id, byte d_w = 255)
         {
-            if ((dec_id[dec_index] == 0) && (d_id != 0))
-                random_cache.Add(dec_index);
-            if ((dec_id[dec_index] != 0) && (d_id == 0))
-                random_cache.Remove(dec_index);
+            if ((dec_id[dec_index] == 0) || (weight[dec_index] == 0)) 
+            {
+                if ((d_id != 0) && (d_w != 0))
+                    random_cache.Add(dec_index);
+            }
+            if ((dec_id[dec_index] != 0) && (weight[dec_index] != 0)) 
+            {
+                if ((d_id == 0) || (d_w == 0))
+                    random_cache.Remove(dec_index);
+            }
             dec_id[dec_index] = d_id;
             weight[dec_index] = d_w;
         }

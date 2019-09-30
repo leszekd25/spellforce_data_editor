@@ -49,6 +49,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.ButtonResizeList = new System.Windows.Forms.Button();
             this.PanelProperties = new System.Windows.Forms.Panel();
+            this.NPCScript = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.AngleTrackbar)).BeginInit();
             this.PanelObjectList.SuspendLayout();
             this.PanelProperties.SuspendLayout();
@@ -69,6 +70,7 @@
             this.ObjectID.Name = "ObjectID";
             this.ObjectID.Size = new System.Drawing.Size(100, 20);
             this.ObjectID.TabIndex = 1;
+            this.ObjectID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ObjectID_MouseDown);
             this.ObjectID.Validated += new System.EventHandler(this.ObjectID_Validated);
             // 
             // label2
@@ -76,9 +78,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(3, 23);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(40, 13);
+            this.label2.Size = new System.Drawing.Size(52, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Unit ID";
+            this.label2.Text = "Object ID";
             // 
             // label3
             // 
@@ -91,11 +93,11 @@
             // 
             // NPCID
             // 
-            this.NPCID.Enabled = false;
             this.NPCID.Location = new System.Drawing.Point(98, 46);
             this.NPCID.Name = "NPCID";
             this.NPCID.Size = new System.Drawing.Size(100, 20);
             this.NPCID.TabIndex = 3;
+            this.NPCID.Validated += new System.EventHandler(this.NPCID_Validated);
             // 
             // label4
             // 
@@ -237,6 +239,7 @@
             // 
             // PanelProperties
             // 
+            this.PanelProperties.Controls.Add(this.NPCScript);
             this.PanelProperties.Controls.Add(this.label2);
             this.PanelProperties.Controls.Add(this.LabelObjectName);
             this.PanelProperties.Controls.Add(this.AngleTrackbar);
@@ -255,6 +258,16 @@
             this.PanelProperties.Name = "PanelProperties";
             this.PanelProperties.Size = new System.Drawing.Size(290, 201);
             this.PanelProperties.TabIndex = 19;
+            // 
+            // NPCScript
+            // 
+            this.NPCScript.Location = new System.Drawing.Point(204, 44);
+            this.NPCScript.Name = "NPCScript";
+            this.NPCScript.Size = new System.Drawing.Size(83, 23);
+            this.NPCScript.TabIndex = 20;
+            this.NPCScript.Text = "Open script";
+            this.NPCScript.UseVisualStyleBackColor = true;
+            this.NPCScript.Click += new System.EventHandler(this.NPCScript_Click);
             // 
             // MapObjectInspector
             // 
@@ -297,5 +310,6 @@
         private System.Windows.Forms.TextBox SearchObjectText;
         private System.Windows.Forms.ListBox ListObjects;
         private System.Windows.Forms.Panel PanelProperties;
+        private System.Windows.Forms.Button NPCScript;
     }
 }

@@ -126,7 +126,7 @@
             // 
             // CampID
             // 
-            this.CampID.BackColor = System.Drawing.Color.DarkOrange;
+            this.CampID.BackColor = System.Drawing.SystemColors.Window;
             this.CampID.Location = new System.Drawing.Point(98, 3);
             this.CampID.Name = "CampID";
             this.CampID.Size = new System.Drawing.Size(100, 20);

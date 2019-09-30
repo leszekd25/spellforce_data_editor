@@ -490,6 +490,7 @@
       <DependentUpon>SFLuaSQLRtsCoopSpawnForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SFLua\SFLuaEnvironment.cs" />
+    <Compile Include="SFMap\MapEdit\MapMonumentEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapBrush.cs" />
     <Compile Include="SFMap\MapEdit\MapBindstoneEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapPortalEditor.cs" />
@@ -512,6 +513,12 @@
     </Compile>
     <Compile Include="SFMap\map_controls\MapBindstoneInspector.Designer.cs">
       <DependentUpon>MapBindstoneInspector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapMonumentInspector.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapMonumentInspector.Designer.cs">
+      <DependentUpon>MapMonumentInspector.cs</DependentUpon>
     </Compile>
     <Compile Include="SFMap\map_controls\MapPortalInspector.cs">
       <SubType>UserControl</SubType>
@@ -579,6 +586,12 @@
     <Compile Include="SFMap\map_dialog\MapAutoTextureDialog.Designer.cs">
       <DependentUpon>MapAutoTextureDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFMap\map_dialog\MapManageTeamCompositions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapManageTeamCompositions.Designer.cs">
+      <DependentUpon>MapManageTeamCompositions.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFMap\map_dialog\MapModifyTextureSet.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -602,6 +615,12 @@
     </Compile>
     <Compile Include="SFMap\map_dialog\MapSelectTile.Designer.cs">
       <DependentUpon>MapSelectTile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapVisibilitySettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapVisibilitySettings.Designer.cs">
+      <DependentUpon>MapVisibilitySettings.cs</DependentUpon>
     </Compile>
     <Compile Include="SFMap\SFCoord.cs" />
     <Compile Include="SFMap\SFMap.cs" />
@@ -912,6 +931,9 @@
     <EmbeddedResource Include="SFMap\map_controls\MapBindstoneInspector.resx">
       <DependentUpon>MapBindstoneInspector.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_controls\MapMonumentInspector.resx">
+      <DependentUpon>MapMonumentInspector.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapPortalInspector.resx">
       <DependentUpon>MapPortalInspector.cs</DependentUpon>
     </EmbeddedResource>
@@ -942,6 +964,9 @@
     <EmbeddedResource Include="SFMap\map_dialog\MapAutoTextureDialog.resx">
       <DependentUpon>MapAutoTextureDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_dialog\MapManageTeamCompositions.resx">
+      <DependentUpon>MapManageTeamCompositions.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_dialog\MapModifyTextureSet.resx">
       <DependentUpon>MapModifyTextureSet.cs</DependentUpon>
     </EmbeddedResource>
@@ -953,6 +978,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_dialog\MapSelectTile.resx">
       <DependentUpon>MapSelectTile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_dialog\MapVisibilitySettings.resx">
+      <DependentUpon>MapVisibilitySettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMod\mod_controls\ModInfoForm.resx">
       <DependentUpon>ModInfoForm.cs</DependentUpon>

@@ -31,7 +31,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // TODO: multiple scenes (at least one for map editor and one for asset viewer
         public SFSceneMeta scene_meta { get; private set; } = new SFSceneMeta();    // scene metadata
 
-        private int frame_counter = 0;      // total frames rendered
+        public int frame_counter { get; private set; } = 0;      // total frames rendered
         public int frames_per_second { get; private set; } = 25;   // framerate
         public System.Diagnostics.Stopwatch delta_timer { get; private set; } = new System.Diagnostics.Stopwatch();     // timer which manages delta time
         private float deltatime = 0f;       // current delta time value in seconds
@@ -45,6 +45,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public LightingSun sun_light { get; } = new LightingSun();
         public Atmosphere atmosphere { get; } = new Atmosphere();
         // render engine takes these lists and renders stuff from the lists, one list for each texture for each shader
+        public HashSet<SFSubModel3D> untex_entries_simple = new HashSet<SFSubModel3D>();
         public Dictionary<SFTexture, HashSet<SFSubModel3D>> tex_entries_simple = new Dictionary<SFTexture, HashSet<SFSubModel3D>>();
         public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>> tex_list_animated { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>>();
         public LinearPool<TexturedGeometryListElementSimple> untextured_list_simple { get; private set; } = new LinearPool<TexturedGeometryListElementSimple>();
@@ -181,14 +182,15 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 tex_list_animated.Remove(tex);
         }
 
-        // instanced versions of simple tex entry
+        // instanced versions of simple tex entry (works for untex as well)
         // they dont return anything, since they're rebuilt every frame...
-        public void AddTextureEntrySimpleInstanced(TexturedGeometryListElementSimple elem)
+
+        public void AddInstancedEntrySimple(TexturedGeometryListElementSimple elem)
         {
             elem.node.Mesh.submodels[elem.submodel_index].instance_matrices.AddElem(elem.node.ResultTransform);
         }
 
-        public void ClearTextureEntriesSimpleInstanced(TexturedGeometryListElementSimple elem)
+        public void ClearInstancedEntriesSimple(TexturedGeometryListElementSimple elem)
         {
             elem.node.Mesh.submodels[elem.submodel_index].instance_matrices.Clear();
         }
@@ -220,6 +222,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                             tex_entries_simple.Add(sbm.material.texture, new HashSet<SFSubModel3D>());
                         if (!tex_entries_simple[sbm.material.texture].Contains(sbm))
                             tex_entries_simple[sbm.material.texture].Add(sbm);
+                    }
+                    else
+                    {
+                        if (!untex_entries_simple.Contains(sbm))
+                            untex_entries_simple.Add(sbm);
                     }
                 }
             }
@@ -443,7 +450,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             for (int i = 0; i < m_lst.Count; i++)
             {
                 string m = m_lst[i];
-                string mesh_obj_name = object_name + "_" + i.ToString();
+                if (m == "")
+                    continue;
                 SceneNodeSimple n = AddSceneNodeSimple(obj_node, m, i.ToString());
                 if (n.Mesh != null)
                     foreach (SFSubModel3D sbm in n.Mesh.submodels)
@@ -471,6 +479,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             for (int i = 0; i < m_lst.Count; i++)
             {
                 string m = m_lst[i];
+                if (m.Contains("frame"))
+                    continue;
                 AddSceneNodeSimple(bld_node, m, i.ToString());
             }
 
@@ -517,6 +527,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             foreach (var tex_entry in tex_entries_simple.Values)
                 foreach (SFSubModel3D sbm in tex_entry)
                     sbm.instance_matrices.Clear();
+            foreach (SFSubModel3D sbm in untex_entries_simple)
+                sbm.instance_matrices.Clear();
 
             root.Update(current_time);
 

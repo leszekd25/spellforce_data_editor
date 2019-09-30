@@ -151,7 +151,41 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             MainForm.mapedittool.update_render = true;
         }
-        
+
+        private void NPCID_Validated(object sender, EventArgs e)
+        {
+            if (ListUnits.SelectedIndex == -1)
+                return;
+
+            SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
+
+            int npc_id = Utility.TryParseInt32(NPCID.Text);
+
+            // find if any npc exists
+            object entity = map.FindNPCEntity(npc_id);
+            if(entity != null)
+            {
+                MessageBox.Show("Duplicate NPC ID " + npc_id + " found. Unable to change selected unit ID.");
+                NPCID.Text = unit.npc_id.ToString();
+            }
+
+            unit.npc_id = npc_id;
+        }
+
+        private void NPCScript_Click(object sender, EventArgs e)
+        {
+            if (ListUnits.SelectedIndex == -1)
+                return;
+
+            SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
+            if (unit.npc_id == 0)
+                return;
+
+            string fname = "script\\p" + map.PlatformID.ToString() + "\\n" + unit.npc_id.ToString() + ".lua";
+            if (SFLua.SFLuaEnvironment.OpenNPCScript((int)map.PlatformID, unit.npc_id) != 0)
+                MessageBox.Show("Could not open " + fname);
+        }
+
         private void Angle_Validated(object sender, EventArgs e)
         {
             if (ListUnits.SelectedIndex == -1)
@@ -255,6 +289,20 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     ListUnits.SelectedIndex = i;
                     return;
                 }
+        }
+
+        private void UnitID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (MainForm.data == null)
+                return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                int elem_id = Utility.TryParseUInt16(UnitID.Text);
+                int real_elem_id = SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(elem_id);
+                if (real_elem_id != -1)
+                    MainForm.data.Tracer_StepForward(17, real_elem_id);
+            }
         }
     }
 }

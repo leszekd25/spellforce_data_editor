@@ -430,9 +430,7 @@ namespace SpellforceDataEditor.SF3D
 
         new public string ToString()
         {
-            return "TEX SIZE#"+width.ToString()+" "+height.ToString()
-                + "\r\nTEX FORMAT#" + format.ToString()
-                +"\r\nTEX MIPMAPS#" + mipMapCount.ToString();
+            return GetName();
         }
 
         public static SFTexture MixUncompressed(SFTexture tex1, byte w1, SFTexture tex2, byte w2)

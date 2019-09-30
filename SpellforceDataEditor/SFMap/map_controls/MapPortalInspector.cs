@@ -161,5 +161,19 @@ namespace SpellforceDataEditor.SFMap.map_controls
             else
                 ShowList();
         }
+
+        private void PortalID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (MainForm.data == null)
+                return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                int elem_id = Utility.TryParseUInt16(PortalID.Text);
+                int real_elem_id = SFCFF.SFCategoryManager.gamedata[38].GetElementIndex(elem_id);
+                if (real_elem_id != -1)
+                    MainForm.data.Tracer_StepForward(38, real_elem_id);
+            }
+        }
     }
 }

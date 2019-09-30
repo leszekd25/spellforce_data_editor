@@ -65,9 +65,30 @@ namespace SpellforceDataEditor.SFMap.map_controls
             return -1;
         }
 
+        private int GetPlayerIndexByBindstone(SFMapInteractiveObject o)
+        {
+            return map.metadata.FindPlayerBySpawnPos(o.grid_position);
+        }
+
         private string GetBindstoneString(SFMapInteractiveObject io)
         {
-            return " Bindstone at " + io.grid_position.ToString();
+            int player = GetPlayerIndexByBindstone(io);
+            if (player == -1)
+                return "Bindstone at " + io.grid_position.ToString();
+            else
+            {
+                if(map.metadata.spawns[player].text_id == 0)
+                    return "Bindstone at " + io.grid_position.ToString();
+                else
+                {
+                    SFCFF.SFCategoryElement elem = SFCFF.SFCategoryManager.FindElementText(
+                        map.metadata.spawns[player].text_id, Settings.LanguageID);
+                    if(elem == null)
+                        return "Bindstone at " + io.grid_position.ToString();
+                    string ret = Utility.CleanString(elem.variants[4]);
+                    return ret + " " + io.grid_position.ToString();
+                }
+            }
         }
 
         private void ShowList()
@@ -133,6 +154,16 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             PanelProperties.Enabled = true;
             SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[GetIOBindstoneIndex(ListBindstones.SelectedIndex)];
+            int player = GetPlayerIndexByBindstone(bindstone);
+            if (player == -1)
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap,
+                    "MapBindstoneInspector.ListBindstones_SelectedIndexChanged(): Can't find player at position "
+                    + bindstone.grid_position.ToString());
+            else
+            {
+                TextID.Text = map.metadata.spawns[player].text_id.ToString();
+                Unknown.Text = map.metadata.spawns[player].unknown.ToString();
+            }
             PosX.Text = bindstone.grid_position.x.ToString();
             PosY.Text = bindstone.grid_position.y.ToString();
             AngleTrackbar.Value = bindstone.angle;
@@ -175,6 +206,57 @@ namespace SpellforceDataEditor.SFMap.map_controls
             map.RotateInteractiveObject(GetIOBindstoneIndex(ListBindstones.SelectedIndex), bindstone.angle);
 
             MainForm.mapedittool.update_render = true;
+        }
+
+        private void TextID_Validated(object sender, EventArgs e)
+        {
+            if (ListBindstones.SelectedIndex == -1)
+                return;
+
+            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[GetIOBindstoneIndex(ListBindstones.SelectedIndex)];
+            int player = GetPlayerIndexByBindstone(bindstone);
+            if (player == -1)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, 
+                    "MapBindstoneInspector.TextID_Validated(): Can't find player at position " 
+                    + bindstone.grid_position.ToString());
+                return;
+            }
+
+            map.metadata.spawns[player].text_id = Utility.TryParseUInt16(TextID.Text, map.metadata.spawns[player].text_id);
+            ListBindstones.Items[ListBindstones.SelectedIndex] = GetBindstoneString(bindstone);
+        }
+
+        private void Unknown_Validated(object sender, EventArgs e)
+        {
+            if (ListBindstones.SelectedIndex == -1)
+                return;
+
+            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[GetIOBindstoneIndex(ListBindstones.SelectedIndex)];
+            int player = GetPlayerIndexByBindstone(bindstone);
+            if (player == -1)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap,
+                    "MapBindstoneInspector.Unknown_Validated(): Can't find player at position "
+                    + bindstone.grid_position.ToString());
+                return;
+            }
+
+            map.metadata.spawns[player].unknown = Utility.TryParseInt16(TextID.Text, map.metadata.spawns[player].unknown);
+        }
+
+        private void TextID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (MainForm.data == null)
+                return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                int elem_id = Utility.TryParseUInt16(TextID.Text);
+                int real_elem_id = SFCFF.SFCategoryManager.gamedata[14].GetElementIndex(elem_id);
+                if (real_elem_id != -1)
+                    MainForm.data.Tracer_StepForward(14, real_elem_id);
+            }
         }
     }
 }

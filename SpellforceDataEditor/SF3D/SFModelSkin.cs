@@ -149,7 +149,7 @@ namespace SpellforceDataEditor.SF3D
             material.unused_uchar = br.ReadByte();
             material.uv_mode = br.ReadByte();
             material.unused_short2 = br.ReadUInt16();
-            material.texRenderMode = br.ReadByte();
+            material.texRenderMode = (RenderMode)br.ReadByte();
             material.texAlpha = br.ReadByte();
             material.matFlags = br.ReadByte();
             material.matDepthBias = br.ReadByte();

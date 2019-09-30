@@ -38,7 +38,7 @@ namespace SpellforceDataEditor.special_forms
 
         public bool update_render = false;                // whenever this is true, window will be repainted, and this switched to false
         int gc_timer = 0;                // when this reaches 200, garbage collector runs
-        
+
         OpenTK.GLControl RenderWindow = null;
 
         public SFMap.MapEdit.MapEditor selected_editor { get; private set; } = new SFMap.MapEdit.MapHeightMapEditor();
@@ -49,7 +49,9 @@ namespace SpellforceDataEditor.special_forms
         MapBrush terrain_brush = new MapBrush();
 
         SFMap.map_dialog.MapAutoTextureDialog autotexture_form = null;
-        
+        SFMap.map_dialog.MapManageTeamCompositions teamcomp_form = null;
+        SFMap.map_dialog.MapVisibilitySettings visibility_form = null;
+
         List<int> unitcombo_to_unitindex = new List<int>();
 
         public MapEditorForm()
@@ -67,10 +69,10 @@ namespace SpellforceDataEditor.special_forms
             TimerAnimation.Enabled = true;
             TimerAnimation.Interval = 1000 / SFRenderEngine.scene.frames_per_second;
             TimerAnimation.Start();
-            
+
             gamedata = SFCFF.SFCategoryManager.gamedata;
         }
-        
+
         private void MapEditorForm_Load(object sender, EventArgs e)
         {
             LogUtils.Log.MemoryUsage();
@@ -78,15 +80,15 @@ namespace SpellforceDataEditor.special_forms
 
         private void MapEditorForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(CloseMap() != 0)
+            if (CloseMap() != 0)
                 e.Cancel = true;
         }
 
         private void MapEditorForm_Resize(object sender, EventArgs e)
         {
             TabEditorModes.Width = this.Width - 22;
-            TabEditorModes.Padding = new Point(((this.Width-420) / TabEditorModes.TabPages.Count / 2), TabEditorModes.Padding.Y);
-            if(RenderWindow!=null)
+            TabEditorModes.Padding = new Point(((this.Width - 350) / TabEditorModes.TabPages.Count / 2), TabEditorModes.Padding.Y);
+            if (RenderWindow != null)
                 ResizeWindow();
         }
 
@@ -263,11 +265,11 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.scene.heightmap = map.heightmap;
                 selected_editor.map = map;
                 InitEditorMode();
-                
+
                 map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
                 map.selection_helper.SetCursorVisibility(true);
 
-                SetCameraViewPoint(new SFCoord(map.width/2, map.height/2));
+                SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
                 ResetCamera();
 
                 RenderWindow.Invalidate();
@@ -328,14 +330,14 @@ namespace SpellforceDataEditor.special_forms
 
             if (map == null)
                 return 0;
-            
+
             Focus();
 
             DialogResult dr = MessageBox.Show(
                 "Do you want to save the map before quitting? This will also overwrite gamedata if modified", "Save before quit?", MessageBoxButtons.YesNoCancel);
             if (dr == DialogResult.Cancel)
                 return -1;
-            else if(dr == DialogResult.Yes)
+            else if (dr == DialogResult.Yes)
             {
                 if (SaveMap() == DialogResult.Cancel)
                     return -2;
@@ -343,6 +345,10 @@ namespace SpellforceDataEditor.special_forms
 
             if (autotexture_form != null)
                 autotexture_form.Close();
+            if (teamcomp_form != null)
+                teamcomp_form.Close();
+            if (visibility_form != null)
+                visibility_form.Close();
 
             TabEditorModes.Enabled = false;
             InspectorClear();
@@ -359,7 +365,7 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.root = null;
             SFRenderEngine.scene.camera = null;
             SFRenderEngine.scene.heightmap = null;
-            foreach(SF3D.SFTexture tex in SFRenderEngine.scene.tex_entries_simple.Keys)
+            foreach (SF3D.SFTexture tex in SFRenderEngine.scene.tex_entries_simple.Keys)
                 SFRenderEngine.scene.tex_entries_simple[tex].Clear();
             SFRenderEngine.scene.tex_entries_simple.Clear();
             if (MainForm.viewer != null)
@@ -384,7 +390,7 @@ namespace SpellforceDataEditor.special_forms
 
             this.RenderWindow = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(32), 24, 8, 4));
             this.RenderWindow.BackColor = System.Drawing.Color.Black;
-            this.RenderWindow.Location = new System.Drawing.Point(3, TabEditorModes.Location.Y+TabEditorModes.Size.Height);
+            this.RenderWindow.Location = new System.Drawing.Point(3, TabEditorModes.Location.Y + TabEditorModes.Size.Height);
             this.RenderWindow.Name = "RenderWindow";
             this.RenderWindow.Size = new System.Drawing.Size(589, 589);
             this.RenderWindow.TabIndex = 2;
@@ -397,7 +403,7 @@ namespace SpellforceDataEditor.special_forms
             this.RenderWindow.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
             this.RenderWindow.MouseWheel += new MouseEventHandler(this.RenderWindow_MouseWheel);
             this.Controls.Add(this.RenderWindow);
-            
+
             // it seems shaders must always be compiled upon creating new window
             SFRenderEngine.Initialize(new Vector2(RenderWindow.ClientSize.Width, RenderWindow.ClientSize.Height));
 
@@ -432,7 +438,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void RenderWindow_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Middle)
+            if (e.Button == MouseButtons.Middle)
             {
                 scroll_mouse_start = new Vector2(Cursor.Position.X, Cursor.Position.Y);
                 mouse_scroll = true;
@@ -456,7 +462,7 @@ namespace SpellforceDataEditor.special_forms
         }
 
         private void RenderWindow_MouseMove(object sender, MouseEventArgs e)
-        {  
+        {
             if (!mouse_on_view)
                 return;
         }
@@ -474,13 +480,13 @@ namespace SpellforceDataEditor.special_forms
 
         private void RenderWindow_MouseWheel(object sender, MouseEventArgs e)
         {
-            if(e.Delta < 0)
+            if (e.Delta < 0)
             {
                 zoom_level *= 1.1f;
-                if (zoom_level > 2)
-                    zoom_level = 2;
+                if (zoom_level > 6)
+                    zoom_level = 6;
             }
-            else if(e.Delta > 0)
+            else if (e.Delta > 0)
             {
                 zoom_level *= 0.9f;
                 if (zoom_level < 0.1f)
@@ -515,8 +521,8 @@ namespace SpellforceDataEditor.special_forms
                 px = Cursor.Position.X - this.Location.X - RenderWindow.Location.X;
                 py = Cursor.Position.Y - this.Location.Y - RenderWindow.Location.Y - 29;
                 float wx, wy;
-                wx = px / RenderWindow.Size.Width;  wx = (wx+0.09f)*0.84f;
-                wy = py / RenderWindow.Size.Height; wy = (wy+0.11f)*0.84f;
+                wx = px / RenderWindow.Size.Width; wx = (wx + 0.09f) * 0.84f;
+                wy = py / RenderWindow.Size.Height; wy = (wy + 0.11f) * 0.84f;
                 Vector3[] frustrum_vertices = SFRenderEngine.scene.camera.FrustumVertices;
                 Vector3 r_start = SFRenderEngine.scene.camera.Position;
                 Vector3 r_end = frustrum_vertices[4]
@@ -533,7 +539,7 @@ namespace SpellforceDataEditor.special_forms
                 Parallel.For(0, map.heightmap.visible_chunks.Count, loop_options, (i, breakState) =>
                 {
                     Vector3 local_result;
-                    SFMapHeightMapChunk chunk = map.heightmap.visible_chunks[map.heightmap.visible_chunks.Count-i-1].MapChunk;
+                    SFMapHeightMapChunk chunk = map.heightmap.visible_chunks[map.heightmap.visible_chunks.Count - i - 1].MapChunk;
                     Vector3 offset = new Vector3(chunk.ix * 16, 0, chunk.iy * 16);
                     if (ray.Intersect(chunk.collision_cache, out local_result))
                     {
@@ -549,20 +555,23 @@ namespace SpellforceDataEditor.special_forms
                     SFCoord cursor_coord = new SFCoord(
                         (int)(Math.Max
                             (0, Math.Min
-                                (result.X, map.width-1))),
+                                (result.X, map.width - 1))),
                         (int)(Math.Max
-                            (0,Math.Min
-                                (result.Z, map.height-1))));
+                            (0, Math.Min
+                                (result.Z, map.height - 1))));
                     SFCoord inv_cursor_coord = new SFCoord(cursor_coord.x, map.height - cursor_coord.y - 1);
 
                     if (map.selection_helper.SetCursorPosition(cursor_coord))
                     {
                         update_render = true;
+                        StatusStrip.SuspendLayout();
                         StatusText.Text = "Cursor position: " + inv_cursor_coord.ToString();
+                        SetSpecificText(inv_cursor_coord);
+                        StatusStrip.ResumeLayout();
                     }
 
                     // on click action
-                    if (mouse_pressed)
+                    if ((mouse_pressed) && (selected_editor != null))
                     {
                         selected_editor.OnMousePress(inv_cursor_coord, mouse_last_pressed);
                         update_render = true;
@@ -571,7 +580,7 @@ namespace SpellforceDataEditor.special_forms
             }
 
             // rotating view by mouse
-            if(mouse_scroll)
+            if (mouse_scroll)
             {
                 Vector2 scroll_mouse_end = new Vector2(Cursor.Position.X, Cursor.Position.Y);
                 Vector2 scroll_translation = (scroll_mouse_end - scroll_mouse_start) * 50 / 250000f;
@@ -592,9 +601,9 @@ namespace SpellforceDataEditor.special_forms
             if (arrows_pressed[3])
                 movement_vector += new Vector2(0, 1);
 
-            if(movement_vector != new Vector2(0, 0))
+            if (movement_vector != new Vector2(0, 0))
             {
-                float angle = SFRenderEngine.scene.camera.Direction.X-(float)(Math.PI*3/2);
+                float angle = SFRenderEngine.scene.camera.Direction.X - (float)(Math.PI * 3 / 2);
                 movement_vector = MathUtils.RotateVec2(movement_vector, angle);
                 SFRenderEngine.scene.camera.translate(new Vector3(movement_vector.X, 0, movement_vector.Y)
                     * 50 / 50f);
@@ -612,7 +621,7 @@ namespace SpellforceDataEditor.special_forms
             if (rotation_pressed[3])
                 movement_vector += new Vector2(0, 1);
 
-            if(movement_vector != new Vector2(0, 0))
+            if (movement_vector != new Vector2(0, 0))
             {
                 SFRenderEngine.scene.camera.Direction += new Vector2(movement_vector.X, -movement_vector.Y)
                     * 50 / 2000f;
@@ -622,6 +631,7 @@ namespace SpellforceDataEditor.special_forms
             // render time
             if (update_render)
             {
+                SFRenderEngine.scene.sun_light.ShadowSize = Math.Max(25f, zoom_level * 40f);
                 map.selection_helper.UpdateSelection();
                 AdjustCameraZ();
                 SFRenderEngine.UpdateVisibleChunks();
@@ -644,14 +654,22 @@ namespace SpellforceDataEditor.special_forms
             TimerAnimation.Start();
         }
 
+        private void SetSpecificText(SFCoord pos)
+        {
+            byte dec_assign = map.decoration_manager.GetFixedDecAssignment(pos);
+            SpecificText.Text = "H: " + map.heightmap.GetHeightAt(pos.x, pos.y).ToString() + "  "
+                              + "T: " + map.heightmap.GetTileFixed(pos).ToString() + "  "
+                              + "D: " + (dec_assign == 0 ? "X" : dec_assign.ToString());
+        }
+
         private void AdjustCameraZ()
         {
-            if(map != null)
+            if (map != null)
             {
                 Vector2 p = new Vector2(SFRenderEngine.scene.camera.Position.X, SFRenderEngine.scene.camera.Position.Z);
                 float z = map.heightmap.GetRealZ(p);
-                
-                SFRenderEngine.scene.camera.translate(new Vector3(0, (25*zoom_level)+z - SFRenderEngine.scene.camera.Position.Y, 0));
+
+                SFRenderEngine.scene.camera.translate(new Vector3(0, (25 * zoom_level) + z - SFRenderEngine.scene.camera.Position.Y, 0));
             }
         }
 
@@ -665,14 +683,14 @@ namespace SpellforceDataEditor.special_forms
             // camera inclination means that we need to increase distance of camera to the position to preserve camera angle
             float angle_factor = 1;
             if (cam_dir.Y != 0)
-                angle_factor = (float)Math.Abs(1/Math.Tan(cam_dir.Y));
+                angle_factor = (float)Math.Abs(1 / Math.Tan(cam_dir.Y));
             // resulting shift of camera positon from desired coordinates to canter the view on them
             Vector2 cam_shift = new Vector2((float)-Math.Sin(cam_dir.X + angle_shift),
-                                            (float)Math.Cos(cam_dir.X + angle_shift)) * (25*angle_factor*zoom_level);
+                                            (float)Math.Cos(cam_dir.X + angle_shift)) * (25 * angle_factor * zoom_level);
             SFRenderEngine.scene.camera.Position = new Vector3(cam_shift.X, 25, cam_shift.Y);
             SFRenderEngine.scene.camera.Direction = cam_dir;
 
-            Vector3 new_camera_pos = new Vector3(pos.x+cam_shift.X, 0, map.heightmap.height - pos.y - 1 + cam_shift.Y);
+            Vector3 new_camera_pos = new Vector3(pos.x + cam_shift.X, 0, map.heightmap.height - pos.y - 1 + cam_shift.Y);
             SFRenderEngine.scene.camera.translate(new_camera_pos - SFRenderEngine.scene.camera.Position);
             AdjustCameraZ();
             update_render = true;
@@ -711,7 +729,7 @@ namespace SpellforceDataEditor.special_forms
             autotexture_form.Show();
         }
 
-        private void autotextureform_FormClosing(object  sender, FormClosingEventArgs e)
+        private void autotextureform_FormClosing(object sender, FormClosingEventArgs e)
         {
             autotexture_form.FormClosing -= new FormClosingEventHandler(autotextureform_FormClosing);
             autotexture_form = null;
@@ -720,7 +738,7 @@ namespace SpellforceDataEditor.special_forms
         // keyboard control of the 3d camera
         protected override bool ProcessDialogKey(Keys keyData)
         {
-            switch(keyData)
+            switch (keyData)
             {
                 case Keys.Left:
                     arrows_pressed[0] = true;
@@ -745,6 +763,26 @@ namespace SpellforceDataEditor.special_forms
                     return true;
                 case Keys.PageDown:
                     rotation_pressed[3] = true;
+                    return true;
+                case Keys.D1 | Keys.Control:
+                    if (TabEditorModes.Enabled)
+                        TabEditorModes.SelectedIndex = 0;
+                    return true;
+                case Keys.D2 | Keys.Control:
+                    if (TabEditorModes.Enabled)
+                        TabEditorModes.SelectedIndex = 1;
+                    return true;
+                case Keys.D3 | Keys.Control:
+                    if (TabEditorModes.Enabled)
+                        TabEditorModes.SelectedIndex = 2;
+                    return true;
+                case Keys.D4 | Keys.Control:
+                    if (TabEditorModes.Enabled)
+                        TabEditorModes.SelectedIndex = 3;
+                    return true;
+                case Keys.D5 | Keys.Control:
+                    if (TabEditorModes.Enabled)
+                        TabEditorModes.SelectedIndex = 4;
                     return true;
                 default:
                     return base.ProcessDialogKey(keyData);
@@ -824,7 +862,10 @@ namespace SpellforceDataEditor.special_forms
         public void InspectorSelect(object o)
         {
             if (selected_inspector == null)
+            {
+                map.selection_helper.CancelSelection();
                 return;
+            }
             selected_inspector.OnSelect(o);
         }
 
@@ -833,9 +874,9 @@ namespace SpellforceDataEditor.special_forms
             PanelInspector.Width = width;
             PanelInspector.Height = this.Height - 25 - PanelInspector.Location.Y;
             PanelInspector.Location = new Point(this.Width - width - 22, PanelInspector.Location.Y);
-            if(selected_inspector != null)
+            if (selected_inspector != null)
                 selected_inspector.Height = PanelInspector.Height;
-            if(PanelInspector.Visible)
+            if (PanelInspector.Visible)
                 ResizeWindow();
         }
 
@@ -845,12 +886,12 @@ namespace SpellforceDataEditor.special_forms
             TabEditorModes.SelectedIndex = -1;
             TabEditorModes.SelectedIndex = 0;
         }
-        
+
         private void TabEditorModes_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (TabEditorModes.SelectedIndex == -1)
                 return;
-            
+
             FlagOverlaysSetInvisible();
             FlagDecalSetInvisible();
 
@@ -858,17 +899,21 @@ namespace SpellforceDataEditor.special_forms
             {
                 ReselectTerrainMode();
             }
-            else if(TabEditorModes.SelectedIndex == 1) // TEXTURE
+            else if (TabEditorModes.SelectedIndex == 1) // TEXTURE
             {
                 ReselectTextureMode();
             }
-            else if(TabEditorModes.SelectedIndex == 2) // ENTITIES
+            else if (TabEditorModes.SelectedIndex == 2) // ENTITIES
             {
                 ReselectEntityMode();
             }
-            else if(TabEditorModes.SelectedIndex == 3) // DECORATIONS
+            else if (TabEditorModes.SelectedIndex == 3) // DECORATIONS
             {
                 ReselectDecorationMode();
+            }
+            else if (TabEditorModes.SelectedIndex == 4) // METADATA
+            {
+                ReselectMetadataMode();
             }
         }
 
@@ -936,7 +981,7 @@ namespace SpellforceDataEditor.special_forms
         {
             if (!RadioHMap.Checked)
                 return;
-            
+
             InspectorClear();
 
             selected_editor = new MapHeightMapEditor()
@@ -955,8 +1000,13 @@ namespace SpellforceDataEditor.special_forms
 
             terrain_brush.size = (float)Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
-            
+
             FlagOverlaysSetInvisible();
+        }
+
+        public void HMapEditSetHeight(int h)
+        {
+            TerrainValue.Text = h.ToString();
         }
 
         private void BrushSizeVal_Validated(object sender, EventArgs e)
@@ -975,7 +1025,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void RadioSquare_CheckedChanged(object sender, EventArgs e)
         {
-            terrain_brush.shape = GetTerrainBrushShape(); 
+            terrain_brush.shape = GetTerrainBrushShape();
         }
 
         private void RadioCircle_CheckedChanged(object sender, EventArgs e)
@@ -998,6 +1048,8 @@ namespace SpellforceDataEditor.special_forms
 
         private void TerrainTrackbar_ValueChanged(object sender, EventArgs e)
         {
+            if (RadioModeSet.Checked)
+                return;
             TerrainValue.Text = TerrainTrackbar.Value.ToString();
             ((MapHeightMapEditor)selected_editor).Value = TerrainTrackbar.Value;
         }
@@ -1041,7 +1093,7 @@ namespace SpellforceDataEditor.special_forms
         }
 
         // TERRAIN FLAGS
-        
+
         private TerrainFlagType GetTerrainFlagType()
         {
             if (RadioFlagMovement.Checked)
@@ -1054,7 +1106,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void FlagOverlaysSetInvisible()
         {
-            if (map.heightmap.OverlayIsVisible("TileMovementBlock"))
+            if (!map.heightmap.OverlayIsVisible("TileMovementBlock"))
                 return;
 
             map.heightmap.OverlayClear("TileMovementBlock");
@@ -1089,7 +1141,7 @@ namespace SpellforceDataEditor.special_forms
 
             foreach (SFCoord p in map.heightmap.chunk56_data)
                 map.heightmap.OverlayAdd("ManualVisionBlock", p);
-            
+
             map.heightmap.OverlaySetVisible("TileMovementBlock", true);
             map.heightmap.OverlaySetVisible("ManualMovementBlock", true);
             map.heightmap.OverlaySetVisible("ManualVisionBlock", true);
@@ -1202,13 +1254,13 @@ namespace SpellforceDataEditor.special_forms
 
         private void RadioTileTypeBase_CheckedChanged(object sender, EventArgs e)
         {
-            if(RadioTileTypeBase.Checked)
+            if (RadioTileTypeBase.Checked)
                 ((SFMap.map_controls.MapTerrainTextureInspector)selected_inspector).SetInspectorType(GetTileType());
         }
 
         private void RadioTileTypeCustom_CheckedChanged(object sender, EventArgs e)
         {
-            if(RadioTileTypeCustom.Checked)
+            if (RadioTileTypeCustom.Checked)
                 ((SFMap.map_controls.MapTerrainTextureInspector)selected_inspector).SetInspectorType(GetTileType());
         }
 
@@ -1332,7 +1384,7 @@ namespace SpellforceDataEditor.special_forms
                 return;
 
             InspectorSet(new SFMap.map_controls.MapUnitInspector());
-            
+
             InitializeComboRaces();
             unitcombo_to_unitindex.Clear();
             UnitName.Items.Clear();
@@ -1356,7 +1408,28 @@ namespace SpellforceDataEditor.special_forms
                 ((MapBuildingEditor)selected_editor).placement_building = Utility.TryParseUInt16(EntityID.Text);
             else if (RadioEntityModeObject.Checked)
                 ((MapObjectEditor)selected_editor).placement_object = Utility.TryParseUInt16(EntityID.Text);
+        }
 
+        private void EntityID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (MainForm.data == null)
+                return;
+
+            int cat_id = -1;
+            if (RadioEntityModeUnit.Checked)
+                cat_id = 17;
+            else if (RadioEntityModeObject.Checked)
+                cat_id = 33;
+            else if (RadioEntityModeBuilding.Checked)
+                cat_id = 23;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                int elem_id = Utility.TryParseUInt16(EntityID.Text);
+                int real_elem_id = SFCFF.SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
+                if (real_elem_id != -1)
+                    MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
+            }
         }
 
         private void UnitRace_SelectedIndexChanged(object sender, EventArgs e)
@@ -1390,7 +1463,7 @@ namespace SpellforceDataEditor.special_forms
                 map = this.map
             };
 
-            PanelUnitPlacementSelect.Visible = true;
+            PanelUnitPlacementSelect.Visible = false;
             PanelEntityPlacementSelect.Visible = true;
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
@@ -1408,7 +1481,7 @@ namespace SpellforceDataEditor.special_forms
                 map = this.map
             };
 
-            PanelUnitPlacementSelect.Visible = true;
+            PanelUnitPlacementSelect.Visible = false;
             PanelEntityPlacementSelect.Visible = true;
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
@@ -1437,7 +1510,7 @@ namespace SpellforceDataEditor.special_forms
             SFLua.SFLuaEnvironment.ShowRtsCoopSpawnGroupsForm();
             InspectorSet(new SFMap.map_controls.MapCoopCampInspector());
         }
-        
+
         private void RadioModeBindstones_CheckedChanged(object sender, EventArgs e)
         {
             if (!RadioModeBindstones.Checked)
@@ -1474,34 +1547,84 @@ namespace SpellforceDataEditor.special_forms
             PanelMonumentType.Visible = false;
         }
 
-       /* private MonumentType GetMonumentType()
+        private MonumentType GetMonumentType()
         {
             if (MonumentHuman.Checked)
                 return MonumentType.HUMAN;
-            else if (RadioCircle.Checked)
-                return BrushShape.CIRCLE;
-            else if (RadioSquare.Checked)
-                return BrushShape.SQUARE;
+            else if (MonumentElf.Checked)
+                return MonumentType.ELF;
+            else if (MonumentDwarf.Checked)
+                return MonumentType.DWARF;
+            else if (MonumentOrc.Checked)
+                return MonumentType.ORC;
+            else if (MonumentTroll.Checked)
+                return MonumentType.TROLL;
+            else if (MonumentDarkElf.Checked)
+                return MonumentType.DARKELF;
+            else if (MonumentHero.Checked)
+                return MonumentType.HERO;
             else
                 return MonumentType.HERO;
-        }*/
+        }
 
         private void RadioModeMonuments_CheckedChanged(object sender, EventArgs e)
         {
             if (!RadioModeMonuments.Checked)
                 return;
 
-            /*InspectorSet(new SFMap.map_controls.MapMonumentInspector());
+            InspectorSet(new SFMap.map_controls.MapMonumentInspector());
 
             selected_editor = new MapMonumentEditor()
             {
                 map = this.map
-            };*/
+            };
 
             PanelUnitPlacementSelect.Visible = false;
             PanelEntityPlacementSelect.Visible = false;
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = true;
+        }
+
+        private void MonumentHuman_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MonumentHuman.Checked)
+                ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
+        }
+
+        private void MonumentElf_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MonumentElf.Checked)
+                ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
+        }
+
+        private void MonumentDwarf_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MonumentDwarf.Checked)
+                ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
+        }
+
+        private void MonumentOrc_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MonumentOrc.Checked)
+                ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
+        }
+
+        private void MonumentTroll_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MonumentTroll.Checked)
+                ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
+        }
+
+        private void MonumentDarkElf_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MonumentDarkElf.Checked)
+                ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
+        }
+
+        private void MonumentHero_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MonumentHero.Checked)
+                ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
         }
 
         // DECORATIONS
@@ -1512,10 +1635,20 @@ namespace SpellforceDataEditor.special_forms
             ((MapDecorationEditor)selected_editor).selected_dec_group = (int)((Button)sender).Tag;
         }
 
+        private Color GetDecGroupButtonColor(int i)
+        {
+            if (i == 0)
+                return Color.IndianRed;
+            if (map.decoration_manager.dec_groups[i].random_cache.Count != 0)
+                return Color.LightGreen;
+            else
+                return SystemColors.Control;
+        }
+
         private void ResetDecGroups()
         {
             PanelDecalGroups.Controls.Clear();
-            for(int i=0; i <= 255; i++)
+            for (int i = 0; i < 255; i++)
             {
                 Button decbutton = new Button()
                 {
@@ -1525,7 +1658,7 @@ namespace SpellforceDataEditor.special_forms
                     Font = new Font("Arial", 8),
                     Margin = new Padding(0, 0, 0, 0),
                     Padding = new Padding(0, 0, 0, 0),
-                    
+                    BackColor = GetDecGroupButtonColor(i)
                 };
                 decbutton.Click += new EventHandler(OnDecButtonPress);
                 PanelDecalGroups.Controls.Add(decbutton);
@@ -1533,9 +1666,14 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
+        public void UpdateDecGroup(int i)
+        {
+            PanelDecalGroups.Controls[i].BackColor = GetDecGroupButtonColor(i);
+        }
+
         private void FlagDecalSetInvisible()
         {
-            if (map.heightmap.OverlayIsVisible("DecorationTile"))
+            if (!map.heightmap.OverlayIsVisible("DecorationTile"))
                 return;
 
             map.heightmap.OverlayClear("DecorationTile");
@@ -1547,6 +1685,9 @@ namespace SpellforceDataEditor.special_forms
 
         private void FlagDecalSetVisible()
         {
+            if (map.heightmap.OverlayIsVisible("DecorationTile"))
+                return;
+
             map.heightmap.OverlaySetVisible("DecorationTile", true);
             foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
                 chunk_node.MapChunk.OverlayUpdate("DecorationTile");
@@ -1556,7 +1697,8 @@ namespace SpellforceDataEditor.special_forms
         {
             PanelBrushShape.Parent = TabEditorModes.TabPages[3];
 
-            ResetDecGroups();
+            if(PanelDecalGroups.Controls.Count == 0)
+                ResetDecGroups();
 
             selected_editor = new MapDecorationEditor
             {
@@ -1572,5 +1714,186 @@ namespace SpellforceDataEditor.special_forms
             terrain_brush.size = (float)Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
         }
+
+        // METADATA
+
+        private void ReselectMetadataMode()
+        {
+            if (map.metadata.map_type == SFMapType.CAMPAIGN)
+            {
+                MapTypeCampaign.Checked = false;
+                MapTypeCampaign.Checked = true;
+            }
+            else if (map.metadata.map_type == SFMapType.COOP)
+            {
+                MapTypeCoop.Checked = false;
+                MapTypeCoop.Checked = true;
+            }
+            else if (map.metadata.map_type == SFMapType.MULTIPLAYER)
+            {
+                MapTypeMultiplayer.Checked = false;
+                MapTypeMultiplayer.Checked = true;
+            }
+
+            selected_editor = null;
+            InspectorSet(null);
+        }
+
+        private void UpdateCoopSpawnParameters()
+        {
+            CoopSpawnParam11.Text = map.metadata.coop_spawn_params[0].param1.ToString();
+            CoopSpawnParam12.Text = map.metadata.coop_spawn_params[0].param2.ToString();
+            CoopSpawnParam13.Text = map.metadata.coop_spawn_params[0].param3.ToString();
+            CoopSpawnParam14.Text = map.metadata.coop_spawn_params[0].param4.ToString();
+            CoopSpawnParam21.Text = map.metadata.coop_spawn_params[1].param1.ToString();
+            CoopSpawnParam22.Text = map.metadata.coop_spawn_params[1].param2.ToString();
+            CoopSpawnParam23.Text = map.metadata.coop_spawn_params[1].param3.ToString();
+            CoopSpawnParam24.Text = map.metadata.coop_spawn_params[1].param4.ToString();
+            CoopSpawnParam31.Text = map.metadata.coop_spawn_params[2].param1.ToString();
+            CoopSpawnParam32.Text = map.metadata.coop_spawn_params[2].param2.ToString();
+            CoopSpawnParam33.Text = map.metadata.coop_spawn_params[2].param3.ToString();
+            CoopSpawnParam34.Text = map.metadata.coop_spawn_params[2].param4.ToString();
+        }
+
+        private void MapTypeCampaign_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MapTypeCampaign.Checked == false)
+                return;
+
+            map.metadata.map_type = SFMapType.CAMPAIGN;
+
+            ButtonTeams.Visible = false;
+            PanelCoopParams.Visible = false;
+        }
+
+        private void MapTypeCoop_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MapTypeCoop.Checked == false)
+                return;
+
+            map.metadata.map_type = SFMapType.COOP;
+
+            ButtonTeams.Visible = true;
+            PanelCoopParams.Visible = true;
+            UpdateCoopSpawnParameters();
+        }
+
+        private void MapTypeMultiplayer_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MapTypeMultiplayer.Checked == false)
+                return;
+
+            map.metadata.map_type = SFMapType.MULTIPLAYER;
+
+            ButtonTeams.Visible = true;
+            PanelCoopParams.Visible = false;
+        }
+
+        private void CoopSpawnParam11_Validated(object sender, EventArgs e)
+        {
+            map.metadata.coop_spawn_params[0].param1 = Utility.TryParseFloat(
+                CoopSpawnParam11.Text, map.metadata.coop_spawn_params[0].param1);
+        }
+
+        private void CoopSpawnParam12_Validated(object sender, EventArgs e)
+        {
+            map.metadata.coop_spawn_params[0].param2 = Utility.TryParseFloat(
+                CoopSpawnParam12.Text, map.metadata.coop_spawn_params[0].param2);
+        }
+
+        private void CoopSpawnParam13_Validated(object sender, EventArgs e)
+        {
+            map.metadata.coop_spawn_params[0].param3 = Utility.TryParseFloat(
+                CoopSpawnParam13.Text, map.metadata.coop_spawn_params[0].param3);
+        }
+
+        private void CoopSpawnParam14_Validated(object sender, EventArgs e)
+        {
+            map.metadata.coop_spawn_params[0].param4 = Utility.TryParseFloat(
+                CoopSpawnParam14.Text, map.metadata.coop_spawn_params[0].param4);
+        }
+
+        private void CoopSpawnParam21_Validated(object sender, EventArgs e)
+        {
+            map.metadata.coop_spawn_params[1].param1 = Utility.TryParseFloat(
+                CoopSpawnParam21.Text, map.metadata.coop_spawn_params[1].param1);
+        }
+
+        private void CoopSpawnParam22_Validated(object sender, EventArgs e)
+        {
+            map.metadata.coop_spawn_params[1].param2 = Utility.TryParseFloat(
+                CoopSpawnParam22.Text, map.metadata.coop_spawn_params[1].param2);
+        }
+
+        private void CoopSpawnParam23_Validated(object sender, EventArgs e)
+        {
+            map.metadata.coop_spawn_params[1].param3 = Utility.TryParseFloat(
+                CoopSpawnParam23.Text, map.metadata.coop_spawn_params[1].param3);
+        }
+
+        private void CoopSpawnParam24_Validated(object sender, EventArgs e)
+        {
+            map.metadata.coop_spawn_params[1].param4 = Utility.TryParseFloat(
+                CoopSpawnParam24.Text, map.metadata.coop_spawn_params[1].param4);
+        }
+
+        private void CoopSpawnParam31_Validated(object sender, EventArgs e)
+        {
+            map.metadata.coop_spawn_params[2].param1 = Utility.TryParseFloat(
+                CoopSpawnParam31.Text, map.metadata.coop_spawn_params[2].param1);
+        }
+
+        private void CoopSpawnParam32_Validated(object sender, EventArgs e)
+        {
+            map.metadata.coop_spawn_params[2].param2 = Utility.TryParseFloat(
+                CoopSpawnParam32.Text, map.metadata.coop_spawn_params[2].param2);
+        }
+
+        private void CoopSpawnParam33_Validated(object sender, EventArgs e)
+        {
+            map.metadata.coop_spawn_params[2].param3 = Utility.TryParseFloat(
+                CoopSpawnParam33.Text, map.metadata.coop_spawn_params[2].param3);
+        }
+
+        private void CoopSpawnParam34_Validated(object sender, EventArgs e)
+        {
+            map.metadata.coop_spawn_params[2].param4 = Utility.TryParseFloat(
+                CoopSpawnParam34.Text, map.metadata.coop_spawn_params[2].param4);
+        }
+
+        private void ButtonTeams_Click(object sender, EventArgs e)
+        {
+            if (teamcomp_form != null)
+                return;
+
+            teamcomp_form = new SFMap.map_dialog.MapManageTeamCompositions();
+            teamcomp_form.map = map;
+            teamcomp_form.FormClosing += new FormClosingEventHandler(teamcompform_FormClosing);
+            teamcomp_form.Show();
+        }
+
+        private void teamcompform_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            teamcomp_form.FormClosing -= new FormClosingEventHandler(teamcompform_FormClosing);
+            teamcomp_form = null;
+        }
+
+        private void visibilitySettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (visibility_form != null)
+                return;
+
+            visibility_form = new SFMap.map_dialog.MapVisibilitySettings();
+            visibility_form.map = map;
+            visibility_form.FormClosing += new FormClosingEventHandler(visibilityform_FormClosing);
+            visibility_form.Show();
+        }
+
+        private void visibilityform_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            visibility_form.FormClosing -= new FormClosingEventHandler(visibilityform_FormClosing);
+            visibility_form = null;
+        }
+
     }
 }

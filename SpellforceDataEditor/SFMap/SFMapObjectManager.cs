@@ -51,6 +51,10 @@ namespace SpellforceDataEditor.SFMap
             string obj_name = obj.GetObjectName();
 
             SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, obj_name, false);
+            // custom resource mesh setting :^)
+            if (node.Children.Count == 0)
+                ObjectSetResourceIfAvailable(id, node);
+
             node.SetParent(map.heightmap.GetChunkNode(position));
             return obj;
         }
@@ -78,6 +82,51 @@ namespace SpellforceDataEditor.SFMap
             if (obj_id == 2541)                                       // spawn point
                 return true;
             return false;
+        }
+
+        public void ObjectSetResourceIfAvailable(int obj_id, SF3D.SceneSynchro.SceneNode node)
+        {
+            string mesh_obj_name = "";
+            string mesh_decal_name = "";
+            // berries
+            if ((obj_id >= 0x80) && (obj_id < 0x80 + 6))
+            {
+                mesh_obj_name = "nature_berry_" + (obj_id - 0x80 + 1).ToString("00");
+                mesh_decal_name = "nature_berry_decal";
+            }
+            else if (obj_id == 0x300)
+            {
+                mesh_obj_name = "nature_wheat_step06";
+                mesh_decal_name = "nature_wheat_decal";
+            }
+            else if (obj_id == 0x302)
+                mesh_obj_name = "nature_mushroom_06";
+            else if ((obj_id >= 0x100) && (obj_id < 0x100 + 9))
+            {
+                mesh_obj_name = "nature_crushable_rock" + (obj_id - 0x100 + 1).ToString();
+                mesh_decal_name = "nature_crushable_rock_decal";
+            }
+            else if ((obj_id >= 0x580) && (obj_id < 0x580 + 9))
+            {
+                mesh_obj_name = "nature_lenya_" + (obj_id - 0x580 + 1).ToString("00");
+                mesh_decal_name = "nature_lenya_decal";
+            }
+            else if ((obj_id >= 0x600) && (obj_id < 0x600 + 9))
+            {
+                mesh_obj_name = "nature_iron_" + (obj_id - 0x600 + 1).ToString("00");
+                mesh_decal_name = "nature_iron_decal";
+            }
+            else if ((obj_id >= 0x680) && (obj_id < 0x680 + 9))
+            {
+                mesh_obj_name = "nature_mitthril_" + (obj_id - 0x680 + 1).ToString("00");
+                mesh_decal_name = "nature_mithril_decal";
+            }
+
+            if (mesh_obj_name != "")
+            {
+                SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(node, mesh_obj_name, "0");
+                SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(node, mesh_decal_name, "0");
+            }
         }
     }
 }

@@ -157,7 +157,41 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 + map.object_manager.objects[ListObjects.SelectedIndex].grid_position.ToString();
             MainForm.mapedittool.update_render = true;
         }
-        
+
+        private void NPCID_Validated(object sender, EventArgs e)
+        {
+            if (ListObjects.SelectedIndex == -1)
+                return;
+
+            SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
+
+            int npc_id = Utility.TryParseInt32(NPCID.Text);
+
+            // find if any npc exists
+            object entity = map.FindNPCEntity(npc_id);
+            if (entity != null)
+            {
+                MessageBox.Show("Duplicate NPC ID " + npc_id + " found. Unable to change selected unit ID.");
+                NPCID.Text = obj.npc_id.ToString();
+            }
+
+            obj.npc_id = npc_id;
+        }
+
+        private void NPCScript_Click(object sender, EventArgs e)
+        {
+            if (ListObjects.SelectedIndex == -1)
+                return;
+
+            SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
+            if (obj.npc_id == 0)
+                return;
+
+            string fname = "script\\p" + map.PlatformID.ToString() + "\\n" + obj.npc_id.ToString() + ".lua";
+            if (SFLua.SFLuaEnvironment.OpenNPCScript((int)map.PlatformID, obj.npc_id) != 0)
+                MessageBox.Show("Could not open " + fname);
+        }
+
         private void Angle_Validated(object sender, EventArgs e)
         {
             if (ListObjects.SelectedIndex == -1)
@@ -242,6 +276,20 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     ListObjects.SelectedIndex = i;
                     return;
                 }
+        }
+
+        private void ObjectID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (MainForm.data == null)
+                return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                int elem_id = Utility.TryParseUInt16(ObjectID.Text);
+                int real_elem_id = SFCFF.SFCategoryManager.gamedata[33].GetElementIndex(elem_id);
+                if (real_elem_id != -1)
+                    MainForm.data.Tracer_StepForward(33, real_elem_id);
+            }
         }
     }
 }

@@ -53,6 +53,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.ButtonResizeList = new System.Windows.Forms.Button();
             this.PanelProperties = new System.Windows.Forms.Panel();
+            this.NPCScript = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.AngleTrackbar)).BeginInit();
             this.PanelUnitList.SuspendLayout();
             this.PanelProperties.SuspendLayout();
@@ -73,6 +74,7 @@
             this.UnitID.Name = "UnitID";
             this.UnitID.Size = new System.Drawing.Size(100, 20);
             this.UnitID.TabIndex = 1;
+            this.UnitID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.UnitID_MouseDown);
             this.UnitID.Validated += new System.EventHandler(this.UnitID_Validated);
             // 
             // label2
@@ -95,11 +97,11 @@
             // 
             // NPCID
             // 
-            this.NPCID.Enabled = false;
             this.NPCID.Location = new System.Drawing.Point(98, 46);
             this.NPCID.Name = "NPCID";
             this.NPCID.Size = new System.Drawing.Size(100, 20);
             this.NPCID.TabIndex = 3;
+            this.NPCID.Validated += new System.EventHandler(this.NPCID_Validated);
             // 
             // label4
             // 
@@ -275,6 +277,7 @@
             // 
             // PanelProperties
             // 
+            this.PanelProperties.Controls.Add(this.NPCScript);
             this.PanelProperties.Controls.Add(this.label2);
             this.PanelProperties.Controls.Add(this.LabelUnitName);
             this.PanelProperties.Controls.Add(this.AngleTrackbar);
@@ -297,6 +300,16 @@
             this.PanelProperties.Name = "PanelProperties";
             this.PanelProperties.Size = new System.Drawing.Size(290, 201);
             this.PanelProperties.TabIndex = 19;
+            // 
+            // NPCScript
+            // 
+            this.NPCScript.Location = new System.Drawing.Point(204, 44);
+            this.NPCScript.Name = "NPCScript";
+            this.NPCScript.Size = new System.Drawing.Size(83, 23);
+            this.NPCScript.TabIndex = 18;
+            this.NPCScript.Text = "Open script";
+            this.NPCScript.UseVisualStyleBackColor = true;
+            this.NPCScript.Click += new System.EventHandler(this.NPCScript_Click);
             // 
             // MapUnitInspector
             // 
@@ -343,5 +356,6 @@
         private System.Windows.Forms.TextBox SearchUnitText;
         private System.Windows.Forms.ListBox ListUnits;
         private System.Windows.Forms.Panel PanelProperties;
+        private System.Windows.Forms.Button NPCScript;
     }
 }

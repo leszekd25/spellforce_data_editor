@@ -16,6 +16,14 @@ namespace SpellforceDataEditor
         public static int ShadowMapSize { get; private set; } = 1024;
         public static int AntiAliasingSamples { get; private set; } = 4;
 
+        public static bool UnitsVisible { get; set; } = true;
+        public static bool BuildingsVisible { get; set; } = true;
+        public static bool ObjectsVisible { get; set; } = true;
+        public static bool DecorationsVisible { get; set; } = true;
+        public static bool LakesVisible { get; set; } = true;
+        public static bool OverlaysVisible { get; set; } = true;
+        public static bool VisualizeHeight { get; set; } = false;
+
         public static string GameDirectory { get; set; } = "";
         public static int LanguageID { get; private set; } = 1;
 
@@ -74,6 +82,29 @@ namespace SpellforceDataEditor
                                 AntiAliasingSamples = 4;
                             AntiAliasingSamples = (AntiAliasingSamples / 2) * 2;
                             break;
+
+                        case "UnitsVisible":
+                            UnitsVisible = (words[1] == "YES");
+                            break;
+                        case "BuildingsVisible":
+                            BuildingsVisible = (words[1] == "YES");
+                            break;
+                        case "ObjectsVisible":
+                            ObjectsVisible = (words[1] == "YES");
+                            break;
+                        case "DecorationsVisible":
+                            DecorationsVisible = (words[1] == "YES");
+                            break;
+                        case "LakesVisible":
+                            LakesVisible = (words[1] == "YES");
+                            break;
+                        case "OverlaysVisible":
+                            OverlaysVisible = (words[1] == "YES");
+                            break;
+                        case "VisualizeHeight":
+                            VisualizeHeight = (words[1] == "YES");
+                            break;
+
                         case "GameDirectory":
                             string s2 = words[1];
                             for (int i = 2; i < words.Length; i++)
@@ -166,6 +197,29 @@ namespace SpellforceDataEditor
                         case "AntiAliasingSamples":
                             words = new string[] { words[0], AntiAliasingSamples.ToString() };
                             break;
+
+                        case "UnitsVisible":
+                            words = new string[] { words[0], UnitsVisible ? "YES" : "NO" };
+                            break;
+                        case "BuildingsVisible":
+                            words = new string[] { words[0], BuildingsVisible ? "YES" : "NO" };
+                            break;
+                        case "ObjectsVisible":
+                            words = new string[] { words[0], ObjectsVisible ? "YES" : "NO" };
+                            break;
+                        case "DecorationsVisible":
+                            words = new string[] { words[0], DecorationsVisible ? "YES" : "NO" };
+                            break;
+                        case "LakesVisible":
+                            words = new string[] { words[0], LakesVisible ? "YES" : "NO" };
+                            break;
+                        case "OverlaysVisible":
+                            words = new string[] { words[0], OverlaysVisible ? "YES" : "NO" };
+                            break;
+                        case "VisualizeHeight":
+                            words = new string[] { words[0], VisualizeHeight ? "YES" : "NO" };
+                            break;
+
                         case "GameDirectory":
                             words = new string[] { words[0], GameDirectory };
                             break;

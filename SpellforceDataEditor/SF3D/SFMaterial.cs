@@ -13,13 +13,27 @@ using OpenTK;
 //expand!
 namespace SpellforceDataEditor.SF3D
 {
+    public enum RenderMode
+    {
+        ONE_ZERO,
+        SRCALPHA_ONE,
+        SRCALPHA_INVSRCALPHA,
+        DESTCOLOR_ONE,
+        ZERO_INVSRCCOLOR,
+        DESTCOLOR_INVSRCALPHA,
+        ONE_INVSRCALPHA,
+        ONE_ONE,
+        DESTCOLOR_SRCCOLOR,
+        DESTCOLOR_ZERO,
+    }
+
     public class SFMaterial
     {
         public int _texID = -1;
         public byte unused_uchar = 0;
         public byte uv_mode = 0;
         public ushort unused_short2 = 0;
-        public byte texRenderMode = 0;
+        public RenderMode texRenderMode = 0;
         public byte texAlpha = 255;
         public byte matFlags = 7;
         public byte matDepthBias = 0;

@@ -513,8 +513,7 @@ namespace SpellforceDataEditor.special_forms
             ResetScene();
             SFResourceManager.DisposeAll();
             GC.Collect(2, GCCollectionMode.Forced, false);
-
-            System.Diagnostics.Debug.WriteLine("GENERATING SCENE " + cat.ToString() + "|" + elem.ToString());
+            
             SFRenderEngine.scene.CatElemToScene(cat, elem);
 
             if (SFRenderEngine.scene.scene_meta.is_animated)   // only if selected element is a unit...

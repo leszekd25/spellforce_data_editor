@@ -24,6 +24,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
     {
         public enum RenderPass { NONE = -1, SHADOWMAP = 0, SCENE = 1, SCREENSPACE = 2 }
         public static SFScene scene { get; } = new SFScene();
+        static float CurrentDepthBias = 0;
+        static RenderMode CurrentRenderMode = RenderMode.SRCALPHA_INVSRCALPHA;
 
         static SFTexture opaque_tex = null;
 
@@ -82,6 +84,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_simple.AddParameter("FogColor");
             shader_simple.AddParameter("FogStart");
             shader_simple.AddParameter("FogEnd");
+            shader_simple.AddParameter("DepthBias");
 
             shader_animated.CompileShader(Properties.Resources.vshader_skel, Properties.Resources.fshader_skel);
             shader_animated.AddParameter("VP");
@@ -104,6 +107,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_heightmap.CompileShader(Properties.Resources.vshader_hmap, Properties.Resources.fshader_hmap);
             shader_heightmap.AddParameter("VP");
             shader_heightmap.AddParameter("M");
+            shader_heightmap.AddParameter("VisualizeHeight");
             shader_heightmap.AddParameter("LSM");
             shader_heightmap.AddParameter("ShadowMap");
             shader_heightmap.AddParameter("SunDirection");
@@ -276,6 +280,55 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
+        private static void SetDepthBias(float v)
+        {
+            if(v != CurrentDepthBias)
+            {
+                CurrentDepthBias = v;
+                GL.Uniform1(active_shader["DepthBias"], v);
+            }
+        }
+
+        private static void SetRenderMode(RenderMode rm)
+        {
+            if (CurrentRenderMode == rm)
+                return;
+
+            switch(rm)
+            {
+                case RenderMode.DESTCOLOR_INVSRCALPHA:
+                    GL.BlendFunc(BlendingFactor.DstColor, BlendingFactor.OneMinusSrcAlpha);
+                    break;
+                case RenderMode.DESTCOLOR_ONE:
+                    GL.BlendFunc(BlendingFactor.DstColor, BlendingFactor.One);
+                    break;
+                case RenderMode.DESTCOLOR_SRCCOLOR:
+                    GL.BlendFunc(BlendingFactor.DstColor, BlendingFactor.SrcColor);
+                    break;
+                case RenderMode.DESTCOLOR_ZERO:
+                    GL.BlendFunc(BlendingFactor.DstColor, BlendingFactor.Zero);
+                    break;
+                case RenderMode.ONE_INVSRCALPHA:
+                    GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcAlpha);
+                    break;
+                case RenderMode.ONE_ONE:
+                    GL.BlendFunc(BlendingFactor.One, BlendingFactor.One);
+                    break;
+                case RenderMode.ONE_ZERO:
+                    GL.BlendFunc(BlendingFactor.One, BlendingFactor.Zero);
+                    break;
+                case RenderMode.SRCALPHA_INVSRCALPHA:
+                    GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+                    break;
+                case RenderMode.SRCALPHA_ONE:
+                    GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
+                    break;
+                case RenderMode.ZERO_INVSRCCOLOR:
+                    GL.BlendFunc(BlendingFactor.Zero, BlendingFactor.OneMinusSrcColor);
+                    break;
+            }
+        }
+
         public static void UpdateVisibleChunks()
         {
             scene.camera.Update(0);
@@ -299,6 +352,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         new Vector2(chunk_node.MapChunk.collision_cache.aabb.center.X, 
                                     chunk_node.MapChunk.collision_cache.aabb.center.Z),
                         new Vector2(scene.camera.Position.X, scene.camera.Position.Z));
+                    chunk_node.CameraHeightDifference = scene.camera.Position.Y - chunk_node.MapChunk.collision_cache.aabb.b.Y;
                     if (chunk_node.DistanceToCamera > 224)  // magic number: zFar+aspect_ratio*sqrt2*chunk size
                         continue;
                     if (!chunk_node.MapChunk.collision_cache.aabb.IsOutsideOfConvexHull(scene.camera.FrustumPlanes))
@@ -416,11 +470,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             // set light matrix and check decoration visibility
             
             foreach(SceneNodeMapChunk chunk_node in vis_chunks)
-                chunk_node.MapChunk.UpdateDecorationVisible(chunk_node.DistanceToCamera);
-            SF3D.Physics.BoundingBox aabb = new Physics.BoundingBox(
-                new Vector3(scene.camera.Position.X - 64, 0, scene.camera.Position.Z - 64),
-                new Vector3(scene.camera.Position.X + 64, scene.camera.Position.Y, scene.camera.Position.Z + 64));
-            scene.sun_light.SetupLightView(aabb);
+                chunk_node.MapChunk.UpdateDecorationVisible(chunk_node.DistanceToCamera, chunk_node.CameraHeightDifference);
+            scene.sun_light.SetupLightView(scene.camera.Position);
         }
 
         private static void RenderHeightmap()
@@ -432,6 +483,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.BindTexture(TextureTarget.Texture2DArray, scene.heightmap.texture_manager.terrain_texture);
                 Matrix4 vp_mat = scene.camera.ViewProjMatrix;
                 GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+                GL.Uniform1(active_shader["VisualizeHeight"], Settings.VisualizeHeight ? 1 : 0);
             }
             else if (current_pass == RenderPass.SHADOWMAP)
                 GL.BindTexture(TextureTarget.Texture2D, opaque_tex.tex_id);
@@ -454,6 +506,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
         // todo: optimize this a bit by caching textures in lakeManager and using them explicitly
         private static void RenderLakes()
         {
+            if (!Settings.LakesVisible)
+                return;
+
             GL.Uniform1(active_shader["apply_shading"], 0);
             GL.Uniform1(active_shader["texture_used"], 1);
             Matrix4 VP_mat = scene.camera.ViewProjMatrix;
@@ -468,13 +523,15 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                 // get chunk position
                 Matrix4 chunk_matrix = chunk_node.ResultTransform;
-                GL.UniformMatrix4(active_shader["M"], false, ref chunk_matrix);
+                //GL.UniformMatrix4(active_shader["M"], false, ref chunk_matrix);
 
                 foreach (SFSubModel3D sbm in chunk.lake_model.submodels)
                 {
                     GL.BindVertexArray(sbm.vertex_array);
+                    sbm.ReloadInstanceMatrices();
+
                     GL.BindTexture(TextureTarget.Texture2D, sbm.material.texture.tex_id);
-                    GL.DrawElements(PrimitiveType.Triangles, (int)sbm.material.indexCount, DrawElementsType.UnsignedInt, (int)sbm.material.indexStart * 4);
+                    GL.DrawElementsInstanced(PrimitiveType.Triangles, (int)sbm.material.indexCount, DrawElementsType.UnsignedInt, IntPtr.Zero, sbm.instance_matrices.Count);
                 }
             }
         }
@@ -482,6 +539,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
         // todo: move overlays to nodes
         public static void RenderOverlays()
         {
+            if (!Settings.OverlaysVisible)
+                return;
+
             GL.Uniform1(active_shader["texture_used"], 0);
             GL.Uniform1(active_shader["apply_shading"], 0);
             Matrix4 VP_mat = scene.camera.ViewProjMatrix;
@@ -490,7 +550,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             foreach (SceneNodeMapChunk chunk_node in scene.heightmap.visible_chunks)
             {
                 Matrix4 chunk_matrix = chunk_node.ResultTransform;
-                GL.UniformMatrix4(active_shader["M"], false, ref chunk_matrix);
+                //GL.UniformMatrix4(active_shader["M"], false, ref chunk_matrix);
 
                 foreach (string o in scene.heightmap.visible_overlays)
                 {
@@ -500,9 +560,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     // get chunk position
 
                     SFSubModel3D sbm = overlay.mesh.submodels[0];
-
                     GL.BindVertexArray(sbm.vertex_array);
-                    GL.DrawElements(PrimitiveType.Triangles, (int)sbm.material.indexCount, DrawElementsType.UnsignedInt, (int)sbm.material.indexStart*4);
+                    // sbm.ReloadInstanceMatrices();
+
+                    GL.DrawElementsInstanced(PrimitiveType.Triangles, (int)sbm.material.indexCount, DrawElementsType.UnsignedInt, IntPtr.Zero, sbm.instance_matrices.Count);
                 }
             }
         }
@@ -519,6 +580,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.Uniform1(active_shader["texture_used"], 0);
                 GL.Uniform1(active_shader["apply_shading"], 0);
                 GL.BindTexture(TextureTarget.Texture2D, 0);
+                SetDepthBias(0);
+                //SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
 
                 Matrix4 vp_mat = scene.camera.ViewProjMatrix;
                 GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
@@ -528,22 +591,18 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.BindTexture(TextureTarget.Texture2D, opaque_tex.tex_id);
             }
 
-            for (int i = 0; i < scene.untextured_list_simple.elements.Count; i++)
-            {
-                if (!scene.untextured_list_simple.elem_active[i])
-                    continue;
-                TexturedGeometryListElementSimple elem = scene.untextured_list_simple.elements[i];
+            int untex_inst_count = 0;
+            foreach (SFSubModel3D sbm in scene.untex_entries_simple)
+                untex_inst_count += sbm.instance_matrices.Count;
+            if (untex_inst_count != 0)
+                foreach (SFSubModel3D sbm in scene.untex_entries_simple)
+                {
+                    GL.BindVertexArray(sbm.vertex_array);
+                    if (current_pass == RenderPass.SHADOWMAP)
+                        sbm.ReloadInstanceMatrices();
 
-                Matrix4 model_mat = elem.node.ResultTransform;
-                GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
-
-                SFSubModel3D sbm = elem.node.Mesh.submodels[0];
-
-                GL.BindVertexArray(sbm.vertex_array);
-                //GL.Uniform1(active_shader["apply_shading"], (mat.apply_shading ? 1 : 0));
-
-                GL.DrawElements(PrimitiveType.Triangles, (int)sbm.material.indexCount, DrawElementsType.UnsignedInt, (int)sbm.material.indexStart * 4);
-            }
+                    GL.DrawElementsInstanced(PrimitiveType.Triangles, (int)sbm.face_indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero, sbm.instance_matrices.Count);
+                }
 
             // textured next
             if (current_pass == RenderPass.SCENE)
@@ -566,7 +625,16 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 foreach (SFSubModel3D sbm in submodels)
                 {
                     GL.BindVertexArray(sbm.vertex_array);
-                    sbm.ReloadInstanceMatrices();
+                    if (current_pass == RenderPass.SHADOWMAP)
+                        sbm.ReloadInstanceMatrices();
+                    else if (current_pass == RenderPass.SCENE)
+                    {
+                        //SetRenderMode(sbm.material.texRenderMode);
+                        if ((sbm.material.matFlags & 4) != 0)
+                            SetDepthBias(sbm.material.matDepthBias);
+                        else
+                            SetDepthBias(0);
+                    }
                     //GL.Uniform1(active_shader["apply_shading"], (mat.apply_shading ? 1 : 0));
 
                     GL.DrawElementsInstanced(PrimitiveType.Triangles, (int)sbm.face_indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero, sbm.instance_matrices.Count);
@@ -609,6 +677,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                     GL.BindVertexArray(chunk.vertex_array);
                     GL.UniformMatrix4(active_shader["boneTransforms"], 20, false, ref bones[0].Row0.X);
+                    //if(current_pass == RenderPass.SCENE)
+                    //    SetRenderMode(chunk.material.texRenderMode);
 
                     GL.DrawElements(PrimitiveType.Triangles, chunk.face_indices.Length, DrawElementsType.UnsignedInt, 0);
                 }
@@ -619,6 +689,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
         {
             if (scene.heightmap == null)
                 scene.sun_light.SetupLightView(new Physics.BoundingBox(new Vector3(-5, 0, -5), new Vector3(5, 30, 5)));
+
+            /*scene.sun_light.Direction = -new Vector3(
+                (float)-Math.Sin(scene.frame_counter/ 10f),
+                -1.0f,
+                (float)Math.Cos(scene.frame_counter / 10f)).Normalized();
+            ApplyLight();*/
 
             current_pass = RenderPass.SHADOWMAP;
 
@@ -658,9 +734,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
             // heightmap and overlays
             if (scene.heightmap != null)
             {
+                //SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
                 UseShader(shader_heightmap);
                 RenderHeightmap();
                 UseShader(shader_simple);
+                SetDepthBias(0);
                 RenderOverlays();
             }
 
@@ -671,7 +749,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
             RenderSimpleObjects();
 
             if (scene.heightmap != null)
+            {
+                SetDepthBias(0);
+                //SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
                 RenderLakes();
+            }
 
 
             // what is below doesnt depend on whats above

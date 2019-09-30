@@ -150,6 +150,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                     case HMapEditMode.SET:  // get
                         Value = map.heightmap.height_data[clicked_pos.y * map.width + clicked_pos.x];
+                        MainForm.mapedittool.HMapEditSetHeight(Value);
                         return;
 
                     case HMapEditMode.SMOOTH:  // rough

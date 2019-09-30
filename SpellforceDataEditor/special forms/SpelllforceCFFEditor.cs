@@ -608,8 +608,6 @@ namespace SpellforceDataEditor.special_forms
                     panelElemManipulate.Visible = true;
                 }
                 panelElemCopy.Visible = true;
-                
-                System.Diagnostics.Debug.WriteLine("Elements: " + ElementSelect.Items.Count.ToString());
             }
             ElementSelect.EndUpdate();
         }

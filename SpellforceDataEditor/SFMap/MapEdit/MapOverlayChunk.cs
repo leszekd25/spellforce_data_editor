@@ -72,6 +72,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
             SF3D.SFSubModel3D sbm = new SF3D.SFSubModel3D();
             sbm.CreateRaw(vertices, uvs, colors, normals, elements, null);
+            sbm.instance_matrices.AddElem(hmap_chunk.owner.ResultTransform);
             
             mesh = new SF3D.SFModel3D();
             mesh.CreateRaw(new SF3D.SFSubModel3D[] { sbm });

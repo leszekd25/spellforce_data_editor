@@ -73,6 +73,14 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         public void OnBaseTexturePress(int ID)
         {
+            if(ID == 0)
+            {
+                ((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile = 0;
+                PanelTileProperties.Enabled = false;
+                PanelTileMixer.Enabled = false;
+                PanelButtons.Enabled = false;
+                return;
+            }
             ((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile = ID+223;
             PanelTileProperties.Enabled = true;
             TileBlocksMovement.Checked = map.heightmap.texture_manager.texture_tiledata[ID + 223].blocks_movement;
@@ -162,6 +170,35 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 LoadBaseTextures();
             else
                 LoadCustomTextures();
+        }
+
+        public void SelectTileType(byte ttype)
+        {
+            if (ttype > 223)
+                ttype = (byte)(ttype - 223);
+
+            if(ttype == 0)
+            {
+                OnBaseTexturePress(0);
+                return;
+            }
+            if(ttype < 32)
+            {
+                SetInspectorType(TerrainTileType.BASE);
+                OnBaseTexturePress(ttype);
+                PanelTiles.Controls[ttype - 1].Focus();
+            }
+            else
+            {
+                SetInspectorType(TerrainTileType.CUSTOM);
+                OnCustomTexturePress(ttype);
+                foreach(MapTerrainTextureControl c in PanelTiles.Controls)
+                    if(c.ID == ttype)
+                    {
+                        c.Focus();
+                        break;
+                    }
+            }
         }
 
         private void TexWeight1_Validated(object sender, EventArgs e)

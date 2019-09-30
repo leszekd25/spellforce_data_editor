@@ -161,6 +161,9 @@ namespace SpellforceDataEditor.SFMap
             
             collision_cache.Generate(new Vector3(ix*size,0,iy*size), vertices);
             Init();
+
+            RebuildLake();
+            UpdateSettingsVisible();
         }
 
         public void GenerateTemporaryAABB()
@@ -233,6 +236,12 @@ namespace SpellforceDataEditor.SFMap
             collision_cache.triangles = null;
 
             vertex_array = -1;
+
+            if (lake_model != null)
+            {
+                SFResources.SFResourceManager.Models.Dispose(lake_model.GetName());
+                lake_model = null;
+            }
         }
 
 
@@ -544,6 +553,7 @@ namespace SpellforceDataEditor.SFMap
 
                 SFSubModel3D sbm = new SFSubModel3D();
                 sbm.CreateRaw(vertices, uvs, colors, normals, indices, material);
+                sbm.instance_matrices.AddElem(owner.ResultTransform);
                 submodels[submodel_index] = sbm;
                 submodel_index += 1;
             }
@@ -564,12 +574,6 @@ namespace SpellforceDataEditor.SFMap
 
                     Degenerate();
 
-                    if (lake_model != null)
-                    {
-                        SFResources.SFResourceManager.Models.Dispose(lake_model.GetName());
-                        lake_model = null;
-                    }
-
                     foreach (MapEdit.MapOverlayChunk ov in overlays.Values)
                         ov.Dispose();
                 }
@@ -579,19 +583,21 @@ namespace SpellforceDataEditor.SFMap
                 if (vis)
                 {
                     visible = true;
+                    decoration_visible = true;
+
                     Generate();
-                    RebuildLake();
+
                     foreach (string o_name in overlays.Keys)
                         OverlayUpdate(o_name);
                 }
             }
         }
 
-        public void UpdateDecorationVisible(float camera_dist)
+        public void UpdateDecorationVisible(float camera_dist, float camera_hdiff)
         {
             if(decoration_visible)
             {
-                if(camera_dist > 71)  // magic number...
+                if((camera_dist > 71)||(camera_hdiff > 81))  // magic number...
                 {
                     decoration_visible = false;
                     foreach (SFMapDecoration d in decorations)
@@ -600,13 +606,36 @@ namespace SpellforceDataEditor.SFMap
             }
             else
             {
-                if(camera_dist <= 71)
+                if((camera_dist <= 71)&&(camera_hdiff <= 81))
                 {
                     decoration_visible = true;
-                    foreach (SFMapDecoration d in decorations)
-                        owner.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName()).Visible = true;
+                    if(Settings.DecorationsVisible)
+                        foreach (SFMapDecoration d in decorations)
+                            owner.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName()).Visible = true;
                 }
             }
+        }
+
+        public void UpdateSettingsVisible()
+        {
+            foreach (SFMapUnit u in units)
+                owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName()).Visible = Settings.UnitsVisible;
+            foreach (SFMapBuilding b in buildings)
+                owner.FindNode<SF3D.SceneSynchro.SceneNode>(b.GetObjectName()).Visible = Settings.BuildingsVisible;
+            foreach (SFMapObject o in objects)
+                owner.FindNode<SF3D.SceneSynchro.SceneNode>(o.GetObjectName()).Visible = Settings.ObjectsVisible;
+            foreach (SFMapInteractiveObject io in int_objects)
+                owner.FindNode<SF3D.SceneSynchro.SceneNode>(io.GetObjectName()).Visible = Settings.ObjectsVisible;
+            foreach (SFMapPortal p in portals)
+                owner.FindNode<SF3D.SceneSynchro.SceneNode>(p.GetObjectName()).Visible = Settings.ObjectsVisible;
+
+            if((Settings.DecorationsVisible)&&(decoration_visible))
+                foreach (SFMapDecoration d in decorations)
+                    owner.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName()).Visible = Settings.DecorationsVisible;
+            if (!Settings.DecorationsVisible)
+                foreach (SFMapDecoration d in decorations)
+                    owner.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName()).Visible = Settings.DecorationsVisible;
+
         }
 
         public void Unload()
@@ -809,6 +838,7 @@ namespace SpellforceDataEditor.SFMap
                 {
                     chunk_nodes[i * chunk_count_x + j] = new SF3D.SceneSynchro.SceneNodeMapChunk("hmap_" + j.ToString() + "_" + i.ToString());
                     SF3D.SceneSynchro.SceneNodeMapChunk chunk_node = chunk_nodes[i * chunk_count_x + j];
+                    chunk_node.Position = new Vector3(j * chunk_size, 0, i * chunk_size);
                     chunk_node.Visible = false;
                     chunk_node.MapChunk = new SFMapHeightMapChunk();
                     chunk_node.MapChunk.hmap = this;
@@ -818,9 +848,7 @@ namespace SpellforceDataEditor.SFMap
                     chunk_node.MapChunk.width = chunk_size;
                     chunk_node.MapChunk.height = chunk_size;
                     chunk_node.MapChunk.GenerateTemporaryAABB();
-
-                    chunk_node.MapChunk.Generate();
-                    chunk_node.Position = new Vector3(j * chunk_size, 0, i * chunk_size);
+                    chunk_node.Update(0);
                 }
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate(): Chunks generated: "+chunk_nodes.Length.ToString());
         }
@@ -1118,7 +1146,7 @@ namespace SpellforceDataEditor.SFMap
             float cz = (x > 0) ? (GetHeightAt(x - 1, y)) : (0);
             float dz = (y > 0) ? (GetHeightAt(x, y - 1)) : (0);
 
-            return (new Vector3(cz - az, 2 * hscale, dz - bz)).Normalized();
+            return (new Vector3(cz - az, 2 * hscale, bz - dz)).Normalized();
         }
 
         public ushort GetHeightAt(int x, int y)
@@ -1148,6 +1176,12 @@ namespace SpellforceDataEditor.SFMap
             visible_overlays.Clear();
             chunk_nodes = null;
             map = null;
+        }
+
+        public void SetVisibilitySettings()
+        {
+            foreach (var chunk in visible_chunks)
+                chunk.MapChunk.UpdateSettingsVisible();
         }
     }
 }

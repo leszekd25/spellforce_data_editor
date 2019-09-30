@@ -1327,7 +1327,6 @@ namespace SpellforceDataEditor.SFCFF
                     for (int i = 0; i < elem_format.Length; i++)
                         elements_loaded.Add(ReadVariantFromBuffer(sr, elem_format[i], string_size[current_string]));
                     Byte vcount = (Byte)elements_loaded[elements_loaded.Count - 1];
-                    System.Diagnostics.Debug.WriteLine(vcount);
                     for (int i = 0; i < vcount*2; i++)
                         elements_loaded.Add(ReadVariantFromBuffer(sr, 'h', string_size[current_string]));
                 }
@@ -1585,7 +1584,6 @@ namespace SpellforceDataEditor.SFCFF
                     for (int i = 0; i < elem_format.Length; i++)
                         elements_loaded.Add(ReadVariantFromBuffer(sr, elem_format[i], string_size[current_string]));
                     Byte vcount = (Byte)elements_loaded[elements_loaded.Count - 1];
-                    System.Diagnostics.Debug.WriteLine(vcount);
                     for (int i = 0; i < vcount * 2; i++)
                         elements_loaded.Add(ReadVariantFromBuffer(sr, 'h', string_size[current_string]));
                 }

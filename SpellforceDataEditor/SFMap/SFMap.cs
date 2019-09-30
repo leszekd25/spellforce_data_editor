@@ -28,7 +28,7 @@ namespace SpellforceDataEditor.SFMap
         public SFMapLakeManager lake_manager { get; private set; } = null;
         public SFMapMetaData metadata { get; private set; } = null;
         public SFMapSelectionHelper selection_helper { get; private set; } = new SFMapSelectionHelper();
-        public SFMapNPCManager npc_manager { get; private set; } = null;
+        //public SFMapNPCManager npc_manager { get; private set; } = null;
         public SFCFF.SFGameData gamedata { get; private set; } = null;
         public uint PlatformID { get; private set; } = 6666;
 
@@ -141,7 +141,7 @@ namespace SpellforceDataEditor.SFMap
             // generate heightmap models and reindex textures
             heightmap.Generate();
 
-            npc_manager = new SFMapNPCManager() { map = this };
+            //npc_manager = new SFMapNPCManager() { map = this };
 
             // load buildings
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading buildings");
@@ -622,10 +622,8 @@ namespace SpellforceDataEditor.SFMap
                 {
                     LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Found coop spawn parameters, assuming coop map type");
                     metadata.map_type = SFMapType.COOP;
-                    metadata.coop_spawn_params = new List<SFMapCoopSpawnParameters>();
                     for (int i = 0; i < 3; i++)
                     {
-                        metadata.coop_spawn_params.Add(new SFMapCoopSpawnParameters());
                         metadata.coop_spawn_params[i].param1 = br.ReadSingle();
                         metadata.coop_spawn_params[i].param2 = br.ReadSingle();
                         metadata.coop_spawn_params[i].param3 = br.ReadSingle();
@@ -1150,7 +1148,7 @@ namespace SpellforceDataEditor.SFMap
             // generate heightmap models and reindex textures
             heightmap.Generate();
 
-            npc_manager = new SFMapNPCManager() { map = this };
+            //npc_manager = new SFMapNPCManager() { map = this };
 
             // load buildings
             building_manager = new SFMapBuildingManager() { map = this };
@@ -1194,17 +1192,6 @@ namespace SpellforceDataEditor.SFMap
             metadata.minimap.height = 128;
             metadata.minimap.texture_data = image_data;
             metadata.minimap.GenerateTexture();
-
-            metadata.coop_spawn_params = new List<SFMapCoopSpawnParameters>
-            {
-                new SFMapCoopSpawnParameters(),
-                new SFMapCoopSpawnParameters(),
-                new SFMapCoopSpawnParameters()
-            };
-            metadata.coop_spawn_params[0].param1 = 1; metadata.coop_spawn_params[1].param1 = 1.5f; metadata.coop_spawn_params[2].param1 = 2;
-            metadata.coop_spawn_params[0].param2 = 1; metadata.coop_spawn_params[1].param2 = 1.5f; metadata.coop_spawn_params[2].param2 = 2;
-            metadata.coop_spawn_params[0].param3 = 1; metadata.coop_spawn_params[1].param3 = 0.7f; metadata.coop_spawn_params[2].param3 = 0.5f;
-            metadata.coop_spawn_params[0].param4 = 1; metadata.coop_spawn_params[1].param4 = 0.7f; metadata.coop_spawn_params[2].param4 = 0.5f;
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Create(): Creating overlays");
             // create overlays, generation in relevant control...
@@ -1261,14 +1248,13 @@ namespace SpellforceDataEditor.SFMap
             portal_manager = null;
             lake_manager = null;
             metadata = null;
-            npc_manager = null;
-    }
+            //npc_manager = null;
+        }
 
         public void AddDecoration(int game_id, SFCoord pos)
         {
             SFMapDecoration dec = decoration_manager.AddDecoration(game_id, pos);
-
-
+            
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.SceneSynchro.SceneNode _obj = heightmap.GetChunkNode(pos).FindNode<SF3D.SceneSynchro.SceneNode>(dec.GetObjectName());
             _obj.Position = heightmap.GetFixedPosition(pos);
@@ -1280,8 +1266,8 @@ namespace SpellforceDataEditor.SFMap
         {
             SFMapObject obj = object_manager.AddObject(game_id, pos, angle, unk1);
             obj.npc_id = npc_id;
-            if (npc_id != 0)
-                npc_manager.AddNPCRef(npc_id, obj);
+            /*if (npc_id != 0)
+                npc_manager.AddNPCRef(npc_id, obj);*/
             
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.SceneSynchro.SceneNode _obj = heightmap.GetChunkNode(pos).FindNode<SF3D.SceneSynchro.SceneNode>(obj.GetObjectName());
@@ -1304,8 +1290,8 @@ namespace SpellforceDataEditor.SFMap
 
             object_manager.RemoveObject(obj);
 
-            if (obj.npc_id != 0)
-                npc_manager.RemoveNPCRef(obj.npc_id);
+            /*if (obj.npc_id != 0)
+                npc_manager.RemoveNPCRef(obj.npc_id);*/
 
             return 0;
         }
@@ -1504,8 +1490,8 @@ namespace SpellforceDataEditor.SFMap
         public void AddBuilding(int game_id, SFCoord pos, int angle, int npc_id, int lvl, int race_id)
         {
             SFMapBuilding bld = building_manager.AddBuilding(game_id, pos, angle, npc_id, lvl, race_id);
-            if (npc_id != 0)
-                npc_manager.AddNPCRef(npc_id, bld);
+            /*if (npc_id != 0)
+                npc_manager.AddNPCRef(npc_id, bld);*/
 
             float z = heightmap.GetZ(pos) / 100.0f; 
             SF3D.SceneSynchro.SceneNode _obj = heightmap.GetChunkNode(pos).FindNode<SF3D.SceneSynchro.SceneNode>(bld.GetObjectName());
@@ -1536,8 +1522,8 @@ namespace SpellforceDataEditor.SFMap
 
             building_manager.RemoveBuilding(building);
 
-            if (building.npc_id != 0)
-                npc_manager.RemoveNPCRef(building.npc_id);
+            /*if (building.npc_id != 0)
+                npc_manager.RemoveNPCRef(building.npc_id);*/
 
             return 0;
         }
@@ -1737,8 +1723,8 @@ namespace SpellforceDataEditor.SFMap
             unit.unknown = unknown;
             unit.group = group;
             unit.unknown2 = unknown2;
-            if (npc_id != 0)
-                npc_manager.AddNPCRef(npc_id, unit);
+            /*if (npc_id != 0)
+                npc_manager.AddNPCRef(npc_id, unit);*/
 
             // 2. modify object transform and appearance
 
@@ -1824,8 +1810,8 @@ namespace SpellforceDataEditor.SFMap
 
             unit_manager.RemoveUnit(unit);
 
-            if (unit.npc_id != 0)
-                npc_manager.RemoveNPCRef(unit.npc_id);
+            /*if (unit.npc_id != 0)
+                npc_manager.RemoveNPCRef(unit.npc_id);*/
 
             return 0;
         }
@@ -1952,6 +1938,24 @@ namespace SpellforceDataEditor.SFMap
 
             return null;
 
+        }
+
+        public object FindNPCEntity(int npc_id)
+        {
+            if (npc_id <= 0)
+                return null;
+
+            foreach (SFMapUnit u in unit_manager.units)
+                if (u.npc_id == npc_id)
+                    return u;
+            foreach (SFMapObject o in object_manager.objects)
+                if (o.npc_id == npc_id)
+                    return o;
+            foreach (SFMapBuilding b in building_manager.buildings)
+                if (b.npc_id == npc_id)
+                    return b;
+
+            return null;
         }
     }
 }

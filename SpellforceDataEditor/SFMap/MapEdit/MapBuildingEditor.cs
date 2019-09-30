@@ -10,7 +10,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
     public class MapBuildingEditor: MapEditor
     {
         bool drag_enabled = false;
-        public int selected_building { get; private set; } = -1;    // unit index
+        public int selected_building { get; set; } = -1;    // unit index
         public int placement_building { get; set; } = 0;
 
         public override void OnMousePress(SFCoord pos, MouseButtons button)

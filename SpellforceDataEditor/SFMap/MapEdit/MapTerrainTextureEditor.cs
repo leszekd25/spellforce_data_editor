@@ -67,7 +67,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 int tex_id = map.heightmap.tile_data[pos.y * map.width + pos.x];
                 if (tex_id > 223)
                     tex_id -= 223;
-                // SelectedTile = tex_id;
+                ((map_controls.MapTerrainTextureInspector)MainForm.mapedittool.selected_inspector).SelectTileType((byte)tex_id);
             }
         }
     }

@@ -38,6 +38,7 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.slopebasedPaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.visibilitySettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenMap = new System.Windows.Forms.OpenFileDialog();
             this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
             this.DialogSaveMap = new System.Windows.Forms.SaveFileDialog();
@@ -50,6 +51,15 @@
             this.label14 = new System.Windows.Forms.Label();
             this.PanelDecalGroups = new System.Windows.Forms.Panel();
             this.TabPageEntities = new System.Windows.Forms.TabPage();
+            this.PanelMonumentType = new System.Windows.Forms.Panel();
+            this.MonumentHero = new System.Windows.Forms.RadioButton();
+            this.label15 = new System.Windows.Forms.Label();
+            this.MonumentHuman = new System.Windows.Forms.RadioButton();
+            this.MonumentElf = new System.Windows.Forms.RadioButton();
+            this.MonumentOrc = new System.Windows.Forms.RadioButton();
+            this.MonumentTroll = new System.Windows.Forms.RadioButton();
+            this.MonumentDwarf = new System.Windows.Forms.RadioButton();
+            this.MonumentDarkElf = new System.Windows.Forms.RadioButton();
             this.EditCoopCampTypes = new System.Windows.Forms.Button();
             this.PanelEntityPlacementSelect = new System.Windows.Forms.Panel();
             this.PanelUnitPlacementSelect = new System.Windows.Forms.Panel();
@@ -115,21 +125,39 @@
             this.RadioFlags = new System.Windows.Forms.RadioButton();
             this.RadioLakes = new System.Windows.Forms.RadioButton();
             this.TabEditorModes = new System.Windows.Forms.TabControl();
-            this.TabPageScripting = new System.Windows.Forms.TabPage();
             this.TabPageMetadata = new System.Windows.Forms.TabPage();
-            this.PanelMonumentType = new System.Windows.Forms.Panel();
-            this.MonumentHero = new System.Windows.Forms.RadioButton();
-            this.label15 = new System.Windows.Forms.Label();
-            this.MonumentHuman = new System.Windows.Forms.RadioButton();
-            this.MonumentElf = new System.Windows.Forms.RadioButton();
-            this.MonumentOrc = new System.Windows.Forms.RadioButton();
-            this.MonumentTroll = new System.Windows.Forms.RadioButton();
-            this.MonumentDwarf = new System.Windows.Forms.RadioButton();
-            this.MonumentDarkElf = new System.Windows.Forms.RadioButton();
+            this.ButtonTeams = new System.Windows.Forms.Button();
+            this.PanelCoopParams = new System.Windows.Forms.Panel();
+            this.label24 = new System.Windows.Forms.Label();
+            this.CoopSpawnParam34 = new System.Windows.Forms.TextBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.CoopSpawnParam33 = new System.Windows.Forms.TextBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.CoopSpawnParam32 = new System.Windows.Forms.TextBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.CoopSpawnParam24 = new System.Windows.Forms.TextBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.CoopSpawnParam23 = new System.Windows.Forms.TextBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.CoopSpawnParam22 = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.CoopSpawnParam14 = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.CoopSpawnParam13 = new System.Windows.Forms.TextBox();
+            this.CoopSpawnParam12 = new System.Windows.Forms.TextBox();
+            this.CoopSpawnParam31 = new System.Windows.Forms.TextBox();
+            this.CoopSpawnParam21 = new System.Windows.Forms.TextBox();
+            this.CoopSpawnParam11 = new System.Windows.Forms.TextBox();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.label16 = new System.Windows.Forms.Label();
+            this.MapTypeCampaign = new System.Windows.Forms.RadioButton();
+            this.MapTypeCoop = new System.Windows.Forms.RadioButton();
+            this.MapTypeMultiplayer = new System.Windows.Forms.RadioButton();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
             this.TabPageEntities.SuspendLayout();
+            this.PanelMonumentType.SuspendLayout();
             this.PanelEntityPlacementSelect.SuspendLayout();
             this.PanelUnitPlacementSelect.SuspendLayout();
             this.panel5.SuspendLayout();
@@ -147,7 +175,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.TerrainTrackbar)).BeginInit();
             this.panel1.SuspendLayout();
             this.TabEditorModes.SuspendLayout();
-            this.PanelMonumentType.SuspendLayout();
+            this.TabPageMetadata.SuspendLayout();
+            this.PanelCoopParams.SuspendLayout();
+            this.panel6.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -211,7 +241,8 @@
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.slopebasedPaintToolStripMenuItem});
+            this.slopebasedPaintToolStripMenuItem,
+            this.visibilitySettingsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -222,6 +253,13 @@
             this.slopebasedPaintToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.slopebasedPaintToolStripMenuItem.Text = "Slope-based paint";
             this.slopebasedPaintToolStripMenuItem.Click += new System.EventHandler(this.slopebasedPaintToolStripMenuItem_Click);
+            // 
+            // visibilitySettingsToolStripMenuItem
+            // 
+            this.visibilitySettingsToolStripMenuItem.Name = "visibilitySettingsToolStripMenuItem";
+            this.visibilitySettingsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.visibilitySettingsToolStripMenuItem.Text = "Visibility settings";
+            this.visibilitySettingsToolStripMenuItem.Click += new System.EventHandler(this.visibilitySettingsToolStripMenuItem_Click);
             // 
             // OpenMap
             // 
@@ -316,6 +354,114 @@
             this.TabPageEntities.Text = "Entities";
             this.TabPageEntities.UseVisualStyleBackColor = true;
             // 
+            // PanelMonumentType
+            // 
+            this.PanelMonumentType.Controls.Add(this.MonumentHero);
+            this.PanelMonumentType.Controls.Add(this.label15);
+            this.PanelMonumentType.Controls.Add(this.MonumentHuman);
+            this.PanelMonumentType.Controls.Add(this.MonumentElf);
+            this.PanelMonumentType.Controls.Add(this.MonumentOrc);
+            this.PanelMonumentType.Controls.Add(this.MonumentTroll);
+            this.PanelMonumentType.Controls.Add(this.MonumentDwarf);
+            this.PanelMonumentType.Controls.Add(this.MonumentDarkElf);
+            this.PanelMonumentType.Location = new System.Drawing.Point(580, 3);
+            this.PanelMonumentType.Name = "PanelMonumentType";
+            this.PanelMonumentType.Size = new System.Drawing.Size(144, 108);
+            this.PanelMonumentType.TabIndex = 13;
+            this.PanelMonumentType.Visible = false;
+            // 
+            // MonumentHero
+            // 
+            this.MonumentHero.AutoSize = true;
+            this.MonumentHero.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.MonumentHero.Location = new System.Drawing.Point(79, 85);
+            this.MonumentHero.Name = "MonumentHero";
+            this.MonumentHero.Size = new System.Drawing.Size(48, 17);
+            this.MonumentHero.TabIndex = 12;
+            this.MonumentHero.Text = "Hero";
+            this.MonumentHero.UseVisualStyleBackColor = true;
+            this.MonumentHero.CheckedChanged += new System.EventHandler(this.MonumentHero_CheckedChanged);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(28, 0);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(80, 13);
+            this.label15.TabIndex = 11;
+            this.label15.Text = "Monument type";
+            // 
+            // MonumentHuman
+            // 
+            this.MonumentHuman.AutoSize = true;
+            this.MonumentHuman.Checked = true;
+            this.MonumentHuman.Location = new System.Drawing.Point(3, 16);
+            this.MonumentHuman.Name = "MonumentHuman";
+            this.MonumentHuman.Size = new System.Drawing.Size(59, 17);
+            this.MonumentHuman.TabIndex = 8;
+            this.MonumentHuman.TabStop = true;
+            this.MonumentHuman.Text = "Human";
+            this.MonumentHuman.UseVisualStyleBackColor = true;
+            this.MonumentHuman.CheckedChanged += new System.EventHandler(this.MonumentHuman_CheckedChanged);
+            // 
+            // MonumentElf
+            // 
+            this.MonumentElf.AutoSize = true;
+            this.MonumentElf.Location = new System.Drawing.Point(3, 39);
+            this.MonumentElf.Name = "MonumentElf";
+            this.MonumentElf.Size = new System.Drawing.Size(37, 17);
+            this.MonumentElf.TabIndex = 9;
+            this.MonumentElf.Text = "Elf";
+            this.MonumentElf.UseVisualStyleBackColor = true;
+            this.MonumentElf.CheckedChanged += new System.EventHandler(this.MonumentElf_CheckedChanged);
+            // 
+            // MonumentOrc
+            // 
+            this.MonumentOrc.AutoSize = true;
+            this.MonumentOrc.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.MonumentOrc.Location = new System.Drawing.Point(79, 16);
+            this.MonumentOrc.Name = "MonumentOrc";
+            this.MonumentOrc.Size = new System.Drawing.Size(42, 17);
+            this.MonumentOrc.TabIndex = 8;
+            this.MonumentOrc.Text = "Orc";
+            this.MonumentOrc.UseVisualStyleBackColor = true;
+            this.MonumentOrc.CheckedChanged += new System.EventHandler(this.MonumentOrc_CheckedChanged);
+            // 
+            // MonumentTroll
+            // 
+            this.MonumentTroll.AutoSize = true;
+            this.MonumentTroll.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.MonumentTroll.Location = new System.Drawing.Point(79, 39);
+            this.MonumentTroll.Name = "MonumentTroll";
+            this.MonumentTroll.Size = new System.Drawing.Size(45, 17);
+            this.MonumentTroll.TabIndex = 9;
+            this.MonumentTroll.Text = "Troll";
+            this.MonumentTroll.UseVisualStyleBackColor = true;
+            this.MonumentTroll.CheckedChanged += new System.EventHandler(this.MonumentTroll_CheckedChanged);
+            // 
+            // MonumentDwarf
+            // 
+            this.MonumentDwarf.AutoSize = true;
+            this.MonumentDwarf.Location = new System.Drawing.Point(3, 62);
+            this.MonumentDwarf.Name = "MonumentDwarf";
+            this.MonumentDwarf.Size = new System.Drawing.Size(53, 17);
+            this.MonumentDwarf.TabIndex = 10;
+            this.MonumentDwarf.Text = "Dwarf";
+            this.MonumentDwarf.UseVisualStyleBackColor = true;
+            this.MonumentDwarf.CheckedChanged += new System.EventHandler(this.MonumentDwarf_CheckedChanged);
+            // 
+            // MonumentDarkElf
+            // 
+            this.MonumentDarkElf.AutoSize = true;
+            this.MonumentDarkElf.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.MonumentDarkElf.Location = new System.Drawing.Point(79, 62);
+            this.MonumentDarkElf.Name = "MonumentDarkElf";
+            this.MonumentDarkElf.Size = new System.Drawing.Size(62, 17);
+            this.MonumentDarkElf.TabIndex = 10;
+            this.MonumentDarkElf.Text = "Dark elf";
+            this.MonumentDarkElf.UseVisualStyleBackColor = true;
+            this.MonumentDarkElf.CheckedChanged += new System.EventHandler(this.MonumentDarkElf_CheckedChanged);
+            // 
             // EditCoopCampTypes
             // 
             this.EditCoopCampTypes.Location = new System.Drawing.Point(486, 3);
@@ -391,6 +537,7 @@
             this.EntityID.Name = "EntityID";
             this.EntityID.Size = new System.Drawing.Size(71, 20);
             this.EntityID.TabIndex = 16;
+            this.EntityID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.EntityID_MouseDown);
             this.EntityID.Validated += new System.EventHandler(this.EntityID_Validated);
             // 
             // label11
@@ -1019,28 +1166,21 @@
             this.TabEditorModes.Controls.Add(this.TabPageTextures);
             this.TabEditorModes.Controls.Add(this.TabPageEntities);
             this.TabEditorModes.Controls.Add(this.TabPageDecorations);
-            this.TabEditorModes.Controls.Add(this.TabPageScripting);
             this.TabEditorModes.Controls.Add(this.TabPageMetadata);
             this.TabEditorModes.Enabled = false;
             this.TabEditorModes.Location = new System.Drawing.Point(0, 27);
             this.TabEditorModes.Name = "TabEditorModes";
-            this.TabEditorModes.Padding = new System.Drawing.Point(55, 3);
+            this.TabEditorModes.Padding = new System.Drawing.Point(72, 3);
             this.TabEditorModes.SelectedIndex = 0;
             this.TabEditorModes.Size = new System.Drawing.Size(1100, 143);
             this.TabEditorModes.TabIndex = 7;
             this.TabEditorModes.SelectedIndexChanged += new System.EventHandler(this.TabEditorModes_SelectedIndexChanged);
             // 
-            // TabPageScripting
-            // 
-            this.TabPageScripting.Location = new System.Drawing.Point(4, 25);
-            this.TabPageScripting.Name = "TabPageScripting";
-            this.TabPageScripting.Size = new System.Drawing.Size(1092, 114);
-            this.TabPageScripting.TabIndex = 5;
-            this.TabPageScripting.Text = "NPCs & Scripting";
-            this.TabPageScripting.UseVisualStyleBackColor = true;
-            // 
             // TabPageMetadata
             // 
+            this.TabPageMetadata.Controls.Add(this.ButtonTeams);
+            this.TabPageMetadata.Controls.Add(this.PanelCoopParams);
+            this.TabPageMetadata.Controls.Add(this.panel6);
             this.TabPageMetadata.Location = new System.Drawing.Point(4, 25);
             this.TabPageMetadata.Name = "TabPageMetadata";
             this.TabPageMetadata.Size = new System.Drawing.Size(1092, 114);
@@ -1048,106 +1188,263 @@
             this.TabPageMetadata.Text = "Metadata";
             this.TabPageMetadata.UseVisualStyleBackColor = true;
             // 
-            // PanelMonumentType
+            // ButtonTeams
             // 
-            this.PanelMonumentType.Controls.Add(this.MonumentHero);
-            this.PanelMonumentType.Controls.Add(this.label15);
-            this.PanelMonumentType.Controls.Add(this.MonumentHuman);
-            this.PanelMonumentType.Controls.Add(this.MonumentElf);
-            this.PanelMonumentType.Controls.Add(this.MonumentOrc);
-            this.PanelMonumentType.Controls.Add(this.MonumentTroll);
-            this.PanelMonumentType.Controls.Add(this.MonumentDwarf);
-            this.PanelMonumentType.Controls.Add(this.MonumentDarkElf);
-            this.PanelMonumentType.Location = new System.Drawing.Point(580, 3);
-            this.PanelMonumentType.Name = "PanelMonumentType";
-            this.PanelMonumentType.Size = new System.Drawing.Size(144, 108);
-            this.PanelMonumentType.TabIndex = 13;
-            this.PanelMonumentType.Visible = false;
+            this.ButtonTeams.Location = new System.Drawing.Point(102, 3);
+            this.ButtonTeams.Name = "ButtonTeams";
+            this.ButtonTeams.Size = new System.Drawing.Size(95, 108);
+            this.ButtonTeams.TabIndex = 11;
+            this.ButtonTeams.Text = "Manage team compositions...";
+            this.ButtonTeams.UseVisualStyleBackColor = true;
+            this.ButtonTeams.Click += new System.EventHandler(this.ButtonTeams_Click);
             // 
-            // MonumentHero
+            // PanelCoopParams
             // 
-            this.MonumentHero.AutoSize = true;
-            this.MonumentHero.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.MonumentHero.Location = new System.Drawing.Point(79, 85);
-            this.MonumentHero.Name = "MonumentHero";
-            this.MonumentHero.Size = new System.Drawing.Size(48, 17);
-            this.MonumentHero.TabIndex = 12;
-            this.MonumentHero.Text = "Hero";
-            this.MonumentHero.UseVisualStyleBackColor = true;
+            this.PanelCoopParams.Controls.Add(this.label24);
+            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam34);
+            this.PanelCoopParams.Controls.Add(this.label23);
+            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam33);
+            this.PanelCoopParams.Controls.Add(this.label22);
+            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam32);
+            this.PanelCoopParams.Controls.Add(this.label21);
+            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam24);
+            this.PanelCoopParams.Controls.Add(this.label20);
+            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam23);
+            this.PanelCoopParams.Controls.Add(this.label19);
+            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam22);
+            this.PanelCoopParams.Controls.Add(this.label18);
+            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam14);
+            this.PanelCoopParams.Controls.Add(this.label17);
+            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam13);
+            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam12);
+            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam31);
+            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam21);
+            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam11);
+            this.PanelCoopParams.Location = new System.Drawing.Point(203, 3);
+            this.PanelCoopParams.Name = "PanelCoopParams";
+            this.PanelCoopParams.Size = new System.Drawing.Size(482, 108);
+            this.PanelCoopParams.TabIndex = 10;
             // 
-            // label15
+            // label24
             // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(28, 0);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(80, 13);
-            this.label15.TabIndex = 11;
-            this.label15.Text = "Monument type";
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(3, 88);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(49, 13);
+            this.label24.TabIndex = 16;
+            this.label24.Text = "3 players";
             // 
-            // MonumentHuman
+            // CoopSpawnParam34
             // 
-            this.MonumentHuman.AutoSize = true;
-            this.MonumentHuman.Checked = true;
-            this.MonumentHuman.Location = new System.Drawing.Point(3, 16);
-            this.MonumentHuman.Name = "MonumentHuman";
-            this.MonumentHuman.Size = new System.Drawing.Size(59, 17);
-            this.MonumentHuman.TabIndex = 8;
-            this.MonumentHuman.TabStop = true;
-            this.MonumentHuman.Text = "Human";
-            this.MonumentHuman.UseVisualStyleBackColor = true;
+            this.CoopSpawnParam34.Location = new System.Drawing.Point(376, 85);
+            this.CoopSpawnParam34.Name = "CoopSpawnParam34";
+            this.CoopSpawnParam34.Size = new System.Drawing.Size(100, 20);
+            this.CoopSpawnParam34.TabIndex = 11;
+            this.CoopSpawnParam34.Validated += new System.EventHandler(this.CoopSpawnParam34_Validated);
             // 
-            // MonumentElf
+            // label23
             // 
-            this.MonumentElf.AutoSize = true;
-            this.MonumentElf.Location = new System.Drawing.Point(3, 39);
-            this.MonumentElf.Name = "MonumentElf";
-            this.MonumentElf.Size = new System.Drawing.Size(37, 17);
-            this.MonumentElf.TabIndex = 9;
-            this.MonumentElf.Text = "Elf";
-            this.MonumentElf.UseVisualStyleBackColor = true;
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(3, 62);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(49, 13);
+            this.label23.TabIndex = 15;
+            this.label23.Text = "2 players";
             // 
-            // MonumentOrc
+            // CoopSpawnParam33
             // 
-            this.MonumentOrc.AutoSize = true;
-            this.MonumentOrc.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.MonumentOrc.Location = new System.Drawing.Point(79, 16);
-            this.MonumentOrc.Name = "MonumentOrc";
-            this.MonumentOrc.Size = new System.Drawing.Size(42, 17);
-            this.MonumentOrc.TabIndex = 8;
-            this.MonumentOrc.Text = "Orc";
-            this.MonumentOrc.UseVisualStyleBackColor = true;
+            this.CoopSpawnParam33.Location = new System.Drawing.Point(270, 85);
+            this.CoopSpawnParam33.Name = "CoopSpawnParam33";
+            this.CoopSpawnParam33.Size = new System.Drawing.Size(100, 20);
+            this.CoopSpawnParam33.TabIndex = 10;
+            this.CoopSpawnParam33.Validated += new System.EventHandler(this.CoopSpawnParam33_Validated);
             // 
-            // MonumentTroll
+            // label22
             // 
-            this.MonumentTroll.AutoSize = true;
-            this.MonumentTroll.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.MonumentTroll.Location = new System.Drawing.Point(79, 39);
-            this.MonumentTroll.Name = "MonumentTroll";
-            this.MonumentTroll.Size = new System.Drawing.Size(45, 17);
-            this.MonumentTroll.TabIndex = 9;
-            this.MonumentTroll.Text = "Troll";
-            this.MonumentTroll.UseVisualStyleBackColor = true;
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(3, 36);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(44, 13);
+            this.label22.TabIndex = 14;
+            this.label22.Text = "1 player";
             // 
-            // MonumentDwarf
+            // CoopSpawnParam32
             // 
-            this.MonumentDwarf.AutoSize = true;
-            this.MonumentDwarf.Location = new System.Drawing.Point(3, 62);
-            this.MonumentDwarf.Name = "MonumentDwarf";
-            this.MonumentDwarf.Size = new System.Drawing.Size(53, 17);
-            this.MonumentDwarf.TabIndex = 10;
-            this.MonumentDwarf.Text = "Dwarf";
-            this.MonumentDwarf.UseVisualStyleBackColor = true;
+            this.CoopSpawnParam32.Location = new System.Drawing.Point(164, 85);
+            this.CoopSpawnParam32.Name = "CoopSpawnParam32";
+            this.CoopSpawnParam32.Size = new System.Drawing.Size(100, 20);
+            this.CoopSpawnParam32.TabIndex = 9;
+            this.CoopSpawnParam32.Validated += new System.EventHandler(this.CoopSpawnParam32_Validated);
             // 
-            // MonumentDarkElf
+            // label21
             // 
-            this.MonumentDarkElf.AutoSize = true;
-            this.MonumentDarkElf.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.MonumentDarkElf.Location = new System.Drawing.Point(79, 62);
-            this.MonumentDarkElf.Name = "MonumentDarkElf";
-            this.MonumentDarkElf.Size = new System.Drawing.Size(62, 17);
-            this.MonumentDarkElf.TabIndex = 10;
-            this.MonumentDarkElf.Text = "Dark elf";
-            this.MonumentDarkElf.UseVisualStyleBackColor = true;
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(390, 16);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(68, 13);
+            this.label21.TabIndex = 13;
+            this.label21.Text = "Spawn delay";
+            // 
+            // CoopSpawnParam24
+            // 
+            this.CoopSpawnParam24.Location = new System.Drawing.Point(376, 59);
+            this.CoopSpawnParam24.Name = "CoopSpawnParam24";
+            this.CoopSpawnParam24.Size = new System.Drawing.Size(100, 20);
+            this.CoopSpawnParam24.TabIndex = 8;
+            this.CoopSpawnParam24.Validated += new System.EventHandler(this.CoopSpawnParam24_Validated);
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(289, 17);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(63, 13);
+            this.label20.TabIndex = 12;
+            this.label20.Text = "Begin wave";
+            // 
+            // CoopSpawnParam23
+            // 
+            this.CoopSpawnParam23.Location = new System.Drawing.Point(270, 59);
+            this.CoopSpawnParam23.Name = "CoopSpawnParam23";
+            this.CoopSpawnParam23.Size = new System.Drawing.Size(100, 20);
+            this.CoopSpawnParam23.TabIndex = 7;
+            this.CoopSpawnParam23.Validated += new System.EventHandler(this.CoopSpawnParam23_Validated);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(187, 17);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(55, 13);
+            this.label19.TabIndex = 11;
+            this.label19.Text = "Init spawn";
+            // 
+            // CoopSpawnParam22
+            // 
+            this.CoopSpawnParam22.Location = new System.Drawing.Point(164, 59);
+            this.CoopSpawnParam22.Name = "CoopSpawnParam22";
+            this.CoopSpawnParam22.Size = new System.Drawing.Size(100, 20);
+            this.CoopSpawnParam22.TabIndex = 6;
+            this.CoopSpawnParam22.Validated += new System.EventHandler(this.CoopSpawnParam22_Validated);
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(74, 18);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(71, 13);
+            this.label18.TabIndex = 10;
+            this.label18.Text = "Max clan size";
+            // 
+            // CoopSpawnParam14
+            // 
+            this.CoopSpawnParam14.Location = new System.Drawing.Point(376, 33);
+            this.CoopSpawnParam14.Name = "CoopSpawnParam14";
+            this.CoopSpawnParam14.Size = new System.Drawing.Size(100, 20);
+            this.CoopSpawnParam14.TabIndex = 5;
+            this.CoopSpawnParam14.Validated += new System.EventHandler(this.CoopSpawnParam14_Validated);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(161, 0);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(121, 13);
+            this.label17.TabIndex = 9;
+            this.label17.Text = "Coop spawn parameters";
+            // 
+            // CoopSpawnParam13
+            // 
+            this.CoopSpawnParam13.Location = new System.Drawing.Point(270, 33);
+            this.CoopSpawnParam13.Name = "CoopSpawnParam13";
+            this.CoopSpawnParam13.Size = new System.Drawing.Size(100, 20);
+            this.CoopSpawnParam13.TabIndex = 4;
+            this.CoopSpawnParam13.Validated += new System.EventHandler(this.CoopSpawnParam13_Validated);
+            // 
+            // CoopSpawnParam12
+            // 
+            this.CoopSpawnParam12.Location = new System.Drawing.Point(164, 33);
+            this.CoopSpawnParam12.Name = "CoopSpawnParam12";
+            this.CoopSpawnParam12.Size = new System.Drawing.Size(100, 20);
+            this.CoopSpawnParam12.TabIndex = 3;
+            this.CoopSpawnParam12.Validated += new System.EventHandler(this.CoopSpawnParam12_Validated);
+            // 
+            // CoopSpawnParam31
+            // 
+            this.CoopSpawnParam31.Location = new System.Drawing.Point(58, 85);
+            this.CoopSpawnParam31.Name = "CoopSpawnParam31";
+            this.CoopSpawnParam31.Size = new System.Drawing.Size(100, 20);
+            this.CoopSpawnParam31.TabIndex = 2;
+            this.CoopSpawnParam31.Validated += new System.EventHandler(this.CoopSpawnParam31_Validated);
+            // 
+            // CoopSpawnParam21
+            // 
+            this.CoopSpawnParam21.Location = new System.Drawing.Point(58, 59);
+            this.CoopSpawnParam21.Name = "CoopSpawnParam21";
+            this.CoopSpawnParam21.Size = new System.Drawing.Size(100, 20);
+            this.CoopSpawnParam21.TabIndex = 1;
+            this.CoopSpawnParam21.Validated += new System.EventHandler(this.CoopSpawnParam21_Validated);
+            // 
+            // CoopSpawnParam11
+            // 
+            this.CoopSpawnParam11.Location = new System.Drawing.Point(58, 33);
+            this.CoopSpawnParam11.Name = "CoopSpawnParam11";
+            this.CoopSpawnParam11.Size = new System.Drawing.Size(100, 20);
+            this.CoopSpawnParam11.TabIndex = 0;
+            this.CoopSpawnParam11.Validated += new System.EventHandler(this.CoopSpawnParam11_Validated);
+            // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.label16);
+            this.panel6.Controls.Add(this.MapTypeCampaign);
+            this.panel6.Controls.Add(this.MapTypeCoop);
+            this.panel6.Controls.Add(this.MapTypeMultiplayer);
+            this.panel6.Location = new System.Drawing.Point(3, 3);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(93, 108);
+            this.panel6.TabIndex = 9;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(16, 0);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(51, 13);
+            this.label16.TabIndex = 11;
+            this.label16.Text = "Map type";
+            // 
+            // MapTypeCampaign
+            // 
+            this.MapTypeCampaign.AutoSize = true;
+            this.MapTypeCampaign.Location = new System.Drawing.Point(3, 16);
+            this.MapTypeCampaign.Name = "MapTypeCampaign";
+            this.MapTypeCampaign.Size = new System.Drawing.Size(72, 17);
+            this.MapTypeCampaign.TabIndex = 8;
+            this.MapTypeCampaign.Text = "Campaign";
+            this.MapTypeCampaign.UseVisualStyleBackColor = true;
+            this.MapTypeCampaign.CheckedChanged += new System.EventHandler(this.MapTypeCampaign_CheckedChanged);
+            // 
+            // MapTypeCoop
+            // 
+            this.MapTypeCoop.AutoSize = true;
+            this.MapTypeCoop.Location = new System.Drawing.Point(3, 39);
+            this.MapTypeCoop.Name = "MapTypeCoop";
+            this.MapTypeCoop.Size = new System.Drawing.Size(50, 17);
+            this.MapTypeCoop.TabIndex = 9;
+            this.MapTypeCoop.Text = "Coop";
+            this.MapTypeCoop.UseVisualStyleBackColor = true;
+            this.MapTypeCoop.CheckedChanged += new System.EventHandler(this.MapTypeCoop_CheckedChanged);
+            // 
+            // MapTypeMultiplayer
+            // 
+            this.MapTypeMultiplayer.AutoSize = true;
+            this.MapTypeMultiplayer.Location = new System.Drawing.Point(3, 62);
+            this.MapTypeMultiplayer.Name = "MapTypeMultiplayer";
+            this.MapTypeMultiplayer.Size = new System.Drawing.Size(75, 17);
+            this.MapTypeMultiplayer.TabIndex = 10;
+            this.MapTypeMultiplayer.Text = "Multiplayer";
+            this.MapTypeMultiplayer.UseVisualStyleBackColor = true;
+            this.MapTypeMultiplayer.CheckedChanged += new System.EventHandler(this.MapTypeMultiplayer_CheckedChanged);
             // 
             // MapEditorForm
             // 
@@ -1174,6 +1471,8 @@
             this.TabPageDecorations.ResumeLayout(false);
             this.TabPageDecorations.PerformLayout();
             this.TabPageEntities.ResumeLayout(false);
+            this.PanelMonumentType.ResumeLayout(false);
+            this.PanelMonumentType.PerformLayout();
             this.PanelEntityPlacementSelect.ResumeLayout(false);
             this.PanelEntityPlacementSelect.PerformLayout();
             this.PanelUnitPlacementSelect.ResumeLayout(false);
@@ -1204,8 +1503,11 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.TabEditorModes.ResumeLayout(false);
-            this.PanelMonumentType.ResumeLayout(false);
-            this.PanelMonumentType.PerformLayout();
+            this.TabPageMetadata.ResumeLayout(false);
+            this.PanelCoopParams.ResumeLayout(false);
+            this.PanelCoopParams.PerformLayout();
+            this.panel6.ResumeLayout(false);
+            this.panel6.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1294,7 +1596,6 @@
         private System.Windows.Forms.TabControl TabEditorModes;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Panel PanelDecalGroups;
-        private System.Windows.Forms.TabPage TabPageScripting;
         private System.Windows.Forms.TabPage TabPageMetadata;
         private System.Windows.Forms.RadioButton RadioModeMonuments;
         private System.Windows.Forms.RadioButton RadioModeCoopCamps;
@@ -1310,5 +1611,33 @@
         private System.Windows.Forms.RadioButton MonumentTroll;
         private System.Windows.Forms.RadioButton MonumentDwarf;
         private System.Windows.Forms.RadioButton MonumentDarkElf;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.RadioButton MapTypeCampaign;
+        private System.Windows.Forms.RadioButton MapTypeCoop;
+        private System.Windows.Forms.RadioButton MapTypeMultiplayer;
+        private System.Windows.Forms.Panel PanelCoopParams;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.TextBox CoopSpawnParam34;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.TextBox CoopSpawnParam33;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.TextBox CoopSpawnParam32;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.TextBox CoopSpawnParam24;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.TextBox CoopSpawnParam23;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.TextBox CoopSpawnParam22;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.TextBox CoopSpawnParam14;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox CoopSpawnParam13;
+        private System.Windows.Forms.TextBox CoopSpawnParam12;
+        private System.Windows.Forms.TextBox CoopSpawnParam31;
+        private System.Windows.Forms.TextBox CoopSpawnParam21;
+        private System.Windows.Forms.TextBox CoopSpawnParam11;
+        private System.Windows.Forms.Button ButtonTeams;
+        private System.Windows.Forms.ToolStripMenuItem visibilitySettingsToolStripMenuItem;
     }
 }

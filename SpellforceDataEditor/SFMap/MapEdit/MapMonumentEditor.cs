@@ -7,26 +7,29 @@ using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
-    public class MapBindstoneEditor: MapEditor
+    public enum MonumentType { HUMAN = 0, ELF, DWARF, ORC, TROLL, DARKELF, HERO }
+
+    public class MapMonumentEditor: MapEditor
     {
         bool drag_enabled = false;
+        public MonumentType selected_type = MonumentType.HERO;
         public int selected_intobj { get; private set; } = -1;       // interactive object index
-        public int selected_bindstone { get; private set; } = -1;    // spawn index
+        public int selected_monument { get; private set; } = -1;    // spawn index
 
         public override void OnMousePress(SFCoord pos, MouseButtons b)
         {
             // 1. find clicked bindstone if it exists
             int intobj_index = -1;
-            int bindstone_index = -1;
+            int monument_index = -1;
             SFMapInteractiveObject int_obj = null;
 
             foreach (SFMapInteractiveObject io in map.int_object_manager.int_objects)
             {
                 intobj_index += 1;
-                if (io.game_id == 769)
+                if ((io.game_id >= 771)&&(io.game_id <= 777))
                 {
-                    bindstone_index += 1;
-                    if (SFCoord.Distance(io.grid_position, pos) <= 2)
+                    monument_index += 1;
+                    if (SFCoord.Distance(io.grid_position, pos) <= 5)
                     {
                         int_obj = io;
                         break;
@@ -41,18 +44,20 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 {
                     if(drag_enabled == true)
                     {
-                        int player = map.metadata.FindPlayerBySpawnPos(int_obj.grid_position);
-                        map.MoveInteractiveObject(intobj_index, pos);
-                        if (player != -1)
-                            map.metadata.spawns[player].pos = pos;
+                        if(map.heightmap.CanMoveToPosition(pos))
+                            map.MoveInteractiveObject(intobj_index, pos);
                     }
                     else
                     {
-                        map.AddInteractiveObject(769, pos, 0, 1);
-                        map.metadata.spawns.Add(new SFMapSpawn());
-                        map.metadata.spawns[map.metadata.spawns.Count - 1].pos = pos;
+                        int new_object_id = 771 + (int)selected_type;
 
-                        ((map_controls.MapBindstoneInspector)MainForm.mapedittool.selected_inspector).LoadNextBindstone();
+                        byte unk_byte = 1;
+                        if (new_object_id == 777)
+                            unk_byte = 5;
+
+                        map.AddInteractiveObject(new_object_id, pos, 0, unk_byte);
+
+                        ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).LoadNextMonument();
                         selected_intobj = intobj_index;
                         MainForm.mapedittool.InspectorSelect(
                             map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]);
@@ -68,16 +73,11 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if (drag_enabled == true)
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
-                        {
-                            int player = map.metadata.FindPlayerBySpawnPos(int_obj.grid_position);
                             map.MoveInteractiveObject(intobj_index, pos);
-                            if (player != -1)
-                                map.metadata.spawns[player].pos = pos;
-                        }
                     }
                     else
                     {
-                        selected_bindstone = bindstone_index;
+                        selected_monument = monument_index;
                         selected_intobj = intobj_index;
 
                         MainForm.mapedittool.InspectorSelect(
@@ -88,38 +88,21 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 }
                 else if (b == MouseButtons.Right)
                 {
-                    bool can_remove = true;
-                    int player = map.metadata.FindPlayerBySpawnPos(int_obj.grid_position);
-                    if (player != -1)
-                    {
-                        if (map.metadata.IsPlayerActive(player))
-                            can_remove = false;
-                    }
+                   if (selected_intobj == intobj_index)
+                        MainForm.mapedittool.InspectorSelect(null);
 
-                    if(can_remove)
-                    {
-                        if (selected_intobj == intobj_index)
-                            MainForm.mapedittool.InspectorSelect(null);
-
-                        map.DeleteInteractiveObject(intobj_index);
-                        ((map_controls.MapBindstoneInspector)MainForm.mapedittool.selected_inspector).RemoveBindstone(bindstone_index);
-                        for (int i = 0; i < map.metadata.spawns.Count; i++)
-                            if (int_obj.grid_position == map.metadata.spawns[i].pos)
-                            {
-                                map.metadata.spawns.RemoveAt(i);
-                                break;
-                            }
-                    }
+                    map.DeleteInteractiveObject(intobj_index);
+                    ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).RemoveMonument(monument_index);
                 }
             }
         }
 
         public override void OnMouseUp(MouseButtons b)
         {
-            if (b == MouseButtons.Left)
+            if (b == MouseButtons.Left)                                                                                
             {
                 drag_enabled = false;
-                if (selected_bindstone != -1)
+                if (selected_monument != -1)
                     MainForm.mapedittool.InspectorSelect(map.int_object_manager.int_objects[selected_intobj]);
             }
         }

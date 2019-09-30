@@ -65,6 +65,11 @@ namespace SpellforceDataEditor.SF3D.Physics
             return new BoundingBox(ab.a - c, ab.b - c);
         }
 
+        public BoundingBox OffsetBy(Vector3 c)
+        {
+            return this + (c - center);
+        }
+
         // returns manhattan distance between a point and the box
         // if point is inside of the box, returned value is less than 0
         public float DistanceIsotropic(Vector3 p)

@@ -52,7 +52,6 @@ namespace SpellforceDataEditor.SFMap.map_controls
                         k += 1;
                     }
                 }
-                System.Diagnostics.Debug.WriteLine("DEC COUNT " + k.ToString());
                 map.heightmap.RebuildOverlay(new SFCoord(0, 0), new SFCoord(map.width - 1, map.height - 1), "DecorationTile");
             }
             MainForm.mapedittool.update_render = true;
@@ -64,13 +63,14 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
             
             ushort new_id = Utility.TryParseUInt16(DecGroupData.Rows[e.RowIndex].Cells[0].Value.ToString());
-            byte new_weight = Utility.TryParseUInt8(DecGroupData.Rows[e.RowIndex].Cells[0].Value.ToString());
+            byte new_weight = Utility.TryParseUInt8(DecGroupData.Rows[e.RowIndex].Cells[1].Value.ToString());
             map.decoration_manager.dec_groups[selected_dec_group].SetDecoration(e.RowIndex + 1, new_id, new_weight);
             if (e.ColumnIndex == 0)
             {
                 map.decoration_manager.ModifyDecorations((byte)selected_dec_group);
                 MainForm.mapedittool.update_render = true;
             }
+            MainForm.mapedittool.UpdateDecGroup(selected_dec_group);
         }
     }
 }
