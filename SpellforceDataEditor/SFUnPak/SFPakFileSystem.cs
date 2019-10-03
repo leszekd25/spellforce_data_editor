@@ -229,8 +229,7 @@ namespace SpellforceDataEditor.SFUnPak
                                                                                                  file_headers[i].size));
             }
 
-            pak_stream.Close();
-            fs.Close();
+            Close();
             return 0;
         }
 

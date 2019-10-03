@@ -36,16 +36,14 @@ namespace SpellforceDataEditor.special_forms
         bool[] arrows_pressed = new bool[] { false, false, false, false };  // left, right, up, down
         bool[] rotation_pressed = new bool[] { false, false, false, false };// left, right, up, down
 
-        public bool update_render = false;                // whenever this is true, window will be repainted, and this switched to false
-        int gc_timer = 0;                // when this reaches 200, garbage collector runs
+        public bool update_render = false;  // whenever this is true, window will be repainted, and this switched to false
+        int gc_timer = 0;                   // when this reaches 200, garbage collector runs
 
         OpenTK.GLControl RenderWindow = null;
 
         public SFMap.MapEdit.MapEditor selected_editor { get; private set; } = new SFMap.MapEdit.MapHeightMapEditor();
         public SFMap.map_controls.MapInspector selected_inspector { get; private set; } = null;
 
-        MapEditMainMode main_mode = MapEditMainMode.TERRAIN;
-        MapEditTerrainMode terrain_mode = MapEditTerrainMode.HEIGHTMAP;
         MapBrush terrain_brush = new MapBrush();
 
         SFMap.map_dialog.MapAutoTextureDialog autotexture_form = null;

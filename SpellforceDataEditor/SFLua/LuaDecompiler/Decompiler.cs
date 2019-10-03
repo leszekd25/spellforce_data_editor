@@ -41,6 +41,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
         LuaLocalVariableRegistry locals = new LuaLocalVariableRegistry();
         int start_pos = -1;
         List<int> instr_ids = new List<int>();
+        int total_arg_count = 0;
 
         public void Push(IRValue val)
         {
@@ -271,9 +272,12 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
             // set up function arguments if any
             for(int i=0;i!=fnc.NumParams;i++)
             {
-                Push(new Str() { value = "_arg" + i.ToString() });
-                locals.RegisterLocal(stack.Count - 1, "_arg" + i.ToString());
+                // in case of function x(arg0): return function(arg1): do stuff end end (which is possible)
+                // need to offset arg names
+                Push(new Str() { value = "_arg" + (i+total_arg_count).ToString() });
+                locals.RegisterLocal(stack.Count - 1, "_arg" + (i + total_arg_count).ToString());
             }
+            total_arg_count += fnc.NumParams;
             if(fnc.IsVarArg)
             {
                 Push(new Str() { value = "..." });
@@ -291,9 +295,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
             for(instr_ids[instr_ids.Count-1] = 0; instr_ids[instr_ids.Count - 1] < fnc.Instructions.Count; instr_ids[instr_ids.Count - 1]++)
             {
                 LuaInstruction instr = fnc.Instructions[instr_ids[instr_ids.Count - 1]];
-                //System.Diagnostics.Debug.WriteLine("STACK COUNT: "+stack.Count
-                //    +" | INSTR #"+instr_ids[instr_ids.Count-1].ToString()
-                //    +" | "+instr.ToString());
+                /*System.Diagnostics.Debug.WriteLine("STACK COUNT: "+stack.Count
+                    +" | INSTR #"+instr_ids[instr_ids.Count-1].ToString()
+                    +" | "+instr.ToString());*/
 
                 // check instruction type for action
                 switch(instr.OpCode)
@@ -321,7 +325,10 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                             for (int k = 0; stack.Count > start_pos + instr.ArgA + 1 + 1; k++)
                                 call_proc_table.Items.Insert(0, new TableAssignment() { index = new Nil(), value = Pop() });
                             if ((call_proc_table.Items.Count == 1) && (call_proc_table.Items[0].value is Table))
+                            {
                                 call_proc.Arguments = (Table)call_proc_table.Items[0].value;
+                                ((Table)call_proc_table.Items[0].value).IsList = false;
+                            }
                             call_proc.Name = (ILValue)Pop();
                             if (call_proc.Name is SelfIdentifier)        // special case...
                             {
@@ -340,7 +347,10 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                             for (int k = 0; stack.Count > start_pos + instr.ArgA + 1 + 1; k++)
                                 call_func_table.Items.Insert(0, new TableAssignment() { index = new Nil(), value = Pop() });
                             if ((call_func_table.Items.Count == 1) && (call_func_table.Items[0].value is Table))
+                            {
                                 call_func.Arguments = (Table)call_func_table.Items[0].value;
+                                ((Table)call_func_table.Items[0].value).IsList = false;
+                            }
                             call_func.Name = (ILValue)Pop();
                             if (call_func.Name is SelfIdentifier)
                                 call_func.Arguments.Items.RemoveAt(0);   // this will be nil
@@ -754,6 +764,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                         Fork pushniljmp_fork = (Fork)root.parent;
                         root = (Chunk)pushniljmp_fork.parent;
                         root.Items.Remove(pushniljmp_fork);
+                        ((OperatorBinaryLogic)pushniljmp_fork.IfCondition).ReverseOperator();      // UNTESTED
                         Push((OperatorBinaryLogic)pushniljmp_fork.IfCondition);
 
                         chunk_stack.RemoveAt(chunk_stack.Count - 1);
@@ -1095,6 +1106,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
             // here is the simplification and fixing (multireturn functions pass)
             // todo...
 
+            total_arg_count -= fnc.NumParams;
             if(cl != null)
             {
                 cl.ClosureChunk = root;
@@ -1226,6 +1238,34 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                 }
                 else if (current_statement is Loop)
                     Simplify(((Loop)current_statement).LoopChunk);
+                npos += 1;
+            }
+
+            // if multiassignment has multiple local identifiers, it's required to only have the first identifier be local
+            npos = 0;
+            while(true)
+            {
+                if (node.Items.Count <= npos)
+                    break;
+
+                IStatement current_statement = node.Items[npos];
+                if(current_statement is MultiAssignment)
+                {
+                    MultiAssignment mas = (MultiAssignment)current_statement;
+                    if(mas.Left[0] is LocalIdentifier)
+                    {
+                        for(int i=1; i < mas.Left.Count; i++)
+                        {
+                            ILValue lvalue = mas.Left[i];
+                            if (lvalue is LocalIdentifier)
+                                mas.Left[i] = new Identifier()
+                                {
+                                    name = ((LocalIdentifier)lvalue).name,
+                                    parent = ((LocalIdentifier)lvalue).parent
+                                };
+                        }
+                    }
+                }
                 npos += 1;
             }
         }

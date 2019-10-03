@@ -23,6 +23,17 @@ namespace SpellforceDataEditor
 
         public MainForm()
         {
+            /*MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", "object\\object_effect_helper.lua");
+            BinaryReader br = new BinaryReader(ms);
+            SFLua.LuaDecompiler.LuaBinaryScript scr = new SFLua.LuaDecompiler.LuaBinaryScript(br);
+            scr.func.DumpAll();
+            br.Close();
+            SFLua.LuaDecompiler.Decompiler dec = new SFLua.LuaDecompiler.Decompiler();
+            var chunk = dec.Decompile(scr.func);
+            StringWriter sw = new StringWriter();
+            chunk.WriteLuaString(sw);
+            File.WriteAllText("func_dec.txt", sw.ToString*/
+
             LogUtils.Log.Info(LogUtils.LogSource.Main, "MainForm() called");
             InitializeComponent();
             linkEditor.Links.Add(0, linkEditor.Text.Length, "https://github.com/leszekd25/spellforce_data_editor/tree/with_viewer/bin");

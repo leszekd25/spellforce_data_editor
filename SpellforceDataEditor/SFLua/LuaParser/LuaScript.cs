@@ -34,6 +34,21 @@ namespace SpellforceDataEditor.SFLua.LuaParser
                 position += 1;
             return code.Substring(start, position - start);
         }
+
+        public string ReadLine()  // used for comments, for example "-- comment"
+        {
+            int start = position;
+            while (code[position] != '\n')
+            {
+                position += 1;
+                if (position == code.Length)
+                {
+                    position -= 1;
+                    break;
+                }
+            }
+            return code.Substring(start, position - start + 1);
+        }
         
         public bool IsIdentifierCharacter(char  c)
         {

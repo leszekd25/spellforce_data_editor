@@ -157,6 +157,11 @@ namespace SpellforceDataEditor.SFLua.LuaParser
                         {
                             if(state == ParseState.READ_IDENTIFIER)
                             {
+                                // check if comment
+                                if((scr.code[scr.position] == '-')&&(scr.code[scr.position+1] == '-')) // comment
+                                {
+
+                                }
                                 max_index += 1;
                                 next_key = (double)max_index;
                                 state = ParseState.READ_VALUE;

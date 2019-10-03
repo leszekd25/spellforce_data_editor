@@ -51,23 +51,40 @@ namespace SpellforceDataEditor.SFLua
 
             if (File.Exists(SFUnPak.SFUnPak.game_directory_name+"\\"+fname))
             {
-                LuaParser.LuaTable test = new LuaParser.LuaTable();
-                LuaParser.LuaScript scr = new  LuaParser.LuaScript(File.ReadAllText(SFUnPak.SFUnPak.game_directory_name + "\\" + fname));
-                scr.position = scr.code.IndexOf('{');       // temporary
-                if (!test.Parse(scr))
-                    return null;
+                // check if the script is compiled
+                FileStream fs = new FileStream(SFUnPak.SFUnPak.game_directory_name + "\\" + fname, FileMode.Open, FileAccess.Read);
+                BinaryReader br = new BinaryReader(fs);
+                LuaDecompiler.LuaBinaryScript bscr = new LuaDecompiler.LuaBinaryScript(br);
+                br.Close();
 
-                return new object[] { test };
+                if(bscr.func == null)            //script is NOT compiled, attempt to read as text script
+                {
+                    LuaParser.LuaTable test = new LuaParser.LuaTable();
+                    LuaParser.LuaScript scr = new LuaParser.LuaScript(
+                        File.ReadAllText(SFUnPak.SFUnPak.game_directory_name + "\\" + fname));
+
+                    scr.position = scr.code.IndexOf('{');       // temporary
+                    if (!test.Parse(scr))
+                        return null;
+
+                    return new object[] { test };
+                }
+                else
+                {
+                    LuaDecompiler.LuaState state = new LuaDecompiler.LuaState();
+                    object[] ret = state.Run(bscr);
+                    return ret;
+                }
             }
             else
             {
-                // testing  luadec
                 MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", fname);
                 BinaryReader br = new BinaryReader(ms);
                 LuaDecompiler.LuaBinaryScript scr = new LuaDecompiler.LuaBinaryScript(br);
+                br.Close();
+
                 LuaDecompiler.LuaState state = new LuaDecompiler.LuaState();
                 object[] ret = state.Run(scr);
-                br.Close();
                 return ret;
             }
         }
