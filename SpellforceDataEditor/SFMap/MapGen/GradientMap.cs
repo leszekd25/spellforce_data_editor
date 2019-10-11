@@ -39,9 +39,11 @@ namespace SpellforceDataEditor.SFMap.MapGen
             return map[y * Width + x];
         }
 
-        // doesnt respect boundaries!
+        // respects boundaries now...
         public void Set(int x, int  y,  float  f)
         {
+            if ((x < 0) || (x >= Width) || (y < 0) || (y >= Height))
+                return;
             map[y * Width + x] = f;
         }
 

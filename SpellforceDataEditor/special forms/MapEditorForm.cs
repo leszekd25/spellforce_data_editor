@@ -179,7 +179,6 @@ namespace SpellforceDataEditor.special_forms
             map.CreateDefault(map_size, generator, gamedata, StatusText);
 
             SFRenderEngine.scene.heightmap = map.heightmap;
-            selected_editor.map = map;
             InitEditorMode();
 
             map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
@@ -261,7 +260,6 @@ namespace SpellforceDataEditor.special_forms
                 }
 
                 SFRenderEngine.scene.heightmap = map.heightmap;
-                selected_editor.map = map;
                 InitEditorMode();
 
                 map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
@@ -455,7 +453,9 @@ namespace SpellforceDataEditor.special_forms
                 return;
             }
             mouse_pressed = false;
-            selected_editor.OnMouseUp(e.Button);
+            if(selected_editor != null)
+                selected_editor.OnMouseUp(e.Button);
+
             update_render = true;
         }
 
@@ -478,20 +478,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void RenderWindow_MouseWheel(object sender, MouseEventArgs e)
         {
-            if (e.Delta < 0)
-            {
-                zoom_level *= 1.1f;
-                if (zoom_level > 6)
-                    zoom_level = 6;
-            }
-            else if (e.Delta > 0)
-            {
-                zoom_level *= 0.9f;
-                if (zoom_level < 0.1f)
-                    zoom_level = 0.1f;
-            }
-            AdjustCameraZ();
-            update_render = true;
+            AddCameraZoom(e.Delta);
         }
 
         private void EnableAnimation()
@@ -660,6 +647,34 @@ namespace SpellforceDataEditor.special_forms
                               + "D: " + (dec_assign == 0 ? "X" : dec_assign.ToString());
         }
 
+        private void AddCameraZoom(int delta)
+        {
+            if(delta < 0)
+                while(delta!=0)
+                {
+                    zoom_level *= 1.1f;
+                    if(zoom_level > 6)
+                    {
+                        zoom_level = 6;
+                        break;
+                    }
+                    delta++;
+                }
+            else
+                while(delta != 0)
+                {
+                    zoom_level *= 0.9f;
+                    if(zoom_level < 0.1f)
+                    {
+                        zoom_level = 0.1f;
+                        break;
+                    }
+                    delta--;
+                }
+            AdjustCameraZ();
+            update_render = true;
+        }
+
         private void AdjustCameraZ()
         {
             if (map != null)
@@ -761,6 +776,20 @@ namespace SpellforceDataEditor.special_forms
                     return true;
                 case Keys.PageDown:
                     rotation_pressed[3] = true;
+                    return true;
+                case Keys.Insert:
+                    AddCameraZoom(-1);
+                    return true;
+                case Keys.Delete:
+                    AddCameraZoom(1);
+                    return true;
+                case Keys.G | Keys.Control:
+                    Settings.DisplayGrid = !Settings.DisplayGrid;
+                    update_render = true;
+                    return true;
+                case Keys.H | Keys.Control:
+                    Settings.VisualizeHeight = !Settings.VisualizeHeight;
+                    update_render = true;
                     return true;
                 case Keys.D1 | Keys.Control:
                     if (TabEditorModes.Enabled)
@@ -1227,6 +1256,25 @@ namespace SpellforceDataEditor.special_forms
                 return SFMap.map_controls.TerrainTileType.CUSTOM;
             else
                 return SFMap.map_controls.TerrainTileType.BASE;
+        }
+
+        public void SetTileType(SFMap.map_controls.TerrainTileType ttype)
+        {
+            if(ttype == SFMap.map_controls.TerrainTileType.BASE)
+            {
+                RadioTileTypeBase.Checked = false;
+                RadioTileTypeBase.Checked = true;
+            }
+            else if(ttype == SFMap.map_controls.TerrainTileType.CUSTOM)
+            {
+                RadioTileTypeCustom.Checked = false;
+                RadioTileTypeCustom.Checked = true;
+            }
+            else
+            {
+                RadioTileTypeBase.Checked = false;
+                RadioTileTypeBase.Checked = true;
+            }
         }
 
         private void ReselectTextureMode()
@@ -1861,6 +1909,9 @@ namespace SpellforceDataEditor.special_forms
 
         private void ButtonTeams_Click(object sender, EventArgs e)
         {
+            if (map == null)
+                return;
+
             if (teamcomp_form != null)
                 return;
 
@@ -1878,6 +1929,9 @@ namespace SpellforceDataEditor.special_forms
 
         private void visibilitySettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (map == null)
+                return;
+
             if (visibility_form != null)
                 return;
 

@@ -68,6 +68,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 if (tex_id > 223)
                     tex_id -= 223;
                 ((map_controls.MapTerrainTextureInspector)MainForm.mapedittool.selected_inspector).SelectTileType((byte)tex_id);
+                MainForm.mapedittool.SetTileType(
+                    (tex_id <= 32) ? map_controls.TerrainTileType.BASE : map_controls.TerrainTileType.CUSTOM);
             }
         }
     }

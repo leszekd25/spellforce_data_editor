@@ -108,6 +108,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_heightmap.AddParameter("VP");
             shader_heightmap.AddParameter("M");
             shader_heightmap.AddParameter("VisualizeHeight");
+            shader_heightmap.AddParameter("DisplayGrid");
+            shader_heightmap.AddParameter("GridColor");
             shader_heightmap.AddParameter("LSM");
             shader_heightmap.AddParameter("ShadowMap");
             shader_heightmap.AddParameter("SunDirection");
@@ -484,6 +486,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 Matrix4 vp_mat = scene.camera.ViewProjMatrix;
                 GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
                 GL.Uniform1(active_shader["VisualizeHeight"], Settings.VisualizeHeight ? 1 : 0);
+                GL.Uniform1(active_shader["DisplayGrid"], Settings.DisplayGrid ? 1 : 0);
+                GL.Uniform4(active_shader["GridColor"], Settings.GridColor); 
             }
             else if (current_pass == RenderPass.SHADOWMAP)
                 GL.BindTexture(TextureTarget.Texture2D, opaque_tex.tex_id);

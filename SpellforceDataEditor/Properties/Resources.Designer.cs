@@ -160,12 +160,14 @@ namespace SpellforceDataEditor.Properties {
         ///flat in vec3 textureID;
         ///in vec3 textureWeight;
         ///in vec4 fragmentPositionLightSpace;
-        ///in float height;
+        ///in vec3 vpos_orig;
         ///
         ///out vec4 color;
         ///
         ///uniform mat4 M;
         ///uniform bool VisualizeHeight;
+        ///uniform bool DisplayGrid;
+        ///uniform vec4 GridColor;
         ///uniform float SunStrength;
         ///uniform vec3 SunDirection;
         ///uniform vec4 SunColor;
@@ -173,8 +175,7 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 AmbientColor;
         ///uniform vec4 FogColor;
         ///uniform float FogStart;
-        ///uniform float FogEnd;
-        ///uniform sampler2DArray myTextureSampler;        /// [rest of string was truncated]&quot;;.
+        ///uniform fl [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_hmap {
             get {
@@ -390,9 +391,9 @@ namespace SpellforceDataEditor.Properties {
         ///flat out vec3 textureID;
         ///out vec3 textureWeight;
         ///out vec4 fragmentPositionLightSpace;
-        ///out float height;
+        ///out vec3 vpos_orig;
         ///
-        ///// Values that stay co [rest of string was truncated]&quot;;.
+        ///// Values that stay  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_hmap {
             get {

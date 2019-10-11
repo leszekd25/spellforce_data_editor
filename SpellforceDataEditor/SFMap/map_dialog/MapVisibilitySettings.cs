@@ -23,7 +23,14 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             checkBox3.Checked = Settings.ObjectsVisible;
             checkBox4.Checked = Settings.DecorationsVisible;
             checkBox5.Checked = Settings.LakesVisible;
+            checkBox6.Checked = Settings.VisualizeHeight;
             checkBox7.Checked = Settings.OverlaysVisible;
+            checkBox8.Checked = Settings.DisplayGrid;
+
+            button1.BackColor = Color.FromArgb(((byte)Settings.GridColor.X*255), 
+                                               ((byte)Settings.GridColor.Y*255), 
+                                               ((byte)Settings.GridColor.Z*255));
+
             ready = true;
         }
 
@@ -77,6 +84,26 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         {
             Settings.OverlaysVisible = checkBox7.Checked;
             MainForm.mapedittool.update_render = true;
+        }
+
+        private void checkBox8_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.DisplayGrid = checkBox8.Checked;
+            MainForm.mapedittool.update_render = true;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if(GridColorPicker.ShowDialog() == DialogResult.OK)
+            {
+                Settings.GridColor = new OpenTK.Vector4(
+                    GridColorPicker.Color.R,
+                    GridColorPicker.Color.G,
+                    GridColorPicker.Color.B,
+                    255) / 255f;
+                button1.BackColor = GridColorPicker.Color;
+                MainForm.mapedittool.update_render = true;
+            }
         }
     }
 }

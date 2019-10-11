@@ -23,6 +23,8 @@ namespace SpellforceDataEditor
         public static bool LakesVisible { get; set; } = true;
         public static bool OverlaysVisible { get; set; } = true;
         public static bool VisualizeHeight { get; set; } = false;
+        public static bool DisplayGrid { get; set; } = false;
+        public static OpenTK.Vector4 GridColor { get; set; } = new OpenTK.Vector4(1, 1, 1, 1);
 
         public static string GameDirectory { get; set; } = "";
         public static int LanguageID { get; private set; } = 1;
@@ -103,6 +105,21 @@ namespace SpellforceDataEditor
                             break;
                         case "VisualizeHeight":
                             VisualizeHeight = (words[1] == "YES");
+                            break;
+                        case "DisplayGrid":
+                            DisplayGrid = (words[1] == "YES");
+                            break;
+                        case "GridColor":
+                            byte r = 255;
+                            byte g = 255;
+                            byte b = 255;
+                            if (words.Length == 4)
+                            {
+                                r = Utility.TryParseUInt8(words[1], 255);
+                                g = Utility.TryParseUInt8(words[2], 255);
+                                b = Utility.TryParseUInt8(words[3], 255);
+                            }
+                            GridColor = new OpenTK.Vector4(r, g, b, 255) / 255f;
                             break;
 
                         case "GameDirectory":
@@ -218,6 +235,14 @@ namespace SpellforceDataEditor
                             break;
                         case "VisualizeHeight":
                             words = new string[] { words[0], VisualizeHeight ? "YES" : "NO" };
+                            break;
+                        case "DisplayGrid":
+                            words = new string[] { words[0], DisplayGrid ? "YES" : "NO" };
+                            break;
+                        case "GridColor":
+                            words = new string[] { words[0], ((byte)(GridColor.X * 255)).ToString() ,
+                                                             ((byte)(GridColor.Y * 255)).ToString() ,
+                                                             ((byte)(GridColor.Z * 255)).ToString() };
                             break;
 
                         case "GameDirectory":

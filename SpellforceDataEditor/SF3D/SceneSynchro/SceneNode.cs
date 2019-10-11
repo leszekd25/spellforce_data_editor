@@ -515,6 +515,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         private Vector2 direction = new Vector2(0, 0);
         private Matrix4 proj_matrix = new Matrix4();
         private float aspect_ratio = 1;
+        private Matrix4 view_matrix = new Matrix4();
         private Matrix4 viewproj_matrix = new Matrix4();
         private Vector3[] frustum_vertices;// = camera.get_frustrum_vertices();
         // construct frustrum planes
@@ -562,6 +563,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // proj matrix: projmatrix
         public Matrix4 ViewProjMatrix { get { return viewproj_matrix; } }
         public Matrix4 ProjMatrix { get { return proj_matrix; } set { proj_matrix = value; viewproj_matrix = proj_matrix; } }
+        public Matrix4 ViewMatrix { get { return view_matrix; } }
         public Physics.Plane[] FrustumPlanes { get { return frustum_planes; } }
         public Vector3[] FrustumVertices { get { return frustum_vertices; } }
         public float AspectRatio { get { return aspect_ratio; } set { aspect_ratio = value; } }
@@ -578,8 +580,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             if (NeedsUpdateLocalTransform)
             {
-                local_transform = Matrix4.LookAt(Position, lookat, new Vector3(0, 1, 0));
-                viewproj_matrix = local_transform * ProjMatrix;
+                view_matrix = Matrix4.LookAt(Position, lookat, new Vector3(0, 1, 0));
+                viewproj_matrix = view_matrix * ProjMatrix;
 
                 // calculate frustrum geometry
                 CalculateFrustumVertices();

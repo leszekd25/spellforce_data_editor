@@ -87,7 +87,7 @@ namespace SpellforceDataEditor.SF3D
             {
                 for (int level =  0; level < mipMapCount && (w != 0 || h != 0); ++level)
                 {
-                    int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
+                    int size = w * h * 4;
                     if (IsValidMipMapLevel(level))
                     {
                         if (min_allowed_level > level) min_allowed_level = level;
@@ -339,7 +339,7 @@ namespace SpellforceDataEditor.SF3D
 
             for (int level = 0; level < mipmaps && (_w != 0 || _h != 0); ++level)
             {
-                int size = ((_w + 3) / 4) * ((_h + 3) / 4) * 64;
+                int size = w*h*4;
                 expected_size += size;
                 if (IsValidMipMapLevel(level))
                     read_size += size;
