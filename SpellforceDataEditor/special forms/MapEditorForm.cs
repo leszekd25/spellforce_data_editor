@@ -650,26 +650,16 @@ namespace SpellforceDataEditor.special_forms
         private void AddCameraZoom(int delta)
         {
             if(delta < 0)
-                while(delta!=0)
                 {
                     zoom_level *= 1.1f;
                     if(zoom_level > 6)
-                    {
                         zoom_level = 6;
-                        break;
-                    }
-                    delta++;
                 }
             else
-                while(delta != 0)
                 {
                     zoom_level *= 0.9f;
                     if(zoom_level < 0.1f)
-                    {
                         zoom_level = 0.1f;
-                        break;
-                    }
-                    delta--;
                 }
             AdjustCameraZ();
             update_render = true;

@@ -105,6 +105,8 @@ namespace SpellforceDataEditor.SFMap
                 }
                 c3.Close();
             }
+            else
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find tile definitions! This is seriously bad!");
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading textures");
             SFChunkFileChunk c4 = f.GetChunkByID(4);
@@ -116,6 +118,8 @@ namespace SpellforceDataEditor.SFMap
                 }
                 c4.Close();
             }
+            else
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not load textures! This is very bad and will cause instability!");
 
             // generate texture data
             heightmap.texture_manager.Init();
@@ -126,16 +130,15 @@ namespace SpellforceDataEditor.SFMap
             {
                 SFChunkFileChunk c6_i = f.GetChunkByID(6, i);
                 if (c6_i == null)
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not read heightmap chunk ID "+i.ToString()+"! This is very bad!");
+                else
                 {
-                    f.Close();
-                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not read heightmap!");
-                    return -4;
+                    using (BinaryReader br = c6_i.Open())
+                    {
+                        heightmap.SetRowRaw(i, br.ReadBytes(size * 2));
+                    }
+                    c6_i.Close();
                 }
-                using (BinaryReader br = c6_i.Open())
-                {
-                    heightmap.SetRowRaw(i, br.ReadBytes(size * 2));
-                }
-                c6_i.Close();
             }
 
             // generate heightmap models and reindex textures
@@ -174,6 +177,8 @@ namespace SpellforceDataEditor.SFMap
                 c11.Close();
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Buildings loaded: " + building_manager.buildings.Count.ToString());
             }
+            else
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find building data");
 
             // load units
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading units");
@@ -205,6 +210,8 @@ namespace SpellforceDataEditor.SFMap
                 c12.Close();
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Units loaded: " + unit_manager.units.Count.ToString());
             }
+            else
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find unit data");
 
             // load objects
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading objects");
@@ -246,6 +253,8 @@ namespace SpellforceDataEditor.SFMap
                 c29.Close();
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Objects loaded: " + object_manager.objects.Count.ToString());
             }
+            else
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find object data");
 
             // load interactive objects
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading interactive objects");
@@ -272,21 +281,28 @@ namespace SpellforceDataEditor.SFMap
                 c30.Close();
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Interactive objects loaded: " + int_object_manager.int_objects.Count.ToString());
             }
+            else
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find interactive object data");
 
             // load decorations
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading decal data");
             tx.Text = "Loading decorations...";
             tx.GetCurrentParent().Refresh();
 
+            decoration_manager = new SFMapDecorationManager() { map = this };
             SFChunkFileChunk c31 = f.GetChunkByID(31);
             if (c31 != null)
             {
                 using (BinaryReader br = c31.Open())
                 {
-                    decoration_manager = new SFMapDecorationManager() { map = this };
                     decoration_manager.dec_assignment = br.ReadBytes(1048576);
                 }
                 c31.Close();
+            }
+            else
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find decal data! This is bad...");
+                decoration_manager.dec_assignment = new byte[1048576];
             }
             SFChunkFileChunk c32 = f.GetChunkByID(32);
             if (c32 != null)
@@ -307,6 +323,12 @@ namespace SpellforceDataEditor.SFMap
                     }
                 }
                 c32.Close();
+            }
+            else
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find decal group data! This is bad...");
+                for (int i = 0; i < 255; i++)
+                    decoration_manager.dec_groups[i] = new SFMapDecorationGroup();
             }
             decoration_manager.GenerateDecorations();
 
@@ -334,6 +356,8 @@ namespace SpellforceDataEditor.SFMap
                 c35.Close();
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Portals loaded: " + portal_manager.portals.Count.ToString());
             }
+            else
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find portal data");
 
             // load lakes
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading lakes");
@@ -358,6 +382,8 @@ namespace SpellforceDataEditor.SFMap
                 c40.Close();
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Lakes found: " + lake_manager.lakes.Count.ToString());
             }
+            else
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find lake data");
 
             // load map flags
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading map flags");
@@ -474,12 +500,12 @@ namespace SpellforceDataEditor.SFMap
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Player spawn data not found!");
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading team compositions");
+            metadata.multi_teams = new List<SFMapMultiplayerTeamComposition>();
             SFChunkFileChunk c53 = f.GetChunkByID(53);
             if (c53 != null)
             {
                 using (BinaryReader br = c53.Open())
                 {
-                    metadata.multi_teams = new List<SFMapMultiplayerTeamComposition>();
                     if (c53.header.ChunkDataType == 2)
                     {
                         LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Found team composition data");
@@ -549,51 +575,8 @@ namespace SpellforceDataEditor.SFMap
                             }
                             metadata.multi_teams.Add(tcomp);
                             cur_teamcount += 1;
-
-                            // load coop spawns
-                            metadata.coop_spawns = new List<SFMapCoopAISpawn>();
-                            if (c29 != null)
-                            {
-                                using (BinaryReader br2 = c29.Open())
-                                {
-                                    if (c29.header.ChunkDataType == 6)
-                                    {
-                                        int obj_i = 0;
-                                        while (br2.BaseStream.Position < br2.BaseStream.Length)
-                                        {
-                                            int x = br2.ReadInt16();
-                                            int y = br2.ReadInt16();
-                                            SFCoord pos = new SFCoord(x, y);
-                                            int object_id = br2.ReadInt16();
-                                            br2.ReadBytes(6);
-                                            if (object_id != 2541)
-                                                br2.ReadBytes(4);
-                                            else
-                                            {
-                                                short spawn_id = br2.ReadInt16();
-                                                short spawn_certain = br2.ReadInt16();
-                                                metadata.coop_spawns.Add(new SFMapCoopAISpawn(
-                                                    object_manager.objects[obj_i],
-                                                    spawn_id,
-                                                    spawn_certain));
-
-                                                // add mesh to the object
-                                                SF3D.SceneSynchro.SceneNode obj_node =
-                                                    heightmap.GetChunkNode(object_manager.objects[obj_i].grid_position)
-                                                    .FindNode<SF3D.SceneSynchro.SceneNode>(object_manager.objects[obj_i].GetObjectName());
-                                                
-                                                string m = "editor_dummy_spawnpoint";
-                                                SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name+"_SPAWNCIRCLE");
-                                            }
-                                            if ((object_id >= 65) && (object_id <= 67))    // editor only
-                                                obj_i--;
-                                            obj_i++;
-                                        }
-                                    }
-                                }
-                                c29.Close();
-                            }
                         }
+
                         // load minimap
                         int width = p_num;
                         int height = br.ReadInt32();
@@ -631,6 +614,50 @@ namespace SpellforceDataEditor.SFMap
                     }
                 }
                 c59.Close();
+
+                // load coop spawns
+                metadata.coop_spawns = new List<SFMapCoopAISpawn>();
+                if (c29 != null)
+                {
+                    using (BinaryReader br2 = c29.Open())
+                    {
+                        if (c29.header.ChunkDataType == 6)
+                        {
+                            int obj_i = 0;
+                            while (br2.BaseStream.Position < br2.BaseStream.Length)
+                            {
+                                int x = br2.ReadInt16();
+                                int y = br2.ReadInt16();
+                                SFCoord pos = new SFCoord(x, y);
+                                int object_id = br2.ReadInt16();
+                                br2.ReadBytes(6);
+                                if (object_id != 2541)
+                                    br2.ReadBytes(4);
+                                else
+                                {
+                                    short spawn_id = br2.ReadInt16();
+                                    short spawn_certain = br2.ReadInt16();
+                                    metadata.coop_spawns.Add(new SFMapCoopAISpawn(
+                                        object_manager.objects[obj_i],
+                                        spawn_id,
+                                        spawn_certain));
+
+                                    // add mesh to the object
+                                    SF3D.SceneSynchro.SceneNode obj_node =
+                                        heightmap.GetChunkNode(object_manager.objects[obj_i].grid_position)
+                                        .FindNode<SF3D.SceneSynchro.SceneNode>(object_manager.objects[obj_i].GetObjectName());
+
+                                    string m = "editor_dummy_spawnpoint";
+                                    SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name + "_SPAWNCIRCLE");
+                                }
+                                if ((object_id >= 65) && (object_id <= 67))    // editor only
+                                    obj_i--;
+                                obj_i++;
+                            }
+                        }
+                    }
+                    c29.Close();
+                }
             }
             else if(metadata.map_type == SFMapType.MULTIPLAYER)
             {
@@ -1183,6 +1210,7 @@ namespace SpellforceDataEditor.SFMap
 
             // load metadata
             metadata = new SFMapMetaData { map_type = SFMapType.COOP };
+            metadata.multi_teams = new List<SFMapMultiplayerTeamComposition>();
 
             byte[] image_data = new byte[128 * 128 * 3];
             for (int i = 0; i < 128 * 128 * 3; i++)
