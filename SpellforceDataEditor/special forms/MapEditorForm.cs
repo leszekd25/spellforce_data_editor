@@ -73,7 +73,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void MapEditorForm_Load(object sender, EventArgs e)
         {
-            LogUtils.Log.MemoryUsage();
+            LogUtils.Log.TotalMemoryUsage();
         }
 
         private void MapEditorForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -197,7 +197,8 @@ namespace SpellforceDataEditor.special_forms
 
             this.Text = "Map Editor - new map";
 
-            LogUtils.Log.MemoryUsage();
+            LogUtils.Log.TotalMemoryUsage();
+            SFResources.SFResourceManager.LogMemoryUsage();
             return 0;
         }
 
@@ -278,7 +279,8 @@ namespace SpellforceDataEditor.special_forms
 
                 this.Text = "Map Editor - " + OpenMap.FileName;
 
-                LogUtils.Log.MemoryUsage();
+                LogUtils.Log.TotalMemoryUsage();
+                SFResources.SFResourceManager.LogMemoryUsage();
                 return 0;
             }
 
@@ -323,6 +325,7 @@ namespace SpellforceDataEditor.special_forms
         private int CloseMap()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.CloseMap() called");
+            SFResources.SFResourceManager.LogMemoryUsage();
 
             if (map == null)
                 return 0;
@@ -373,7 +376,8 @@ namespace SpellforceDataEditor.special_forms
             this.Text = "Map Editor";
             GC.Collect();
 
-            LogUtils.Log.MemoryUsage();
+            LogUtils.Log.TotalMemoryUsage();
+            SFResources.SFResourceManager.LogMemoryUsage();
 
             return 0;
         }

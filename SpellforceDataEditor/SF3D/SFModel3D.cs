@@ -205,6 +205,15 @@ namespace SpellforceDataEditor.SF3D
             return "SUBMODEL " + submodel_id.ToString();
         }
 
+        public int GetSizeBytes()
+        {
+            return 12 * vertices.Length
+                 + 8 * uvs.Length
+                 + 16 * colors.Length
+                 + 12 * normals.Length
+                 + 4 * face_indices.Length;
+        }
+
         public void Dispose()
         {
             instance_matrices.Dispose();
@@ -333,6 +342,17 @@ namespace SpellforceDataEditor.SF3D
         public string GetName()
         {
             return name;
+        }
+
+        public int GetSizeBytes()
+        {
+            if (submodels == null)
+                return 0;
+
+            int ret = 0;
+            for (int i = 0; i < submodels.Length; i++)
+                ret += submodels[i].GetSizeBytes();
+            return ret;
         }
 
         public void Dispose()

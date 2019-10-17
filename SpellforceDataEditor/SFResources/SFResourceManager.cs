@@ -133,5 +133,19 @@ namespace SpellforceDataEditor.SFResources
             }
             return false;
         }
+
+        public static void LogMemoryUsage()
+        {
+            string log_string = "Memory usage (bytes): ";
+            log_string += "TEXTURES " + Textures.GetResourceSize().ToString()
+                       + ", 3D MODELS " + Models.GetResourceSize().ToString()
+                       + ", SKELETONS " + Skeletons.GetResourceSize().ToString()
+                       + ", SKINS " + Skins.GetResourceSize().ToString()
+                       + ", BSI" + BSIs.GetResourceSize().ToString()
+                       + ", ANIMATIONS " + Animations.GetResourceSize().ToString()
+                       + ", SOUNDS " + (Sounds.GetResourceSize() + Musics.GetResourceSize() + Messages.GetResourceSize()).ToString();
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.LogMemoryUsage() called");
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, log_string);
+        }
     }
 }

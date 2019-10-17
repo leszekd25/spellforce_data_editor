@@ -201,34 +201,9 @@ namespace SpellforceDataEditor.SFChunkFile
                 LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkByID(): Chunk data is not valid!");
                 throw new InvalidDataException("SFChunkFileChunk.GetChunkById(): Invalid chunk data!");
             }
+            LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkByID(): Found chunk, chunk type: "
+                + chunk.header.ChunkDataType.ToString() + ", data length: " + chunk.get_original_data_length().ToString());
             return chunk;
-
-            /*
-
-            bool found = false;
-            SFChunkFileChunk chunk = null;
-
-            br.BaseStream.Position = 20;
-            int cm = get_data_type();
-
-            while (br.BaseStream.Position < br.BaseStream.Length)
-            {
-                chunk = new SFChunkFileChunk();
-                chunk.ReadHeader(br, cm, false);
-                if ((chunk.get_id() == id) && (chunk.get_occurence() == occ_id))
-                {
-                    if(chunk.Read(br) != 0)
-                    {
-                        LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkByID(): Chunk data is not valid!");
-                        throw new InvalidDataException("SFChunkFileChunk.GetChunkById(): Invalid chunk data!");
-                    }
-                    found = true;
-                    break;
-                }
-                br.BaseStream.Position += (cm == 2?12:16) + chunk.get_data_length();
-            }
-            
-            return (found ? chunk : null);*/
         }
 
 

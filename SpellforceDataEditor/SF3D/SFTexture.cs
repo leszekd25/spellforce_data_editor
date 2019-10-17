@@ -20,6 +20,7 @@ namespace SpellforceDataEditor.SF3D
     public class SFTexture: SFResource
     {
         public byte[] data { get; private set; }
+        private int data_length_before_free = 0;                // used for GetSizeBytes
         public int width { get; private set; }
         public int height { get; private set; }
         public int tex_id { get; private set; } = -1;
@@ -415,6 +416,8 @@ namespace SpellforceDataEditor.SF3D
         // used after loading textures that are no longer needed in memory, i.e, won't be reloaded anymore
         public void FreeMemory()
         {
+            if(data != null)
+                data_length_before_free = data.Length;
             data = null;
         }
 
@@ -431,6 +434,13 @@ namespace SpellforceDataEditor.SF3D
         new public string ToString()
         {
             return GetName();
+        }
+
+        public int GetSizeBytes()
+        {
+            if (data == null)
+                return data_length_before_free;
+            return data.Length;
         }
 
         public static SFTexture MixUncompressed(SFTexture tex1, byte w1, SFTexture tex2, byte w2)

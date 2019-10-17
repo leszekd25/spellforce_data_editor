@@ -72,7 +72,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (ListCoopCamps.Items.Count >= map.metadata.coop_spawns.Count)
                 return;
 
-            SFMapCoopAISpawn spawn = map.metadata.coop_spawns[ListCoopCamps.Items.Count - 1];
+            SFMapCoopAISpawn spawn = map.metadata.coop_spawns[ListCoopCamps.Items.Count];
             string ret = "";
             if (SFLua.SFLuaEnvironment.coop_spawns.coop_spawn_types != null)
                 if (SFLua.SFLuaEnvironment.coop_spawns.coop_spawn_types.ContainsKey(spawn.spawn_id))

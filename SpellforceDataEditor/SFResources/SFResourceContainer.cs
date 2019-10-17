@@ -21,6 +21,7 @@ namespace SpellforceDataEditor.SFResources
         Dictionary<string, int> reference_count = new Dictionary<string, int>();
         string prefix_path = "";
         string[] suffix_extensions = null;
+        int total_size = 0;
 
         public SFResourceContainer()
         {
@@ -82,6 +83,7 @@ namespace SpellforceDataEditor.SFResources
                 LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Could not load resource " + prefix_path + "\\" + res_to_load);
                 return res_code;
             }
+            total_size += resource.GetSizeBytes();
             resource.Init();
             resource.SetName(rname);
             cont.Add(rname, resource);
@@ -118,6 +120,7 @@ namespace SpellforceDataEditor.SFResources
                 LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): Could not load resource " + rname + " from memory!");
                 return res_code;
             }
+            total_size += resource.GetSizeBytes();
             resource.Init();
             resource.SetName(rname);
             cont.Add(rname, resource);
@@ -136,6 +139,7 @@ namespace SpellforceDataEditor.SFResources
                 LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.AddManually(): Resource " + rname + " already exists!");
                 throw new Exception("Can't load directly from memory: Resource already exists!");
             }
+            total_size += res.GetSizeBytes();
             res.Init();
             res.SetName(rname);
             cont.Add(rname, res);
@@ -162,6 +166,7 @@ namespace SpellforceDataEditor.SFResources
                     LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Negative reference count!");
                 LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Removing resource "+rname);
 
+                total_size -= cont[rname].GetSizeBytes();
                 cont[rname].Dispose();
                 cont.Remove(rname);
                 reference_count.Remove(rname);
@@ -193,6 +198,11 @@ namespace SpellforceDataEditor.SFResources
             return cont.Keys.ToList();
         }
 
+        public int GetResourceSize()
+        {
+            return total_size;
+        }
+
         // removes all resources no matter the reference counters
         public void DisposeAll()
         {
@@ -207,6 +217,7 @@ namespace SpellforceDataEditor.SFResources
                 cont.Remove(rname);
                 reference_count.Remove(rname);
             }
+            total_size = 0;
         }
     }
 }

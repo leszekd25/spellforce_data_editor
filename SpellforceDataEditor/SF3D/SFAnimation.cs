@@ -23,6 +23,11 @@ namespace SpellforceDataEditor.SF3D
         {
             return new CompressedMatrix(position.Get(t), rotation.Get(t));
         }
+
+        public int GetSizeBytes()
+        {
+            return position.GetSizeBytes() + rotation.GetSizeBytes();
+        }
     }
 
     public class SFAnimation: SFResource
@@ -95,6 +100,14 @@ namespace SpellforceDataEditor.SF3D
         public string GetName()
         {
             return name;
+        }
+
+        public int GetSizeBytes()
+        {
+            int ret = 0;
+            for (int i = 0; i < bone_animations.Count; i++)
+                ret += bone_animations[i].GetSizeBytes();
+            return ret;
         }
 
         public void Dispose()

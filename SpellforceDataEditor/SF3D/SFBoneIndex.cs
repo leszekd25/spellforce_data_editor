@@ -59,6 +59,15 @@ namespace SpellforceDataEditor.SF3D
             return name;
         }
 
+        public int GetSizeBytes()
+        {
+            int ret = 0;
+            for (int i = 0; i < modelnum; i++)
+                ret += bone_count[i]+1;
+            ret *= 4;
+            return ret + 4;
+        }
+
         public void Dispose()
         {
 

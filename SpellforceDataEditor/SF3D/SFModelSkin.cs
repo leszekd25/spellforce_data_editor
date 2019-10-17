@@ -185,6 +185,17 @@ namespace SpellforceDataEditor.SF3D
             return bsi_name;
         }
 
+        public int GetSizeBytes()
+        {
+            return 12 * vertices.Length
+                 + 8 * uvs.Length
+                 + 12 * normals.Length
+                 + 16 * bone_indices.Length
+                 + 16 * bone_weights.Length
+                 + 4 * face_indices.Length
+                 + 4 * bones.Length;
+        }
+
         public void Dispose()
         {
 
@@ -249,6 +260,17 @@ namespace SpellforceDataEditor.SF3D
         public string GetName()
         {
             return name;
+        }
+
+        public int GetSizeBytes()
+        {
+            if (submodels == null)
+                return 0;
+
+            int ret = 0;
+            for (int i = 0; i < submodels.Length; i++)
+                ret += submodels[i].GetSizeBytes();
+            return ret;
         }
 
         public void Dispose()

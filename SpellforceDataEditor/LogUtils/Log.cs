@@ -50,9 +50,9 @@ namespace SpellforceDataEditor.LogUtils
         }
 
         // this is slow! only use sporadically
-        static public void MemoryUsage()
+        static public void TotalMemoryUsage()
         {
-            log_list.Add(new LogData(LogOption.INFO, LogSource.Main, "MemoryUsage(): \r\n    Current   total memory used: "
+            log_list.Add(new LogData(LogOption.INFO, LogSource.Main, "TotalMemoryUsage(): \r\n    Current total memory used: "
                 + System.Diagnostics.Process.GetCurrentProcess().WorkingSet64.ToString() + " bytes \r\n    Current managed memory used: "
                 + GC.GetTotalMemory(true).ToString() + " bytes"));
         }

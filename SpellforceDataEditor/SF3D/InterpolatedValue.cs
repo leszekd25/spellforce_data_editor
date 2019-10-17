@@ -19,6 +19,7 @@ namespace SpellforceDataEditor.SF3D
         void Add(T item, float t);
         T Get(float t);
         float GetMaxTime();
+        int GetSizeBytes();
     }
 
     public class InterpolatedVector3: IInterpolatedValue<Vector3>
@@ -78,6 +79,11 @@ namespace SpellforceDataEditor.SF3D
         {
             return max_time;
         }
+
+        public int GetSizeBytes()
+        {
+            return 4 * time.Count + 12 * value.Count;
+        }
     }
 
     public class InterpolatedQuaternion: IInterpolatedValue<Quaternion>
@@ -136,6 +142,11 @@ namespace SpellforceDataEditor.SF3D
         public float GetMaxTime()
         {
             return max_time;
+        }
+
+        public int GetSizeBytes()
+        {
+            return 4 * time.Count + 16 * value.Count;
         }
     }
 }

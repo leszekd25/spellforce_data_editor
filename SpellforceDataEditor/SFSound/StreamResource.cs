@@ -36,9 +36,16 @@ namespace SpellforceDataEditor.SFSound
             return name;
         }
 
+        public int GetSizeBytes()
+        {
+            if (sound_data == null)
+                return 0;
+            return sound_data.Length;
+        }
+
         public void Dispose()
         {
-
+            sound_data = null;
         }
     }
 }

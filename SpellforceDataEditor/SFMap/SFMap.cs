@@ -410,6 +410,7 @@ namespace SpellforceDataEditor.SFMap
             }
             else
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Movement flag data not found");
+
             SFChunkFileChunk c56 = f.GetChunkByID(56);
             if (c56 != null)
             {
@@ -429,6 +430,7 @@ namespace SpellforceDataEditor.SFMap
             }
             else
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Vision flag data not found");
+
             SFChunkFileChunk c60 = f.GetChunkByID(60);
             if (c60 != null)
             {
@@ -598,6 +600,7 @@ namespace SpellforceDataEditor.SFMap
             }
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading coop spawn parameters");
+            metadata.coop_spawns = new List<SFMapCoopAISpawn>();
             SFChunkFileChunk c59 = f.GetChunkByID(59);
             if (c59 != null)
             {
@@ -616,7 +619,6 @@ namespace SpellforceDataEditor.SFMap
                 c59.Close();
 
                 // load coop spawns
-                metadata.coop_spawns = new List<SFMapCoopAISpawn>();
                 if (c29 != null)
                 {
                     using (BinaryReader br2 = c29.Open())
@@ -928,7 +930,7 @@ namespace SpellforceDataEditor.SFMap
             if (metadata.map_type == SFMapType.COOP)
                 bld_chunk_type = 2;
 
-            byte[] c11_data = new byte[building_manager.buildings.Count * 11];
+            byte[] c11_data = new byte[building_manager.buildings.Count * (bld_chunk_type == 2?10:11)];
             using (MemoryStream ms = new MemoryStream(c11_data))
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
@@ -1211,6 +1213,7 @@ namespace SpellforceDataEditor.SFMap
             // load metadata
             metadata = new SFMapMetaData { map_type = SFMapType.COOP };
             metadata.multi_teams = new List<SFMapMultiplayerTeamComposition>();
+            metadata.coop_spawns = new List<SFMapCoopAISpawn>();
 
             byte[] image_data = new byte[128 * 128 * 3];
             for (int i = 0; i < 128 * 128 * 3; i++)

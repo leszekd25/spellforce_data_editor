@@ -18,6 +18,7 @@ namespace SpellforceDataEditor.SFResources
         void Init();
         void Dispose();
         void SetName(string s);
+        int GetSizeBytes();
         string GetName();
     }
 }

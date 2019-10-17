@@ -47,7 +47,7 @@ namespace SpellforceDataEditor
             else
                 LabelIsSpecifiedGameDir.Text = "Game directory:\r\nNOT specified";
 
-            LogUtils.Log.MemoryUsage();
+            LogUtils.Log.TotalMemoryUsage();
         }
 
         void CheckNewVersionAvailable()

@@ -179,6 +179,11 @@ namespace SpellforceDataEditor.SF3D
             return name;
         }
 
+        public int GetSizeBytes()
+        {
+            return 132 * bone_count;
+        }
+
         public void Dispose()
         {
 
