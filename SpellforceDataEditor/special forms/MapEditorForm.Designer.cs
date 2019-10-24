@@ -37,6 +37,7 @@
             this.closeMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.slopebasedPaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.visibilitySettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenMap = new System.Windows.Forms.OpenFileDialog();
@@ -153,6 +154,7 @@
             this.MapTypeCampaign = new System.Windows.Forms.RadioButton();
             this.MapTypeCoop = new System.Windows.Forms.RadioButton();
             this.MapTypeMultiplayer = new System.Windows.Forms.RadioButton();
+            this.exportHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
@@ -241,23 +243,32 @@
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.importHeightmapToolStripMenuItem,
+            this.exportHeightmapToolStripMenuItem,
             this.slopebasedPaintToolStripMenuItem,
             this.visibilitySettingsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
+            // importHeightmapToolStripMenuItem
+            // 
+            this.importHeightmapToolStripMenuItem.Name = "importHeightmapToolStripMenuItem";
+            this.importHeightmapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importHeightmapToolStripMenuItem.Text = "Import heightmap";
+            this.importHeightmapToolStripMenuItem.Click += new System.EventHandler(this.importHeightmapToolStripMenuItem_Click);
+            // 
             // slopebasedPaintToolStripMenuItem
             // 
             this.slopebasedPaintToolStripMenuItem.Name = "slopebasedPaintToolStripMenuItem";
-            this.slopebasedPaintToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.slopebasedPaintToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.slopebasedPaintToolStripMenuItem.Text = "Slope-based paint";
             this.slopebasedPaintToolStripMenuItem.Click += new System.EventHandler(this.slopebasedPaintToolStripMenuItem_Click);
             // 
             // visibilitySettingsToolStripMenuItem
             // 
             this.visibilitySettingsToolStripMenuItem.Name = "visibilitySettingsToolStripMenuItem";
-            this.visibilitySettingsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.visibilitySettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.visibilitySettingsToolStripMenuItem.Text = "Visibility settings";
             this.visibilitySettingsToolStripMenuItem.Click += new System.EventHandler(this.visibilitySettingsToolStripMenuItem_Click);
             // 
@@ -1446,6 +1457,13 @@
             this.MapTypeMultiplayer.UseVisualStyleBackColor = true;
             this.MapTypeMultiplayer.CheckedChanged += new System.EventHandler(this.MapTypeMultiplayer_CheckedChanged);
             // 
+            // exportHeightmapToolStripMenuItem
+            // 
+            this.exportHeightmapToolStripMenuItem.Name = "exportHeightmapToolStripMenuItem";
+            this.exportHeightmapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportHeightmapToolStripMenuItem.Text = "Export heightmap";
+            this.exportHeightmapToolStripMenuItem.Click += new System.EventHandler(this.exportHeightmapToolStripMenuItem_Click);
+            // 
             // MapEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1639,5 +1657,7 @@
         private System.Windows.Forms.TextBox CoopSpawnParam11;
         private System.Windows.Forms.Button ButtonTeams;
         private System.Windows.Forms.ToolStripMenuItem visibilitySettingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importHeightmapToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportHeightmapToolStripMenuItem;
     }
 }

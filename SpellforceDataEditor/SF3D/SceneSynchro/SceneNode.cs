@@ -20,7 +20,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
     // ultimately might become obsolete...
     public class SceneNode
     {
-        public string Name { get; private set; } = "";
+        public string Name { get; set; } = "";
         public SceneNode Parent { get; set; } = null;
         public List<SceneNode> Children { get; protected set; } = new List<SceneNode>();
 

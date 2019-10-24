@@ -586,6 +586,18 @@
     <Compile Include="SFMap\map_dialog\MapAutoTextureDialog.Designer.cs">
       <DependentUpon>MapAutoTextureDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFMap\map_dialog\MapExportHeightmapDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapExportHeightmapDialog.Designer.cs">
+      <DependentUpon>MapExportHeightmapDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapImportHeightmapDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapImportHeightmapDialog.Designer.cs">
+      <DependentUpon>MapImportHeightmapDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFMap\map_dialog\MapManageTeamCompositions.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -963,6 +975,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_dialog\MapAutoTextureDialog.resx">
       <DependentUpon>MapAutoTextureDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_dialog\MapExportHeightmapDialog.resx">
+      <DependentUpon>MapExportHeightmapDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_dialog\MapImportHeightmapDialog.resx">
+      <DependentUpon>MapImportHeightmapDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_dialog\MapManageTeamCompositions.resx">
       <DependentUpon>MapManageTeamCompositions.cs</DependentUpon>

@@ -853,6 +853,86 @@ namespace SpellforceDataEditor.SFMap
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate(): Chunks generated: "+chunk_nodes.Length.ToString());
         }
 
+        public int ImportHeights(System.Drawing.Bitmap bitmap, byte step, byte offset)
+        {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.ImportHeights() called");
+            if ((bitmap.Width > 1024) || (bitmap.Height > 1024))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapHeightMap.ImportHeights(): Invalid heightmap dimensions!");
+                return -1;
+            }
+
+            int newmap_size = 256;
+            if ((bitmap.Width > 256) || (bitmap.Height > 256))
+                newmap_size = 512;
+            if ((bitmap.Width > 512) || (bitmap.Height > 512))
+                newmap_size = 1024;
+
+            SFCoord hmap_offset = new SFCoord((width - bitmap.Width) / 2, (height - bitmap.Height) / 2);
+
+            // rebuild every chunk on the map if the newmap size is different from current map dimension
+            /*if (newmap_size < width)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapHeightMap.Import(): New heightmap is smaller than the current one!");
+                return -2;
+            }*/
+
+            // if only_change_height is set to true and new map size is greater than the current one, reorder the chunks
+            if (newmap_size > width)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapHeightMap.Import(): New heightmap is bigger than the current one!");
+                return -3;
+            }
+
+            if (step == 0)
+                step = 1;
+
+            for(int i=0;i<height;i++)
+                for(int j=0;j<width;j++)
+                {
+                    if ((i >= hmap_offset.y) || (i < width - hmap_offset.y) || (j >= hmap_offset.x) || (j < height - hmap_offset.x))
+                        height_data[i * width + j] = (ushort)(Math.Max((bitmap.GetPixel(
+                            j - hmap_offset.x, 
+                            bitmap.Height - (i - hmap_offset.y) - 1).R - offset), 0) * step);
+                    else
+                        height_data[i * width + j] = 0;
+                }
+
+            RebuildGeometry(new SFCoord(0, 0), new SFCoord(width - 1, height - 1));
+
+            return 0;
+        }
+
+        public int ExportHeights(System.Drawing.Bitmap bitmap, byte step, byte offset)
+        {
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.ExportHeights() called");
+
+            if (bitmap == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapHeightMap.ExportHeights(): Bitmap is null!");
+                return -1;
+            }
+
+            if ((bitmap.Width != width) || (bitmap.Height != height))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapHeightMap.ExportHeights(): Bitmap dimensions do not match map size!");
+                return -2;
+            }
+
+            for (int i = 0; i < height; i++)
+                for (int j = 0; j < width; j++)
+                {
+                    byte col = (byte)Math.Max(0,
+                                        Math.Min(255,
+                                            (GetZ(new SFCoord(j, i)) / step) + offset));
+                    if (col <= offset)
+                        col = 0;
+                    bitmap.SetPixel(j, height - i - 1, System.Drawing.Color.FromArgb(col, col, col));
+                }
+
+            return 0;
+        }
+
         public ushort GetZ(SFCoord pos)
         {
             return height_data[pos.y * width + pos.x];

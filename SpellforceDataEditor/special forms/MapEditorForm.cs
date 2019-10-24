@@ -49,6 +49,8 @@ namespace SpellforceDataEditor.special_forms
         SFMap.map_dialog.MapAutoTextureDialog autotexture_form = null;
         SFMap.map_dialog.MapManageTeamCompositions teamcomp_form = null;
         SFMap.map_dialog.MapVisibilitySettings visibility_form = null;
+        SFMap.map_dialog.MapImportHeightmapDialog importhmap_form = null;
+        SFMap.map_dialog.MapExportHeightmapDialog exporthmap_form = null;
 
         List<int> unitcombo_to_unitindex = new List<int>();
 
@@ -348,6 +350,8 @@ namespace SpellforceDataEditor.special_forms
                 teamcomp_form.Close();
             if (visibility_form != null)
                 visibility_form.Close();
+            if (importhmap_form != null)
+                importhmap_form.Close();
 
             TabEditorModes.Enabled = false;
             InspectorClear();
@@ -1941,5 +1945,44 @@ namespace SpellforceDataEditor.special_forms
             visibility_form = null;
         }
 
+        private void importHeightmapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (map == null)
+                return;
+
+            if (importhmap_form != null)
+                return;
+
+            importhmap_form = new SFMap.map_dialog.MapImportHeightmapDialog();
+            importhmap_form.map = map;
+            importhmap_form.FormClosed += new FormClosedEventHandler(importhmap_FormClosed);
+            importhmap_form.Show();
+        }
+
+        private void importhmap_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            importhmap_form.FormClosed -= new FormClosedEventHandler(importhmap_FormClosed);
+            importhmap_form = null;
+        }
+
+        private void exportHeightmapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (map == null)
+                return;
+
+            if (exporthmap_form != null)
+                return;
+
+            exporthmap_form = new SFMap.map_dialog.MapExportHeightmapDialog();
+            exporthmap_form.map = map;
+            exporthmap_form.FormClosed += new FormClosedEventHandler(exporthmap_FormClosed);
+            exporthmap_form.Show();
+        }
+
+        private void exporthmap_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            exporthmap_form.FormClosed -= new FormClosedEventHandler(exporthmap_FormClosed);
+            exporthmap_form = null;
+        }
     }
 }
