@@ -38,6 +38,7 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.slopebasedPaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.visibilitySettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenMap = new System.Windows.Forms.OpenFileDialog();
@@ -154,7 +155,6 @@
             this.MapTypeCampaign = new System.Windows.Forms.RadioButton();
             this.MapTypeCoop = new System.Windows.Forms.RadioButton();
             this.MapTypeMultiplayer = new System.Windows.Forms.RadioButton();
-            this.exportHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
@@ -254,21 +254,28 @@
             // importHeightmapToolStripMenuItem
             // 
             this.importHeightmapToolStripMenuItem.Name = "importHeightmapToolStripMenuItem";
-            this.importHeightmapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importHeightmapToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.importHeightmapToolStripMenuItem.Text = "Import heightmap";
             this.importHeightmapToolStripMenuItem.Click += new System.EventHandler(this.importHeightmapToolStripMenuItem_Click);
+            // 
+            // exportHeightmapToolStripMenuItem
+            // 
+            this.exportHeightmapToolStripMenuItem.Name = "exportHeightmapToolStripMenuItem";
+            this.exportHeightmapToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.exportHeightmapToolStripMenuItem.Text = "Export heightmap";
+            this.exportHeightmapToolStripMenuItem.Click += new System.EventHandler(this.exportHeightmapToolStripMenuItem_Click);
             // 
             // slopebasedPaintToolStripMenuItem
             // 
             this.slopebasedPaintToolStripMenuItem.Name = "slopebasedPaintToolStripMenuItem";
-            this.slopebasedPaintToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.slopebasedPaintToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.slopebasedPaintToolStripMenuItem.Text = "Slope-based paint";
             this.slopebasedPaintToolStripMenuItem.Click += new System.EventHandler(this.slopebasedPaintToolStripMenuItem_Click);
             // 
             // visibilitySettingsToolStripMenuItem
             // 
             this.visibilitySettingsToolStripMenuItem.Name = "visibilitySettingsToolStripMenuItem";
-            this.visibilitySettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.visibilitySettingsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.visibilitySettingsToolStripMenuItem.Text = "Visibility settings";
             this.visibilitySettingsToolStripMenuItem.Click += new System.EventHandler(this.visibilitySettingsToolStripMenuItem_Click);
             // 
@@ -384,11 +391,13 @@
             // MonumentHero
             // 
             this.MonumentHero.AutoSize = true;
+            this.MonumentHero.Checked = true;
             this.MonumentHero.ForeColor = System.Drawing.SystemColors.WindowText;
             this.MonumentHero.Location = new System.Drawing.Point(79, 85);
             this.MonumentHero.Name = "MonumentHero";
             this.MonumentHero.Size = new System.Drawing.Size(48, 17);
             this.MonumentHero.TabIndex = 12;
+            this.MonumentHero.TabStop = true;
             this.MonumentHero.Text = "Hero";
             this.MonumentHero.UseVisualStyleBackColor = true;
             this.MonumentHero.CheckedChanged += new System.EventHandler(this.MonumentHero_CheckedChanged);
@@ -405,12 +414,10 @@
             // MonumentHuman
             // 
             this.MonumentHuman.AutoSize = true;
-            this.MonumentHuman.Checked = true;
             this.MonumentHuman.Location = new System.Drawing.Point(3, 16);
             this.MonumentHuman.Name = "MonumentHuman";
             this.MonumentHuman.Size = new System.Drawing.Size(59, 17);
             this.MonumentHuman.TabIndex = 8;
-            this.MonumentHuman.TabStop = true;
             this.MonumentHuman.Text = "Human";
             this.MonumentHuman.UseVisualStyleBackColor = true;
             this.MonumentHuman.CheckedChanged += new System.EventHandler(this.MonumentHuman_CheckedChanged);
@@ -1456,13 +1463,6 @@
             this.MapTypeMultiplayer.Text = "Multiplayer";
             this.MapTypeMultiplayer.UseVisualStyleBackColor = true;
             this.MapTypeMultiplayer.CheckedChanged += new System.EventHandler(this.MapTypeMultiplayer_CheckedChanged);
-            // 
-            // exportHeightmapToolStripMenuItem
-            // 
-            this.exportHeightmapToolStripMenuItem.Name = "exportHeightmapToolStripMenuItem";
-            this.exportHeightmapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.exportHeightmapToolStripMenuItem.Text = "Export heightmap";
-            this.exportHeightmapToolStripMenuItem.Click += new System.EventHandler(this.exportHeightmapToolStripMenuItem_Click);
             // 
             // MapEditorForm
             // 

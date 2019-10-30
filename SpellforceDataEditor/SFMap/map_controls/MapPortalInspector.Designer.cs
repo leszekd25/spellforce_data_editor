@@ -153,6 +153,7 @@
             this.AngleTrackbar.Size = new System.Drawing.Size(100, 20);
             this.AngleTrackbar.TabIndex = 20;
             this.AngleTrackbar.TickFrequency = 45;
+            this.AngleTrackbar.ValueChanged += new System.EventHandler(this.AngleTrackbar_ValueChanged);
             // 
             // Angle
             // 
@@ -161,6 +162,7 @@
             this.Angle.Name = "Angle";
             this.Angle.Size = new System.Drawing.Size(46, 20);
             this.Angle.TabIndex = 19;
+            this.Angle.Validated += new System.EventHandler(this.Angle_Validated);
             // 
             // label6
             // 

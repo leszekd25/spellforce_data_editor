@@ -166,7 +166,7 @@ namespace SpellforceDataEditor.SFMap
                         int npc_id = br.ReadInt16();   // presumed
                         int b_type = br.ReadByte();
                         int b_lvl = 1;
-                        int race_id = 0;
+                        int race_id = -1;
                         if (c11.header.ChunkDataType > 1)
                             b_lvl = br.ReadByte();
                         if (c11.header.ChunkDataType > 2)

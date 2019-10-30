@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
-    public enum MonumentType { HUMAN = 0, ELF, DWARF, ORC, TROLL, DARKELF, HERO }
+    public enum MonumentType { HUMAN = 0, DWARF, ELF, DARKELF, ORC, TROLL, HERO }
 
     public class MapMonumentEditor: MapEditor
     {
