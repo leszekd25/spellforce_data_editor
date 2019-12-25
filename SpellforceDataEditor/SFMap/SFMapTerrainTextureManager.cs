@@ -337,7 +337,8 @@ namespace SpellforceDataEditor.SFMap
 
             tile_texture_atlas[tile_id] = SFTexture.MixUncompressed(
                 base_texture_bank[texture_tiledata[tile_id].ind1], texture_tiledata[tile_id].weight1,
-                base_texture_bank[texture_tiledata[tile_id].ind2], texture_tiledata[tile_id].weight2);
+                base_texture_bank[texture_tiledata[tile_id].ind2], texture_tiledata[tile_id].weight2,
+                base_texture_bank[texture_tiledata[tile_id].ind3], texture_tiledata[tile_id].weight3);
             tile_texture_atlas[tile_id].Init();
             // insert texture data to the atlas
 

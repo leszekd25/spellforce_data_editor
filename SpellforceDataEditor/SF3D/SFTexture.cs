@@ -474,5 +474,43 @@ namespace SpellforceDataEditor.SF3D
 
             return new_tex;
         }
+
+        public static SFTexture MixUncompressed(SFTexture tex1, byte w1, SFTexture tex2, byte w2, SFTexture tex3, byte w3)
+        {
+            if ((tex1.width != tex2.width) || (tex1.height != tex2.height))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFTexture.MixUncompressed(): Texture1 and texture2 dimensions do not match!");
+                throw new Exception("SFTexture.MixUncompressed(): Texture1 and texture2 dimensions do not match!");
+            }
+            if ((tex1.width != tex3.width) || (tex1.height != tex3.height))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFTexture.MixUncompressed(): Texture1 and texture3 dimensions do not match!");
+                throw new Exception("SFTexture.MixUncompressed(): Texture1 and texture3 dimensions do not match!");
+            }
+
+            if ((tex1.format != InternalFormat.Rgba) || (tex2.format != InternalFormat.Rgba) || (tex3.format != InternalFormat.Rgba))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFTexture.MixUncompressed(): Texture(s) are not uncompressed!");
+                throw new Exception("SFTexture.MixUncompressed(): Texture(s) are not uncompressed!");
+            }
+            if (w1 + w2 + w3 == 0)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 127 for all weights");
+                w1 = 127; w2 = 127; w3 = 127;
+            }
+
+            SFTexture new_tex = new SFTexture();
+            new_tex.width = tex1.width;
+            new_tex.height = tex1.height;
+            new_tex.mipMapCount = tex1.mipMapCount;
+            new_tex.format = tex1.format;
+            new_tex.data = new byte[tex1.data.Length];
+            for (int i = 0; i < tex1.data.Length; i++)
+            {
+                new_tex.data[i] = (byte)((w1 * tex1.data[i] + w2 * tex2.data[i] + w3 * tex3.data[i]) / 255);
+            }
+
+            return new_tex;
+        }
     }
 }
