@@ -110,10 +110,7 @@ namespace SpellforceDataEditor.SF3D
                 uv.X = br.ReadSingle(); uv.Y = br.ReadSingle();
                 Vector4 v_bones = new Vector4();
                 for(int k = 0; k < 4; k++)
-                {
                     v_bones[k] = (float)br.ReadByte();
-                    if (weight[k] == 0f) v_bones[k] = -1.0f;
-                }
                 vertices[i] = position; normals[i] = normal; uvs[i] = uv; bone_indices[i] = v_bones; bone_weights[i] = weight;
             }
 

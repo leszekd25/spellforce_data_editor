@@ -230,29 +230,20 @@ void main(){
   newNormal = vec4(0.0, 0.0, 0.0, 1.0);
 
   index = int(vertexBoneIndex.x);
-  if(index != -1)
-  {
-    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.x;
-    newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.x;
-  }
+  newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.x;
+  newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.x;
+
   index = int(vertexBoneIndex.y);
-  if(index != -1)
-  {
-    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.y + newVertex;
-    newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.y + newNormal;
-  }
+  newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.y + newVertex;
+  newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.y + newNormal;
+
   index = int(vertexBoneIndex.z);
-  if(index != -1)
-  {
-    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.z + newVertex;
-    newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.z + newNormal;
-  }
+  newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.z + newVertex;
+  newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.z + newNormal;
+
   index = int(vertexBoneIndex.w);
-  if(index != -1)
-  {
-    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.w + newVertex;
-    newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.w + newNormal;
-  }
+  newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.w + newVertex;
+  newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.w + newNormal;
 
   
   // Output position of the vertex, in clip space : MVP * position

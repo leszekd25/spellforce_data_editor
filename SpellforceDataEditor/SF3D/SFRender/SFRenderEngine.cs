@@ -671,13 +671,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
             }
 
+            Matrix4[] bones = new Matrix4[20];
             foreach (SFTexture tex in scene.tex_list_animated.Keys)
             {
                 //if(current_pass == RenderPass.SCENE)
                     GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
 
                 LinearPool<TexturedGeometryListElementAnimated> elem_list = scene.tex_list_animated[tex];
-                Matrix4[] bones = new Matrix4[20];
+
                 for (int i = 0; i < elem_list.elements.Count; i++)
                 {
                     if (!elem_list.elem_active[i])
