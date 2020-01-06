@@ -1,5 +1,5 @@
 ﻿/*
- * CompressedMatrix is an intermediate structure which holds rotation matrix (3x3) and translation vector (3)
+ * CompressedMatrix is an intermediate structure which holds rotation matrix (3x3) using quaternion (4) and translation vector (3)
  * Holding data in this structure simplifies operations that would otherwise have to be done on 4x4 matrices
  * Note that currently it's only used to reduce data bandwidth
  */

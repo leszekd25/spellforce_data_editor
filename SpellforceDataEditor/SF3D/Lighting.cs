@@ -14,6 +14,7 @@ namespace SpellforceDataEditor.SF3D
         public Vector4 Color = new Vector4(1.0f);
     }
 
+    // for some reason shadows dont want to work, need to investigate
     public class LightingSun
     {
         public float Strength = 1.0f;

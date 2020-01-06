@@ -155,6 +155,9 @@
             this.MapTypeCampaign = new System.Windows.Forms.RadioButton();
             this.MapTypeCoop = new System.Windows.Forms.RadioButton();
             this.MapTypeMultiplayer = new System.Windows.Forms.RadioButton();
+            this.PanelUtility = new System.Windows.Forms.Panel();
+            this.label25 = new System.Windows.Forms.Label();
+            this.TrackbarCameraSpeed = new System.Windows.Forms.TrackBar();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
@@ -180,6 +183,8 @@
             this.TabPageMetadata.SuspendLayout();
             this.PanelCoopParams.SuspendLayout();
             this.panel6.SuspendLayout();
+            this.PanelUtility.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TrackbarCameraSpeed)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -1464,11 +1469,43 @@
             this.MapTypeMultiplayer.UseVisualStyleBackColor = true;
             this.MapTypeMultiplayer.CheckedChanged += new System.EventHandler(this.MapTypeMultiplayer_CheckedChanged);
             // 
+            // PanelUtility
+            // 
+            this.PanelUtility.Controls.Add(this.TrackbarCameraSpeed);
+            this.PanelUtility.Controls.Add(this.label25);
+            this.PanelUtility.Location = new System.Drawing.Point(822, 642);
+            this.PanelUtility.Name = "PanelUtility";
+            this.PanelUtility.Size = new System.Drawing.Size(274, 25);
+            this.PanelUtility.TabIndex = 9;
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(3, 3);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(75, 13);
+            this.label25.TabIndex = 0;
+            this.label25.Text = "Camera speed";
+            // 
+            // TrackbarCameraSpeed
+            // 
+            this.TrackbarCameraSpeed.AutoSize = false;
+            this.TrackbarCameraSpeed.Location = new System.Drawing.Point(84, 0);
+            this.TrackbarCameraSpeed.Maximum = 200;
+            this.TrackbarCameraSpeed.Minimum = 10;
+            this.TrackbarCameraSpeed.Name = "TrackbarCameraSpeed";
+            this.TrackbarCameraSpeed.Size = new System.Drawing.Size(104, 22);
+            this.TrackbarCameraSpeed.TabIndex = 1;
+            this.TrackbarCameraSpeed.TickFrequency = 20;
+            this.TrackbarCameraSpeed.Value = 100;
+            this.TrackbarCameraSpeed.ValueChanged += new System.EventHandler(this.TrackbarCameraSpeed_ValueChanged);
+            // 
             // MapEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1100, 667);
+            this.Controls.Add(this.PanelUtility);
             this.Controls.Add(this.PanelInspector);
             this.Controls.Add(this.TabEditorModes);
             this.Controls.Add(this.StatusStrip);
@@ -1526,6 +1563,9 @@
             this.PanelCoopParams.PerformLayout();
             this.panel6.ResumeLayout(false);
             this.panel6.PerformLayout();
+            this.PanelUtility.ResumeLayout(false);
+            this.PanelUtility.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TrackbarCameraSpeed)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1659,5 +1699,8 @@
         private System.Windows.Forms.ToolStripMenuItem visibilitySettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importHeightmapToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportHeightmapToolStripMenuItem;
+        private System.Windows.Forms.Panel PanelUtility;
+        private System.Windows.Forms.TrackBar TrackbarCameraSpeed;
+        private System.Windows.Forms.Label label25;
     }
 }

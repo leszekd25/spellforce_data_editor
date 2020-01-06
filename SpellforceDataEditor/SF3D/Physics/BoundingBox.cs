@@ -21,7 +21,7 @@ namespace SpellforceDataEditor.SF3D.Physics
         private Vector3[] vertices;
         public Vector3 center { get; private set; }
 
-        // automatically sets a and be to fit the definition
+        // automatically sets a and b to fit the definition
         public BoundingBox(Vector3 _a, Vector3 _b)
         {
             a = _a;

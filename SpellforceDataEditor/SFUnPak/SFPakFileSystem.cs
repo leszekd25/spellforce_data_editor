@@ -19,7 +19,7 @@ namespace SpellforceDataEditor.SFUnPak
 {
     public class SFPakHeader
     {
-        public int version;
+        public byte[] version;
         public char[] sentinel;
         public char[] unknown;
         public int unknown2;
@@ -31,13 +31,13 @@ namespace SpellforceDataEditor.SFUnPak
         public bool is_valid()
         {
             string s = new string(sentinel);
-            return (version == 4)&&(sentinel[0] == 'M');
+            return ((version[0] == 4)||(version[0] == 5))&&(sentinel[0] == 'M');
         }
 
         //from pak file
         public void get(BinaryReader br)
         {
-            version = br.ReadInt32();
+            version = br.ReadBytes(4);
             sentinel = br.ReadChars(24);
             unknown = br.ReadChars(44);
             unknown2 = br.ReadInt32();
@@ -66,7 +66,7 @@ namespace SpellforceDataEditor.SFUnPak
         public override string ToString()
         {
             string s = new string(sentinel);
-            return "VERSION " + version.ToString() + " SENTINEL " + s + " LENGTH "+sentinel.Length.ToString();
+            return "VERSION " + version[0].ToString() + " SENTINEL " + s + " LENGTH "+sentinel.Length.ToString();
         }
     }
 

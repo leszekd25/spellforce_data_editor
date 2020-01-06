@@ -32,10 +32,20 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public SFSceneMeta scene_meta { get; private set; } = new SFSceneMeta();    // scene metadata
 
         public int frame_counter { get; private set; } = 0;      // total frames rendered
-        public int frames_per_second { get; private set; } = 25;   // framerate
+        public int frames_per_second { get; private set; } = Settings.FramesPerSecond;   // framerate
         public System.Diagnostics.Stopwatch delta_timer { get; private set; } = new System.Diagnostics.Stopwatch();     // timer which manages delta time
         private float deltatime = 0f;       // current delta time value in seconds
+        public float DeltaTime
+        {
+            get
+            {
+                if (time_flowing)
+                    return deltatime;
+                return 0f;
+            }
+        }
         public float current_time { get; private set; } = 0f;        // current scene time in seconds
+        private bool time_flowing = false;
 
         public SceneNode root;   // tree with all visible objects; invisible objects are not connected to root
         public SFMap.SFMapHeightMap heightmap = null;  // contains heightmap chunk scene nodes
@@ -114,7 +124,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 23:
                 case 24:
                 case 25:
-                    //get item id
+                    //get building id
                     int building_id = (ushort)SFCategoryManager.gamedata[category][element][0];
                     SceneNode building_node = AddSceneBuilding(building_id, "building");
                     building_node.SetParent(root);
@@ -124,7 +134,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 33:
                 case 34:
                 case 35:
-                    //get item id
+                    //get object id
                     int object_id = (ushort)SFCategoryManager.gamedata[category][element][0];
                     SceneNode object_node = AddSceneObject(object_id, "object", true);
                     object_node.SetParent(root);
@@ -511,17 +521,26 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             current_time = t;
         }
 
-        // updates root of the scene (and consequently, all children that need to be updated)
-        public void Update(bool time_flow = true)
+        public void StopTimeFlow()
         {
-            if (time_flow)
-            {
-                delta_timer.Stop();
-                deltatime = delta_timer.ElapsedMilliseconds / (float)1000;
-                delta_timer.Restart();
-            }
-            else
-                deltatime = 0f;
+            time_flowing = false;
+        }
+
+        public void ResumeTimeFlow()
+        {
+            if(!time_flowing)
+                deltatime = 1.0f/frames_per_second;
+            time_flowing = true;
+            delta_timer.Restart();
+            
+        }
+
+        // updates root of the scene (and consequently, all children that need to be updated)
+        public void Update()
+        {
+            delta_timer.Stop();
+            deltatime = delta_timer.ElapsedMilliseconds / (float)1000;
+            delta_timer.Restart();
 
             // for instanced rendering
             foreach (var tex_entry in tex_entries_simple.Values)

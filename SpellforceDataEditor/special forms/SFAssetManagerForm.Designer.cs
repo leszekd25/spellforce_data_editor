@@ -63,7 +63,6 @@
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
-            this.glControl1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.glControl1_KeyPress);
             this.glControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseDown);
             this.glControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseMove);
             this.glControl1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseUp);
@@ -243,10 +242,12 @@
             this.Controls.Add(this.glControl1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
+            this.MinimumSize = new System.Drawing.Size(787, 489);
             this.Name = "SFAssetManagerForm";
             this.Text = "Asset Viewer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SF3DManagerForm_FormClosing);
             this.Load += new System.EventHandler(this.SF3DManagerForm_Load);
+            this.Resize += new System.EventHandler(this.SFAssetManagerForm_Resize);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.PanelSound.ResumeLayout(false);

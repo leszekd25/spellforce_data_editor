@@ -42,12 +42,15 @@ namespace SpellforceDataEditor.SFResources
         // name of the resource in the pak files
         public int Load(string rname)
         {
+            // if resource is already loaded, increase reference count to that resource and return -1
             if (cont.ContainsKey(rname))
             {
                 reference_count[rname] += 1;
                 // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
                 return -1;
             }
+
+            // determine if resource exists in pak files, given the extension types
             string res_to_load = "";
             MemoryStream ms = null;
             foreach (string ext in suffix_extensions)
@@ -55,20 +58,17 @@ namespace SpellforceDataEditor.SFResources
                 res_to_load = rname;
                 if (!rname.Contains(ext))
                     res_to_load += ext;
-                LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Loading resource " + res_to_load);
-                 ms = SFUnPak.SFUnPak.LoadFileFind(prefix_path + "\\" + res_to_load);
-                if (ms == null)
-                {
-                    LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Could not find resource " + prefix_path + "\\" + res_to_load);
-                    continue;
-                }
-                break;
+                ms = SFUnPak.SFUnPak.LoadFileFind(prefix_path + "\\" + res_to_load);
+                if (ms != null)
+                    break;
+                LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Could not find resource " + prefix_path + "\\" + res_to_load);
             }
             if(ms == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): None of the suffix extensions matched the given resource");
                 return -2;
             }
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Loading resource " + res_to_load);
 
             //resource loading stack
             string prev_res = SFResourceManager.current_resource;
@@ -78,11 +78,13 @@ namespace SpellforceDataEditor.SFResources
             SFResourceManager.current_resource = prev_res;
             //end of stack
 
+            // if failed to load resource, return error code
             if (res_code != 0)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Could not load resource " + prefix_path + "\\" + res_to_load);
                 return res_code;
             }
+
             total_size += resource.GetSizeBytes();
             resource.Init();
             resource.SetName(rname);

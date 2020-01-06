@@ -121,24 +121,21 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_heightmap.AddParameter("FogStart");
             shader_heightmap.AddParameter("FogEnd");
 
-            if (Settings.EnableShadows)
-            {
-                shader_shadowmap.CompileShader(Properties.Resources.vshader_shadowmap, Properties.Resources.fshader_shadowmap);
-                shader_shadowmap.AddParameter("LSM");
-                shader_shadowmap.AddParameter("M");
-                shader_shadowmap.AddParameter("DiffuseTexture");
+            shader_shadowmap.CompileShader(Properties.Resources.vshader_shadowmap, Properties.Resources.fshader_shadowmap);
+            shader_shadowmap.AddParameter("LSM");
+            shader_shadowmap.AddParameter("M");
+            shader_shadowmap.AddParameter("DiffuseTexture");
 
-                shader_shadowmap_animated.CompileShader(Properties.Resources.vshader_shadowmap_animated, Properties.Resources.fshader_shadowmap);
-                shader_shadowmap_animated.AddParameter("LSM");
-                shader_shadowmap_animated.AddParameter("M");
-                shader_shadowmap_animated.AddParameter("boneTransforms");
-                shader_shadowmap_animated.AddParameter("DiffuseTexture");
+            shader_shadowmap_animated.CompileShader(Properties.Resources.vshader_shadowmap_animated, Properties.Resources.fshader_shadowmap);
+            shader_shadowmap_animated.AddParameter("LSM");
+            shader_shadowmap_animated.AddParameter("M");
+            shader_shadowmap_animated.AddParameter("boneTransforms");
+            shader_shadowmap_animated.AddParameter("DiffuseTexture");
 
-                shader_shadowmap_heightmap.CompileShader(Properties.Resources.vshader_shadowmap_heightmap, Properties.Resources.fshader_shadowmap);
-                shader_shadowmap_heightmap.AddParameter("LSM");
-                shader_shadowmap_heightmap.AddParameter("M");
-                shader_shadowmap_heightmap.AddParameter("DiffuseTexture");
-            }
+            shader_shadowmap_heightmap.CompileShader(Properties.Resources.vshader_shadowmap_heightmap, Properties.Resources.fshader_shadowmap);
+            shader_shadowmap_heightmap.AddParameter("LSM");
+            shader_shadowmap_heightmap.AddParameter("M");
+            shader_shadowmap_heightmap.AddParameter("DiffuseTexture");
 
             shader_framebuffer_simple.CompileShader(Properties.Resources.vshader_framebuffer, Properties.Resources.fshader_framebuffer_simple);
 
@@ -253,7 +250,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             GL.UseProgram(shader_shadowmap_heightmap.ProgramID);
             GL.Uniform1(shader_shadowmap_heightmap["DiffuseTexture"], 0);
-
+            
             GL.UseProgram(0);
         }
 
@@ -331,6 +328,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
+        // this could be optimized to not check all chunks every time...
         public static void UpdateVisibleChunks()
         {
             scene.camera.Update(0);
@@ -361,9 +359,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         vis_chunks_per_task[i].Add(chunk_node);
                 }
             });
-            //foreach (SceneNodeMapChunk chunk_node in scene.heightmap.chunk_nodes)
-            //    if(!chunk_node.MapChunk.aabb.IsOutsideOfConvexHull(scene.camera.FrustrumPlanes))
-            //        vis_chunks.Add(chunk_node);
+
             for (int i = 0; i < 4; i++)
                 for (int j = 0; j < vis_chunks_per_task[i].Count; j++)
                     vis_chunks.Add(vis_chunks_per_task[i][j]);
@@ -469,11 +465,32 @@ namespace SpellforceDataEditor.SF3D.SFRender
             SF3D.Physics.BoundingBox aabb = new Physics.BoundingBox(new Vector3(xmin, 0, ymin), new Vector3(xmax, zmax+15, ymax));
             scene.sun_light.SetupLightView(aabb);*/
 
-            // set light matrix and check decoration visibility
+            // set light matrix and check decoration visibility, this also sets level of detail
             
             foreach(SceneNodeMapChunk chunk_node in vis_chunks)
                 chunk_node.MapChunk.UpdateDecorationVisible(chunk_node.DistanceToCamera, chunk_node.CameraHeightDifference);
             scene.sun_light.SetupLightView(scene.camera.Position);
+        }
+
+        // once per frame
+        private static void ReloadInstanceMatrices()
+        {
+            foreach (SFSubModel3D sbm in scene.untex_entries_simple)
+            {
+                GL.BindVertexArray(sbm.vertex_array);
+                    sbm.ReloadInstanceMatrices();
+            }
+
+            foreach (SFTexture tex in scene.tex_entries_simple.Keys)
+            {
+                HashSet<SFSubModel3D> submodels = scene.tex_entries_simple[tex];
+
+                foreach (SFSubModel3D sbm in submodels)
+                {
+                    GL.BindVertexArray(sbm.vertex_array);
+                    sbm.ReloadInstanceMatrices();
+                }
+            }
         }
 
         private static void RenderHeightmap()
@@ -540,7 +557,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
-        // todo: move overlays to nodes
+        // todo: move overlays to a shader now that grid is supported
         public static void RenderOverlays()
         {
             if (!Settings.OverlaysVisible)
@@ -602,9 +619,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 foreach (SFSubModel3D sbm in scene.untex_entries_simple)
                 {
                     GL.BindVertexArray(sbm.vertex_array);
-                    if (current_pass == RenderPass.SHADOWMAP)
-                        sbm.ReloadInstanceMatrices();
-
                     GL.DrawElementsInstanced(PrimitiveType.Triangles, (int)sbm.face_indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero, sbm.instance_matrices.Count);
                 }
 
@@ -629,9 +643,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 foreach (SFSubModel3D sbm in submodels)
                 {
                     GL.BindVertexArray(sbm.vertex_array);
-                    if (current_pass == RenderPass.SHADOWMAP)
-                        sbm.ReloadInstanceMatrices();
-                    else if (current_pass == RenderPass.SCENE)
+                    if (current_pass == RenderPass.SCENE)
                     {
                         //SetRenderMode(sbm.material.texRenderMode);
                         if ((sbm.material.matFlags & 4) != 0)
@@ -646,6 +658,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
+        // this is very slow, dunno
         public static void RenderAnimatedObjects()
         {
             Matrix4 lsm_mat = scene.sun_light.LightMatrix;
@@ -700,6 +713,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 (float)Math.Cos(scene.frame_counter / 10f)).Normalized();
             ApplyLight();*/
 
+            ReloadInstanceMatrices();
+
+            // render shadowmap
             current_pass = RenderPass.SHADOWMAP;
 
             SetFramebuffer(shadowmap_depth);
@@ -721,6 +737,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 UseShader(shader_shadowmap);
                 RenderSimpleObjects();
             }
+
+            // render actual view
+
             current_pass = RenderPass.SCENE;
             //draw everything to a texture
             SetFramebuffer(screenspace_framebuffer);
@@ -761,6 +780,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
 
             // what is below doesnt depend on whats above
+            // post-processing (currently not much happening here)
+
             current_pass = RenderPass.SCREENSPACE;
             // move from multisampled to intermediate framebuffer, to be able to use screenspace shader
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, screenspace_framebuffer.fbo);

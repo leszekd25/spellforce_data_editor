@@ -12,8 +12,9 @@ namespace SpellforceDataEditor
     {
         public static int IgnoredMipMapsCount { get; private set; } = 0;
         public static int MaximumAllowedTextureSize { get; private set; } = 2048;
-        public static bool EnableShadows { get; private set; } = true;
+        public static bool EnableShadows { get; set; } = true;
         public static int ShadowMapSize { get; private set; } = 1024;
+        public static int FramesPerSecond { get; private set; } = 60;
         public static int AntiAliasingSamples { get; private set; } = 4;
 
         public static bool UnitsVisible { get; set; } = true;
@@ -74,6 +75,13 @@ namespace SpellforceDataEditor
                             ShadowMapSize = Utility.TryParseUInt16(words[1], (ushort)ShadowMapSize);
                             if (ShadowMapSize < 64)
                                 ShadowMapSize = 64;
+                            break;
+                        case "FramesPerSecond":
+                            FramesPerSecond = Utility.TryParseUInt16(words[1], (ushort)FramesPerSecond);
+                            if (FramesPerSecond < 5)
+                                FramesPerSecond = 5;
+                            if (FramesPerSecond > 1000)
+                                FramesPerSecond = 1000;
                             break;
                         case "EnableShadows":
                             EnableShadows = (words[1] == "YES");
@@ -207,6 +215,9 @@ namespace SpellforceDataEditor
                             break;
                         case "ShadowMapSize":
                             words = new string[] { words[0], ShadowMapSize.ToString() };
+                            break;
+                        case "FramesPerSecond":
+                            words = new string[] { words[0], FramesPerSecond.ToString() };
                             break;
                         case "EnableShadows":
                             words = new string[] { words[0], EnableShadows ? "YES" : "NO" };

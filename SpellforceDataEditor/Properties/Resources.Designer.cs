@@ -381,9 +381,8 @@ namespace SpellforceDataEditor.Properties {
         ///// Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec3 vertexNormal;
-        ///layout(location = 2) in vec2 vertexUV;
-        ///layout(location = 3) in vec3 texID;
-        /////layout(location = 4) in vec3 texWeight;
+        ///layout(location = 2) in vec3 texID;
+        /////layout(location = 3) in vec3 texWeight;
         ///
         ///out vec3 fragmentPosition;
         ///out vec2 UV;
@@ -393,7 +392,8 @@ namespace SpellforceDataEditor.Properties {
         ///out vec4 fragmentPositionLightSpace;
         ///out vec3 vpos_orig;
         ///
-        ///// Values that stay  [rest of string was truncated]&quot;;.
+        ///// Values that stay constant for the whole mesh.
+        ///uniform ma [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_hmap {
             get {

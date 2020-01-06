@@ -260,6 +260,11 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
             return chunks;
         }
 
+        // decompiles given lua chunk and returns root of a code tree the chunk resolves into
+        // fnc - lua chunk to decompile
+        // cl - current closure (equivalent to user function defined in a lua chunk)
+        // upvalues - list of upvalues inherited from parent lua chunk
+        // if closure is not null, the code tree becomes property of the closure, and this function returns null
         public Chunk Decompile(LuaBinaryFunction fnc, Closure cl = null, List<string> upvalues = null)
         {
             if (fnc.Instructions.Count == 0)
@@ -1103,8 +1108,6 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
             instr_ids.RemoveAt(instr_ids.Count - 1);
 
             Simplify(root);
-            // here is the simplification and fixing (multireturn functions pass)
-            // todo...
 
             total_arg_count -= fnc.NumParams;
             if(cl != null)
@@ -1131,39 +1134,34 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
             //    + " | INSTR ID: "+(node.parent != null?((IStatement)node.parent).InstructionID:-1).ToString());
             // simplfy IF ELSE IF ELSE IF ELSE END END END into IF ELSEIF ELSEIF ELSE END
             // O(n^2), n - elseif branches
-            if(node.parent != null)
+            if((node.parent != null)&&(node.parent is Fork))
             {
-                if(node.parent is Fork)
-                {
-                    if(node.parent.parent.parent != null)
-                    {
-                        if(node.parent.parent.parent is Fork)
-                        {
-                            Fork mainfork = (Fork)node.parent.parent.parent;
-                            Fork secfork = (Fork)node.parent;
+                Fork secfork = (Fork)node.parent;
 
-                            if (secfork.parent == mainfork.ElseChunk)
+                if((secfork.parent.parent != null)&&(secfork.parent.parent is Fork))
+                {
+                    Fork mainfork = (Fork)secfork.parent.parent;
+
+                    if (secfork.parent == mainfork.ElseChunk)
+                    {
+                        if(mainfork.ElseChunk.Items.Count == 1)
+                        {
+                            // recursive folding
+                            if ((secfork.ElseChunk.Items.Count == 1) && (secfork.ElseChunk.Items[0] is Fork))
                             {
-                                if(mainfork.ElseChunk.Items.Count == 1)
-                                {
-                                    // recursive folding
-                                    if ((secfork.ElseChunk.Items.Count == 1) && (secfork.ElseChunk.Items[0] is Fork))
-                                    {
-                                        Simplify(((Fork)secfork.ElseChunk.Items[0]).ElseChunk);
-                                        foreach (IOperatorLogic io in secfork.ElseifConditions)
-                                            mainfork.ElseifConditions.Add(io);
-                                        secfork.ElseifConditions.Clear();
-                                        foreach (Chunk c in secfork.ElseifChunks)
-                                            mainfork.ElseifChunks.Add(c);
-                                        secfork.ElseifChunks.Clear();
-                                    }
-                                    mainfork.ElseifConditions.Insert(0, secfork.IfCondition);
-                                    mainfork.ElseifChunks.Insert(0, secfork.IfChunk);
-                                    mainfork.ElseChunk = secfork.ElseChunk;
-                                    secfork.ElseChunk.parent = mainfork;
-                                    return;
-                                }
+                                Simplify(((Fork)secfork.ElseChunk.Items[0]).ElseChunk);
+                                foreach (IOperatorLogic io in secfork.ElseifConditions)
+                                    mainfork.ElseifConditions.Add(io);
+                                secfork.ElseifConditions.Clear();
+                                foreach (Chunk c in secfork.ElseifChunks)
+                                    mainfork.ElseifChunks.Add(c);
+                                secfork.ElseifChunks.Clear();
                             }
+                            mainfork.ElseifConditions.Insert(0, secfork.IfCondition);
+                            mainfork.ElseifChunks.Insert(0, secfork.IfChunk);
+                            mainfork.ElseChunk = secfork.ElseChunk;
+                            secfork.ElseChunk.parent = mainfork;
+                            return;
                         }
                     }
                 }

@@ -20,13 +20,15 @@ namespace SpellforceDataEditor.SF3D.Physics
         public Vector3 start;
         public Vector3 vector;
         public Vector3 nvector;    // vector but normalized
-        public float length;
+
+        float length2;
+        public float Length { get { return (float)Math.Sqrt(length2); } set { length2 = value * value; } }
 
         public Ray(Vector3 s, Vector3 v)
         {
             start = s;
             vector = v;
-            length = v.Length;
+            length2 = v.LengthSquared;
             nvector = v.Normalized();
         }
 
@@ -37,10 +39,10 @@ namespace SpellforceDataEditor.SF3D.Physics
             float ln_prod = Vector3.Dot(vector, pl.normal);
             if (ln_prod != 0)
             {
-                // intersection of ray and plane the triangle belongs to
+                // intersection of ray and plane
                 float ray_d = Vector3.Dot(pl.point - start, pl.normal) / ln_prod;
                 point = new Vector3(ray_d * vector + start);
-                if ((point - start).Length > length)
+                if ((point - start).LengthSquared > length2)
                     return false;
                 return true;
             }
@@ -61,7 +63,7 @@ namespace SpellforceDataEditor.SF3D.Physics
                 // intersection of ray and plane the triangle belongs to
                 float ray_d = Vector3.Dot(Vector3.Subtract(tr.v1, start), tr.normal) / ln_prod;
                 point = Vector3.Add(ray_d * vector, start);
-                if (Vector3.Subtract(point, start).Length > length)
+                if (Vector3.Subtract(point, start).LengthSquared > length2)
                     return false;
                 // check if point is in triangle using barycentric coordinates
                 return tr.ContainsPoint(point);
@@ -78,7 +80,7 @@ namespace SpellforceDataEditor.SF3D.Physics
         {
             // binary sampling of distance to the box
             float current_start = 0;
-            float current_end = length;
+            float current_end = (float)Math.Sqrt(length2);
             float current_center;
             Vector3 current_point;
             float dist;
@@ -115,7 +117,6 @@ namespace SpellforceDataEditor.SF3D.Physics
                 int triangle_count = sbm.face_indices.Length / 3;
                 for (int i = 0; i < triangle_count; i++)
                 {
-                    // todo: use precalculated triangle normals
                     Triangle t = new Triangle(sbm.vertices[sbm.face_indices[i * 3 + 2]],
                         sbm.vertices[sbm.face_indices[i * 3 + 0]],
                         sbm.vertices[sbm.face_indices[i * 3 + 1]]);
@@ -142,7 +143,6 @@ namespace SpellforceDataEditor.SF3D.Physics
 
             for (int i = 0; i < mesh.triangles.Length; i++)
             {
-                // todo: use precalculated triangle normals
                 if (r.Intersect(mesh.triangles[i], out point))
                     return true;
             }

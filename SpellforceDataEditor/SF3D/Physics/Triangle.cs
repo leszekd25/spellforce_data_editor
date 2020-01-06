@@ -1,5 +1,5 @@
 ﻿/*
- * Triangle is the simplest two-dimensional bounded shape
+ * Triangle is the simplest two-dimensional shape with finite non-zero area
  * Operations for retrieving triangle area and checking is a point lies inside of the triangle are provided
  * */
 

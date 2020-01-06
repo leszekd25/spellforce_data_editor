@@ -126,7 +126,7 @@ namespace SpellforceDataEditor.SF3D
                 if (LoadTGA(br) != 0)
                 {
                     LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFTexture.Load(): Could not deduce texture data type!");
-                    return -1;
+                    return -201;
                 }
 
             return 0;
@@ -495,7 +495,7 @@ namespace SpellforceDataEditor.SF3D
             }
             if (w1 + w2 + w3 == 0)
             {
-                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 127 for all weights");
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights");
                 w1 = 85; w2 = 85; w3 = 85;
             }
 

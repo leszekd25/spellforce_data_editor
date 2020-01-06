@@ -207,6 +207,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return null;
         }
 
+        // returns full name of the node (recursive, slow)
         public string GetFullPath()
         {
             if (Parent == null)
@@ -249,6 +250,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public int index;
     }
 
+    // use this for displaying non-animated 3d objects
     public class SceneNodeSimple : SceneNode
     {
         private SFModel3D mesh;
@@ -299,6 +301,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public int index;
     }
 
+    // use this for displaying animated 3d meshes
     public class SceneNodeAnimated : SceneNode
     {
         private SFSkeleton skeleton = null;
@@ -446,7 +449,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
     }
 
-    //  this node should be attached to a SceneNodeAnimated node
+    // this node should be attached to a SceneNodeAnimated node,
+    // for example if you want a weapon node to follow an arm bone of a character node
     public class SceneNodeBone : SceneNode
     {
         // parent must be SceneNodeAnimated
@@ -492,7 +496,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
     }
     
-    // this is handled somewhere else
+    // this is mainly used as a convenience for certain operations
     public class SceneNodeMapChunk: SceneNode
     {
         public SFMap.SFMapHeightMapChunk MapChunk;

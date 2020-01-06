@@ -557,9 +557,8 @@ void main(){
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexNormal;
-layout(location = 2) in vec2 vertexUV;
-layout(location = 3) in vec3 texID;
-//layout(location = 4) in vec3 texWeight;
+layout(location = 2) in vec3 texID;
+//layout(location = 3) in vec3 texWeight;
 
 out vec3 fragmentPosition;
 out vec2 UV;
@@ -584,7 +583,7 @@ void main(){
   // Output position of the vertex, in clip space : MVP * position
   gl_Position = VP * M * vec4(vertexPosition_modelspace,1);
   fragmentPositionLightSpace = LSM * M * vec4(vertexPosition_modelspace, 1);
-  UV = vertexUV;
+  UV = vertexPosition_modelspace.xz/4;
   fragmentPosition = vertexPosition_modelspace;
   fragmentNormal = vertexNormal;
   textureID = texID;

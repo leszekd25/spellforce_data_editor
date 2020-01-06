@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Files of type ChunkFile store its data in chunks, which are described using SFChunkFileChunk class
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

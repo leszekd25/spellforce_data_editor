@@ -1,4 +1,7 @@
-﻿using System;
+﻿// ChunkFile format is used by Spellforce for storing map data, save data and game data
+// While game data is already handled in SFCFF, all of those types can be handled by SFChunkFile class
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

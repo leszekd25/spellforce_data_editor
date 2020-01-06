@@ -32,6 +32,7 @@ namespace SpellforceDataEditor.special_forms
         Vector2 scroll_mouse_start = new Vector2(0, 0);
         bool mouse_scroll = false;
         float zoom_level = 1.0f;
+        float camera_speed_factor = 1.0f;
 
         bool[] arrows_pressed = new bool[] { false, false, false, false };  // left, right, up, down
         bool[] rotation_pressed = new bool[] { false, false, false, false };// left, right, up, down
@@ -90,6 +91,8 @@ namespace SpellforceDataEditor.special_forms
             TabEditorModes.Padding = new Point(((this.Width - 350) / TabEditorModes.TabPages.Count / 2), TabEditorModes.Padding.Y);
             if (RenderWindow != null)
                 ResizeWindow();
+
+            PanelUtility.Location = new Point(this.Width - PanelUtility.Width, StatusStrip.Location.Y);
         }
 
         private void createNewMapToolStripMenuItem_Click(object sender, EventArgs e)
@@ -506,6 +509,8 @@ namespace SpellforceDataEditor.special_forms
             if (map == null)
                 return;
 
+            bool update_ui = false;
+
             // find point which mouse hovers at
             if (mouse_on_view)
             {
@@ -521,7 +526,7 @@ namespace SpellforceDataEditor.special_forms
                 Vector3 r_end = frustrum_vertices[4]
                     + wx * (frustrum_vertices[5] - frustrum_vertices[4])
                     + wy * (frustrum_vertices[6] - frustrum_vertices[4]);
-                SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start) { length = 1000 };
+                SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start) { Length = 1000 };
 
                 // collide with every visible chunk
                 Vector3 result = new Vector3(0, 0, 0);
@@ -576,11 +581,12 @@ namespace SpellforceDataEditor.special_forms
             if (mouse_scroll)
             {
                 Vector2 scroll_mouse_end = new Vector2(Cursor.Position.X, Cursor.Position.Y);
-                Vector2 scroll_translation = (scroll_mouse_end - scroll_mouse_start) * 50 / 250000f;
+                Vector2 scroll_translation = (scroll_mouse_end - scroll_mouse_start) * SFRenderEngine.scene.DeltaTime / 250f;
 
                 SFRenderEngine.scene.camera.Direction += new Vector2(scroll_translation.X, -scroll_translation.Y);
 
                 update_render = true;
+                update_ui = true;
             }
 
             // moving view by arrow keys
@@ -598,9 +604,10 @@ namespace SpellforceDataEditor.special_forms
             {
                 float angle = SFRenderEngine.scene.camera.Direction.X - (float)(Math.PI * 3 / 2);
                 movement_vector = MathUtils.RotateVec2(movement_vector, angle);
-                SFRenderEngine.scene.camera.translate(new Vector3(movement_vector.X, 0, movement_vector.Y)
-                    * 50 / 50f);
+                movement_vector *= 60.0f * camera_speed_factor * SFRenderEngine.scene.DeltaTime;
+                SFRenderEngine.scene.camera.translate(new Vector3(movement_vector.X, 0, movement_vector.Y));
                 update_render = true;
+                update_ui = true;
             }
 
             // rotating view by home/end/pageup/pagedown
@@ -616,9 +623,10 @@ namespace SpellforceDataEditor.special_forms
 
             if (movement_vector != new Vector2(0, 0))
             {
-                SFRenderEngine.scene.camera.Direction += new Vector2(movement_vector.X, -movement_vector.Y)
-                    * 50 / 2000f;
+                movement_vector *= 2.0f * SFRenderEngine.scene.DeltaTime;
+                SFRenderEngine.scene.camera.Direction += new Vector2(movement_vector.X, -movement_vector.Y);
                 update_render = true;
+                update_ui = true;
             }
 
             // render time
@@ -635,6 +643,11 @@ namespace SpellforceDataEditor.special_forms
 
             if (dynamic_render)
                 update_render = true;
+
+            if (!update_ui)
+                SFRenderEngine.scene.StopTimeFlow();
+            else
+                SFRenderEngine.scene.ResumeTimeFlow();
 
             // garbage collector
             gc_timer += 1;
@@ -713,6 +726,11 @@ namespace SpellforceDataEditor.special_forms
             zoom_level = 1;
             AdjustCameraZ();
             update_render = true;
+        }
+
+        private void TrackbarCameraSpeed_ValueChanged(object sender, EventArgs e)
+        {
+            camera_speed_factor = TrackbarCameraSpeed.Value / 100.0f;
         }
 
         private void ResizeWindow()

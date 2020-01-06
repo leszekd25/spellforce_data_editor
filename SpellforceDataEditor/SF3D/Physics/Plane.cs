@@ -1,7 +1,7 @@
 ﻿/*
  * Plane describes a 2D plane in a 3D space using a point and a normal to the plane
  * Normal also describes sides of the plane, which is important for certain operations
- * Operations for calculating distance from a point to the plane and determining the side a point is on in relation to he plane
+ * Operations for calculating distance from a point to the plane and determining the side a point is on in relation to the plane
  * are provided
  * */
 
@@ -15,7 +15,7 @@ using OpenTK;
 
 namespace SpellforceDataEditor.SF3D.Physics
 {
-    // plane is described using a point belonging to it and a normal of the plane
+    // plane is described using a point belonging to it and a normal vector to the plane
     public class Plane
     {
         public Vector3 point;
