@@ -19,33 +19,48 @@ using SpellforceDataEditor.SFResources;
 
 namespace SpellforceDataEditor.SF3D
 {
-    public class SFModelSkinChunk: SFResource
+    public struct SFModelSkinMapBase
     {
-        public int chunk_id = -1;
+        public int vbase;
+        public int fbase;
 
-        public Vector3[] vertices = null;
-        public Vector2[] uvs = null;
-        public Vector3[] normals = null;
-        public Vector4[] bone_indices = null;
-        public Vector4[] bone_weights = null;
-
-        public uint[] face_indices = null;
-
-        public SFMaterial material = null;
-        public int[] bones = null;
-        public string bsi_name = ""+Utility.S_NONAME;
-
-        public int vertex_array = -1;
-        public int vertex_buffer, uv_buffer, normal_buffer, bone_index_buffer, bone_weight_buffer, element_buffer;
-
-        public SFModelSkinChunk()
+        public SFModelSkinMapBase(int v, int f)
         {
-
+            vbase = v;
+            fbase = f;
         }
 
-        public void Init()
+        public override string ToString()
         {
+            return "VBASE " + vbase.ToString() + ", FBASE " + fbase.ToString();
+        }
+    }
 
+    // for now, no memory cleanup/reuse, for testing purposes
+    static public class SFModelSkinMap
+    {
+        static public List<Vector3> vertices = new List<Vector3>();
+        static public List<Vector2> uvs = new List<Vector2>();
+        static public List<Vector3> normals = new List<Vector3>();
+        static public List<Vector4> bone_indices = new List<Vector4>();
+        static public List<Vector4> bone_weights = new List<Vector4>();
+
+        static public Vector3[] vertices_array = null;
+        static public Vector2[] uvs_array = null;
+        static public Vector3[] normals_array = null;
+        static public Vector4[] bone_indices_array = null;
+        static public Vector4[] bone_weights_array = null;
+
+        static public List<uint> face_indices = new List<uint>();
+        static public uint[] face_indices_array = null;
+
+        static public int vertex_array { get; private set; } = -1;
+        static public int vertex_buffer, uv_buffer, normal_buffer, bone_index_buffer, bone_weight_buffer, element_buffer;
+
+        static private bool up_to_date = true;
+
+        static public void Init()
+        {
             vertex_array = GL.GenVertexArray();
             vertex_buffer = GL.GenBuffer();
             normal_buffer = GL.GenBuffer();
@@ -57,47 +72,33 @@ namespace SpellforceDataEditor.SF3D
             GL.BindVertexArray(vertex_array);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
-            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, uvs.Length * 8, uvs, BufferUsageHint.StaticDraw);
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Length * 12, normals, BufferUsageHint.StaticDraw);
             GL.EnableVertexAttribArray(2);
             GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, bone_index_buffer);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, bone_indices.Length * 16, bone_indices, BufferUsageHint.StaticDraw);
             GL.EnableVertexAttribArray(3);
             GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, bone_weight_buffer);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, bone_weights.Length * 16, bone_weights, BufferUsageHint.StaticDraw);
             GL.EnableVertexAttribArray(4);
             GL.VertexAttribPointer(4, 4, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
-            GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, face_indices.Length * 4, face_indices, BufferUsageHint.StaticDraw);
 
             GL.BindVertexArray(0);
         }
 
-        public int Load(MemoryStream ms)
+        static public SFModelSkinMapBase AddNewSkinChunk(BinaryReader br, int vcount, int fcount)
         {
-            BinaryReader br = new BinaryReader(ms);
+            SFModelSkinMapBase ret = new SFModelSkinMapBase(vertices.Count, face_indices.Count);
 
-            int vcount, fcount;
-            vcount = br.ReadInt32();
-            fcount = br.ReadInt32();
-            vertices = new Vector3[vcount]; normals = new Vector3[vcount]; uvs = new Vector2[vcount];
-            bone_indices = new Vector4[vcount]; bone_weights = new Vector4[vcount];
-
-            for(int i = 0; i < vcount; i++)
+            for (int i = 0; i < vcount; i++)
             {
                 Vector3 position = new Vector3();
                 position.X = br.ReadSingle(); position.Y = br.ReadSingle(); position.Z = br.ReadSingle();
@@ -109,32 +110,157 @@ namespace SpellforceDataEditor.SF3D
                 Vector2 uv = new Vector2();
                 uv.X = br.ReadSingle(); uv.Y = br.ReadSingle();
                 Vector4 v_bones = new Vector4();
-                for(int k = 0; k < 4; k++)
+                for (int k = 0; k < 4; k++)
                     v_bones[k] = (float)br.ReadByte();
-                vertices[i] = position; normals[i] = normal; uvs[i] = uv; bone_indices[i] = v_bones; bone_weights[i] = weight;
+                vertices.Add(position); normals.Add(normal); uvs.Add(uv); bone_indices.Add(v_bones); bone_weights.Add(weight);
             }
-
-            face_indices = new uint[fcount * 3];
-            for(int i = 0; i < fcount; i++)
+            
+            for (int i = 0; i < fcount; i++)
             {
-                face_indices[i * 3] = (uint)br.ReadUInt16();
-                face_indices[i * 3 + 1] = (uint)br.ReadUInt16();
-                face_indices[i * 3 + 2] = (uint)br.ReadUInt16();
+                face_indices.Add((uint)br.ReadUInt16());
+                face_indices.Add((uint)br.ReadUInt16());
+                face_indices.Add((uint)br.ReadUInt16());
                 br.ReadUInt16();
             }
 
+            up_to_date = false;
+            System.Diagnostics.Debug.WriteLine("VERTICES " + vertices.Count.ToString() + " INDICES " + face_indices.Count.ToString());
+            return ret;
+        }
+
+        static public int ConvertChunk(int chunk_id, SFModelSkinMapBase mapbase, int vcount, SFBoneIndex bsi)
+        {
+            for(int i = 0; i < vcount; i++)
+            {
+                Vector4 cur_bi = bone_indices[mapbase.vbase + i];
+                Vector4 new_bi = new Vector4(bsi.bone_index_remap[chunk_id][(int)cur_bi.X],
+                    bsi.bone_index_remap[chunk_id][(int)cur_bi.Y],
+                    bsi.bone_index_remap[chunk_id][(int)cur_bi.Z],
+                    bsi.bone_index_remap[chunk_id][(int)cur_bi.W]);
+                bone_indices[mapbase.vbase + i] = new_bi;
+            }
+
+            return 0;
+        }
+
+        static public int RemoveSkin(int index)
+        {
+            return 0;
+        }
+
+        static public void Update()
+        {
+            if (up_to_date)
+                return;
+
+            if (vertices.Count == 0)
+                return;
+
+            vertices_array = vertices.ToArray();
+            uvs_array = uvs.ToArray();
+            normals_array = normals.ToArray();
+            bone_indices_array = bone_indices.ToArray();
+            bone_weights_array = bone_weights.ToArray();
+            face_indices_array = face_indices.ToArray();
+
+            GL.BindVertexArray(vertex_array);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Count * 12, vertices_array, BufferUsageHint.StaticDraw);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
+            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, uvs.Count * 8, uvs_array, BufferUsageHint.StaticDraw);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Count * 12, normals_array, BufferUsageHint.StaticDraw);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bone_index_buffer);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, bone_indices.Count * 16, bone_indices_array, BufferUsageHint.StaticDraw);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bone_weight_buffer);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, bone_weights.Count * 16, bone_weights_array, BufferUsageHint.StaticDraw);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
+            GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, face_indices.Count * 4, face_indices_array, BufferUsageHint.StaticDraw);
+
+            GL.BindVertexArray(0);
+
+            up_to_date = true;
+        }
+
+        static public void Clear()
+        {
+            if(vertex_array != -1)
+            {
+                GL.DeleteBuffer(vertex_buffer);
+                GL.DeleteBuffer(normal_buffer);
+                GL.DeleteBuffer(uv_buffer);
+                GL.DeleteBuffer(bone_index_buffer);
+                GL.DeleteBuffer(bone_weight_buffer);
+                GL.DeleteBuffer(element_buffer);
+                GL.DeleteVertexArray(vertex_buffer);
+                vertex_array = -1;
+            }
+
+            vertices.Clear();
+            normals.Clear();
+            uvs.Clear();
+            bone_indices.Clear();
+            bone_weights.Clear();
+            face_indices.Clear();
+
+            vertices_array = null;
+            uvs_array = null;
+            normals_array = null;
+            bone_indices_array = null;
+            bone_weights_array = null;
+            face_indices_array = null;
+        }
+    }
+
+    public class SFModelSkinChunk: SFResource
+    {
+        public int chunk_id = -1;
+
+        public SFModelSkinMapBase mapbase;
+        public int base_vertex = 0;
+
+        public SFMaterial material = null;
+        public string bsi_name = ""+Utility.S_NONAME;
+
+        public SFModelSkinChunk()
+        {
+
+        }
+
+        public void Init()
+        {
+
+        }
+
+        public int Load(MemoryStream ms)
+        {
+            BinaryReader br = new BinaryReader(ms);
+
+            int vcount, fcount;
+            vcount = br.ReadInt32();
+            fcount = br.ReadInt32();
+
+            base_vertex = SFModelSkinMap.vertices.Count;
+
             SFBoneIndex bsi = null;
             int bsi_code = SFResourceManager.BSIs.Load(SFResourceManager.current_resource);
-            if ((bsi_code != 0)&&(bsi_code != -1))
+            if ((bsi_code != 0) && (bsi_code != -1))
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkinChunk.Load(): Could not load bone skin index file (BSI name = " + SFResourceManager.current_resource + ")");
                 return bsi_code;
             }
             bsi = SFResourceManager.BSIs.Get(SFResourceManager.current_resource);
+
+            mapbase = SFModelSkinMap.AddNewSkinChunk(br, vcount, fcount);
+            SFModelSkinMap.ConvertChunk(chunk_id, mapbase, vcount, bsi);
             
             SetName(SFResourceManager.current_resource);
-            bones = new int[bsi.bone_index_remap[chunk_id].Length];
-            bsi.bone_index_remap[chunk_id].CopyTo(bones, 0);
 
             //load material
             br.ReadInt16();
@@ -164,8 +290,8 @@ namespace SpellforceDataEditor.SF3D
             }
             tex = SFResourceManager.Textures.Get(matname);
             material.texture = tex;
-            material.indexStart = 0;
-            material.indexCount = (uint)face_indices.Length;
+            material.indexStart = (uint)mapbase.fbase;
+            material.indexCount = (uint)(fcount*3);
 
             br.BaseStream.Position += 126;
 
@@ -184,29 +310,18 @@ namespace SpellforceDataEditor.SF3D
 
         public int GetSizeBytes()
         {
-            return 12 * vertices.Length
+            return 0;
+            /*return 12 * vertices.Length
                  + 8 * uvs.Length
                  + 12 * normals.Length
                  + 16 * bone_indices.Length
                  + 16 * bone_weights.Length
                  + 4 * face_indices.Length
-                 + 4 * bones.Length;
+                 + 4 * bones.Length;*/
         }
 
         public void Dispose()
         {
-
-            if (vertex_array != -1)
-            {
-                GL.DeleteBuffer(vertex_buffer);
-                GL.DeleteBuffer(normal_buffer);
-                GL.DeleteBuffer(uv_buffer);
-                GL.DeleteBuffer(bone_index_buffer);
-                GL.DeleteBuffer(bone_weight_buffer);
-                GL.DeleteBuffer(element_buffer);
-                GL.DeleteVertexArray(vertex_array);
-                vertex_array = -1;
-            }
             if((material != null)&&(material.texture != null))
                 SFResourceManager.Textures.Dispose(material.texture.GetName());
             SFResourceManager.BSIs.Dispose(GetName());

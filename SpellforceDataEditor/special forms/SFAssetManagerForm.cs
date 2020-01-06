@@ -79,6 +79,7 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.root = null;
             SFRenderEngine.scene.camera = null;
             SFResourceManager.DisposeAll();
+            SFModelSkinMap.Clear();
             sound_engine.UnloadSound();
 
             Settings.EnableShadows = tmp_shadows;

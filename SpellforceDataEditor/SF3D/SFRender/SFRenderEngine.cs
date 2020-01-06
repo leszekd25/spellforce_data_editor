@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -46,13 +47,50 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         static Vector2 render_size = new Vector2(0, 0);
 
+        // for skeletal animation
+        static Matrix4[] bone_array = new Matrix4[256];
+        static int bone_buffer = -1;
+
         static bool initialized = false;
+
+        private static void DebugCallback(DebugSource source,
+                                  DebugType type,
+                                  int id,
+                                  DebugSeverity severity,
+                                  int length,
+                                  IntPtr message,
+                                  IntPtr userParam)
+        {
+            string messageString = Marshal.PtrToStringAnsi(message, length);
+
+            Console.WriteLine($"{Enum.GetName(typeof(DebugSeverity), severity)}" +
+                $" {Enum.GetName(typeof(DebugType), type) } | {messageString}");
+
+            if (type == DebugType.DebugTypeError)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "OPENGL DEBUG CALLBACK: " + messageString);
+            }
+            else
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "OPENGL DEBUG CALLBACK: " + messageString);
+            }
+        }
+
+        private static DebugProc _debugProcCallback = DebugCallback;
+        private static GCHandle _debugProcCallbackHandle;
 
         //called only once!
         public static void Initialize(Vector2 view_size)
         {
-            if (initialized)
-                return;
+            // debug setting
+            if (!initialized)
+            {
+                _debugProcCallbackHandle = GCHandle.Alloc(_debugProcCallback);
+
+                GL.DebugMessageCallback(_debugProcCallback, IntPtr.Zero);
+                GL.Enable(EnableCap.DebugOutput);
+                GL.Enable(EnableCap.DebugOutputSynchronous);
+            }
 
             render_size = view_size;
 
@@ -175,8 +213,25 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 }
             }
 
-            // this doesnt work for now...
-            //initialized = true;
+            if(bone_buffer == -1)
+            {
+                int uniformBonesAnimated = GL.GetUniformBlockIndex((uint)(shader_animated.ProgramID), "Bones");
+                int uniformBonesAnimatedShadowmap = GL.GetUniformBlockIndex((uint)(shader_shadowmap_animated.ProgramID), "Bones");
+
+                GL.UniformBlockBinding(shader_animated.ProgramID, uniformBonesAnimated, 0);
+                GL.UniformBlockBinding(shader_shadowmap_animated.ProgramID, uniformBonesAnimatedShadowmap, 0);
+
+                bone_buffer = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.UniformBuffer, bone_buffer);
+                GL.BufferData(BufferTarget.UniformBuffer, 256*16*4, new IntPtr(0), BufferUsageHint.StaticDraw); // allocate 150 bytes of memory
+                GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+
+                GL.BindBufferRange(BufferRangeTarget.UniformBuffer, 0, bone_buffer, new IntPtr(0), 256 * 16 * 4);
+            }
+
+            SFModelSkinMap.Init();
+            
+            initialized = true;
         }
 
         public static void ResizeView(Vector2 view_size)
@@ -658,7 +713,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
-        // this is very slow, dunno
+        /*// this is very slow, dunno
         public static void RenderAnimatedObjects()
         {
             Matrix4 lsm_mat = scene.sun_light.LightMatrix;
@@ -701,6 +756,84 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     GL.DrawElements(PrimitiveType.Triangles, chunk.face_indices.Length, DrawElementsType.UnsignedInt, 0);
                 }
             }
+        }*/
+
+        // this is very slow, dunno
+        public static void RenderAnimatedObjects()
+        {
+            SFModelSkinMap.Update();
+
+            Matrix4 lsm_mat = scene.sun_light.LightMatrix;
+            GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
+            if (current_pass == RenderPass.SCENE)
+            {
+                GL.Uniform1(active_shader["apply_shading"], 1);
+                Matrix4 vp_mat = scene.camera.ViewProjMatrix;
+                GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+            }
+
+
+            if (SFModelSkinMap.vertex_array == -1)
+                return;
+
+            GL.BindVertexArray(SFModelSkinMap.vertex_array);
+            foreach(SceneNodeAnimated node in scene.animated_objects)
+            {
+                SFModelSkin skin = node.Skin;
+                if (skin == null)
+                    continue;
+
+                Matrix4 model_mat = node.ResultTransform;
+                GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
+
+                Array.Copy(node.BoneTransforms, bone_array, node.Skeleton.bone_count);
+
+                GL.BindBuffer(BufferTarget.UniformBuffer, bone_buffer);
+                GL.BufferSubData<Matrix4>(BufferTarget.UniformBuffer, new IntPtr(0), 16 * 4 * node.Skeleton.bone_count, bone_array);
+
+                for(int i = 0; i < skin.submodels.Length; i++)
+                {
+                    SFModelSkinChunk chunk = skin.submodels[i];
+                    GL.BindTexture(TextureTarget.Texture2D, chunk.material.texture.tex_id);
+
+                    //if(current_pass == RenderPass.SCENE)
+                    //    SetRenderMode(chunk.material.texRenderMode);
+
+                    GL.DrawElementsBaseVertex(PrimitiveType.Triangles, (int)chunk.material.indexCount,
+                        DrawElementsType.UnsignedInt, new IntPtr(chunk.material.indexStart*4), chunk.base_vertex);
+                }
+            }
+
+            /*Matrix4[] bones = new Matrix4[20];
+            foreach (SFTexture tex in scene.tex_list_animated.Keys)
+            {
+                //if(current_pass == RenderPass.SCENE)
+                GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
+
+                LinearPool<TexturedGeometryListElementAnimated> elem_list = scene.tex_list_animated[tex];
+
+                for (int i = 0; i < elem_list.elements.Count; i++)
+                {
+                    if (!elem_list.elem_active[i])
+                        continue;
+                    TexturedGeometryListElementAnimated elem = elem_list.elements[i];
+
+                    Matrix4 model_mat = elem.node.ResultTransform;
+                    GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
+
+                    SFModelSkinChunk chunk = elem.node.Skin.submodels[elem.submodel_index];
+
+                    for (int j = 0; j < chunk.bones.Length; j++)
+                        bones[j] = elem.node.BoneTransforms[chunk.bones[j]];
+
+                    GL.BindVertexArray(chunk.vertex_array);
+                    GL.UniformMatrix4(active_shader["boneTransforms"], 20, false, ref bones[0].Row0.X);
+                    //if(current_pass == RenderPass.SCENE)
+                    //    SetRenderMode(chunk.material.texRenderMode);
+
+                    GL.DrawElements(PrimitiveType.Triangles, chunk.face_indices.Length, DrawElementsType.UnsignedInt, 0);
+                }
+            }*/
         }
 
         public static void RenderScene()

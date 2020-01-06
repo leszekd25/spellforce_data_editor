@@ -379,6 +379,7 @@ namespace SpellforceDataEditor.special_forms
             map = null;
             // for good measure (bad! bad!) (TODO: make this do nothing since all resources should be properly disposed at this point)                for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
             SFResources.SFResourceManager.DisposeAll();
+            SF3D.SFModelSkinMap.Clear();
             DestroyRenderWindow();
             this.Text = "Map Editor";
             GC.Collect();

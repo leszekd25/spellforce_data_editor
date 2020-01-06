@@ -108,14 +108,6 @@ namespace SpellforceDataEditor.SF3D
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
-            while (true)
-            {
-                ErrorCode ec = GL.GetError();
-                if (ec == ErrorCode.NoError)
-                    break;
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFTexture.Init(): OpenGL error '" + ec.ToString() + "' for texture " + name);
-                System.Diagnostics.Debug.WriteLine("SFTexture.Init() " + ec + " | " + name);
-            }
         }
 
         public int Load(MemoryStream ms)

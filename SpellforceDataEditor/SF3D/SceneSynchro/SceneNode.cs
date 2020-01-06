@@ -339,7 +339,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
         }
         // list of scene cache pointers
-        public TexGeometryLinkAnimated[] TextureGeometryIndex { get; private set; } = null;
+        //public TexGeometryLinkAnimated[] TextureGeometryIndex { get; private set; } = null;
 
         public SceneNodeAnimated(string n) : base(n) { }
 
@@ -398,7 +398,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // also do this if transparent = true, let transparent object list deal with those
         private void ClearTexGeometry()
         {
-            if (TextureGeometryIndex == null)
+            if(SFRender.SFRenderEngine.scene.animated_objects.Contains(this))
+                SFRender.SFRenderEngine.scene.animated_objects.Remove(this);
+
+            /*if (TextureGeometryIndex == null)
                 return;
 
             foreach (TexGeometryLinkAnimated link in TextureGeometryIndex)
@@ -408,14 +411,16 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     SFRender.SFRenderEngine.scene.tex_list_animated.Remove(link.texture);
             }
 
-                TextureGeometryIndex = null;
+            TextureGeometryIndex = null;*/
         }
 
         // adds elements drawn by this node to scene cache
         // also do this if transparent = false, let transparent object list deal with those
         private void AddTexGeometry()
         {
-            if (TextureGeometryIndex != null)
+            if (!SFRender.SFRenderEngine.scene.animated_objects.Contains(this))
+                SFRender.SFRenderEngine.scene.animated_objects.Add(this);
+            /*if (TextureGeometryIndex != null)
                 ClearTexGeometry();
             if (skin == null)
                 return;
@@ -430,7 +435,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 elem.node = this;
                 elem.submodel_index = i;
                 TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntryAnimated(skin.submodels[i].material.texture, elem);
-            }
+            }*/
         }
 
         // disposes skeleton and skin used by this node (reference counted)

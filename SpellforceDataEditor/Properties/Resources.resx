@@ -206,6 +206,11 @@ layout(location = 2) in vec3 vertexNormal;
 layout(location = 3) in vec4 vertexBoneIndex;
 layout(location = 4) in vec4 vertexBoneWeight;
 
+layout(std140) uniform Bones
+{
+  mat4 data[256];
+};
+
 out vec3 fragmentPosition;
 out vec2 UV;
 out vec3 fragmentNormal;
@@ -215,7 +220,7 @@ out vec4 fragmentPositionLightSpace;
 uniform mat4 VP;
 uniform mat4 LSM;
 uniform mat4 M;
-uniform mat4 boneTransforms[20];
+//uniform mat4 boneTransforms[20];
   
 void main(){
   vec4 Vertex;
@@ -230,20 +235,20 @@ void main(){
   newNormal = vec4(0.0, 0.0, 0.0, 1.0);
 
   index = int(vertexBoneIndex.x);
-  newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.x;
-  newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.x;
+  newVertex = (data[index] * Vertex) * vertexBoneWeight.x;
+  newNormal = (data[index] * Normal) * vertexBoneWeight.x;
 
   index = int(vertexBoneIndex.y);
-  newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.y + newVertex;
-  newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.y + newNormal;
+  newVertex = (data[index] * Vertex) * vertexBoneWeight.y + newVertex;
+  newNormal = (data[index] * Normal) * vertexBoneWeight.y + newNormal;
 
   index = int(vertexBoneIndex.z);
-  newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.z + newVertex;
-  newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.z + newNormal;
+  newVertex = (data[index] * Vertex) * vertexBoneWeight.z + newVertex;
+  newNormal = (data[index] * Normal) * vertexBoneWeight.z + newNormal;
 
   index = int(vertexBoneIndex.w);
-  newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.w + newVertex;
-  newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.w + newNormal;
+  newVertex = (data[index] * Vertex) * vertexBoneWeight.w + newVertex;
+  newNormal = (data[index] * Normal) * vertexBoneWeight.w + newNormal;
 
   
   // Output position of the vertex, in clip space : MVP * position
@@ -694,12 +699,17 @@ layout(location = 2) in vec3 vertexNormal;
 layout(location = 3) in vec4 vertexBoneIndex;
 layout(location = 4) in vec4 vertexBoneWeight;
 
+layout(std140) uniform Bones
+{
+  mat4 data[256];
+};
+
 out vec2 UV;
 
 // Values that stay constant for the whole mesh.
 uniform mat4 LSM;
 uniform mat4 M;
-uniform mat4 boneTransforms[20];
+//uniform mat4 boneTransforms[20];
   
 void main(){
   vec4 Vertex;
@@ -709,26 +719,17 @@ void main(){
   Vertex = vec4(vertexPosition_modelspace, 1.0);
   newVertex = vec4(0.0, 0.0, 0.0, 1.0);
 
-  index = int(vertexBoneIndex.x);
-  if(index != -1)
-  {
-    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.x;
-  }
+    index = int(vertexBoneIndex.x);
+  newVertex = (data[index] * Vertex) * vertexBoneWeight.x;
+
   index = int(vertexBoneIndex.y);
-  if(index != -1)
-  {
-    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.y + newVertex;
-  }
+  newVertex = (data[index] * Vertex) * vertexBoneWeight.y + newVertex;
+
   index = int(vertexBoneIndex.z);
-  if(index != -1)
-  {
-    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.z + newVertex;
-  }
+  newVertex = (data[index] * Vertex) * vertexBoneWeight.z + newVertex;
+
   index = int(vertexBoneIndex.w);
-  if(index != -1)
-  {
-    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.w + newVertex;
-  }
+  newVertex = (data[index] * Vertex) * vertexBoneWeight.w + newVertex;
 
   
   // Output position of the vertex, in clip space : MVP * position

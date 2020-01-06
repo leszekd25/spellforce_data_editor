@@ -57,7 +57,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // render engine takes these lists and renders stuff from the lists, one list for each texture for each shader
         public HashSet<SFSubModel3D> untex_entries_simple = new HashSet<SFSubModel3D>();
         public Dictionary<SFTexture, HashSet<SFSubModel3D>> tex_entries_simple = new Dictionary<SFTexture, HashSet<SFSubModel3D>>();
-        public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>> tex_list_animated { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>>();
+        //public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>> tex_list_animated { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>>();
+        public HashSet<SceneNodeAnimated> animated_objects = new HashSet<SceneNodeAnimated>();
         public LinearPool<TexturedGeometryListElementSimple> untextured_list_simple { get; private set; } = new LinearPool<TexturedGeometryListElementSimple>();
 
         public void Init()
@@ -173,7 +174,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 untextured_list_simple.Clear();
         }
 
-        public int AddTextureEntryAnimated(SFTexture tex, TexturedGeometryListElementAnimated elem)
+        /*public int AddTextureEntryAnimated(SFTexture tex, TexturedGeometryListElementAnimated elem)
         {
             if (!tex_list_animated.ContainsKey(tex))
                 tex_list_animated.Add(tex, new LinearPool<TexturedGeometryListElementAnimated>());
@@ -190,7 +191,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
             if (tex_list_animated[tex].used_count == 0)
                 tex_list_animated.Remove(tex);
-        }
+        }*/
 
         // instanced versions of simple tex entry (works for untex as well)
         // they dont return anything, since they're rebuilt every frame...

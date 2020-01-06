@@ -209,15 +209,6 @@ namespace SpellforceDataEditor.SFMap
                     w /= 2;
                     h /= 2;
                 }
-
-                while (true)
-                {
-                    ErrorCode ec = GL.GetError();
-                    if (ec == ErrorCode.NoError)
-                        break;
-                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.Init(): OpenGL error '" + ec.ToString() + "' for terrain texture id " + i.ToString());
-                    System.Diagnostics.Debug.WriteLine("TTM.Init() " + ec+" "+i.ToString());
-                }
             }
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int)All.Repeat);
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int)All.Repeat);

@@ -459,16 +459,17 @@ namespace SpellforceDataEditor.Properties {
         ///layout(location = 3) in vec4 vertexBoneIndex;
         ///layout(location = 4) in vec4 vertexBoneWeight;
         ///
+        ///layout(std140) uniform Bones
+        ///{
+        ///  mat4 data[256];
+        ///};
+        ///
         ///out vec2 UV;
         ///
         ///// Values that stay constant for the whole mesh.
         ///uniform mat4 LSM;
         ///uniform mat4 M;
-        ///uniform mat4 boneTransforms[20];
-        ///  
-        ///void main(){
-        ///  vec4 Vertex;
-        ///  vec4 newVerte [rest of string was truncated]&quot;;.
+        /////uniform mat4 boneTransf [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_shadowmap_animated {
             get {
@@ -512,14 +513,17 @@ namespace SpellforceDataEditor.Properties {
         ///layout(location = 3) in vec4 vertexBoneIndex;
         ///layout(location = 4) in vec4 vertexBoneWeight;
         ///
+        ///layout(std140) uniform Bones
+        ///{
+        ///  mat4 data[256];
+        ///};
+        ///
         ///out vec3 fragmentPosition;
         ///out vec2 UV;
         ///out vec3 fragmentNormal;
         ///out vec4 fragmentPositionLightSpace;
         ///
-        ///// Values that stay constant for the whole mesh.
-        ///uniform mat4 VP;
-        ///uniform m [rest of string was truncated]&quot;;.
+        ///// Values that stay [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_skel {
             get {
