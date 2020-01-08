@@ -65,5 +65,55 @@ namespace SpellforceDataEditor.SF3D.Physics
             aabb = new BoundingBox(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2));
             aabb += offset;
         }
+
+        // same as above, but vectors are stored in a float array now, and indices are always used
+        // used for heightmap speedup
+        public void GenerateFromHeightmap(Vector3 off, SFMap.SFMapHeightMapGeometryPool pool, int chunk_id)
+        {
+            float[] vertices = pool.vertices_pool;
+            uint[] indices = pool.indices_pool;
+
+            offset = off;
+
+            int triangle_count = 512;
+
+            triangles = new Triangle[triangle_count];
+
+            int v_off = chunk_id * 3 * 17 * 17;
+            int f_off = chunk_id * 6 * 16 * 16;
+
+            for (int i = 0; i < triangle_count; i++)
+            {
+                Vector3 v1 = new Vector3(vertices[v_off + 3 * indices[f_off + 3 * i + 0] + 0],
+                    vertices[v_off + 3 * indices[f_off + 3 * i + 0] + 1],
+                    vertices[v_off + 3 * indices[f_off + 3 * i + 0] + 2]);
+                Vector3 v2 = new Vector3(vertices[v_off + 3 * indices[f_off + 3 * i + 1] + 0],
+                    vertices[v_off + 3 * indices[f_off + 3 * i + 1] + 1],
+                    vertices[v_off + 3 * indices[f_off + 3 * i + 1] + 2]);
+                Vector3 v3 = new Vector3(vertices[v_off + 3 * indices[f_off + 3 * i + 2] + 0],
+                    vertices[v_off + 3 * indices[f_off + 3 * i + 2] + 1],
+                    vertices[v_off + 3 * indices[f_off + 3 * i + 2] + 2]);
+                triangles[i] = new Triangle(v1, v2, v3);
+            }
+
+            /*float x1, x2, y1, y2, z1, z2;
+            x1 = 10000;
+            x2 = -10000;
+            y1 = 10000;
+            y2 = -10000;
+            z1 = 10000;
+            z2 = -10000;
+            for(int i = 0; i < 17*17; i++)
+            {
+                x1 = Math.Min(x1, vertices[3 * i + 0]);
+                x2 = Math.Max(x2, vertices[3 * i + 0]);
+                y1 = Math.Min(y1, vertices[3 * i + 1]);
+                y2 = Math.Max(y2, vertices[3 * i + 1]);
+                z1 = Math.Min(z1, vertices[3 * i + 2]);
+                z2 = Math.Max(z2, vertices[3 * i + 2]);
+            }
+            aabb = new BoundingBox(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2));
+            aabb += offset;*/
+        }
     }
 }

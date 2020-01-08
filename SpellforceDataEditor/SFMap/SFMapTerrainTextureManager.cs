@@ -60,6 +60,9 @@ namespace SpellforceDataEditor.SFMap
         public Image[] texture_base_image = new Image[TEXTURES_AVAILABLE+1]; // all base textures in the game
         public Image[] texture_tile_image = new Image[MAX_TILES];         // tiles loaded - first 31 are loaded bases
 
+        // tilemap texture buffer
+        int uniformTileData_buffer;
+        int[] uniformTileData;
 
         public void LoadTextureNames()
         {
@@ -182,7 +185,6 @@ namespace SpellforceDataEditor.SFMap
             for (int i = 0; i < min_allowed_level; i++)
                 mipmap_divisor *= 2;
 
-            // todo: add mipmaps : )
             terrain_texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
             GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8 - min_allowed_level, SizedInternalFormat.Rgba8, 256/mipmap_divisor, 256/mipmap_divisor, 255);
@@ -209,15 +211,6 @@ namespace SpellforceDataEditor.SFMap
                     w /= 2;
                     h /= 2;
                 }
-
-                while (true)
-                {
-                    ErrorCode ec = GL.GetError();
-                    if (ec == ErrorCode.NoError)
-                        break;
-                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.Init(): OpenGL error '" + ec.ToString() + "' for terrain texture id " + i.ToString());
-                    System.Diagnostics.Debug.WriteLine("TTM.Init() " + ec+" "+i.ToString());
-                }
             }
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int)All.Repeat);
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int)All.Repeat);
@@ -231,6 +224,34 @@ namespace SpellforceDataEditor.SFMap
             for (int i = 32; i < 224; i++)
                 if((!tile_used[i])&&(tile_texture_atlas[i] != base_texture_bank[0]))
                     tile_texture_atlas[i].FreeMemory();
+
+            // create uniform buffer object for tiledata
+            uniformTileData_buffer = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.UniformBuffer, uniformTileData_buffer);
+            GL.BufferData(BufferTarget.UniformBuffer, 2 * 4 * 4 * MAX_TILES, new IntPtr(0), BufferUsageHint.StaticDraw);
+            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+
+            uniformTileData = new int[2 * 4 * MAX_TILES];
+            GL.BindBufferRange(BufferRangeTarget.UniformBuffer, 0, uniformTileData_buffer, new IntPtr(0), 2 * 4 * MAX_TILES);
+
+            UpdateUniformTileData(0, MAX_TILES - 1);
+        }
+
+        public void UpdateUniformTileData(int start, int end)
+        {
+            for (int i = start; i <= end; i++)
+            {
+                uniformTileData[i * 8 + 0] = texture_tiledata[i].ind1;
+                uniformTileData[i * 8 + 1] = texture_tiledata[i].ind2;
+                uniformTileData[i * 8 + 2] = texture_tiledata[i].ind3;
+                uniformTileData[i * 8 + 3] = 0;
+                uniformTileData[i * 8 + 4] = texture_tiledata[i].weight1;
+                uniformTileData[i * 8 + 5] = texture_tiledata[i].weight2;
+                uniformTileData[i * 8 + 6] = texture_tiledata[i].weight3;
+                uniformTileData[i * 8 + 7] = 0;
+            }
+            GL.BindBuffer(BufferTarget.UniformBuffer, uniformTileData_buffer);
+            GL.BufferSubData(BufferTarget.UniformBuffer, new IntPtr(8 * start), 8 * (end - start) + 8, ref uniformTileData[8 * start]);
         }
 
         public bool SetBaseTexture(int base_index, int tex_id)
@@ -445,6 +466,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 tile_texture_atlas[i].Dispose();
             }
+            GL.DeleteBuffer(uniformTileData_buffer);
         }
     }
 }

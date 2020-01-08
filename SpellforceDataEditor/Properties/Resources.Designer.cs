@@ -157,8 +157,7 @@ namespace SpellforceDataEditor.Properties {
         ///in vec3 fragmentPosition;
         ///in vec2 UV;
         ///in vec3 fragmentNormal;
-        ///flat in vec3 textureID;
-        ///in vec3 textureWeight;
+        ///in vec4 textureWeight;
         ///in vec4 fragmentPositionLightSpace;
         ///in vec3 vpos_orig;
         ///
@@ -175,7 +174,9 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 AmbientColor;
         ///uniform vec4 FogColor;
         ///uniform float FogStart;
-        ///uniform fl [rest of string was truncated]&quot;;.
+        ///uniform float FogEnd;
+        ///
+        ///uniform sa [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_hmap {
             get {
@@ -381,19 +382,21 @@ namespace SpellforceDataEditor.Properties {
         ///// Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec3 vertexNormal;
-        ///layout(location = 2) in vec3 texID;
-        /////layout(location = 3) in vec3 texWeight;
         ///
         ///out vec3 fragmentPosition;
         ///out vec2 UV;
         ///out vec3 fragmentNormal;
-        ///flat out vec3 textureID;
-        ///out vec3 textureWeight;
+        ///out vec4 textureWeight;
         ///out vec4 fragmentPositionLightSpace;
         ///out vec3 vpos_orig;
         ///
         ///// Values that stay constant for the whole mesh.
-        ///uniform ma [rest of string was truncated]&quot;;.
+        ///uniform mat4 VP;
+        ///uniform mat4 LSM;
+        ///uniform mat4 M;
+        ///
+        ///// each vertex of a quad has a different texW
+        ///vec4 texW[6]  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_hmap {
             get {
@@ -482,9 +485,6 @@ namespace SpellforceDataEditor.Properties {
         ///// Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec3 vertexNormal;
-        ///layout(location = 2) in vec2 vertexUV;
-        ///layout(location = 3) in vec3 texID;
-        /////layout(location = 4) in vec3 texWeight;
         ///
         ///out vec2 UV;
         ///
@@ -494,7 +494,9 @@ namespace SpellforceDataEditor.Properties {
         ///  
         ///void main(){
         ///  // Output position of the vertex, in clip space : MVP * position
-        ///  gl_Positio [rest of string was truncated]&quot;;.
+        ///  gl_Position = LSM * M* vec4(vertexPosition_modelspace,1);
+        ///  UV = vec2(0, 0);
+        ///}.
         /// </summary>
         internal static string vshader_shadowmap_heightmap {
             get {
