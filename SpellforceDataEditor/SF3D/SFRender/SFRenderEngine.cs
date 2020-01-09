@@ -548,10 +548,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
             Matrix4 model_mat = new Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
             GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
 
+            /*for (int i = 0; i < 256; i++)
+                GL.DrawElementsBaseVertex(PrimitiveType.Triangles, 6 * 16 * 16, DrawElementsType.UnsignedInt,
+                    new IntPtr(i * 6 * 16 * 16 * 4), i * 6 * 16 * 16);*/
+
             for(int i = 0; i < scene.heightmap.geometry_pool.last_used; i++)
                 if(scene.heightmap.geometry_pool.active[i])
                     GL.DrawElementsBaseVertex(PrimitiveType.Triangles, 6 * 16 * 16, DrawElementsType.UnsignedInt,
-                        new IntPtr(i * 6 * 16 * 16 * 4), i * 6 * 16 * 16);
+                        new IntPtr(i * 6 * 16 * 16 * 4), i * 17 * 17);
 
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
         }

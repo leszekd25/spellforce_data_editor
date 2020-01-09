@@ -19,9 +19,9 @@ namespace SpellforceDataEditor.SFMap
 
         public float[] vertices_pool = new float[3 * POOL_SIZE * (17 * 17)];    // vec3
         public float[] normals_pool = new float[3 * POOL_SIZE * (17 * 17)];     // vec3
-        public uint[] indices_pool = new uint[6 * POOL_SIZE * (16 * 16)];       // uint
+        public uint[] indices_pool = new uint[6 * POOL_SIZE * (16 * 16)];       // uint, 6 per quad
 
-        public uint[] indices_base = new uint[6 * 16 * 16];
+        public uint[] indices_base = new uint[6 * (16 * 16)];
 
         public bool[] active = new bool[POOL_SIZE];
         public int first_unused = 0;
@@ -41,7 +41,13 @@ namespace SpellforceDataEditor.SFMap
                     indices_base[6 * (i * 16 + j) + 4] = i * 17 + j+17;
                     indices_base[6 * (i * 16 + j) + 5] = i * 17 + j+18;
                 }
-            for (int i = 0; i < POOL_SIZE; i++) active[i] = false;
+
+            for (int i = 0; i < POOL_SIZE; i++)
+            {
+                active[i] = false;
+                // indices generated only once per run
+                Array.Copy(indices_base, 0, indices_pool, 6 * i * (16 * 16), 6 * (16 * 16));
+            }
 
             Init();
         }
@@ -103,8 +109,6 @@ namespace SpellforceDataEditor.SFMap
 
         public void UpdateChunk(int offset, SFMapHeightMap hmap, int ix, int iy)
         {
-            int data_offset = 3 * 17 * 17 * offset;
-
             float flatten_factor = 100.0f;
 
             int map_size = hmap.width;
@@ -118,30 +122,25 @@ namespace SpellforceDataEditor.SFMap
             {
                 for (int j = 0; j < 17; j++)
                 {
-                    vertices_pool[data_offset + (i * 17 + j) * 3 + 0] = col_start + j;
-                    vertices_pool[data_offset + (i * 17 + j) * 3 + 1] = hmap.GetHeightAt(col_start + j, row_start + i) / flatten_factor;
-                    vertices_pool[data_offset + (i * 17 + j) * 3 + 2] = row_start + i;
+                    vertices_pool[3 * (17 * 17 * offset + i * 17 + j) + 0] = col_start + j;
+                    vertices_pool[3 * (17 * 17 * offset + i * 17 + j) + 1] = hmap.GetHeightAt(col_start + j, row_start + i) / flatten_factor;
+                    vertices_pool[3 * (17 * 17 * offset + i * 17 + j) + 2] = row_start + i;
 
                     Vector3 normal_vec = hmap.GetVertexNormal(col_start + j, row_start + i);
-                    normals_pool[data_offset + (i * 17 + j) * 3 + 0] = normal_vec[0];
-                    normals_pool[data_offset + (i * 17 + j) * 3 + 1] = normal_vec[1];
-                    normals_pool[data_offset + (i * 17 + j) * 3 + 2] = normal_vec[2];
+                    normals_pool[3 * (17 * 17 * offset + i * 17 + j) + 0] = normal_vec[0];
+                    normals_pool[3 * (17 * 17 * offset + i * 17 + j) + 1] = normal_vec[1];
+                    normals_pool[3 * (17 * 17 * offset + i * 17 + j) + 2] = normal_vec[2];
                 }
             }
 
-            // indices
-            Array.Copy(indices_base, 0, indices_pool, 6 * offset * (16 * 16), 6 * 16 * 16);
-
             // buffer subdata
 
-            GL.BindVertexArray(vertex_array);
             GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
-            GL.BufferSubData<float>(BufferTarget.ArrayBuffer, new IntPtr(data_offset*4), 3 * 17 * 17 * 4, ref vertices_pool[data_offset]);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(3 * (17 * 17 * offset * 4)), 3 * (17 * 17 * 4), 
+                ref vertices_pool[3 * (17 * 17 * offset)]);
             GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
-            GL.BufferSubData<float>(BufferTarget.ArrayBuffer, new IntPtr(data_offset*4), 3 * 17 * 17 * 4, ref normals_pool[data_offset]);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
-            GL.BufferSubData<uint>(BufferTarget.ElementArrayBuffer, new IntPtr(6 * offset * (16 * 16) * 4), 6 * 16 * 16 * 4, ref indices_pool[6 * offset * (16 * 16)]);
-            GL.BindVertexArray(0);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(3 * (17 * 17 * offset * 4)), 3 * (17 * 17 * 4), 
+                ref normals_pool[3 * (17 * 17 * offset)]);
         }
 
         public void FreeChunk(int offset)
@@ -256,8 +255,11 @@ namespace SpellforceDataEditor.SFMap
             if (!generated)
                 return;
 
-            hmap.geometry_pool.FreeChunk(pool_index);
-            pool_index = -1;
+            if (pool_index != -1)
+            {
+                hmap.geometry_pool.FreeChunk(pool_index);
+                pool_index = -1;
+            }
 
             collision_cache.triangles = null;
 
@@ -282,7 +284,7 @@ namespace SpellforceDataEditor.SFMap
 
             collision_cache.GenerateFromHeightmap(new Vector3(0, 0, 0), hmap.geometry_pool, pool_index);
 
-            // fix all object positions (without lakes for now...)
+            // fix all object positions (lakes ignored)
             foreach (SFMapUnit u in units)
             {
                 SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());

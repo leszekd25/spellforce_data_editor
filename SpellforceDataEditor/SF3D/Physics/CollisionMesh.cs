@@ -96,7 +96,7 @@ namespace SpellforceDataEditor.SF3D.Physics
                 triangles[i] = new Triangle(v1, v2, v3);
             }
 
-            /*float x1, x2, y1, y2, z1, z2;
+            float x1, x2, y1, y2, z1, z2;
             x1 = 10000;
             x2 = -10000;
             y1 = 10000;
@@ -105,15 +105,15 @@ namespace SpellforceDataEditor.SF3D.Physics
             z2 = -10000;
             for(int i = 0; i < 17*17; i++)
             {
-                x1 = Math.Min(x1, vertices[3 * i + 0]);
-                x2 = Math.Max(x2, vertices[3 * i + 0]);
-                y1 = Math.Min(y1, vertices[3 * i + 1]);
-                y2 = Math.Max(y2, vertices[3 * i + 1]);
-                z1 = Math.Min(z1, vertices[3 * i + 2]);
-                z2 = Math.Max(z2, vertices[3 * i + 2]);
+                x1 = Math.Min(x1, vertices[v_off + 3 * i + 0]);
+                x2 = Math.Max(x2, vertices[v_off + 3 * i + 0]);
+                y1 = Math.Min(y1, vertices[v_off + 3 * i + 1]);
+                y2 = Math.Max(y2, vertices[v_off + 3 * i + 1]);
+                z1 = Math.Min(z1, vertices[v_off + 3 * i + 2]);
+                z2 = Math.Max(z2, vertices[v_off + 3 * i + 2]);
             }
             aabb = new BoundingBox(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2));
-            aabb += offset;*/
+            aabb += offset;
         }
     }
 }
