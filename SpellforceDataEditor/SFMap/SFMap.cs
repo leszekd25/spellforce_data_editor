@@ -1270,7 +1270,7 @@ namespace SpellforceDataEditor.SFMap
             if(metadata!=null)
                 metadata.Unload();             // minimap texture
             if(selection_helper!=null)
-                selection_helper.Dispose();    // selection 3d meshpublic SFMapHeightMap heightmap { get; private set; } = null;
+                selection_helper.Dispose();    // selection 3d mesh
             building_manager = null;
             unit_manager = null;
             object_manager = null;

@@ -156,8 +156,11 @@
             this.MapTypeCoop = new System.Windows.Forms.RadioButton();
             this.MapTypeMultiplayer = new System.Windows.Forms.RadioButton();
             this.PanelUtility = new System.Windows.Forms.Panel();
-            this.label25 = new System.Windows.Forms.Label();
             this.TrackbarCameraSpeed = new System.Windows.Forms.TrackBar();
+            this.label25 = new System.Windows.Forms.Label();
+            this.TimerUpdatesPerSecond = new System.Windows.Forms.Timer(this.components);
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.UpdatesText = new System.Windows.Forms.ToolStripLabel();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
@@ -304,6 +307,8 @@
             this.StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StatusText,
             this.toolStripSeparator1,
+            this.UpdatesText,
+            this.toolStripSeparator2,
             this.SpecificText});
             this.StatusStrip.Location = new System.Drawing.Point(0, 642);
             this.StatusStrip.Name = "StatusStrip";
@@ -1478,15 +1483,6 @@
             this.PanelUtility.Size = new System.Drawing.Size(274, 25);
             this.PanelUtility.TabIndex = 9;
             // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(3, 3);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(75, 13);
-            this.label25.TabIndex = 0;
-            this.label25.Text = "Camera speed";
-            // 
             // TrackbarCameraSpeed
             // 
             this.TrackbarCameraSpeed.AutoSize = false;
@@ -1499,6 +1495,30 @@
             this.TrackbarCameraSpeed.TickFrequency = 20;
             this.TrackbarCameraSpeed.Value = 100;
             this.TrackbarCameraSpeed.ValueChanged += new System.EventHandler(this.TrackbarCameraSpeed_ValueChanged);
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(3, 3);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(75, 13);
+            this.label25.TabIndex = 0;
+            this.label25.Text = "Camera speed";
+            // 
+            // TimerUpdatesPerSecond
+            // 
+            this.TimerUpdatesPerSecond.Interval = 1000;
+            this.TimerUpdatesPerSecond.Tick += new System.EventHandler(this.TimerUpdatesPerSecond_Tick);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // UpdatesText
+            // 
+            this.UpdatesText.Name = "UpdatesText";
+            this.UpdatesText.Size = new System.Drawing.Size(0, 22);
             // 
             // MapEditorForm
             // 
@@ -1702,5 +1722,8 @@
         private System.Windows.Forms.Panel PanelUtility;
         private System.Windows.Forms.TrackBar TrackbarCameraSpeed;
         private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Timer TimerUpdatesPerSecond;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripLabel UpdatesText;
     }
 }

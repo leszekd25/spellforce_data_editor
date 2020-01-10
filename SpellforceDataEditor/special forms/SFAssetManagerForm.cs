@@ -24,7 +24,7 @@ namespace SpellforceDataEditor.special_forms
 
         bool synchronized = false;
 
-        Point mouse_pos;
+        //Point mouse_pos;
         bool mouse_pressed = false;
         Vector2 scroll_mouse_start = new Vector2(0, 0);
         bool[] arrows_pressed = new bool[] { false, false, false, false };  // left, right, up, down
@@ -59,6 +59,7 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.Initialize(new Vector2(glControl1.ClientSize.Width, glControl1.ClientSize.Height));
             SFRenderEngine.scene.camera.Position = new Vector3(0, 1, 6);
             SFRenderEngine.scene.camera.Lookat = new Vector3(0, 1, 0);
+            glControl1.MakeCurrent();
 
             TimerAnimation.Enabled = true;
             TimerAnimation.Interval = 1000 / SFRenderEngine.scene.frames_per_second;
@@ -68,7 +69,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
-            glControl1.MakeCurrent();
+            //glControl1.MakeCurrent(); // only on resize :)
             SFRenderEngine.RenderScene();
             glControl1.SwapBuffers();
         }
@@ -107,6 +108,7 @@ namespace SpellforceDataEditor.special_forms
 
             SFRenderEngine.ResizeView(new Vector2(new_rcsize, new_rcsize));
             update_render = true;
+            glControl1.MakeCurrent();
         }
 
         private void HideAllPanels()

@@ -57,7 +57,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 else
                     throw new Exception("MapTerrainTextureInspector.OnCustomTileMixPress(): Invalid button ID!");
 
-                map.heightmap.texture_manager.UpdateTileTexture(selected_tile);
+                map.heightmap.texture_manager.RefreshTilePreview(selected_tile);
                 SelectedCustomTileTex.SetImage(map.heightmap.texture_manager.texture_tile_image[selected_tile], 0);
 
                 foreach (MapTerrainTextureControl c in PanelTiles.Controls)
@@ -141,7 +141,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             int cur_i = 0;
             for(int i = 32; i < 224; i++)
             {
-                if(map.heightmap.texture_manager.tile_used[i])
+                if(map.heightmap.texture_manager.tile_defined[i])
                 {
                     MapTerrainTextureControl mttc = new MapTerrainTextureControl();
                     mttc.ID = i;
@@ -207,7 +207,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             TexWeight1.Text = Utility.TryParseUInt8(TexWeight1.Text).ToString();
             map.heightmap.texture_manager.texture_tiledata[selected_tile].weight1 = Utility.TryParseUInt8(TexWeight1.Text);
 
-            map.heightmap.texture_manager.UpdateTileTexture(selected_tile);
+            map.heightmap.texture_manager.RefreshTilePreview(selected_tile);
             SelectedCustomTileTex.SetImage(map.heightmap.texture_manager.texture_tile_image[selected_tile], 0);
 
             foreach(MapTerrainTextureControl c in PanelTiles.Controls)
@@ -226,7 +226,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             TexWeight2.Text = Utility.TryParseUInt8(TexWeight2.Text).ToString();
             map.heightmap.texture_manager.texture_tiledata[selected_tile].weight2 = Utility.TryParseUInt8(TexWeight2.Text);
 
-            map.heightmap.texture_manager.UpdateTileTexture(selected_tile);
+            map.heightmap.texture_manager.RefreshTilePreview(selected_tile);
             SelectedCustomTileTex.SetImage(map.heightmap.texture_manager.texture_tile_image[selected_tile], 0);
 
             foreach (MapTerrainTextureControl c in PanelTiles.Controls)
@@ -245,7 +245,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             TexWeight3.Text = Utility.TryParseUInt8(TexWeight3.Text).ToString();
             map.heightmap.texture_manager.texture_tiledata[selected_tile].weight3 = Utility.TryParseUInt8(TexWeight3.Text);
 
-            map.heightmap.texture_manager.UpdateTileTexture(selected_tile);
+            map.heightmap.texture_manager.RefreshTilePreview(selected_tile);
             SelectedCustomTileTex.SetImage(map.heightmap.texture_manager.texture_tile_image[selected_tile], 0);
 
             foreach (MapTerrainTextureControl c in PanelTiles.Controls)
@@ -263,11 +263,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
             int new_tile = 32;
             while(true)
             {
-                if (map.heightmap.texture_manager.tile_used[new_tile] == false)
+                if (map.heightmap.texture_manager.tile_defined[new_tile] == false)
                     break;
                 new_tile += 1;
             }
-            map.heightmap.texture_manager.tile_used[new_tile] = true;
+            map.heightmap.texture_manager.tile_defined[new_tile] = true;
             LoadCustomTextures();
         }
 
@@ -277,10 +277,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (selected_tile == 0)
                 return;
 
-            if(map.heightmap.texture_manager.tile_used[selected_tile] == true)
+            if(map.heightmap.texture_manager.tile_defined[selected_tile] == true)
             {
                 ((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile = 0;
-                map.heightmap.texture_manager.tile_used[selected_tile] = false;
+                map.heightmap.texture_manager.tile_defined[selected_tile] = false;
                 LoadCustomTextures();
             }
         }

@@ -231,17 +231,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
             FramebufferErrorCode e = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
             if (e != FramebufferErrorCode.FramebufferComplete)
-            {
-                while (true)
-                {
-                    ErrorCode ec = GL.GetError();
-                    if (ec == ErrorCode.NoError)
-                        break;
-                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "Framebuffer.Resize(): OpenGL error '" + ec.ToString());
-                    System.Diagnostics.Debug.WriteLine("Framebuffer.Resize() " + ec);
-                }
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "Framebuffer.Resize(): Error generating framebuffer! Error type "+e.ToString());
-            }
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }

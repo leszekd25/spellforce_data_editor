@@ -1,0 +1,1670 @@
+[INFO] Main: Program.Main(): session start time: 16:30:37
+[INFO] Main: Settings.Load() called
+[INFO] Main: MainForm() called
+[INFO] SFCFF: SFCategoryManager.init() called
+[INFO] Main: TotalMemoryUsage(): 
+    Current total memory used: 33976320 bytes 
+    Current managed memory used: 588568 bytes
+[INFO] Main: MainForm.getVersion_completed(): Editor is up-to-date
+[INFO] SFUnPak: SFUnPak.SpecifyGameDirectory() called, directory: C:\personal stuff\SpellForce - Platinum Edition
+[INFO] SFUnPak: SFUnPak.SpecifyGameDirectory(): Directory specified, loading data
+[INFO] SFUnPak: SFPakMap.Clear() called
+[INFO] SFUnPak: SFUnPak.SpecifyGameDirectory(): Pak map loaded
+[INFO] SFLua: SFLuaSQLRtsCoopSpawn.Load() called
+[INFO] SFLua: SFLuaSQLRtsCoopSpawn.Load(): Executing script script\gdsrtscoopspawngroups.lua
+[INFO] SFLua: SFLuaSQLRtsCoopSpawn.Load(): Spawn file read successfully, found spawns: 150
+[INFO] SFLua: SFLuaSQLItem.Load() called
+[INFO] SFLua: SFLuaSQLItem.Load(): Executing script script\sql_item.lua
+[INFO] SFLua: SFLuaSQLObject.Load() called
+[INFO] SFLua: SFLuaSQLObject.Load(): Executing script script\sql_object.lua
+[INFO] SFLua: SFLuaSQLBuilding.Load() called
+[INFO] SFLua: SFLuaSQLBuilding.Load(): Executing script script\sql_building.lua
+[INFO] SFLua: SFLuaSQLHead.Load() called
+[INFO] SFLua: SFLuaSQLHead.Load(): Executing script script\sql_head.lua
+[INFO] Main: TotalMemoryUsage(): 
+    Current total memory used: 72695808 bytes 
+    Current managed memory used: 12699916 bytes
+[INFO] SFMap: MapEditorForm.CloseMap() called
+[INFO] SFResources: SFResourceManager.LogMemoryUsage() called
+[INFO] SFResources: Memory usage (bytes): TEXTURES 0, 3D MODELS 0, SKELETONS 0, SKINS 0, BSI0, ANIMATIONS 0, SOUNDS 0
+[INFO] SFMap: MapEditorForm.LoadMap() called
+[INFO] SFCFF: SFGameData.Read() called
+[INFO] SFCFF: SFCategory.read() called, category name: 1. Spell data
+[INFO] SFCFF: SFCategory.read(): Data size: 261364 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 3439
+[INFO] SFCFF: SFCategory.read() called, category name: 2. Spell type data
+[INFO] SFCFF: SFCategory.read(): Data size: 17625 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 235
+[INFO] SFCFF: SFCategory.read() called, category name: 3. Unknown (1)
+[INFO] SFCFF: SFCategory.read(): Data size: 12 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 2
+[INFO] SFCFF: SFCategory.read() called, category name: 4. Unit/hero stats
+[INFO] SFCFF: SFCategory.read(): Data size: 119192 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 2536
+[INFO] SFCFF: SFCategory.read() called, category name: 5. Hero/worker skills
+[INFO] SFCFF: SFCategory.read(): Data size: 6870 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 345
+[INFO] SFCFF: SFCategory.read() called, category name: 6. Hero spells
+[INFO] SFCFF: SFCategory.read(): Data size: 1775 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 141
+[INFO] SFCFF: SFCategory.read() called, category name: 7. Item general info
+[INFO] SFCFF: SFCategory.read(): Data size: 156222 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 7101
+[INFO] SFCFF: SFCategory.read() called, category name: 8. Item armor data
+[INFO] SFCFF: SFCategory.read(): Data size: 22860 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 635
+[INFO] SFCFF: SFCategory.read() called, category name: 9. Inventory spell scroll link with installed spell scroll
+[INFO] SFCFF: SFCategory.read(): Data size: 9704 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 2426
+[INFO] SFCFF: SFCategory.read() called, category name: 10. Item weapon data
+[INFO] SFCFF: SFCategory.read(): Data size: 11536 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 721
+[INFO] SFCFF: SFCategory.read() called, category name: 11. Item skill requirements
+[INFO] SFCFF: SFCategory.read(): Data size: 24630 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 3316
+[INFO] SFCFF: SFCategory.read() called, category name: 12. Item weapon effects/inventory scroll link with spell
+[INFO] SFCFF: SFCategory.read(): Data size: 20150 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 3980
+[INFO] SFCFF: SFCategory.read() called, category name: 13. Item UI data
+[INFO] SFCFF: SFCategory.read(): Data size: 573459 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 6237
+[INFO] SFCFF: SFCategory.read() called, category name: 14. Item installed spell scroll link with spell
+[INFO] SFCFF: SFCategory.read(): Data size: 7672 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 1918
+[INFO] SFCFF: SFCategory.read() called, category name: 15. Text data
+[INFO] SFCFF: SFCategory.read(): Data size: 65135280 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 39019
+[INFO] SFCFF: SFCategory.read() called, category name: 16. Race stats
+[INFO] SFCFF: SFCategory.read(): Data size: 3483 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 129
+[INFO] SFCFF: SFCategory.read() called, category name: 17. Clan relations
+[INFO] SFCFF: SFCategory.read(): Data size: 3072 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 32
+[INFO] SFCFF: SFCategory.read() called, category name: 18. Unit general data/link with unit stats
+[INFO] SFCFF: SFCategory.read(): Data size: 167488 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 2617
+[INFO] SFCFF: SFCategory.read() called, category name: 19. Unit equipment
+[INFO] SFCFF: SFCategory.read(): Data size: 29525 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 2617
+[INFO] SFCFF: SFCategory.read() called, category name: 20. Unit spells
+[INFO] SFCFF: SFCategory.read(): Data size: 3935 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 715
+[INFO] SFCFF: SFCategory.read() called, category name: 21. Army unit resource requirements
+[INFO] SFCFF: SFCategory.read(): Data size: 512 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 87
+[INFO] SFCFF: SFCategory.read() called, category name: 22. Corpse loot
+[INFO] SFCFF: SFCategory.read(): Data size: 14960 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 715
+[INFO] SFCFF: SFCategory.read() called, category name: 23. Army unit building requirements
+[INFO] SFCFF: SFCategory.read(): Data size: 215 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 31
+[INFO] SFCFF: SFCategory.read() called, category name: 24. Building data
+[INFO] SFCFF: SFCategory.read(): Data size: 4761 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 207
+[INFO] SFCFF: SFCategory.read() called, category name: 25. Building collision data
+[INFO] SFCFF: SFCategory.read(): Data size: 11428 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 207
+[INFO] SFCFF: SFCategory.read() called, category name: 26. Building resource requirements
+[INFO] SFCFF: SFCategory.read(): Data size: 830 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 119
+[INFO] SFCFF: SFCategory.read() called, category name: 27. Skills link with text data
+[INFO] SFCFF: SFCategory.read(): Data size: 192 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 8
+[INFO] SFCFF: SFCategory.read() called, category name: 28. Skill point requirements
+[INFO] SFCFF: SFCategory.read(): Data size: 1260 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 7
+[INFO] SFCFF: SFCategory.read() called, category name: 29. Merchants link with unit general data
+[INFO] SFCFF: SFCategory.read(): Data size: 768 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 192
+[INFO] SFCFF: SFCategory.read() called, category name: 30. Merchant inventory
+[INFO] SFCFF: SFCategory.read(): Data size: 32724 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 192
+[INFO] SFCFF: SFCategory.read() called, category name: 31. Merchant sell/buy rate
+[INFO] SFCFF: SFCategory.read(): Data size: 2525 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 113
+[INFO] SFCFF: SFCategory.read() called, category name: 32. Resources link with data
+[INFO] SFCFF: SFCategory.read(): Data size: 42 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 14
+[INFO] SFCFF: SFCategory.read() called, category name: 33. Player level scaling
+[INFO] SFCFF: SFCategory.read(): Data size: 765 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 51
+[INFO] SFCFF: SFCategory.read() called, category name: 34. Environment objects data
+[INFO] SFCFF: SFCategory.read(): Data size: 89532 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 1658
+[INFO] SFCFF: SFCategory.read() called, category name: 35. Interactive objects collision data
+[INFO] SFCFF: SFCategory.read(): Data size: 2463 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 54
+[INFO] SFCFF: SFCategory.read() called, category name: 36. Environment object loot
+[INFO] SFCFF: SFCategory.read(): Data size: 22583 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 525
+[INFO] SFCFF: SFCategory.read() called, category name: 37. NPC link with text data
+[INFO] SFCFF: SFCategory.read(): Data size: 56598 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 9433
+[INFO] SFCFF: SFCategory.read() called, category name: 38. Map data
+[INFO] SFCFF: SFCategory.read(): Data size: 7384 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 104
+[INFO] SFCFF: SFCategory.read() called, category name: 39. Portal locations
+[INFO] SFCFF: SFCategory.read(): Data size: 2535 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 195
+[INFO] SFCFF: SFCategory.read() called, category name: 40. Unknown (from sql_lua?)
+[INFO] SFCFF: SFCategory.read(): Data size: 6 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 2
+[INFO] SFCFF: SFCategory.read() called, category name: 41. Description link with txt data
+[INFO] SFCFF: SFCategory.read(): Data size: 5084 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 1271
+[INFO] SFCFF: SFCategory.read() called, category name: 42. Extended description data
+[INFO] SFCFF: SFCategory.read(): Data size: 3000 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 500
+[INFO] SFCFF: SFCategory.read() called, category name: 43. Quest hierarchy/description data
+[INFO] SFCFF: SFCategory.read(): Data size: 17680 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 1040
+[INFO] SFCFF: SFCategory.read() called, category name: 44. Weapon types
+[INFO] SFCFF: SFCategory.read(): Data size: 105 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 21
+[INFO] SFCFF: SFCategory.read() called, category name: 45. Weapon materials
+[INFO] SFCFF: SFCategory.read(): Data size: 28 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 7
+[INFO] SFCFF: SFCategory.read() called, category name: 46. Terrain material data
+[INFO] SFCFF: SFCategory.read(): Data size: 480 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 120
+[INFO] SFCFF: SFCategory.read() called, category name: 47. Heads
+[INFO] SFCFF: SFCategory.read(): Data size: 64 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 32
+[INFO] SFCFF: SFCategory.read() called, category name: 48. Unit upgrade data
+[INFO] SFCFF: SFCategory.read(): Data size: 4860 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 54
+[INFO] SFCFF: SFCategory.read() called, category name: 49. Item sets
+[INFO] SFCFF: SFCategory.read(): Data size: 76 bytes
+[INFO] SFCFF: SFCategory.read(): Items read: 19
+[INFO] SF3D: SFScene.Init() called
+[INFO] SF3D: SFRenderEngine.Initialize() called
+[INFO] SF3D: SFRenderEngine.ResizeView() called (view_size = (589; 589))
+[INFO] SF3D: ShaderCompiler.Compile(): Creating shader id 3
+[INFO] SF3D: ShaderCompiler.Compile(): Shader id 3 compile log: 
+[INFO] SF3D: 
+[INFO] SF3D: ShaderCompiler.Compile(): Creating shader id 4
+[INFO] SF3D: ShaderCompiler.Compile(): Shader id 4 compile log: 
+[INFO] SF3D: 
+[INFO] SF3D: ShaderCompiler.Compile(): Creating shader id 5
+[INFO] SF3D: ShaderCompiler.Compile(): Shader id 5 compile log: 
+[INFO] SF3D: 
+[INFO] SF3D: ShaderCompiler.Compile(): Creating shader id 6
+[INFO] SF3D: ShaderCompiler.Compile(): Shader id 6 compile log: 
+[INFO] SF3D: 
+[INFO] SF3D: ShaderCompiler.Compile(): Creating shader id 7
+[INFO] SF3D: ShaderCompiler.Compile(): Shader id 7 compile log: 
+[INFO] SF3D: 
+[INFO] SF3D: ShaderCompiler.Compile(): Creating shader id 8
+[INFO] SF3D: ShaderCompiler.Compile(): Shader id 8 compile log: 
+[INFO] SF3D: 
+[INFO] SF3D: ShaderCompiler.Compile(): Creating shader id 9
+[INFO] SF3D: ShaderCompiler.Compile(): Shader id 9 compile log: 
+[INFO] SF3D: 
+[INFO] SF3D: SFRenderEngine.ResizeView() called (view_size = (1024; 547))
+[INFO] SF3D: SFRenderEngine.ResizeView() called (view_size = (1298; 547))
+[INFO] SFMap: SFMap.Load() called, filename: C:\personal stuff\SpellForce - Platinum Edition\map\campaign\001_liannon.map
+[INFO] SFChunkFile: SFChunkFile.Open() called
+[INFO] SFMap: SFMap.Load(): Loading tile data
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 2, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 65539
+[INFO] SFMap: SFMap.Load(): Map size is 256
+[INFO] SFMap: SFMap.Load(): Loading tile definitions
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 3, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 3, data length: 3570
+[INFO] SFMap: SFMap.Load(): Loading textures
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 4, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 4, data length: 63
+[INFO] SFMap: SFMapTerrainTextureManager.Init() called
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[WARNING] SF3D: SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights
+[INFO] SFMap: SFMap.Load(): Loading heightmap
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 1)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 2)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 3)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 4)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 5)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 6)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 7)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 8)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 9)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 10)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 11)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 12)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 13)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 14)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 15)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 16)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 17)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 18)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 19)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 20)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 21)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 22)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 23)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 24)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 25)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 26)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 27)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 28)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 29)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 30)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 31)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 32)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 33)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 34)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 35)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 36)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 37)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 38)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 39)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 40)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 41)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 42)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 43)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 44)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 45)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 46)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 47)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 48)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 49)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 50)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 51)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 52)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 53)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 54)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 55)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 56)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 57)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 58)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 59)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 60)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 61)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 62)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 63)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 64)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 65)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 66)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 67)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 68)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 69)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 70)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 71)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 72)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 73)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 74)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 75)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 76)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 77)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 78)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 79)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 80)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 81)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 82)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 83)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 84)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 85)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 86)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 87)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 88)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 89)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 90)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 91)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 92)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 93)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 94)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 95)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 96)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 97)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 98)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 99)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 100)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 101)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 102)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 103)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 104)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 105)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 106)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 107)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 108)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 109)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 110)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 111)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 112)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 113)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 114)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 115)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 116)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 117)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 118)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 119)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 120)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 121)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 122)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 123)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 124)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 125)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 126)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 127)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 128)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 129)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 130)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 131)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 132)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 133)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 134)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 135)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 136)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 137)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 138)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 139)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 140)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 141)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 142)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 143)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 144)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 145)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 146)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 147)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 148)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 149)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 150)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 151)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 152)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 153)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 154)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 155)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 156)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 157)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 158)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 159)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 160)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 161)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 162)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 163)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 164)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 165)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 166)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 167)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 168)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 169)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 170)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 171)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 172)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 173)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 174)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 175)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 176)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 177)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 178)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 179)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 180)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 181)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 182)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 183)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 184)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 185)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 186)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 187)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 188)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 189)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 190)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 191)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 192)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 193)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 194)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 195)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 196)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 197)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 198)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 199)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 200)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 201)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 202)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 203)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 204)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 205)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 206)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 207)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 208)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 209)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 210)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 211)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 212)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 213)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 214)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 215)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 216)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 217)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 218)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 219)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 220)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 221)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 222)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 223)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 224)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 225)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 226)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 227)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 228)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 229)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 230)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 231)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 232)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 233)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 234)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 235)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 236)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 237)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 238)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 239)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 240)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 241)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 242)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 243)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 244)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 245)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 246)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 247)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 248)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 249)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 250)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 251)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 252)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 253)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 254)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 6, occurence id = 255)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 6, data length: 512
+[INFO] SFMap: SFMapHeightMap.Generate() called
+[INFO] SFMap: SFMapHeightMap.Generate(): Chunks generated: 256
+[INFO] SFMap: SFMap.Load(): Loading buildings
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 11, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 2, data length: 70
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hut_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hut_small.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hut_small_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hut_small_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_orc_forge.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_orc_forge_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_orc_forge_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_orc_forge_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_orc_forge_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_orc_fisherhut.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_orc_fisherhut_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_orc_fisherhut_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_orc_fisherhut_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_orc_fisherhut_decal.dds
+[INFO] SFMap: SFMap.Load(): Buildings loaded: 7
+[INFO] SFMap: SFMap.Load(): Loading units
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 12, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 4, data length: 962
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_paladin_ghost.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_paladin_ghost.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_paladin_ghost.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_paladin_cold_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_paladin_cold_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_paladin_cold_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_robe_simplelinen_grey.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_robe_simplelinen_grey.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_robe_simplelinen_grey.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_robe_simplelinen_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_robe_simplelinen_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_old_white.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_old_white.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_old_white.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_old_white.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_chest_leather_wolfpelt_brown.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_chest_leather_wolfpelt_brown.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_chest_leather_wolfpelt_brown.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_chest_leather_wolfpelt_brown_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_chest_leather_wolfpelt_brown_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_brown.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_brown.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_brown.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_brown_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_brown_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_brown_stepped_02.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_brown_stepped_02.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_brown_stepped_02.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_brown_stepped_02.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_chest_leather_brown_simple.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_chest_leather_brown_simple.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_chest_leather_brown_simple.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_chest_leather_brown_simple_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_chest_leather_brown_simple_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_darkgrey_simple.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_darkgrey_simple.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_darkgrey_simple.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_darkgrey_simple_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_darkgrey_simple_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_moustache.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_moustache.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_moustache.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_moustache.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_hero_claymore.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_hero_claymore.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_chest_chain_plate_grey.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_chest_chain_plate_grey.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_chest_chain_plate_grey.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_chest_chain_plate_grey_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_chest_chain_plate_grey_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_legs_plate_knight_silver.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_legs_plate_knight_silver.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_legs_plate_knight_silver.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_legs_plate_knight_silver_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_legs_plate_knight_silver_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_head_shorthair2_brown.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_head_shorthair2_brown.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_head_shorthair2_brown.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_head_shorthair2_brown_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_human_crossbow.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_human_crossbow.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_rough_black.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_rough_black.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_rough_black.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_head_rough_black.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_hero_sword1.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_hero_schwert1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_cold2.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_cold2.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_cold2.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_cold2_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_cold2_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_chest_leather_brown_simple.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_chest_leather_brown_simple.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_chest_leather_brown_simple.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_chest_leather_brown_simple_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_chest_leather_brown_simple_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_legs_leather_brown.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_legs_leather_brown.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_legs_leather_brown.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_legs_leather_brown_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_legs_leather_brown_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_head_brown_longpigtail.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_head_brown_longpigtail.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_head_brown_longpigtail.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_head_brown_longpigtail.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_katana.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_katana.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_orc_shield.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_orc_shield.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_advanced_cold2.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_advanced_cold2.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_advanced_cold2.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_advanced_cold2_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_advanced_cold2_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_advanced_cold2_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_dwarf_twohandbattleaxe.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_dwarfs_twohandbattleaxe.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_robe_nature_green.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_robe_nature_green.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_robe_nature_green.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_robe_nature_green_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_robe_nature_green_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_head_blondlonghairxxl.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_head_blondlonghairxxl.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_head_blondlonghairxxl.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_female_head_blondlonghairxxl.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_plate_studded_brown.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_plate_studded_brown.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_plate_studded_brown.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_plate_studded_brown_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_legs_leather_plate_studded_brown_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_beard_black.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_beard_black.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_beard_black.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_hero_male_head_beard_black.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_npc_goblin_green.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_npc_goblin_green.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_npc_goblin_green.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_npc_goblin_green.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_orc_dagger.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_orc_dagger.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_human_shortsword.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_human_shortsword.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_hero_sword2_ghost.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_hero_schwert2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_npc_goblin_brown.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_npc_goblin_brown.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_npc_goblin_brown.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_npc_goblin_brown.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_armsman_warm.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_armsman_warm.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_armsman_warm.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_armsman_warm_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_armsman_warm_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_armsman_warm_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_dragonaxe.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_dragonaxe.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_ghoul_mace.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_ghoul_mace.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_orc_club.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_orc_keule.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_wraith_saber.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_wraith_saber.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_animal_deer_young.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_animal_deer_young.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_animal_deer_young.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_animal_deer_young.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_darkelf_dagger.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_darkelf_dagger.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_warm.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_warm.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_warm.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_warm_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_worker_warm_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_goblin_fishnet_fish.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_human_fishnet_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_human_fishnet_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_clan_utran_soldier.bor
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_clan_utran_soldier.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_clan_utran_soldier.bsi
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_clan_utran_soldier_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource figure_human_clan_utran_soldier_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_halberd.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource equipment_weapon_halberd.dds
+[INFO] SFMap: SFMap.Load(): Units loaded: 74
+[INFO] SFMap: SFMap.Load(): Loading objects
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 29, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 5, data length: 23520
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_medium_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_medium_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_medium_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_extra_large_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_extra_large_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_extra_large_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_large_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_large_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_large_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_small_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_small_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_beech_small_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_large_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_large_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_large_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_large_id4.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_medium_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_medium_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_medium_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_medium_id4.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_small_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_small_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_small_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_birch_small_id4.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_thin2.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_thin_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_thin_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_thin3.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_thin4.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_cypress_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_cypress_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_cypress_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_cypress_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_cypress_id4.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_cypress_id5.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_fir_cripple.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_fir_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_fir_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_fir_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_mountain_fir_id4.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_fir_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_fir_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_old1.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_old_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_old_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_old_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_old_id4.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_old2.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_old3.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_old4.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_fir_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_cypress_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_fence_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_fence_large_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_fence_large_broken.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_fence_large_broken_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_adorn_stump3.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_adorn_stump3_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_adorn_stump3_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_adorn_stump3_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_adorn_stump4.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_adorn_stump4_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_adorn_stump4_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_adorn_stump4_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_fence_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_fence_small_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_lava_rock_04.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_lava_rock_04_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_granite_large1.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_mountain_granite_large1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock2_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock2_extra_large.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock1_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock1_extra_large.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock1_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock3_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock3_extra_large.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock3_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock3_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_granite_large4.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_mountain_granite_large4.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_granite_medium1.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_mountain_granite_medium1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_granite_medium2.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_mountain_granite_medium2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_granite_small3.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_mountain_granite_medium3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_cypress_cripple.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock4_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock2_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock4_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock4_extra_large.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock1_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock2_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock4_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_torch_dark3.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_torch_dark2_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_fireplace_light.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_fireplace_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_treasurechest_02.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_treasurechest_02.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_treasurechest.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_treasurechest_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock1_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock3_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock2_large.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock4_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_greenland_rock1_large.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_treasurechest_03.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_treasurechest_03.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_wall_long_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_wall_long_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_wall_medium_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_wall_medium_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_wall_tower_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_wall_tower_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_wall_tower_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_wall_long_45_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_human_palisade_short_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_human_palisade.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_human_palisade_long.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_human_palisade_short_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_foodstore.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_foodstore_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_foodstore_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_foodstore_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_foodstore_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_tree_dead_thin1.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_mine.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_mine_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_mine_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_mine_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_main1.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_main1_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_main1_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_main1_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_main1_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_quarry.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_quarry_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_huntinglodge.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_huntinglodge_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_huntinglodge_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_huntinglodge_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_huntinglodge_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_sawmill.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_sawmill_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_sawmill_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_sawmill_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_sawmill_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_grainfarm.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_grainfarm_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_grainfarm_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_grainfarm_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_grainfarm_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_hay.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_hay_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_woodcutterhut.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_woodcutterhut_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_woodcutterhut_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_woodcutterhut_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_berry_02.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_berry_02_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_berry_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_berry_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_berry_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_berry_04.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_berry_04_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_barrell_wooden_big_03.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_barrel_wooden.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_barrel_wooden_small.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_barrell_wooden_big_01.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_barrell_wooden_big_02.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_box1.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_box1_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_forge_steel.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_forge_steel_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_forge_steel_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_forge_steel_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_forge_steel_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_obelisk.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_obelisk.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_obelisk_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_obelisk_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_wall_towngate_portalkeep_closed.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_wall_towngate_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_stonegate_short_closed.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_stonegate_large_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_stonegate_short_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_stonegate_short_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_fisherhut.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_fisherhut_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_fisherhut_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_fisherhut_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource building_human_fisherhut_decal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_granite_large2.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_mountain_granite_large2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_granite_large3.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_mountain_granite_large3.dds
+[INFO] SFMap: SFMap.Load(): Objects loaded: 684
+[INFO] SFMap: SFMap.Load(): Loading interactive objects
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 30, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 1, data length: 18
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_main.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id4.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id5.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id6.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id7.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id8.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id9.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id10.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id11.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id12.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id13.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_id14.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_flags_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_hero_monument_decal_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_player_monument_main.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_player_monument.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_player_monument_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_player_monument_decal.dds
+[INFO] SFMap: SFMap.Load(): Interactive objects loaded: 2
+[INFO] SFMap: SFMap.Load(): Loading decal data
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 31, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 2, data length: 1048576
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 32, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 1, data length: 22950
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_flymushroom_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_mountain_flymushroom_medium_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp2_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp2_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp2_id4.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_grassbunch_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_mountain_grassbunch_large_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_swampgrass2_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_swampgrass1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_fern_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_mountain_fern_medium_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_fern_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_mountain_fern_small_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_flymushroom_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_grassbunch_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_mountain_grassbunch_small_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_swampgrass1_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_swampgrass2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_swampgrass2_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_grassbunch_outgrow.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_grassbunch_outgrow_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_grassbunch_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_mountain_grassbunch_medium_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_snapdragon_group.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_mountain_snapdragon_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_scrub_big.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_mountain_scrub_big_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_mountain_scrub_big_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_fircone01.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_fircone1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_swampgrass2_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_flowerbush1.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_mountain_flowerbush1_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_mountain_flowerbush1_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_grassbunch_outgrow_flat.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_grassbunch_outgrow_thin_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_thornbush1.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_mountain_thornbush_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_mountain_thornbush_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_swampgrass1_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_flymushroom_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_snapdragon_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_fern_smalldead.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_mountain_fern_smalldead_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_swampgrass1_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_champignon_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_mountain_champignon_medium_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_reed.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_mountain_reed_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_grassbunch_outgrow_thin.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_swampgrass1_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp3_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp3_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp3_id4.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp2_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp2_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp2_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp2_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp1_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp1_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp1_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp3_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp3_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp3_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp3_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp2_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_stonemushroom_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_mountain_stonemushroom_medium_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp1_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_stonemushroom_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp1_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_desert3_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_desert3_id3.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_desert3_id4.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_thorn_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_thorn_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_thorn_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_desertgrass1_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_desertgrass2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_group_branches_normal01.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_group_of_branches.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_group_branches_normal04.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_desert3_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_desert3_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_desert3_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_swamp1_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_desertgrass2_extra_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_desertgrass1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_swampgrass2_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_desertgrass1_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_desertgrass2_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_desertgrass1_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_creosote_big.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_creosote_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_creosote_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_grassbunch2_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_mountain_grassbunch2_large_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_group_branches_normal03.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_desertgrass2_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_scrub_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_mountain_scrub_small_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_mountain_scrub_small_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_desert3_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_champignon_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_desertgrass1_small.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_desert3_medium.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_group_branches_normal02.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_fern_largedead.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_mountain_fern_largedead_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_desertgrass2_large.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_wildrose_yellow_long.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_cassia_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_bush_cassia_id2.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_fern_mediumdead.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_grass_mountain_fern_mediumdead_id1.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource nature_prop_champignon_large.msb
+[INFO] SFMap: SFMap.Load(): Loading portals
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 35, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 1, data length: 24
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_portal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_portal.dds
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_portal_decal.msb
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource worlditem_portal_decal.dds
+[INFO] SFMap: SFMap.Load(): Portals loaded: 3
+[INFO] SFMap: SFMap.Load(): Loading lakes
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 40, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 1, data length: 36
+[INFO] SFMap: SFMap.Load(): Lakes found: 5
+[INFO] SFMap: SFMap.Load(): Loading map flags
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 42, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 1, data length: 3268
+[INFO] SFMap: SFMap.Load(): Movement flag count: 817
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 56, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 1, data length: 1208
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 60, occurence id = 0)
+[INFO] SFMap: SFMap.Load(): Additional flag data not found
+[INFO] SFMap: SFMap.Load(): Loading player spawn data
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 55, occurence id = 0)
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID(): Found chunk, chunk type: 1, data length: 12
+[INFO] SFMap: SFMap.Load(): Player spawns loaded: 1
+[INFO] SFMap: SFMap.Load(): Loading team compositions
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 53, occurence id = 0)
+[INFO] SFMap: SFMap.Load(): Team composition data not found, assuming campaign map type
+[INFO] SFMap: SFMap.Load(): Loading coop spawn parameters
+[INFO] SFChunkFile: SFChunkFile.GetChunkByID() called (id = 59, occurence id = 0)
+[INFO] SFMap: SFMap.Load(): Creating overlays
+[INFO] SFMap: SFMapHeightMap.OverlayCreate() called, overlay name: TileMovementBlock
+[INFO] SFMap: SFMapHeightMap.OverlayCreate() called, overlay name: ManualMovementBlock
+[INFO] SFMap: SFMapHeightMap.OverlayCreate() called, overlay name: ManualVisionBlock
+[INFO] SFMap: SFMapHeightMap.OverlayCreate() called, overlay name: BuildingBlock
+[INFO] SFMap: SFMapHeightMap.OverlayCreate() called, overlay name: DecorationTile
+[INFO] SFChunkFile: SFChunkFile.Close() called
+[INFO] SFMap: SFMap.Load(): Load successful!
+[INFO] Main: TotalMemoryUsage(): 
+    Current total memory used: 385585152 bytes 
+    Current managed memory used: 138691480 bytes
+[INFO] SFResources: SFResourceManager.LogMemoryUsage() called
+[INFO] SFResources: Memory usage (bytes): TEXTURES 60353752, 3D MODELS 3397008, SKELETONS 274560, SKINS 1062704, BSI4504, ANIMATIONS 0, SOUNDS 0
+[INFO] SFResources: SFResourceContainer.Load(): Loading resource landscape_lake_water.dds
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_9_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_10_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_4
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_4
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_9_8
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_5_3
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_3
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_3
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_2
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_5_2
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_5_3
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_2
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_3
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_2
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_4
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_9_11
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_3
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_5
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_4
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_5
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_8_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_8_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_11
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_10_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_8_8
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_11_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_12_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_9_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_9_8
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_10_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_11_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_8_11
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_12_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_9_11
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_10_11
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_11_11
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_11_10
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_11_9
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_12_9
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_12_8
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_12_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_12_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_11_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_11_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_4_10
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_5_10
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_10
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_5_3
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_5
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_11_9
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_12_9
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_12_8
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_12_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_12_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_11_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_11_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_10_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_10_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_2
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_3
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_2
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_3
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_4
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_9_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_9_8
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_5_2
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_5_3
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_4
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_5
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_8_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_5
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_6_6
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_8_7
+[WARNING] SFResources: SFResourceContainer.Dispose(): Negative reference count!
+[INFO] SFResources: SFResourceContainer.Dispose(): Removing resource LAKE_7_7
+[INFO] Main: Settings.Save() called
+[INFO] Main: Program.Main(): session finish time: 16:34:56

@@ -33,14 +33,15 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             uint k = 0;
             foreach(SFCoord p in points)
             {
-                int offset = (p.y * hmap_chunk.hmap.chunk_size + p.x) * 6;
-                float h = hmap_chunk.vertices[offset].Y;
+                //int offset = (p.y * hmap_chunk.hmap.chunk_size + p.x) * 6;
+                //float h = hmap_chunk.vertices[offset].Y;
+                float h = hmap_chunk.hmap.GetZ(p) / 100.0f;
                 // vertices
-                vertices[k * 5 + 0] = new Vector3(p.x - 0.2f, h, (hmap_chunk.hmap.chunk_size - p.y - 1) - 0.2f);
-                vertices[k * 5 + 1] = new Vector3(p.x + 0.2f, h, (hmap_chunk.hmap.chunk_size - p.y - 1) - 0.2f);
-                vertices[k * 5 + 2] = new Vector3(p.x - 0.2f, h, (hmap_chunk.hmap.chunk_size - p.y - 1) + 0.2f);
-                vertices[k * 5 + 3] = new Vector3(p.x + 0.2f, h, (hmap_chunk.hmap.chunk_size - p.y - 1) + 0.2f);
-                vertices[k * 5 + 4] = new Vector3(p.x, h + 1f, (hmap_chunk.hmap.chunk_size - p.y - 1));
+                vertices[k * 5 + 0] = new Vector3(p.x - 0.2f, h, (SFMapHeightMapGeometryPool.CHUNK_SIZE - p.y - 1) - 0.2f);
+                vertices[k * 5 + 1] = new Vector3(p.x + 0.2f, h, (SFMapHeightMapGeometryPool.CHUNK_SIZE - p.y - 1) - 0.2f);
+                vertices[k * 5 + 2] = new Vector3(p.x - 0.2f, h, (SFMapHeightMapGeometryPool.CHUNK_SIZE - p.y - 1) + 0.2f);
+                vertices[k * 5 + 3] = new Vector3(p.x + 0.2f, h, (SFMapHeightMapGeometryPool.CHUNK_SIZE - p.y - 1) + 0.2f);
+                vertices[k * 5 + 4] = new Vector3(p.x, h + 1f, (SFMapHeightMapGeometryPool.CHUNK_SIZE - p.y - 1));
                 // colors
                 colors[k * 5 + 0] = color;
                 colors[k * 5 + 1] = color;

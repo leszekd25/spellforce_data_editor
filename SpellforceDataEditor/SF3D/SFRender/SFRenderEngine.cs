@@ -107,11 +107,13 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_heightmap.CompileShader(Properties.Resources.vshader_hmap, Properties.Resources.fshader_hmap);
             shader_heightmap.AddParameter("VP");
             shader_heightmap.AddParameter("M");
+            shader_heightmap.AddParameter("GridSize");
             shader_heightmap.AddParameter("VisualizeHeight");
             shader_heightmap.AddParameter("DisplayGrid");
             shader_heightmap.AddParameter("GridColor");
             shader_heightmap.AddParameter("LSM");
             shader_heightmap.AddParameter("ShadowMap");
+            shader_heightmap.AddParameter("TileMap");
             shader_heightmap.AddParameter("SunDirection");
             shader_heightmap.AddParameter("SunStrength");
             shader_heightmap.AddParameter("SunColor");
@@ -120,6 +122,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_heightmap.AddParameter("FogColor");
             shader_heightmap.AddParameter("FogStart");
             shader_heightmap.AddParameter("FogEnd");
+            // tiledata ubo binding
+            int uniform_tiledata = GL.GetUniformBlockIndex(shader_heightmap.ProgramID, "Tiles");
+            GL.UniformBlockBinding(shader_heightmap.ProgramID, uniform_tiledata, 0);
 
             shader_shadowmap.CompileShader(Properties.Resources.vshader_shadowmap, Properties.Resources.fshader_shadowmap);
             shader_shadowmap.AddParameter("LSM");
@@ -241,6 +246,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             GL.UseProgram(shader_heightmap.ProgramID);
             GL.Uniform1(shader_heightmap["ShadowMap"], 1);
+            GL.Uniform1(shader_heightmap["TileMap"], 2);
 
             GL.UseProgram(shader_shadowmap.ProgramID);
             GL.Uniform1(shader_shadowmap["DiffuseTexture"], 0);
@@ -495,7 +501,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         private static void RenderHeightmap()
         {
-            Matrix4 lsm_mat = scene.sun_light.LightMatrix;
+            /*Matrix4 lsm_mat = scene.sun_light.LightMatrix;
             GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
             if (current_pass == RenderPass.SCENE)
             {
@@ -520,6 +526,41 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.BindVertexArray(chunk.vertex_array);
                 GL.DrawArrays(PrimitiveType.Triangles, 0, chunk.vertices.Length);
             }
+            GL.BindTexture(TextureTarget.Texture2DArray, 0);*/
+
+            Matrix4 lsm_mat = scene.sun_light.LightMatrix;
+            GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
+            GL.BindVertexArray(scene.heightmap.geometry_pool.vertex_array);
+            if (current_pass == RenderPass.SCENE)
+            {
+                GL.ActiveTexture(TextureUnit.Texture2);
+                GL.BindTexture(TextureTarget.Texture2D, scene.heightmap.tile_data_texture);
+                GL.ActiveTexture(TextureUnit.Texture0);
+                GL.BindTexture(TextureTarget.Texture2DArray, scene.heightmap.texture_manager.terrain_texture);
+                Matrix4 vp_mat = scene.camera.ViewProjMatrix;
+                GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+                GL.Uniform1(active_shader["VisualizeHeight"], Settings.VisualizeHeight ? 1 : 0);
+                GL.Uniform1(active_shader["DisplayGrid"], Settings.DisplayGrid ? 1 : 0);
+                GL.Uniform1(active_shader["GridSize"], scene.heightmap.width);
+                GL.Uniform4(active_shader["GridColor"], Settings.GridColor);
+            }
+            else if (current_pass == RenderPass.SHADOWMAP)
+                GL.BindTexture(TextureTarget.Texture2D, opaque_tex.tex_id);
+
+            Matrix4 model_mat = new Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+            GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
+
+            /*for (int i = 0; i < 256; i++)
+                GL.DrawElementsBaseVertex(PrimitiveType.Triangles, 6 * 16 * 16, DrawElementsType.UnsignedInt,
+                    new IntPtr(i * 6 * 16 * 16 * 4), i * 6 * 16 * 16);*/
+
+            for (int i = 0; i < scene.heightmap.geometry_pool.last_used; i++)
+                if (scene.heightmap.geometry_pool.active[i])
+                    GL.DrawElementsBaseVertex(PrimitiveType.Triangles,
+                        6 * SFMapHeightMapGeometryPool.CHUNK_SIZE * SFMapHeightMapGeometryPool.CHUNK_SIZE, DrawElementsType.UnsignedShort,
+                        new IntPtr(i * 6 * SFMapHeightMapGeometryPool.CHUNK_SIZE * SFMapHeightMapGeometryPool.CHUNK_SIZE * 4),
+                        i * (SFMapHeightMapGeometryPool.CHUNK_SIZE + 1) * (SFMapHeightMapGeometryPool.CHUNK_SIZE + 1));
+
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
         }
 

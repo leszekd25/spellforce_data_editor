@@ -39,10 +39,11 @@ namespace SpellforceDataEditor.special_forms
 
         public bool update_render = false;  // whenever this is true, window will be repainted, and this switched to false
         int gc_timer = 0;                   // when this reaches 200, garbage collector runs
+        int updates_this_second = 0;
 
         OpenTK.GLControl RenderWindow = null;
 
-        public SFMap.MapEdit.MapEditor selected_editor { get; private set; } = new SFMap.MapEdit.MapHeightMapEditor();
+        public MapEditor selected_editor { get; private set; } = new MapHeightMapEditor();
         public SFMap.map_controls.MapInspector selected_inspector { get; private set; } = null;
 
         MapBrush terrain_brush = new MapBrush();
@@ -83,6 +84,8 @@ namespace SpellforceDataEditor.special_forms
         {
             if (CloseMap() != 0)
                 e.Cancel = true;
+            else
+                selected_editor = null;
         }
 
         private void MapEditorForm_Resize(object sender, EventArgs e)
@@ -261,6 +264,7 @@ namespace SpellforceDataEditor.special_forms
                 catch (InvalidDataException)
                 {
                     StatusText.Text = "Map contains invalid data!";
+                    map = null;
                     DestroyRenderWindow();
                     return -4;
                 }
@@ -413,6 +417,7 @@ namespace SpellforceDataEditor.special_forms
 
             // it seems shaders must always be compiled upon creating new window
             SFRenderEngine.Initialize(new Vector2(RenderWindow.ClientSize.Width, RenderWindow.ClientSize.Height));
+            TimerUpdatesPerSecond.Start();
 
             ResizeWindow();
         }
@@ -434,11 +439,14 @@ namespace SpellforceDataEditor.special_forms
             this.Controls.Remove(RenderWindow);
             this.RenderWindow.Dispose();
             this.RenderWindow = null;
+
+            TimerUpdatesPerSecond.Stop();
+            UpdatesText.Text = "";
         }
 
         private void RenderWindow_Paint(object sender, PaintEventArgs e)
         {
-            RenderWindow.MakeCurrent();
+            //RenderWindow.MakeCurrent();   // needs to only be done during resize, because cant run asset viewer anyways :^)
             SFRenderEngine.RenderScene();
             RenderWindow.SwapBuffers();
         }
@@ -538,13 +546,11 @@ namespace SpellforceDataEditor.special_forms
                 {
                     Vector3 local_result;
                     SFMapHeightMapChunk chunk = map.heightmap.visible_chunks[map.heightmap.visible_chunks.Count - i - 1].MapChunk;
-                    Vector3 offset = new Vector3(chunk.ix * 16, 0, chunk.iy * 16);
                     if (ray.Intersect(chunk.collision_cache, out local_result))
                     {
                         breakState.Break();
                         result = local_result;
                         ray_success = true;
-                        result += offset;
                     }
                 });
 
@@ -638,6 +644,7 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.UpdateVisibleChunks();
                 SFRenderEngine.scene.Update();
                 RenderWindow.Invalidate();
+                updates_this_second += 1;
                 update_render = false;
             }
 
@@ -651,13 +658,21 @@ namespace SpellforceDataEditor.special_forms
 
             // garbage collector
             gc_timer += 1;
-            if (gc_timer == 200)
+            if (gc_timer >= 8*SFRenderEngine.scene.frames_per_second)
             {
                 GC.Collect();
                 gc_timer = 0;
             }
 
             TimerAnimation.Start();
+        }
+
+
+        private void TimerUpdatesPerSecond_Tick(object sender, EventArgs e)
+        {
+            TimerUpdatesPerSecond.Start();
+            UpdatesText.Text = "Updates / s: " + updates_this_second.ToString();
+            updates_this_second = 0;
         }
 
         private void SetSpecificText(SFCoord pos)
@@ -744,6 +759,7 @@ namespace SpellforceDataEditor.special_forms
             PanelInspector.Location = new Point(6 + RenderWindow.Width, ystart);
             SFRenderEngine.ResizeView(new Vector2(w_width, w_height));
             update_render = true;
+            RenderWindow.MakeCurrent();
         }
 
         private void slopebasedPaintToolStripMenuItem_Click(object sender, EventArgs e)

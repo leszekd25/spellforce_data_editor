@@ -108,14 +108,6 @@ namespace SpellforceDataEditor.SF3D
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
-            while (true)
-            {
-                ErrorCode ec = GL.GetError();
-                if (ec == ErrorCode.NoError)
-                    break;
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFTexture.Init(): OpenGL error '" + ec.ToString() + "' for texture " + name);
-                System.Diagnostics.Debug.WriteLine("SFTexture.Init() " + ec + " | " + name);
-            }
         }
 
         public int Load(MemoryStream ms)
@@ -475,7 +467,8 @@ namespace SpellforceDataEditor.SF3D
             return new_tex;
         }
 
-        public static SFTexture MixUncompressed(SFTexture tex1, byte w1, SFTexture tex2, byte w2, SFTexture tex3, byte w3)
+        // used only for terrain texture preview for now...
+        public static void MixUncompressed(SFTexture tex1, byte w1, SFTexture tex2, byte w2, SFTexture tex3, byte w3, ref SFTexture new_tex)
         {
             if ((tex1.width != tex2.width) || (tex1.height != tex2.height))
             {
@@ -498,19 +491,17 @@ namespace SpellforceDataEditor.SF3D
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFTexture.MixUncompressed(): Texture weights are both 0! Using weight 85 for all weights");
                 w1 = 85; w2 = 85; w3 = 85;
             }
-
-            SFTexture new_tex = new SFTexture();
+            
             new_tex.width = tex1.width;
             new_tex.height = tex1.height;
             new_tex.mipMapCount = tex1.mipMapCount;
             new_tex.format = tex1.format;
-            new_tex.data = new byte[tex1.data.Length];
+            if(new_tex.data == null)
+                new_tex.data = new byte[tex1.data.Length];
             for (int i = 0; i < tex1.data.Length; i++)
             {
                 new_tex.data[i] = (byte)((w1 * tex1.data[i] + w2 * tex2.data[i] + w3 * tex3.data[i]) / 255);
             }
-
-            return new_tex;
         }
     }
 }

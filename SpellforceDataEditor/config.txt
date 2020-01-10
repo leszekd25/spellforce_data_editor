@@ -10,7 +10,7 @@ MaximumAllowedTextureSize 2048
 # GameDirectory is a path parameter, it should point at the folder with Spellforce.exe
 # When specified, editor will try to preload data from PAKs found in the GameDirectory/pak folder
 # Some editor features require this to be a valid parameter
-GameDirectory 
+GameDirectory C:\personal stuff\SpellForce - Platinum Edition
 
 # LogInfo/Warning/Error allowed values: YES, NO
 # Sets log level option to be set on or off

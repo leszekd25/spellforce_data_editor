@@ -65,8 +65,8 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             tim_b.Location = add_button.Location;
             tim_b.Size = add_button.Size;
             tim_b.Tag = cur_tex;
-            tim_b.Image = map.heightmap.texture_manager.CreateBitmapFromTexture(
-                                       map.heightmap.texture_manager.tile_texture_atlas[0]);
+            tim_b.Image = map.heightmap.texture_manager.texture_tile_image[0];//CreateBitmapFromTexture(
+                                       //map.heightmap.texture_manager.tile_texture_atlas[0]);
             tim_b.MouseClick += new MouseEventHandler(buttonTex_MouseClick);
             TextBox tw_tb = new TextBox();
             tw_tb.Location = new Point(add_button.Location.X, add_button.Location.Y + 73);
@@ -140,8 +140,8 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                 td.tile_id = 0;
             tb.Text = td.tile_id.ToString();
 
-            td.tile_image.Image = map.heightmap.texture_manager.CreateBitmapFromTexture(
-                                      map.heightmap.texture_manager.tile_texture_atlas[td.tile_id]);
+            td.tile_image.Image = map.heightmap.texture_manager.texture_tile_image[td.tile_id];//map.heightmap.texture_manager.CreateBitmapFromTexture(
+                                      //map.heightmap.texture_manager.tile_texture_atlas[td.tile_id]);
 
         }
 
@@ -238,8 +238,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             wsum_above = sum_weights;
 
             GenerateMapTextures();
-            foreach (var chunk_node in map.heightmap.chunk_nodes)
-                chunk_node.MapChunk.RebuildTerrainTexture();
+            map.heightmap.RebuildTerrainTexture(new SFCoord(0, 0), new SFCoord(map.width - 1, map.height - 1));
             MainForm.mapedittool.update_render = true;
         }
 

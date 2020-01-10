@@ -10,6 +10,176 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SpellforceDataEditor.SFMap
 {
+    public class SFMapHeightMapGeometryPool
+    {
+        public const int POOL_SIZE = 768;
+        public const int CHUNK_SIZE = 16;
+
+        public int vertex_array = -1;
+        public int position_buffer, normal_buffer, element_buffer;
+
+        public Vector3[] vertices_pool = new Vector3[POOL_SIZE * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1)];    // vec3
+        public Vector3[] normals_pool = new Vector3[POOL_SIZE * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1)];     // vec3
+        public ushort[] indices_pool = new ushort[6 * POOL_SIZE * (CHUNK_SIZE * CHUNK_SIZE)];       // ushort, 6 per quad
+
+        public ushort[] indices_base = new ushort[6 * (CHUNK_SIZE * CHUNK_SIZE)];
+
+        public bool[] active = new bool[POOL_SIZE];
+        public int first_unused = 0;
+        public int last_used = -1;
+        public int used_count = 0;
+
+        public SFMapHeightMapGeometryPool()
+        {
+            // generate indices base
+            for (uint i = 0; i < CHUNK_SIZE; i++)
+                for (uint j = 0; j < CHUNK_SIZE; j++)
+                {
+                    indices_base[6 * (i * CHUNK_SIZE + j) + 0] = (ushort)(i * (CHUNK_SIZE + 1) + j);
+                    indices_base[6 * (i * CHUNK_SIZE + j) + 1] = (ushort)(i * (CHUNK_SIZE + 1) + j + 1);
+                    indices_base[6 * (i * CHUNK_SIZE + j) + 2] = (ushort)(i * (CHUNK_SIZE + 1) + j + (CHUNK_SIZE + 1));
+                    indices_base[6 * (i * CHUNK_SIZE + j) + 3] = (ushort)(i * (CHUNK_SIZE + 1) + j + 1);
+                    indices_base[6 * (i * CHUNK_SIZE + j) + 4] = (ushort)(i * (CHUNK_SIZE + 1) + j + (CHUNK_SIZE + 1));
+                    indices_base[6 * (i * CHUNK_SIZE + j) + 5] = (ushort)(i * (CHUNK_SIZE + 1) + j + (CHUNK_SIZE + 2));
+                }
+
+            for (int i = 0; i < POOL_SIZE; i++)
+            {
+                active[i] = false;
+                // indices generated only once per run
+                Array.Copy(indices_base, 0, indices_pool, 6 * i * (CHUNK_SIZE * CHUNK_SIZE), 6 * (CHUNK_SIZE * CHUNK_SIZE));
+            }
+
+            Init();
+        }
+
+        public void Init()
+        {
+            if (vertex_array == -1)
+                vertex_array = GL.GenVertexArray();
+            position_buffer = GL.GenBuffer();
+            normal_buffer = GL.GenBuffer();
+            element_buffer = GL.GenBuffer();
+
+            GL.BindVertexArray(vertex_array);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices_pool.Length * 12, vertices_pool, BufferUsageHint.DynamicDraw);
+            GL.EnableVertexAttribArray(0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals_pool.Length * 12, normals_pool, BufferUsageHint.DynamicDraw);
+            GL.EnableVertexAttribArray(1);
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
+            GL.BufferData<ushort>(BufferTarget.ElementArrayBuffer, indices_pool.Length * 2, indices_pool, BufferUsageHint.DynamicDraw);
+
+            GL.BindVertexArray(0);
+        }
+
+        // returns position of the chunk in memory
+        public int BuildNewChunk(SFMapHeightMap hmap, int ix, int iy)
+        {
+            if (used_count == POOL_SIZE)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapHeightMapGeometryPool.BuildNewChunk(): Pool is closed!");
+                throw new ArgumentOutOfRangeException("SFMapHeightMapGeometryPool.BuildNewChunk(): No room to allocate next chunk!");
+            }
+
+            int ret = first_unused;
+            for (int i = first_unused + 1; i < POOL_SIZE; i++)
+                if (!active[i])
+                {
+                    first_unused = i;
+                    break;
+                }
+
+            if (last_used < ret)
+                last_used = ret;
+
+            active[ret] = true;
+            used_count += 1;
+
+            // generate geometry for the chunk
+            UpdateChunk(ret, hmap, ix, iy);
+
+            return ret;
+        }
+
+        public void UpdateChunk(int offset, SFMapHeightMap hmap, int ix, int iy)
+        {
+            float flatten_factor = 100.0f;
+
+            int map_size = hmap.width;
+            int chunk_count = map_size / CHUNK_SIZE;
+            int row_start = (chunk_count - iy - 1) * CHUNK_SIZE;
+            int col_start = ix * CHUNK_SIZE;
+
+            byte[] tex_data = hmap.tile_data;
+
+            for (int i = 0; i < (CHUNK_SIZE+1); i++)
+            {
+                for (int j = 0; j < (CHUNK_SIZE+1); j++)
+                {
+                    vertices_pool[(CHUNK_SIZE + 1) * (CHUNK_SIZE + 1) * offset + (CHUNK_SIZE + 1) * i + j] = new Vector3(
+                        col_start + j, 
+                        hmap.GetHeightAt(col_start + j, row_start + i) / flatten_factor, 
+                        map_size - (row_start + i) - 1);
+
+                    normals_pool[(CHUNK_SIZE + 1) * (CHUNK_SIZE + 1) * offset + (CHUNK_SIZE + 1) * i + j] = 
+                        hmap.GetVertexNormal(col_start + j, row_start + i);
+                }
+            }
+
+            // buffer subdata
+            GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, 
+                new IntPtr(12 * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1) * offset), 
+                12 * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1),
+                ref vertices_pool[(CHUNK_SIZE + 1) * (CHUNK_SIZE + 1) * offset]);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, 
+                new IntPtr(12 * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1) * offset),
+                12 * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1),
+                ref normals_pool[(CHUNK_SIZE + 1) * (CHUNK_SIZE + 1) * offset]);
+        }
+
+        public void FreeChunk(int offset)
+        {
+            if (active[offset])
+            {
+                active[offset] = false;
+                used_count -= 1;
+                if (offset < first_unused)
+                    first_unused = offset;
+                if (offset == last_used)
+                    for (int i = last_used - 1; i >= 0; i--)
+                        if (active[offset])
+                        {
+                            last_used = i;
+                            break;
+                        }
+                if (used_count == 0)
+                    last_used = -1;
+            }
+        }
+
+        public void Unload()
+        {
+            if (vertex_array != -1)
+            {
+                GL.DeleteBuffer(position_buffer);
+                GL.DeleteBuffer(normal_buffer);
+                GL.DeleteBuffer(element_buffer);
+                GL.DeleteVertexArray(vertex_array);
+                vertex_array = -1;
+            }
+        }
+    }
+
     public class SFMapHeightMapChunk
     {
         public SFMapHeightMap hmap = null;
@@ -18,12 +188,10 @@ namespace SpellforceDataEditor.SFMap
         public int id, ix, iy;
         public bool visible = false;
         public bool decoration_visible = false;
+        public bool generated = false;
 
         // heightmap
-        public byte[] material_id;
-        public Vector3[] vertices;
-        public Vector3[] normals;
-        public Vector3[] texture_id;
+        int pool_index = -1;
 
         public SF3D.Physics.CollisionMesh collision_cache = new SF3D.Physics.CollisionMesh();
 
@@ -41,8 +209,6 @@ namespace SpellforceDataEditor.SFMap
         public List<SFMapPortal> portals = new List<SFMapPortal>();
         public List<SFMapDecoration> decorations = new List<SFMapDecoration>();
 
-        public int vertex_array, position_buffer, normal_buffer, tex_id_buffer = -1;
-
 
         public void Generate()
         {
@@ -51,114 +217,17 @@ namespace SpellforceDataEditor.SFMap
 
             Degenerate();
 
-            ushort[] data = hmap.height_data;
-            byte[] tex_data = hmap.tile_data;
+            id = iy * (hmap.width / width) + ix;
 
-            float flatten_factor = 100;
+            pool_index = hmap.geometry_pool.BuildNewChunk(hmap, ix, iy);
 
-            int map_size = hmap.width;
-            int size = width;
-
-            id = iy * (map_size / size) + ix;
-
-            int chunk_count = map_size / size;
-
-            int row_start = (chunk_count - iy - 1) * size;
-            int col_start = ix * size;
-
-            material_id = new byte[(size + 1) * (size + 1)];
-
-            vertices = new OpenTK.Vector3[size * size * 6];
-            normals = new OpenTK.Vector3[size * size * 6];
-            texture_id = new Vector3[size * size * 6];
-
-            // precalculate material data
-            for (int i = 0; i <= size; i++)
-            {
-                for (int j = 0; j <= size; j++)
-                {
-                    SFCoord p = new SFCoord(col_start + j, row_start + i);
-                    if (p.InRect(0, 0, map_size - 1, map_size - 1))
-                        material_id[i * (size + 1) + j] = tex_data[(row_start + i) * map_size + col_start + j];
-                    else
-                        material_id[i * (size + 1) + j] = 0;
-                }
-            }
-
-            // todo: roll into some nice loops (though is it really necessary?)
-            // generate mesh data
-            for (int i = 0; i < size; i++)
-            {
-                for (int j = 0; j < size; j++)
-                {
-                    int t = (i * size + j) * 6;
-                    Vector3 triangle_mats;
-
-                    if ((i + j) % 2 == 0)
-                    {
-                        // left triangle
-                        vertices[t + 0] = new Vector3((float)j, hmap.GetHeightAt(col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 1] = new Vector3((float)j + 1, hmap.GetHeightAt(col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-                        vertices[t + 2] = new Vector3((float)j, hmap.GetHeightAt(col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-
-                        triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[(i + 1) * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
-                        texture_id[t + 0] = triangle_mats;
-                        texture_id[t + 1] = triangle_mats;
-                        texture_id[t + 2] = triangle_mats;
-
-                        // right triangle
-                        vertices[t + 3] = new Vector3((float)j, hmap.GetHeightAt(col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 4] = new Vector3((float)j + 1, hmap.GetHeightAt(col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 5] = new Vector3((float)j + 1, hmap.GetHeightAt(col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-
-                        triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j + 1]);
-                        texture_id[t + 3] = triangle_mats;
-                        texture_id[t + 4] = triangle_mats;
-                        texture_id[t + 5] = triangle_mats;
-
-                        normals[t + 0] = hmap.GetVertexNormal(col_start + j, row_start + i);
-                        normals[t + 1] = hmap.GetVertexNormal(col_start + j + 1, row_start + i + 1);
-                        normals[t + 2] = hmap.GetVertexNormal(col_start + j, row_start + i + 1);
-                        normals[t + 3] = normals[(i * size + j) * 6 + 0]; //GetVertexNormal(data, map_size, col_start + j, row_start + i);
-                        normals[t + 4] = hmap.GetVertexNormal(col_start + j + 1, row_start + i);
-                        normals[t + 5] = normals[(i * size + j) * 6 + 1]; //GetVertexNormal(data, map_size, col_start + j+1, row_start + i+1);
-                    }
-                    else
-                    {
-                        // left triangle
-                        vertices[t + 0] = new Vector3((float)j, hmap.GetHeightAt(col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 1] = new Vector3((float)j + 1, hmap.GetHeightAt(col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 2] = new Vector3((float)j, hmap.GetHeightAt(col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-
-                        triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
-                        texture_id[t + 0] = triangle_mats;
-                        texture_id[t + 1] = triangle_mats;
-                        texture_id[t + 2] = triangle_mats;
-                        // right triangle
-                        vertices[t + 3] = new Vector3((float)j + 1, hmap.GetHeightAt(col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 4] = new Vector3((float)j + 1, hmap.GetHeightAt(col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-                        vertices[t + 5] = new Vector3((float)j, hmap.GetHeightAt(col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-
-                        triangle_mats = new Vector3(material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
-                        texture_id[t + 3] = triangle_mats;
-                        texture_id[t + 4] = triangle_mats;
-                        texture_id[t + 5] = triangle_mats;
-
-                        normals[t + 0] = hmap.GetVertexNormal(col_start + j, row_start + i);
-                        normals[t + 1] = hmap.GetVertexNormal(col_start + j + 1, row_start + i);
-                        normals[t + 2] = hmap.GetVertexNormal(col_start + j, row_start + i + 1);
-                        normals[t + 3] = normals[(i * size + j) * 6 + 1]; //GetVertexNormal(data, map_size, col_start + j + 1, row_start + i);
-                        normals[t + 4] = hmap.GetVertexNormal(col_start + j + 1, row_start + i + 1);
-                        normals[t + 5] = normals[(i * size + j) * 6 + 2]; //GetVertexNormal(data, map_size, col_start + j, row_start + i + 1);
-                    }
-                }
-            }
-
-            collision_cache.Generate(new Vector3(ix * size, 0, iy * size), vertices);
+            collision_cache.GenerateFromHeightmap(new Vector3(0, 0, 0), hmap.geometry_pool, pool_index);
             Init();
 
             RebuildLake();
             UpdateSettingsVisible();
+
+            generated = true;
         }
 
         public void GenerateTemporaryAABB()
@@ -181,54 +250,29 @@ namespace SpellforceDataEditor.SFMap
 
         public void Init()
         {
-            vertex_array = GL.GenVertexArray();
-            position_buffer = GL.GenBuffer();
-            normal_buffer = GL.GenBuffer();
-            tex_id_buffer = GL.GenBuffer();
-
-            GL.BindVertexArray(vertex_array);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Length * 12, normals, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, tex_id_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, texture_id.Length * 12, texture_id, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexAttribArray(2);
-            GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindVertexArray(0);
+            
         }
 
         public void Degenerate()
         {
-            if (vertex_array == -1)
+            if (!generated)
                 return;
 
-            GL.DeleteBuffer(position_buffer);
-            GL.DeleteBuffer(normal_buffer);
-            GL.DeleteBuffer(tex_id_buffer);
-            GL.DeleteVertexArray(vertex_array);
+            if (pool_index != -1)
+            {
+                hmap.geometry_pool.FreeChunk(pool_index);
+                pool_index = -1;
+            }
 
-            material_id = null;
-            vertices = null;
-            normals = null;
-            texture_id = null;
             collision_cache.triangles = null;
-
-            vertex_array = -1;
 
             if (lake_model != null)
             {
                 SFResources.SFResourceManager.Models.Dispose(lake_model.GetName());
                 lake_model = null;
             }
+
+            generated = false;
         }
 
 
@@ -238,77 +282,10 @@ namespace SpellforceDataEditor.SFMap
             if (!visible)
                 return;
 
-            float flatten_factor = 100;
-
-            int size = width;
-            int chunk_count = hmap.width / size;
-
-            int row_start = (chunk_count - iy - 1) * size;
-            int col_start = ix * size;
-
-            for (int i = 0; i < size; i++)
-            {
-                for (int j = 0; j < size; j++)
-                {
-                    int t = (i * size + j) * 6;
-
-                    if ((i + j) % 2 == 0)
-                    {
-                        // left triangle
-                        vertices[t + 0] = new Vector3((float)j, hmap.GetHeightAt(col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 1] = new Vector3((float)j + 1, hmap.GetHeightAt(col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-                        vertices[t + 2] = new Vector3((float)j, hmap.GetHeightAt(col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-
-                        // right triangle
-                        vertices[t + 3] = new Vector3((float)j, hmap.GetHeightAt(col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 4] = new Vector3((float)j + 1, hmap.GetHeightAt(col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 5] = new Vector3((float)j + 1, hmap.GetHeightAt(col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-
-                        normals[t + 0] = hmap.GetVertexNormal(col_start + j, row_start + i);
-                        normals[t + 1] = hmap.GetVertexNormal(col_start + j + 1, row_start + i + 1);
-                        normals[t + 2] = hmap.GetVertexNormal(col_start + j, row_start + i + 1);
-                        normals[t + 3] = normals[(i * size + j) * 6 + 0]; //GetVertexNormal(data, map_size, col_start + j, row_start + i);
-                        normals[t + 4] = hmap.GetVertexNormal(col_start + j + 1, row_start + i);
-                        normals[t + 5] = normals[(i * size + j) * 6 + 1]; //GetVertexNormal(data, map_size, col_start + j+1, row_start + i+1);
-                    }
-                    else
-                    {
-                        // left triangle
-                        vertices[t + 0] = new Vector3((float)j, hmap.GetHeightAt(col_start + j, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 1] = new Vector3((float)j + 1, hmap.GetHeightAt(col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 2] = new Vector3((float)j, hmap.GetHeightAt(col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-
-                        // right triangle
-                        vertices[t + 3] = new Vector3((float)j + 1, hmap.GetHeightAt(col_start + j + 1, row_start + i) / flatten_factor, ((float)size) - (float)i - 1);
-                        vertices[t + 4] = new Vector3((float)j + 1, hmap.GetHeightAt(col_start + j + 1, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-                        vertices[t + 5] = new Vector3((float)j, hmap.GetHeightAt(col_start + j, row_start + i + 1) / flatten_factor, ((float)size) - (float)(i + 1) - 1);
-
-                        normals[t + 0] = hmap.GetVertexNormal(col_start + j, row_start + i);
-                        normals[t + 1] = hmap.GetVertexNormal(col_start + j + 1, row_start + i);
-                        normals[t + 2] = hmap.GetVertexNormal(col_start + j, row_start + i + 1);
-                        normals[t + 3] = normals[(i * size + j) * 6 + 1]; //GetVertexNormal(data, map_size, col_start + j + 1, row_start + i);
-                        normals[t + 4] = hmap.GetVertexNormal(col_start + j + 1, row_start + i + 1);
-                        normals[t + 5] = normals[(i * size + j) * 6 + 2]; //GetVertexNormal(data, map_size, col_start + j, row_start + i + 1);
-                    }
-                }
-            }
-
             collision_cache = new SF3D.Physics.CollisionMesh();
-            collision_cache.Generate(new Vector3(ix * size, 0, iy * size), vertices);
+            hmap.geometry_pool.UpdateChunk(pool_index, hmap, ix, iy);
 
-            GL.BindVertexArray(vertex_array);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Length * 12, normals, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindVertexArray(0);
+            collision_cache.GenerateFromHeightmap(new Vector3(0, 0, 0), hmap.geometry_pool, pool_index);
 
 
             // fix all object positions (without lakes for now...)
@@ -345,80 +322,6 @@ namespace SpellforceDataEditor.SFMap
 
             foreach (string o_name in overlays.Keys)
                 OverlayUpdate(o_name);
-        }
-
-        // for texture edit only
-        public void RebuildTerrainTexture()
-        {
-            byte[] tex_data = hmap.tile_data;
-            int map_size = hmap.width;
-            if (!visible)
-                return;
-
-            int size = width;
-            int chunk_count = map_size / size;
-
-            int row_start = (chunk_count - iy - 1) * size;
-            int col_start = ix * size;
-
-            // precalculate material data
-            for (int i = 0; i <= size; i++)
-            {
-                for (int j = 0; j <= size; j++)
-                {
-                    SFCoord p = new SFCoord(col_start + j, row_start + i);
-                    if (p.InRect(0, 0, map_size - 1, map_size - 1))
-                        material_id[i * (size + 1) + j] = tex_data[(row_start + i) * map_size + col_start + j];
-                    else
-                        material_id[i * (size + 1) + j] = 0;
-                }
-            }
-
-            for (int i = 0; i < size; i++)
-            {
-                for (int j = 0; j < size; j++)
-                {
-                    int t = (i * size + j) * 6;
-                    Vector3 triangle_mats;
-
-                    if ((i + j) % 2 == 0)
-                    {
-                        // left triangle
-                        triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[(i + 1) * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
-                        texture_id[t + 0] = triangle_mats;
-                        texture_id[t + 1] = triangle_mats;
-                        texture_id[t + 2] = triangle_mats;
-
-                        // right triangle
-                        triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j + 1]);
-                        texture_id[t + 3] = triangle_mats;
-                        texture_id[t + 4] = triangle_mats;
-                        texture_id[t + 5] = triangle_mats;
-                    }
-                    else
-                    {
-                        // left triangle
-                        triangle_mats = new Vector3(material_id[i * (size + 1) + j], material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
-                        texture_id[t + 0] = triangle_mats;
-                        texture_id[t + 1] = triangle_mats;
-                        texture_id[t + 2] = triangle_mats;
-                        // right triangle
-                        triangle_mats = new Vector3(material_id[i * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j + 1], material_id[(i + 1) * (size + 1) + j]);
-                        texture_id[t + 3] = triangle_mats;
-                        texture_id[t + 4] = triangle_mats;
-                        texture_id[t + 5] = triangle_mats;
-                    }
-                }
-            }
-
-            GL.BindVertexArray(vertex_array);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, tex_id_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, texture_id.Length * 12, texture_id, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexAttribArray(2);
-            GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindVertexArray(0);
         }
 
         struct SFMapLakeCellInfo
@@ -627,13 +530,11 @@ namespace SpellforceDataEditor.SFMap
 
         public void Unload()
         {
-            if (vertex_array == -1)
-                return;
-
-            GL.DeleteBuffer(position_buffer);
-            GL.DeleteBuffer(normal_buffer);
-            GL.DeleteBuffer(tex_id_buffer);
-            GL.DeleteVertexArray(vertex_array);
+            if (pool_index != -1)
+            {
+                hmap.geometry_pool.FreeChunk(pool_index);
+                pool_index = -1;
+            }
 
             if (lake_model != null)
             {
@@ -654,13 +555,7 @@ namespace SpellforceDataEditor.SFMap
 
             hmap = null;
             owner = null;
-            material_id = null;
-            vertices = null;
-            normals = null;
-            texture_id = null;
             collision_cache = null;
-
-            vertex_array = -1;
         }
 
         public void AddUnit(SFMapUnit u)
@@ -748,6 +643,7 @@ namespace SpellforceDataEditor.SFMap
     {
         public SFMap map = null;
         public SFMapTerrainTextureManager texture_manager { get; private set; } = new SFMapTerrainTextureManager();
+        public SFMapHeightMapGeometryPool geometry_pool { get; private set; } = new SFMapHeightMapGeometryPool();
         public int width, height;
         public ushort[] height_data;
         public byte[] tile_data;
@@ -757,12 +653,13 @@ namespace SpellforceDataEditor.SFMap
         public List<SFCoord> chunk42_data = new List<SFCoord>();
         public List<SFCoord> chunk56_data = new List<SFCoord>();
         public List<SFMapChunk60Data> chunk60_data = new List<SFMapChunk60Data>();
-
-        public int chunk_size { get; private set; }
+        
         public SF3D.SceneSynchro.SceneNodeMapChunk[] chunk_nodes { get; private set; }
         public List<SF3D.SceneSynchro.SceneNodeMapChunk> visible_chunks = new List<SF3D.SceneSynchro.SceneNodeMapChunk>();
 
         public List<string> visible_overlays { get; private set; } = new List<string>();
+
+        public int tile_data_texture = -1;
 
         public SFMapHeightMap(int w, int h)
         {
@@ -773,24 +670,45 @@ namespace SpellforceDataEditor.SFMap
             lake_data = new byte[w * h]; lake_data.Initialize();
             building_data = new ushort[w * h]; building_data.Initialize();
             temporary_mask = new bool[w * h];
+
+            tile_data_texture = GL.GenTexture();
+            GL.ActiveTexture(TextureUnit.Texture2);
+            GL.BindTexture(TextureTarget.Texture2D, tile_data_texture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R8, width, height, 0,
+                PixelFormat.Red, PixelType.UnsignedByte, tile_data);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.ActiveTexture(TextureUnit.Texture0);
+        }
+
+        public void UpdateTileMap()
+        {
+            GL.ActiveTexture(TextureUnit.Texture2);
+            GL.BindTexture(TextureTarget.Texture2D, tile_data_texture);
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.Red, PixelType.UnsignedByte, tile_data);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.ActiveTexture(TextureUnit.Texture0);
         }
 
         public SFMapHeightMapChunk GetChunk(SFCoord pos)
         {
-            int chunk_count_y = height / chunk_size;
-            return chunk_nodes[(chunk_count_y * ((height - pos.y - 1) / chunk_size) + (pos.x / chunk_size))].MapChunk;
+            int chunk_count_y = height / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            return chunk_nodes[(chunk_count_y * ((height - pos.y - 1) / SFMapHeightMapGeometryPool.CHUNK_SIZE) + (pos.x / SFMapHeightMapGeometryPool.CHUNK_SIZE))].MapChunk;
         }
 
         public SF3D.SceneSynchro.SceneNodeMapChunk GetChunkNode(SFCoord pos)
         {
-            int chunk_count_y = height / chunk_size;
-            return chunk_nodes[(chunk_count_y * ((height - pos.y - 1) / chunk_size) + (pos.x / chunk_size))];
+            int chunk_count_y = height / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            return chunk_nodes[(chunk_count_y * ((height - pos.y - 1) / SFMapHeightMapGeometryPool.CHUNK_SIZE) + (pos.x / SFMapHeightMapGeometryPool.CHUNK_SIZE))];
         }
 
         // takes into account that each object on the map is bound to a chunk
         public Vector3 GetFixedPosition(SFCoord pos)
         {
-            return new Vector3(pos.x % chunk_size, GetZ(pos) / 100.0f, (height - pos.y - 1) % chunk_size);
+            return new Vector3(pos.x % SFMapHeightMapGeometryPool.CHUNK_SIZE, GetZ(pos) / 100.0f, (height - pos.y - 1) % SFMapHeightMapGeometryPool.CHUNK_SIZE);
         }
 
         public void SetRowRaw(int row, byte[] chunk_data)
@@ -808,30 +726,30 @@ namespace SpellforceDataEditor.SFMap
         public void SetTilesRaw(byte[] _tiles)
         {
             tile_data = _tiles;
+            UpdateTileMap();
         }
 
         public void Generate()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate() called");
 
-            chunk_size = 16;
-            int chunk_count_x = width / chunk_size;
-            int chunk_count_y = height / chunk_size;
+            int chunk_count_x = width / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int chunk_count_y = height / SFMapHeightMapGeometryPool.CHUNK_SIZE;
             chunk_nodes = new SF3D.SceneSynchro.SceneNodeMapChunk[chunk_count_x * chunk_count_y];
             for (int i = 0; i < chunk_count_y; i++)
                 for (int j = 0; j < chunk_count_x; j++)
                 {
                     chunk_nodes[i * chunk_count_x + j] = new SF3D.SceneSynchro.SceneNodeMapChunk("hmap_" + j.ToString() + "_" + i.ToString());
                     SF3D.SceneSynchro.SceneNodeMapChunk chunk_node = chunk_nodes[i * chunk_count_x + j];
-                    chunk_node.Position = new Vector3(j * chunk_size, 0, i * chunk_size);
+                    chunk_node.Position = new Vector3(j * SFMapHeightMapGeometryPool.CHUNK_SIZE, 0, i * SFMapHeightMapGeometryPool.CHUNK_SIZE);
                     chunk_node.Visible = false;
                     chunk_node.MapChunk = new SFMapHeightMapChunk();
                     chunk_node.MapChunk.hmap = this;
                     chunk_node.MapChunk.owner = chunk_nodes[i * chunk_count_x + j];
                     chunk_node.MapChunk.ix = j;
                     chunk_node.MapChunk.iy = i;
-                    chunk_node.MapChunk.width = chunk_size;
-                    chunk_node.MapChunk.height = chunk_size;
+                    chunk_node.MapChunk.width = SFMapHeightMapGeometryPool.CHUNK_SIZE;
+                    chunk_node.MapChunk.height = SFMapHeightMapGeometryPool.CHUNK_SIZE;
                     chunk_node.MapChunk.GenerateTemporaryAABB();
                     chunk_node.Update(0);
                 }
@@ -1020,13 +938,13 @@ namespace SpellforceDataEditor.SFMap
 
         public void RebuildGeometry(SFCoord topleft, SFCoord bottomright)
         {
-            int chunk_count_x = width / chunk_size;
-            int chunk_count_y = height / chunk_size;
+            int chunk_count_x = width / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int chunk_count_y = height / SFMapHeightMapGeometryPool.CHUNK_SIZE;
 
-            int topchunkx = topleft.x / 16;
-            int topchunky = topleft.y / 16;
-            int botchunkx = bottomright.x / 16;
-            int botchunky = bottomright.y / 16;
+            int topchunkx = topleft.x / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int topchunky = topleft.y / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int botchunkx = bottomright.x / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int botchunky = bottomright.y / SFMapHeightMapGeometryPool.CHUNK_SIZE;
 
             for (int i = topchunkx; i <= botchunkx; i++)
                 for (int j = topchunky; j <= botchunky; j++)
@@ -1035,17 +953,15 @@ namespace SpellforceDataEditor.SFMap
 
         public void RebuildTerrainTexture(SFCoord topleft, SFCoord bottomright)
         {
-            int chunk_count_x = width / chunk_size;
-            int chunk_count_y = height / chunk_size;
+            int chunk_count_x = width / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int chunk_count_y = height / SFMapHeightMapGeometryPool.CHUNK_SIZE;
 
-            int topchunkx = topleft.x / 16;
-            int topchunky = topleft.y / 16;
-            int botchunkx = bottomright.x / 16;
-            int botchunky = bottomright.y / 16;
+            int topchunkx = topleft.x / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int topchunky = topleft.y / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int botchunkx = bottomright.x / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int botchunky = bottomright.y / SFMapHeightMapGeometryPool.CHUNK_SIZE;
 
-            for (int i = topchunkx; i <= botchunkx; i++)
-                for (int j = topchunky; j <= botchunky; j++)
-                    chunk_nodes[(chunk_count_y - j - 1) * chunk_count_x + i].MapChunk.RebuildTerrainTexture();
+            UpdateTileMap();
         }
 
         public void OverlayCreate(string o_name, Vector4 col)
@@ -1062,7 +978,7 @@ namespace SpellforceDataEditor.SFMap
         public void OverlayAdd(string o_name, SFCoord pos)
         {
             SFMapHeightMapChunk chunk = GetChunk(pos);
-            SFCoord new_pos = pos - new SFCoord(chunk.ix * chunk_size, ((width / chunk_size) - chunk.iy - 1) * chunk_size);
+            SFCoord new_pos = pos - new SFCoord(chunk.ix * SFMapHeightMapGeometryPool.CHUNK_SIZE, ((width / SFMapHeightMapGeometryPool.CHUNK_SIZE) - chunk.iy - 1) * SFMapHeightMapGeometryPool.CHUNK_SIZE);
             if (!chunk.overlays[o_name].points.Contains(new_pos))
                 chunk.overlays[o_name].points.Add(new_pos);
         }
@@ -1070,7 +986,7 @@ namespace SpellforceDataEditor.SFMap
         public void OverlayRemove(string o_name, SFCoord pos)
         {
             SFMapHeightMapChunk chunk = GetChunk(pos);
-            SFCoord new_pos = pos - new SFCoord(chunk.ix * chunk_size, ((width / chunk_size) - chunk.iy - 1) * chunk_size);
+            SFCoord new_pos = pos - new SFCoord(chunk.ix * SFMapHeightMapGeometryPool.CHUNK_SIZE, ((width / SFMapHeightMapGeometryPool.CHUNK_SIZE) - chunk.iy - 1) * SFMapHeightMapGeometryPool.CHUNK_SIZE);
             int i = chunk.overlays[o_name].points.IndexOf(new_pos);
             if (i != -1)
                 chunk.overlays[o_name].points.RemoveAt(i);
@@ -1101,13 +1017,13 @@ namespace SpellforceDataEditor.SFMap
 
         public void RebuildOverlay(SFCoord topleft, SFCoord bottomright, string o_name)
         {
-            int chunk_count_x = width / chunk_size;
-            int chunk_count_y = height / chunk_size;
+            int chunk_count_x = width / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int chunk_count_y = height / SFMapHeightMapGeometryPool.CHUNK_SIZE;
 
-            int topchunkx = topleft.x / chunk_size;
-            int topchunky = topleft.y / chunk_size;
-            int botchunkx = bottomright.x / chunk_size;
-            int botchunky = bottomright.y / chunk_size;
+            int topchunkx = topleft.x / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int topchunky = topleft.y / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int botchunkx = bottomright.x / SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int botchunky = bottomright.y / SFMapHeightMapGeometryPool.CHUNK_SIZE;
 
             for (int i = topchunkx; i <= botchunkx; i++)
                 for (int j = topchunky; j <= botchunky; j++)
@@ -1228,11 +1144,18 @@ namespace SpellforceDataEditor.SFMap
             if (map == null)
                 return;
 
+            if(tile_data_texture != -1)
+            {
+                GL.DeleteTexture(tile_data_texture);
+                tile_data_texture = -1;
+            }
             if (texture_manager != null)
                 texture_manager.Unload();
             if (chunk_nodes != null)
                 foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
                     SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(chunk);
+            geometry_pool.Unload();
+            geometry_pool = null;
 
             chunk42_data.Clear();
             chunk56_data.Clear();

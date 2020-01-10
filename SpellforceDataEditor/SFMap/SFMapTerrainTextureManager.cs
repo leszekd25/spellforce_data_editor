@@ -49,16 +49,21 @@ namespace SpellforceDataEditor.SFMap
         // map consists of tiles: tiles 0-31 are textures from texture_id, 32-223 - mixed custom tiles
         // tiles 224-255 are tiles with proper texture
         // mixed tiles use IDs from 0 to 31...
-        public SFTexture[] tile_texture_atlas { get; private set; } = new SFTexture[MAX_TILES];
+
         // helper array to check if a mixed tile is defined
-        public bool[] tile_used { get; private set; } = new bool[MAX_TILES];
+        public bool[] tile_defined { get; private set; } = new bool[MAX_TILES];
         // each tile contains data which is saved in map file
         public SFMapTerrainTextureTileData[] texture_tiledata { get; private set; } = new SFMapTerrainTextureTileData[MAX_TILES];
         public int terrain_texture { get; private set; } = -1;     //texture GL ID
 
         // all images below are 64x64, taking up at most 20 KB per image - no more than 2 MB
+        SFTexture texture_tile_mixer = null;
         public Image[] texture_base_image = new Image[TEXTURES_AVAILABLE+1]; // all base textures in the game
         public Image[] texture_tile_image = new Image[MAX_TILES];         // tiles loaded - first 31 are loaded bases
+
+        // tilemap texture buffer
+        int uniformTileData_buffer;
+        int[] uniformTileData;
 
 
         public void LoadTextureNames()
@@ -118,7 +123,7 @@ namespace SpellforceDataEditor.SFMap
             }
             ms.Close();
 
-            tex.Uncompress();
+            tex.Uncompress();     // needed for this to work in texture atlas (?)
             tex.Init();
             return tex;
         }
@@ -139,37 +144,19 @@ namespace SpellforceDataEditor.SFMap
             }
 
             // generate inbetween textures
-            tile_texture_atlas[0] = base_texture_bank[0];
-            tile_used[0] = true;
+            texture_tile_mixer = new SFTexture();
+            tile_defined[0] = true;
             for (int i = 1; i < 32; i++)
-            {
-                tile_texture_atlas[i] = base_texture_bank[i];
-                tile_used[i] = true;
-            }
+                tile_defined[i] = true;
             for(int i = 224; i < 255; i++)
-            {
-                tile_texture_atlas[i] = base_texture_bank[i - 223];
-                tile_used[i] = true;
+                tile_defined[i] = true;
 
-            }
             for (int i = 32; i < 224; i++)
             {
-                if ((texture_tiledata[i].ind1 != 0) || (texture_tiledata[i].ind2 != 0))
-                {
-                    tile_texture_atlas[i] = SFTexture.MixUncompressed(base_texture_bank[texture_tiledata[i].ind1],
-                                                                      texture_tiledata[i].weight1,
-                                                                      base_texture_bank[texture_tiledata[i].ind2],
-                                                                      texture_tiledata[i].weight2,
-                                                                      base_texture_bank[texture_tiledata[i].ind3],
-                                                                      texture_tiledata[i].weight3);
-                    tile_texture_atlas[i].Init();
-                    tile_used[i] = true;
-                }
+                if ((texture_tiledata[i].ind1 != 0) || (texture_tiledata[i].ind2 != 0) || (texture_tiledata[i].ind3 != 0))
+                    tile_defined[i] = true;
                 else
-                {
-                    tile_texture_atlas[i] = base_texture_bank[0];
-                    tile_used[i] = false;
-                }
+                    tile_defined[i] = false;
             }
 
             int mipmap_divisor = 1;
@@ -185,8 +172,8 @@ namespace SpellforceDataEditor.SFMap
             // todo: add mipmaps : )
             terrain_texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
-            GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8 - min_allowed_level, SizedInternalFormat.Rgba8, 256/mipmap_divisor, 256/mipmap_divisor, 255);
-            for (int i = 0; i < 255; i++)
+            GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8 - min_allowed_level, SizedInternalFormat.Rgba8, 256/mipmap_divisor, 256/mipmap_divisor, 32);
+            for (int i = 0; i < 32; i++)
             {
                 int offset = 0;
 
@@ -198,39 +185,67 @@ namespace SpellforceDataEditor.SFMap
                 {
                     int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
 
-                    if (tile_texture_atlas[i].IsValidMipMapLevel(level))
+                    if (base_texture_bank[i].IsValidMipMapLevel(level))
                     {
                         if (min_allowed_level > level) min_allowed_level = level;
 
-                        GL.TexSubImage3D(TextureTarget.Texture2DArray, level - min_allowed_level, 0, 0, i, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref tile_texture_atlas[i].data[offset]);
+                        GL.TexSubImage3D(TextureTarget.Texture2DArray, level - min_allowed_level, 0, 0, i, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref base_texture_bank[i].data[offset]);
 
                         offset += size;
                     }
                     w /= 2;
                     h /= 2;
                 }
-
-                while (true)
-                {
-                    ErrorCode ec = GL.GetError();
-                    if (ec == ErrorCode.NoError)
-                        break;
-                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.Init(): OpenGL error '" + ec.ToString() + "' for terrain texture id " + i.ToString());
-                    System.Diagnostics.Debug.WriteLine("TTM.Init() " + ec+" "+i.ToString());
-                }
             }
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int)All.Repeat);
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int)All.Repeat);
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
 
-            // generate button images
+            // generate button images (TODO: optimize this)
             GenerateBaseImages();
             GenerateTileImages();
+            
+            // create uniform buffer object for tiledata
+            uniformTileData_buffer = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.UniformBuffer, uniformTileData_buffer);
+            GL.BufferData(BufferTarget.UniformBuffer, 2 * 4 * 4 * MAX_TILES, new IntPtr(0), BufferUsageHint.StaticDraw);
+            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-            // free unused textures
-            for (int i = 32; i < 224; i++)
-                if((!tile_used[i])&&(tile_texture_atlas[i] != base_texture_bank[0]))
-                    tile_texture_atlas[i].FreeMemory();
+            uniformTileData = new int[2 * 4 * MAX_TILES];
+            GL.BindBufferRange(BufferRangeTarget.UniformBuffer, 0, uniformTileData_buffer, new IntPtr(0), 2 * 4 * 4 * MAX_TILES);
+
+            UpdateUniformTileData(0, MAX_TILES - 1);
+
+            GC.Collect();
+        }
+
+        public void UpdateUniformTileData(int start, int end)
+        {
+            for (int i = start; i <= end; i++)
+            {
+                if (i < 224)
+                    uniformTileData[i * 4 + 0] = texture_tiledata[i].ind1;
+                else
+                    uniformTileData[i * 4 + 0] = texture_tiledata[i].ind1-31;
+
+                uniformTileData[i * 4 + 1] = texture_tiledata[i].ind2;
+                uniformTileData[i * 4 + 2] = texture_tiledata[i].ind3;
+                uniformTileData[i * 4 + 3] = 0;
+            }
+            for (int i = start; i <= end; i++)
+            {
+                uniformTileData[MAX_TILES * 4 + i * 4 + 0] = texture_tiledata[i].weight1;
+                uniformTileData[MAX_TILES * 4 + i * 4 + 1] = texture_tiledata[i].weight2;
+                uniformTileData[MAX_TILES * 4 + i * 4 + 2] = texture_tiledata[i].weight3;
+                uniformTileData[MAX_TILES * 4 + i * 4 + 3] = 0;
+            }
+            // exceptional case...
+            uniformTileData[0] = 0;
+
+            GL.BindBuffer(BufferTarget.UniformBuffer, uniformTileData_buffer);
+            GL.BufferSubData(BufferTarget.UniformBuffer, new IntPtr(4 * 4 * start), 4 * 4 * (end - start) + 4 * 4, ref uniformTileData[4 * start]);
+            GL.BufferSubData(BufferTarget.UniformBuffer, new IntPtr(4 * 4 * (start + MAX_TILES)), 4 * 4 * (end - start) + 4 * 4, ref uniformTileData[4 * (start + MAX_TILES)]);
+            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
         }
 
         public bool SetBaseTexture(int base_index, int tex_id)
@@ -255,12 +270,8 @@ namespace SpellforceDataEditor.SFMap
             base_texture_bank[base_index].Dispose();
             // load new texture
             base_texture_bank[base_index] = LoadTerrainTexture(tex_id + TEXTURES_AVAILABLE);
-            tile_texture_atlas[base_index] = base_texture_bank[base_index];
-            tile_texture_atlas[base_index+223] = base_texture_bank[base_index];
-            // insert texture data to the atlas
-            int atlas_index1 = base_index;
-            int atlas_index2 = base_index + 223;
 
+            // insert texture data to the atlas
             GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
 
             int offset = 0;
@@ -272,106 +283,22 @@ namespace SpellforceDataEditor.SFMap
             for (int level = 0; level < 8 && (w != 0 || h != 0); ++level)
             {
                 int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
-                if (tile_texture_atlas[atlas_index1].IsValidMipMapLevel(level))
+                if (base_texture_bank[base_index].IsValidMipMapLevel(level))
                 {
                     if (min_allowed_level > level)
                         min_allowed_level = level;
 
-                    GL.TexSubImage3D(TextureTarget.Texture2DArray, level - min_allowed_level, 0, 0, atlas_index1, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref tile_texture_atlas[atlas_index1].data[offset]);
-                    GL.TexSubImage3D(TextureTarget.Texture2DArray, level - min_allowed_level, 0, 0, atlas_index2, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref tile_texture_atlas[atlas_index2].data[offset]);
-
+                    GL.TexSubImage3D(TextureTarget.Texture2DArray, level - min_allowed_level, 0, 0, base_index, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref base_texture_bank[base_index].data[offset]);
+                    
                     offset += size;
                 }
                 w /= 2;
                 h /= 2;
             }
-            RefreshTilePreview(atlas_index1);
-            RefreshTilePreview(atlas_index2);
-
+            RefreshTilePreview(base_index);
 
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
-            // mix all textures...
-            for(int i = 32; i < 224; i++)
-            {
-                if((texture_tiledata[i].ind1 == base_index)||(texture_tiledata[i].ind2 == base_index))
-                {
-                    tile_texture_atlas[i].Dispose();
-                    tile_texture_atlas[i] = SFTexture.MixUncompressed(base_texture_bank[texture_tiledata[i].ind1],
-                                                                      texture_tiledata[i].weight1,
-                                                                      base_texture_bank[texture_tiledata[i].ind2], 
-                                                                      texture_tiledata[i].weight2,
-                                                                      base_texture_bank[texture_tiledata[i].ind3],
-                                                                      texture_tiledata[i].weight3);
-                    tile_texture_atlas[i].Init();
-
-                    offset = 0;
-
-                    w = 256;
-                    h = 256;
-                    min_allowed_level = 1000;
-
-                    for (int level = 0; level < 8 && (w != 0 || h != 0); ++level)
-                    {
-                        int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
-                        if (tile_texture_atlas[i].IsValidMipMapLevel(level))
-                        {
-                            if (min_allowed_level > level) min_allowed_level = level;
-
-                            GL.TexSubImage3D(TextureTarget.Texture2DArray, level - min_allowed_level, 0, 0, i, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref tile_texture_atlas[i].data[offset]);
-
-                            offset += size;
-                        }
-                        w /= 2;
-                        h /= 2;
-                    }
-
-                    tile_texture_atlas[i].FreeMemory();
-                }
-            }
             return true;
-        }
-
-        public void UpdateTileTexture(int tile_id)
-        {
-            // unload existing texture
-            if(tile_texture_atlas[tile_id] != base_texture_bank[0])
-                tile_texture_atlas[tile_id].Dispose();
-
-            // load new texture
-
-            tile_texture_atlas[tile_id] = SFTexture.MixUncompressed(
-                base_texture_bank[texture_tiledata[tile_id].ind1], texture_tiledata[tile_id].weight1,
-                base_texture_bank[texture_tiledata[tile_id].ind2], texture_tiledata[tile_id].weight2,
-                base_texture_bank[texture_tiledata[tile_id].ind3], texture_tiledata[tile_id].weight3);
-            tile_texture_atlas[tile_id].Init();
-            // insert texture data to the atlas
-
-            GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
-
-            int offset = 0;
-
-            int w = 256;
-            int h = 256;
-            int min_allowed_level = 1000;
-
-            for (int level = 0; level < 8 && (w != 0 || h != 0); ++level)
-            {
-                int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
-                if (tile_texture_atlas[tile_id].IsValidMipMapLevel(level))
-                {
-                    if (min_allowed_level > level) min_allowed_level = level;
-
-                    GL.TexSubImage3D(TextureTarget.Texture2DArray, level - min_allowed_level, 0, 0, tile_id, w, h, 1, PixelFormat.Rgba, PixelType.UnsignedByte, ref tile_texture_atlas[tile_id].data[offset]);
-
-                    offset += size;
-                }
-                w /= 2;
-                h /= 2;
-            }
-
-            GL.BindTexture(TextureTarget.Texture2DArray, 0);
-
-            RefreshTilePreview(tile_id);
         }
 
         // operates on a 64x64 mip map level ground texture, hardcoded for now...
@@ -402,14 +329,8 @@ namespace SpellforceDataEditor.SFMap
         // generates previews for all loaded tiles
         public void GenerateTileImages()
         {
-            for(int i = 0; i < MAX_TILES-31; i++)
-            {
-                if ((i >= 0) && (i <= 31))
-                    texture_tile_image[i] = CreateBitmapFromTexture(base_texture_bank[i]);
-                else if ((i >= 32) && (i <= 223) && (tile_used[i]))
-                    texture_tile_image[i] = CreateBitmapFromTexture(tile_texture_atlas[i]);
-                // last 31 textures NEVER used
-            }
+            for (int i = 0; i < MAX_TILES - 31; i++)
+                RefreshTilePreview(i);
         }
 
         // generates previews for all existing terrain textures in game
@@ -425,26 +346,29 @@ namespace SpellforceDataEditor.SFMap
 
         public void RefreshTilePreview(int tile_id)
         {
-            if ((tile_texture_atlas[tile_id] != null) && (tile_texture_atlas[tile_id].data != null))
-                texture_tile_image[tile_id] = CreateBitmapFromTexture(tile_texture_atlas[tile_id]);
-            else
-                texture_tile_image[tile_id] = null;
-        }
+            if (tile_id < 0)
+                return;
 
-        public void FreeTileMemory(int tile_id)
-        {
-            if ((tile_id >= 32) && (tile_id < 224))
-                tile_texture_atlas[tile_id].FreeMemory();
+            if (tile_id < 32)
+                texture_tile_image[tile_id] = CreateBitmapFromTexture(base_texture_bank[tile_id]);
+            else
+            {
+                SFTexture.MixUncompressed(
+                    base_texture_bank[texture_tiledata[tile_id].ind1], texture_tiledata[tile_id].weight1,
+                    base_texture_bank[texture_tiledata[tile_id].ind2], texture_tiledata[tile_id].weight2,
+                    base_texture_bank[texture_tiledata[tile_id].ind3], texture_tiledata[tile_id].weight3,
+                    ref texture_tile_mixer);
+                texture_tile_image[tile_id] = CreateBitmapFromTexture(texture_tile_mixer);
+            }
         }
 
         public void Unload()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.Unload() called");
             GL.DeleteTexture(terrain_texture);
-            for(int i = 0; i < MAX_TILES; i++)
-            {
-                tile_texture_atlas[i].Dispose();
-            }
+            for (int i = 0; i < 32; i++)
+                base_texture_bank[i].Dispose();
+            GL.DeleteBuffer(uniformTileData_buffer);
         }
     }
 }
