@@ -183,7 +183,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     obj_array[(i + offset) * 5 + 1] = new_lang_index;
                     obj_array[(i + offset) * 5 + 2] = (Byte)cur_elem[2];
                     obj_array[(i + offset) * 5 + 3] = Utility.FixedLengthString(Utility.CleanString(cur_elem[3]), 50);    
-                    obj_array[(i + offset) * 5 + 4] = new char[512];    //todo: get this value from category
+                    obj_array[(i + offset) * 5 + 4] = Utility.FixedLengthString("", 512);
                 }
             }
             new_elem.AddVariants(obj_array);
