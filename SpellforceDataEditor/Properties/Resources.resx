@@ -434,12 +434,16 @@ uniform float FogEnd;
 uniform sampler2DArray myTextureSampler;
 uniform sampler2D ShadowMap;
 uniform sampler2D TileMap;
+uniform sampler2D OverlayMap;
 layout(std140) uniform Tiles
 {
   ivec4 tex_id[255];
   ivec4 tex_w[255];
 };
-
+layout(std140) uniform Overlays
+{
+  vec4 ov_colors[16];
+};
 
 vec2 poissonDisk[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
@@ -564,6 +568,13 @@ void main(){
 
   // grid
   color = mix(color, GridColor, gridintensity);
+
+  // overlay
+  vec2 fixed_UV = (UV*4);
+  fixed_UV.y = GridSize-fixed_UV.y;
+  int ov_col_index = int(texture(OverlayMap, (fixed_UV+vec2(0.5, -0.5))/float(GridSize)).r*255);
+  vec4 ov_col_final = ov_colors[ov_col_index];
+  color = mix(color, ov_col_final, 0.7*ov_col_final.a);
 
   // fog calculation
   float dist = gl_FragCoord.z / gl_FragCoord.w;

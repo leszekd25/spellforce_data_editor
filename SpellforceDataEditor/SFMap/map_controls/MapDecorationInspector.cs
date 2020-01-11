@@ -40,19 +40,20 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 }
             }
 
-            map.heightmap.OverlayClear("DecorationTile");
+            for (int i = 0; i < map.width; i++)
+                for (int j = 0; j < map.height; j++)
+                    map.heightmap.overlay_data_decals[j * map.width + i] = 0;
             if (selected_dec_group != 0)
             {
-                int k = 0;
                 for (int i = 0; i < 1048576; i++)
                 {
                     if (map.decoration_manager.dec_assignment[i] == selected_dec_group)
                     {
-                        map.heightmap.OverlayAdd("DecorationTile", map.decoration_manager.GetFixedDecPosition(i));
-                        k += 1;
+                        SFCoord p = map.decoration_manager.GetFixedDecPosition(i);
+                        map.heightmap.overlay_data_decals[p.y * map.width + p.x] = 6;
                     }
                 }
-                map.heightmap.RebuildOverlay(new SFCoord(0, 0), new SFCoord(map.width - 1, map.height - 1), "DecorationTile");
+                map.heightmap.RefreshOverlay();
             }
             MainForm.mapedittool.update_render = true;
         }

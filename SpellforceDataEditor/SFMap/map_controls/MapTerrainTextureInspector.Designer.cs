@@ -87,6 +87,7 @@
             this.TileBlocksVision.TabIndex = 1;
             this.TileBlocksVision.Text = "Blocks vision";
             this.TileBlocksVision.UseVisualStyleBackColor = true;
+            this.TileBlocksVision.CheckedChanged += new System.EventHandler(this.TileBlocksVision_CheckedChanged);
             // 
             // TileBlocksMovement
             // 
@@ -97,6 +98,7 @@
             this.TileBlocksMovement.TabIndex = 0;
             this.TileBlocksMovement.Text = "Blocks movement";
             this.TileBlocksMovement.UseVisualStyleBackColor = true;
+            this.TileBlocksMovement.CheckedChanged += new System.EventHandler(this.TileBlocksMovement_CheckedChanged);
             // 
             // PanelTileMixer
             // 

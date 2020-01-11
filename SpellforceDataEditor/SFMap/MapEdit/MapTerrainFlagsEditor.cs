@@ -30,16 +30,16 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 bottomright.y = (short)(map.height - 1);
 
             List<SFCoord> data_list;
-            string o_name;
+            byte overlay_color;
             if (FlagType == TerrainFlagType.MOVEMENT)
             {
                 data_list = map.heightmap.chunk42_data;
-                o_name = "ManualMovementBlock";
+                overlay_color = 2;
             }
             else if (FlagType == TerrainFlagType.VISION)
             {
                 data_list = map.heightmap.chunk56_data;
-                o_name = "ManualVisionBlock";
+                overlay_color = 5;
             }
             else
                 throw new Exception("MapTerrainFlagsEditor.OnMousePress(): Invalid flag value!");
@@ -56,7 +56,14 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         if (!data_list.Contains(p))
                         {
                             data_list.Add(p);
-                            map.heightmap.OverlayAdd(o_name, p);
+                            // determine color
+                            byte cur_color = map.heightmap.overlay_data_flags[j * map.width + i];
+                            if ((overlay_color == 2) && ((cur_color == 5) || (cur_color == 10)))
+                                overlay_color = 10;
+                            else if ((overlay_color == 5) && ((cur_color == 2) || (cur_color == 9) || (cur_color == 10)))
+                                overlay_color = 10;
+
+                            map.heightmap.overlay_data_flags[j * map.width + i] = overlay_color;
                         }
                     }
                 }
@@ -73,13 +80,48 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         if (data_list.Contains(p))
                         {
                             data_list.Remove(p);
-                            map.heightmap.OverlayRemove(o_name, p);
+                            // determine color
+                            byte cur_color = map.heightmap.overlay_data_flags[j * map.width + i];
+                            if(overlay_color == 5)
+                            {
+                                if (cur_color == 5)
+                                    overlay_color = 0;
+                                else if (cur_color == 10)
+                                {
+                                    if (!map.heightmap.chunk42_data.Contains(p))
+                                        overlay_color = 9;
+                                    else
+                                        overlay_color = 2;
+                                }
+                                else
+                                    overlay_color = cur_color;
+                            }
+                            else if(overlay_color == 2)
+                            {
+                                if (cur_color == 2)
+                                {
+                                    if (map.heightmap.texture_manager.texture_tiledata[map.heightmap.tile_data[j * map.width + i]].blocks_movement)
+                                        overlay_color = 9;
+                                    else
+                                        overlay_color = 0;
+                                }
+                                else if (cur_color == 10)
+                                {
+                                    if (map.heightmap.texture_manager.texture_tiledata[map.heightmap.tile_data[j * map.width + i]].blocks_movement)
+                                        overlay_color = 10;
+                                    else
+                                        overlay_color = 5;
+                                }
+                                else
+                                    overlay_color = cur_color;
+                            }
+                            map.heightmap.overlay_data_flags[j * map.width + i] = overlay_color;
                         }
                     }
                 }
             }
 
-            map.heightmap.RebuildOverlay(topleft, bottomright, o_name);
+            map.heightmap.RefreshOverlay();
         }
     }
 }

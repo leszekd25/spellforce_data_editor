@@ -502,7 +502,6 @@
     <Compile Include="SFMap\MapEdit\MapUnitEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapHeightMapEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapLakesEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapOverlayChunk.cs" />
     <Compile Include="SFMap\MapEdit\MapTerrainFlagsEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapTerrainTextureEditor.cs" />
     <Compile Include="SFMap\MapGen\GradientMap.cs" />

@@ -666,41 +666,26 @@ namespace SpellforceDataEditor.SFMap
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Coop parameters not found, assuming multiplayer mode");
             }
 
-            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Creating overlays");
-            // create overlays, generation in relevant control...
-            heightmap.OverlayCreate("TileMovementBlock", new OpenTK.Vector4(0.5f, 0, 0, 0.7f));
-            //for (int i = 0; i < height; i++)
-            //    for (int j = 0; j < width; j++)
-            //       if (heightmap.texture_manager.texture_tiledata[heightmap.tile_data[i * width + j]].blocks_movement)
-            //            heightmap.OverlayAdd("TileMovementBlock", new SFCoord(j, i));
-
-            heightmap.OverlayCreate("ManualMovementBlock", new OpenTK.Vector4(1, 0, 0, 0.7f));
-            //foreach (SFCoord p in heightmap.chunk42_data)
-            //    heightmap.OverlayAdd("ManualMovementBlock", p);
-
-            heightmap.OverlayCreate("ManualVisionBlock", new OpenTK.Vector4(1, 1, 0, 0.7f));
-            //foreach (SFCoord p in heightmap.chunk56_data)
-            //    heightmap.OverlayAdd("ManualVisionBlock", p);
-
-            heightmap.OverlayCreate("BuildingBlock", new OpenTK.Vector4(0.3f, 1f, 0.3f, 0.7f));
-            for (int i = 0; i < height; i++)
-                for (int j = 0; j < width; j++)
-                    if (heightmap.building_data[i * width + j] != 0)
-                        heightmap.OverlayAdd("BuildingBlock", new SFCoord(j, i));
-
-            heightmap.OverlayCreate("DecorationTile", new OpenTK.Vector4(0.9f, 0.3f, 0.9f, 0.9f));
-
-
-            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in heightmap.chunk_nodes)
+            // terrain flags overlay
+            for (int i = 0; i < width; i++)
             {
-                chunk_node.MapChunk.OverlayUpdate("TileMovementBlock");
-                chunk_node.MapChunk.OverlayUpdate("ManualMovementBlock");
-                chunk_node.MapChunk.OverlayUpdate("ManualVisionBlock");
-                chunk_node.MapChunk.OverlayUpdate("BuildingBlock");
-                chunk_node.MapChunk.OverlayUpdate("DecorationTile");
+                for (int j = 0; j < height; j++)
+                {
+                    if (heightmap.texture_manager.texture_tiledata[heightmap.tile_data[j * width + i]].blocks_movement)
+                        heightmap.overlay_data_flags[j * width + i] = 9;
+                    else
+                        heightmap.overlay_data_flags[j * width + i] = 0;
+                }
             }
-
-            //heightmap.OverlaySetVisible("BuildingBlock", true);
+            foreach (SFCoord p in heightmap.chunk42_data)
+                heightmap.overlay_data_flags[p.y * width + p.x] = 2;
+            foreach (SFCoord p in heightmap.chunk56_data)
+            {
+                if (heightmap.overlay_data_flags[p.y * width + p.x] == 0)
+                    heightmap.overlay_data_flags[p.y * width + p.x] = 10;
+                else
+                    heightmap.overlay_data_flags[p.y * width + p.x] = 5;
+            }
 
             // selection helper stuff
             selection_helper.AssignToMap(this);
@@ -1224,32 +1209,26 @@ namespace SpellforceDataEditor.SFMap
             metadata.minimap.texture_data = image_data;
             metadata.minimap.GenerateTexture();
 
-            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Create(): Creating overlays");
-            // create overlays, generation in relevant control...
-            heightmap.OverlayCreate("TileMovementBlock", new OpenTK.Vector4(0.5f, 0, 0, 0.7f));
-            heightmap.OverlayCreate("ManualMovementBlock", new OpenTK.Vector4(1, 0, 0, 0.7f));
-            heightmap.OverlayCreate("ManualVisionBlock", new OpenTK.Vector4(1, 1, 0, 0.7f));
-
-            // debug
-            heightmap.OverlayCreate("BuildingBlock", new OpenTK.Vector4(0.3f, 1f, 0.3f, 0.7f));
-            for (int i = 0; i < height; i++)
-                for (int j = 0; j < width; j++)
-                    if (heightmap.building_data[i * width + j] != 0)
-                        heightmap.OverlayAdd("BuildingBlock", new SFCoord(j, i));
-
-            heightmap.OverlayCreate("DecorationTile", new OpenTK.Vector4(0.9f, 0.3f, 0.9f, 0.9f));
-
-
-            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in heightmap.chunk_nodes)
+            // flag overlay
+            for (int i = 0; i < width; i++)
             {
-                chunk_node.MapChunk.OverlayUpdate("TileMovementBlock");
-                chunk_node.MapChunk.OverlayUpdate("ManualMovementBlock");
-                chunk_node.MapChunk.OverlayUpdate("ManualVisionBlock");
-                chunk_node.MapChunk.OverlayUpdate("BuildingBlock");
-                chunk_node.MapChunk.OverlayUpdate("DecorationTile");
+                for (int j = 0; j < height; j++)
+                {
+                    if (heightmap.texture_manager.texture_tiledata[heightmap.tile_data[j * width + i]].blocks_movement)
+                        heightmap.overlay_data_flags[j * width + i] = 9;
+                    else
+                        heightmap.overlay_data_flags[j * width + i] = 0;
+                }
             }
-
-            //heightmap.OverlaySetVisible("BuildingBlock", true);
+            foreach (SFCoord p in heightmap.chunk42_data)
+                heightmap.overlay_data_flags[p.y * width + p.x] = 2;
+            foreach (SFCoord p in heightmap.chunk56_data)
+            {
+                if (heightmap.overlay_data_flags[p.y * width + p.x] == 0)
+                    heightmap.overlay_data_flags[p.y * width + p.x] = 10;
+                else
+                    heightmap.overlay_data_flags[p.y * width + p.x] = 5;
+            }
 
             // selection helper stuff
             selection_helper.AssignToMap(this);

@@ -47,6 +47,8 @@
             this.StatusStrip = new System.Windows.Forms.ToolStrip();
             this.StatusText = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.UpdatesText = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.SpecificText = new System.Windows.Forms.ToolStripLabel();
             this.PanelInspector = new System.Windows.Forms.Panel();
             this.TabPageDecorations = new System.Windows.Forms.TabPage();
@@ -91,7 +93,6 @@
             this.label9 = new System.Windows.Forms.Label();
             this.TabPageTerrain = new System.Windows.Forms.TabPage();
             this.PanelFlags = new System.Windows.Forms.Panel();
-            this.CheckDisplayFlags = new System.Windows.Forms.CheckBox();
             this.RadioFlagVision = new System.Windows.Forms.RadioButton();
             this.RadioFlagMovement = new System.Windows.Forms.RadioButton();
             this.label8 = new System.Windows.Forms.Label();
@@ -159,8 +160,6 @@
             this.TrackbarCameraSpeed = new System.Windows.Forms.TrackBar();
             this.label25 = new System.Windows.Forms.Label();
             this.TimerUpdatesPerSecond = new System.Windows.Forms.Timer(this.components);
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.UpdatesText = new System.Windows.Forms.ToolStripLabel();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
@@ -325,6 +324,16 @@
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // UpdatesText
+            // 
+            this.UpdatesText.Name = "UpdatesText";
+            this.UpdatesText.Size = new System.Drawing.Size(0, 22);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // SpecificText
             // 
@@ -799,7 +808,6 @@
             // 
             // PanelFlags
             // 
-            this.PanelFlags.Controls.Add(this.CheckDisplayFlags);
             this.PanelFlags.Controls.Add(this.RadioFlagVision);
             this.PanelFlags.Controls.Add(this.RadioFlagMovement);
             this.PanelFlags.Controls.Add(this.label8);
@@ -808,17 +816,6 @@
             this.PanelFlags.Size = new System.Drawing.Size(207, 73);
             this.PanelFlags.TabIndex = 8;
             this.PanelFlags.Visible = false;
-            // 
-            // CheckDisplayFlags
-            // 
-            this.CheckDisplayFlags.AutoSize = true;
-            this.CheckDisplayFlags.Location = new System.Drawing.Point(59, 41);
-            this.CheckDisplayFlags.Name = "CheckDisplayFlags";
-            this.CheckDisplayFlags.Size = new System.Drawing.Size(85, 17);
-            this.CheckDisplayFlags.TabIndex = 4;
-            this.CheckDisplayFlags.Text = "Display flags";
-            this.CheckDisplayFlags.UseVisualStyleBackColor = true;
-            this.CheckDisplayFlags.CheckedChanged += new System.EventHandler(this.CheckDisplayFlags_CheckedChanged);
             // 
             // RadioFlagVision
             // 
@@ -1510,16 +1507,6 @@
             this.TimerUpdatesPerSecond.Interval = 1000;
             this.TimerUpdatesPerSecond.Tick += new System.EventHandler(this.TimerUpdatesPerSecond_Tick);
             // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
-            // UpdatesText
-            // 
-            this.UpdatesText.Name = "UpdatesText";
-            this.UpdatesText.Size = new System.Drawing.Size(0, 22);
-            // 
             // MapEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1636,7 +1623,6 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TabPage TabPageTerrain;
         private System.Windows.Forms.Panel PanelFlags;
-        private System.Windows.Forms.CheckBox CheckDisplayFlags;
         private System.Windows.Forms.RadioButton RadioFlagVision;
         private System.Windows.Forms.RadioButton RadioFlagMovement;
         private System.Windows.Forms.Label label8;

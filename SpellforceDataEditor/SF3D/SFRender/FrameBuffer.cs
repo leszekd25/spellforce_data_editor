@@ -126,8 +126,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     texture_color = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2DMultisample, texture_color);
                     GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, PixelInternalFormat.Rgb, width, height, true);
-                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int)All.Linear);
-                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int)All.Linear);
+                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int)All.Linear);
+                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int)All.Linear);
                     GL.BindTexture(TextureTarget.Texture2DMultisample, 0);
 
                     GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, texture_color, 0);
@@ -138,12 +138,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     texture_depth = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2DMultisample, texture_depth);
                     GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, PixelInternalFormat.DepthComponent24, width, height, true);
-                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-                    float[] col = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
-                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureBorderColor, col);
-                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int)All.Nearest);
-                    GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int)All.Nearest);
+                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+                    //float[] col = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureBorderColor, col);
+                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int)All.Nearest);
+                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int)All.Nearest);
                     GL.BindTexture(TextureTarget.Texture2DMultisample, 0);
 
                     GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, texture_depth, 0);

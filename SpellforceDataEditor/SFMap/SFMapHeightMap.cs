@@ -39,8 +39,8 @@ namespace SpellforceDataEditor.SFMap
                     indices_base[6 * (i * CHUNK_SIZE + j) + 1] = (ushort)(i * (CHUNK_SIZE + 1) + j + 1);
                     indices_base[6 * (i * CHUNK_SIZE + j) + 2] = (ushort)(i * (CHUNK_SIZE + 1) + j + (CHUNK_SIZE + 1));
                     indices_base[6 * (i * CHUNK_SIZE + j) + 3] = (ushort)(i * (CHUNK_SIZE + 1) + j + 1);
-                    indices_base[6 * (i * CHUNK_SIZE + j) + 4] = (ushort)(i * (CHUNK_SIZE + 1) + j + (CHUNK_SIZE + 1));
-                    indices_base[6 * (i * CHUNK_SIZE + j) + 5] = (ushort)(i * (CHUNK_SIZE + 1) + j + (CHUNK_SIZE + 2));
+                    indices_base[6 * (i * CHUNK_SIZE + j) + 4] = (ushort)(i * (CHUNK_SIZE + 1) + j + (CHUNK_SIZE + 2));
+                    indices_base[6 * (i * CHUNK_SIZE + j) + 5] = (ushort)(i * (CHUNK_SIZE + 1) + j + (CHUNK_SIZE + 1));
                 }
 
             for (int i = 0; i < POOL_SIZE; i++)
@@ -198,9 +198,6 @@ namespace SpellforceDataEditor.SFMap
         // lake
         public SFModel3D lake_model = null;    // generated here, but owned by ResourceManager
 
-        // overlays
-        public Dictionary<string, MapEdit.MapOverlayChunk> overlays { get; private set; } = new Dictionary<string, MapEdit.MapOverlayChunk>();
-
         //public SF3D.Physics.BoundingBox aabb;
         public List<SFMapBuilding> buildings = new List<SFMapBuilding>();
         public List<SFMapObject> objects = new List<SFMapObject>();
@@ -319,9 +316,6 @@ namespace SpellforceDataEditor.SFMap
                 SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(p.GetObjectName());
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(p.grid_position) / 100.0f, _obj.Position.Z);
             }
-
-            foreach (string o_name in overlays.Keys)
-                OverlayUpdate(o_name);
         }
 
         struct SFMapLakeCellInfo
@@ -463,9 +457,6 @@ namespace SpellforceDataEditor.SFMap
                     visible = false;
 
                     Degenerate();
-
-                    foreach (MapEdit.MapOverlayChunk ov in overlays.Values)
-                        ov.Dispose();
                 }
             }
             else
@@ -476,9 +467,6 @@ namespace SpellforceDataEditor.SFMap
                     decoration_visible = true;
 
                     Generate();
-
-                    foreach (string o_name in overlays.Keys)
-                        OverlayUpdate(o_name);
                 }
             }
         }
@@ -542,16 +530,12 @@ namespace SpellforceDataEditor.SFMap
                 lake_model = null;
             }
 
-            foreach (MapEdit.MapOverlayChunk ov in overlays.Values)
-                ov.Dispose();
-
             units.Clear();
             objects.Clear();
             buildings.Clear();
             decorations.Clear();
             int_objects.Clear();
             portals.Clear();
-            overlays.Clear();
 
             hmap = null;
             owner = null;
@@ -617,13 +601,6 @@ namespace SpellforceDataEditor.SFMap
         {
             portals.Remove(p);
         }
-
-        public void OverlayUpdate(string o_name)
-        {
-            if (!visible)
-                return;
-            overlays[o_name].Update(this, o_name);
-        }
     }
 
     // didnt know where to put it
@@ -657,9 +634,17 @@ namespace SpellforceDataEditor.SFMap
         public SF3D.SceneSynchro.SceneNodeMapChunk[] chunk_nodes { get; private set; }
         public List<SF3D.SceneSynchro.SceneNodeMapChunk> visible_chunks = new List<SF3D.SceneSynchro.SceneNodeMapChunk>();
 
-        public List<string> visible_overlays { get; private set; } = new List<string>();
-
+        // tile_data translates directly to a texture
         public int tile_data_texture = -1;
+
+        // UBO for overlay data to the shader
+        int uniformOverlays_buffer;
+        Vector4[] uniformOverlays = new Vector4[16];     // 16 available colors
+        public byte[] overlay_data_flags;
+        public int overlay_texture_flags = -1;
+        public byte[] overlay_data_decals;
+        public int overlay_texture_decals = -1;
+        public int overlay_active_texture = -1;
 
         public SFMapHeightMap(int w, int h)
         {
@@ -670,6 +655,8 @@ namespace SpellforceDataEditor.SFMap
             lake_data = new byte[w * h]; lake_data.Initialize();
             building_data = new ushort[w * h]; building_data.Initialize();
             temporary_mask = new bool[w * h];
+            overlay_data_flags = new byte[w * h];
+            overlay_data_decals = new byte[w * h];
 
             tile_data_texture = GL.GenTexture();
             GL.ActiveTexture(TextureUnit.Texture2);
@@ -682,6 +669,38 @@ namespace SpellforceDataEditor.SFMap
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
             GL.BindTexture(TextureTarget.Texture2D, 0);
             GL.ActiveTexture(TextureUnit.Texture0);
+
+            // create uniform buffer object for overlays
+            uniformOverlays_buffer = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.UniformBuffer, uniformOverlays_buffer);
+            GL.BufferData(BufferTarget.UniformBuffer, 16 * 4 * 4, new IntPtr(0), BufferUsageHint.StaticDraw);
+            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+            GL.BindBufferRange(BufferRangeTarget.UniformBuffer, 1, uniformOverlays_buffer, new IntPtr(0), 16 * 4 * 4);
+            SetOverlayColors();
+
+            // overlay data
+            overlay_texture_flags = GL.GenTexture();
+            overlay_texture_decals = GL.GenTexture();
+            GL.ActiveTexture(TextureUnit.Texture3);
+
+            GL.BindTexture(TextureTarget.Texture2D, overlay_texture_flags);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R8, width, height, 0,
+                PixelFormat.Red, PixelType.UnsignedByte, overlay_data_flags);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
+
+            GL.BindTexture(TextureTarget.Texture2D, overlay_texture_decals);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R8, width, height, 0,
+                PixelFormat.Red, PixelType.UnsignedByte, overlay_data_decals);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
+
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.ActiveTexture(TextureUnit.Texture0);
         }
 
         public void UpdateTileMap()
@@ -689,6 +708,42 @@ namespace SpellforceDataEditor.SFMap
             GL.ActiveTexture(TextureUnit.Texture2);
             GL.BindTexture(TextureTarget.Texture2D, tile_data_texture);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.Red, PixelType.UnsignedByte, tile_data);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.ActiveTexture(TextureUnit.Texture0);
+        }
+
+        public void ResetFlagOverlay()
+        {
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    if (texture_manager.texture_tiledata[tile_data[j * width + i]].blocks_movement)
+                        overlay_data_flags[j * width + i] = 9;
+                    else
+                        overlay_data_flags[j * width + i] = 0;
+                }
+            }
+            foreach (SFCoord p in chunk42_data)
+                overlay_data_flags[p.y * width + p.x] = 2;
+            foreach (SFCoord p in chunk56_data)
+            {
+                if (overlay_data_flags[p.y * width + p.x] == 0)
+                    overlay_data_flags[p.y * width + p.x] = 5;
+                else
+                    overlay_data_flags[p.y * width + p.x] = 10;
+            }
+        }
+
+        // refreshes currently active overlay
+        public void RefreshOverlay()
+        {
+            GL.ActiveTexture(TextureUnit.Texture3);
+            GL.BindTexture(TextureTarget.Texture2D, overlay_active_texture);
+            if(overlay_active_texture == overlay_texture_flags)
+                GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.Red, PixelType.UnsignedByte, overlay_data_flags);
+            else
+                GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.Red, PixelType.UnsignedByte, overlay_data_decals);
             GL.BindTexture(TextureTarget.Texture2D, 0);
             GL.ActiveTexture(TextureUnit.Texture0);
         }
@@ -964,70 +1019,27 @@ namespace SpellforceDataEditor.SFMap
             UpdateTileMap();
         }
 
-        public void OverlayCreate(string o_name, Vector4 col)
+        private void SetOverlayColors()
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.OverlayCreate() called, overlay name: " + o_name);
-
-            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
-            {
-                chunk.MapChunk.overlays.Add(o_name, new MapEdit.MapOverlayChunk());
-                chunk.MapChunk.overlays[o_name].color = col;
-            }
-        }
-
-        public void OverlayAdd(string o_name, SFCoord pos)
-        {
-            SFMapHeightMapChunk chunk = GetChunk(pos);
-            SFCoord new_pos = pos - new SFCoord(chunk.ix * SFMapHeightMapGeometryPool.CHUNK_SIZE, ((width / SFMapHeightMapGeometryPool.CHUNK_SIZE) - chunk.iy - 1) * SFMapHeightMapGeometryPool.CHUNK_SIZE);
-            if (!chunk.overlays[o_name].points.Contains(new_pos))
-                chunk.overlays[o_name].points.Add(new_pos);
-        }
-
-        public void OverlayRemove(string o_name, SFCoord pos)
-        {
-            SFMapHeightMapChunk chunk = GetChunk(pos);
-            SFCoord new_pos = pos - new SFCoord(chunk.ix * SFMapHeightMapGeometryPool.CHUNK_SIZE, ((width / SFMapHeightMapGeometryPool.CHUNK_SIZE) - chunk.iy - 1) * SFMapHeightMapGeometryPool.CHUNK_SIZE);
-            int i = chunk.overlays[o_name].points.IndexOf(new_pos);
-            if (i != -1)
-                chunk.overlays[o_name].points.RemoveAt(i);
-        }
-
-        public void OverlayClear(string o_name)
-        {
-            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk in chunk_nodes)
-                if (chunk.MapChunk.overlays[o_name].points.Count != 0)
-                {
-                    chunk.MapChunk.overlays[o_name].points.Clear();
-                    chunk.MapChunk.OverlayUpdate(o_name);
-                }
-        }
-
-        public void OverlaySetVisible(string o_name, bool visible)
-        {
-            if ((!visible_overlays.Contains(o_name)) && (visible))
-                visible_overlays.Add(o_name);
-            else if ((visible_overlays.Contains(o_name)) && (!visible))
-                visible_overlays.Remove(o_name);
-        }
-
-        public bool OverlayIsVisible(string o_name)
-        {
-            return visible_overlays.Contains(o_name);
-        }
-
-        public void RebuildOverlay(SFCoord topleft, SFCoord bottomright, string o_name)
-        {
-            int chunk_count_x = width / SFMapHeightMapGeometryPool.CHUNK_SIZE;
-            int chunk_count_y = height / SFMapHeightMapGeometryPool.CHUNK_SIZE;
-
-            int topchunkx = topleft.x / SFMapHeightMapGeometryPool.CHUNK_SIZE;
-            int topchunky = topleft.y / SFMapHeightMapGeometryPool.CHUNK_SIZE;
-            int botchunkx = bottomright.x / SFMapHeightMapGeometryPool.CHUNK_SIZE;
-            int botchunky = bottomright.y / SFMapHeightMapGeometryPool.CHUNK_SIZE;
-
-            for (int i = topchunkx; i <= botchunkx; i++)
-                for (int j = topchunky; j <= botchunky; j++)
-                    chunk_nodes[(chunk_count_y - j - 1) * chunk_count_x + i].MapChunk.OverlayUpdate(o_name);
+            uniformOverlays[0] = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);    // empty
+            uniformOverlays[1] = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);    // white
+            uniformOverlays[2] = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);    // full red
+            uniformOverlays[3] = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);    // full green
+            uniformOverlays[4] = new Vector4(0.0f, 0.0f, 1.0f, 1.0f);    // full blue
+            uniformOverlays[5] = new Vector4(1.0f, 1.0f, 0.0f, 1.0f);    // full yellow
+            uniformOverlays[6] = new Vector4(1.0f, 0.0f, 1.0f, 1.0f);    // full fuchsia
+            uniformOverlays[7] = new Vector4(0.0f, 1.0f, 1.0f, 1.0f);    // full teal
+            uniformOverlays[8] = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);    // full black
+            uniformOverlays[9] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
+            uniformOverlays[10] = new Vector4(1.0f, 0.7f, 0.0f, 1.0f);    // orange
+            uniformOverlays[11] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
+            uniformOverlays[12] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
+            uniformOverlays[13] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
+            uniformOverlays[14] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
+            uniformOverlays[15] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
+            GL.BindBuffer(BufferTarget.UniformBuffer, uniformOverlays_buffer);
+            GL.BufferSubData(BufferTarget.UniformBuffer, new IntPtr(0), 16 * 4 * 4, ref uniformOverlays[0]);
+            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
         }
 
         public List<HashSet<SFCoord>> GetSeparateIslands(HashSet<SFCoord> src)
@@ -1144,11 +1156,24 @@ namespace SpellforceDataEditor.SFMap
             if (map == null)
                 return;
 
-            if(tile_data_texture != -1)
+            if (tile_data_texture != -1)
             {
                 GL.DeleteTexture(tile_data_texture);
                 tile_data_texture = -1;
             }
+
+            if (overlay_texture_flags != -1)
+            {
+                GL.DeleteTexture(overlay_texture_flags);
+                overlay_texture_flags = -1;
+            }
+            if (overlay_texture_decals != -1)
+            {
+                GL.DeleteTexture(overlay_texture_decals);
+                overlay_texture_decals = -1;
+            }
+            overlay_active_texture = -1;
+
             if (texture_manager != null)
                 texture_manager.Unload();
             if (chunk_nodes != null)
@@ -1161,7 +1186,6 @@ namespace SpellforceDataEditor.SFMap
             chunk56_data.Clear();
             chunk60_data.Clear();
             visible_chunks.Clear();
-            visible_overlays.Clear();
             chunk_nodes = null;
             map = null;
         }

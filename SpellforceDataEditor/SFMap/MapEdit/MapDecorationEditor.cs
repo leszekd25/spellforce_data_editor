@@ -42,11 +42,11 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             continue;
 
                         selection.Add(p);
-                        map.heightmap.OverlayAdd("DecorationTile", new SFCoord(p.x, p.y));
+                        map.heightmap.overlay_data_decals[p.y * map.width + p.x] = 6;
                     }
                 }
 
-                map.heightmap.RebuildOverlay(topleft, bottomright, "DecorationTile");
+                map.heightmap.RefreshOverlay();
             }
             else if (b == MouseButtons.Right)
             {
@@ -65,7 +65,13 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 is_adding = false;
 
                 if(selected_dec_group == 0)
-                    map.heightmap.OverlayClear("DecorationTile");
+                {
+                    for (int i = 0; i < map.width; i++)
+                        for (int j = 0; j < map.height; j++)
+                            map.heightmap.overlay_data_decals[j * map.width + i] = 0;
+
+                    map.heightmap.RefreshOverlay();
+                }
 
                 MainForm.mapedittool.update_render = true;
             }

@@ -476,6 +476,7 @@ namespace SpellforceDataEditor.special_forms
                 selected_editor.OnMouseUp(e.Button);
 
             update_render = true;
+
         }
 
         private void RenderWindow_MouseMove(object sender, MouseEventArgs e)
@@ -488,6 +489,7 @@ namespace SpellforceDataEditor.special_forms
         {
             mouse_on_view = false;
             mouse_pressed = false;
+
         }
 
         private void RenderWindow_MouseEnter(object sender, EventArgs e)
@@ -516,6 +518,8 @@ namespace SpellforceDataEditor.special_forms
         {
             if (map == null)
                 return;
+
+            TimerAnimation.Start();
 
             bool update_ui = false;
 
@@ -579,6 +583,7 @@ namespace SpellforceDataEditor.special_forms
                     {
                         selected_editor.OnMousePress(inv_cursor_coord, mouse_last_pressed);
                         update_render = true;
+                        update_ui = true;
                     }
                 }
             }
@@ -663,8 +668,6 @@ namespace SpellforceDataEditor.special_forms
                 GC.Collect();
                 gc_timer = 0;
             }
-
-            TimerAnimation.Start();
         }
 
 
@@ -951,8 +954,8 @@ namespace SpellforceDataEditor.special_forms
             if (TabEditorModes.SelectedIndex == -1)
                 return;
 
-            FlagOverlaysSetInvisible();
-            FlagDecalSetInvisible();
+            map.heightmap.overlay_active_texture = -1;
+            update_render = true;
 
             if (TabEditorModes.SelectedIndex == 0) // TERRAIN
             {
@@ -980,6 +983,9 @@ namespace SpellforceDataEditor.special_forms
 
         private void ReselectTerrainMode()
         {
+            map.heightmap.overlay_active_texture = -1;
+            update_render = true;
+
             PanelBrushShape.Parent = TabEditorModes.TabPages[0];
             if (RadioHMap.Checked)
             {
@@ -1060,7 +1066,8 @@ namespace SpellforceDataEditor.special_forms
             terrain_brush.size = (float)Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
 
-            FlagOverlaysSetInvisible();
+            map.heightmap.overlay_active_texture = -1;
+            update_render = true;
         }
 
         public void HMapEditSetHeight(int h)
@@ -1163,55 +1170,6 @@ namespace SpellforceDataEditor.special_forms
                 return TerrainFlagType.MOVEMENT;
         }
 
-        private void FlagOverlaysSetInvisible()
-        {
-            if (!map.heightmap.OverlayIsVisible("TileMovementBlock"))
-                return;
-
-            map.heightmap.OverlayClear("TileMovementBlock");
-            map.heightmap.OverlaySetVisible("TileMovementBlock", false);
-
-            map.heightmap.OverlayClear("ManualMovementBlock");
-            map.heightmap.OverlaySetVisible("ManualMovementBlock", false);
-
-            map.heightmap.OverlayClear("ManualVisionBlock");
-            map.heightmap.OverlaySetVisible("ManualVisionBlock", false);
-
-            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
-            {
-                chunk_node.MapChunk.OverlayUpdate("TileMovementBlock");
-                chunk_node.MapChunk.OverlayUpdate("ManualMovementBlock");
-                chunk_node.MapChunk.OverlayUpdate("ManualVisionBlock");
-            }
-        }
-
-        private void FlagOverlaysSetVisible()
-        {
-            if (map.heightmap.OverlayIsVisible("TileMovementBlock"))
-                return;
-
-            for (int i = 0; i < map.height; i++)
-                for (int j = 0; j < map.width; j++)
-                    if (map.heightmap.texture_manager.texture_tiledata[map.heightmap.tile_data[i * map.width + j]].blocks_movement)
-                        map.heightmap.OverlayAdd("TileMovementBlock", new SFCoord(j, i));
-
-            foreach (SFCoord p in map.heightmap.chunk42_data)
-                map.heightmap.OverlayAdd("ManualMovementBlock", p);
-
-            foreach (SFCoord p in map.heightmap.chunk56_data)
-                map.heightmap.OverlayAdd("ManualVisionBlock", p);
-
-            map.heightmap.OverlaySetVisible("TileMovementBlock", true);
-            map.heightmap.OverlaySetVisible("ManualMovementBlock", true);
-            map.heightmap.OverlaySetVisible("ManualVisionBlock", true);
-            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
-            {
-                chunk_node.MapChunk.OverlayUpdate("TileMovementBlock");
-                chunk_node.MapChunk.OverlayUpdate("ManualMovementBlock");
-                chunk_node.MapChunk.OverlayUpdate("ManualVisionBlock");
-            }
-        }
-
         private void RadioFlags_CheckedChanged(object sender, EventArgs e)
         {
             if (!RadioFlags.Checked)
@@ -1235,7 +1193,10 @@ namespace SpellforceDataEditor.special_forms
             terrain_brush.size = (float)Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
 
-            CheckDisplayFlags_CheckedChanged(null, null);
+            map.heightmap.overlay_active_texture = map.heightmap.overlay_texture_flags;
+            map.heightmap.ResetFlagOverlay();
+            map.heightmap.RefreshOverlay();
+            update_render = true;
         }
 
         private void RadioFlagMovement_CheckedChanged(object sender, EventArgs e)
@@ -1246,14 +1207,6 @@ namespace SpellforceDataEditor.special_forms
         private void RadioFlagVision_CheckedChanged(object sender, EventArgs e)
         {
             ((MapTerrainFlagsEditor)selected_editor).FlagType = GetTerrainFlagType();
-        }
-
-        private void CheckDisplayFlags_CheckedChanged(object sender, EventArgs e)
-        {
-            if (CheckDisplayFlags.Checked)
-                FlagOverlaysSetVisible();
-            else
-                FlagOverlaysSetInvisible();
         }
 
         // LAKES
@@ -1273,9 +1226,10 @@ namespace SpellforceDataEditor.special_forms
             PanelStrength.Visible = false;
             PanelTerrainSettings.Visible = false;
 
-            FlagOverlaysSetInvisible();
-
             InspectorSet(new SFMap.map_controls.MapLakeInspector());
+
+            map.heightmap.overlay_active_texture = -1;
+            update_render = true;
         }
 
         // TERRAIN PAINT
@@ -1749,28 +1703,6 @@ namespace SpellforceDataEditor.special_forms
             PanelDecalGroups.Controls[i].BackColor = GetDecGroupButtonColor(i);
         }
 
-        private void FlagDecalSetInvisible()
-        {
-            if (!map.heightmap.OverlayIsVisible("DecorationTile"))
-                return;
-
-            map.heightmap.OverlayClear("DecorationTile");
-            map.heightmap.OverlaySetVisible("DecorationTile", false);
-
-            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
-                chunk_node.MapChunk.OverlayUpdate("DecorationTile");
-        }
-
-        private void FlagDecalSetVisible()
-        {
-            if (map.heightmap.OverlayIsVisible("DecorationTile"))
-                return;
-
-            map.heightmap.OverlaySetVisible("DecorationTile", true);
-            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.chunk_nodes)
-                chunk_node.MapChunk.OverlayUpdate("DecorationTile");
-        }
-
         private void ReselectDecorationMode()
         {
             PanelBrushShape.Parent = TabEditorModes.TabPages[3];
@@ -1785,12 +1717,14 @@ namespace SpellforceDataEditor.special_forms
             };
             InspectorSet(new SFMap.map_controls.MapDecorationInspector());
 
-            FlagDecalSetVisible();
-
             PanelBrushShape.Visible = true;
 
             terrain_brush.size = (float)Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
+
+            map.heightmap.overlay_active_texture = map.heightmap.overlay_texture_decals;
+            map.heightmap.RefreshOverlay();
+            update_render = true;
         }
 
         // METADATA
