@@ -254,6 +254,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 loaded_skin = SFResourceManager.LoadSkin(skin_name);
             if (loaded_skin)
                 new_node.SetSkeletonSkin(SFResourceManager.Skeletons.Get(skin_name), SFResourceManager.Skins.Get(skin_name));
+            loaded_skin = SFResourceManager.LoadModel(skin_name);
+            if (loaded_skin)
+                new_node.Mesh = SFResourceManager.Models.Get(skin_name);
 
             return new_node;
         }

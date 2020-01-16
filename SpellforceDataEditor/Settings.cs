@@ -27,6 +27,9 @@ namespace SpellforceDataEditor
         public static bool DisplayGrid { get; set; } = false;
         public static OpenTK.Vector4 GridColor { get; set; } = new OpenTK.Vector4(1, 1, 1, 1);
 
+        public static string ExtractDirectory { get; set; } = "";
+        public static bool ExtractAllInOne { get; set; } = false;
+
         public static string GameDirectory { get; set; } = "";
         public static int LanguageID { get; private set; } = 1;
 
@@ -130,6 +133,15 @@ namespace SpellforceDataEditor
                             GridColor = new OpenTK.Vector4(r, g, b, 255) / 255f;
                             break;
 
+                        case "ExtractDirectory":
+                            string es2 = words[1];
+                            for (int i = 2; i < words.Length; i++)
+                                es2 += " " + words[i];
+                            ExtractDirectory = es2;
+                            break;
+                        case "ExtractAllInOne":
+                            ExtractAllInOne = (words[1] == "YES");
+                            break;
                         case "GameDirectory":
                             string s2 = words[1];
                             for (int i = 2; i < words.Length; i++)
@@ -256,6 +268,12 @@ namespace SpellforceDataEditor
                                                              ((byte)(GridColor.Z * 255)).ToString() };
                             break;
 
+                        case "ExtractDirectory":
+                            words = new string[] { words[0], ExtractDirectory };
+                            break;
+                        case "ExtractAllInOne":
+                            words = new string[] { words[0], ExtractAllInOne ? "YES" : "NO" };
+                            break;
                         case "GameDirectory":
                             words = new string[] { words[0], GameDirectory };
                             break;

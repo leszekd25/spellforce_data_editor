@@ -32,6 +32,10 @@
             this.glControl1 = new OpenTK.GLControl();
             this.ListEntries = new System.Windows.Forms.ListBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetCameraPosiitonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reloadCurrentSceneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.GameDirDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusText = new System.Windows.Forms.ToolStripStatusLabel();
@@ -47,6 +51,7 @@
             this.button1Extract = new System.Windows.Forms.Button();
             this.button2Extract = new System.Windows.Forms.Button();
             this.comboMessages = new System.Windows.Forms.ComboBox();
+            this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelSound.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackSoundDuration)).BeginInit();
@@ -79,11 +84,44 @@
             // 
             // menuStrip1
             // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optionsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(771, 24);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.resetCameraPosiitonToolStripMenuItem,
+            this.reloadCurrentSceneToolStripMenuItem,
+            this.exportSettingsToolStripMenuItem});
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.optionsToolStripMenuItem.Text = "Options";
+            // 
+            // resetCameraPosiitonToolStripMenuItem
+            // 
+            this.resetCameraPosiitonToolStripMenuItem.Name = "resetCameraPosiitonToolStripMenuItem";
+            this.resetCameraPosiitonToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.resetCameraPosiitonToolStripMenuItem.Text = "Reset camera posiiton (Space)";
+            this.resetCameraPosiitonToolStripMenuItem.Click += new System.EventHandler(this.resetCameraPosiitonToolStripMenuItem_Click);
+            // 
+            // reloadCurrentSceneToolStripMenuItem
+            // 
+            this.reloadCurrentSceneToolStripMenuItem.Name = "reloadCurrentSceneToolStripMenuItem";
+            this.reloadCurrentSceneToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.reloadCurrentSceneToolStripMenuItem.Text = "Reload current scene (Ctrl+R)";
+            this.reloadCurrentSceneToolStripMenuItem.Click += new System.EventHandler(this.reloadCurrentSceneToolStripMenuItem_Click);
+            // 
+            // exportSettingsToolStripMenuItem
+            // 
+            this.exportSettingsToolStripMenuItem.Name = "exportSettingsToolStripMenuItem";
+            this.exportSettingsToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.exportSettingsToolStripMenuItem.Text = "Extraction settings...";
+            this.exportSettingsToolStripMenuItem.Click += new System.EventHandler(this.exportSettingsToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -248,6 +286,8 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SF3DManagerForm_FormClosing);
             this.Load += new System.EventHandler(this.SF3DManagerForm_Load);
             this.Resize += new System.EventHandler(this.SFAssetManagerForm_Resize);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.PanelSound.ResumeLayout(false);
@@ -278,5 +318,9 @@
         private System.Windows.Forms.Button button1Extract;
         private System.Windows.Forms.Button button2Extract;
         private System.Windows.Forms.ComboBox comboMessages;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resetCameraPosiitonToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reloadCurrentSceneToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportSettingsToolStripMenuItem;
     }
 }

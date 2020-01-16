@@ -789,6 +789,8 @@ namespace SpellforceDataEditor.SFCFF
                 total_text += "\r\nQuest item (can not be sold)";
             else if (special == 8)
                 total_text += "\r\nQuest item (can be sold)";
+            else if (special == 16)
+                total_text += "\r\nYou need to meet all item requirements to use this item";
             else if (special != 0)
                 total_text += "\r\nUnknown optional data";
             return total_text;

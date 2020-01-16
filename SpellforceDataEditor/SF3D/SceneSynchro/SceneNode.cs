@@ -225,6 +225,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             InternalDispose();
 
+            //System.Diagnostics.Debug.WriteLine("DISPOSING " + Name);
+
             foreach (SceneNode c in Children)
                 c.Dispose();
 
@@ -304,8 +306,20 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
     // use this for displaying animated 3d meshes
     public class SceneNodeAnimated : SceneNode
     {
+        private SFModel3D mesh = null;        // this is only for extraction convenience!
         private SFSkeleton skeleton = null;
         private SFModelSkin skin = null;
+        public SFModel3D Mesh
+        {
+            get
+            {
+                return mesh;
+            }
+            set
+            {
+                mesh = value;
+            }
+        }
         public SFSkeleton Skeleton { get { return skeleton; } private set { skeleton = value; } }
         public SFModelSkin Skin
         {
@@ -344,6 +358,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public SceneNodeAnimated(string n) : base(n) { }
 
         // this must be used
+        // also this bypasses resource system (for now), so they need to be managed elsewhere
         public void SetSkeletonSkin(SFSkeleton _skeleton, SFModelSkin _skin)
         {
             if (_skeleton != null)
@@ -376,7 +391,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             else  // looping
                 AnimCurrentTime = t - (int)(t / Animation.max_time);
 
-            UpdateBoneTransforms();
+            if(BoneTransforms != null)
+                UpdateBoneTransforms();
         }
 
         // calculates bone transforms for this node
@@ -436,6 +452,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // disposes skeleton and skin used by this node (reference counted)
         protected override void InternalDispose()
         {
+            if (Mesh != null)
+            {
+                SFResources.SFResourceManager.Models.Dispose(Mesh.GetName());
+                Mesh = null;
+            }
             if (Skeleton != null)
             {
                 SFResources.SFResourceManager.Skeletons.Dispose(Skeleton.GetName());
@@ -600,14 +621,14 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
         }
 
+        // use this to shift camera around
         public void translate(Vector3 tr)
         {
             position += tr;
             lookat += tr;
             TouchLocalTransform(); TouchParents();
         }
-
-        // todo: this is wrong at certain angles?
+        
         private void CalculateFrustumVertices()
         {
             // get forward, up, right direction

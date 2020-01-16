@@ -142,18 +142,14 @@ namespace SpellforceDataEditor.SF3D
 
             for (int i = 0; i < bone_count; i++)
             {
-                Matrix4 temp_matrix = Matrix4.Identity;
-                Matrix4 rotation_matrix = Matrix4.CreateFromQuaternion(bone_rot[i]);
-                //option 1: wrong order here
-                temp_matrix = rotation_matrix;
+                Matrix4 temp_matrix = Matrix4.CreateFromQuaternion(bone_rot[i]);
+				
                 temp_matrix.Row3 = new Vector4(bone_pos[i], 1);
                 bone_reference_matrices[i] = temp_matrix;
             
-                //option 2: wrong order here
                 if (bone_parents[i] != -1)
                     bone_reference_matrices[i] = bone_reference_matrices[i] * bone_reference_matrices[bone_parents[i]];
             
-                //check all combinations of options
                 bone_inverted_matrices[i] = bone_reference_matrices[i].Inverted();
             }
             

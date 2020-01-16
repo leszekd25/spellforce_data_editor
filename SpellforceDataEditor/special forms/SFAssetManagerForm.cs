@@ -20,18 +20,62 @@ namespace SpellforceDataEditor.special_forms
 {
     public partial class SFAssetManagerForm : Form
     {
+        class SFAssetManagerSceneInfo          // used for hot reload
+        {
+            public int scene_type = -1;  // 0 - mesh, 1 - anim, 2 - sync, 3 - music, 4 - sound, 5 - message
+            public int element_index = -1;  // on the ListEntries
+            public int anim_index = -1;     // for scene type 1 and 2
+            public int message_type = -1;   // for scene type 5
+
+            public int cat = -1;            // for scene type 2
+            public int elem = -1;           // for scene type 2
+            public int elem_animated = 0;   // for scene type 2
+
+            public SFAssetManagerSceneInfo GetCopy()
+            {
+                SFAssetManagerSceneInfo ret = new SFAssetManagerSceneInfo();
+                ret.scene_type = scene_type;
+                ret.elem = elem;
+                ret.cat = cat;
+                ret.anim_index = anim_index;
+                ret.element_index = element_index;
+                ret.message_type = message_type;
+                ret.elem_animated = elem_animated;
+                return ret;
+            }
+
+            public void Clear()
+            {
+                scene_type = -1;
+                element_index = -1;
+                anim_index = -1;
+                message_type = -1;
+
+                cat = -1;
+                elem = -1;
+                elem_animated = 0;
+            }
+        }
+
         SFSoundEngine sound_engine = new SFSoundEngine();
 
         bool synchronized = false;
-
-        //Point mouse_pos;
+        
         bool mouse_pressed = false;
         Vector2 scroll_mouse_start = new Vector2(0, 0);
-        bool[] arrows_pressed = new bool[] { false, false, false, false };  // left, right, up, down
+        bool[] arrows_pressed = new bool[] { false, false, false, false };  // left, right, up, down, pageup, pagedown
 
         bool tmp_shadows = Settings.EnableShadows;
         bool update_render = true;
         bool dynamic_render = false;
+
+        float zoom_level = 1f;
+
+        SFModel3D grid_model;
+        SceneNodeSimple grid_node;
+
+        SFAssetManagerSceneInfo current_scene_info = new SFAssetManagerSceneInfo();
+
 
         public SFAssetManagerForm()
         {
@@ -57,14 +101,48 @@ namespace SpellforceDataEditor.special_forms
 
             SFRenderEngine.scene.Init();
             SFRenderEngine.Initialize(new Vector2(glControl1.ClientSize.Width, glControl1.ClientSize.Height));
-            SFRenderEngine.scene.camera.Position = new Vector3(0, 1, 6);
-            SFRenderEngine.scene.camera.Lookat = new Vector3(0, 1, 0);
+            SFRenderEngine.scene.camera.Position = new Vector3(0, 2, 6);
+            SFRenderEngine.scene.camera.Lookat = new Vector3(0, 0, 0);
+            glControl1.MouseWheel += new MouseEventHandler(glControl1_MouseWheel);
             glControl1.MakeCurrent();
 
             TimerAnimation.Enabled = true;
             TimerAnimation.Interval = 1000 / SFRenderEngine.scene.frames_per_second;
             TimerAnimation.Start();
             SFRenderEngine.scene.delta_timer.Restart();
+
+            // create grid model
+            Vector3[] vertices = new Vector3[] { new Vector3(-1, 0, -1), new Vector3(-1, 0, 1), new Vector3(1, 0, -1), new Vector3(1, 0, 1) };
+            Vector2[] uvs = new Vector2[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) };
+            Vector4[] colors = new Vector4[] { new Vector4(0.5f), new Vector4(0.5f), new Vector4(0.5f), new Vector4(0.5f) };
+            Vector3[] normals = new Vector3[] { new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0) };
+            uint[] indices = new uint[] { 0, 1, 2, 1, 3, 2 };
+            SFMaterial material = new SFMaterial();
+            material.indexStart = (uint)0;
+            material.indexCount = (uint)6;
+
+            string tex_name = "test_lake";
+            SFTexture tex = null;
+            int tex_code = SFResourceManager.Textures.Load(tex_name);
+            if ((tex_code != 0) && (tex_code != -1))
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFAssetManagerForm.SF3DManagerForm_Load(): Could not load texture (texture name = " + tex_name + ")");
+            else
+            {
+                tex = SFResourceManager.Textures.Get(tex_name);
+                tex.FreeMemory();
+            }
+            material.texture = tex;
+
+            SFSubModel3D sbm = new SFSubModel3D();
+            sbm.CreateRaw(vertices, uvs, colors, normals, indices, material);
+            grid_model = new SFModel3D();
+            grid_model.CreateRaw(new SFSubModel3D[] { sbm });
+            SFResourceManager.Models.AddManually(grid_model, "_GRID_");
+
+            grid_node = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "_GRID_", "_GRID_");
+            grid_node.Position = new Vector3(0, -0.01f, 0);
+            grid_node.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
+            grid_node.Scale = new Vector3(8, 8, 8);
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
@@ -81,6 +159,7 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.camera = null;
             SFResourceManager.DisposeAll();
             sound_engine.UnloadSound();
+            glControl1.MouseWheel -= new MouseEventHandler(glControl1_MouseWheel);
 
             Settings.EnableShadows = tmp_shadows;
         }
@@ -123,16 +202,20 @@ namespace SpellforceDataEditor.special_forms
 
         private void ComboBrowseMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ListEntries.Items.Clear();
-            ListAnimations.Items.Clear();
-            ResetScene();
-            dynamic_render = false;
-            sound_engine.UnloadSound();
-            TimerSoundDuration.Stop();
-            trackSoundDuration.Value = 0;
-            SFResourceManager.DisposeAll();
-            HideAllPanels();
-            synchronized = false;
+            if (ComboBrowseMode.SelectedIndex != -1)     // when changing from X to Y, it first changes to -1, so its ok to ignore this
+            {
+                ListEntries.Items.Clear();
+                ListAnimations.Items.Clear();
+                ResetScene();
+                SFResourceManager.Animations.DisposeAll();     // they're not being cleared, and its relatively fast compared to other stuff
+                dynamic_render = false;
+                sound_engine.UnloadSound();
+                TimerSoundDuration.Stop();
+                trackSoundDuration.Value = 0;
+                //SFResourceManager.DisposeAll();
+                HideAllPanels();
+                synchronized = false;
+            }
 
             if(ComboBrowseMode.SelectedIndex == 0)
             {
@@ -196,6 +279,9 @@ namespace SpellforceDataEditor.special_forms
                 comboMessages.SelectedIndex = -1;
                 comboMessages.Show();
             }
+
+            current_scene_info.Clear();
+            current_scene_info.scene_type = ComboBrowseMode.SelectedIndex;
         }
 
         private void ListEntries_SelectedIndexChanged(object sender, EventArgs e)
@@ -236,6 +322,7 @@ namespace SpellforceDataEditor.special_forms
                 SceneNodeAnimated obj_d1 = scene.root.FindNode<SceneNodeAnimated>("dynamic_mesh");
                 SFModelSkin skin = null;
                 SFSkeleton skel = null;
+                SFModel3D mesh = null;
 
                 if (ListEntries.SelectedIndex != -1)
                 {
@@ -246,6 +333,7 @@ namespace SpellforceDataEditor.special_forms
                     {
                         StatusText.Text = "Failed to load skin " + skin_name + ", status code "+result.ToString();
                         obj_d1.SetSkeletonSkin(null, null);
+                        obj_d1.Mesh = null;
                         return;
                     }
                     skin = SFResourceManager.Skins.Get(skin_name);
@@ -258,10 +346,24 @@ namespace SpellforceDataEditor.special_forms
                     {
                         StatusText.Text = "Failed to load skeleton " + skel_name;
                         obj_d1.SetSkeletonSkin(null, null);
+                        obj_d1.Mesh = null;
                         return;
                     }
                     skel = SFResourceManager.Skeletons.Get(skel_name);
                     StatusText.Text = "Loaded skeleton " + skel_name;
+
+                    string model_name = ListEntries.SelectedItem.ToString();
+                    model_name = model_name.Substring(0, model_name.Length - 4);
+                    result = SFResourceManager.Models.Load(model_name);
+                    if ((result != 0) && (result != -1))
+                    {
+                        StatusText.Text = "Failed to load model " + model_name;
+                        obj_d1.SetSkeletonSkin(null, null);
+                        obj_d1.Mesh = null;
+                        return;
+                    }
+                    mesh = SFResourceManager.Models.Get(model_name);
+                    StatusText.Text = "Loaded model " + model_name;
 
                     List<string> anims = GetAllSkeletonAnimations(skel);
                     foreach (string n in anims)
@@ -270,6 +372,7 @@ namespace SpellforceDataEditor.special_forms
 
                 obj_d1.SetSkeletonSkin(skel, skin);
                 obj_d1.SetAnimation(null, false);
+                obj_d1.Mesh = mesh;
             }
 
             if (ComboBrowseMode.SelectedIndex == 3)
@@ -349,6 +452,8 @@ namespace SpellforceDataEditor.special_forms
 
             update_render = true;
             dynamic_render = false;
+
+            current_scene_info.element_index = ListEntries.SelectedIndex;
         }
 
         protected override bool ProcessDialogKey(Keys keyData)
@@ -366,6 +471,12 @@ namespace SpellforceDataEditor.special_forms
                     return true;
                 case Keys.Down:
                     arrows_pressed[3] = true;
+                    return true;
+                case Keys.R | Keys.Control:
+                    ReloadScene();
+                    return true;
+                case Keys.Space:
+                    ResetCamera();
                     return true;
                 default:
                     return base.ProcessDialogKey(keyData);
@@ -465,6 +576,8 @@ namespace SpellforceDataEditor.special_forms
             }
 
             update_render = true;
+
+            current_scene_info.anim_index = ListAnimations.SelectedIndex;
         }
 
         private void UpdateSliderSound()
@@ -500,29 +613,24 @@ namespace SpellforceDataEditor.special_forms
                 update_render = true;
                 update_ui = true;
             }
-
-            // moving camera using arrows
-            float cam_speed = 2;
-
-            Vector3 forward = (SFRenderEngine.scene.camera.Lookat - SFRenderEngine.scene.camera.Position).Normalized();
-            Vector3 up = new Vector3(0, 1, 0);
-            Vector3 right = Vector3.Cross(forward, up).Normalized();
-            float speed_factor = cam_speed * SFRenderEngine.scene.DeltaTime;
-            Vector3 movement_vector = new Vector3(0, 0, 0);
+            
+            // moving view by arrow keys
+            Vector2 movement_vector = new Vector2(0, 0);
             if (arrows_pressed[0])
-                movement_vector -= right;
+                movement_vector += new Vector2(-1, 0);
             if (arrows_pressed[1])
-                movement_vector += right;
+                movement_vector += new Vector2(1, 0);
             if (arrows_pressed[2])
-                movement_vector += forward;
+                movement_vector += new Vector2(0, -1);
             if (arrows_pressed[3])
-                movement_vector -= forward;
+                movement_vector += new Vector2(0, 1);
 
-            movement_vector *= cam_speed * speed_factor;
-
-            if(movement_vector != new Vector3(0, 0, 0))
+            if (movement_vector != new Vector2(0, 0))
             {
-                SFRenderEngine.scene.camera.translate(movement_vector);
+                float angle = SFRenderEngine.scene.camera.Direction.X - (float)(Math.PI * 3 / 2);
+                movement_vector = MathUtils.RotateVec2(movement_vector, angle);
+                movement_vector *= 6 * SFRenderEngine.scene.DeltaTime;
+                SFRenderEngine.scene.camera.translate(new Vector3(movement_vector.X, 0, movement_vector.Y));
                 update_render = true;
                 update_ui = true;
             }
@@ -593,6 +701,34 @@ namespace SpellforceDataEditor.special_forms
                 return;
         }
 
+        private void glControl1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            AddCameraZoom(e.Delta);
+        }
+
+        private void AddCameraZoom(int delta)
+        {
+            if (delta < 0)
+            {
+                zoom_level *= 1.2f;
+                if (zoom_level > 40)
+                    zoom_level = 40;
+            }
+            else
+            {
+                zoom_level *= 0.82f;
+                if (zoom_level < 0.1f)
+                    zoom_level = 0.1f;
+            }
+            AdjustCameraZ();
+            update_render = true;
+        }
+
+        private void AdjustCameraZ()
+        {
+            SFRenderEngine.scene.camera.translate(new Vector3(0, (2*zoom_level)-SFRenderEngine.scene.camera.Position.Y, 0));
+        }
+
         public void GenerateScene(int cat, int elem)
         {
             if (!synchronized)
@@ -603,8 +739,14 @@ namespace SpellforceDataEditor.special_forms
             ResetScene();
             SFResourceManager.DisposeAll();
             GC.Collect(2, GCCollectionMode.Forced, false);
+
+            if (cat < 0)
+                return;
+            if (elem < 0)
+                return;
             
             SFRenderEngine.scene.CatElemToScene(cat, elem);
+            current_scene_info.elem_animated = 0;
 
             if (SFRenderEngine.scene.scene_meta.is_animated)   // only if selected element is a unit...
             {
@@ -620,12 +762,15 @@ namespace SpellforceDataEditor.special_forms
                             List<string> anims = GetAllSkeletonAnimations(chest_node.Skeleton);
                             foreach (string n in anims)
                                 ListAnimations.Items.Add(n);
+                            current_scene_info.elem_animated = 1;
                         }
                     }
                 }
             }
 
             update_render = true;
+            current_scene_info.cat = cat;
+            current_scene_info.elem = elem;
         }
 
         private void buttonSoundPlay_Click(object sender, EventArgs e)
@@ -717,44 +862,48 @@ namespace SpellforceDataEditor.special_forms
                 if (mod == null)
                     return;
 
-                SFResourceManager.Models.Extract(item);
+                if (SFResourceManager.Models.Extract(item) != 0)
+                    LogUtils.Log.Error(LogUtils.LogSource.SFResources, 
+                        "SFAssetManagerForm.button1Extract_Click(): Could not extract model "+item);
                 List<string> tx = SFResourceManager.Textures.GetNames();
                 foreach (string t in tx)
                     foreach (SFSubModel3D sbm in mod.submodels)
                         if (sbm.material.texture == SFResourceManager.Textures.Get(t))
-                            SFResourceManager.Textures.Extract(t);
+                            if(SFResourceManager.Textures.Extract(t) != 0)
+                                LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                                    "SFAssetManagerForm.button1Extract_Click(): Could not extract texture " + t);
 
-                StatusText.Text = "Extracted " + item;
+                StatusText.Text = "Extraction finished";
             }
 
             if(ComboBrowseMode.SelectedIndex == 1)
             {
-                SFModelSkin mod = SFResourceManager.Skins.Get(item);
+                SFModel3D mod = SFResourceManager.Models.Get(item);
                 if (mod == null)
                     return;
                 SceneNodeAnimated obj = SFRenderEngine.scene.root.FindNode<SceneNodeAnimated>("dynamic_mesh");
 
-                SFResourceManager.Skins.Extract(item);
+                if (SFResourceManager.Models.Extract(item) != 0)
+                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                        "SFAssetManagerForm.button1Extract_Click(): Could not extract model " + item);
+                List<string> tx = SFResourceManager.Textures.GetNames();
+                foreach (string t in tx)
+                    foreach (SFSubModel3D sbm in mod.submodels)
+                        if (sbm.material.texture == SFResourceManager.Textures.Get(t))
+                            if (SFResourceManager.Textures.Extract(t) != 0)
+                                LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                                    "SFAssetManagerForm.button1Extract_Click(): Could not extract texture " + t);
+
                 List<string> skels = SFResourceManager.Skeletons.GetNames();
                 foreach (string skel in skels)
                     if(obj.Skeleton == SFResourceManager.Skeletons.Get(skel))
                     {
-                        SFResourceManager.Skeletons.Extract(skel);
-                        SFResourceManager.BSIs.Extract(skel);
-                        SFResourceManager.Skins.Extract(skel);
-                        
-                        List<string> tx = SFResourceManager.Textures.GetNames();
-                        foreach (string t in tx)
-                            foreach (SFModelSkinChunk ch in obj.Skin.submodels)
-                            {
-                                SFMaterial mat = ch.material;
-                                if (mat.texture == SFResourceManager.Textures.Get(t))
-                                    SFResourceManager.Textures.Extract(t);
-                            }
-
+                        if (SFResourceManager.Skeletons.Extract(skel) != 0)
+                            LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                                "SFAssetManagerForm.button1Extract_Click(): Could not extract skeleton " + skel);
                         break;
                     }
-                StatusText.Text = "Extracted " + item;
+                StatusText.Text = "Extraction finished";
             }
 
             if (ComboBrowseMode.SelectedIndex == 3)
@@ -763,9 +912,11 @@ namespace SpellforceDataEditor.special_forms
                 if (s == null)
                     return;
 
-                SFResourceManager.Musics.Extract(item);
+                if (SFResourceManager.Musics.Extract(item) != 0)
+                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                        "SFAssetManagerForm.button1Extract_Click(): Could not extract music " + item);
 
-                StatusText.Text = "Extracted " + item;
+                StatusText.Text = "Extraction finished";
             }
 
             if (ComboBrowseMode.SelectedIndex == 4)
@@ -774,9 +925,11 @@ namespace SpellforceDataEditor.special_forms
                 if (s == null)
                     return;
 
-                SFResourceManager.Sounds.Extract(item);
+                if (SFResourceManager.Sounds.Extract(item) != 0)
+                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                         "SFAssetManagerForm.button1Extract_Click(): Could not extract sound " + item);
 
-                StatusText.Text = "Extracted " + item;
+                StatusText.Text = "Extraction finished";
             }
 
             if (ComboBrowseMode.SelectedIndex == 5)
@@ -785,9 +938,11 @@ namespace SpellforceDataEditor.special_forms
                 if (s == null)
                     return;
 
-                SFResourceManager.Messages.Extract(item);
+                if(SFResourceManager.Messages.Extract(item) != 0)
+                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                        "SFAssetManagerForm.button1Extract_Click(): Could not extract message " + item);
 
-                StatusText.Text = "Extracted " + item;
+                StatusText.Text = "Extraction finished";
             }
         }
 
@@ -806,9 +961,11 @@ namespace SpellforceDataEditor.special_forms
                 if (anim == null)
                     return;
 
-                SFResourceManager.Animations.Extract(item);
+                if(SFResourceManager.Animations.Extract(item) != 0)
+                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                        "SFAssetManagerForm.button1Extract_Click(): Could not extract message " + item);
 
-                StatusText.Text = "Extracted " + item;
+                StatusText.Text = "Extraction finished";
             }
         }
 
@@ -839,14 +996,86 @@ namespace SpellforceDataEditor.special_forms
             ListEntries.Items.Clear();
             foreach (string s in SFResourceManager.message_names[item])
                 ListEntries.Items.Add(s);
+
+            current_scene_info.message_type = comboMessages.SelectedIndex;
         }
 
         // failsafe for the case map is unloaded and viewer is opened
         public void ResetScene()
         {
+            grid_node.SetParent(null);
             SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
             SFRenderEngine.scene.root.Visible = true;
             SFRenderEngine.scene.camera.SetParent(SFRenderEngine.scene.root);
+            grid_node.SetParent(SFRenderEngine.scene.root);
+            update_render = true;
+        }
+
+        private void ResetCamera()
+        {
+            SFRenderEngine.scene.camera.Position = new Vector3(0, 1, 6);
+            SFRenderEngine.scene.camera.Lookat = new Vector3(0, 1, 0);
+            zoom_level = 1.0f;
+            update_render = true;
+        }
+
+        private void ReloadScene()
+        {
+            SFAssetManagerSceneInfo s_info = current_scene_info.GetCopy();
+            if (s_info.scene_type == -1)
+                return;
+
+            ResetScene();
+
+            ComboBrowseMode.SelectedIndex = -1;
+            ComboBrowseMode.SelectedIndex = s_info.scene_type;
+
+            if(ComboBrowseMode.SelectedIndex == 0)
+                ListEntries.SelectedIndex = s_info.element_index;
+
+            if(ComboBrowseMode.SelectedIndex == 1)
+            {
+                ListEntries.SelectedIndex = s_info.element_index;
+                ListAnimations.SelectedIndex = s_info.anim_index;
+            }
+
+            if(ComboBrowseMode.SelectedIndex == 2)
+            {
+                if (synchronized)
+                {
+                    GenerateScene(s_info.cat, s_info.elem);
+                    if (s_info.elem_animated == 1)
+                        ListAnimations.SelectedIndex = s_info.anim_index;
+                }
+            }
+
+            if (ComboBrowseMode.SelectedIndex == 3)
+                ListEntries.SelectedIndex = s_info.element_index;
+
+            if (ComboBrowseMode.SelectedIndex == 4)
+                ListEntries.SelectedIndex = s_info.element_index;
+
+            if (ComboBrowseMode.SelectedIndex == 5)
+            {
+                comboMessages.SelectedIndex = s_info.message_type;
+                ListEntries.SelectedIndex = s_info.element_index;
+            }
+        }
+
+        private void resetCameraPosiitonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ResetCamera();
+        }
+
+        private void reloadCurrentSceneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReloadScene();
+        }
+
+        private void exportSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExtractionSettingsForm esf = new ExtractionSettingsForm();
+            esf.ShowDialog();
         }
     }
 }

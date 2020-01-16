@@ -189,7 +189,13 @@ namespace SpellforceDataEditor.SFResources
         {
             foreach(string ext in suffix_extensions)
             {
-                if (SFUnPak.SFUnPak.ExtractFileFind(prefix_path + "\\" + rname + ext, prefix_path + "\\" + rname + ext) == 0)
+                string extract_fname = Settings.ExtractDirectory;
+                if (extract_fname != "")
+                    extract_fname += "\\";
+                if (!Settings.ExtractAllInOne)
+                    extract_fname += prefix_path + "\\";
+                extract_fname += rname + ext;
+                if (SFUnPak.SFUnPak.ExtractFileFind(prefix_path + "\\" + rname + ext, extract_fname) == 0)
                     return 0;
             }
             return -1;

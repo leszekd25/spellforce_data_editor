@@ -21,6 +21,7 @@ namespace SpellforceDataEditor.SF3D
     {
         public int modelnum { get; private set; } = 0;
         public int[] bone_count { get; private set; } = null;
+		public int[] material_per_segment { get; private set; } = null;
         public int[][] bone_index_remap { get; private set; } = null;
         string name;
 
@@ -34,10 +35,11 @@ namespace SpellforceDataEditor.SF3D
             BinaryReader br = new BinaryReader(ms);
             modelnum = br.ReadInt32();
             bone_count = new int[modelnum];
+			material_per_segment = new int[modelnum];
             bone_index_remap = new int[modelnum][];
             for(int i = 0; i < modelnum; i++)
             {
-                br.ReadInt32();
+                material_per_segment[i] = br.ReadInt32();
                 bone_count[i] = br.ReadInt32();
                 bone_index_remap[i] = new int[bone_count[i]];
                 for(int j = 0; j < bone_count[i]; j++)

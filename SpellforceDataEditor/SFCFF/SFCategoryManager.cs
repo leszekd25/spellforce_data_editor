@@ -291,13 +291,19 @@ namespace SpellforceDataEditor.SFCFF
                     break;
                 case 73:  //rain of fire
                 case 74:  //blizzard
-                case 76:  //stone rain
                     p[0] = "Time between ticks";
                     p[1] = "Tick count";
                     p[2] = "Radius (?)";
                     p[3] = "Drops per tick (?)";
                     p[4] = "Sub-effect ID";
                     p[10] = "0000100000";
+                    break;
+                case 76:  //stone rain
+                    p[0] = "Time between ticks";
+                    p[1] = "Tick count";
+                    p[2] = "Radius (?)";
+                    p[3] = "Drops per tick (?)";
+                    p[4] = "Damage";
                     break;
                 case 75:  //acid cloud
                     p[0] = "Area radius";

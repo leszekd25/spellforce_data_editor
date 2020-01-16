@@ -672,6 +672,12 @@
     <Compile Include="special forms\CalculatorsForm.Designer.cs">
       <DependentUpon>CalculatorsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="special forms\ExtractionSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\ExtractionSettingsForm.Designer.cs">
+      <DependentUpon>ExtractionSettingsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="special forms\MapEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1007,6 +1013,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\CalculatorsForm.resx">
       <DependentUpon>CalculatorsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="special forms\ExtractionSettingsForm.resx">
+      <DependentUpon>ExtractionSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\MapEditorForm.resx">
       <DependentUpon>MapEditorForm.cs</DependentUpon>

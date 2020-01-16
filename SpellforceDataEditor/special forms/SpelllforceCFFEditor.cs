@@ -158,7 +158,7 @@ namespace SpellforceDataEditor.special_forms
             else
             {
                 DialogResult result = SaveGameData.ShowDialog();
-                if (result == System.Windows.Forms.DialogResult.OK)
+                if (result == DialogResult.OK)
                 {
                     diff_resolve_current_element();
 
