@@ -520,8 +520,8 @@ namespace SpellforceDataEditor.Properties {
         ///out vec4 fragmentPositionLightSpace;
         ///
         ///// Values that stay constant for the whole mesh.
-        ///uniform mat4 VP;
-        ///uniform m [rest of string was truncated]&quot;;.
+        ///uniform mat4 P;
+        ///uniform ma [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_skel {
             get {

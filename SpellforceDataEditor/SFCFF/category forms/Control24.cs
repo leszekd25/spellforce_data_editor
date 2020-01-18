@@ -117,6 +117,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox8.Text = variant_repr(11);
             textBox12.Text = variant_repr(12);
             textBox13.Text = variant_repr(13);
+
+            button_repr(ButtonGoto25, 24, "Collision data", "Building");
+            button_repr(ButtonGoto26, 25, "Requirements", "Building");
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
@@ -141,6 +144,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             if (e.Button == MouseButtons.Right)
                 step_into(textBox12, 41);
+        }
+
+        private void ButtonGoto25_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto25, 24);
+            button_repr(ButtonGoto25, 24, "Collision data", "Building");
+        }
+
+        private void ButtonGoto26_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto26, 25);
+            button_repr(ButtonGoto26, 25, "Requirements", "Building");
         }
     }
 }

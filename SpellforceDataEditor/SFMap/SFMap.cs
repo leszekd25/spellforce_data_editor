@@ -722,6 +722,7 @@ namespace SpellforceDataEditor.SFMap
             int data_size;
 
             // chunk 2
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving tile data");
             data_size = 3 + heightmap.width * heightmap.height;
             byte[] c2_data = new byte[data_size];
             using (BinaryWriter bw = new BinaryWriter(new MemoryStream(c2_data)))
@@ -733,6 +734,7 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(2, 0, true, 6, c2_data);
 
             // chunks 6
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving heightmap");
             ushort[] c6i_data = new ushort[heightmap.height];
             byte[] c6i_rawdata = new byte[heightmap.height * 2];
             for (int i = 0; i < heightmap.width; i++)
@@ -743,6 +745,7 @@ namespace SpellforceDataEditor.SFMap
             }
 
             // chunk 3
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving tile definitions");
             byte[] c3_data = new byte[3570];
             for (int i = 0; i < 255; i++)
             {
@@ -764,6 +767,7 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(3, 0, true, 3, c3_data);
 
             // chunk 4
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving textures");
             byte[] c4_data = new byte[63];
             for (int i = 0; i < 63; i++)
             {
@@ -772,6 +776,7 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(4, 0, true, 4, c4_data);
 
             // chunk 42
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving map flags");
             heightmap.chunk42_data.Sort();
             byte[] c42_data = new byte[heightmap.chunk42_data.Count * 4];
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Movement flag count: " + heightmap.chunk42_data.Count.ToString());
@@ -806,6 +811,7 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(56, 0, true, 1, c56_data);
 
             // chunk 40
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving lakes");
             byte[] c40_data = new byte[1 + lake_manager.lakes.Count * 7];
             using (MemoryStream ms = new MemoryStream(c40_data))
             {
@@ -824,6 +830,7 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(40, 0, true, 1, c40_data);
 
             // chunk 31
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving decal data");
             f.AddChunk(31, 0, true, 2, decoration_manager.dec_assignment);
 
             // chunk 32
@@ -844,6 +851,7 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(32, 0, true, 1, c32_data);
 
             // chunk 29
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving objects");
             byte[] c29_data = new byte[object_manager.objects.Count * 16];
             using (MemoryStream ms = new MemoryStream(c29_data))
             {
@@ -876,6 +884,7 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(29, 0, true, 6, c29_data);
 
             // chunk 35
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving portals");
             byte[] c35_data = new byte[portal_manager.portals.Count * 8];
             using (MemoryStream ms = new MemoryStream(c35_data))
             {
@@ -893,6 +902,7 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(35, 0, true, 1, c35_data);
 
             // chunk 30
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving interactive objects");
             byte[] c30_data = new byte[int_object_manager.int_objects.Count * 9];
             using (MemoryStream ms = new MemoryStream(c30_data))
             {
@@ -911,6 +921,7 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(30, 0, true, 1, c30_data);
 
             // chunk 11
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving buildings");
             short bld_chunk_type = 3;
             if (metadata.map_type == SFMapType.COOP)
                 bld_chunk_type = 2;
@@ -936,6 +947,7 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(11, 0, true, bld_chunk_type, c11_data);
 
             // chunk 12
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving units");
             byte[] c12_data = new byte[unit_manager.units.Count * 14];
             using (MemoryStream ms = new MemoryStream(c12_data))
             {
@@ -959,6 +971,7 @@ namespace SpellforceDataEditor.SFMap
             // chunks 44 and 46 unused?
 
             // chunk 53
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving team compositions");
             short chunk_type;
             byte[] team_array = new byte[0];
             switch (metadata.map_type)
@@ -995,6 +1008,7 @@ namespace SpellforceDataEditor.SFMap
             }
 
             // chunk 55
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving player spawn data");
             byte[] c55_data = new byte[4 + metadata.spawns.Count * 8];
             using (MemoryStream ms = new MemoryStream(c55_data))
             {
@@ -1032,6 +1046,7 @@ namespace SpellforceDataEditor.SFMap
             // chunk 8000 not used?
 
             // chunk 59
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving coop spawn parameters");
             if (metadata.map_type == SFMapType.COOP)
             {
                 float[] c59_data = new float[12];

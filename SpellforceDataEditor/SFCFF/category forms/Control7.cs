@@ -96,6 +96,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox6.Text = variant_repr(8);
             textBox7.Text = variant_repr(9);
             textBox9.Text = variant_repr(10);
+
+            button_repr(ButtonGoto8, 7, "Armor stats", "Item");
+            button_repr(ButtonGoto9, 8, "Scroll link", "Item");
+            button_repr(ButtonGoto10, 9, "Weapon data", "Item");
+            button_repr(ButtonGoto11, 10, "Requirements", "Item");
+            button_repr(ButtonGoto12, 11, "Spell effects", "Item");
+            button_repr(ButtonGoto13, 12, "UI data", "Item");
+            button_repr(ButtonGoto14, 13, "Spell link", "Item");
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
@@ -126,6 +134,48 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             if (e.Button == MouseButtons.Right)
                 step_into(textBox5, 23);
+        }
+
+        private void ButtonGoto8_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto8, 7);
+            button_repr(ButtonGoto8, 7, "Armor stats", "Item");
+        }
+
+        private void ButtonGoto9_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto9, 8);
+            button_repr(ButtonGoto9, 8, "Scroll link", "Item");
+        }
+
+        private void ButtonGoto10_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto10, 9);
+            button_repr(ButtonGoto10, 9, "Weapon data", "Item");
+        }
+
+        private void ButtonGoto11_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto11, 10);
+            button_repr(ButtonGoto11, 10, "Requirements", "Item");
+        }
+
+        private void ButtonGoto12_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto12, 11);
+            button_repr(ButtonGoto12, 11, "Spell effects", "Item");
+        }
+
+        private void ButtonGoto13_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto13, 12);
+            button_repr(ButtonGoto13, 12, "UI data", "Item");
+        }
+
+        private void ButtonGoto14_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto14, 13);
+            button_repr(ButtonGoto14, 13, "Spell link", "Item");
         }
     }
 }

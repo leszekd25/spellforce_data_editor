@@ -106,17 +106,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox12.Text = variant_repr(9);
             textBox13.Text = string_repr(10);
             textBox10.Text = variant_repr(11);
-            spelltrace_id = SFCategoryManager.gamedata[19].FindElementIndex<UInt16>(0, Utility.TryParseUInt16(textBox1.Text));
-            if (spelltrace_id == -1)
-            {
-                label_SpellTrace.Visible = false;
-                button_Trace.Visible = false;
-            }
-            else
-            {
-                label_SpellTrace.Visible = true;
-                button_Trace.Visible = true;
-            }
+
+            button_repr(ButtonGoto19, 18, "Equipment", "Unit");
+            button_repr(ButtonGoto20, 19, "Spells", "Unit");
+            button_repr(ButtonGoto21, 20, "Resource requirements", "Unit");
+            button_repr(ButtonGoto22, 21, "Loot", "Unit");
+            button_repr(ButtonGoto23, 22, "Upgrade data", "Unit");
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
@@ -134,6 +129,36 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void button_Trace_Click(object sender, EventArgs e)
         {
             step_into(textBox1, 19);
+        }
+
+        private void ButtonGoto19_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto19, 18);
+            button_repr(ButtonGoto19, 18, "Equipment", "Unit");
+        }
+
+        private void ButtonGoto20_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto20, 19);
+            button_repr(ButtonGoto20, 19, "Spells", "Unit");
+        }
+
+        private void ButtonGoto21_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto21, 20);
+            button_repr(ButtonGoto21, 20, "Resource requirements", "Unit");
+        }
+
+        private void ButtonGoto22_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto22, 21);
+            button_repr(ButtonGoto22, 21, "Loot", "Unit");
+        }
+
+        private void ButtonGoto23_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto23, 22);
+            button_repr(ButtonGoto23, 22, "Upgrade data", "Unit");
         }
     }
 }

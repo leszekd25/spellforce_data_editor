@@ -11,7 +11,7 @@ using System.IO.Compression;
 
 namespace SpellforceDataEditor.SFChunkFile
 {
-    public enum SFChunkFileType { GAMEDATA, MAP }
+    public enum SFChunkFileType { GAMEDATA, MAP, SAVE }
 
     public struct SFChunkLookupKey
     {

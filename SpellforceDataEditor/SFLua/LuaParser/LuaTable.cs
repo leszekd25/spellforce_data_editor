@@ -155,26 +155,29 @@ namespace SpellforceDataEditor.SFLua.LuaParser
                         }
                         else if(scr.IsNumberCharacter(scr.code[scr.position]))
                         {
-                            if(state == ParseState.READ_IDENTIFIER)
+                            if ((scr.code[scr.position] == '-') && (scr.code[scr.position + 1] == '-')) // comment
                             {
-                                // check if comment
-                                if((scr.code[scr.position] == '-')&&(scr.code[scr.position+1] == '-')) // comment
-                                {
-
-                                }
-                                max_index += 1;
-                                next_key = (double)max_index;
-                                state = ParseState.READ_VALUE;
+                                scr.ReadLine();
                             }
-                            if(state == ParseState.READ_VALUE)
+                            else
                             {
-                                double val = scr.ReadNumber();
-                                if (entries.ContainsKey(next_key))
-                                    entries[next_key] = val;
-                                else
-                                    entries.Add(next_key, val);
-                                next_key = null;
-                                state = ParseState.READ_COMMA;
+                                if (state == ParseState.READ_IDENTIFIER)
+                                {
+                                    // check if comment
+                                    max_index += 1;
+                                    next_key = (double)max_index;
+                                    state = ParseState.READ_VALUE;
+                                }
+                                if (state == ParseState.READ_VALUE)
+                                {
+                                    double val = scr.ReadNumber();
+                                    if (entries.ContainsKey(next_key))
+                                        entries[next_key] = val;
+                                    else
+                                        entries.Add(next_key, val);
+                                    next_key = null;
+                                    state = ParseState.READ_COMMA;
+                                }
                             }
                         }
                         break;

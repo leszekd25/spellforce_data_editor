@@ -55,6 +55,8 @@
             this.label12 = new System.Windows.Forms.Label();
             this.textBox13 = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
+            this.ButtonGoto25 = new System.Windows.Forms.Button();
+            this.ButtonGoto26 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -296,10 +298,32 @@
             this.label13.TabIndex = 26;
             this.label13.Text = "Unknown";
             // 
+            // ButtonGoto25
+            // 
+            this.ButtonGoto25.Location = new System.Drawing.Point(3, 175);
+            this.ButtonGoto25.Name = "ButtonGoto25";
+            this.ButtonGoto25.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto25.TabIndex = 28;
+            this.ButtonGoto25.Text = "button1";
+            this.ButtonGoto25.UseVisualStyleBackColor = true;
+            this.ButtonGoto25.Click += new System.EventHandler(this.ButtonGoto25_Click);
+            // 
+            // ButtonGoto26
+            // 
+            this.ButtonGoto26.Location = new System.Drawing.Point(260, 175);
+            this.ButtonGoto26.Name = "ButtonGoto26";
+            this.ButtonGoto26.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto26.TabIndex = 29;
+            this.ButtonGoto26.Text = "button2";
+            this.ButtonGoto26.UseVisualStyleBackColor = true;
+            this.ButtonGoto26.Click += new System.EventHandler(this.ButtonGoto26_Click);
+            // 
             // Control24
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ButtonGoto26);
+            this.Controls.Add(this.ButtonGoto25);
             this.Controls.Add(this.textBox13);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.textBox12);
@@ -362,5 +386,7 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox textBox13;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Button ButtonGoto25;
+        private System.Windows.Forms.Button ButtonGoto26;
     }
 }

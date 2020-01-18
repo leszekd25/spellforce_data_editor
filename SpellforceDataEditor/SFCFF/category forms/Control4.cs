@@ -202,12 +202,28 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox26.Text = variant_repr(23);
             textBox21.Text = variant_repr(24);
             textBox24.Text = variant_repr(25);
+
+            // button repr
+            button_repr(ButtonGoto5, 4, "Hero/Worker skills", "Unit/Hero data");
+            button_repr(ButtonGoto6, 5, "Hero spells", "Unit/Hero data");
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
                 step_into(textBox2, 15);
+        }
+
+        private void ButtonGoto5_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto5, 4);
+            button_repr(ButtonGoto5, 4, "Hero/Worker skills", "Unit/Hero data");
+        }
+
+        private void ButtonGoto6_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto6, 5);
+            button_repr(ButtonGoto6, 5, "Hero spells", "Unit/Hero data");
         }
     }
 }

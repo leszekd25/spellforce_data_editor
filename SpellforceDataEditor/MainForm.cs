@@ -188,9 +188,16 @@ namespace SpellforceDataEditor
                 MessageBox.Show("Game directory is not specified!");
                 return;
             }
-            mapedittool = new special_forms.MapEditorForm();
-            mapedittool.FormClosed += new FormClosedEventHandler(this.mapedittool_FormClosed);
-            mapedittool.Show();
+            try
+            {
+                mapedittool = new special_forms.MapEditorForm();
+                mapedittool.FormClosed += new FormClosedEventHandler(this.mapedittool_FormClosed);
+                mapedittool.Show();
+            }
+            catch(Exception)
+            {
+                MessageBox.Show("Could not load Lua scripts");
+            }
         }
 
         private void mapedittool_FormClosed(object sender, FormClosedEventArgs e)

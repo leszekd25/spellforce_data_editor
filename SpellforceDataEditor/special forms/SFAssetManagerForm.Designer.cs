@@ -119,7 +119,7 @@
             // exportSettingsToolStripMenuItem
             // 
             this.exportSettingsToolStripMenuItem.Name = "exportSettingsToolStripMenuItem";
-            this.exportSettingsToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.exportSettingsToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.exportSettingsToolStripMenuItem.Text = "Extraction settings...";
             this.exportSettingsToolStripMenuItem.Click += new System.EventHandler(this.exportSettingsToolStripMenuItem_Click);
             // 
@@ -136,8 +136,7 @@
             // StatusText
             // 
             this.StatusText.Name = "StatusText";
-            this.StatusText.Size = new System.Drawing.Size(137, 17);
-            this.StatusText.Text = "Specify game directory...";
+            this.StatusText.Size = new System.Drawing.Size(0, 17);
             // 
             // ComboBrowseMode
             // 

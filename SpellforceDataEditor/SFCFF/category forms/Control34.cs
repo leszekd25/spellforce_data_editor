@@ -89,12 +89,27 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox2.Text = variant_repr(7);
             textBox9.Text = variant_repr(8);
             textBox10.Text = variant_repr(9);
+
+            button_repr(ButtonGoto35, 34, "Collision data", "Object");
+            button_repr(ButtonGoto36, 35, "Loot", "Object");
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
                 step_into(textBox3, 14);
+        }
+
+        private void ButtonGoto35_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto35, 34);
+            button_repr(ButtonGoto35, 34, "Collision data", "Object");
+        }
+
+        private void ButtonGoto36_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto36, 35);
+            button_repr(ButtonGoto36, 35, "Loot", "Object");
         }
     }
 }

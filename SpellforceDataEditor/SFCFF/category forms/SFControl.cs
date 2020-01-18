@@ -99,6 +99,69 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             return BitConverter.ToString(bytes).Replace('-', ' ');
         }
 
+        // sets button text (a helper function)
+        public void button_repr(Button bt, int cat_i, string label1, string label2)
+        {
+            if (bt == null)
+                return;
+            if ((bt.IsDisposed)||(bt.Disposing))
+                return;
+
+            int cur_id = category.GetElementID(current_element);
+
+            SFCategory cat = SFCategoryManager.gamedata[cat_i];
+            int real_elem_id = cat.GetElementIndex(cur_id);
+            bt.Tag = (real_elem_id == -1);
+            if (real_elem_id == -1)
+            {
+                bt.Text = String.Format("Add {0} for this {1}", label1, label2);
+                bt.BackColor = Color.Yellow;
+            }
+            else
+            {
+                bt.Text = String.Format("Go to {0} of this {1}", label1, label2);
+                bt.BackColor = Color.DarkOrange;
+            }
+        }
+
+        public void button_step_into(Button bt, int cat_i)
+        {
+            if((bool)bt.Tag)     // add new entry
+            {
+                int cur_id = category.GetElementID(current_element);
+
+                SFCategory cat = SFCategoryManager.gamedata[cat_i];
+                int new_ind = cat.GetNewElementIndex(cur_id);
+                SFCategoryElement new_elem = cat.GetEmptyElement();
+                switch (cat.GetElementFormat()[0])
+                {
+                    case 'B':
+                        new_elem[0] = (byte)cur_id;
+                        break;
+                    case 'H':
+                        new_elem[0] = (ushort)cur_id;
+                        break;
+                    case 'I':
+                        new_elem[0] = (uint)cur_id;
+                        break;
+                    default:
+                        throw new Exception("SFControl.button_step_into(): Invalid element format!");
+                }
+                cat.elements.Insert(new_ind, new_elem);
+
+                if (!MainForm.data.synchronized_with_mapeditor)
+                    MainForm.data.diff.push_change(cat_i, 
+                        new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, new_ind-1, null, new_elem));
+
+                bt.Tag = false;
+            }
+            else
+            {
+                int cur_id = category.GetElementID(current_element);
+                step_into(cat_i, cur_id);
+            }
+        }
+
         public void step_into(TextBox tb, int cat_i)
         {
             int elem_id = Utility.TryParseInt32(tb.Text);

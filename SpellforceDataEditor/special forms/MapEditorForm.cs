@@ -65,7 +65,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "MapEditorForm(): Failed to load SQL data!");
                 Close();
-                return;
+                throw new Exception("MapEditorForm(): Failed to load SQL data");
             }
 
             TimerAnimation.Enabled = true;

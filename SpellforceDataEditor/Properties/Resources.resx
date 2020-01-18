@@ -212,7 +212,8 @@ out vec3 fragmentNormal;
 out vec4 fragmentPositionLightSpace;
 
 // Values that stay constant for the whole mesh.
-uniform mat4 VP;
+uniform mat4 P;
+uniform mat4 V;
 uniform mat4 LSM;
 uniform mat4 M;
 uniform mat4 boneTransforms[20];
@@ -225,9 +226,9 @@ void main(){
   int index;
 
   Vertex = vec4(vertexPosition_modelspace, 1.0);
-  Normal = vec4(vertexNormal, 1.0);
+  Normal = vec4(vertexNormal, 0.0);
   newVertex = vec4(0.0, 0.0, 0.0, 1.0);
-  newNormal = vec4(0.0, 0.0, 0.0, 1.0);
+  newNormal = vec4(0.0, 0.0, 0.0, 0.0);
 
   index = int(vertexBoneIndex.x);
   newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.x;
@@ -247,11 +248,11 @@ void main(){
 
   
   // Output position of the vertex, in clip space : MVP * position
-  gl_Position =  VP * M * vec4(newVertex.xyz, 1.0);
+  gl_Position =  P * V * M * vec4(newVertex.xyz, 1.0);
   fragmentPositionLightSpace = LSM * M * vec4(newVertex.xyz, 1);
   fragmentPosition = newVertex.xyz;
   UV = vertexUV;
-  fragmentNormal = newNormal.xyz;
+  fragmentNormal = vec3(newNormal);
 }</value>
   </data>
   <data name="vshader" xml:space="preserve">

@@ -28,7 +28,7 @@ namespace SpellforceDataEditor.special_forms
 
         protected List<int> current_indices = new List<int>();  //list of indices corrsponding to all displayed elements
 
-        protected SFDiffTools diff = new SFDiffTools();
+        public SFDiffTools diff { get; private set; } = new SFDiffTools();
         protected SFCategoryElement diff_current_element = null;//for checking if an element was modified before switching
 
         protected SFCategoryElement insert_copy_element = null; //if there was an element copied, it's stored here
@@ -237,15 +237,19 @@ namespace SpellforceDataEditor.special_forms
             if (CategorySelect.SelectedIndex == -1)
                 return;
 
+            // force textboxes to validate, submitting data
             Focus();
 
+            // find out if element has changed during viewing it, save it in diff data if so
             diff_resolve_current_element();
             diff_current_element = null;
 
+            // set visibility
             panelElemManipulate.Visible = false;
             panelElemCopy.Visible = false;
             ElementSelect.Enabled = true;
 
+            // set current category
             SFCategory ctg = SFCategoryManager.gamedata[CategorySelect.SelectedIndex];
             if (selected_category_index != CategorySelect.SelectedIndex)
             {
@@ -255,11 +259,14 @@ namespace SpellforceDataEditor.special_forms
             selected_category_index = CategorySelect.SelectedIndex;
             real_category_index = selected_category_index;
 
-            ElementSelect_refresh(ctg);       //clear all elements and start loading new elements
+            // clear all elements and start loading new elements
+            ElementSelect_refresh(ctg);       
 
+            // set display form for elements of this category
             set_element_display(real_category_index);
             ElementDisplay.Visible = false;
 
+            // search panel setup
             SearchPanel.Controls.Clear();
             SearchPanel.Controls.Add(ElementDisplay);
             SearchColumnID.Items.Clear();

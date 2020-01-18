@@ -59,10 +59,12 @@
             // 
             // textBox1
             // 
+            this.textBox1.BackColor = System.Drawing.Color.DarkOrange;
             this.textBox1.Location = new System.Drawing.Point(105, 19);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 2;
+            this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
             this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // textBox2

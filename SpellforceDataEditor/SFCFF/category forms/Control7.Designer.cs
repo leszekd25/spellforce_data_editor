@@ -49,6 +49,13 @@
             this.textBox10 = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.textBox11 = new System.Windows.Forms.TextBox();
+            this.ButtonGoto8 = new System.Windows.Forms.Button();
+            this.ButtonGoto9 = new System.Windows.Forms.Button();
+            this.ButtonGoto10 = new System.Windows.Forms.Button();
+            this.ButtonGoto11 = new System.Windows.Forms.Button();
+            this.ButtonGoto12 = new System.Windows.Forms.Button();
+            this.ButtonGoto13 = new System.Windows.Forms.Button();
+            this.ButtonGoto14 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -75,8 +82,8 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(126, 20);
             this.textBox2.TabIndex = 3;
-            this.textBox2.Validated += new System.EventHandler(this.textBox2_TextChanged);
             this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
+            this.textBox2.Validated += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // label2
             // 
@@ -94,8 +101,8 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(126, 20);
             this.textBox3.TabIndex = 5;
-            this.textBox3.Validated += new System.EventHandler(this.textBox3_TextChanged);
             this.textBox3.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox3_MouseDown);
+            this.textBox3.Validated += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // label3
             // 
@@ -113,8 +120,8 @@
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(126, 20);
             this.textBox4.TabIndex = 7;
-            this.textBox4.Validated += new System.EventHandler(this.textBox4_TextChanged);
             this.textBox4.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox4_MouseDown);
+            this.textBox4.Validated += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // label4
             // 
@@ -132,8 +139,8 @@
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(126, 20);
             this.textBox5.TabIndex = 9;
-            this.textBox5.Validated += new System.EventHandler(this.textBox5_TextChanged);
             this.textBox5.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox5_MouseDown);
+            this.textBox5.Validated += new System.EventHandler(this.textBox5_TextChanged);
             // 
             // label5
             // 
@@ -202,8 +209,8 @@
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new System.Drawing.Size(126, 20);
             this.textBox9.TabIndex = 17;
-            this.textBox9.Validated += new System.EventHandler(this.textBox9_TextChanged);
             this.textBox9.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox9_MouseDown);
+            this.textBox9.Validated += new System.EventHandler(this.textBox9_TextChanged);
             // 
             // label9
             // 
@@ -239,10 +246,94 @@
             this.textBox11.TabIndex = 21;
             this.textBox11.Validated += new System.EventHandler(this.textBox11_TextChanged);
             // 
+            // ButtonGoto8
+            // 
+            this.ButtonGoto8.BackColor = System.Drawing.Color.DarkOrange;
+            this.ButtonGoto8.Location = new System.Drawing.Point(3, 168);
+            this.ButtonGoto8.Name = "ButtonGoto8";
+            this.ButtonGoto8.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto8.TabIndex = 22;
+            this.ButtonGoto8.Text = "button1";
+            this.ButtonGoto8.UseVisualStyleBackColor = false;
+            this.ButtonGoto8.Click += new System.EventHandler(this.ButtonGoto8_Click);
+            // 
+            // ButtonGoto9
+            // 
+            this.ButtonGoto9.BackColor = System.Drawing.Color.DarkOrange;
+            this.ButtonGoto9.Location = new System.Drawing.Point(260, 168);
+            this.ButtonGoto9.Name = "ButtonGoto9";
+            this.ButtonGoto9.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto9.TabIndex = 23;
+            this.ButtonGoto9.Text = "button2";
+            this.ButtonGoto9.UseVisualStyleBackColor = false;
+            this.ButtonGoto9.Click += new System.EventHandler(this.ButtonGoto9_Click);
+            // 
+            // ButtonGoto10
+            // 
+            this.ButtonGoto10.BackColor = System.Drawing.Color.DarkOrange;
+            this.ButtonGoto10.Location = new System.Drawing.Point(4, 197);
+            this.ButtonGoto10.Name = "ButtonGoto10";
+            this.ButtonGoto10.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto10.TabIndex = 24;
+            this.ButtonGoto10.Text = "button3";
+            this.ButtonGoto10.UseVisualStyleBackColor = false;
+            this.ButtonGoto10.Click += new System.EventHandler(this.ButtonGoto10_Click);
+            // 
+            // ButtonGoto11
+            // 
+            this.ButtonGoto11.BackColor = System.Drawing.Color.DarkOrange;
+            this.ButtonGoto11.Location = new System.Drawing.Point(260, 197);
+            this.ButtonGoto11.Name = "ButtonGoto11";
+            this.ButtonGoto11.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto11.TabIndex = 25;
+            this.ButtonGoto11.Text = "button4";
+            this.ButtonGoto11.UseVisualStyleBackColor = false;
+            this.ButtonGoto11.Click += new System.EventHandler(this.ButtonGoto11_Click);
+            // 
+            // ButtonGoto12
+            // 
+            this.ButtonGoto12.BackColor = System.Drawing.Color.DarkOrange;
+            this.ButtonGoto12.Location = new System.Drawing.Point(4, 226);
+            this.ButtonGoto12.Name = "ButtonGoto12";
+            this.ButtonGoto12.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto12.TabIndex = 26;
+            this.ButtonGoto12.Text = "button5";
+            this.ButtonGoto12.UseVisualStyleBackColor = false;
+            this.ButtonGoto12.Click += new System.EventHandler(this.ButtonGoto12_Click);
+            // 
+            // ButtonGoto13
+            // 
+            this.ButtonGoto13.BackColor = System.Drawing.Color.DarkOrange;
+            this.ButtonGoto13.Location = new System.Drawing.Point(260, 226);
+            this.ButtonGoto13.Name = "ButtonGoto13";
+            this.ButtonGoto13.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto13.TabIndex = 27;
+            this.ButtonGoto13.Text = "button6";
+            this.ButtonGoto13.UseVisualStyleBackColor = false;
+            this.ButtonGoto13.Click += new System.EventHandler(this.ButtonGoto13_Click);
+            // 
+            // ButtonGoto14
+            // 
+            this.ButtonGoto14.BackColor = System.Drawing.Color.DarkOrange;
+            this.ButtonGoto14.Location = new System.Drawing.Point(4, 255);
+            this.ButtonGoto14.Name = "ButtonGoto14";
+            this.ButtonGoto14.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto14.TabIndex = 28;
+            this.ButtonGoto14.Text = "button7";
+            this.ButtonGoto14.UseVisualStyleBackColor = false;
+            this.ButtonGoto14.Click += new System.EventHandler(this.ButtonGoto14_Click);
+            // 
             // Control7
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ButtonGoto14);
+            this.Controls.Add(this.ButtonGoto13);
+            this.Controls.Add(this.ButtonGoto12);
+            this.Controls.Add(this.ButtonGoto11);
+            this.Controls.Add(this.ButtonGoto10);
+            this.Controls.Add(this.ButtonGoto9);
+            this.Controls.Add(this.ButtonGoto8);
             this.Controls.Add(this.textBox11);
             this.Controls.Add(this.textBox10);
             this.Controls.Add(this.label10);
@@ -293,5 +384,12 @@
         private System.Windows.Forms.TextBox textBox10;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox textBox11;
+        private System.Windows.Forms.Button ButtonGoto8;
+        private System.Windows.Forms.Button ButtonGoto9;
+        private System.Windows.Forms.Button ButtonGoto10;
+        private System.Windows.Forms.Button ButtonGoto11;
+        private System.Windows.Forms.Button ButtonGoto12;
+        private System.Windows.Forms.Button ButtonGoto13;
+        private System.Windows.Forms.Button ButtonGoto14;
     }
 }

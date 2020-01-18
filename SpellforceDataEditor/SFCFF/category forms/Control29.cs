@@ -33,12 +33,27 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             textBox1.Text = variant_repr(0);
             textBox3.Text = variant_repr(1);
+
+            button_repr(ButtonGoto30, 29, "Inventory", "Merchant");
+            button_repr(ButtonGoto31, 30, "Sell/Buy rate", "Merchant");
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
                 step_into(textBox3, 17);
+        }
+
+        private void ButtonGoto30_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto30, 29);
+            button_repr(ButtonGoto30, 29, "Inventory", "Merchant");
+        }
+
+        private void ButtonGoto31_Click(object sender, EventArgs e)
+        {
+            button_step_into(ButtonGoto31, 30);
+            button_repr(ButtonGoto31, 30, "Sell/Buy rate", "Merchant");
         }
     }
 }

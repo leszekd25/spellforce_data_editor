@@ -50,9 +50,12 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.textBox10 = new System.Windows.Forms.TextBox();
-            this.button_Trace = new System.Windows.Forms.Button();
-            this.label_SpellTrace = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
+            this.ButtonGoto19 = new System.Windows.Forms.Button();
+            this.ButtonGoto20 = new System.Windows.Forms.Button();
+            this.ButtonGoto21 = new System.Windows.Forms.Button();
+            this.ButtonGoto22 = new System.Windows.Forms.Button();
+            this.ButtonGoto23 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label3
@@ -246,28 +249,6 @@
             this.textBox10.TabIndex = 40;
             this.textBox10.Validated += new System.EventHandler(this.textBox10_TextChanged);
             // 
-            // button_Trace
-            // 
-            this.button_Trace.BackColor = System.Drawing.Color.DarkOrange;
-            this.button_Trace.Location = new System.Drawing.Point(413, 226);
-            this.button_Trace.Name = "button_Trace";
-            this.button_Trace.Size = new System.Drawing.Size(75, 23);
-            this.button_Trace.TabIndex = 42;
-            this.button_Trace.Text = "Go";
-            this.button_Trace.UseVisualStyleBackColor = false;
-            this.button_Trace.Visible = false;
-            this.button_Trace.Click += new System.EventHandler(this.button_Trace_Click);
-            // 
-            // label_SpellTrace
-            // 
-            this.label_SpellTrace.AutoSize = true;
-            this.label_SpellTrace.Location = new System.Drawing.Point(303, 231);
-            this.label_SpellTrace.Name = "label_SpellTrace";
-            this.label_SpellTrace.Size = new System.Drawing.Size(104, 13);
-            this.label_SpellTrace.TabIndex = 41;
-            this.label_SpellTrace.Text = "This unit casts spells";
-            this.label_SpellTrace.Visible = false;
-            // 
             // label11
             // 
             this.label11.AutoSize = true;
@@ -277,13 +258,66 @@
             this.label11.TabIndex = 43;
             this.label11.Text = "Unknown1";
             // 
+            // ButtonGoto19
+            // 
+            this.ButtonGoto19.Location = new System.Drawing.Point(3, 226);
+            this.ButtonGoto19.Name = "ButtonGoto19";
+            this.ButtonGoto19.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto19.TabIndex = 44;
+            this.ButtonGoto19.Text = "button1";
+            this.ButtonGoto19.UseVisualStyleBackColor = true;
+            this.ButtonGoto19.Click += new System.EventHandler(this.ButtonGoto19_Click);
+            // 
+            // ButtonGoto20
+            // 
+            this.ButtonGoto20.Location = new System.Drawing.Point(260, 226);
+            this.ButtonGoto20.Name = "ButtonGoto20";
+            this.ButtonGoto20.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto20.TabIndex = 45;
+            this.ButtonGoto20.Text = "button2";
+            this.ButtonGoto20.UseVisualStyleBackColor = true;
+            this.ButtonGoto20.Click += new System.EventHandler(this.ButtonGoto20_Click);
+            // 
+            // ButtonGoto21
+            // 
+            this.ButtonGoto21.Location = new System.Drawing.Point(3, 255);
+            this.ButtonGoto21.Name = "ButtonGoto21";
+            this.ButtonGoto21.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto21.TabIndex = 47;
+            this.ButtonGoto21.Text = "button3";
+            this.ButtonGoto21.UseVisualStyleBackColor = true;
+            this.ButtonGoto21.Click += new System.EventHandler(this.ButtonGoto21_Click);
+            // 
+            // ButtonGoto22
+            // 
+            this.ButtonGoto22.Location = new System.Drawing.Point(260, 255);
+            this.ButtonGoto22.Name = "ButtonGoto22";
+            this.ButtonGoto22.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto22.TabIndex = 46;
+            this.ButtonGoto22.Text = "button4";
+            this.ButtonGoto22.UseVisualStyleBackColor = true;
+            this.ButtonGoto22.Click += new System.EventHandler(this.ButtonGoto22_Click);
+            // 
+            // ButtonGoto23
+            // 
+            this.ButtonGoto23.Location = new System.Drawing.Point(3, 284);
+            this.ButtonGoto23.Name = "ButtonGoto23";
+            this.ButtonGoto23.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto23.TabIndex = 48;
+            this.ButtonGoto23.Text = "button5";
+            this.ButtonGoto23.UseVisualStyleBackColor = true;
+            this.ButtonGoto23.Click += new System.EventHandler(this.ButtonGoto23_Click);
+            // 
             // Control18
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ButtonGoto23);
+            this.Controls.Add(this.ButtonGoto21);
+            this.Controls.Add(this.ButtonGoto22);
+            this.Controls.Add(this.ButtonGoto20);
+            this.Controls.Add(this.ButtonGoto19);
             this.Controls.Add(this.label11);
-            this.Controls.Add(this.button_Trace);
-            this.Controls.Add(this.label_SpellTrace);
             this.Controls.Add(this.textBox10);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label9);
@@ -336,8 +370,11 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox textBox10;
-        private System.Windows.Forms.Button button_Trace;
-        private System.Windows.Forms.Label label_SpellTrace;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Button ButtonGoto19;
+        private System.Windows.Forms.Button ButtonGoto20;
+        private System.Windows.Forms.Button ButtonGoto21;
+        private System.Windows.Forms.Button ButtonGoto22;
+        private System.Windows.Forms.Button ButtonGoto23;
     }
 }

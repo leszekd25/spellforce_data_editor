@@ -115,7 +115,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_simple.AddParameter("DepthBias");
 
             shader_animated.CompileShader(Properties.Resources.vshader_skel, Properties.Resources.fshader_skel);
-            shader_animated.AddParameter("VP");
+            shader_animated.AddParameter("P");
+            shader_animated.AddParameter("V");
             shader_animated.AddParameter("M");
             shader_animated.AddParameter("LSM");
             shader_animated.AddParameter("DiffuseTexture");
@@ -683,8 +684,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
             if (current_pass == RenderPass.SCENE)
             {
                 GL.Uniform1(active_shader["apply_shading"], 1);
-                Matrix4 vp_mat = scene.camera.ViewProjMatrix;
-                GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+                Matrix4 p_mat = scene.camera.ProjMatrix;
+                GL.UniformMatrix4(active_shader["P"], false, ref p_mat);
+                Matrix4 v_mat = scene.camera.ViewMatrix;
+                GL.UniformMatrix4(active_shader["V"], false, ref v_mat);
             }
 
             Matrix4[] bones = new Matrix4[20];

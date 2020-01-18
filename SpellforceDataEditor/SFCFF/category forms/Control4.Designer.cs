@@ -78,6 +78,8 @@
             this.label22 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
+            this.ButtonGoto5 = new System.Windows.Forms.Button();
+            this.ButtonGoto6 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBox1
@@ -506,10 +508,34 @@
             this.label24.TabIndex = 53;
             this.label24.Text = "Unknown2";
             // 
+            // ButtonGoto5
+            // 
+            this.ButtonGoto5.AutoEllipsis = true;
+            this.ButtonGoto5.BackColor = System.Drawing.Color.DarkOrange;
+            this.ButtonGoto5.Location = new System.Drawing.Point(3, 380);
+            this.ButtonGoto5.Name = "ButtonGoto5";
+            this.ButtonGoto5.Size = new System.Drawing.Size(228, 38);
+            this.ButtonGoto5.TabIndex = 54;
+            this.ButtonGoto5.UseVisualStyleBackColor = false;
+            this.ButtonGoto5.Click += new System.EventHandler(this.ButtonGoto5_Click);
+            // 
+            // ButtonGoto6
+            // 
+            this.ButtonGoto6.AutoEllipsis = true;
+            this.ButtonGoto6.BackColor = System.Drawing.Color.DarkOrange;
+            this.ButtonGoto6.Location = new System.Drawing.Point(260, 380);
+            this.ButtonGoto6.Name = "ButtonGoto6";
+            this.ButtonGoto6.Size = new System.Drawing.Size(228, 38);
+            this.ButtonGoto6.TabIndex = 55;
+            this.ButtonGoto6.UseVisualStyleBackColor = false;
+            this.ButtonGoto6.Click += new System.EventHandler(this.ButtonGoto6_Click);
+            // 
             // Control4
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ButtonGoto6);
+            this.Controls.Add(this.ButtonGoto5);
             this.Controls.Add(this.label24);
             this.Controls.Add(this.label23);
             this.Controls.Add(this.label22);
@@ -618,5 +644,7 @@
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Button ButtonGoto5;
+        private System.Windows.Forms.Button ButtonGoto6;
     }
 }

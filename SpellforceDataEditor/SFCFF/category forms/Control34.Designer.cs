@@ -46,6 +46,8 @@
             this.label8 = new System.Windows.Forms.Label();
             this.textBox9 = new System.Windows.Forms.TextBox();
             this.textBox10 = new System.Windows.Forms.TextBox();
+            this.ButtonGoto35 = new System.Windows.Forms.Button();
+            this.ButtonGoto36 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -133,8 +135,8 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(126, 20);
             this.textBox3.TabIndex = 68;
-            this.textBox3.Validated += new System.EventHandler(this.textBox3_TextChanged);
             this.textBox3.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox3_MouseDown);
+            this.textBox3.Validated += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // label6
             // 
@@ -203,10 +205,32 @@
             this.textBox10.TabIndex = 77;
             this.textBox10.Validated += new System.EventHandler(this.textBox10_TextChanged);
             // 
+            // ButtonGoto35
+            // 
+            this.ButtonGoto35.Location = new System.Drawing.Point(3, 201);
+            this.ButtonGoto35.Name = "ButtonGoto35";
+            this.ButtonGoto35.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto35.TabIndex = 78;
+            this.ButtonGoto35.Text = "button1";
+            this.ButtonGoto35.UseVisualStyleBackColor = true;
+            this.ButtonGoto35.Click += new System.EventHandler(this.ButtonGoto35_Click);
+            // 
+            // ButtonGoto36
+            // 
+            this.ButtonGoto36.Location = new System.Drawing.Point(3, 230);
+            this.ButtonGoto36.Name = "ButtonGoto36";
+            this.ButtonGoto36.Size = new System.Drawing.Size(228, 23);
+            this.ButtonGoto36.TabIndex = 79;
+            this.ButtonGoto36.Text = "button2";
+            this.ButtonGoto36.UseVisualStyleBackColor = true;
+            this.ButtonGoto36.Click += new System.EventHandler(this.ButtonGoto36_Click);
+            // 
             // Control34
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ButtonGoto36);
+            this.Controls.Add(this.ButtonGoto35);
             this.Controls.Add(this.textBox10);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.textBox9);
@@ -251,5 +275,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textBox9;
         private System.Windows.Forms.TextBox textBox10;
+        private System.Windows.Forms.Button ButtonGoto35;
+        private System.Windows.Forms.Button ButtonGoto36;
     }
 }
