@@ -343,7 +343,7 @@ float CalculateShadow(vec4 FPLS, float b){
     if(ProjectionCoordinates.z &gt; 1.0)
         return 1.0;
     ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
-    float bias = max(0.05 * (1.0 - b), 0.005);  
+    float bias = min(0.05, max(0.05 * (1.0 - b), 0.005));  
     float result = 0.0;
     float CurrentDepth = ProjectionCoordinates.z;
     //shadow map sampling
@@ -524,7 +524,7 @@ void main(){
   mat3 normalMatrix = transpose(inverse(mat3(M)));
   vec3 normal = normalize(normalMatrix * fragmentNormal);
   vec3 fragVec = fragmentPosition;
-  float brightness = dot(normal, SunDirection); // both vectors are normalized
+  float brightness = (dot(normal, SunDirection)*1.4)-0.4; // both vectors are normalized
     // calculate shadow
   brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
   brightness = clamp(brightness, 0, 1);  
@@ -563,12 +563,9 @@ void main(){
   vec4 ambient_color = AmbientColor * AmbientStrength;
   vec4 sun_color = SunColor * SunStrength;
   color = (ambient_color*(1-brightness))+(sun_color*brightness);
-  color.a = 1.0;
   color = color*temp_c;
   color = clamp(color, 0.0, 1.0);
-
-  // grid
-  color = mix(color, GridColor, gridintensity);
+  color.a = 1.0;
 
   // overlay
   vec2 fixed_UV = (UV*4);
@@ -576,6 +573,9 @@ void main(){
   int ov_col_index = int(texture(OverlayMap, (fixed_UV+vec2(0.5, -0.5))/float(GridSize)).r*255);
   vec4 ov_col_final = ov_colors[ov_col_index];
   color = mix(color, ov_col_final, 0.7*ov_col_final.a);
+
+  // grid
+  color = mix(color, GridColor, gridintensity);
 
   // fog calculation
   float dist = gl_FragCoord.z / gl_FragCoord.w;

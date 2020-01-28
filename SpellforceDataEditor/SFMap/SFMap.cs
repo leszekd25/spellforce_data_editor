@@ -26,6 +26,7 @@ namespace SpellforceDataEditor.SFMap
         public SFMapDecorationManager decoration_manager { get; private set; } = null;
         public SFMapPortalManager portal_manager { get; private set; } = null;
         public SFMapLakeManager lake_manager { get; private set; } = null;
+        public SFMapWeatherManager weather_manager { get; private set; } = null;
         public SFMapMetaData metadata { get; private set; } = null;
         public SFMapSelectionHelper selection_helper { get; private set; } = new SFMapSelectionHelper();
         //public SFMapNPCManager npc_manager { get; private set; } = null;
@@ -451,6 +452,22 @@ namespace SpellforceDataEditor.SFMap
             }
             else
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Additional flag data not found");
+
+            // load weather
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading weather data");
+            tx.Text = "Loading weather...";
+            tx.GetCurrentParent().Refresh();
+            weather_manager = new SFMapWeatherManager();
+            SFChunkFileChunk c44 = f.GetChunkByID(44);
+            if(c44 != null)
+            {
+                using (BinaryReader br = c44.Open())
+                {
+                    int weather_count = br.ReadByte();
+                    for(int i = 0; i < weather_count; i++)
+                        weather_manager.weather[i] = br.ReadByte();
+                }
+            }
 
             // load metadata
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading player spawn data");
@@ -969,6 +986,28 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(12, 0, true, 5, c12_data);
 
             // chunks 44 and 46 unused?
+            // chunk 44
+            weather_manager.Normalize();
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving weather");
+            byte[] c44_data = new byte[weather_manager.weather.Length+1];
+            using (MemoryStream ms = new MemoryStream(c44_data))
+            {
+                using (BinaryWriter bw = new BinaryWriter(ms))
+                {
+                    bw.Write((byte)weather_manager.weather.Length);
+                    for (int i = 0; i < weather_manager.weather.Length; i++)
+                        bw.Write(weather_manager.weather[i]);
+                }
+            }
+            f.AddChunk(44, 0, true, 1, c44_data);
+
+            // chunk 46
+            byte m_group = (byte)Math.Min(254, unit_manager.GetHighestGroup());
+            byte[] c46_data = new byte[m_group + 2];
+            c46_data[0] = (byte)(m_group + 1);
+            for (byte i = 0; i <= m_group; i++)
+                c46_data[i + 1] = i;
+            f.AddChunk(46, 0, true, 1, c46_data);
 
             // chunk 53
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving team compositions");
@@ -1207,6 +1246,10 @@ namespace SpellforceDataEditor.SFMap
 
             // load lakes
             lake_manager = new SFMapLakeManager() { map = this };
+
+            // load weather
+
+            weather_manager = new SFMapWeatherManager();
 
             // load map flags
 

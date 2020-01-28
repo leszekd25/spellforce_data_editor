@@ -34,7 +34,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             return 0;
         }
 
-        public override void OnMousePress(SFCoord clicked_pos, MouseButtons button)
+        public override void OnMousePress(SFCoord clicked_pos, MouseButtons button, ref special_forms.SpecialKeysPressed specials)
         {
             int size = (int)Math.Ceiling(Brush.size);
             Brush.center = clicked_pos;

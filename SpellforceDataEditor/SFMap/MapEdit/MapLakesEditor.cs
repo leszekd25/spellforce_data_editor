@@ -17,7 +17,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             MainForm.mapedittool.InspectorSelect(lake);
         }
 
-        public override void OnMousePress(SFCoord pos, MouseButtons button)
+        public override void OnMousePress(SFCoord pos, MouseButtons button, ref special_forms.SpecialKeysPressed specials)
         {
             if (map == null)
                 return;

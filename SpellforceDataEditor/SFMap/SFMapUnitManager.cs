@@ -71,5 +71,13 @@ namespace SpellforceDataEditor.SFMap
 
             map.heightmap.GetChunk(u.grid_position).RemoveUnit(u);
         }
+
+        public int GetHighestGroup()
+        {
+            int m_group = 0;
+            for (int i = 0; i < units.Count; i++)
+                m_group = Math.Max(m_group, units[i].group);
+            return m_group;
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public int SelectedTile = 0;
         public bool EditSimilar = false;
 
-        public override void OnMousePress(SFCoord pos, MouseButtons b)
+        public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             if (b == MouseButtons.Left)
             {

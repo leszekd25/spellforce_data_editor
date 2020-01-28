@@ -11,12 +11,12 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
     public class MapMonumentEditor: MapEditor
     {
-        bool drag_enabled = false;
+        bool first_click = false;
         public MonumentType selected_type = MonumentType.HERO;
         public int selected_intobj { get; private set; } = -1;       // interactive object index
         public int selected_monument { get; private set; } = -1;    // spawn index
 
-        public override void OnMousePress(SFCoord pos, MouseButtons b)
+        public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             // 1. find clicked bindstone if it exists
             int intobj_index = -1;
@@ -42,15 +42,16 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 if(b == MouseButtons.Left)
                 {
-                    if(drag_enabled == true)
+                    if((specials.Shift)&&(selected_intobj != -1))
                     {
                         if(map.heightmap.CanMoveToPosition(pos))
-                            map.MoveInteractiveObject(intobj_index, pos);
+                            map.MoveInteractiveObject(selected_intobj, pos);
                     }
-                    else
+                    else if(!first_click)
                     {
                         int new_object_id = 771 + (int)selected_type;
 
+                        // slot count?
                         byte unk_byte = 1;
                         if (new_object_id == 777)
                             unk_byte = 5;
@@ -59,21 +60,29 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                         ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).LoadNextMonument();
                         selected_intobj = intobj_index;
+                        selected_monument = monument_index;
                         MainForm.mapedittool.InspectorSelect(
                             map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]);
 
-                        drag_enabled = true;
+                        first_click = true;
                     }
+                }
+                else if(b == MouseButtons.Right)
+                {
+                    selected_monument = -1;
+                    selected_intobj = -1;
+
+                    MainForm.mapedittool.InspectorSelect(null);
                 }
             }
             else
             {
                 if (b == MouseButtons.Left)
                 {
-                    if (drag_enabled == true)
+                    if ((specials.Shift) && (selected_intobj != -1))
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
-                            map.MoveInteractiveObject(intobj_index, pos);
+                            map.MoveInteractiveObject(selected_intobj, pos);
                     }
                     else
                     {
@@ -82,8 +91,6 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                         MainForm.mapedittool.InspectorSelect(
                             map.int_object_manager.int_objects[selected_intobj]);
-
-                        drag_enabled = true;
                     }
                 }
                 else if (b == MouseButtons.Right)
@@ -101,7 +108,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         {
             if (b == MouseButtons.Left)                                                                                
             {
-                drag_enabled = false;
+                first_click = false;
                 if (selected_monument != -1)
                     MainForm.mapedittool.InspectorSelect(map.int_object_manager.int_objects[selected_intobj]);
             }

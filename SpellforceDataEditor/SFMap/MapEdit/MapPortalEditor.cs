@@ -9,10 +9,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 {
     public class MapPortalEditor: MapEditor
     {
-        bool drag_enabled = false;
+        bool first_click = false;
         public int selected_portal { get; private set; } = -1;    // spawn index
 
-        public override void OnMousePress(SFCoord pos, MouseButtons b)
+        public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             SFMapPortal portal = null;
 
@@ -30,57 +30,52 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 if (b == MouseButtons.Left)
                 {
-                    if (drag_enabled == true)
-                    {
-                        if(map.heightmap.CanMoveToPosition(pos))
-                            map.MovePortal(selected_portal, pos);
-                    }
-                    else
-                    {
-                        // check if can place
-                        if (map.heightmap.CanMoveToPosition(pos))
-                        {
-                            map.AddPortal(0, pos, 0);
+                    if (!map.heightmap.CanMoveToPosition(pos))
+                        return;
 
-                            ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).LoadNextPortal();
-                            selected_portal = map.portal_manager.portals.Count - 1;
-                            MainForm.mapedittool.InspectorSelect(map.portal_manager.portals[selected_portal]);
+                    if ((specials.Shift)&&(selected_portal != -1))
+                        map.MovePortal(selected_portal, pos);
+                    else if(!first_click)
+                    {
+                        map.AddPortal(0, pos, 0);
 
-                            drag_enabled = true;
-                        }
+                        ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).LoadNextPortal();
+                        selected_portal = map.portal_manager.portals.Count - 1;
+                        MainForm.mapedittool.InspectorSelect(map.portal_manager.portals[selected_portal]);
+
+                        first_click = true;
                     }
+                }
+                else if(b == MouseButtons.Right)
+                {
+                    selected_portal = -1;
+                    MainForm.mapedittool.InspectorSelect(null);
                 }
             }
             else
             {
+                // find selected coop camp index
+                int portal_map_index = map.portal_manager.portals.IndexOf(portal);
+                if (portal_map_index == -1)
+                    return;
+
                 if (b == MouseButtons.Left)
                 {
                     // if dragging unit, just move selected unit, dont create a new one
-                    if (drag_enabled)
+                    if ((specials.Shift) && (selected_portal != -1))
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
                             map.MovePortal(selected_portal, pos);
                     }
                     else
                     {
-                        // find selected coop camp index
-                        int portal_map_index = map.portal_manager.portals.IndexOf(portal);
-                        if (portal_map_index == -1)
-                            return;
-
                         selected_portal = portal_map_index;
                         MainForm.mapedittool.InspectorSelect(portal);
-
-                        drag_enabled = true;
                     }
                 }
                 // delete unit
                 else if (b == MouseButtons.Right)
                 {
-                    int portal_map_index = map.portal_manager.portals.IndexOf(portal);
-                    if (portal_map_index == -1)
-                        return;
-
                     if (portal_map_index == selected_portal)
                         MainForm.mapedittool.InspectorSelect(null);
 
@@ -94,7 +89,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         {
             if (b == MouseButtons.Left)
             {
-                drag_enabled = false;
+                first_click = false;
                 if (selected_portal != -1)
                     MainForm.mapedittool.InspectorSelect(map.portal_manager.portals[selected_portal]);
             }

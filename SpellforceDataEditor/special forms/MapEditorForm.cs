@@ -17,7 +17,12 @@ using SpellforceDataEditor.SFMap.MapEdit;
 namespace SpellforceDataEditor.special_forms
 {
     public enum MapEditMainMode { TERRAIN, TEXTURES, ENTITIES, MISC };
-    public enum MapEditTerrainMode { HEIGHTMAP, FLAGS, LAKES };
+    public enum MapEditTerrainMode { HEIGHTMAP, FLAGS, LAKES, WEATHER };
+    public struct SpecialKeysPressed
+    {
+        public bool Ctrl;
+        public bool Shift;
+    }
 
     public partial class MapEditorForm : Form
     {
@@ -36,6 +41,7 @@ namespace SpellforceDataEditor.special_forms
 
         bool[] arrows_pressed = new bool[] { false, false, false, false };  // left, right, up, down
         bool[] rotation_pressed = new bool[] { false, false, false, false };// left, right, up, down
+        SpecialKeysPressed special_pressed = new SpecialKeysPressed();
 
         public bool update_render = false;  // whenever this is true, window will be repainted, and this switched to false
         int gc_timer = 0;                   // when this reaches 200, garbage collector runs
@@ -203,6 +209,7 @@ namespace SpellforceDataEditor.special_forms
                 MessageBox.Show("Note: Editor now operates on gamedata file in your Spellforce directory. Modifying in-editor gamedata and saving results will result in permanent change to your gamedata in your Spellforce directory.");
             }
 
+            GC.Collect();
             this.Text = "Map Editor - new map";
 
             LogUtils.Log.TotalMemoryUsage();
@@ -285,6 +292,8 @@ namespace SpellforceDataEditor.special_forms
                     LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap(): Synchronized with gamedata editor");
                     MessageBox.Show("Note: Editor now operates on gamedata file in your Spellforce directory. Modifying in-editor gamedata and saving results will result in permanent change to your gamedata in your Spellforce directory.");
                 }
+
+                GC.Collect();
 
                 this.Text = "Map Editor - " + OpenMap.FileName;
 
@@ -381,7 +390,7 @@ namespace SpellforceDataEditor.special_forms
             if (MainForm.viewer != null)
                 MainForm.viewer.ResetScene();
             map = null;
-            // for good measure (bad! bad!) (TODO: make this do nothing since all resources should be properly disposed at this point)                for (int i = 0; i < (int)MAPEDIT_MODE.MAX; i++)
+            // for good measure (bad! bad!) (TODO: make this do nothing since all resources should be properly disposed at this point)
             SFResources.SFResourceManager.DisposeAll();
             DestroyRenderWindow();
             this.Text = "Map Editor";
@@ -581,7 +590,7 @@ namespace SpellforceDataEditor.special_forms
                     // on click action
                     if ((mouse_pressed) && (selected_editor != null))
                     {
-                        selected_editor.OnMousePress(inv_cursor_coord, mouse_last_pressed);
+                        selected_editor.OnMousePress(inv_cursor_coord, mouse_last_pressed, ref special_pressed);
                         update_render = true;
                         update_ui = true;
                     }
@@ -846,6 +855,12 @@ namespace SpellforceDataEditor.special_forms
                     if (TabEditorModes.Enabled)
                         TabEditorModes.SelectedIndex = 4;
                     return true;
+                case Keys.ControlKey | Keys.Control:
+                    special_pressed.Ctrl = true;
+                    return true;
+                case Keys.ShiftKey | Keys.Shift:
+                    special_pressed.Shift = true;
+                    return true;
                 default:
                     return base.ProcessDialogKey(keyData);
             }
@@ -871,6 +886,10 @@ namespace SpellforceDataEditor.special_forms
                     rotation_pressed[2] = false;
                 else if ((int)msg.WParam == 0x22) // pagedown
                     rotation_pressed[3] = false;
+                else if ((int)msg.WParam == 0x10) // shift
+                    special_pressed.Shift = false;
+                else if ((int)msg.WParam == 0x11) // ctrl
+                    special_pressed.Ctrl = false;
             }
             return base.ProcessKeyPreview(ref msg);
         }
@@ -1002,6 +1021,11 @@ namespace SpellforceDataEditor.special_forms
                 RadioLakes.Checked = false;
                 RadioLakes.Checked = true;
             }
+            if(RadioWeather.Checked)
+            {
+                RadioWeather.Checked = false;
+                RadioWeather.Checked = true;
+            }
         }
 
         private HMapEditMode GetHeightMapEditMode()
@@ -1062,6 +1086,7 @@ namespace SpellforceDataEditor.special_forms
             PanelBrushShape.Visible = true;
             PanelStrength.Visible = true;
             PanelTerrainSettings.Visible = true;
+            PanelWeather.Visible = false;
 
             terrain_brush.size = (float)Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
@@ -1189,6 +1214,7 @@ namespace SpellforceDataEditor.special_forms
             PanelBrushShape.Visible = true;
             PanelStrength.Visible = false;
             PanelTerrainSettings.Visible = false;
+            PanelWeather.Visible = false;
 
             terrain_brush.size = (float)Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
@@ -1225,11 +1251,88 @@ namespace SpellforceDataEditor.special_forms
             PanelBrushShape.Visible = false;
             PanelStrength.Visible = false;
             PanelTerrainSettings.Visible = false;
+            PanelWeather.Visible = false;
 
             InspectorSet(new SFMap.map_controls.MapLakeInspector());
 
             map.heightmap.overlay_active_texture = -1;
             update_render = true;
+        }
+
+        // WEATHER
+        private void RadioWeather_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!RadioWeather.Checked)
+                return;
+
+            InspectorClear();
+
+            selected_editor = null;
+
+            PanelFlags.Visible = false;
+            PanelBrushShape.Visible = false;
+            PanelStrength.Visible = false;
+            PanelTerrainSettings.Visible = false;
+            PanelWeather.Visible = true;
+            PanelWeather.Location = PanelBrushShape.Location;
+
+            map.heightmap.overlay_active_texture = -1;
+            update_render = true;
+
+            UpdateWeatherPanel();
+        }
+
+        private void UpdateWeatherPanel()
+        {
+            WClear.Text = map.weather_manager.weather[0].ToString();
+            WCloud.Text = map.weather_manager.weather[1].ToString();
+            WStorm.Text = map.weather_manager.weather[2].ToString();
+            WLavafog.Text = map.weather_manager.weather[3].ToString();
+            WLavafogBright.Text = map.weather_manager.weather[4].ToString();
+            WDesertfog.Text = map.weather_manager.weather[5].ToString();
+            WSwampfog.Text = map.weather_manager.weather[6].ToString();
+            WLavanight.Text = map.weather_manager.weather[7].ToString();
+        }
+
+
+        private void WClear_Validated(object sender, EventArgs e)
+        {
+            map.weather_manager.weather[0] = Utility.TryParseUInt8(WClear.Text, map.weather_manager.weather[0]);
+        }
+
+        private void WCloud_Validated(object sender, EventArgs e)
+        {
+            map.weather_manager.weather[1] = Utility.TryParseUInt8(WCloud.Text, map.weather_manager.weather[1]);
+        }
+
+        private void WStorm_Validated(object sender, EventArgs e)
+        {
+            map.weather_manager.weather[2] = Utility.TryParseUInt8(WStorm.Text, map.weather_manager.weather[2]);
+        }
+
+        private void WLavafog_Validated(object sender, EventArgs e)
+        {
+            map.weather_manager.weather[3] = Utility.TryParseUInt8(WLavafog.Text, map.weather_manager.weather[3]);
+        }
+
+        private void WLavafogBright_Validated(object sender, EventArgs e)
+        {
+            map.weather_manager.weather[4] = Utility.TryParseUInt8(WLavafogBright.Text, map.weather_manager.weather[4]);
+        }
+
+        private void WDesertfog_Validated(object sender, EventArgs e)
+        {
+            map.weather_manager.weather[5] = Utility.TryParseUInt8(WDesertfog.Text, map.weather_manager.weather[5]);
+        }
+
+        private void WSwampfog_Validated(object sender, EventArgs e)
+        {
+            map.weather_manager.weather[6] = Utility.TryParseUInt8(WSwampfog.Text, map.weather_manager.weather[6]);
+        }
+
+        private void WLavanight_Validated(object sender, EventArgs e)
+        {
+            map.weather_manager.weather[7] = Utility.TryParseUInt8(WLavanight.Text, map.weather_manager.weather[7]);
         }
 
         // TERRAIN PAINT

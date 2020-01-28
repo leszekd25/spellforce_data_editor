@@ -172,6 +172,8 @@ namespace SpellforceDataEditor.SFMap
             // todo: add mipmaps : )
             terrain_texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int)All.LinearMipmapLinear);
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMagFilter, (int)All.Linear);
             GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8 - min_allowed_level, SizedInternalFormat.Rgba8, 256/mipmap_divisor, 256/mipmap_divisor, 32);
             for (int i = 0; i < 32; i++)
             {
@@ -351,7 +353,7 @@ namespace SpellforceDataEditor.SFMap
 
             if (tile_id < 32)
                 texture_tile_image[tile_id] = CreateBitmapFromTexture(base_texture_bank[tile_id]);
-            else
+            else if(tile_defined[tile_id])
             {
                 SFTexture.MixUncompressed(
                     base_texture_bank[texture_tiledata[tile_id].ind1], texture_tiledata[tile_id].weight1,

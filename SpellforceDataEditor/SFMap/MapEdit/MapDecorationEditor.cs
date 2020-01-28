@@ -14,7 +14,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         bool is_adding = false;
         public HashSet<SFCoord> selection = new HashSet<SFCoord>();
 
-        public override void OnMousePress(SFCoord pos, MouseButtons b)
+        public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             if (b == MouseButtons.Left)
             {

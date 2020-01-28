@@ -14,7 +14,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public MapBrush Brush { get; set; }
         public TerrainFlagType FlagType { get; set; }
 
-        public override void OnMousePress(SFCoord pos, MouseButtons button)
+        public override void OnMousePress(SFCoord pos, MouseButtons button, ref special_forms.SpecialKeysPressed specials)
         {
             int size = (int)Brush.size;
             Brush.center = pos;

@@ -269,7 +269,7 @@ namespace SpellforceDataEditor.SFCFF
                 else
                     current_end = current_center - 1;
             }
-            LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.find_binary_element_index(): Element not found (variant index = " + v_index.ToString() + ", value = " + value.ToString() + ", category: " + category_name+")");
+    
             return -1;
         }
 
@@ -669,14 +669,6 @@ namespace SpellforceDataEditor.SFCFF
             return stats_id.ToString() + " " + unit_txt;
             
         }
-
-        public override string GetElementDescription(int index)
-        {
-            Byte skill_major = (Byte)this[index][1];
-            Byte skill_minor = (Byte)this[index][2];
-            Byte skill_level = (Byte)this[index][3];
-            return "This unit skill: " + SFCategoryManager.GetSkillName(skill_major, skill_minor, skill_level);
-        }
     }
 
     //hero skills/spells (6th category)
@@ -901,16 +893,6 @@ namespace SpellforceDataEditor.SFCFF
             UInt16 item_id = (UInt16)this[index][0];
             string txt = SFCategoryManager.GetItemName(item_id);
             return this[index][0].ToString() + " " + txt;
-        }
-
-        public override string GetElementDescription(int index)
-        {
-            Byte skill_major = (Byte)this[index][2];
-            Byte skill_minor = (Byte)this[index][3];
-            Byte skill_level = (Byte)this[index][4];
-            Byte req_ind = (Byte)this[index][1];
-            string req_txt = SFCategoryManager.GetSkillName(skill_major, skill_minor, skill_level);
-            return "Requirement "+req_ind.ToString()+": "+req_txt;
         }
     }
 
@@ -1185,15 +1167,6 @@ namespace SpellforceDataEditor.SFCFF
             string txt_unit = SFCategoryManager.GetUnitName(unit_id);
             return unit_id.ToString() + " " + txt_unit;
         }
-
-        public override string GetElementDescription(int index)
-        {
-            Byte resource_amount = (Byte)this[index][2];
-            Byte resource_id = (Byte)this[index][1];
-            SFCategoryElement elem = SFCategoryManager.gamedata[31].FindElement<Byte>(0, resource_id);
-            string resource_name = SFCategoryManager.GetTextFromElement(elem, 1);
-            return "Requirement: " + resource_amount.ToString() + " " + resource_name;
-        }
     }
 
     //unit corpse loot (22nd category)
@@ -1214,37 +1187,9 @@ namespace SpellforceDataEditor.SFCFF
         public override string GetElementString(int index)
         {
             UInt16 unit_id = (UInt16)this[index][0];
-            Byte slot_id = (Byte)this[index][1];
+            int slot_count = this[index].variants.Count / 7;
             string txt_unit = SFCategoryManager.GetUnitName(unit_id);
-            return unit_id.ToString() + " " + txt_unit;// + " (" + slot_id.ToString() + ")";
-        }
-
-        public override string GetElementDescription(int index)
-        {
-            int item_num = 0;
-            for(int i = 0; i<3; i++)
-            {
-                if ((UInt16)this[index][2+i*2] != 0)
-                    item_num++;
-            }
-            string total_string = "";
-            Single[] chances = new Single[3];
-            for(int i = 0; i < item_num; i++)
-            {
-                UInt16 item_id = (UInt16)this[index][2 + i * 2];
-                Byte data_chance = 0;
-                if (i != 2)
-                    data_chance = (Byte)this[index][3 + i * 2];
-                if (i == 0)
-                    chances[0] = (Single)(data_chance) / 100;
-                else if (i == 1)
-                    chances[1] = ((Single)(data_chance) / 100) * (1 - chances[0]);
-                else if (i == 2)
-                    chances[2] = 1 - chances[0] - chances[1];
-                string txt_item = SFCategoryManager.GetItemName(item_id);
-                total_string += "Item #" + (i + 1).ToString() + ": " + txt_item + " (" + (chances[i]*100).ToString() + "% chance)\r\n";
-            }
-            return total_string;
+            return unit_id.ToString() + " " + txt_unit + " - " + slot_count.ToString() + ((slot_count == 1)?" slot":" slots");
         }
     }
 
@@ -1261,15 +1206,6 @@ namespace SpellforceDataEditor.SFCFF
         public override Object[] GetElementFromBuffer(BinaryReader sr)
         {
             return GetMultipleElementsFromBuffer(sr, 'H');
-        }
-
-        public override string GetElementString(int index)
-        {
-            UInt16 unit_id = (UInt16)this[index][0];
-            UInt16 building_id = (UInt16)this[index][2];
-            string txt_unit = SFCategoryManager.GetUnitName(unit_id);
-            string txt_building = SFCategoryManager.GetBuildingName(building_id);
-            return unit_id.ToString() + " " + txt_unit + " | " + txt_building;
         }
     }
 
@@ -1369,15 +1305,6 @@ namespace SpellforceDataEditor.SFCFF
             Byte b_index = (Byte)this[index][1];
             string txt_building = SFCategoryManager.GetBuildingName(building_id);
             return building_id.ToString() + " " + txt_building + " [" + b_index.ToString() + "]";
-        }
-
-        public override string GetElementDescription(int index)
-        {
-            UInt16 resource_amount = (UInt16)this[index][2];
-            Byte resource_id = (Byte)this[index][1];
-            SFCategoryElement elem = SFCategoryManager.gamedata[31].FindElement<Byte>(0, resource_id);
-            string resource_name = SFCategoryManager.GetTextFromElement(elem, 1);
-            return "Requirement: " + resource_amount.ToString() + " " + resource_name;
         }
     }
 
@@ -1489,16 +1416,6 @@ namespace SpellforceDataEditor.SFCFF
             UInt16 merchant_id = (UInt16)this[index][0];
             string txt_merchant = SFCategoryManager.GetMerchantName(merchant_id);
             return merchant_id.ToString() + " " + txt_merchant;
-        }
-
-        public override string GetElementDescription(int index)
-        {
-            Byte item_type = (Byte)this[index][1];
-            UInt16 perc = (UInt16)this[index][2];
-            string item_text = Utility.S_NONAME;
-            if ((item_type > 0) && (item_type < SFCategory7.item_types.Length))
-                item_text = SFCategory7.item_types[item_type];
-            return "Selling price for " + item_text + " type items: " + perc.ToString() + "% of base price\r\nBuying price: "+(200-perc).ToString()+"% of base price";
         }
     }
 
@@ -1623,37 +1540,9 @@ namespace SpellforceDataEditor.SFCFF
         public override string GetElementString(int index)
         {
             UInt16 object_id = (UInt16)this[index][0];
-            Byte slot_id = (Byte)this[index][1];
+            int slot_count = this[index].variants.Count / 7;
             string txt_unit = SFCategoryManager.GetObjectName(object_id);
-            return object_id.ToString() + " " + txt_unit + " (" + slot_id.ToString() + ")";
-        }
-
-        public override string GetElementDescription(int index)
-        {
-            int item_num = 0;
-            for (int i = 0; i < 3; i++)
-            {
-                if ((UInt16)this[index][2+i*2] != 0)
-                    item_num++;
-            }
-            string total_string = "";
-            Single[] chances = new Single[3];
-            for (int i = 0; i < item_num; i++)
-            {
-                UInt16 item_id = (UInt16)this[index][2+i*2];
-                Byte data_chance = 0;
-                if (i != 2)
-                    data_chance = (Byte)this[index][3+i*2];
-                if (i == 0)
-                    chances[0] = (Single)(data_chance) / 100;
-                else if (i == 1)
-                    chances[1] = ((Single)(data_chance) / 100) * (1 - chances[0]);
-                else if (i == 2)
-                    chances[2] = 1 - chances[0] - chances[1];
-                string txt_item = SFCategoryManager.GetItemName(item_id);
-                total_string += "Item #" + (i + 1).ToString() + ": " + txt_item + " (" + (chances[i] * 100).ToString() + "% chance)\r\n";
-            }
-            return total_string;
+            return object_id.ToString() + " " + txt_unit + " - " + slot_count.ToString() + ((slot_count == 1) ? " slot" : " slots");
         }
     }
     

@@ -199,18 +199,38 @@ namespace SpellforceDataEditor.SFUnPak
             pak_file = fs;
 
             pak_stream = new BinaryReader(fs, Encoding.Default);
-            pak_header.get(pak_stream);
-            if(!pak_header.is_valid())
+            try
+            {
+                pak_header.get(pak_stream);
+            }
+            catch(Exception e)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Init(): Error loading pak header)");
+            }
+            if (!pak_header.is_valid())
             {
                 fs.Close();
                 LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Init(): Pak header is invalid!");
                 return -3;
             }
+            LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Init(): Pak header contents: "
+                + String.Format("File count {0}, pak size {1}, pak data offset {2}", 
+                    pak_header.n_entries.ToString(), 
+                    pak_header.file_size.ToString(),
+                    pak_header.data_start_offset.ToString()));
 
-            for(int i = 0; i < pak_header.n_entries; i++)
+            int ii = 0;
+            try
             {
-                file_headers.Add(new SFPakEntryHeader());
-                file_headers[i].get(pak_stream);
+                for (ii = 0; ii < pak_header.n_entries; ii++)
+                {
+                    file_headers.Add(new SFPakEntryHeader());
+                    file_headers[ii].get(pak_stream);
+                }
+            }
+            catch (Exception e)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Init(): Error loading filenames (file index " + ii.ToString() + ")");
             }
 
             data_offset = (uint)pak_header.data_start_offset;
@@ -218,6 +238,7 @@ namespace SpellforceDataEditor.SFUnPak
 
             pak_stream.BaseStream.Position = 0;
             //retrieve entry names!
+            
             for (int i = 0; i < file_headers.Count; i++)
             {
                 file_headers[i].name = GetFileName(i, false);
@@ -226,7 +247,7 @@ namespace SpellforceDataEditor.SFUnPak
                 if (!file_spans.ContainsKey(file_headers[i].dir_name))
                     file_spans.Add(file_headers[i].dir_name, new Dictionary<string, SFPakFileSpan>());
                 file_spans[file_headers[i].dir_name].Add(file_headers[i].name, new SFPakFileSpan(file_headers[i].data_offset,
-                                                                                                 file_headers[i].size));
+                                                                                                    file_headers[i].size));
             }
 
             Close();

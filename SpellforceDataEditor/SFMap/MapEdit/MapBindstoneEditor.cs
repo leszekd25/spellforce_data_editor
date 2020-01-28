@@ -9,11 +9,11 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 {
     public class MapBindstoneEditor: MapEditor
     {
-        bool drag_enabled = false;
+        bool first_click = false;
         public int selected_intobj { get; private set; } = -1;       // interactive object index
         public int selected_bindstone { get; private set; } = -1;    // spawn index
 
-        public override void OnMousePress(SFCoord pos, MouseButtons b)
+        public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             // 1. find clicked bindstone if it exists
             int intobj_index = -1;
@@ -37,16 +37,20 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             // 2. if not clicked, create new bindstone
             if(int_obj == null)
             {
-                if(b == MouseButtons.Left)
+                if (b == MouseButtons.Left)
                 {
-                    if(drag_enabled == true)
+                    if (!map.heightmap.CanMoveToPosition(pos))
+                        return;
+
+                    if ((specials.Shift) && (selected_intobj != -1))
                     {
-                        int player = map.metadata.FindPlayerBySpawnPos(int_obj.grid_position);
-                        map.MoveInteractiveObject(intobj_index, pos);
+                        int player = map.metadata.FindPlayerBySpawnPos(map.int_object_manager.int_objects[selected_intobj].grid_position);
+
+                        map.MoveInteractiveObject(selected_intobj, pos);
                         if (player != -1)
                             map.metadata.spawns[player].pos = pos;
                     }
-                    else
+                    else if (!first_click)
                     {
                         map.AddInteractiveObject(769, pos, 0, 1);
                         map.metadata.spawns.Add(new SFMapSpawn());
@@ -57,23 +61,31 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         MainForm.mapedittool.InspectorSelect(
                             map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]);
 
-                        drag_enabled = true;
+                        first_click = true;
                     }
+                }
+                else if (b == MouseButtons.Right)
+                {
+                    selected_intobj = -1;
+                    selected_bindstone = -1;
+
+                    MainForm.mapedittool.InspectorSelect(null);
                 }
             }
             else
             {
                 if (b == MouseButtons.Left)
                 {
-                    if (drag_enabled == true)
+                    if ((specials.Shift)&&(selected_intobj != -1))
                     {
-                        if (map.heightmap.CanMoveToPosition(pos))
-                        {
-                            int player = map.metadata.FindPlayerBySpawnPos(int_obj.grid_position);
-                            map.MoveInteractiveObject(intobj_index, pos);
-                            if (player != -1)
-                                map.metadata.spawns[player].pos = pos;
-                        }
+                        if (!(map.heightmap.CanMoveToPosition(pos)))
+                            return;
+
+                        int player = map.metadata.FindPlayerBySpawnPos(map.int_object_manager.int_objects[selected_intobj].grid_position);
+
+                        map.MoveInteractiveObject(selected_intobj, pos);
+                        if (player != -1)
+                            map.metadata.spawns[player].pos = pos;
                     }
                     else
                     {
@@ -82,14 +94,12 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                         MainForm.mapedittool.InspectorSelect(
                             map.int_object_manager.int_objects[selected_intobj]);
-
-                        drag_enabled = true;
                     }
                 }
                 else if (b == MouseButtons.Right)
                 {
-                    bool can_remove = true;
                     int player = map.metadata.FindPlayerBySpawnPos(int_obj.grid_position);
+                    bool can_remove = true;
                     if (player != -1)
                     {
                         if (map.metadata.IsPlayerActive(player))
@@ -118,7 +128,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         {
             if (b == MouseButtons.Left)
             {
-                drag_enabled = false;
+                first_click = false;
                 if (selected_bindstone != -1)
                     MainForm.mapedittool.InspectorSelect(map.int_object_manager.int_objects[selected_intobj]);
             }

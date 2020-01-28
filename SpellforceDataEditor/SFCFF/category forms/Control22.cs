@@ -47,40 +47,42 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 set_element_variant(current_element, 0 + i * 7, Utility.TryParseUInt16(textBox1.Text));
         }
 
-        private void textBox6_TextChanged(object sender, EventArgs e)
-        {
-            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
-            set_element_variant(current_element, 1 + index * 7, Utility.TryParseUInt8(textBox6.Text));
-        }
-
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex+1);
             set_element_variant(current_element, 2 + index * 7, Utility.TryParseUInt16(textBox2.Text));
+
+            item1_name.Text = SFCategoryManager.GetItemName(Utility.TryParseUInt16(textBox2.Text, 0));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
             set_element_variant(current_element, 3 + index * 7, Utility.TryParseUInt8(textBox3.Text));
+            UpdateEffectiveChance();
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
             set_element_variant(current_element, 4 + index * 7, Utility.TryParseUInt16(textBox5.Text));
+
+            item2_name.Text = SFCategoryManager.GetItemName(Utility.TryParseUInt16(textBox5.Text, 0));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
             set_element_variant(current_element, 5 + index * 7, Utility.TryParseUInt8(textBox4.Text));
+            UpdateEffectiveChance();
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
             set_element_variant(current_element, 6 + index * 7, Utility.TryParseUInt16(textBox7.Text));
+
+            item3_name.Text = SFCategoryManager.GetItemName(Utility.TryParseUInt16(textBox7.Text, 0));
         }
 
         public override void set_element(int index)
@@ -117,11 +119,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override void show_element()
         {
             textBox1.Text = variant_repr(0);
-            for(int i = 0; i < 6; i++)
+            for(int i = 1; i <= 6; i++)
             {
                 if(get_subelem_index_by_slot_id(i) != -1)
                 {
-                    ListSlots.SelectedIndex = i;
+                    ListSlots.SelectedIndex = -1;
+                    ListSlots.SelectedIndex = i-1;
                     return;
                 }
             }
@@ -151,6 +154,46 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 step_into(textBox7, 6);
         }
 
+        private void UpdateEffectiveChance()
+        {
+            textBox8.Text = "0"; textBox6.Text = "0"; textBox10.Text = "0"; 
+
+            SFCategoryElement elem = category[current_element];
+
+            int slot_id = ListSlots.SelectedIndex + 1;
+            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
+            int item_num = 0;
+            for (int i = 0; i < 3; i++)    // check for items
+            {
+                if ((UInt16)elem[7 * index + 2 + i * 2] != 0)
+                    item_num++;
+            }
+
+            Single[] chances = new Single[3];
+            for (int i = 0; i < item_num; i++)
+            {
+                UInt16 item_id = (UInt16)elem[7 * index + 2 + i * 2];
+                Byte data_chance = 0;
+                if (i != 2)
+                    data_chance = (Byte)elem[7 * index + 3 + i * 2];
+                if (i == 0)
+                {
+                    chances[0] = (Single)(data_chance);
+                    textBox8.Text = chances[0].ToString();
+                }
+                else if (i == 1)
+                {
+                    chances[1] = (Single)(data_chance) * (1 - chances[0]/100); 
+                    textBox6.Text = chances[1].ToString();
+                }
+                else if (i == 2)
+                {
+                    chances[2] = 100 - chances[0] - chances[1]; 
+                    textBox10.Text = chances[2].ToString();
+                }
+            }
+        }
+
         private void ListSlots_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = ListSlots.SelectedIndex;
@@ -166,13 +209,23 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox7.Enabled = enable;
 
             if (!enable)
+            {
+                item1_name.Text = "";
+                item2_name.Text = "";
+                item3_name.Text = "";
                 return;
-            textBox6.Text = variant_repr(1 + index * 7);
+            }
             textBox2.Text = variant_repr(2 + index * 7);
             textBox3.Text = variant_repr(3 + index * 7);
             textBox5.Text = variant_repr(4 + index * 7);
             textBox4.Text = variant_repr(5 + index * 7);
             textBox7.Text = variant_repr(6 + index * 7);
+
+            item1_name.Text = SFCategoryManager.GetItemName(Utility.TryParseUInt16(textBox2.Text, 0));
+            item2_name.Text = SFCategoryManager.GetItemName(Utility.TryParseUInt16(textBox5.Text, 0));
+            item3_name.Text = SFCategoryManager.GetItemName(Utility.TryParseUInt16(textBox7.Text, 0));
+
+            UpdateEffectiveChance();
         }
 
         private void ListSlots_ItemCheck(object sender, ItemCheckEventArgs e)

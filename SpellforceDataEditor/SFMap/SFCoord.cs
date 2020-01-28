@@ -46,20 +46,20 @@ namespace SpellforceDataEditor.SFMap
 
         public static bool operator <(SFCoord c1, SFCoord c2)
         {
-            if (c1.x < c2.x)
+            if (c1.y < c2.y)
                 return true;
-            else if (c1.x == c2.x)
-                return (c1.y < c2.y);
+            else if (c1.y == c2.y)
+                return (c1.x < c2.x);
             else
                 return false;
         }
 
         public static bool operator >(SFCoord c1, SFCoord c2)
         {
-            if (c1.x > c2.x)
+            if (c1.y > c2.y)
                 return true;
-            else if (c1.x == c2.x)
-                return (c1.y > c2.y);
+            else if (c1.y == c2.y)
+                return (c1.x > c2.x);
             else
                 return false;
         }

@@ -9,10 +9,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 {
     public class MapCoopCampEditor: MapEditor
     {
-        bool drag_enabled = false;
+        bool first_click = false;
         public int selected_spawn { get; private set; } = -1;    // spawn index
 
-        public override void OnMousePress(SFCoord pos, MouseButtons b)
+        public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             SFMapObject obj = null;
             SFMapCoopAISpawn spawn = null;
@@ -32,13 +32,13 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 if (b == MouseButtons.Left)
                 {
-                    if (drag_enabled == true)
+                    if (!map.heightmap.CanMoveToPosition(pos))
+                        return;
+
+                    if ((specials.Shift)&&(selected_spawn != -1))
                         map.MoveObject(map.object_manager.objects.IndexOf(map.metadata.coop_spawns[selected_spawn].spawn_obj), pos);
-                    else
+                    else if(!first_click)
                     {
-                        // check if can place
-                        //if (map.heightmap.CanMoveToPosition(fixed_pos))
-                        //{
                         ushort new_object_id = 2541;
                         if (map.gamedata[33].GetElementIndex(new_object_id) == -1)
                             return;
@@ -60,32 +60,34 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         selected_spawn = map.metadata.coop_spawns.Count - 1;
                         MainForm.mapedittool.InspectorSelect(map.metadata.coop_spawns[selected_spawn]);
 
-                        drag_enabled = true;
-                        //}
+                        first_click = true;
                     }
+                }
+                else if(b == MouseButtons.Right)
+                {
+                    selected_spawn = -1;
+                    MainForm.mapedittool.InspectorSelect(null);
                 }
             }
             else
             {
                 if (b == MouseButtons.Left)
                 {
+                    // find selected coop camp index
+                    int spawn_map_index = map.metadata.coop_spawns.IndexOf(spawn);
+                    if (spawn_map_index == -1)
+                        return;
+
                     // if dragging unit, just move selected unit, dont create a new one
-                    if (drag_enabled)
+                    if ((specials.Shift) && (selected_spawn != -1))
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
                             map.MoveObject(map.object_manager.objects.IndexOf(obj), pos);
                     }
                     else
                     {
-                        // find selected coop camp index
-                        int spawn_map_index = map.metadata.coop_spawns.IndexOf(spawn);
-                        if (spawn_map_index == -1)
-                            return;
-
                         selected_spawn = spawn_map_index;
                         MainForm.mapedittool.InspectorSelect(spawn);
-
-                        drag_enabled = true;
                     }
                 }
                 // delete unit
@@ -110,7 +112,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         {
             if (b == MouseButtons.Left)
             {
-                drag_enabled = false;
+                first_click = false;
                 if (selected_spawn != -1)
                     MainForm.mapedittool.InspectorSelect(map.metadata.coop_spawns[selected_spawn]);
             }

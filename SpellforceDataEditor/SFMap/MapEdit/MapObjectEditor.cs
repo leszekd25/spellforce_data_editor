@@ -9,11 +9,11 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 {
     public class MapObjectEditor: MapEditor
     {
-        bool drag_enabled = false;
+        bool first_click = false;
         public int selected_object { get; private set; } = -1;    // unit index
         public int placement_object { get; set; } = 0;
 
-        public override void OnMousePress(SFCoord pos, MouseButtons button)
+        public override void OnMousePress(SFCoord pos, MouseButtons button, ref special_forms.SpecialKeysPressed specials)
         {
             if (map == null)
                 return;
@@ -25,17 +25,13 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 if (button == MouseButtons.Left)
                 {
+                    if (!map.heightmap.CanMoveToPosition(pos))
+                        return;
                     // if dragging unit, just move selected unit, dont create a new one
-                    if (drag_enabled)
-                    {
-                        //if (map.heightmap.CanMoveToPosition(fixed_pos))
+                    if ((specials.Shift)&&(selected_object != -1))
                         map.MoveObject(selected_object, pos);
-                    }
-                    else
+                    else if(!first_click)
                     {
-                        // check if can place
-                        //if (map.heightmap.CanMoveToPosition(fixed_pos))
-                        //{
                         ushort new_object_id = (ushort)placement_object;
                         if (map.gamedata[33].GetElementIndex(new_object_id) == -1)
                             return;
@@ -46,41 +42,38 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         selected_object = map.object_manager.objects.Count - 1;
                         MainForm.mapedittool.InspectorSelect(map.object_manager.objects[selected_object]);
 
-                        drag_enabled = true;
-                        //}
+                        first_click = true;
                     }
+                }
+                else if(button == MouseButtons.Right)
+                {
+                    selected_object = -1;
+                    MainForm.mapedittool.InspectorSelect(null);
                 }
             }
             else
             {
+                int object_map_index = map.object_manager.objects.IndexOf(obj);
+                if (object_map_index == -1)
+                    return;
+
                 if (button == MouseButtons.Left)
                 {
                     // if dragging unit, just move selected unit, dont create a new one
-                    if (drag_enabled)
+                    if ((specials.Shift) && (selected_object != -1))
                     {
-                        //if (map.heightmap.CanMoveToPosition(fixed_pos))
-                        map.MoveObject(selected_object, pos);
+                        if (map.heightmap.CanMoveToPosition(pos))
+                            map.MoveObject(selected_object, pos);
                     }
                     else
                     {
-                        // find selected unit id
-                        int object_map_index = map.object_manager.objects.IndexOf(obj);
-                        if (object_map_index == -1)
-                            return;
-
                         selected_object = object_map_index;
                         MainForm.mapedittool.InspectorSelect(map.object_manager.objects[selected_object]);
-
-                        drag_enabled = true;
                     }
                 }
                 // delete unit
                 else if (button == MouseButtons.Right)
                 {
-                    int object_map_index = map.object_manager.objects.IndexOf(obj);
-                    if (object_map_index == -1)
-                        return;
-
                     if (object_map_index == selected_object)
                         MainForm.mapedittool.InspectorSelect(null);
 
@@ -94,7 +87,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         {
             if (b == MouseButtons.Left)
             {
-                drag_enabled = false;
+                first_click = false;
                 if(selected_object != -1)
                     MainForm.mapedittool.InspectorSelect(map.object_manager.objects[selected_object]);
             }

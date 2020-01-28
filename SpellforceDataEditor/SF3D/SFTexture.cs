@@ -107,6 +107,13 @@ namespace SpellforceDataEditor.SF3D
             if (mipMapCount == 1)
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.LinearMipmapLinear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
+
+            //GL.TexParameter(TextureTarget.Texture2D, All.MaxTextureMaxAnisotropyExt, 8);// RenderState.Instance.AnisotropyLevel);
+            
+
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 

@@ -75,11 +75,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
         {
             if (!initialized)
             {
-                /*_debugProcCallbackHandle = GCHandle.Alloc(_debugProcCallback);
+                _debugProcCallbackHandle = GCHandle.Alloc(_debugProcCallback);
 
                 GL.DebugMessageCallback(_debugProcCallback, IntPtr.Zero);
                 GL.Enable(EnableCap.DebugOutput);
-                GL.Enable(EnableCap.DebugOutputSynchronous);*/
+                GL.Enable(EnableCap.DebugOutputSynchronous);
             }
 
             render_size = view_size;
@@ -178,9 +178,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_framebuffer_simple.CompileShader(Properties.Resources.vshader_framebuffer, Properties.Resources.fshader_framebuffer_simple);
 
             scene.sun_light.Direction = -(new Vector3(0, -1, 0).Normalized());
-            scene.sun_light.Color = new Vector4(1, 1, 1, 1);
-            scene.sun_light.Strength = 1.5f;
-            scene.ambient_light.Color = new Vector4(1f, 1f, 1f, 1.0f);
+            scene.sun_light.Color = new Vector4(1, 1, 1f, 1);
+            scene.sun_light.Strength = 1.6f;
+            scene.ambient_light.Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
             scene.ambient_light.Strength = 0.8f;
             scene.atmosphere.FogColor = new Vector4(0.55f, 0.55f, 0.85f, 1.0f);
             scene.atmosphere.FogStart = 100f;
@@ -214,6 +214,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
 
             initialized = true;
+
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "Renderer used: " + GL.GetString(StringName.Renderer));
         }
 
         public static void ResizeView(Vector2 view_size)
