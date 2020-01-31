@@ -60,7 +60,9 @@ namespace SpellforceDataEditor.special_forms
         SFMap.map_dialog.MapImportHeightmapDialog importhmap_form = null;
         SFMap.map_dialog.MapExportHeightmapDialog exporthmap_form = null;
 
-        List<int> unitcombo_to_unitindex = new List<int>();
+        Dictionary<string, TreeNode> unit_tree = null;
+        Dictionary<string, TreeNode> building_tree = null;
+        Dictionary<string, TreeNode> obj_tree = null;
 
         public MapEditorForm()
         {
@@ -97,7 +99,7 @@ namespace SpellforceDataEditor.special_forms
         private void MapEditorForm_Resize(object sender, EventArgs e)
         {
             TabEditorModes.Width = this.Width - 22;
-            TabEditorModes.Padding = new Point(((this.Width - 350) / TabEditorModes.TabPages.Count / 2), TabEditorModes.Padding.Y);
+            TabEditorModes.Padding = new Point(Math.Max(100, ((this.Width - 350)) / TabEditorModes.TabPages.Count / 2), TabEditorModes.Padding.Y);
             if (RenderWindow != null)
                 ResizeWindow();
 
@@ -372,6 +374,10 @@ namespace SpellforceDataEditor.special_forms
             TabEditorModes.Enabled = false;
             InspectorClear();
 
+            TreeEntities.Nodes.Clear();
+            unit_tree = null;
+            obj_tree = null;
+
             map.Unload();
             if (MainForm.data != null)
             {
@@ -380,6 +386,7 @@ namespace SpellforceDataEditor.special_forms
             }
             else
                 SFCFF.SFCategoryManager.UnloadAll();
+
             SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
             SFRenderEngine.scene.root = null;
             SFRenderEngine.scene.camera = null;
@@ -764,11 +771,16 @@ namespace SpellforceDataEditor.special_forms
         {
             int ystart = RenderWindow.Location.Y;
             int yend = StatusStrip.Location.Y;
-            int w_height = yend - ystart - 3;
-            int w_width = this.Width - 22 - (PanelInspector.Visible ? PanelInspector.Width : 0);
-            RenderWindow.Location = new Point(3, ystart);
+            int w_height = Math.Max(100, yend - ystart - 3);
+            int w_width = this.Width - 22 - (PanelInspector.Visible ? PanelInspector.Width : 0)
+                - (PanelObjectSelector.Visible ? PanelObjectSelector.Width : 0);
+            int xstart = (PanelObjectSelector.Visible ? PanelObjectSelector.Location.X + PanelObjectSelector.Width + 3 : 0);
+            PanelObjectSelector.Height = w_height;
+            TreeEntities.Height = w_height - 32;
+            TreeEntitytFilter.Location = new Point(TreeEntitytFilter.Location.X, w_height - 23);
+            RenderWindow.Location = new Point(xstart, ystart);
             RenderWindow.Size = new Size(w_width, w_height);
-            PanelInspector.Location = new Point(6 + RenderWindow.Width, ystart);
+            PanelInspector.Location = new Point(6 + RenderWindow.Width + (PanelObjectSelector.Visible ? PanelObjectSelector.Width : 0), ystart);
             SFRenderEngine.ResizeView(new Vector2(w_width, w_height));
             update_render = true;
             RenderWindow.MakeCurrent();
@@ -975,6 +987,7 @@ namespace SpellforceDataEditor.special_forms
 
             map.heightmap.overlay_active_texture = -1;
             update_render = true;
+            PanelObjectSelector.Visible = false;
 
             if (TabEditorModes.SelectedIndex == 0) // TERRAIN
             {
@@ -1465,52 +1478,190 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
-        public void InitializeComboRaces()
+        // this tree code is very ugly, i wish you could instantiate TreeNodeCollection outside of TreeView
+        // forgive me for i have sinned
+
+
+        // load object picker tree
+        private void GenerateUnitTree()
         {
-            if (!SFCFF.SFCategoryManager.ready)
-                return;
-
-            UnitRace.Items.Clear();
-
-            SFCFF.SFCategory races_cat = SFCFF.SFCategoryManager.gamedata[15];
-            for (int i = 0; i < races_cat.GetElementCount(); i++)
+            TreeEntities.Nodes.Clear();
+            if (unit_tree != null)
             {
-                ushort race_name_index = (ushort)(races_cat[i][7]);
+                Utility.TreeShallowCopy(unit_tree, TreeEntities.Nodes);
+                return;
+            }
+
+            unit_tree = new Dictionary<string, TreeNode>();
+            // generate race nodes
+            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[15];
+            for (int i = 0; i < cat.GetElementCount(); i++)
+            {
+                byte race_id = (byte)cat[i][0];
+                ushort race_name_index = (ushort)(cat[i][7]);
+                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+
+                string race_name;
+                if (name_elem != null)
+                    race_name = Utility.CleanString(name_elem[4]);
+                else
+                    race_name = Utility.S_MISSING;
+
+                race_name = race_id.ToString() + ". " + race_name;
+                unit_tree.Add(race_name, new TreeNode(race_name));
+                //UnitRace.Items.Add(race_name);
+
+            }
+            // generate unit nodes
+            SFCFF.SFCategory units_cat = SFCFF.SFCategoryManager.gamedata[17];
+            for (int i = 0; i < units_cat.GetElementCount(); i++)
+            {
+                ushort unit_id = (ushort)units_cat[i][0];
+                string unit_name = unit_id.ToString() + ". " + SFCFF.SFCategoryManager.GetUnitName(unit_id, true);
+
+                ushort stats_id = (ushort)(units_cat[i][2]);
+                SFCFF.SFCategoryElement stats_elem = SFCFF.SFCategoryManager.gamedata[3].FindElementBinary(0, stats_id);
+                if (stats_elem == null)
+                {
+                    unit_tree.Add(unit_name, new TreeNode(unit_name) { Tag = unit_id });
+                    continue;
+                }
+
+                byte unit_race_id = (byte)stats_elem[2];
+                int race_cat_index = cat.GetElementIndex(unit_race_id);
+
+                ushort race_name_index = (ushort)(cat[race_cat_index][7]);
                 SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
                     race_name = Utility.CleanString(name_elem[4]);
                 else
                     race_name = Utility.S_MISSING;
-                UnitRace.Items.Add(race_name);
-            }
+
+                race_name = unit_race_id.ToString() + ". " + race_name;
+                if (unit_tree.ContainsKey(race_name))
+                    unit_tree[race_name].Nodes.Add(new TreeNode(unit_name) { Tag = unit_id });
+                else
+                    unit_tree.Add(unit_name, new TreeNode(unit_name) { Tag = unit_id });
+            }            
+            // clear empty nodes
+            HashSet<string> nodes_to_remove = new HashSet<string>();
+            foreach (string s in unit_tree.Keys)
+                if ((unit_tree[s].Nodes.Count == 0) && (unit_tree[s].Tag == null))
+                    nodes_to_remove.Add(s);
+            foreach (string s in nodes_to_remove)
+                unit_tree.Remove(s);
+
+            Utility.TreeShallowCopy(unit_tree, TreeEntities.Nodes);
+            GC.Collect();
         }
 
-        public void ReloadRaceUnits()
+        private void GetUnitNodesByName(string txt)
         {
-            byte race_id = (byte)SFCFF.SFCategoryManager.gamedata[15][UnitRace.SelectedIndex][0];
-            List<int> unit_indices = new List<int>();
-            SFCFF.SFCategory units_cat = SFCFF.SFCategoryManager.gamedata[17];
+            if (txt == "")
+            {
+                GenerateUnitTree();
+                return;
+            }
+            txt = txt.ToLower();
 
+            TreeEntities.Nodes.Clear();
+            // generate race nodes
+            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[15];
+            for (int i = 0; i < cat.GetElementCount(); i++)
+            {
+                byte race_id = (byte)cat[i][0];
+                ushort race_name_index = (ushort)(cat[i][7]);
+                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+
+                string race_name;
+                if (name_elem != null)
+                    race_name = Utility.CleanString(name_elem[4]);
+                else
+                    race_name = Utility.S_MISSING;
+
+                race_name = race_id.ToString() + ". " + race_name;
+                TreeEntities.Nodes.Add(race_name, race_name);
+                //UnitRace.Items.Add(race_name);
+
+            }
+            // generate unit nodes
+            SFCFF.SFCategory units_cat = SFCFF.SFCategoryManager.gamedata[17];
             for (int i = 0; i < units_cat.GetElementCount(); i++)
             {
+                ushort unit_id = (ushort)units_cat[i][0];
+                string unit_name = unit_id.ToString() + ". " + SFCFF.SFCategoryManager.GetUnitName(unit_id, true);
+
                 ushort stats_id = (ushort)(units_cat[i][2]);
                 SFCFF.SFCategoryElement stats_elem = SFCFF.SFCategoryManager.gamedata[3].FindElementBinary(0, stats_id);
                 if (stats_elem == null)
+                {
+                    if (unit_name.ToLower().Contains(txt))
+                        TreeEntities.Nodes.Add(new TreeNode(unit_name) { Tag = unit_id });
                     continue;
+                }
+
                 byte unit_race_id = (byte)stats_elem[2];
-                if (race_id != unit_race_id)
+                int race_cat_index = cat.GetElementIndex(unit_race_id);
+
+                ushort race_name_index = (ushort)(cat[race_cat_index][7]);
+                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+                string race_name;
+                if (name_elem != null)
+                    race_name = Utility.CleanString(name_elem[4]);
+                else
+                    race_name = Utility.S_MISSING;
+
+                race_name = unit_race_id.ToString() + ". " + race_name;
+
+                if ((!race_name.ToLower().Contains(txt)) && (!unit_name.ToLower().Contains(txt)))
                     continue;
 
-                unit_indices.Add((ushort)(units_cat[i][0]));
+                if (TreeEntities.Nodes.ContainsKey(race_name))
+                    TreeEntities.Nodes[race_name].Nodes.Add(new TreeNode(unit_name) { Tag = unit_id });
+                else
+                    TreeEntities.Nodes.Add(new TreeNode(unit_name) { Tag = unit_id });
             }
+            // clear empty nodes
+            HashSet<string> nodes_to_remove = new HashSet<string>();
+            foreach (TreeNode n in TreeEntities.Nodes)
+                if ((n.Nodes.Count == 0) && (n.Tag == null))
+                    nodes_to_remove.Add(n.Name);
+            foreach (string s in nodes_to_remove)
+                TreeEntities.Nodes.RemoveByKey(s);
 
-            //  TODO: sort by level
-            // right now:  just passing whole list
-            unitcombo_to_unitindex = unit_indices;
 
-            for (int i = 0; i < unitcombo_to_unitindex.Count; i++)
-                UnitName.Items.Add(SFCFF.SFCategoryManager.GetUnitName((ushort)unitcombo_to_unitindex[i], true));
+            GC.Collect();
+        }
+
+        private void TreeEntities_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Node.Tag != null)
+            {
+                EntityID.Text = e.Node.Tag.ToString();
+                if(RadioEntityModeUnit.Checked)
+                    ((MapUnitEditor)selected_editor).placement_unit = Utility.TryParseUInt16(EntityID.Text);
+                if(RadioEntityModeBuilding.Checked)
+                    ((MapBuildingEditor)selected_editor).placement_building = Utility.TryParseUInt16(EntityID.Text);
+                if (RadioEntityModeObject.Checked)
+                    ((MapObjectEditor)selected_editor).placement_object = Utility.TryParseUInt16(EntityID.Text);
+            }
+        }
+        private void TreeEntityFilter_TextChanged(object sender, EventArgs e)
+        {
+            TimerTreeEntityFilter.Stop();
+            TimerTreeEntityFilter.Start();
+        }
+
+        private void TimerTreeEntityFilter_Tick(object sender, EventArgs e)
+        {
+            if (RadioEntityModeUnit.Checked)
+                GetUnitNodesByName(TreeEntitytFilter.Text);
+            if (RadioEntityModeBuilding.Checked)
+                GetBuildingNodesByName(TreeEntitytFilter.Text);
+            if(RadioEntityModeObject.Checked)
+                GetObjectNodesByName(TreeEntitytFilter.Text);
+            TimerTreeEntityFilter.Stop();
         }
 
         private void RadioEntityModeUnit_CheckedChanged(object sender, EventArgs e)
@@ -1518,21 +1669,20 @@ namespace SpellforceDataEditor.special_forms
             if (!RadioEntityModeUnit.Checked)
                 return;
 
-            InspectorSet(new SFMap.map_controls.MapUnitInspector());
 
-            InitializeComboRaces();
-            unitcombo_to_unitindex.Clear();
-            UnitName.Items.Clear();
+            PanelObjectSelector.Visible = true;
+            InspectorSet(new SFMap.map_controls.MapUnitInspector());
+            GenerateUnitTree();
 
             selected_editor = new MapUnitEditor()
             {
                 map = this.map
             };
 
-            PanelUnitPlacementSelect.Visible = true;
             PanelEntityPlacementSelect.Visible = true;
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
+            PanelObjectAngle.Visible = false;
         }
 
         private void EntityID_Validated(object sender, EventArgs e)
@@ -1567,23 +1717,139 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
-        private void UnitRace_SelectedIndexChanged(object sender, EventArgs e)
+        // load object picker tree
+        private void GenerateBuildingTree()
         {
-            UnitName.Items.Clear();
-            unitcombo_to_unitindex.Clear();
-            if (UnitRace.SelectedIndex == -1)
+            TreeEntities.Nodes.Clear();
+            if (building_tree != null)
+            {
+                Utility.TreeShallowCopy(building_tree, TreeEntities.Nodes);
                 return;
+            }
 
-            ReloadRaceUnits();
+            building_tree = new Dictionary<string, TreeNode>();
+            // generate race nodes
+            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[15];
+            for (int i = 0; i < cat.GetElementCount(); i++)
+            {
+                byte race_id = (byte)cat[i][0];
+                ushort race_name_index = (ushort)(cat[i][7]);
+                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+
+                string race_name;
+                if (name_elem != null)
+                    race_name = Utility.CleanString(name_elem[4]);
+                else
+                    race_name = Utility.S_MISSING;
+
+                race_name = race_id.ToString() + ". " + race_name;
+                building_tree.Add(race_name, new TreeNode(race_name));
+                //UnitRace.Items.Add(race_name);
+
+            }
+            // generate building nodes
+            SFCFF.SFCategory buildings_cat = SFCFF.SFCategoryManager.gamedata[23];
+            for (int i = 0; i < buildings_cat.GetElementCount(); i++)
+            {
+                ushort building_id = (ushort)buildings_cat[i][0];
+
+                byte building_race_id = (byte)buildings_cat[i][1];
+                int race_cat_index = cat.GetElementIndex(building_race_id);
+
+                ushort race_name_index = (ushort)(cat[race_cat_index][7]);
+                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+                string race_name;
+                if (name_elem != null)
+                    race_name = Utility.CleanString(name_elem[4]);
+                else
+                    race_name = Utility.S_MISSING;
+
+                race_name = building_race_id.ToString() + ". " + race_name;
+                string building_name = building_id.ToString() + ". " + SFCFF.SFCategoryManager.GetBuildingName(building_id);
+                if (building_tree.ContainsKey(race_name))
+                    building_tree[race_name].Nodes.Add(new TreeNode(building_name) { Tag = building_id });
+                else
+                    building_tree.Add(building_name, new TreeNode(building_name) { Tag = building_id });
+            }
+            // clear empty nodes
+            HashSet<string> nodes_to_remove = new HashSet<string>();
+            foreach (string s in building_tree.Keys)
+                if ((building_tree[s].Nodes.Count == 0) && (building_tree[s].Tag == null))
+                    nodes_to_remove.Add(s);
+            foreach (string s in nodes_to_remove)
+                building_tree.Remove(s);
+
+            Utility.TreeShallowCopy(building_tree, TreeEntities.Nodes);
+            GC.Collect();
         }
 
-        private void UnitName_SelectedIndexChanged(object sender, EventArgs e)
+        private void GetBuildingNodesByName(string txt)
         {
-            if (UnitName.SelectedIndex == -1)
+            if (txt == "")
+            {
+                GenerateBuildingTree();
                 return;
+            }
+            txt = txt.ToLower();
 
-            EntityID.Text = unitcombo_to_unitindex[UnitName.SelectedIndex].ToString();
-            ((MapUnitEditor)selected_editor).placement_unit = Utility.TryParseUInt16(EntityID.Text);
+            TreeEntities.Nodes.Clear();
+
+            // generate race nodes
+            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[15];
+            for (int i = 0; i < cat.GetElementCount(); i++)
+            {
+                byte race_id = (byte)cat[i][0];
+                ushort race_name_index = (ushort)(cat[i][7]);
+                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+
+                string race_name;
+                if (name_elem != null)
+                    race_name = Utility.CleanString(name_elem[4]);
+                else
+                    race_name = Utility.S_MISSING;
+
+                race_name = race_id.ToString() + ". " + race_name;
+                TreeEntities.Nodes.Add(race_name, race_name);
+                //UnitRace.Items.Add(race_name);
+
+            }
+            // generate building nodes
+            SFCFF.SFCategory buildings_cat = SFCFF.SFCategoryManager.gamedata[23];
+            for (int i = 0; i < buildings_cat.GetElementCount(); i++)
+            {
+                ushort building_id = (ushort)buildings_cat[i][0];
+
+                byte building_race_id = (byte)buildings_cat[i][1];
+                int race_cat_index = cat.GetElementIndex(building_race_id);
+
+                ushort race_name_index = (ushort)(cat[race_cat_index][7]);
+                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+                string race_name;
+                if (name_elem != null)
+                    race_name = Utility.CleanString(name_elem[4]);
+                else
+                    race_name = Utility.S_MISSING;
+
+                race_name = building_race_id.ToString() + ". " + race_name;
+                string building_name = building_id.ToString() + ". " + SFCFF.SFCategoryManager.GetBuildingName(building_id);
+                if ((!race_name.ToLower().Contains(txt)) && (!building_name.ToLower().Contains(txt)))
+                    continue;
+
+                if (TreeEntities.Nodes.ContainsKey(race_name))
+                    TreeEntities.Nodes[race_name].Nodes.Add(new TreeNode(building_name) { Tag = building_id });
+                else
+                    TreeEntities.Nodes.Add(new TreeNode(building_name) { Tag = building_id });
+            }
+            // clear empty nodes
+            HashSet<string> nodes_to_remove = new HashSet<string>();
+            foreach (TreeNode n in TreeEntities.Nodes)
+                if ((n.Nodes.Count == 0) && (n.Tag == null))
+                    nodes_to_remove.Add(n.Name);
+            foreach (string s in nodes_to_remove)
+                TreeEntities.Nodes.RemoveByKey(s);
+
+
+            GC.Collect();
         }
 
         private void RadioEntityModeBuilding_CheckedChanged(object sender, EventArgs e)
@@ -1591,17 +1857,175 @@ namespace SpellforceDataEditor.special_forms
             if (!RadioEntityModeBuilding.Checked)
                 return;
 
+            PanelObjectSelector.Visible = true;
             InspectorSet(new SFMap.map_controls.MapBuildingInspector());
+            GenerateBuildingTree();
 
             selected_editor = new MapBuildingEditor()
             {
                 map = this.map
             };
 
-            PanelUnitPlacementSelect.Visible = false;
             PanelEntityPlacementSelect.Visible = true;
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
+            PanelObjectAngle.Visible = false;
+        }
+
+        // load object picker tree
+        private void GenerateObjectTree()
+        {
+            TreeEntities.Nodes.Clear();
+            if (obj_tree != null)
+            {
+                Utility.TreeShallowCopy(obj_tree, TreeEntities.Nodes);
+                return;
+            }
+
+            obj_tree = new Dictionary<string, TreeNode>();
+
+            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[33];
+            foreach(SFCFF.SFCategoryElement e in cat.elements)
+            {
+                UInt16 id = (UInt16)e[0];
+                if((id > 64)&&(id < 128))
+                    continue;
+                if((id >= 771)&&(id <= 778))
+                    continue;
+                if (id == 769)
+                    continue;
+                if (id == 2541)
+                    continue;
+
+
+                string name = id.ToString()+". "+SFCFF.SFCategoryManager.GetObjectName(id);
+                string path = Utility.CleanString(e[5]);
+                string[] path_items = path.Split('/');
+                if ((path_items.Length == 1) && (path_items[0] == ""))
+                    path_items = new string[] { };
+
+                // add entry
+                if (path_items.Length == 0)
+                {
+                    obj_tree.Add(name, new TreeNode(name) { Tag = id });
+                    continue;
+                }
+
+                TreeNode tnc = null;
+                if (!obj_tree.ContainsKey(path_items[0]))
+                    obj_tree.Add(path_items[0], new TreeNode(path_items[0]));
+                tnc = obj_tree[path_items[0]];
+
+                for(int i = 1; i < path_items.Length; i++)
+                {
+                    if (!tnc.Nodes.ContainsKey(path_items[i]))
+                        tnc.Nodes.Add(path_items[i], path_items[i]);
+                    tnc = tnc.Nodes[path_items[i]];
+                }
+                tnc.Nodes.Add(new TreeNode(name) { Tag = id });
+            }
+
+            Utility.TreeShallowCopy(obj_tree, TreeEntities.Nodes);
+            GC.Collect();
+        }
+
+        private void GetObjectNodesByName(string txt)
+        {
+            if(txt == "")
+            {
+                GenerateObjectTree();
+                return;
+            }
+            txt = txt.ToLower();
+
+            TreeEntities.Nodes.Clear();
+
+            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[33];
+            foreach (SFCFF.SFCategoryElement e in cat.elements)
+            {
+                UInt16 id = (UInt16)e[0];
+                if ((id > 64) && (id < 128))
+                    continue;
+                if ((id >= 771) && (id <= 778))
+                    continue;
+                if (id == 769)
+                    continue;
+                if (id == 2541)
+                    continue;
+
+
+                string name = id.ToString() + ". " + SFCFF.SFCategoryManager.GetObjectName(id);
+                string path = Utility.CleanString(e[5]);
+                string[] path_items = path.Split('/');
+                if ((path_items.Length == 1) && (path_items[0] == ""))
+                    path_items = new string[] { };
+
+                bool include = true;
+                if (!name.ToLower().Contains(txt))
+                {
+                    include = false;
+                    foreach(string s in path_items)
+                        if(s.ToLower().Contains(txt))
+                        {
+                            include = true;
+                            break;
+                        }
+                }
+                if (!include)
+                    continue;
+
+                // add entry
+                if (path_items.Length == 0)
+                {
+                    TreeEntities.Nodes.Add(new TreeNode(name) { Tag = id });
+                    continue;
+                }
+
+                TreeNode tnc = null;
+                if (!TreeEntities.Nodes.ContainsKey(path_items[0]))
+                    TreeEntities.Nodes.Add(path_items[0], path_items[0]);
+                tnc = TreeEntities.Nodes[path_items[0]];
+
+                for (int i = 1; i < path_items.Length; i++)
+                {
+                    if (!tnc.Nodes.ContainsKey(path_items[i]))
+                        tnc.Nodes.Add(path_items[i], path_items[i]);
+                    tnc = tnc.Nodes[path_items[i]];
+                }
+                tnc.Nodes.Add(new TreeNode(name) { Tag = id });
+            }
+
+
+            GC.Collect();
+        }
+
+
+        public struct AngleInfo
+        {
+            public UInt16 angle;
+            public bool random;
+        }
+
+        private void Angle_Validated(object sender, EventArgs e)
+        {
+            int v = Utility.TryParseUInt16(Angle.Text);
+            AngleTrackbar.Value = (v >= 0 ? (v <= 359 ? v : 359) : 0);
+        }
+
+        private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
+        {
+            Angle.Text = AngleTrackbar.Value.ToString();
+        }
+
+        private void CheckRandomRange_CheckedChanged(object sender, EventArgs e)
+        {
+            Angle.Enabled = !CheckRandomRange.Checked;
+            AngleTrackbar.Enabled = !CheckRandomRange.Checked;
+        }
+
+        public AngleInfo GetAngleInfo()
+        {
+            return new AngleInfo() { angle = Utility.TryParseUInt16(Angle.Text), random = CheckRandomRange.Checked };
         }
 
         private void RadioEntityModeObject_CheckedChanged(object sender, EventArgs e)
@@ -1609,17 +2033,19 @@ namespace SpellforceDataEditor.special_forms
             if (!RadioEntityModeObject.Checked)
                 return;
 
+            PanelObjectSelector.Visible = true;
             InspectorSet(new SFMap.map_controls.MapObjectInspector());
+            GenerateObjectTree();
 
             selected_editor = new MapObjectEditor()
             {
                 map = this.map
             };
 
-            PanelUnitPlacementSelect.Visible = false;
             PanelEntityPlacementSelect.Visible = true;
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
+            PanelObjectAngle.Visible = true;
         }
 
         private void RadioModeCoopCamps_CheckedChanged(object sender, EventArgs e)
@@ -1627,6 +2053,7 @@ namespace SpellforceDataEditor.special_forms
             if (!RadioModeCoopCamps.Checked)
                 return;
 
+            PanelObjectSelector.Visible = false;
             InspectorSet(new SFMap.map_controls.MapCoopCampInspector());
 
             selected_editor = new MapCoopCampEditor()
@@ -1634,10 +2061,10 @@ namespace SpellforceDataEditor.special_forms
                 map = this.map
             };
 
-            PanelUnitPlacementSelect.Visible = false;
             PanelEntityPlacementSelect.Visible = false;
             EditCoopCampTypes.Visible = true;
             PanelMonumentType.Visible = false;
+            PanelObjectAngle.Visible = false;
         }
 
         private void EditCoopCampTypes_Click(object sender, EventArgs e)
@@ -1651,6 +2078,7 @@ namespace SpellforceDataEditor.special_forms
             if (!RadioModeBindstones.Checked)
                 return;
 
+            PanelObjectSelector.Visible = false;
             InspectorSet(new SFMap.map_controls.MapBindstoneInspector());
 
             selected_editor = new MapBindstoneEditor()
@@ -1658,10 +2086,10 @@ namespace SpellforceDataEditor.special_forms
                 map = this.map
             };
 
-            PanelUnitPlacementSelect.Visible = false;
             PanelEntityPlacementSelect.Visible = false;
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
+            PanelObjectAngle.Visible = false;
         }
 
         private void RadioModePortals_CheckedChanged(object sender, EventArgs e)
@@ -1669,6 +2097,7 @@ namespace SpellforceDataEditor.special_forms
             if (!RadioModePortals.Checked)
                 return;
 
+            PanelObjectSelector.Visible = false;
             InspectorSet(new SFMap.map_controls.MapPortalInspector());
 
             selected_editor = new MapPortalEditor()
@@ -1676,10 +2105,10 @@ namespace SpellforceDataEditor.special_forms
                 map = this.map
             };
 
-            PanelUnitPlacementSelect.Visible = false;
             PanelEntityPlacementSelect.Visible = false;
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
+            PanelObjectAngle.Visible = false;
         }
 
         private MonumentType GetMonumentType()
@@ -1707,6 +2136,7 @@ namespace SpellforceDataEditor.special_forms
             if (!RadioModeMonuments.Checked)
                 return;
 
+            PanelObjectSelector.Visible = false;
             InspectorSet(new SFMap.map_controls.MapMonumentInspector());
 
             selected_editor = new MapMonumentEditor()
@@ -1714,10 +2144,10 @@ namespace SpellforceDataEditor.special_forms
                 map = this.map
             };
 
-            PanelUnitPlacementSelect.Visible = false;
             PanelEntityPlacementSelect.Visible = false;
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = true;
+            PanelObjectAngle.Visible = false;
         }
 
         private void MonumentHuman_CheckedChanged(object sender, EventArgs e)

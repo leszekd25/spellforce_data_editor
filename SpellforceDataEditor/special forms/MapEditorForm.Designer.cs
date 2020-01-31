@@ -66,14 +66,14 @@
             this.MonumentDarkElf = new System.Windows.Forms.RadioButton();
             this.EditCoopCampTypes = new System.Windows.Forms.Button();
             this.PanelEntityPlacementSelect = new System.Windows.Forms.Panel();
-            this.PanelUnitPlacementSelect = new System.Windows.Forms.Panel();
-            this.label12 = new System.Windows.Forms.Label();
-            this.UnitName = new System.Windows.Forms.ComboBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.UnitRace = new System.Windows.Forms.ComboBox();
             this.EntityID = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.PanelObjectAngle = new System.Windows.Forms.Panel();
+            this.CheckRandomRange = new System.Windows.Forms.CheckBox();
+            this.AngleTrackbar = new System.Windows.Forms.TrackBar();
+            this.Angle = new System.Windows.Forms.TextBox();
+            this.label36 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
             this.RadioModeMonuments = new System.Windows.Forms.RadioButton();
             this.label6 = new System.Windows.Forms.Label();
@@ -92,6 +92,25 @@
             this.RadioTileTypeBase = new System.Windows.Forms.RadioButton();
             this.label9 = new System.Windows.Forms.Label();
             this.TabPageTerrain = new System.Windows.Forms.TabPage();
+            this.PanelWeather = new System.Windows.Forms.Panel();
+            this.label35 = new System.Windows.Forms.Label();
+            this.label34 = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.label32 = new System.Windows.Forms.Label();
+            this.label31 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.WLavanight = new System.Windows.Forms.TextBox();
+            this.WSwampfog = new System.Windows.Forms.TextBox();
+            this.WDesertfog = new System.Windows.Forms.TextBox();
+            this.WLavafogBright = new System.Windows.Forms.TextBox();
+            this.WLavafog = new System.Windows.Forms.TextBox();
+            this.WStorm = new System.Windows.Forms.TextBox();
+            this.WCloud = new System.Windows.Forms.TextBox();
+            this.WClear = new System.Windows.Forms.TextBox();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
             this.PanelFlags = new System.Windows.Forms.Panel();
             this.RadioFlagVision = new System.Windows.Forms.RadioButton();
             this.RadioFlagMovement = new System.Windows.Forms.RadioButton();
@@ -123,6 +142,7 @@
             this.TerrainValue = new System.Windows.Forms.TextBox();
             this.TerrainTrackbar = new System.Windows.Forms.TrackBar();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.RadioWeather = new System.Windows.Forms.RadioButton();
             this.label1 = new System.Windows.Forms.Label();
             this.RadioHMap = new System.Windows.Forms.RadioButton();
             this.RadioFlags = new System.Windows.Forms.RadioButton();
@@ -160,37 +180,23 @@
             this.TrackbarCameraSpeed = new System.Windows.Forms.TrackBar();
             this.label25 = new System.Windows.Forms.Label();
             this.TimerUpdatesPerSecond = new System.Windows.Forms.Timer(this.components);
-            this.RadioWeather = new System.Windows.Forms.RadioButton();
-            this.PanelWeather = new System.Windows.Forms.Panel();
-            this.label26 = new System.Windows.Forms.Label();
-            this.label27 = new System.Windows.Forms.Label();
-            this.WClear = new System.Windows.Forms.TextBox();
-            this.WCloud = new System.Windows.Forms.TextBox();
-            this.WStorm = new System.Windows.Forms.TextBox();
-            this.WLavafog = new System.Windows.Forms.TextBox();
-            this.WLavafogBright = new System.Windows.Forms.TextBox();
-            this.WDesertfog = new System.Windows.Forms.TextBox();
-            this.WSwampfog = new System.Windows.Forms.TextBox();
-            this.WLavanight = new System.Windows.Forms.TextBox();
-            this.label28 = new System.Windows.Forms.Label();
-            this.label29 = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
-            this.label31 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
-            this.label33 = new System.Windows.Forms.Label();
-            this.label34 = new System.Windows.Forms.Label();
-            this.label35 = new System.Windows.Forms.Label();
+            this.PanelObjectSelector = new System.Windows.Forms.Panel();
+            this.TreeEntitytFilter = new System.Windows.Forms.TextBox();
+            this.TreeEntities = new System.Windows.Forms.TreeView();
+            this.TimerTreeEntityFilter = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
             this.TabPageEntities.SuspendLayout();
             this.PanelMonumentType.SuspendLayout();
             this.PanelEntityPlacementSelect.SuspendLayout();
-            this.PanelUnitPlacementSelect.SuspendLayout();
+            this.PanelObjectAngle.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AngleTrackbar)).BeginInit();
             this.panel5.SuspendLayout();
             this.TabPageTextures.SuspendLayout();
             this.PanelTileType.SuspendLayout();
             this.TabPageTerrain.SuspendLayout();
+            this.PanelWeather.SuspendLayout();
             this.PanelFlags.SuspendLayout();
             this.PanelBrushShape.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -207,7 +213,7 @@
             this.panel6.SuspendLayout();
             this.PanelUtility.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TrackbarCameraSpeed)).BeginInit();
-            this.PanelWeather.SuspendLayout();
+            this.PanelObjectSelector.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -532,61 +538,14 @@
             // 
             // PanelEntityPlacementSelect
             // 
-            this.PanelEntityPlacementSelect.Controls.Add(this.PanelUnitPlacementSelect);
             this.PanelEntityPlacementSelect.Controls.Add(this.EntityID);
             this.PanelEntityPlacementSelect.Controls.Add(this.label11);
             this.PanelEntityPlacementSelect.Controls.Add(this.label10);
+            this.PanelEntityPlacementSelect.Controls.Add(this.PanelObjectAngle);
             this.PanelEntityPlacementSelect.Location = new System.Drawing.Point(187, 3);
             this.PanelEntityPlacementSelect.Name = "PanelEntityPlacementSelect";
             this.PanelEntityPlacementSelect.Size = new System.Drawing.Size(293, 108);
             this.PanelEntityPlacementSelect.TabIndex = 10;
-            // 
-            // PanelUnitPlacementSelect
-            // 
-            this.PanelUnitPlacementSelect.Controls.Add(this.label12);
-            this.PanelUnitPlacementSelect.Controls.Add(this.UnitName);
-            this.PanelUnitPlacementSelect.Controls.Add(this.label13);
-            this.PanelUnitPlacementSelect.Controls.Add(this.UnitRace);
-            this.PanelUnitPlacementSelect.Location = new System.Drawing.Point(5, 41);
-            this.PanelUnitPlacementSelect.Name = "PanelUnitPlacementSelect";
-            this.PanelUnitPlacementSelect.Size = new System.Drawing.Size(288, 55);
-            this.PanelUnitPlacementSelect.TabIndex = 11;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(3, 7);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(33, 13);
-            this.label12.TabIndex = 14;
-            this.label12.Text = "Race";
-            // 
-            // UnitName
-            // 
-            this.UnitName.FormattingEnabled = true;
-            this.UnitName.Location = new System.Drawing.Point(50, 30);
-            this.UnitName.Name = "UnitName";
-            this.UnitName.Size = new System.Drawing.Size(235, 21);
-            this.UnitName.TabIndex = 18;
-            this.UnitName.SelectedIndexChanged += new System.EventHandler(this.UnitName_SelectedIndexChanged);
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(3, 33);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(26, 13);
-            this.label13.TabIndex = 15;
-            this.label13.Text = "Unit";
-            // 
-            // UnitRace
-            // 
-            this.UnitRace.FormattingEnabled = true;
-            this.UnitRace.Location = new System.Drawing.Point(50, 4);
-            this.UnitRace.Name = "UnitRace";
-            this.UnitRace.Size = new System.Drawing.Size(235, 21);
-            this.UnitRace.TabIndex = 17;
-            this.UnitRace.SelectedIndexChanged += new System.EventHandler(this.UnitRace_SelectedIndexChanged);
             // 
             // EntityID
             // 
@@ -615,6 +574,58 @@
             this.label10.Size = new System.Drawing.Size(74, 13);
             this.label10.TabIndex = 12;
             this.label10.Text = "Entity to place";
+            // 
+            // PanelObjectAngle
+            // 
+            this.PanelObjectAngle.Controls.Add(this.CheckRandomRange);
+            this.PanelObjectAngle.Controls.Add(this.AngleTrackbar);
+            this.PanelObjectAngle.Controls.Add(this.Angle);
+            this.PanelObjectAngle.Controls.Add(this.label36);
+            this.PanelObjectAngle.Location = new System.Drawing.Point(5, 46);
+            this.PanelObjectAngle.Name = "PanelObjectAngle";
+            this.PanelObjectAngle.Size = new System.Drawing.Size(288, 54);
+            this.PanelObjectAngle.TabIndex = 11;
+            this.PanelObjectAngle.Visible = false;
+            // 
+            // CheckRandomRange
+            // 
+            this.CheckRandomRange.AutoSize = true;
+            this.CheckRandomRange.Location = new System.Drawing.Point(69, 30);
+            this.CheckRandomRange.Name = "CheckRandomRange";
+            this.CheckRandomRange.Size = new System.Drawing.Size(95, 17);
+            this.CheckRandomRange.TabIndex = 23;
+            this.CheckRandomRange.Text = "Random angle";
+            this.CheckRandomRange.UseVisualStyleBackColor = true;
+            this.CheckRandomRange.CheckedChanged += new System.EventHandler(this.CheckRandomRange_CheckedChanged);
+            // 
+            // AngleTrackbar
+            // 
+            this.AngleTrackbar.AutoSize = false;
+            this.AngleTrackbar.Location = new System.Drawing.Point(68, 4);
+            this.AngleTrackbar.Maximum = 359;
+            this.AngleTrackbar.Name = "AngleTrackbar";
+            this.AngleTrackbar.Size = new System.Drawing.Size(165, 20);
+            this.AngleTrackbar.TabIndex = 22;
+            this.AngleTrackbar.TickFrequency = 45;
+            this.AngleTrackbar.ValueChanged += new System.EventHandler(this.AngleTrackbar_ValueChanged);
+            // 
+            // Angle
+            // 
+            this.Angle.Location = new System.Drawing.Point(239, 4);
+            this.Angle.Name = "Angle";
+            this.Angle.Size = new System.Drawing.Size(46, 20);
+            this.Angle.TabIndex = 21;
+            this.Angle.Text = "0";
+            this.Angle.Validated += new System.EventHandler(this.Angle_Validated);
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(3, 7);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(34, 13);
+            this.label36.TabIndex = 0;
+            this.label36.Text = "Angle";
             // 
             // panel5
             // 
@@ -827,6 +838,186 @@
             this.TabPageTerrain.TabIndex = 0;
             this.TabPageTerrain.Text = "Terrain";
             this.TabPageTerrain.UseVisualStyleBackColor = true;
+            // 
+            // PanelWeather
+            // 
+            this.PanelWeather.Controls.Add(this.label35);
+            this.PanelWeather.Controls.Add(this.label34);
+            this.PanelWeather.Controls.Add(this.label33);
+            this.PanelWeather.Controls.Add(this.label32);
+            this.PanelWeather.Controls.Add(this.label31);
+            this.PanelWeather.Controls.Add(this.label30);
+            this.PanelWeather.Controls.Add(this.label29);
+            this.PanelWeather.Controls.Add(this.label28);
+            this.PanelWeather.Controls.Add(this.WLavanight);
+            this.PanelWeather.Controls.Add(this.WSwampfog);
+            this.PanelWeather.Controls.Add(this.WDesertfog);
+            this.PanelWeather.Controls.Add(this.WLavafogBright);
+            this.PanelWeather.Controls.Add(this.WLavafog);
+            this.PanelWeather.Controls.Add(this.WStorm);
+            this.PanelWeather.Controls.Add(this.WCloud);
+            this.PanelWeather.Controls.Add(this.WClear);
+            this.PanelWeather.Controls.Add(this.label27);
+            this.PanelWeather.Controls.Add(this.label26);
+            this.PanelWeather.Location = new System.Drawing.Point(888, 3);
+            this.PanelWeather.Name = "PanelWeather";
+            this.PanelWeather.Size = new System.Drawing.Size(629, 108);
+            this.PanelWeather.TabIndex = 10;
+            this.PanelWeather.Visible = false;
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(483, 10);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(54, 13);
+            this.label35.TabIndex = 28;
+            this.label35.Text = "Lavanight";
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(427, 10);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(57, 13);
+            this.label34.TabIndex = 27;
+            this.label34.Text = "Swampfog";
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(370, 10);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(53, 13);
+            this.label33.TabIndex = 26;
+            this.label33.Text = "Desertfog";
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(286, 10);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(81, 13);
+            this.label32.TabIndex = 25;
+            this.label32.Text = "Lavafog (bright)";
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(238, 10);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(46, 13);
+            this.label31.TabIndex = 24;
+            this.label31.Text = "Lavafog";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(190, 10);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(39, 13);
+            this.label30.TabIndex = 23;
+            this.label30.Text = "Stormy";
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(145, 10);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(39, 13);
+            this.label29.TabIndex = 22;
+            this.label29.Text = "Cloudy";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(91, 10);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(31, 13);
+            this.label28.TabIndex = 21;
+            this.label28.Text = "Clear";
+            // 
+            // WLavanight
+            // 
+            this.WLavanight.Location = new System.Drawing.Point(486, 26);
+            this.WLavanight.Name = "WLavanight";
+            this.WLavanight.Size = new System.Drawing.Size(51, 20);
+            this.WLavanight.TabIndex = 20;
+            this.WLavanight.Validated += new System.EventHandler(this.WLavanight_Validated);
+            // 
+            // WSwampfog
+            // 
+            this.WSwampfog.Location = new System.Drawing.Point(430, 26);
+            this.WSwampfog.Name = "WSwampfog";
+            this.WSwampfog.Size = new System.Drawing.Size(50, 20);
+            this.WSwampfog.TabIndex = 19;
+            this.WSwampfog.Validated += new System.EventHandler(this.WSwampfog_Validated);
+            // 
+            // WDesertfog
+            // 
+            this.WDesertfog.Location = new System.Drawing.Point(373, 26);
+            this.WDesertfog.Name = "WDesertfog";
+            this.WDesertfog.Size = new System.Drawing.Size(50, 20);
+            this.WDesertfog.TabIndex = 18;
+            this.WDesertfog.Validated += new System.EventHandler(this.WDesertfog_Validated);
+            // 
+            // WLavafogBright
+            // 
+            this.WLavafogBright.Location = new System.Drawing.Point(289, 26);
+            this.WLavafogBright.Name = "WLavafogBright";
+            this.WLavafogBright.Size = new System.Drawing.Size(78, 20);
+            this.WLavafogBright.TabIndex = 17;
+            this.WLavafogBright.Validated += new System.EventHandler(this.WLavafogBright_Validated);
+            // 
+            // WLavafog
+            // 
+            this.WLavafog.Location = new System.Drawing.Point(241, 26);
+            this.WLavafog.Name = "WLavafog";
+            this.WLavafog.Size = new System.Drawing.Size(42, 20);
+            this.WLavafog.TabIndex = 16;
+            this.WLavafog.Validated += new System.EventHandler(this.WLavafog_Validated);
+            // 
+            // WStorm
+            // 
+            this.WStorm.Location = new System.Drawing.Point(193, 26);
+            this.WStorm.Name = "WStorm";
+            this.WStorm.Size = new System.Drawing.Size(42, 20);
+            this.WStorm.TabIndex = 15;
+            this.WStorm.Validated += new System.EventHandler(this.WStorm_Validated);
+            // 
+            // WCloud
+            // 
+            this.WCloud.Location = new System.Drawing.Point(145, 26);
+            this.WCloud.Name = "WCloud";
+            this.WCloud.Size = new System.Drawing.Size(42, 20);
+            this.WCloud.TabIndex = 14;
+            this.WCloud.Validated += new System.EventHandler(this.WCloud_Validated);
+            // 
+            // WClear
+            // 
+            this.WClear.Location = new System.Drawing.Point(94, 26);
+            this.WClear.Name = "WClear";
+            this.WClear.Size = new System.Drawing.Size(42, 20);
+            this.WClear.TabIndex = 13;
+            this.WClear.Validated += new System.EventHandler(this.WClear_Validated);
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(4, 29);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(51, 13);
+            this.label27.TabIndex = 12;
+            this.label27.Text = "Value (%)";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(4, 10);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(71, 13);
+            this.label26.TabIndex = 11;
+            this.label26.Text = "Weather type";
             // 
             // PanelFlags
             // 
@@ -1162,6 +1353,17 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(93, 108);
             this.panel1.TabIndex = 8;
+            // 
+            // RadioWeather
+            // 
+            this.RadioWeather.AutoSize = true;
+            this.RadioWeather.Location = new System.Drawing.Point(3, 85);
+            this.RadioWeather.Name = "RadioWeather";
+            this.RadioWeather.Size = new System.Drawing.Size(66, 17);
+            this.RadioWeather.TabIndex = 12;
+            this.RadioWeather.Text = "Weather";
+            this.RadioWeather.UseVisualStyleBackColor = true;
+            this.RadioWeather.CheckedChanged += new System.EventHandler(this.RadioWeather_CheckedChanged);
             // 
             // label1
             // 
@@ -1530,202 +1732,43 @@
             this.TimerUpdatesPerSecond.Interval = 1000;
             this.TimerUpdatesPerSecond.Tick += new System.EventHandler(this.TimerUpdatesPerSecond_Tick);
             // 
-            // RadioWeather
+            // PanelObjectSelector
             // 
-            this.RadioWeather.AutoSize = true;
-            this.RadioWeather.Location = new System.Drawing.Point(3, 85);
-            this.RadioWeather.Name = "RadioWeather";
-            this.RadioWeather.Size = new System.Drawing.Size(66, 17);
-            this.RadioWeather.TabIndex = 12;
-            this.RadioWeather.Text = "Weather";
-            this.RadioWeather.UseVisualStyleBackColor = true;
-            this.RadioWeather.CheckedChanged += new System.EventHandler(this.RadioWeather_CheckedChanged);
+            this.PanelObjectSelector.Controls.Add(this.TreeEntitytFilter);
+            this.PanelObjectSelector.Controls.Add(this.TreeEntities);
+            this.PanelObjectSelector.Location = new System.Drawing.Point(4, 172);
+            this.PanelObjectSelector.Name = "PanelObjectSelector";
+            this.PanelObjectSelector.Size = new System.Drawing.Size(255, 467);
+            this.PanelObjectSelector.TabIndex = 10;
+            this.PanelObjectSelector.Visible = false;
             // 
-            // PanelWeather
+            // TreeEntitytFilter
             // 
-            this.PanelWeather.Controls.Add(this.label35);
-            this.PanelWeather.Controls.Add(this.label34);
-            this.PanelWeather.Controls.Add(this.label33);
-            this.PanelWeather.Controls.Add(this.label32);
-            this.PanelWeather.Controls.Add(this.label31);
-            this.PanelWeather.Controls.Add(this.label30);
-            this.PanelWeather.Controls.Add(this.label29);
-            this.PanelWeather.Controls.Add(this.label28);
-            this.PanelWeather.Controls.Add(this.WLavanight);
-            this.PanelWeather.Controls.Add(this.WSwampfog);
-            this.PanelWeather.Controls.Add(this.WDesertfog);
-            this.PanelWeather.Controls.Add(this.WLavafogBright);
-            this.PanelWeather.Controls.Add(this.WLavafog);
-            this.PanelWeather.Controls.Add(this.WStorm);
-            this.PanelWeather.Controls.Add(this.WCloud);
-            this.PanelWeather.Controls.Add(this.WClear);
-            this.PanelWeather.Controls.Add(this.label27);
-            this.PanelWeather.Controls.Add(this.label26);
-            this.PanelWeather.Location = new System.Drawing.Point(888, 3);
-            this.PanelWeather.Name = "PanelWeather";
-            this.PanelWeather.Size = new System.Drawing.Size(629, 108);
-            this.PanelWeather.TabIndex = 10;
-            this.PanelWeather.Visible = false;
+            this.TreeEntitytFilter.Location = new System.Drawing.Point(6, 444);
+            this.TreeEntitytFilter.Name = "TreeEntitytFilter";
+            this.TreeEntitytFilter.Size = new System.Drawing.Size(246, 20);
+            this.TreeEntitytFilter.TabIndex = 1;
+            this.TreeEntitytFilter.TextChanged += new System.EventHandler(this.TreeEntityFilter_TextChanged);
             // 
-            // label26
+            // TreeEntities
             // 
-            this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(4, 10);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(71, 13);
-            this.label26.TabIndex = 11;
-            this.label26.Text = "Weather type";
+            this.TreeEntities.Location = new System.Drawing.Point(6, 3);
+            this.TreeEntities.Name = "TreeEntities";
+            this.TreeEntities.Size = new System.Drawing.Size(246, 435);
+            this.TreeEntities.TabIndex = 0;
+            this.TreeEntities.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeEntities_NodeMouseClick);
             // 
-            // label27
+            // TimerTreeEntityFilter
             // 
-            this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(4, 29);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(51, 13);
-            this.label27.TabIndex = 12;
-            this.label27.Text = "Value (%)";
-            // 
-            // WClear
-            // 
-            this.WClear.Location = new System.Drawing.Point(94, 26);
-            this.WClear.Name = "WClear";
-            this.WClear.Size = new System.Drawing.Size(42, 20);
-            this.WClear.TabIndex = 13;
-            this.WClear.Validated += new System.EventHandler(this.WClear_Validated);
-            // 
-            // WCloud
-            // 
-            this.WCloud.Location = new System.Drawing.Point(145, 26);
-            this.WCloud.Name = "WCloud";
-            this.WCloud.Size = new System.Drawing.Size(42, 20);
-            this.WCloud.TabIndex = 14;
-            this.WCloud.Validated += new System.EventHandler(this.WCloud_Validated);
-            // 
-            // WStorm
-            // 
-            this.WStorm.Location = new System.Drawing.Point(193, 26);
-            this.WStorm.Name = "WStorm";
-            this.WStorm.Size = new System.Drawing.Size(42, 20);
-            this.WStorm.TabIndex = 15;
-            this.WStorm.Validated += new System.EventHandler(this.WStorm_Validated);
-            // 
-            // WLavafog
-            // 
-            this.WLavafog.Location = new System.Drawing.Point(241, 26);
-            this.WLavafog.Name = "WLavafog";
-            this.WLavafog.Size = new System.Drawing.Size(42, 20);
-            this.WLavafog.TabIndex = 16;
-            this.WLavafog.Validated += new System.EventHandler(this.WLavafog_Validated);
-            // 
-            // WLavafogBright
-            // 
-            this.WLavafogBright.Location = new System.Drawing.Point(289, 26);
-            this.WLavafogBright.Name = "WLavafogBright";
-            this.WLavafogBright.Size = new System.Drawing.Size(78, 20);
-            this.WLavafogBright.TabIndex = 17;
-            this.WLavafogBright.Validated += new System.EventHandler(this.WLavafogBright_Validated);
-            // 
-            // WDesertfog
-            // 
-            this.WDesertfog.Location = new System.Drawing.Point(373, 26);
-            this.WDesertfog.Name = "WDesertfog";
-            this.WDesertfog.Size = new System.Drawing.Size(50, 20);
-            this.WDesertfog.TabIndex = 18;
-            this.WDesertfog.Validated += new System.EventHandler(this.WDesertfog_Validated);
-            // 
-            // WSwampfog
-            // 
-            this.WSwampfog.Location = new System.Drawing.Point(430, 26);
-            this.WSwampfog.Name = "WSwampfog";
-            this.WSwampfog.Size = new System.Drawing.Size(50, 20);
-            this.WSwampfog.TabIndex = 19;
-            this.WSwampfog.Validated += new System.EventHandler(this.WSwampfog_Validated);
-            // 
-            // WLavanight
-            // 
-            this.WLavanight.Location = new System.Drawing.Point(486, 26);
-            this.WLavanight.Name = "WLavanight";
-            this.WLavanight.Size = new System.Drawing.Size(51, 20);
-            this.WLavanight.TabIndex = 20;
-            this.WLavanight.Validated += new System.EventHandler(this.WLavanight_Validated);
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(91, 10);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(31, 13);
-            this.label28.TabIndex = 21;
-            this.label28.Text = "Clear";
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(145, 10);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(39, 13);
-            this.label29.TabIndex = 22;
-            this.label29.Text = "Cloudy";
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(190, 10);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(39, 13);
-            this.label30.TabIndex = 23;
-            this.label30.Text = "Stormy";
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(238, 10);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(46, 13);
-            this.label31.TabIndex = 24;
-            this.label31.Text = "Lavafog";
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(286, 10);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(81, 13);
-            this.label32.TabIndex = 25;
-            this.label32.Text = "Lavafog (bright)";
-            // 
-            // label33
-            // 
-            this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(370, 10);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(53, 13);
-            this.label33.TabIndex = 26;
-            this.label33.Text = "Desertfog";
-            // 
-            // label34
-            // 
-            this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(427, 10);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(57, 13);
-            this.label34.TabIndex = 27;
-            this.label34.Text = "Swampfog";
-            // 
-            // label35
-            // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(483, 10);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(54, 13);
-            this.label35.TabIndex = 28;
-            this.label35.Text = "Lavanight";
+            this.TimerTreeEntityFilter.Interval = 500;
+            this.TimerTreeEntityFilter.Tick += new System.EventHandler(this.TimerTreeEntityFilter_Tick);
             // 
             // MapEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1100, 667);
+            this.Controls.Add(this.PanelObjectSelector);
             this.Controls.Add(this.PanelUtility);
             this.Controls.Add(this.PanelInspector);
             this.Controls.Add(this.TabEditorModes);
@@ -1751,8 +1794,9 @@
             this.PanelMonumentType.PerformLayout();
             this.PanelEntityPlacementSelect.ResumeLayout(false);
             this.PanelEntityPlacementSelect.PerformLayout();
-            this.PanelUnitPlacementSelect.ResumeLayout(false);
-            this.PanelUnitPlacementSelect.PerformLayout();
+            this.PanelObjectAngle.ResumeLayout(false);
+            this.PanelObjectAngle.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AngleTrackbar)).EndInit();
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
             this.TabPageTextures.ResumeLayout(false);
@@ -1760,6 +1804,8 @@
             this.PanelTileType.ResumeLayout(false);
             this.PanelTileType.PerformLayout();
             this.TabPageTerrain.ResumeLayout(false);
+            this.PanelWeather.ResumeLayout(false);
+            this.PanelWeather.PerformLayout();
             this.PanelFlags.ResumeLayout(false);
             this.PanelFlags.PerformLayout();
             this.PanelBrushShape.ResumeLayout(false);
@@ -1787,8 +1833,8 @@
             this.PanelUtility.ResumeLayout(false);
             this.PanelUtility.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TrackbarCameraSpeed)).EndInit();
-            this.PanelWeather.ResumeLayout(false);
-            this.PanelWeather.PerformLayout();
+            this.PanelObjectSelector.ResumeLayout(false);
+            this.PanelObjectSelector.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1816,11 +1862,6 @@
         private System.Windows.Forms.TabPage TabPageDecorations;
         private System.Windows.Forms.TabPage TabPageEntities;
         private System.Windows.Forms.Panel PanelEntityPlacementSelect;
-        private System.Windows.Forms.Panel PanelUnitPlacementSelect;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.ComboBox UnitName;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.ComboBox UnitRace;
         private System.Windows.Forms.TextBox EntityID;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
@@ -1947,5 +1988,14 @@
         private System.Windows.Forms.TextBox WClear;
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Panel PanelObjectSelector;
+        private System.Windows.Forms.TreeView TreeEntities;
+        private System.Windows.Forms.Panel PanelObjectAngle;
+        private System.Windows.Forms.Label label36;
+        private System.Windows.Forms.CheckBox CheckRandomRange;
+        private System.Windows.Forms.TrackBar AngleTrackbar;
+        private System.Windows.Forms.TextBox Angle;
+        private System.Windows.Forms.TextBox TreeEntitytFilter;
+        private System.Windows.Forms.Timer TimerTreeEntityFilter;
     }
 }

@@ -394,5 +394,11 @@ namespace SpellforceDataEditor
 
             return 0;
         }
+
+        public static void TreeShallowCopy(Dictionary<string, TreeNode> src, TreeNodeCollection dst)
+        {
+            foreach (string tn in src.Keys)
+                dst.Add(src[tn]);
+        }
     }
 }

@@ -1110,6 +1110,8 @@ namespace SpellforceDataEditor.SFMap
             byte tex_index = tile_data[pos.y * width + pos.x];
             if (texture_manager.texture_tiledata[tex_index].blocks_movement)
                 return false;
+            if (GetZ(pos) == 0)
+                return false;
 
             SFMapHeightMapChunk chunk = GetChunk(pos);
             // check if another unit is on position
@@ -1128,6 +1130,17 @@ namespace SpellforceDataEditor.SFMap
                 return false;
 
             return true;
+        }
+
+        public bool PositionOccupiedByObject(SFCoord pos)
+        {
+            SFMapHeightMapChunk chunk = GetChunk(pos);
+            // check if another object is on position
+            foreach (SFMapObject o in chunk.objects)
+                if (o.grid_position == pos)
+                    return true;
+
+            return false;
         }
 
         // https://www.gamedev.net/forums/topic/163625-fast-way-to-calculate-heightmap-normals/

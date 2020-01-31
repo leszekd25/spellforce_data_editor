@@ -531,6 +531,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                 foreach (SFSubModel3D sbm in submodels)
                 {
+                    if (sbm.vertex_array == -1)
+                        continue;
                     GL.BindVertexArray(sbm.vertex_array);
                     sbm.ReloadInstanceMatrices();
                 }
@@ -664,6 +666,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     GL.BindVertexArray(sbm.vertex_array);
                     if (current_pass == RenderPass.SCENE)
                     {
+                        //GL.Uniform1(active_shader["apply_shading"], sbm.material.matFlags);
                         SetRenderMode(sbm.material.texRenderMode);
                         if ((sbm.material.matFlags & 4) != 0)
                             SetDepthBias(sbm.material.matDepthBias);

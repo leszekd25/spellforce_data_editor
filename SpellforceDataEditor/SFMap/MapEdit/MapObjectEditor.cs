@@ -25,7 +25,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 if (button == MouseButtons.Left)
                 {
-                    if (!map.heightmap.CanMoveToPosition(pos))
+                    if (map.heightmap.PositionOccupiedByObject(pos))
                         return;
                     // if dragging unit, just move selected unit, dont create a new one
                     if ((specials.Shift)&&(selected_object != -1))
@@ -38,8 +38,16 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         // create new unit and drag it until mouse released
 
                         map.AddObject(new_object_id, pos, 0, 0, 0);
-                        ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).LoadNextObject();
                         selected_object = map.object_manager.objects.Count - 1;
+
+                        special_forms.MapEditorForm.AngleInfo angle_info = MainForm.mapedittool.GetAngleInfo();
+                        UInt16 angle = angle_info.angle;
+                        if (angle_info.random)
+                            angle = (UInt16)(MathUtils.Rand() % 360);
+                        map.RotateObject(selected_object, angle);
+                        map.object_manager.objects[selected_object].angle = angle;
+
+                        ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).LoadNextObject();
                         MainForm.mapedittool.InspectorSelect(map.object_manager.objects[selected_object]);
 
                         first_click = true;
@@ -62,7 +70,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     // if dragging unit, just move selected unit, dont create a new one
                     if ((specials.Shift) && (selected_object != -1))
                     {
-                        if (map.heightmap.CanMoveToPosition(pos))
+                        if (!map.heightmap.PositionOccupiedByObject(pos))
                             map.MoveObject(selected_object, pos);
                     }
                     else

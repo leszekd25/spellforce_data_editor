@@ -48,7 +48,7 @@ namespace SpellforceDataEditor.SFMap
             int_objects.Add(obj);
 
             string obj_name = obj.GetObjectName();
-            SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, obj_name, false);
+            SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, obj_name, true);
             node.SetParent(map.heightmap.GetChunkNode(position));
             return obj;
         }

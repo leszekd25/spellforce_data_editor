@@ -1378,7 +1378,7 @@ namespace SpellforceDataEditor.SFMap
             SF3D.SceneSynchro.SceneNode obj_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(obj.GetObjectName());
             if (obj_node != null)
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(obj_node);
-            SF3D.SceneSynchro.SceneNode _obj = SFRenderEngine.scene.AddSceneObject(new_object_id, obj.GetObjectName(), false);
+            SF3D.SceneSynchro.SceneNode _obj = SFRenderEngine.scene.AddSceneObject(new_object_id, obj.GetObjectName(), true);
             _obj.SetParent(chunk_node);
 
             obj.game_id = new_object_id;
@@ -1808,14 +1808,15 @@ namespace SpellforceDataEditor.SFMap
                 throw new InvalidDataException("SFMap.AddUnit(): Invalid unit ID!");
             }
             SFCFF.SFCategoryElement unit_data = gamedata[17][unit_index];
+
             unit_index = gamedata[3].GetElementIndex((ushort)unit_data[2]);
-            if (unit_index == -1)
+            float unit_size = 1f;
+            if (unit_index != -1)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit stats with given id does not exist! Unit stats id = " + unit_data[2].ToString());
-                throw new InvalidDataException("SFMap.AddUnit(): Invalid unit data!");
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + game_id.ToString() + "), setting unit scale to 100%");
+                unit_data = gamedata[3][unit_index];
+                unit_size = Math.Max((ushort)unit_data[19], (ushort)40) / 100.0f;
             }
-            unit_data = gamedata[3][unit_index];
-            float unit_size = Math.Max(((ushort)unit_data[19]), (ushort)40) / 100.0f;
             obj.Scale = new OpenTK.Vector3(unit_size*100/128);
         }
 
@@ -1915,14 +1916,15 @@ namespace SpellforceDataEditor.SFMap
                 throw new InvalidDataException("SFMap.ReplaceUnit(): Invalid unit ID!");
             }
             SFCFF.SFCategoryElement unit_data = gamedata[17][unit_index];
+            
             unit_index = gamedata[3].GetElementIndex((ushort)unit_data[2]);
-            if (unit_index == -1)
+            float unit_size = 1f;
+            if (unit_index != -1)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit stats with given id does not exist! Unit stats id = " + unit_data[2].ToString());
-                throw new InvalidDataException("SFMap.ReplaceUnit(): Invalid unit data!");
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + unit.game_id.ToString() + "), setting unit scale to 100%");
+                unit_data = gamedata[3][unit_index];
+                unit_size = Math.Max(((ushort)unit_data[19]), (ushort)40) / 100.0f;
             }
-            unit_data = gamedata[3][unit_index];
-            float unit_size = Math.Max(((ushort)unit_data[19]), (ushort)40) / 100.0f;
             obj.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
 
             return 0;
