@@ -1009,6 +1009,9 @@ namespace SpellforceDataEditor.special_forms
             {
                 ReselectMetadataMode();
             }
+
+            EntityID.Text = "0";
+            ConfirmPlacementEntity();
         }
 
         //TERRAIN EDIT
@@ -1634,17 +1637,46 @@ namespace SpellforceDataEditor.special_forms
             GC.Collect();
         }
 
+        private void ConfirmPlacementEntity()
+        {
+            map.selection_helper.ClearPreview();
+            map.selection_helper.SetPreviewAngle(0);
+
+            if (TabEditorModes.SelectedIndex != 2)
+                return;
+
+            if (RadioEntityModeUnit.Checked)
+            {
+                ((MapUnitEditor)selected_editor).placement_unit = Utility.TryParseUInt16(EntityID.Text);
+                map.selection_helper.SetPreviewUnit(Utility.TryParseUInt16(EntityID.Text));
+            }
+            if (RadioEntityModeBuilding.Checked)
+            {
+                ((MapBuildingEditor)selected_editor).placement_building = Utility.TryParseUInt16(EntityID.Text);
+                map.selection_helper.SetPreviewBuilding(Utility.TryParseUInt16(EntityID.Text));
+            }
+            if (RadioEntityModeObject.Checked)
+            {
+                ((MapObjectEditor)selected_editor).placement_object = Utility.TryParseUInt16(EntityID.Text);
+                map.selection_helper.SetPreviewObject(Utility.TryParseUInt16(EntityID.Text));
+                map.selection_helper.SetPreviewAngle((ushort)AngleTrackbar.Value);
+            }
+            if(RadioModeCoopCamps.Checked)
+                map.selection_helper.SetPreviewObject(2541);
+            if(RadioModeBindstones.Checked)
+                map.selection_helper.SetPreviewObject(769);
+            if (RadioModePortals.Checked)
+                map.selection_helper.SetPreviewObject(778);
+            if (RadioModeMonuments.Checked)
+                map.selection_helper.SetPreviewObject((ushort)(771 + (int)GetMonumentType()));
+        }
+
         private void TreeEntities_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Node.Tag != null)
             {
                 EntityID.Text = e.Node.Tag.ToString();
-                if(RadioEntityModeUnit.Checked)
-                    ((MapUnitEditor)selected_editor).placement_unit = Utility.TryParseUInt16(EntityID.Text);
-                if(RadioEntityModeBuilding.Checked)
-                    ((MapBuildingEditor)selected_editor).placement_building = Utility.TryParseUInt16(EntityID.Text);
-                if (RadioEntityModeObject.Checked)
-                    ((MapObjectEditor)selected_editor).placement_object = Utility.TryParseUInt16(EntityID.Text);
+                ConfirmPlacementEntity();
             }
         }
         private void TreeEntityFilter_TextChanged(object sender, EventArgs e)
@@ -1683,16 +1715,14 @@ namespace SpellforceDataEditor.special_forms
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
             PanelObjectAngle.Visible = false;
+
+            EntityID.Text = "0";
+            ConfirmPlacementEntity();
         }
 
         private void EntityID_Validated(object sender, EventArgs e)
         {
-            if (RadioEntityModeUnit.Checked)
-                ((MapUnitEditor)selected_editor).placement_unit = Utility.TryParseUInt16(EntityID.Text);
-            else if (RadioEntityModeBuilding.Checked)
-                ((MapBuildingEditor)selected_editor).placement_building = Utility.TryParseUInt16(EntityID.Text);
-            else if (RadioEntityModeObject.Checked)
-                ((MapObjectEditor)selected_editor).placement_object = Utility.TryParseUInt16(EntityID.Text);
+            ConfirmPlacementEntity();
         }
 
         private void EntityID_MouseDown(object sender, MouseEventArgs e)
@@ -1707,6 +1737,8 @@ namespace SpellforceDataEditor.special_forms
                 cat_id = 33;
             else if (RadioEntityModeBuilding.Checked)
                 cat_id = 23;
+            if (cat_id == -1)
+                return;
 
             if (e.Button == MouseButtons.Right)
             {
@@ -1870,6 +1902,9 @@ namespace SpellforceDataEditor.special_forms
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
             PanelObjectAngle.Visible = false;
+
+            EntityID.Text = "0";
+            ConfirmPlacementEntity();
         }
 
         // load object picker tree
@@ -2015,6 +2050,8 @@ namespace SpellforceDataEditor.special_forms
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
         {
             Angle.Text = AngleTrackbar.Value.ToString();
+            if (RadioEntityModeObject.Checked)
+                map.selection_helper.SetPreviewAngle((ushort)AngleTrackbar.Value);
         }
 
         private void CheckRandomRange_CheckedChanged(object sender, EventArgs e)
@@ -2046,6 +2083,9 @@ namespace SpellforceDataEditor.special_forms
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
             PanelObjectAngle.Visible = true;
+
+            EntityID.Text = "0";
+            ConfirmPlacementEntity();
         }
 
         private void RadioModeCoopCamps_CheckedChanged(object sender, EventArgs e)
@@ -2065,6 +2105,8 @@ namespace SpellforceDataEditor.special_forms
             EditCoopCampTypes.Visible = true;
             PanelMonumentType.Visible = false;
             PanelObjectAngle.Visible = false;
+
+            ConfirmPlacementEntity();
         }
 
         private void EditCoopCampTypes_Click(object sender, EventArgs e)
@@ -2090,6 +2132,8 @@ namespace SpellforceDataEditor.special_forms
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
             PanelObjectAngle.Visible = false;
+
+            ConfirmPlacementEntity();
         }
 
         private void RadioModePortals_CheckedChanged(object sender, EventArgs e)
@@ -2109,6 +2153,8 @@ namespace SpellforceDataEditor.special_forms
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
             PanelObjectAngle.Visible = false;
+
+            ConfirmPlacementEntity();
         }
 
         private MonumentType GetMonumentType()
@@ -2148,48 +2194,71 @@ namespace SpellforceDataEditor.special_forms
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = true;
             PanelObjectAngle.Visible = false;
+
+            ConfirmPlacementEntity();
         }
 
         private void MonumentHuman_CheckedChanged(object sender, EventArgs e)
         {
             if (MonumentHuman.Checked)
+            { 
                 ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
+                map.selection_helper.SetPreviewObject((ushort)(771 + (int)GetMonumentType()));
+            }
         }
 
         private void MonumentElf_CheckedChanged(object sender, EventArgs e)
         {
             if (MonumentElf.Checked)
+            {
                 ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
+                map.selection_helper.SetPreviewObject((ushort)(771 + (int)GetMonumentType()));
+            }
         }
 
         private void MonumentDwarf_CheckedChanged(object sender, EventArgs e)
         {
             if (MonumentDwarf.Checked)
+            {
                 ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
+                map.selection_helper.SetPreviewObject((ushort)(771 + (int)GetMonumentType()));
+            }
         }
 
         private void MonumentOrc_CheckedChanged(object sender, EventArgs e)
         {
             if (MonumentOrc.Checked)
+            {
                 ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
+                map.selection_helper.SetPreviewObject((ushort)(771 + (int)GetMonumentType()));
+            }
         }
 
         private void MonumentTroll_CheckedChanged(object sender, EventArgs e)
         {
             if (MonumentTroll.Checked)
+            {
                 ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
+                map.selection_helper.SetPreviewObject((ushort)(771 + (int)GetMonumentType()));
+            }
         }
 
         private void MonumentDarkElf_CheckedChanged(object sender, EventArgs e)
         {
             if (MonumentDarkElf.Checked)
+            {
                 ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
+                map.selection_helper.SetPreviewObject((ushort)(771 + (int)GetMonumentType()));
+            }
         }
 
         private void MonumentHero_CheckedChanged(object sender, EventArgs e)
         {
             if (MonumentHero.Checked)
+            {
                 ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
+                map.selection_helper.SetPreviewObject((ushort)(771 + (int)GetMonumentType()));
+            }
         }
 
         // DECORATIONS

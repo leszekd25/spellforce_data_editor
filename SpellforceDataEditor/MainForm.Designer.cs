@@ -100,9 +100,9 @@
             this.labelVersion.AutoSize = true;
             this.labelVersion.Location = new System.Drawing.Point(12, 130);
             this.labelVersion.Name = "labelVersion";
-            this.labelVersion.Size = new System.Drawing.Size(108, 13);
+            this.labelVersion.Size = new System.Drawing.Size(70, 13);
             this.labelVersion.TabIndex = 6;
-            this.labelVersion.Text = "Version 31.01.2020.1";
+            this.labelVersion.Text = "01.02.2020.1";
             // 
             // linkEditor
             // 

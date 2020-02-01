@@ -26,6 +26,13 @@ namespace SpellforceDataEditor.SFMap
         SFMapPortal selected_portal = null;
         SelectionType selection_type = SelectionType.NONE;
 
+        SF3D.SceneSynchro.SceneNode preview_entity = null;
+        ushort preview_entity_angle = 0;
+        SelectionType preview_type = SelectionType.NONE;
+        ushort preview_unit_id = 0;
+        ushort preview_building_id = 0;
+        ushort preview_object_id = 0;
+
         public SFMapSelectionHelper()
         {
             // generate selection 3d model
@@ -97,7 +104,7 @@ namespace SpellforceDataEditor.SFMap
         public void SetSelectionPosition(SFCoord pos)
         {
             float z = map.heightmap.GetZ(pos) / 100.0f;
-            sel_obj.Position = new OpenTK.Vector3((float)pos.x-offset.X, (float)z, (float)(map.height - pos.y - 1)+offset.Y);
+            sel_obj.Position = new OpenTK.Vector3((float)pos.x - offset.X, (float)z, (float)(map.height - pos.y - 1) + offset.Y);
         }
 
         public void SetSelectionVisibility(bool vis)
@@ -190,7 +197,7 @@ namespace SpellforceDataEditor.SFMap
         public void UpdateSelection()
         {
             SetSelectionVisibility(selection_type != SelectionType.NONE);
-            if(selection_type == SelectionType.UNIT)
+            if (selection_type == SelectionType.UNIT)
             {
                 if (selected_unit != null)
                     SetSelectionPosition(selected_unit.grid_position);
@@ -223,7 +230,7 @@ namespace SpellforceDataEditor.SFMap
                     SetSelectionPosition(selected_object.grid_position);
                 }
             }
-            else if(selection_type == SelectionType.INTERACTIVE_OBJECT)
+            else if (selection_type == SelectionType.INTERACTIVE_OBJECT)
             {
                 if (selected_interactive_object != null)
                 {
@@ -253,6 +260,10 @@ namespace SpellforceDataEditor.SFMap
                 cursor_position = pos;
                 float z = map.heightmap.GetZ(new SFCoord(pos.x, map.height - pos.y - 1)) / 100.0f;
                 cur_obj.Position = new Vector3(pos.x, z, pos.y);
+
+                if (preview_entity != null)
+                    preview_entity.Position = new Vector3(pos.x, z + 0.2f, pos.y);
+
                 return true;
             }
             return false;
@@ -263,6 +274,102 @@ namespace SpellforceDataEditor.SFMap
             cur_obj.Visible = vis;
         }
 
+        public void ClearPreview()
+        {
+            preview_type = SelectionType.NONE;
+            if (preview_entity != null)
+            {
+                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(SF3D.SFRender.SFRenderEngine.scene.root.FindNode<SF3D.SceneSynchro.SceneNode>("_PREVIEW_"));
+                preview_entity = null;
+            }
+
+        }
+
+        public void ResetPreview()
+        {
+            ClearPreview();
+            preview_entity = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeEmpty(SF3D.SFRender.SFRenderEngine.scene.root, "_PREVIEW_");
+            preview_entity.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+        }
+
+        public void SetPreviewUnit(ushort unit_id)
+        {
+            if (unit_id == 0)
+            {
+                ClearPreview();
+                preview_unit_id = 0;
+                return;
+            }
+
+            ResetPreview();
+            preview_type = SelectionType.UNIT;
+
+            // get unit
+            preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(unit_id, "_UNIT_" + unit_id.ToString()));
+
+            int unit_index = map.gamedata[17].GetElementIndex(unit_id);
+            if (unit_index == -1)
+                return;
+
+            SFCFF.SFCategoryElement unit_data = map.gamedata[17][unit_index];
+            unit_index = map.gamedata[3].GetElementIndex((ushort)unit_data[2]);
+            float unit_size = 1f;
+            if (unit_index != -1)
+            {
+                unit_data = map.gamedata[3][unit_index];
+                unit_size = Math.Max((ushort)unit_data[19], (ushort)40) / 100.0f;
+            }
+
+            preview_entity.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
+
+            preview_unit_id = unit_id;
+        }
+
+        public void SetPreviewBuilding(ushort building_id)
+        {
+            if (building_id == 0)
+            {
+                ClearPreview();
+                preview_building_id = 0;
+                return;
+            }
+
+            ResetPreview();
+            preview_type = SelectionType.BUILDING;
+
+            // get building
+            preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneBuilding(building_id, "_BUILDING_" + building_id.ToString()));
+            preview_entity.Scale = new OpenTK.Vector3(100 / 128f);
+
+            preview_building_id = building_id;
+        }
+
+        public void SetPreviewObject(ushort object_id)
+        {
+            if (object_id == 0)
+            {
+                ClearPreview();
+                preview_object_id = 0;
+                return;
+            }
+
+            ResetPreview();
+            preview_type = SelectionType.OBJECT;
+
+            // get building
+            preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(object_id, "_OBJECT_" + object_id.ToString(), true));
+            preview_entity.Scale = new OpenTK.Vector3(100 / 128f);
+
+            preview_object_id = object_id;
+        }
+
+        public void SetPreviewAngle(ushort angle)
+        {
+            preview_entity_angle = angle;
+            if (preview_entity != null)
+                preview_entity.SetAnglePlane(angle);
+        }
+
         public void Dispose()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapSelectionHelper.Dispose() called");
@@ -270,6 +377,7 @@ namespace SpellforceDataEditor.SFMap
             SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(SF3D.SFRender.SFRenderEngine.scene.root.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("_CURSOR_"));
             sel_obj = null;
             cur_obj = null;
+            ClearPreview();
         }
     }
 }

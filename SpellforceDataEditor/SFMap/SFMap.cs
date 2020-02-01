@@ -868,9 +868,12 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(32, 0, true, 1, c32_data);
 
             // chunk 29
+            // FIX for maps being broken when opened in original editor: reintroduce flag objects
+            HashSet<SFCoord> merged_flags = new HashSet<SFCoord>(heightmap.chunk42_data.Intersect(heightmap.chunk56_data));
+
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving objects");
-            byte[] c29_data = new byte[object_manager.objects.Count * 16];
-            using (MemoryStream ms = new MemoryStream(c29_data))
+            byte[] c29_data;// = new byte[object_manager.objects.Count * 16];
+            using (MemoryStream ms = new MemoryStream(32768 * 16))     // 16384 is max number of objects, doubling that in case there are more flags than anticipated
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
@@ -896,7 +899,43 @@ namespace SpellforceDataEditor.SFMap
                             }
                         }
                     }
+                    // flags type 67
+                    foreach(SFCoord p in merged_flags)
+                    {
+                        bw.Write((short)p.x);
+                        bw.Write((short)p.y);
+                        bw.Write((short)67);
+                        bw.Write((short)0);
+                        bw.Write((short)0);
+                        bw.Write((short)0);
+                        bw.Write((int)0);
+                    }
+                    // flags type 65
+                    foreach (SFCoord p in heightmap.chunk42_data)
+                        if (!merged_flags.Contains(p))
+                        {
+                            bw.Write((short)p.x);
+                            bw.Write((short)p.y);
+                            bw.Write((short)65);
+                            bw.Write((short)0);
+                            bw.Write((short)0);
+                            bw.Write((short)0);
+                            bw.Write((int)0);
+                        }                    
+                    // flags type 65
+                    foreach (SFCoord p in heightmap.chunk56_data)
+                        if (!merged_flags.Contains(p))
+                        {
+                            bw.Write((short)p.x);
+                            bw.Write((short)p.y);
+                            bw.Write((short)66);
+                            bw.Write((short)0);
+                            bw.Write((short)0);
+                            bw.Write((short)0);
+                            bw.Write((int)0);
+                        }
                 }
+                c29_data = ms.ToArray();
             }
             f.AddChunk(29, 0, true, 6, c29_data);
 
@@ -1813,10 +1852,11 @@ namespace SpellforceDataEditor.SFMap
             float unit_size = 1f;
             if (unit_index != -1)
             {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + game_id.ToString() + "), setting unit scale to 100%");
                 unit_data = gamedata[3][unit_index];
                 unit_size = Math.Max((ushort)unit_data[19], (ushort)40) / 100.0f;
             }
+            else
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + game_id.ToString() + "), setting unit scale to 100%");
             obj.Scale = new OpenTK.Vector3(unit_size*100/128);
         }
 
