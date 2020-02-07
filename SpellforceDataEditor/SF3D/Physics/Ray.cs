@@ -150,6 +150,94 @@ namespace SpellforceDataEditor.SF3D.Physics
             return false;
         }
 
+        // calculates point of intersection between a heightmap and the ray
+        // this is the preferred way of checking ray collision with the heightmap
+        // NOT WORKING YET
+        public bool Intersect(SFMap.SFMapHeightMap hmap, out Vector3 point)
+        {
+            point = new Vector3(0, 0, 0);
+            Vector2 ray_grid_start = new Vector2(start.X, start.Z);
+            Vector2 ray_grid_grad = new Vector2(vector.X, vector.Z).Normalized();
+            int chunk_size = SFMap.SFMapHeightMapGeometryPool.CHUNK_SIZE;
+
+
+            int next_grid_x = (int)Math.Floor(ray_grid_start.X / chunk_size) * chunk_size;
+            int next_grid_y = (int)Math.Floor(ray_grid_start.Y / chunk_size) * chunk_size;
+            if (ray_grid_grad.X > 0)
+                next_grid_x += chunk_size;
+            if (ray_grid_grad.Y > 0)
+                next_grid_y += chunk_size;
+
+            SFMap.SFCoord chunk_center = new SFMap.SFCoord(
+                chunk_size / 2 + (int)Math.Floor(ray_grid_start.X / chunk_size) * chunk_size,
+                chunk_size / 2 + (int)Math.Floor(ray_grid_start.Y / chunk_size) * chunk_size);
+
+            float distance_travelled = 0;
+            float lgt = Length;
+            while (distance_travelled < lgt)
+            {
+                // check if current chunk center is in bounds
+                if(!((hmap.width < chunk_center.x) || (0 > chunk_center.x) || (hmap.height < chunk_center.y) || (0 > chunk_center.y)))
+                {
+                    // check if collision happens on the map chunk right here
+                    SFMap.SFMapHeightMapChunk hmap_chunk = hmap.GetChunk(new SFMap.SFCoord(chunk_center.x, hmap.map.width-chunk_center.y-1));
+                    if ((hmap_chunk.collision_cache != null)&&(hmap_chunk.collision_cache.triangles != null))
+                    {
+                        if (Intersect(hmap_chunk.collision_cache, out point))
+                            return true;
+                    }
+                }
+
+                // move ray forward
+                if (ray_grid_grad.X == 0)
+                {
+                    float coeff_y = Math.Abs((ray_grid_start.Y - next_grid_y) / ray_grid_grad.Y);
+                    ray_grid_start += ray_grid_grad * coeff_y;
+                    distance_travelled += coeff_y;
+                    chunk_center = new SFMap.SFCoord(chunk_center.x, chunk_center.y+(ray_grid_grad.Y > 0 ? chunk_size : -chunk_size));
+                    next_grid_y += (ray_grid_grad.Y > 0 ? chunk_size : -chunk_size);
+                }
+                else if (ray_grid_grad.Y == 0)
+                {
+                    float coeff_x = Math.Abs((ray_grid_start.X - next_grid_x) / ray_grid_grad.X);
+                    ray_grid_start += ray_grid_grad * coeff_x;
+                    distance_travelled += coeff_x;
+                    chunk_center = new SFMap.SFCoord(chunk_center.x + (ray_grid_grad.X > 0 ? chunk_size : -chunk_size), chunk_center.y);
+                    next_grid_x += (ray_grid_grad.X > 0 ? chunk_size : -chunk_size);
+                }
+                else
+                {
+                    float coeff_x = Math.Abs((ray_grid_start.X - next_grid_x) / ray_grid_grad.X);
+                    float coeff_y = Math.Abs((ray_grid_start.Y - next_grid_y) / ray_grid_grad.Y);
+                    if (coeff_x > coeff_y)           // will move 1 up/down on the grid
+                    {
+                        ray_grid_start += ray_grid_grad * coeff_y; 
+                        distance_travelled += coeff_y;
+                        chunk_center = new SFMap.SFCoord(chunk_center.x, chunk_center.y + (ray_grid_grad.Y > 0 ? chunk_size : -chunk_size));
+                        next_grid_y += (ray_grid_grad.Y > 0 ? chunk_size : -chunk_size);
+                    }
+                    else
+                    {
+                        ray_grid_start += ray_grid_grad * coeff_x; 
+                        distance_travelled += coeff_x;
+                        chunk_center = new SFMap.SFCoord(chunk_center.x + (ray_grid_grad.X > 0 ? chunk_size : -chunk_size), chunk_center.y);
+                        next_grid_x += (ray_grid_grad.X > 0 ? chunk_size : -chunk_size);
+                    }
+                }
+
+                // check if ray out of bounds
+                if ((hmap.width < chunk_center.x) && (ray_grid_grad.X > 0))
+                    break;
+                if ((0 > chunk_center.x) && (ray_grid_grad.X < 0))
+                    break;
+                if ((hmap.height < chunk_center.y) && (ray_grid_grad.Y > 0))
+                    break;
+                if ((0 > chunk_center.y) && (ray_grid_grad.Y < 0))
+                    break;
+            }
+            return false;
+        }
+
         public static Ray operator +(Ray r, Vector3 c)
         {
             return new Ray(r.start + c, r.vector);

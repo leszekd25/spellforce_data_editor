@@ -544,11 +544,11 @@ namespace SpellforceDataEditor.special_forms
             {
                 // generate ray
                 float px, py;
-                px = Cursor.Position.X - this.Location.X - RenderWindow.Location.X;
+                px = Cursor.Position.X - this.Location.X - RenderWindow.Location.X - 8;
                 py = Cursor.Position.Y - this.Location.Y - RenderWindow.Location.Y - 29;
                 float wx, wy;
-                wx = px / RenderWindow.Size.Width; wx = (wx + 0.09f) * 0.84f;
-                wy = py / RenderWindow.Size.Height; wy = (wy + 0.11f) * 0.84f;
+                wx = ((px / RenderWindow.Size.Width)+0.1f)/1.2f;
+                wy = ((py / RenderWindow.Size.Height)+0.1f)/1.2f;
                 Vector3[] frustrum_vertices = SFRenderEngine.scene.camera.FrustumVertices;
                 Vector3 r_start = SFRenderEngine.scene.camera.Position;
                 Vector3 r_end = frustrum_vertices[4]
@@ -556,33 +556,18 @@ namespace SpellforceDataEditor.special_forms
                     + wy * (frustrum_vertices[6] - frustrum_vertices[4]);
                 SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start) { Length = 1000 };
 
-                // collide with every visible chunk
                 Vector3 result = new Vector3(0, 0, 0);
-                bool ray_success = false;
-
-                ParallelOptions loop_options = new ParallelOptions();
-                loop_options.MaxDegreeOfParallelism = 4;
-                Parallel.For(0, map.heightmap.visible_chunks.Count, loop_options, (i, breakState) =>
-                {
-                    Vector3 local_result;
-                    SFMapHeightMapChunk chunk = map.heightmap.visible_chunks[map.heightmap.visible_chunks.Count - i - 1].MapChunk;
-                    if (ray.Intersect(chunk.collision_cache, out local_result))
-                    {
-                        breakState.Break();
-                        result = local_result;
-                        ray_success = true;
-                    }
-                });
+                bool ray_success = ray.Intersect(map.heightmap, out result);
 
                 if (ray_success)
                 {
                     SFCoord cursor_coord = new SFCoord(
                         (int)(Math.Max
                             (0, Math.Min
-                                (result.X, map.width - 1))),
+                                (Math.Round(result.X), map.width - 1))),
                         (int)(Math.Max
                             (0, Math.Min
-                                (result.Z, map.height - 1))));
+                                (Math.Round(result.Z), map.height - 1))));
                     SFCoord inv_cursor_coord = new SFCoord(cursor_coord.x, map.height - cursor_coord.y - 1);
 
                     if (map.selection_helper.SetCursorPosition(cursor_coord))
@@ -659,7 +644,7 @@ namespace SpellforceDataEditor.special_forms
             // render time
             if (update_render)
             {
-                SFRenderEngine.scene.sun_light.ShadowSize = Math.Max(25f, zoom_level * 40f);
+                SFRenderEngine.scene.sun_light.ShadowSize = Math.Max(50f, Math.Min(zoom_level * 60f, 200f));
                 map.selection_helper.UpdateSelection();
                 AdjustCameraZ();
                 SFRenderEngine.UpdateVisibleChunks();

@@ -166,8 +166,8 @@ namespace SpellforceDataEditor.special_forms
 
         private void SFAssetManagerForm_Resize(object sender, EventArgs e)
         {
-            int rcheight = this.Height - 89;
-            int rcwidth = this.Width - 371;
+            int rcheight = Math.Max(100, this.Height - 89);
+            int rcwidth = Math.Max(100, this.Width - 371);
             int new_rcsize = Math.Min(rcheight, rcwidth);
             glControl1.Size = new Size(new_rcsize, new_rcsize);
 

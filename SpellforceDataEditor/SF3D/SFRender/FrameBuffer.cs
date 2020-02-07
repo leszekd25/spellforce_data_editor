@@ -236,6 +236,22 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
+        public void SetUpShadowmap()
+        {
+            if(texture_depth != -1)
+            {
+                GL.BindTexture(TextureTarget.Texture2D, texture_depth);
+                GL.SamplerParameter(texture_depth, SamplerParameterName.TextureCompareMode, (int)All.CompareRefToTexture);
+                if (sample_count == 0)
+                {
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
+                }
+
+                GL.BindTexture(TextureTarget.Texture2D, 0);
+            }
+        }
+
         public void Dispose()
         {
             if(fbo != -1)
@@ -257,6 +273,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.DeleteBuffer(vertices_vbo);
                 GL.DeleteVertexArray(screen_vao);
             }
+            rbo = -1;
+            fbo = -1;
+            texture_color = -1;
+            texture_depth = -1;
+            texture_stencil = -1;
         }
     }
 }

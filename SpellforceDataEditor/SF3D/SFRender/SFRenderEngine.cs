@@ -104,6 +104,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_simple.AddParameter("ShadowMap");
             shader_simple.AddParameter("texture_used");
             shader_simple.AddParameter("apply_shading");
+
             shader_simple.AddParameter("SunDirection");
             shader_simple.AddParameter("SunStrength");
             shader_simple.AddParameter("SunColor");
@@ -193,6 +194,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 screenspace_intermediate.Dispose();
             }
             shadowmap_depth = new FrameBuffer(Settings.ShadowMapSize, Settings.ShadowMapSize, 0, FrameBuffer.TextureType.DEPTH, FrameBuffer.RenderBufferType.NONE);
+            //shadowmap_depth.SetUpShadowmap();
             screenspace_framebuffer = new FrameBuffer((int)view_size.X, (int)view_size.Y, Settings.AntiAliasingSamples);
             screenspace_intermediate = new FrameBuffer((int)view_size.X, (int)view_size.Y, 0);
 
@@ -648,8 +650,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
             {
                 GL.Uniform1(active_shader["texture_used"], 1);
                 GL.Uniform1(active_shader["apply_shading"], 1);
+
             }
-            foreach(SFTexture tex in scene.tex_entries_simple.Keys)
+            foreach (SFTexture tex in scene.tex_entries_simple.Keys)
             {
                 HashSet<SFSubModel3D> submodels = scene.tex_entries_simple[tex];
 

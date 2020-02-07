@@ -111,10 +111,9 @@ namespace SpellforceDataEditor.Properties {
         ///uniform sampler2D ShadowMap;
         ///uniform bool texture_used;
         ///uniform bool apply_shading;
+        ///uniform bool drop_alpha;
         ///uniform vec4 FogColor;
-        ///uniform float FogStart;
-        ///uniform float FogEnd;
-        ///un [rest of string was truncated]&quot;;.
+        ///uniform float FogStart;        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader {
             get {
@@ -210,7 +209,7 @@ namespace SpellforceDataEditor.Properties {
         ///
         ///void main()
         ///{
-        ///    if(texture(DiffuseTexture, UV).a &lt; 0.9)
+        ///    if(texture(DiffuseTexture, UV).a &lt; 0.5)
         ///        discard;
         ///    gl_FragDepth =gl_FragCoord.z;
         ///}.

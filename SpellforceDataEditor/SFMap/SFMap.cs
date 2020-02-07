@@ -868,6 +868,19 @@ namespace SpellforceDataEditor.SFMap
             f.AddChunk(32, 0, true, 1, c32_data);
 
             // chunk 29
+            // FIX for flags eating objects
+            HashSet<SFCoord> obj_positions = new HashSet<SFCoord>();
+            for (int i = 0; i < object_manager.objects.Count; i++)
+                obj_positions.Add(object_manager.objects[i].grid_position);
+            for (int i = 0; i < int_object_manager.int_objects.Count; i++)
+                obj_positions.Add(int_object_manager.int_objects[i].grid_position);
+            for (int i = 0; i < unit_manager.units.Count; i++)
+                obj_positions.Add(unit_manager.units[i].grid_position);
+            for (int i = 0; i < building_manager.buildings.Count; i++)
+                obj_positions.Add(building_manager.buildings[i].grid_position);
+            for (int i = 0; i < portal_manager.portals.Count; i++)
+                obj_positions.Add(portal_manager.portals[i].grid_position);
+
             // FIX for maps being broken when opened in original editor: reintroduce flag objects
             HashSet<SFCoord> merged_flags = new HashSet<SFCoord>(heightmap.chunk42_data.Intersect(heightmap.chunk56_data));
 
@@ -902,6 +915,8 @@ namespace SpellforceDataEditor.SFMap
                     // flags type 67
                     foreach(SFCoord p in merged_flags)
                     {
+                        if (obj_positions.Contains(p))
+                            continue;
                         bw.Write((short)p.x);
                         bw.Write((short)p.y);
                         bw.Write((short)67);
@@ -914,6 +929,8 @@ namespace SpellforceDataEditor.SFMap
                     foreach (SFCoord p in heightmap.chunk42_data)
                         if (!merged_flags.Contains(p))
                         {
+                            if (obj_positions.Contains(p))
+                                continue;
                             bw.Write((short)p.x);
                             bw.Write((short)p.y);
                             bw.Write((short)65);
@@ -926,6 +943,8 @@ namespace SpellforceDataEditor.SFMap
                     foreach (SFCoord p in heightmap.chunk56_data)
                         if (!merged_flags.Contains(p))
                         {
+                            if (obj_positions.Contains(p))
+                                continue;
                             bw.Write((short)p.x);
                             bw.Write((short)p.y);
                             bw.Write((short)66);
