@@ -64,7 +64,11 @@ namespace SpellforceDataEditor.special_forms
             if (!Directory.Exists("modtemplates"))
                 Directory.CreateDirectory("modtemplates");
             if (!File.Exists("modtemplates\\last_used.tmpl"))
-                File.Create("modtemplates\\last_used.tmpl");
+            {
+                FileStream fs = File.Create("modtemplates\\last_used.tmpl");
+                fs.Close();
+            }
+
             last_used.Load("last_used");
 
             RefreshModList();

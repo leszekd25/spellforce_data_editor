@@ -82,7 +82,7 @@ namespace SpellforceDataEditor.SFCFF
             fs.Close();
 
             if(result != 0)
-                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFGameData.Read() failed! Read log above this line for details");
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFGameData.Read() failed!");
             return result;
         }
 

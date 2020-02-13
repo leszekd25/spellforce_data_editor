@@ -182,6 +182,7 @@ namespace SpellforceDataEditor.special_forms
             ListAnimations.Location = new Point(ListAnimations.Location.X, PanelSound.Location.Y + PanelSound.Height + 6);
             button1Extract.Location = new Point(rcx - 87, button1Extract.Location.Y);
             button2Extract.Location = new Point(rcx - 87, ListAnimations.Location.Y);
+            ButtonToggleFloor.Location = new Point(glControl1.Location.X, glControl1.Location.Y + new_rcsize + 1);
 
 
 
@@ -1076,6 +1077,13 @@ namespace SpellforceDataEditor.special_forms
         {
             ExtractionSettingsForm esf = new ExtractionSettingsForm();
             esf.ShowDialog();
+        }
+
+        private void ButtonToggleFloor_Click(object sender, EventArgs e)
+        {
+            if (grid_node != null)
+                grid_node.Visible = !grid_node.Visible;
+            update_render = true;
         }
     }
 }

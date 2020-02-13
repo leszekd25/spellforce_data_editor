@@ -51,6 +51,7 @@
             this.button1Extract = new System.Windows.Forms.Button();
             this.button2Extract = new System.Windows.Forms.Button();
             this.comboMessages = new System.Windows.Forms.ComboBox();
+            this.ButtonToggleFloor = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelSound.SuspendLayout();
@@ -263,11 +264,22 @@
             this.comboMessages.Visible = false;
             this.comboMessages.SelectedIndexChanged += new System.EventHandler(this.comboMessages_SelectedIndexChanged);
             // 
+            // ButtonToggleFloor
+            // 
+            this.ButtonToggleFloor.Location = new System.Drawing.Point(371, 428);
+            this.ButtonToggleFloor.Name = "ButtonToggleFloor";
+            this.ButtonToggleFloor.Size = new System.Drawing.Size(86, 23);
+            this.ButtonToggleFloor.TabIndex = 10;
+            this.ButtonToggleFloor.Text = "Toggle floor";
+            this.ButtonToggleFloor.UseVisualStyleBackColor = true;
+            this.ButtonToggleFloor.Click += new System.EventHandler(this.ButtonToggleFloor_Click);
+            // 
             // SFAssetManagerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(771, 450);
+            this.Controls.Add(this.ButtonToggleFloor);
             this.Controls.Add(this.comboMessages);
             this.Controls.Add(this.button2Extract);
             this.Controls.Add(this.button1Extract);
@@ -321,5 +333,6 @@
         private System.Windows.Forms.ToolStripMenuItem resetCameraPosiitonToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reloadCurrentSceneToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportSettingsToolStripMenuItem;
+        private System.Windows.Forms.Button ButtonToggleFloor;
     }
 }
