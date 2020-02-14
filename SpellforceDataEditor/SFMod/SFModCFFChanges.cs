@@ -268,7 +268,7 @@ namespace SpellforceDataEditor.SFMod
                         index = cat.GetElementIndex(change.element_index);
                         if (index == -1)
                             break;
-                        elems.RemoveAt(index);
+                        //elems.RemoveAt(index);                  // NOTE: mods can not remove elements from gamedata, as it would effectively destroy transitive properties of mods (order does not matter)
                         break;
                     case SFModCFFChangeType.INSERT:
                         // find suitable position for an element
