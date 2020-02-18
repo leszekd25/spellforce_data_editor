@@ -253,6 +253,31 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #version 330 core
+        ///
+        ///in vec2 UV;
+        ///
+        ///out vec4 color;
+        ///
+        ///uniform sampler2D Tex;
+        ///
+        ///void main(){
+        ///  vec4 temp_c;
+        ///  temp_c = texture(Tex, UV);
+        ///  if(temp_c.a == 0.0)
+        ///    discard;
+        ///
+        ///  color = temp_c;
+        ///  color = clamp(color, 0.0, 1.0);
+        ///}.
+        /// </summary>
+        internal static string fshader_ui {
+            get {
+                return ResourceManager.GetString("fshader_ui", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap hmap_icon {
@@ -525,6 +550,29 @@ namespace SpellforceDataEditor.Properties {
         internal static string vshader_skel {
             get {
                 return ResourceManager.GetString("vshader_skel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 330 core
+        ///
+        ///// Input vertex data, different for all executions of this shader.
+        ///layout(location = 0) in vec3 vertexPosition_modelspace;
+        ///layout(location = 1) in vec2 vertexUV;
+        ///
+        ///out vec2 UV;
+        ///
+        ///uniform mat4 VP;
+        ///  
+        ///void main(){
+        ///  // Output position of the vertex, in clip space : MVP * position
+        ///  gl_Position = VP * vec4(vertexPosition_modelspace, 1);
+        ///  UV = vertexUV;
+        ///}.
+        /// </summary>
+        internal static string vshader_ui {
+            get {
+                return ResourceManager.GetString("vshader_ui", resourceCulture);
             }
         }
     }

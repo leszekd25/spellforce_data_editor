@@ -288,13 +288,14 @@ namespace SpellforceDataEditor.SFMod
             return 0;
         }
 
+        // deletions temporarily pulled out
         public override string ToString()
         {
             string ret = "";
             int[] stat = new int[3];
             foreach(SFModCFFChangeElement e in changes)
                 stat[(int)e.type]++;
-            ret += "Deletions: " + stat[0].ToString() + ", additions: " + stat[1].ToString() + ", modifications: " + stat[2].ToString();
+            ret += /*"Deletions: " + stat[0].ToString() + ", a*/"Additions: " + stat[1].ToString() + ", modifications: " + stat[2].ToString();
             return ret;
         }
     }

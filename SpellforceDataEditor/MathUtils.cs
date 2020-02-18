@@ -97,5 +97,10 @@ namespace SpellforceDataEditor
             float c = (float)Math.Cos(angle);
             return new Vector2(v.X * c - v.Y * s, v.X * s + v.Y * c);
         }
+
+        public static float MapRange(float v, float s1, float s2, float d1, float d2)
+        {
+            return d1 + ((v - s1) / (s2 - s1)) * (d2 - d1);
+        }
     }
 }

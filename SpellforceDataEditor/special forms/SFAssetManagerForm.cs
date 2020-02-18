@@ -143,6 +143,10 @@ namespace SpellforceDataEditor.special_forms
             grid_node.Position = new Vector3(0, -0.01f, 0);
             grid_node.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
             grid_node.Scale = new Vector3(8, 8, 8);
+
+            // test: add ui image
+            /*SFRenderEngine.ui.AddStorage(tex, 1);
+            SFRenderEngine.ui.AddElementImage(tex, new Vector2(128, 128), new Vector2(0, 0), new Vector2(0, 0));*/
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
@@ -157,6 +161,7 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
             SFRenderEngine.scene.root = null;
             SFRenderEngine.scene.camera = null;
+            SFRenderEngine.ui.Dispose();
             SFResourceManager.DisposeAll();
             sound_engine.UnloadSound();
             glControl1.MouseWheel -= new MouseEventHandler(glControl1_MouseWheel);
@@ -639,6 +644,7 @@ namespace SpellforceDataEditor.special_forms
             if (update_render)
             {
                 SFRenderEngine.scene.Update();
+                SFRenderEngine.ui.Update();
                 glControl1.Invalidate();
                 update_render = false;
             }

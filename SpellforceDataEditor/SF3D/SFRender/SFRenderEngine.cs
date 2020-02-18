@@ -16,6 +16,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpellforceDataEditor.SF3D;
 using SpellforceDataEditor.SF3D.SceneSynchro;
+using SpellforceDataEditor.SF3D.UI;
 using SpellforceDataEditor.SFUnPak;
 using SpellforceDataEditor.SFMap;
 
@@ -23,8 +24,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
 {
     public static class SFRenderEngine
     {
-        public enum RenderPass { NONE = -1, SHADOWMAP = 0, SCENE = 1, SCREENSPACE = 2 }
+        public enum RenderPass { NONE = -1, SHADOWMAP = 0, SCENE = 1, SCREENSPACE = 2, UI = 3 }
         public static SFScene scene { get; } = new SFScene();
+        public static UIManager ui { get; } = new UIManager();
         static float CurrentDepthBias = 0;
         static RenderMode CurrentRenderMode = RenderMode.SRCALPHA_INVSRCALPHA;
 
@@ -36,6 +38,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static SFShader shader_shadowmap = new SFShader();
         static SFShader shader_shadowmap_animated = new SFShader();
         static SFShader shader_shadowmap_heightmap = new SFShader();
+        static SFShader shader_ui = new SFShader();
         static SFShader active_shader = null;
         static RenderPass current_pass = RenderPass.NONE;
         
@@ -45,7 +48,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static FrameBuffer screenspace_framebuffer = null;
         static FrameBuffer screenspace_intermediate = null;
 
-        static Vector2 render_size = new Vector2(0, 0);
+        public static Vector2 render_size { get; private set; } = new Vector2(0, 0);
 
         static bool initialized = false;
 
@@ -82,19 +85,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.Enable(EnableCap.DebugOutputSynchronous);
             }
 
-            render_size = view_size;
 
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.Initialize() called");
-            ResizeView(view_size);
-
-            GL.ClearColor(scene.atmosphere.FogColor.X, scene.atmosphere.FogColor.Y, 
-                          scene.atmosphere.FogColor.Z, scene.atmosphere.FogColor.W);
-
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.StencilTest);
-            GL.Enable(EnableCap.Blend);
-            GL.DepthFunc(DepthFunction.Less);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             shader_simple.CompileShader(Properties.Resources.vshader, Properties.Resources.fshader);
             shader_simple.AddParameter("VP");
@@ -178,6 +170,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             shader_framebuffer_simple.CompileShader(Properties.Resources.vshader_framebuffer, Properties.Resources.fshader_framebuffer_simple);
 
+            shader_ui.CompileShader(Properties.Resources.vshader_ui, Properties.Resources.fshader_ui);
+            shader_ui.AddParameter("Tex");
+            shader_ui.AddParameter("VP");
+
             scene.sun_light.Direction = -(new Vector3(0, -1, 0).Normalized());
             scene.sun_light.Color = new Vector4(1, 1, 1f, 1);
             scene.sun_light.Strength = 1.6f;
@@ -186,6 +182,18 @@ namespace SpellforceDataEditor.SF3D.SFRender
             scene.atmosphere.FogColor = new Vector4(0.55f, 0.55f, 0.85f, 1.0f);
             scene.atmosphere.FogStart = 100f;
             scene.atmosphere.FogEnd = 200f;
+
+            render_size = view_size;
+            ResizeView(view_size);
+
+            GL.ClearColor(scene.atmosphere.FogColor.X, scene.atmosphere.FogColor.Y,
+                          scene.atmosphere.FogColor.Z, scene.atmosphere.FogColor.W);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.Blend);
+            GL.DepthFunc(DepthFunction.Less);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             if (screenspace_framebuffer != null)
             {
@@ -233,6 +241,21 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 screenspace_framebuffer.Resize((int)view_size.X, (int)view_size.Y);
                 screenspace_intermediate.Resize((int)view_size.X, (int)view_size.Y);
             }
+
+            UseShader(shader_ui);
+
+            Matrix4 ortho;
+            Matrix4.CreateOrthographicOffCenter(-render_size.X, render_size.X, render_size.Y, -render_size.Y, 0.1f, 100, out ortho);
+            /*Matrix4 ortho = new Matrix4(
+                1 / render_size.X, 0, 0, 0.0f,
+                0, -1 / render_size.Y, 0, 0.0f,
+                0, 0, -2 / (100 - 0.1f), -((100 + 0.1f) / (100 - 0.1f)),
+                0, 0, 0, 1);*/
+            GL.UniformMatrix4(active_shader["VP"], true, ref ortho);
+
+            UseShader(null);
+
+            ui.ForceUpdate();
         }
 
         private static void ApplyLight()
@@ -293,6 +316,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             GL.UseProgram(shader_shadowmap_heightmap.ProgramID);
             GL.Uniform1(shader_shadowmap_heightmap["DiffuseTexture"], 0);
+
+            GL.UseProgram(shader_ui.ProgramID);
+            GL.Uniform1(shader_ui["Tex"], 0);
             
             GL.UseProgram(0);
         }
@@ -519,7 +545,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         }
 
         // once per frame
-        private static void ReloadInstanceMatrices()
+        static void ReloadInstanceMatrices()
         {
             foreach (SFSubModel3D sbm in scene.untex_entries_simple)
             {
@@ -541,7 +567,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
-        private static void RenderHeightmap()
+        static void RenderHeightmap()
         {
             Matrix4 lsm_mat = scene.sun_light.LightMatrix;
             GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
@@ -580,7 +606,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         // todo: make this be handled automatically by RenderSimple...
         // todo: optimize this a bit by caching textures in lakeManager and using them explicitly
-        private static void RenderLakes()
+        static void RenderLakes()
         {
             if (!Settings.LakesVisible)
                 return;
@@ -613,7 +639,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         }
 
         // todo: sort transparent materials
-        public static void RenderSimpleObjects()
+        static void RenderSimpleObjects()
         {
             Matrix4 lsm_mat = scene.sun_light.LightMatrix;
             GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
@@ -684,7 +710,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         }
 
         // this is very slow, dunno
-        public static void RenderAnimatedObjects()
+        static void RenderAnimatedObjects()
         {
             Matrix4 lsm_mat = scene.sun_light.LightMatrix;
             GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
@@ -726,6 +752,25 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         SetRenderMode(chunk.material.texRenderMode);
 
                     GL.DrawElements(PrimitiveType.Triangles, chunk.face_indices.Length, DrawElementsType.UnsignedInt, 0);
+                }
+            }
+        }
+
+
+        public static void RenderUI()
+        {
+            foreach(SFTexture tex in ui.storages.Keys)
+            {
+                GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
+                UIQuadStorage storage = ui.storages[tex];
+                GL.BindVertexArray(storage.vertex_array);
+
+                for(int i = 0; i < storage.spans.Count; i++)
+                {
+                    if (!storage.spans[i].visible)
+                        continue;
+
+                    GL.DrawArrays(PrimitiveType.Triangles, storage.spans[i].start * 6, storage.spans[i].count * 6);
                 }
             }
         }
@@ -804,6 +849,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 RenderLakes();
             }
 
+            // now draw UI
+            GL.Disable(EnableCap.DepthTest);
+            UseShader(shader_ui);
+            RenderUI();
 
             // what is below doesnt depend on whats above
             // post-processing (currently not much happening here)

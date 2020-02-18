@@ -174,7 +174,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             elem.RemoveRaw(index * 3, 3);
 
             RefreshListItemTypes();
-            ListItemTypes.SelectedIndex = Math.Max(index, ListItemTypes.Items.Count - 1);
+            ListItemTypes.SelectedIndex = Math.Min(index, ListItemTypes.Items.Count - 1);
         }
     }
 }

@@ -394,6 +394,7 @@ namespace SpellforceDataEditor.special_forms
             foreach (SF3D.SFTexture tex in SFRenderEngine.scene.tex_entries_simple.Keys)
                 SFRenderEngine.scene.tex_entries_simple[tex].Clear();
             SFRenderEngine.scene.tex_entries_simple.Clear();
+            SFRenderEngine.ui.Dispose();
             if (MainForm.viewer != null)
                 MainForm.viewer.ResetScene();
             map = null;

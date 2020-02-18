@@ -799,4 +799,40 @@ void main(){
   UV = vertexUV;
 }</value>
   </data>
+  <data name="fshader_ui" xml:space="preserve">
+    <value>#version 330 core
+
+in vec2 UV;
+
+out vec4 color;
+
+uniform sampler2D Tex;
+
+void main(){
+  vec4 temp_c;
+  temp_c = texture(Tex, UV);
+  if(temp_c.a == 0.0)
+    discard;
+
+  color = temp_c;
+  color = clamp(color, 0.0, 1.0);
+}</value>
+  </data>
+  <data name="vshader_ui" xml:space="preserve">
+    <value>#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec2 vertexUV;
+
+out vec2 UV;
+
+uniform mat4 VP;
+  
+void main(){
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position = VP * vec4(vertexPosition_modelspace, 1);
+  UV = vertexUV;
+}</value>
+  </data>
 </root>
