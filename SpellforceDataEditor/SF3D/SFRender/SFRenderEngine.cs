@@ -173,6 +173,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_ui.CompileShader(Properties.Resources.vshader_ui, Properties.Resources.fshader_ui);
             shader_ui.AddParameter("Tex");
             shader_ui.AddParameter("VP");
+            shader_ui.AddParameter("offset");
 
             scene.sun_light.Direction = -(new Vector3(0, -1, 0).Normalized());
             scene.sun_light.Color = new Vector4(1, 1, 1f, 1);
@@ -246,11 +247,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             Matrix4 ortho;
             Matrix4.CreateOrthographicOffCenter(-render_size.X, render_size.X, render_size.Y, -render_size.Y, 0.1f, 100, out ortho);
-            /*Matrix4 ortho = new Matrix4(
-                1 / render_size.X, 0, 0, 0.0f,
-                0, -1 / render_size.Y, 0, 0.0f,
-                0, 0, -2 / (100 - 0.1f), -((100 + 0.1f) / (100 - 0.1f)),
-                0, 0, 0, 1);*/
             GL.UniformMatrix4(active_shader["VP"], true, ref ortho);
 
             UseShader(null);
@@ -769,8 +765,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 {
                     if (!storage.spans[i].visible)
                         continue;
+                    if (storage.spans[i].used == 0)
+                        continue;
 
-                    GL.DrawArrays(PrimitiveType.Triangles, storage.spans[i].start * 6, storage.spans[i].count * 6);
+                    GL.Uniform2(active_shader["offset"], storage.spans[i].position);
+                    GL.DrawArrays(PrimitiveType.Triangles, storage.spans[i].start * 6, storage.spans[i].used * 6);
                 }
             }
         }
@@ -842,12 +841,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
             UseShader(shader_simple);
             RenderSimpleObjects();
 
+            SetDepthBias(0);
+            SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
+
             if (scene.heightmap != null)
-            {
-                SetDepthBias(0);
-                SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
                 RenderLakes();
-            }
 
             // now draw UI
             GL.Disable(EnableCap.DepthTest);

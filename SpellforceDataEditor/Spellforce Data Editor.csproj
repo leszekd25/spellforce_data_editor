@@ -94,6 +94,7 @@
     <Compile Include="SF3D\SFRender\FrameBuffer.cs" />
     <Compile Include="SF3D\SceneSynchro\SceneNode.cs" />
     <Compile Include="SF3D\SceneSynchro\TexturedGeometryList.cs" />
+    <Compile Include="SF3D\UI\UIFont.cs" />
     <Compile Include="SF3D\UI\UIManager.cs" />
     <Compile Include="SF3D\UI\UIQuadStorage.cs" />
     <Compile Include="SFCFF\calculator forms\CalcControl.cs">

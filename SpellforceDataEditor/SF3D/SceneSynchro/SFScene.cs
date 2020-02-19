@@ -24,6 +24,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
     {
         public float duration = 0f;
         public bool is_animated = false;
+        public string name = "";
     }
 
     public class SFScene
@@ -119,6 +120,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     //create scene
                     SceneNodeSimple item_node = AddSceneNodeSimple(root, m_name, "item");
                     item_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+                    scene_meta.name = SFCategoryManager.GetItemName((ushort)item_id);
 
                     break;
                 case 23:
@@ -129,6 +131,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     SceneNode building_node = AddSceneBuilding(building_id, "building");
                     building_node.SetParent(root);
                     building_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+                    scene_meta.name = SFCategoryManager.GetBuildingName((ushort)building_id);
 
                     break;
                 case 33:
@@ -139,6 +142,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     SceneNode object_node = AddSceneObject(object_id, "object", true);
                     object_node.SetParent(root);
                     object_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+                    scene_meta.name = SFCategoryManager.GetObjectName((ushort)object_id);
 
                     break;
                 case 17:
@@ -152,6 +156,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     SceneNode unit_node = AddSceneUnit(unit_id, "unit");
                     unit_node.SetParent(root);
                     unit_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+                    scene_meta.name = SFCategoryManager.GetUnitName((ushort)unit_id);
                     
                     scene_meta.is_animated = true;
                     break;

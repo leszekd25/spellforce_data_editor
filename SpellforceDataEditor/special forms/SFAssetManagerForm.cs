@@ -18,6 +18,7 @@ using SpellforceDataEditor.SFResources;
 
 namespace SpellforceDataEditor.special_forms
 {
+    
     public partial class SFAssetManagerForm : Form
     {
         class SFAssetManagerSceneInfo          // used for hot reload
@@ -57,6 +58,77 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
+        class SFAssetManagerUI
+        {
+            SF3D.UI.UIFont font_outline;
+            SF3D.UI.UIFont font_main;
+
+            SF3D.UI.UIElementIndex label_name_outline;
+            SF3D.UI.UIElementIndex label_detail1_outline;
+            SF3D.UI.UIElementIndex label_detail2_outline;
+            SF3D.UI.UIElementIndex label_detail3_outline;
+            SF3D.UI.UIElementIndex label_name;
+            SF3D.UI.UIElementIndex label_detail1;
+            SF3D.UI.UIElementIndex label_detail2;
+            SF3D.UI.UIElementIndex label_detail3;
+
+            public SFAssetManagerUI()
+            {
+                font_outline = new SF3D.UI.UIFont() { space_between_letters = 1 };
+                font_outline.Load("font_fonttable_0512_12px_outline_l9");
+
+                font_main = new SF3D.UI.UIFont() { space_between_letters = 1 };
+                font_main.Load("font_fonttable_0512_12px_l9");
+
+                SFRenderEngine.ui.AddStorage(font_outline.font_texture, 1024);
+                SFRenderEngine.ui.AddStorage(font_main.font_texture, 1024);
+
+                label_name_outline = SFRenderEngine.ui.AddElementText(font_outline, 256, new Vector2(10, 25));
+                label_detail1_outline = SFRenderEngine.ui.AddElementText(font_outline, 256, new Vector2(10, 45));
+                label_detail2_outline = SFRenderEngine.ui.AddElementText(font_outline, 256, new Vector2(10, 65));
+                label_detail3_outline = SFRenderEngine.ui.AddElementText(font_outline, 256, new Vector2(10, 85));
+                label_name = SFRenderEngine.ui.AddElementText(font_main, 256, new Vector2(10, 25));
+                label_detail1 = SFRenderEngine.ui.AddElementText(font_main, 256, new Vector2(10, 45));
+                label_detail2 = SFRenderEngine.ui.AddElementText(font_main, 256, new Vector2(10, 65));
+                label_detail3 = SFRenderEngine.ui.AddElementText(font_main, 256, new Vector2(10, 85));
+
+                SetName("");
+                SetLabel1("");
+                SetLabel2("");
+                SetLabel3("");
+            }
+
+            public void SetName(string name)
+            {
+                SFRenderEngine.ui.SetElementText(label_name_outline, font_outline, name);
+                SFRenderEngine.ui.SetElementText(label_name, font_main, name);
+            }
+
+            public void SetLabel1(string l1)
+            {
+                SFRenderEngine.ui.SetElementText(label_detail1_outline, font_outline, l1);
+                SFRenderEngine.ui.SetElementText(label_detail1, font_main, l1);
+            }
+
+            public void SetLabel2(string l2)
+            {
+                SFRenderEngine.ui.SetElementText(label_detail2_outline, font_outline, l2);
+                SFRenderEngine.ui.SetElementText(label_detail2, font_main, l2);
+            }
+
+            public void SetLabel3(string l3)
+            {
+                SFRenderEngine.ui.SetElementText(label_detail3_outline, font_outline, l3);
+                SFRenderEngine.ui.SetElementText(label_detail3, font_main, l3);
+            }
+
+            public void Dispose()
+            {
+                font_outline.Dispose();
+                font_main.Dispose();
+            }
+        }
+
         SFSoundEngine sound_engine = new SFSoundEngine();
 
         bool synchronized = false;
@@ -75,6 +147,8 @@ namespace SpellforceDataEditor.special_forms
         SceneNodeSimple grid_node;
 
         SFAssetManagerSceneInfo current_scene_info = new SFAssetManagerSceneInfo();
+
+        SFAssetManagerUI ui = null;
 
 
         public SFAssetManagerForm()
@@ -144,9 +218,8 @@ namespace SpellforceDataEditor.special_forms
             grid_node.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
             grid_node.Scale = new Vector3(8, 8, 8);
 
-            // test: add ui image
-            /*SFRenderEngine.ui.AddStorage(tex, 1);
-            SFRenderEngine.ui.AddElementImage(tex, new Vector2(128, 128), new Vector2(0, 0), new Vector2(0, 0));*/
+            // set up ui
+            ui = new SFAssetManagerUI();
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
@@ -162,6 +235,7 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.root = null;
             SFRenderEngine.scene.camera = null;
             SFRenderEngine.ui.Dispose();
+            ui.Dispose();
             SFResourceManager.DisposeAll();
             sound_engine.UnloadSound();
             glControl1.MouseWheel -= new MouseEventHandler(glControl1_MouseWheel);
@@ -221,6 +295,7 @@ namespace SpellforceDataEditor.special_forms
                 //SFResourceManager.DisposeAll();
                 HideAllPanels();
                 synchronized = false;
+                ui.SetName(""); ui.SetLabel1(""); ui.SetLabel2(""); ui.SetLabel3("");
             }
 
             if(ComboBrowseMode.SelectedIndex == 0)
@@ -318,6 +393,18 @@ namespace SpellforceDataEditor.special_forms
                     obj_s1.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
                     //obj_s1.Mesh = SFResourceManager.Models.Get(model_name);     <- this should be instead of above
                     StatusText.Text = "Loaded model " + model_name;
+
+                    // get mesh info
+                    // count vertices, faces, submodels
+                    int face_count = 0;
+                    int vert_count = 0;
+                    int submodel_count = obj_s1.Mesh.submodels.Length;
+                    foreach (var sbm in obj_s1.Mesh.submodels)
+                    {
+                        vert_count += sbm.vertices.Length;
+                        face_count += sbm.face_indices.Length / 3;
+                    }
+                    ui.SetLabel1("Submodels: " + submodel_count.ToString() + ", vertices: " + vert_count.ToString() + ", faces: " + face_count.ToString());
                 }
             }
 
@@ -379,6 +466,10 @@ namespace SpellforceDataEditor.special_forms
                 obj_d1.SetSkeletonSkin(skel, skin);
                 obj_d1.SetAnimation(null, false);
                 obj_d1.Mesh = mesh;
+
+                ui.SetLabel1("Skeleton bones: "+skel.bone_count.ToString());
+                ui.SetLabel2("");
+                ui.SetLabel3("");
             }
 
             if (ComboBrowseMode.SelectedIndex == 3)
@@ -400,6 +491,8 @@ namespace SpellforceDataEditor.special_forms
                     sound_engine.LoadSoundMP3(SFResourceManager.Musics.Get(s_n));
                     StatusText.Text = "Loaded music " + s_n;
                     UpdateSliderSound();
+
+                    ui.SetLabel1("Length: "+ TimeSpan.FromMilliseconds(sound_engine.GetSoundDuration()).ToString(@"m\:ss\.ff"));
                 }
             }
 
@@ -422,6 +515,8 @@ namespace SpellforceDataEditor.special_forms
                     sound_engine.LoadSoundWAV(SFResourceManager.Sounds.Get(s_n));
                     StatusText.Text = "Loaded sound " + s_n;
                     UpdateSliderSound();
+
+                    ui.SetLabel1("Length: " + TimeSpan.FromMilliseconds(sound_engine.GetSoundDuration()).ToString(@"m\:ss\.ff"));
                 }
             }
 
@@ -453,8 +548,12 @@ namespace SpellforceDataEditor.special_forms
                     }
                     StatusText.Text = "Loaded message " + s_n;
                     UpdateSliderSound();
+
+                    ui.SetLabel1("Length: " + TimeSpan.FromMilliseconds(sound_engine.GetSoundDuration()).ToString(@"m\:ss\.ff"));
                 }
             }
+
+            ui.SetName(ListEntries.SelectedItem.ToString());
 
             update_render = true;
             dynamic_render = false;
@@ -538,6 +637,9 @@ namespace SpellforceDataEditor.special_forms
                     UpdateSliderAnimation();
                     dynamic_render = true;
                     statusStrip1.Refresh();
+
+                    ui.SetLabel2("Animation: " + anim_name);
+                    ui.SetLabel3("Length: "+ TimeSpan.FromSeconds(SFRenderEngine.scene.scene_meta.duration).ToString(@"m\:ss\.ff"));
                 }
             }
 
@@ -578,6 +680,8 @@ namespace SpellforceDataEditor.special_forms
                     dynamic_render = true;
                     statusStrip1.Refresh();
 
+                    ui.SetLabel2("Animation: " + anim_name);
+                    ui.SetLabel3("Length: " + TimeSpan.FromSeconds(SFRenderEngine.scene.scene_meta.duration).ToString(@"m\:ss\.ff"));
                 }
             }
 
@@ -744,7 +848,7 @@ namespace SpellforceDataEditor.special_forms
             ListEntries.Items.Clear();
             ListAnimations.Items.Clear();
             ResetScene();
-            SFResourceManager.DisposeAll();
+            //SFResourceManager.DisposeAll();
             GC.Collect(2, GCCollectionMode.Forced, false);
 
             if (cat < 0)
@@ -778,6 +882,7 @@ namespace SpellforceDataEditor.special_forms
             update_render = true;
             current_scene_info.cat = cat;
             current_scene_info.elem = elem;
+            ui.SetName(SFRenderEngine.scene.scene_meta.name);
         }
 
         private void buttonSoundPlay_Click(object sender, EventArgs e)

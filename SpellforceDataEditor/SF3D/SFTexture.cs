@@ -292,6 +292,16 @@ namespace SpellforceDataEditor.SF3D
                 }
             }
 
+            // flip texture Y
+            for(int i = 0; i < isp_w; i++)
+                for(int j = 0; j < isp_h/2; j++)
+                    for (int k = 0; k < 4; k++)
+                    {
+                        byte tmp_px = pixels[(i + j * isp_w) * 4 + k];
+                        pixels[(i + j * isp_w) * 4 + k] = pixels[(i + (isp_h - j - 1) * isp_w) * 4 + k];
+                        pixels[(i + (isp_h - j - 1) * isp_w) * 4 + k] = tmp_px;
+                    }
+
             data = pixels;
             width = isp_w; height = isp_h; mipMapCount = 1; format = InternalFormat.Rgba;
 
@@ -400,6 +410,11 @@ namespace SpellforceDataEditor.SF3D
             data = pixels;
 
             format = InternalFormat.Rgba;
+        }
+
+        public byte GetUncompressedAlpha(int x, int y)
+        {
+            return data[(y * width + x) * 4 + 3];
         }
 
         public void SetName(string s)

@@ -562,11 +562,12 @@ namespace SpellforceDataEditor.Properties {
         ///
         ///out vec2 UV;
         ///
+        ///uniform vec2 offset;
         ///uniform mat4 VP;
         ///  
         ///void main(){
         ///  // Output position of the vertex, in clip space : MVP * position
-        ///  gl_Position = VP * vec4(vertexPosition_modelspace, 1);
+        ///  gl_Position = VP * vec4(vertexPosition_modelspace+vec3(offset, 0), 1);
         ///  UV = vertexUV;
         ///}.
         /// </summary>
