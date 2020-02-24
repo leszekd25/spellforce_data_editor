@@ -1017,6 +1017,17 @@ namespace SpellforceDataEditor.special_forms
             }
 
             EntityID.Text = "0";
+
+            // entity mode needs minimap replacement
+            if (TabEditorModes.SelectedIndex == 2)
+            {
+                Minimap.Location = new System.Drawing.Point(262, 170);
+            }
+            else
+            {
+                Minimap.Location = new System.Drawing.Point(0, 170);
+            }
+
             ConfirmPlacementEntity();
         }
 
