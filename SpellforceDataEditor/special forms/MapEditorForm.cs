@@ -375,6 +375,10 @@ namespace SpellforceDataEditor.special_forms
                 visibility_form.Close();
             if (importhmap_form != null)
                 importhmap_form.Close();
+            if (exporthmap_form != null)
+                exporthmap_form.Close();
+            if (minimap_form != null)
+                minimap_form.Close();
 
             TabEditorModes.Enabled = false;
             InspectorClear();
