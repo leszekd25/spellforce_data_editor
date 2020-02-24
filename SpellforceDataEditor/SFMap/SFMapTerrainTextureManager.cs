@@ -61,6 +61,11 @@ namespace SpellforceDataEditor.SFMap
         public Image[] texture_base_image = new Image[TEXTURES_AVAILABLE+1]; // all base textures in the game
         public Image[] texture_tile_image = new Image[MAX_TILES];         // tiles loaded - first 31 are loaded bases
 
+        /// <summary>
+        /// Contains the average color for each tile texture (updated in RefreshTilePreview)
+        /// </summary>
+        public Color[] tile_average_color = new Color[MAX_TILES];
+
         // tilemap texture buffer
         int uniformTileData_buffer;
         int[] uniformTileData;
@@ -346,6 +351,41 @@ namespace SpellforceDataEditor.SFMap
             }
         }
 
+        public void GenerateAverageTileColor(int tile_id)
+        {
+            if (!tile_defined[tile_id])
+                return;
+
+            Image img = texture_tile_image[tile_id];
+            if (img == null)
+                return;
+
+            Bitmap bitmap = new Bitmap(img);
+
+            int red = 0;
+            int green = 0;
+            int blue = 0;
+
+            // sum up pixel colors
+            for (int x = 0; x < bitmap.Width; x++)
+            {
+                for (int y = 0; y < bitmap.Height; y++)
+                {
+                    red += bitmap.GetPixel(x, y).R;
+                    green += bitmap.GetPixel(x, y).G;
+                    blue += bitmap.GetPixel(x, y).B;
+                }
+            }
+
+            // divide by number of pixels to obtain average
+            int pixels = bitmap.Height * bitmap.Width;
+            red /= pixels;
+            green /= pixels;
+            blue /= pixels;
+
+            tile_average_color[tile_id] = Color.FromArgb(red, green, blue);
+        }
+
         public void RefreshTilePreview(int tile_id)
         {
             if (tile_id < 0)
@@ -362,6 +402,8 @@ namespace SpellforceDataEditor.SFMap
                     ref texture_tile_mixer);
                 texture_tile_image[tile_id] = CreateBitmapFromTexture(texture_tile_mixer);
             }
+
+            GenerateAverageTileColor(tile_id);
         }
 
         public void Unload()

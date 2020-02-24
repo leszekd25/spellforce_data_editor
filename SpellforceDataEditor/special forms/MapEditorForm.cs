@@ -36,7 +36,7 @@ namespace SpellforceDataEditor.special_forms
         bool mouse_on_view = false;      // if true, mouse is in render window
         Vector2 scroll_mouse_start = new Vector2(0, 0);
         bool mouse_scroll = false;
-        float zoom_level = 1.0f;
+        public float zoom_level = 1.0f;
         float camera_speed_factor = 1.0f;
 
         bool[] arrows_pressed = new bool[] { false, false, false, false };  // left, right, up, down
@@ -46,6 +46,8 @@ namespace SpellforceDataEditor.special_forms
         public bool update_render = false;  // whenever this is true, window will be repainted, and this switched to false
         int gc_timer = 0;                   // when this reaches 200, garbage collector runs
         int updates_this_second = 0;
+
+        bool update_minimap = false; // whenever this is true, render cycle will call Minimap.UpdateCamera()
 
         OpenTK.GLControl RenderWindow = null;
 
@@ -57,6 +59,7 @@ namespace SpellforceDataEditor.special_forms
         SFMap.map_dialog.MapAutoTextureDialog autotexture_form = null;
         SFMap.map_dialog.MapManageTeamCompositions teamcomp_form = null;
         SFMap.map_dialog.MapVisibilitySettings visibility_form = null;
+        public SFMap.map_dialog.MapMinimapSettings minimap_form = null;
         SFMap.map_dialog.MapImportHeightmapDialog importhmap_form = null;
         SFMap.map_dialog.MapExportHeightmapDialog exporthmap_form = null;
 
@@ -202,6 +205,7 @@ namespace SpellforceDataEditor.special_forms
 
             SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
             ResetCamera();
+            Minimap.LoadMap(map);
 
             RenderWindow.Invalidate();
 
@@ -286,6 +290,7 @@ namespace SpellforceDataEditor.special_forms
 
                 SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
                 ResetCamera();
+                Minimap.LoadMap(map);
 
                 RenderWindow.Invalidate();
 
@@ -398,6 +403,7 @@ namespace SpellforceDataEditor.special_forms
             if (MainForm.viewer != null)
                 MainForm.viewer.ResetScene();
             map = null;
+            Minimap.CloseMap();
             // for good measure (bad! bad!) (TODO: make this do nothing since all resources should be properly disposed at this point)
             SFResources.SFResourceManager.DisposeAll();
             DestroyRenderWindow();
@@ -452,7 +458,6 @@ namespace SpellforceDataEditor.special_forms
             this.RenderWindow.MouseMove -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseMove);
             this.RenderWindow.MouseUp -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
             this.RenderWindow.MouseWheel -= new MouseEventHandler(this.RenderWindow_MouseWheel);
-
             this.Controls.Remove(RenderWindow);
             this.RenderWindow.Dispose();
             this.RenderWindow = null;
@@ -621,6 +626,7 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.scene.camera.translate(new Vector3(movement_vector.X, 0, movement_vector.Y));
                 update_render = true;
                 update_ui = true;
+                update_minimap = true;
             }
 
             // rotating view by home/end/pageup/pagedown
@@ -663,6 +669,12 @@ namespace SpellforceDataEditor.special_forms
             else
                 SFRenderEngine.scene.ResumeTimeFlow();
 
+            if (update_minimap)
+            {
+                Minimap.UpdateCamera();
+                update_minimap = false;
+            }
+
             // garbage collector
             gc_timer += 1;
             if (gc_timer >= 8*SFRenderEngine.scene.frames_per_second)
@@ -704,6 +716,7 @@ namespace SpellforceDataEditor.special_forms
                 }
             AdjustCameraZ();
             update_render = true;
+            update_minimap = true;
         }
 
         private void AdjustCameraZ()
@@ -777,7 +790,10 @@ namespace SpellforceDataEditor.special_forms
             if (map == null)
                 return;
             if (autotexture_form != null)
+            {
+                autotexture_form.BringToFront();
                 return;
+            }
             autotexture_form = new SFMap.map_dialog.MapAutoTextureDialog();
             autotexture_form.map = map;
             autotexture_form.FormClosing += new FormClosingEventHandler(autotextureform_FormClosing);
@@ -2487,7 +2503,10 @@ namespace SpellforceDataEditor.special_forms
                 return;
 
             if (visibility_form != null)
+            {
+                visibility_form.BringToFront();
                 return;
+            }
 
             visibility_form = new SFMap.map_dialog.MapVisibilitySettings();
             visibility_form.map = map;
@@ -2501,13 +2520,39 @@ namespace SpellforceDataEditor.special_forms
             visibility_form = null;
         }
 
+        private void minimapSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (map == null)
+                return;
+
+            if (minimap_form != null)
+            {
+                minimap_form.BringToFront();
+                return;
+            }
+
+            minimap_form = new SFMap.map_dialog.MapMinimapSettings();
+            //minimap_form.map = map;
+            minimap_form.FormClosing += new FormClosingEventHandler(minimapform_FormClosing);
+            minimap_form.Show();
+        }
+
+        private void minimapform_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            minimap_form.FormClosing -= new FormClosingEventHandler(minimapform_FormClosing);
+            minimap_form = null;
+        }
+
         private void importHeightmapToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (map == null)
                 return;
 
             if (importhmap_form != null)
+            {
+                importhmap_form.BringToFront();
                 return;
+            }
 
             importhmap_form = new SFMap.map_dialog.MapImportHeightmapDialog();
             importhmap_form.map = map;
@@ -2527,7 +2572,10 @@ namespace SpellforceDataEditor.special_forms
                 return;
 
             if (exporthmap_form != null)
+            {
+                exporthmap_form.BringToFront();
                 return;
+            }
 
             exporthmap_form = new SFMap.map_dialog.MapExportHeightmapDialog();
             exporthmap_form.map = map;

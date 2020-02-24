@@ -72,5 +72,11 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     (tex_id <= 32) ? map_controls.TerrainTileType.BASE : map_controls.TerrainTileType.CUSTOM);
             }
         }
+
+        public override void OnMouseUp(MouseButtons b)
+        {
+            MainForm.mapedittool.Minimap.GenerateMinimap();
+            base.OnMouseUp(b);
+        }
     }
 }
