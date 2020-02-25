@@ -513,6 +513,12 @@
     <Compile Include="SFMap\map_controls\MapBindstoneInspector.Designer.cs">
       <DependentUpon>MapBindstoneInspector.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFMap\map_controls\MapMinimap.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapMinimap.Designer.cs">
+      <DependentUpon>MapMinimap.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFMap\map_controls\MapMonumentInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -602,6 +608,12 @@
     </Compile>
     <Compile Include="SFMap\map_dialog\MapManageTeamCompositions.Designer.cs">
       <DependentUpon>MapManageTeamCompositions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapMinimapSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapMinimapSettings.Designer.cs">
+      <DependentUpon>MapMinimapSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="SFMap\map_dialog\MapModifyTextureSet.cs">
       <SubType>Form</SubType>
@@ -949,6 +961,12 @@
     <EmbeddedResource Include="SFMap\map_controls\MapBindstoneInspector.resx">
       <DependentUpon>MapBindstoneInspector.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_controls\MapMinimap.resx">
+      <DependentUpon>MapMinimap.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_controls\MapMinimap.sq-AL.resx">
+      <DependentUpon>MapMinimap.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapMonumentInspector.resx">
       <DependentUpon>MapMonumentInspector.cs</DependentUpon>
     </EmbeddedResource>
@@ -990,6 +1008,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_dialog\MapManageTeamCompositions.resx">
       <DependentUpon>MapManageTeamCompositions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_dialog\MapMinimapSettings.resx">
+      <DependentUpon>MapMinimapSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_dialog\MapModifyTextureSet.resx">
       <DependentUpon>MapModifyTextureSet.cs</DependentUpon>
