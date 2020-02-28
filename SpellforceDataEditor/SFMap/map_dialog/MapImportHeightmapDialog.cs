@@ -28,6 +28,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                     {
                         map.heightmap.ImportHeights((Bitmap)PreviewPic.BackgroundImage, scale, offset);
                         map.heightmap.RebuildGeometry(new SFCoord(0, 0), new SFCoord(map.width - 1, map.height - 1));
+                        MainForm.mapedittool.ui.RedrawMinimap(map);
                         MainForm.mapedittool.update_render = true;
                     }
                 }
@@ -45,6 +46,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                     {
                         map.heightmap.ImportHeights((Bitmap)PreviewPic.BackgroundImage, scale, offset);
                         map.heightmap.RebuildGeometry(new SFCoord(0, 0), new SFCoord(map.width - 1, map.height - 1));
+                        MainForm.mapedittool.ui.RedrawMinimap(map);
                         MainForm.mapedittool.update_render = true;
                     }
                 }
@@ -85,6 +87,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             {
                 map.heightmap.height_data = previous_map;
                 map.heightmap.RebuildGeometry(new SFCoord(0, 0), new SFCoord(map.width-1, map.height-1));
+                MainForm.mapedittool.ui.RedrawMinimap(map);
                 MainForm.mapedittool.update_render = true;
             }
         }

@@ -239,6 +239,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 
             GenerateMapTextures();
             map.heightmap.RebuildTerrainTexture(new SFCoord(0, 0), new SFCoord(map.width - 1, map.height - 1));
+            MainForm.mapedittool.ui.RedrawMinimap(map);
             MainForm.mapedittool.update_render = true;
         }
 

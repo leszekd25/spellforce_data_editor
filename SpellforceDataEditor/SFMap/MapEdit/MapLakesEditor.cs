@@ -28,7 +28,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 if (lake_index == 0)
                 {
                     if (map.lake_manager.AddLake(pos, 0, 0) != null)
+                    {
                         SelectLake(map.lake_manager.lakes[map.lake_manager.lakes.Count - 1]);
+                        MainForm.mapedittool.ui.RedrawMinimap(map, map.lake_manager.lakes[map.lake_manager.lakes.Count - 1].cells);
+                    }
                 }
                 else
                     SelectLake(map.lake_manager.lakes[lake_index - 1]);
@@ -39,8 +42,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 {
                     if (map.lake_manager.lakes[lake_index - 1] == selected_lake)
                         SelectLake(null);
+                    HashSet<SFCoord> tmp_cells = map.lake_manager.lakes[lake_index - 1].cells;
                     map.lake_manager.RemoveLake(map.lake_manager.lakes[lake_index - 1]);
-
+                    MainForm.mapedittool.ui.RedrawMinimap(map, tmp_cells);
                 }
                 else
                     SelectLake(null);

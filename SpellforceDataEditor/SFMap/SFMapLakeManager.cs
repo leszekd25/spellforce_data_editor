@@ -111,6 +111,19 @@ namespace SpellforceDataEditor.SFMap
             return tex_name;
         }
 
+        public System.Drawing.Color GetLakeMinimapColor(int type)
+        {
+            if (type == 0)
+                return System.Drawing.Color.FromArgb(255, 100, 100, 200);
+            else if (type == 1)
+                return System.Drawing.Color.FromArgb(255, 175, 125, 90);
+            else if (type == 2)
+                return System.Drawing.Color.FromArgb(255, 240, 140, 40);
+            else if (type == 3)
+                return System.Drawing.Color.FromArgb(255, 240, 240, 255);
+            return System.Drawing.Color.FromArgb(255, 0, 0, 0);
+        }
+
         // should be updated after lake_start or lake_depth was modified
         // this method further modifies lake_start and lake_depth
         public void UpdateLake(SFMapLake lake)

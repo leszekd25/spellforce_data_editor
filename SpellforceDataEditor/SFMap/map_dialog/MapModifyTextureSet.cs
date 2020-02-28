@@ -63,14 +63,16 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                 return;
 
             map.heightmap.texture_manager.SetBaseTexture(selected_base, ID);
-            foreach(map_controls.MapTerrainTextureControl c in PanelTextureSet.Controls)
+            foreach (map_controls.MapTerrainTextureControl c in PanelTextureSet.Controls)
             {
-                if(c.ID == selected_base)
+                if (c.ID == selected_base)
                 {
                     c.SetImage(map.heightmap.texture_manager.texture_tile_image[selected_base], selected_base);
                     break;
                 }
             }
+            MainForm.mapedittool.ui.RedrawMinimap(map);
+            MainForm.mapedittool.update_render = true;
         }
     }
 }

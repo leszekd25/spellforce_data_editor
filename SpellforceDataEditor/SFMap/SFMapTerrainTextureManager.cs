@@ -62,6 +62,7 @@ namespace SpellforceDataEditor.SFMap
         /// Contains the average color for each tile texture (updated in RefreshTilePreview)
         /// </summary>
         public Color[] tile_average_color = new Color[MAX_TILES];
+        public Color tile_ocean_color;
 
         // map consists of tiles: tiles 0-31 are textures from texture_id, 32-223 - mixed custom tiles
         // tiles 224-255 are tiles with proper texture
@@ -225,6 +226,11 @@ namespace SpellforceDataEditor.SFMap
 
             UpdateUniformTileData(0, MAX_TILES - 1);
 
+            tile_ocean_color = Color.FromArgb(
+                    (int)(SF3D.SFRender.SFRenderEngine.scene.atmosphere.FogColor.X * 200),
+                    (int)(SF3D.SFRender.SFRenderEngine.scene.atmosphere.FogColor.Y * 200),
+                    (int)(SF3D.SFRender.SFRenderEngine.scene.atmosphere.FogColor.Z * 200));
+
             GC.Collect();
         }
 
@@ -356,14 +362,6 @@ namespace SpellforceDataEditor.SFMap
         // operates on 64x64 mipmap, hardcoded for now...
         public void GenerateAverageTileColor(int tile_id, SFTexture tex)
         {
-            if(tile_id == 0)
-            {
-                tile_average_color[tile_id] = Color.FromArgb(
-                    (int)(SF3D.SFRender.SFRenderEngine.scene.atmosphere.FogColor.X * 200),
-                    (int)(SF3D.SFRender.SFRenderEngine.scene.atmosphere.FogColor.Y * 200),
-                    (int)(SF3D.SFRender.SFRenderEngine.scene.atmosphere.FogColor.Z * 200));
-                return;
-            }
             int ignored_level = 0;
             while (!tex.IsValidMipMapLevel(ignored_level))
                 ignored_level += 1;

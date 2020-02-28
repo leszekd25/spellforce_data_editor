@@ -17,6 +17,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public HMapBrushInterpolationMode Interpolation { get; set; }
         public HMapEditMode EditMode { get; set; }
 
+        HashSet<SFCoord> pixels = new HashSet<SFCoord>();
+
         private float GetStrengthAt(SFCoord pos)
         {
             float k = Brush.GetInvertedDistanceNormalized(pos);
@@ -67,6 +69,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 map.heightmap.height_data[j * map.width + i] += (ushort)(Value * cell_strength);
                                 if (map.heightmap.height_data[j * map.width + i] > 65535)
                                     map.heightmap.height_data[j * map.width + i] = 65535;
+
+                                pixels.Add(new SFCoord(i, j));
                             }
                         }
                         break;
@@ -86,6 +90,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 map.heightmap.height_data[j * map.width + i] = (ushort)(Value);
                                 if (Value == 0)
                                     map.heightmap.tile_data[j * map.width + i] = 0;
+
+                                pixels.Add(new SFCoord(i, j));
                             }
                         }
                         break;
@@ -116,6 +122,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                     continue;
                                 map.heightmap.height_data[j * map.width + i] +=
                                     (ushort)((terrain_sum - map.heightmap.height_data[j * map.width + i]) * cell_strength * smooth_str);
+
+                                pixels.Add(new SFCoord(i, j));
                             }
                         }
                         break;
@@ -144,6 +152,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 }
                                 else
                                     map.heightmap.height_data[j * map.width + i] -= (ushort)(Value * cell_strength);
+
+                                pixels.Add(new SFCoord(i, j));
                             }
                         }
                         break;
@@ -191,6 +201,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                     map.heightmap.height_data[j * map.width + i] =
                                         (ushort)(map.heightmap.height_data[j * map.width + i] -
                                         (ushort)(v * cell_strength * rough_str));
+
+                                pixels.Add(new SFCoord(i, j));
                             }
                         }
                         break;
@@ -203,6 +215,14 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             map.heightmap.RebuildGeometry(topleft, bottomright);
             if (update_texture)
                 map.heightmap.RebuildTerrainTexture(topleft, bottomright);
+        }
+
+        public override void OnMouseUp(MouseButtons b)
+        {
+            MainForm.mapedittool.ui.RedrawMinimap(map, pixels);
+            pixels.Clear();
+            MainForm.mapedittool.update_render = true;
+            base.OnMouseUp(b);
         }
     }
 }

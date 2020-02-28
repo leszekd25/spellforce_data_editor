@@ -78,7 +78,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
         public override void OnMouseUp(MouseButtons b)
         {
-            MainForm.mapedittool.ui.RedrawMinimap(pixels, (byte)(SelectedTile >= 32 ? SelectedTile - 223 : SelectedTile));
+            MainForm.mapedittool.ui.RedrawMinimap(map, pixels, (byte)(SelectedTile >= 32 ? SelectedTile - 223 : SelectedTile));
             pixels.Clear();
             MainForm.mapedittool.update_render = true;
             base.OnMouseUp(b);

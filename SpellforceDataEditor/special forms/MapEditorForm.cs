@@ -28,7 +28,8 @@ namespace SpellforceDataEditor.special_forms
             SF3D.UI.UIFont font_main;
 
             SF3D.UI.UIElementIndex image_minimap;
-            SF3D.UI.UIElementIndex test_image;
+            SF3D.UI.UIElementIndex image_minimap_frame_left;
+            SF3D.UI.UIElementIndex image_minimap_frame_top;
 
             SF3D.UI.UIElementIndex label_name_outline;
             SF3D.UI.UIElementIndex label_name;
@@ -66,48 +67,137 @@ namespace SpellforceDataEditor.special_forms
                 minimap_tex.SetName("minimap");
 
                 SFRenderEngine.ui.AddStorage(minimap_tex, 1);
+                SFRenderEngine.ui.AddStorage(SFRenderEngine.opaque_tex, 2);
 
                 image_minimap = SFRenderEngine.ui.AddElementImage(minimap_tex, new Vector2(m_width, m_height), new Vector2(0, 0), new Vector2(0, 0), true);
+                image_minimap_frame_left = SFRenderEngine.ui.AddElementImage(SFRenderEngine.opaque_tex, new Vector2(3, m_height), new Vector2(0, 0), new Vector2(0, 0), false);
+                image_minimap_frame_top = SFRenderEngine.ui.AddElementImage(SFRenderEngine.opaque_tex, new Vector2(m_width, 3), new Vector2(0, 0), new Vector2(0, 0), false);
             }
 
-            public void RedrawMinimap()
+            public void RedrawMinimap(SFMap.SFMap map)
             {
                 if (minimap_tex == null)
                     return;
 
-                SFMapHeightMap hmap = SFRenderEngine.scene.heightmap;
+                SFMapHeightMap hmap = map.heightmap;
                 Color col;
                 SFCoord coord;
                 for (int i = 0; i < hmap.width; i++)
                     for (int j = 0; j < hmap.height; j++)
                     {
                         coord = new SFCoord(i, j);
-                        col = hmap.texture_manager.tile_average_color[hmap.GetTileFixed(coord)];
-                        minimap_tex.data[(j * hmap.width + i) * 4 + 0] = col.R;
-                        minimap_tex.data[(j * hmap.width + i) * 4 + 1] = col.G;
-                        minimap_tex.data[(j * hmap.width + i) * 4 + 2] = col.B;
+                        float col_str = 1.0f;
+                        if (hmap.GetZ(coord) != 0)
+                        {
+                            col = hmap.texture_manager.tile_average_color[hmap.GetTileFixed(coord)];
+
+                            // shading
+                            Vector3 normal = hmap.GetVertexNormal(i, j);
+                            col_str = (Vector3.Dot(normal, new Vector3(0, 1, 0)) / 2) + 0.5f;
+                        }
+                        else
+                            col = hmap.texture_manager.tile_ocean_color;
+
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 0] = (byte)(col.R * col_str);
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 1] = (byte)(col.G * col_str);
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 2] = (byte)(col.B * col_str);
                         minimap_tex.data[(j * hmap.width + i) * 4 + 3] = 255;
                     }
+
+                foreach(SFMapLake lake in map.lake_manager.lakes)
+                {
+                    col = map.lake_manager.GetLakeMinimapColor(lake.type);
+                    foreach(SFCoord p in lake.cells)
+                    {
+                        minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 0] = col.R;
+                        minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 1] = col.G;
+                        minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 2] = col.B;
+                        minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 3] = 255;
+                    }
+                }
 
                 minimap_tex.UpdateImage();
             }
 
-            public void RedrawMinimap(HashSet<SFCoord> pixels, byte tile_id)
+            public void RedrawMinimap(SFMap.SFMap map, HashSet<SFCoord> pixels, byte tile_id)
             {
                 if (minimap_tex == null)
                     return;
 
-                SFMapHeightMap hmap = SFRenderEngine.scene.heightmap;
+                SFMapHeightMap hmap = map.heightmap;
 
                 Color col = hmap.texture_manager.tile_average_color[tile_id];
                 foreach (SFCoord p in pixels)
                 {
                     int i = p.x;
                     int j = p.y;
-                    minimap_tex.data[(j * hmap.width + i) * 4 + 0] = col.R;
-                    minimap_tex.data[(j * hmap.width + i) * 4 + 1] = col.G;
-                    minimap_tex.data[(j * hmap.width + i) * 4 + 2] = col.B;
-                    minimap_tex.data[(j * hmap.width + i) * 4 + 3] = 255;
+                    if (hmap.lake_data[j * hmap.width + i] != 0)
+                        continue;
+                    // shading
+                    if (hmap.GetZ(p) != 0)
+                    {
+                        Vector3 normal = hmap.GetVertexNormal(i, j);
+                        float col_str = (Vector3.Dot(normal, new Vector3(0, 1, 0)) / 2) + 0.5f;
+
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 0] = (byte)(col.R * col_str);
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 1] = (byte)(col.G * col_str);
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 2] = (byte)(col.B * col_str);
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 3] = 255;
+                    }
+                    else
+                    {
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 0] = hmap.texture_manager.tile_ocean_color.R;
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 1] = hmap.texture_manager.tile_ocean_color.G;
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 2] = hmap.texture_manager.tile_ocean_color.B;
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 3] = 255;
+                    }
+                }
+
+                minimap_tex.UpdateImage();
+            }
+
+            public void RedrawMinimap(SFMap.SFMap map, HashSet<SFCoord> pixels)
+            {
+                if (minimap_tex == null)
+                    return;
+
+                SFMapHeightMap hmap = map.heightmap;
+
+                foreach (SFCoord p in pixels)
+                {
+                    int i = p.x;
+                    int j = p.y;
+                    if (hmap.lake_data[j * hmap.width + i] != 0)
+                    {
+                        Color col = map.lake_manager.GetLakeMinimapColor(map.lake_manager.lakes[hmap.lake_data[j*hmap.width+i]-1].type);
+
+                        minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 0] = col.R;
+                        minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 1] = col.G;
+                        minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 2] = col.B;
+                        minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 3] = 255;
+                    }
+                    else
+                    {
+                        Color col = hmap.texture_manager.tile_average_color[hmap.GetTileFixed(p)];
+                        // shading
+                        if (hmap.GetZ(p) != 0)
+                        {
+                            Vector3 normal = hmap.GetVertexNormal(i, j);
+                            float col_str = (Vector3.Dot(normal, new Vector3(0, 1, 0)) / 2) + 0.5f;
+
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 0] = (byte)(col.R * col_str);
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 1] = (byte)(col.G * col_str);
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 2] = (byte)(col.B * col_str);
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 3] = 255;
+                        }
+                        else
+                        {
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 0] = hmap.texture_manager.tile_ocean_color.R;
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 1] = hmap.texture_manager.tile_ocean_color.G;
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 2] = hmap.texture_manager.tile_ocean_color.B;
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 3] = 255;
+                        }
+                    }
                 }
 
                 minimap_tex.UpdateImage();
@@ -119,6 +209,8 @@ namespace SpellforceDataEditor.special_forms
                     return;
 
                 SFRenderEngine.ui.SetElementVisible(image_minimap, visible);
+                SFRenderEngine.ui.SetElementVisible(image_minimap_frame_left, visible);
+                SFRenderEngine.ui.SetElementVisible(image_minimap_frame_top, visible);
             }
 
             public void SetMinimapSize(int size)
@@ -126,11 +218,20 @@ namespace SpellforceDataEditor.special_forms
                 if (minimap_tex == null)
                     return;
 
-                minimap_size = size;
+                minimap_size = Math.Min((int)Math.Min(SFRenderEngine.render_size.X-3, SFRenderEngine.render_size.Y-3), size);
+                size = minimap_size;
 
                 SFRenderEngine.ui.SetImageSize(image_minimap, new Vector2(size, size));
+                SFRenderEngine.ui.SetImageSize(image_minimap_frame_left, new Vector2(3, size));
+                SFRenderEngine.ui.SetImageSize(image_minimap_frame_top, new Vector2(size+3, 3));
+
                 SFRenderEngine.ui.MoveElement(image_minimap, new Vector2(SFRenderEngine.render_size.X - size, SFRenderEngine.render_size.Y - size));
+                SFRenderEngine.ui.MoveElement(image_minimap_frame_left, new Vector2(SFRenderEngine.render_size.X - size - 3, SFRenderEngine.render_size.Y - size));
+                SFRenderEngine.ui.MoveElement(image_minimap_frame_top, new Vector2(SFRenderEngine.render_size.X - size - 3, SFRenderEngine.render_size.Y - size - 3));
+
                 SFRenderEngine.ui.UpdateElement(image_minimap);
+                SFRenderEngine.ui.UpdateElement(image_minimap_frame_left);
+                SFRenderEngine.ui.UpdateElement(image_minimap_frame_top);
             }
 
             public void OnResize()
@@ -152,8 +253,11 @@ namespace SpellforceDataEditor.special_forms
                     else
                     {
                         float s = Math.Max(SFRenderEngine.render_size.X - mx, SFRenderEngine.render_size.Y - my);
-                        if((int)s != minimap_size)
+                        if ((int)s != minimap_size)
+                        {
                             SetMinimapSize((int)s);
+                            MainForm.mapedittool.update_render = true;
+                        }
                     }
 
                     return true;
@@ -191,9 +295,15 @@ namespace SpellforceDataEditor.special_forms
                 return clicked;
             }
 
+            public bool GetMinimapVisible()
+            {
+                return SFRenderEngine.ui.GetElementVisible(image_minimap);
+            }
+
             public void UninitMinimap()
             {
                 SFRenderEngine.ui.RemoveStorage(minimap_tex);
+                SFRenderEngine.ui.RemoveStorage(SFRenderEngine.opaque_tex);
                 minimap_tex.Dispose();
                 minimap_tex = null;
             }
@@ -206,6 +316,9 @@ namespace SpellforceDataEditor.special_forms
                     minimap_tex.Dispose();
             }
         }
+
+
+
 
         SFMap.SFMap map = null;
         SFCFF.SFGameData gamedata = null;
@@ -398,7 +511,7 @@ namespace SpellforceDataEditor.special_forms
 
             ui = new MapEditorUI();
             ui.InitMinimap(map.width, map.height);
-            ui.RedrawMinimap();
+            ui.RedrawMinimap(map);
             ui.SetMinimapSize(256);
 
             RenderWindow.Invalidate();
@@ -488,7 +601,7 @@ namespace SpellforceDataEditor.special_forms
 
                 ui = new MapEditorUI();
                 ui.InitMinimap(map.width, map.height);
-                ui.RedrawMinimap();
+                ui.RedrawMinimap(map);
                 ui.SetMinimapSize(256);
 
                 RenderWindow.Invalidate();
@@ -787,9 +900,6 @@ namespace SpellforceDataEditor.special_forms
                     SFCoord clicked_pos = new SFCoord(0, 0);
                     if (ui.GetMinimapPosClicked(ref clicked_pos))
                         SetCameraViewPoint(clicked_pos);
-
-                    update_render = true;
-                    update_ui = true;
                 }
             }
 
@@ -1041,6 +1151,10 @@ namespace SpellforceDataEditor.special_forms
                     return true;
                 case Keys.H | Keys.Control:
                     Settings.VisualizeHeight = !Settings.VisualizeHeight;
+                    update_render = true;
+                    return true;
+                case Keys.M | Keys.Control:
+                    ui.SetMinimapVisible(!ui.GetMinimapVisible());
                     update_render = true;
                     return true;
                 case Keys.D1 | Keys.Control:

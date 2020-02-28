@@ -26,6 +26,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             checkBox6.Checked = Settings.VisualizeHeight;
             checkBox7.Checked = Settings.OverlaysVisible;
             checkBox8.Checked = Settings.DisplayGrid;
+            checkBox9.Checked = MainForm.mapedittool.ui.GetMinimapVisible();
 
             button1.BackColor = Color.FromArgb(((byte)Settings.GridColor.X*255), 
                                                ((byte)Settings.GridColor.Y*255), 

@@ -31,7 +31,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static float CurrentDepthBias = 0;
         static RenderMode CurrentRenderMode = RenderMode.SRCALPHA_INVSRCALPHA;
 
-        static SFTexture opaque_tex = null;
+        public static SFTexture opaque_tex { get; private set; } = null;
 
         static SFShader shader_simple = new SFShader();
         static SFShader shader_animated = new SFShader();
