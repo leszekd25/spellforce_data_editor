@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-using OpenTK;
-using System.IO;
-using SpellforceDataEditor.SFMap;
+﻿using OpenTK;
 using SpellforceDataEditor.SF3D.SFRender;
+using SpellforceDataEditor.SFMap;
 using SpellforceDataEditor.SFMap.MapEdit;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.special_forms
 {
@@ -24,8 +18,195 @@ namespace SpellforceDataEditor.special_forms
         public bool Shift;
     }
 
+
+
     public partial class MapEditorForm : Form
     {
+        public class MapEditorUI
+        {
+            SF3D.UI.UIFont font_outline;
+            SF3D.UI.UIFont font_main;
+
+            SF3D.UI.UIElementIndex image_minimap;
+            SF3D.UI.UIElementIndex test_image;
+
+            SF3D.UI.UIElementIndex label_name_outline;
+            SF3D.UI.UIElementIndex label_name;
+
+            // minimap texture
+            public SF3D.SFTexture minimap_tex { get; private set; } = null;
+
+            int minimap_size;
+            bool resizing = false;
+            bool clicked = false;
+            SFCoord clicked_pos = new SFCoord(0, 0);
+
+            public MapEditorUI()
+            {
+                font_outline = new SF3D.UI.UIFont() { space_between_letters = 2 };
+                font_outline.Load("font_fonttable_0512_12px_outline_l9");
+
+                font_main = new SF3D.UI.UIFont() { space_between_letters = 2 };
+                font_main.Load("font_fonttable_0512_12px_l9");
+
+                //SFRenderEngine.ui.AddStorage(font_outline.font_texture, 256);
+                //SFRenderEngine.ui.AddStorage(font_main.font_texture, 256);
+
+                //label_name_outline = SFRenderEngine.ui.AddElementText(font_outline, 256, new Vector2(0, 25));
+                //label_name = SFRenderEngine.ui.AddElementText(font_main, 256, new Vector2(0, 25));
+
+                //SFRenderEngine.ui.SetElementText(label_name_outline, font_outline, "test font");
+                //SFRenderEngine.ui.SetElementText(label_name, font_main, "test font");
+            }
+
+            public void InitMinimap(int m_width, int m_height)
+            {
+                minimap_tex = SF3D.SFTexture.RGBAImage((ushort)m_width, (ushort)m_height);
+                minimap_tex.Init();
+                minimap_tex.SetName("minimap");
+
+                SFRenderEngine.ui.AddStorage(minimap_tex, 1);
+
+                image_minimap = SFRenderEngine.ui.AddElementImage(minimap_tex, new Vector2(m_width, m_height), new Vector2(0, 0), new Vector2(0, 0), true);
+            }
+
+            public void RedrawMinimap()
+            {
+                if (minimap_tex == null)
+                    return;
+
+                SFMapHeightMap hmap = SFRenderEngine.scene.heightmap;
+                Color col;
+                SFCoord coord;
+                for (int i = 0; i < hmap.width; i++)
+                    for (int j = 0; j < hmap.height; j++)
+                    {
+                        coord = new SFCoord(i, j);
+                        col = hmap.texture_manager.tile_average_color[hmap.GetTileFixed(coord)];
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 0] = col.R;
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 1] = col.G;
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 2] = col.B;
+                        minimap_tex.data[(j * hmap.width + i) * 4 + 3] = 255;
+                    }
+
+                minimap_tex.UpdateImage();
+            }
+
+            public void RedrawMinimap(HashSet<SFCoord> pixels, byte tile_id)
+            {
+                if (minimap_tex == null)
+                    return;
+
+                SFMapHeightMap hmap = SFRenderEngine.scene.heightmap;
+
+                Color col = hmap.texture_manager.tile_average_color[tile_id];
+                foreach (SFCoord p in pixels)
+                {
+                    int i = p.x;
+                    int j = p.y;
+                    minimap_tex.data[(j * hmap.width + i) * 4 + 0] = col.R;
+                    minimap_tex.data[(j * hmap.width + i) * 4 + 1] = col.G;
+                    minimap_tex.data[(j * hmap.width + i) * 4 + 2] = col.B;
+                    minimap_tex.data[(j * hmap.width + i) * 4 + 3] = 255;
+                }
+
+                minimap_tex.UpdateImage();
+            }
+
+            public void SetMinimapVisible(bool visible)
+            {
+                if (minimap_tex == null)
+                    return;
+
+                SFRenderEngine.ui.SetElementVisible(image_minimap, visible);
+            }
+
+            public void SetMinimapSize(int size)
+            {
+                if (minimap_tex == null)
+                    return;
+
+                minimap_size = size;
+
+                SFRenderEngine.ui.SetImageSize(image_minimap, new Vector2(size, size));
+                SFRenderEngine.ui.MoveElement(image_minimap, new Vector2(SFRenderEngine.render_size.X - size, SFRenderEngine.render_size.Y - size));
+                SFRenderEngine.ui.UpdateElement(image_minimap);
+            }
+
+            public void OnResize()
+            {
+                SetMinimapSize(minimap_size);
+            }
+
+            public bool ProcessInput(float mx, float my, bool mouse_pressed)
+            {
+                if (minimap_tex == null)
+                    return false;
+                if (!SFRenderEngine.ui.GetElementVisible(image_minimap))
+                    return false;
+
+                if (resizing)
+                {
+                    if (mouse_pressed == false)
+                        resizing = false;
+                    else
+                    {
+                        float s = Math.Max(SFRenderEngine.render_size.X - mx, SFRenderEngine.render_size.Y - my);
+                        if((int)s != minimap_size)
+                            SetMinimapSize((int)s);
+                    }
+
+                    return true;
+                }
+
+                if((Math.Abs(mx-(SFRenderEngine.render_size.X-minimap_size)) < 16)&&(Math.Abs(my-(SFRenderEngine.render_size.Y-minimap_size)) < 16))
+                {
+                    resizing = true;
+                    return true;
+                }
+
+                if (!mouse_pressed)
+                    clicked = false;
+                if ((mx > SFRenderEngine.render_size.X - minimap_size) && (my > SFRenderEngine.render_size.Y - minimap_size))
+                {
+                    if ((mouse_pressed) && (!clicked))
+                    {
+                        clicked_pos = new SFCoord(
+                            SFRenderEngine.scene.heightmap.width -  (int)(((SFRenderEngine.render_size.X - mx)) * (SFRenderEngine.scene.heightmap.width / (float)minimap_size)) - 1,
+                            (int)((SFRenderEngine.render_size.Y - my) * (SFRenderEngine.scene.heightmap.height / (float)minimap_size)));
+                        clicked = true;
+                    }
+
+                    return true;
+                }
+
+                return false;
+            }
+
+            public bool GetMinimapPosClicked(ref SFCoord pos)
+            {
+                if (clicked)
+                    pos = clicked_pos;
+
+                return clicked;
+            }
+
+            public void UninitMinimap()
+            {
+                SFRenderEngine.ui.RemoveStorage(minimap_tex);
+                minimap_tex.Dispose();
+                minimap_tex = null;
+            }
+
+            public void Dispose()
+            {
+                font_outline.Dispose();
+                font_main.Dispose();
+                if(minimap_tex != null)
+                    minimap_tex.Dispose();
+            }
+        }
+
         SFMap.SFMap map = null;
         SFCFF.SFGameData gamedata = null;
 
@@ -44,12 +225,8 @@ namespace SpellforceDataEditor.special_forms
         SpecialKeysPressed special_pressed = new SpecialKeysPressed();
 
         public bool update_render = false;  // whenever this is true, window will be repainted, and this switched to false
-        int gc_timer = 0;                   // when this reaches 200, garbage collector runs
+        int gc_timer = 0;                   // when this reaches 8x fps, garbage collector runs
         int updates_this_second = 0;
-
-        bool update_minimap = false; // whenever this is true, render cycle will call Minimap.UpdateCamera()
-
-        OpenTK.GLControl RenderWindow = null;
 
         public MapEditor selected_editor { get; private set; } = new MapHeightMapEditor();
         public SFMap.map_controls.MapInspector selected_inspector { get; private set; } = null;
@@ -59,7 +236,6 @@ namespace SpellforceDataEditor.special_forms
         SFMap.map_dialog.MapAutoTextureDialog autotexture_form = null;
         SFMap.map_dialog.MapManageTeamCompositions teamcomp_form = null;
         SFMap.map_dialog.MapVisibilitySettings visibility_form = null;
-        public SFMap.map_dialog.MapMinimapSettings minimap_form = null;
         SFMap.map_dialog.MapImportHeightmapDialog importhmap_form = null;
         SFMap.map_dialog.MapExportHeightmapDialog exporthmap_form = null;
 
@@ -67,16 +243,21 @@ namespace SpellforceDataEditor.special_forms
         Dictionary<string, TreeNode> building_tree = null;
         Dictionary<string, TreeNode> obj_tree = null;
 
+        public MapEditorUI ui { get; private set; } = null;
+
         public MapEditorForm()
         {
             InitializeComponent();
+        }
 
+        private void MapEditorForm_Load(object sender, EventArgs e)
+        {
             SFLua.SFLuaEnvironment.LoadSQL(false);
             if (!SFLua.SFLuaEnvironment.data_loaded)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "MapEditorForm(): Failed to load SQL data!");
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "MapEditorForm_Load(): Failed to load SQL data!");
                 Close();
-                throw new Exception("MapEditorForm(): Failed to load SQL data");
+                throw new Exception("MapEditorForm_Load(): Failed to load SQL data");
             }
 
             TimerAnimation.Enabled = true;
@@ -84,10 +265,13 @@ namespace SpellforceDataEditor.special_forms
             TimerAnimation.Start();
 
             gamedata = SFCFF.SFCategoryManager.gamedata;
-        }
 
-        private void MapEditorForm_Load(object sender, EventArgs e)
-        {
+            SFRenderEngine.scene.Init();
+            CreateRenderWindow();
+            InspectorHide();
+
+            this.WindowState = FormWindowState.Maximized;
+
             LogUtils.Log.TotalMemoryUsage();
         }
 
@@ -96,15 +280,21 @@ namespace SpellforceDataEditor.special_forms
             if (CloseMap() != 0)
                 e.Cancel = true;
             else
+            {
                 selected_editor = null;
+
+                SFRenderEngine.scene.root = null;
+                SFRenderEngine.scene.camera = null;
+                SFRenderEngine.scene.heightmap = null;
+                DestroyRenderWindow();
+            }
         }
 
         private void MapEditorForm_Resize(object sender, EventArgs e)
         {
             TabEditorModes.Width = this.Width - 22;
             TabEditorModes.Padding = new Point(Math.Max(100, ((this.Width - 350)) / TabEditorModes.TabPages.Count / 2), TabEditorModes.Padding.Y);
-            if (RenderWindow != null)
-                ResizeWindow();
+            ResizeWindow();
 
             PanelUtility.Location = new Point(this.Width - PanelUtility.Width, StatusStrip.Location.Y);
         }
@@ -189,9 +379,9 @@ namespace SpellforceDataEditor.special_forms
                 SFCFF.SFCategoryManager.manual_SetGamedata(gamedata);
 
             // display init
-            SFRenderEngine.scene.Init();
+            /*SFRenderEngine.scene.Init();
             CreateRenderWindow();
-            InspectorHide();
+            InspectorHide();*/
 
             // create and generate map
             map = new SFMap.SFMap();
@@ -205,7 +395,11 @@ namespace SpellforceDataEditor.special_forms
 
             SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
             ResetCamera();
-            Minimap.LoadMap(map);
+
+            ui = new MapEditorUI();
+            ui.InitMinimap(map.width, map.height);
+            ui.RedrawMinimap();
+            ui.SetMinimapSize(256);
 
             RenderWindow.Invalidate();
 
@@ -260,9 +454,9 @@ namespace SpellforceDataEditor.special_forms
                 else
                     SFCFF.SFCategoryManager.manual_SetGamedata(gamedata);
 
-                SFRenderEngine.scene.Init();
+                /*SFRenderEngine.scene.Init();
                 CreateRenderWindow();
-                InspectorHide();
+                InspectorHide();*/
 
                 map = new SFMap.SFMap();
                 try
@@ -270,6 +464,7 @@ namespace SpellforceDataEditor.special_forms
                     if (map.Load(OpenMap.FileName, gamedata, StatusText) != 0)
                     {
                         StatusText.Text = "Failed to load map";
+                        map = null;
                         DestroyRenderWindow();
                         return -3;
                     }
@@ -290,7 +485,11 @@ namespace SpellforceDataEditor.special_forms
 
                 SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
                 ResetCamera();
-                Minimap.LoadMap(map);
+
+                ui = new MapEditorUI();
+                ui.InitMinimap(map.width, map.height);
+                ui.RedrawMinimap();
+                ui.SetMinimapSize(256);
 
                 RenderWindow.Invalidate();
 
@@ -377,8 +576,6 @@ namespace SpellforceDataEditor.special_forms
                 importhmap_form.Close();
             if (exporthmap_form != null)
                 exporthmap_form.Close();
-            if (minimap_form != null)
-                minimap_form.Close();
 
             TabEditorModes.Enabled = false;
             InspectorClear();
@@ -396,21 +593,25 @@ namespace SpellforceDataEditor.special_forms
             else
                 SFCFF.SFCategoryManager.UnloadAll();
 
-            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
-            SFRenderEngine.scene.root = null;
-            SFRenderEngine.scene.camera = null;
             SFRenderEngine.scene.heightmap = null;
+            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
+
             foreach (SF3D.SFTexture tex in SFRenderEngine.scene.tex_entries_simple.Keys)
                 SFRenderEngine.scene.tex_entries_simple[tex].Clear();
             SFRenderEngine.scene.tex_entries_simple.Clear();
+            SFRenderEngine.scene.untex_entries_simple.Clear();
+            
+            //ui.UninitMinimap();
+            ui.Dispose();
+            ui = null;
             SFRenderEngine.ui.Dispose();
+
             if (MainForm.viewer != null)
                 MainForm.viewer.ResetScene();
             map = null;
-            Minimap.CloseMap();
             // for good measure (bad! bad!) (TODO: make this do nothing since all resources should be properly disposed at this point)
             SFResources.SFResourceManager.DisposeAll();
-            DestroyRenderWindow();
+            //DestroyRenderWindow();
             this.Text = "Map Editor";
             GC.Collect();
 
@@ -420,51 +621,31 @@ namespace SpellforceDataEditor.special_forms
             return 0;
         }
 
-        // moved from designer to code, experimenting with memory usage
         private void CreateRenderWindow()
         {
-            if (RenderWindow != null)
-                return;
-
-            this.RenderWindow = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(32), 24, 8, 4));
-            this.RenderWindow.BackColor = System.Drawing.Color.Black;
-            this.RenderWindow.Location = new System.Drawing.Point(3, TabEditorModes.Location.Y + TabEditorModes.Size.Height);
-            this.RenderWindow.Name = "RenderWindow";
-            this.RenderWindow.Size = new System.Drawing.Size(589, 589);
-            this.RenderWindow.TabIndex = 2;
-            this.RenderWindow.VSync = true;
-            this.RenderWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
-            this.RenderWindow.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseDown);
-            this.RenderWindow.MouseEnter += new System.EventHandler(this.RenderWindow_MouseEnter);
-            this.RenderWindow.MouseLeave += new System.EventHandler(this.RenderWindow_MouseLeave);
-            this.RenderWindow.MouseMove += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseMove);
-            this.RenderWindow.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
-            this.RenderWindow.MouseWheel += new MouseEventHandler(this.RenderWindow_MouseWheel);
-            this.Controls.Add(this.RenderWindow);
+            RenderWindow.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseDown);
+            RenderWindow.MouseEnter += new System.EventHandler(this.RenderWindow_MouseEnter);
+            RenderWindow.MouseLeave += new System.EventHandler(this.RenderWindow_MouseLeave);
+            RenderWindow.MouseMove += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseMove);
+            RenderWindow.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
+            RenderWindow.MouseWheel += new MouseEventHandler(this.RenderWindow_MouseWheel);
 
             // it seems shaders must always be compiled upon creating new window
             SFRenderEngine.Initialize(new Vector2(RenderWindow.ClientSize.Width, RenderWindow.ClientSize.Height));
             TimerUpdatesPerSecond.Start();
 
-            ResizeWindow();
+            RenderWindow.MakeCurrent();
         }
 
         // after this is called, memory will be freed (?)
         private void DestroyRenderWindow()
         {
-            if (RenderWindow == null)
-                return;
-
-            this.RenderWindow.Paint -= new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
-            this.RenderWindow.MouseDown -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseDown);
-            this.RenderWindow.MouseEnter -= new System.EventHandler(this.RenderWindow_MouseEnter);
-            this.RenderWindow.MouseLeave -= new System.EventHandler(this.RenderWindow_MouseLeave);
-            this.RenderWindow.MouseMove -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseMove);
-            this.RenderWindow.MouseUp -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
-            this.RenderWindow.MouseWheel -= new MouseEventHandler(this.RenderWindow_MouseWheel);
-            this.Controls.Remove(RenderWindow);
-            this.RenderWindow.Dispose();
-            this.RenderWindow = null;
+            RenderWindow.MouseDown -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseDown);
+            RenderWindow.MouseEnter -= new System.EventHandler(this.RenderWindow_MouseEnter);
+            RenderWindow.MouseLeave -= new System.EventHandler(this.RenderWindow_MouseLeave);
+            RenderWindow.MouseMove -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseMove);
+            RenderWindow.MouseUp -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
+            RenderWindow.MouseWheel -= new MouseEventHandler(this.RenderWindow_MouseWheel);
 
             TimerUpdatesPerSecond.Stop();
             UpdatesText.Text = "";
@@ -549,53 +730,66 @@ namespace SpellforceDataEditor.special_forms
 
             bool update_ui = false;
 
-            // find point which mouse hovers at
+            // mouse actions
             if (mouse_on_view)
             {
-                // generate ray
                 float px, py;
                 px = Cursor.Position.X - this.Location.X - RenderWindow.Location.X - 8;
                 py = Cursor.Position.Y - this.Location.Y - RenderWindow.Location.Y - 29;
-                float wx, wy;
-                wx = ((px / RenderWindow.Size.Width)+0.1f)/1.2f;
-                wy = ((py / RenderWindow.Size.Height)+0.1f)/1.2f;
-                Vector3[] frustrum_vertices = SFRenderEngine.scene.camera.FrustumVertices;
-                Vector3 r_start = SFRenderEngine.scene.camera.Position;
-                Vector3 r_end = frustrum_vertices[4]
-                    + wx * (frustrum_vertices[5] - frustrum_vertices[4])
-                    + wy * (frustrum_vertices[6] - frustrum_vertices[4]);
-                SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start) { Length = 1000 };
 
-                Vector3 result = new Vector3(0, 0, 0);
-                bool ray_success = ray.Intersect(map.heightmap, out result);
-
-                if (ray_success)
+                if (!ui.ProcessInput(px, py, mouse_pressed))
                 {
-                    SFCoord cursor_coord = new SFCoord(
-                        (int)(Math.Max
-                            (0, Math.Min
-                                (Math.Round(result.X), map.width - 1))),
-                        (int)(Math.Max
-                            (0, Math.Min
-                                (Math.Round(result.Z), map.height - 1))));
-                    SFCoord inv_cursor_coord = new SFCoord(cursor_coord.x, map.height - cursor_coord.y - 1);
+                    //find point which mouse hovers at
+                    float wx, wy;
+                    wx = ((px / RenderWindow.Size.Width) + 0.1f) / 1.2f;
+                    wy = ((py / RenderWindow.Size.Height) + 0.1f) / 1.2f;
+                    Vector3[] frustrum_vertices = SFRenderEngine.scene.camera.FrustumVertices;
+                    Vector3 r_start = SFRenderEngine.scene.camera.Position;
+                    Vector3 r_end = frustrum_vertices[4]
+                        + wx * (frustrum_vertices[5] - frustrum_vertices[4])
+                        + wy * (frustrum_vertices[6] - frustrum_vertices[4]);
+                    SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start) { Length = 1000 };
 
-                    if (map.selection_helper.SetCursorPosition(cursor_coord))
-                    {
-                        update_render = true;
-                        StatusStrip.SuspendLayout();
-                        StatusText.Text = "Cursor position: " + inv_cursor_coord.ToString();
-                        SetSpecificText(inv_cursor_coord);
-                        StatusStrip.ResumeLayout();
-                    }
+                    Vector3 result = new Vector3(0, 0, 0);
+                    bool ray_success = ray.Intersect(map.heightmap, out result);
 
-                    // on click action
-                    if ((mouse_pressed) && (selected_editor != null))
+                    if (ray_success)
                     {
-                        selected_editor.OnMousePress(inv_cursor_coord, mouse_last_pressed, ref special_pressed);
-                        update_render = true;
-                        update_ui = true;
+                        SFCoord cursor_coord = new SFCoord(
+                            (int)(Math.Max
+                                (0, Math.Min
+                                    (Math.Round(result.X), map.width - 1))),
+                            (int)(Math.Max
+                                (0, Math.Min
+                                    (Math.Round(result.Z), map.height - 1))));
+                        SFCoord inv_cursor_coord = new SFCoord(cursor_coord.x, map.height - cursor_coord.y - 1);
+
+                        if (map.selection_helper.SetCursorPosition(cursor_coord))
+                        {
+                            update_render = true;
+                            StatusStrip.SuspendLayout();
+                            StatusText.Text = "Cursor position: " + inv_cursor_coord.ToString();
+                            SetSpecificText(inv_cursor_coord);
+                            StatusStrip.ResumeLayout();
+                        }
+
+                        // on click action
+                        if ((mouse_pressed) && (selected_editor != null))
+                        {
+                            selected_editor.OnMousePress(inv_cursor_coord, mouse_last_pressed, ref special_pressed);
+                            update_render = true;
+                            update_ui = true;
+                        }
                     }
+                }
+                else
+                {
+                    SFCoord clicked_pos = new SFCoord(0, 0);
+                    if (ui.GetMinimapPosClicked(ref clicked_pos))
+                        SetCameraViewPoint(clicked_pos);
+
+                    update_render = true;
+                    update_ui = true;
                 }
             }
 
@@ -630,7 +824,6 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.scene.camera.translate(new Vector3(movement_vector.X, 0, movement_vector.Y));
                 update_render = true;
                 update_ui = true;
-                update_minimap = true;
             }
 
             // rotating view by home/end/pageup/pagedown
@@ -660,6 +853,7 @@ namespace SpellforceDataEditor.special_forms
                 AdjustCameraZ();
                 SFRenderEngine.UpdateVisibleChunks();
                 SFRenderEngine.scene.Update();
+                SFRenderEngine.ui.Update();
                 RenderWindow.Invalidate();
                 updates_this_second += 1;
                 update_render = false;
@@ -672,12 +866,6 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.scene.StopTimeFlow();
             else
                 SFRenderEngine.scene.ResumeTimeFlow();
-
-            if (update_minimap)
-            {
-                Minimap.UpdateCamera();
-                update_minimap = false;
-            }
 
             // garbage collector
             gc_timer += 1;
@@ -720,7 +908,6 @@ namespace SpellforceDataEditor.special_forms
                 }
             AdjustCameraZ();
             update_render = true;
-            update_minimap = true;
         }
 
         private void AdjustCameraZ()
@@ -784,7 +971,10 @@ namespace SpellforceDataEditor.special_forms
             RenderWindow.Location = new Point(xstart, ystart);
             RenderWindow.Size = new Size(w_width, w_height);
             PanelInspector.Location = new Point(6 + RenderWindow.Width + (PanelObjectSelector.Visible ? PanelObjectSelector.Width : 0), ystart);
+
             SFRenderEngine.ResizeView(new Vector2(w_width, w_height));
+            if(ui != null)
+                ui.OnResize();
             update_render = true;
             RenderWindow.MakeCurrent();
         }
@@ -917,6 +1107,13 @@ namespace SpellforceDataEditor.special_forms
             ResetCamera();
         }
 
+
+
+        // map editor controls below
+
+
+
+
         private void InspectorClear()
         {
             this.Focus();
@@ -1017,16 +1214,6 @@ namespace SpellforceDataEditor.special_forms
             }
 
             EntityID.Text = "0";
-
-            // entity mode needs minimap replacement
-            if (TabEditorModes.SelectedIndex == 2)
-            {
-                Minimap.Location = new System.Drawing.Point(262, 170);
-            }
-            else
-            {
-                Minimap.Location = new System.Drawing.Point(0, 170);
-            }
 
             ConfirmPlacementEntity();
         }
@@ -2533,29 +2720,6 @@ namespace SpellforceDataEditor.special_forms
         {
             visibility_form.FormClosing -= new FormClosingEventHandler(visibilityform_FormClosing);
             visibility_form = null;
-        }
-
-        private void minimapSettingsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (map == null)
-                return;
-
-            if (minimap_form != null)
-            {
-                minimap_form.BringToFront();
-                return;
-            }
-
-            minimap_form = new SFMap.map_dialog.MapMinimapSettings();
-            //minimap_form.map = map;
-            minimap_form.FormClosing += new FormClosingEventHandler(minimapform_FormClosing);
-            minimap_form.Show();
-        }
-
-        private void minimapform_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            minimap_form.FormClosing -= new FormClosingEventHandler(minimapform_FormClosing);
-            minimap_form = null;
         }
 
         private void importHeightmapToolStripMenuItem_Click(object sender, EventArgs e)

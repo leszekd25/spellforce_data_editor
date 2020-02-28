@@ -38,33 +38,36 @@ namespace SpellforceDataEditor.SFMap
         public const int MAX_TILES = 255;
         public const int TEXTURES_AVAILABLE = 119;
 
-        // all available texture names are here
-        List<string> texture_filenames;
-        // all 32 used textures - only the last 31 of those are modifiable in the editor
-        public SFTexture[] base_texture_bank { get; private set; } = new SFTexture[MAX_USED_TEXTURES];
         // map info contains texture IDs for all textures - both far textures and proper textures
         // in game, proper texture = far texture + TEXTURES_AVAILABLE
         // exception: texture 0, proper texture = far texture
         public byte[] texture_id { get; private set; } = new byte[MAX_TEXTURES];
-        // map consists of tiles: tiles 0-31 are textures from texture_id, 32-223 - mixed custom tiles
-        // tiles 224-255 are tiles with proper texture
-        // mixed tiles use IDs from 0 to 31...
 
-        // helper array to check if a mixed tile is defined
-        public bool[] tile_defined { get; private set; } = new bool[MAX_TILES];
+        // all available texture names are here
+        List<string> texture_filenames;
+
+        // all 32 used textures - only the last 31 of those are modifiable in the editor
+        public SFTexture[] base_texture_bank { get; private set; } = new SFTexture[MAX_USED_TEXTURES];
+
+        public Image[] texture_base_image = new Image[TEXTURES_AVAILABLE + 1]; // all base textures in the game
+
+        SFTexture texture_tile_mixer = null;
+
         // each tile contains data which is saved in map file
         public SFMapTerrainTextureTileData[] texture_tiledata { get; private set; } = new SFMapTerrainTextureTileData[MAX_TILES];
-        public int terrain_texture { get; private set; } = -1;     //texture GL ID
-
-        // all images below are 64x64, taking up at most 20 KB per image - no more than 2 MB
-        SFTexture texture_tile_mixer = null;
-        public Image[] texture_base_image = new Image[TEXTURES_AVAILABLE+1]; // all base textures in the game
         public Image[] texture_tile_image = new Image[MAX_TILES];         // tiles loaded - first 31 are loaded bases
-
+        // helper array to check if a mixed tile is defined
+        public bool[] tile_defined { get; private set; } = new bool[MAX_TILES];
         /// <summary>
         /// Contains the average color for each tile texture (updated in RefreshTilePreview)
         /// </summary>
         public Color[] tile_average_color = new Color[MAX_TILES];
+
+        // map consists of tiles: tiles 0-31 are textures from texture_id, 32-223 - mixed custom tiles
+        // tiles 224-255 are tiles with proper texture
+        // mixed tiles use IDs from 0 to 31...
+
+        public int terrain_texture { get; private set; } = -1;     //texture GL ID
 
         // tilemap texture buffer
         int uniformTileData_buffer;
@@ -174,7 +177,6 @@ namespace SpellforceDataEditor.SFMap
             for (int i = 0; i < min_allowed_level; i++)
                 mipmap_divisor *= 2;
 
-            // todo: add mipmaps : )
             terrain_texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int)All.LinearMipmapLinear);
@@ -351,39 +353,46 @@ namespace SpellforceDataEditor.SFMap
             }
         }
 
-        public void GenerateAverageTileColor(int tile_id)
+        // operates on 64x64 mipmap, hardcoded for now...
+        public void GenerateAverageTileColor(int tile_id, SFTexture tex)
         {
-            if (!tile_defined[tile_id])
-                return;
-
-            Image img = texture_tile_image[tile_id];
-            if (img == null)
-                return;
-
-            Bitmap bitmap = new Bitmap(img);
-
-            int red = 0;
-            int green = 0;
-            int blue = 0;
-
-            // sum up pixel colors
-            for (int x = 0; x < bitmap.Width; x++)
+            if(tile_id == 0)
             {
-                for (int y = 0; y < bitmap.Height; y++)
-                {
-                    red += bitmap.GetPixel(x, y).R;
-                    green += bitmap.GetPixel(x, y).G;
-                    blue += bitmap.GetPixel(x, y).B;
-                }
+                tile_average_color[tile_id] = Color.FromArgb(
+                    (int)(SF3D.SFRender.SFRenderEngine.scene.atmosphere.FogColor.X * 200),
+                    (int)(SF3D.SFRender.SFRenderEngine.scene.atmosphere.FogColor.Y * 200),
+                    (int)(SF3D.SFRender.SFRenderEngine.scene.atmosphere.FogColor.Z * 200));
+                return;
             }
+            int ignored_level = 0;
+            while (!tex.IsValidMipMapLevel(ignored_level))
+                ignored_level += 1;
 
-            // divide by number of pixels to obtain average
-            int pixels = bitmap.Height * bitmap.Width;
-            red /= pixels;
-            green /= pixels;
-            blue /= pixels;
+            if (ignored_level > 2)
+                return;
 
-            tile_average_color[tile_id] = Color.FromArgb(red, green, blue);
+            int offset = (tex.width * tex.height * 4) * (ignored_level > 0 ? 0 : 1)
+                       + (tex.width * tex.height) * (ignored_level > 1 ? 0 : 1);
+
+            int r = 0, g = 0, b = 0;
+
+            for (int i = 0; i < 64; i++)
+                for (int j = 0; j < 64; j++)
+                {
+                    r += tex.data[offset + 4 * (i * 64 + j) + 0];
+                    g += tex.data[offset + 4 * (i * 64 + j) + 1];
+                    b += tex.data[offset + 4 * (i * 64 + j) + 2];
+                }
+
+            r /= 4096;
+            g /= 4096;
+            b /= 4096;
+
+            r = Math.Min(255, (int)(r * SF3D.SFRender.SFRenderEngine.scene.sun_light.Strength));
+            g = Math.Min(255, (int)(g * SF3D.SFRender.SFRenderEngine.scene.sun_light.Strength));
+            b = Math.Min(255, (int)(b * SF3D.SFRender.SFRenderEngine.scene.sun_light.Strength));
+
+            tile_average_color[tile_id] = Color.FromArgb(r, g, b);
         }
 
         public void RefreshTilePreview(int tile_id)
@@ -392,8 +401,12 @@ namespace SpellforceDataEditor.SFMap
                 return;
 
             if (tile_id < 32)
+            {
                 texture_tile_image[tile_id] = CreateBitmapFromTexture(base_texture_bank[tile_id]);
-            else if(tile_defined[tile_id])
+
+                GenerateAverageTileColor(tile_id, base_texture_bank[tile_id]);
+            }
+            else if (tile_defined[tile_id])
             {
                 SFTexture.MixUncompressed(
                     base_texture_bank[texture_tiledata[tile_id].ind1], texture_tiledata[tile_id].weight1,
@@ -401,9 +414,9 @@ namespace SpellforceDataEditor.SFMap
                     base_texture_bank[texture_tiledata[tile_id].ind3], texture_tiledata[tile_id].weight3,
                     ref texture_tile_mixer);
                 texture_tile_image[tile_id] = CreateBitmapFromTexture(texture_tile_mixer);
-            }
 
-            GenerateAverageTileColor(tile_id);
+                GenerateAverageTileColor(tile_id, texture_tile_mixer);
+            }
         }
 
         public void Unload()

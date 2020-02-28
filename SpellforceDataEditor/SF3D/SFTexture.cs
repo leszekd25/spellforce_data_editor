@@ -370,6 +370,41 @@ namespace SpellforceDataEditor.SF3D
             return 0;
         }
 
+        static public SFTexture RGBAImage(ushort w, ushort h)
+        {
+            SFTexture tex = new SFTexture() { data = new byte[w * h * 4], width = w, height = h, mipMapCount = 1, format = InternalFormat.Rgba };
+            return tex;
+        }
+
+        public void UpdateImage()
+        {
+            if(data == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFTexture.UpdateImage(): Texture data was freed, can not update");
+                return;
+            }
+
+            GL.BindTexture(TextureTarget.Texture2D, tex_id);
+
+            /* load the mipmaps */
+            if (format != InternalFormat.Rgba)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFTexture.UpdateImage(): Invalid texture format!");
+                return;
+            }
+            if(mipMapCount != 1)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFTexture.UpdateImage(): Invalid mipmap count!");
+                return;
+            }
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height,
+                        0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+
         // uncompress utility (used in heightmap array texture to have all textures use the same uncompressed format
         public void Uncompress()
         {

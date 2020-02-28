@@ -41,7 +41,6 @@
             this.exportHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.slopebasedPaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.visibilitySettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.minimapSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenMap = new System.Windows.Forms.OpenFileDialog();
             this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
             this.DialogSaveMap = new System.Windows.Forms.SaveFileDialog();
@@ -185,7 +184,7 @@
             this.TreeEntitytFilter = new System.Windows.Forms.TextBox();
             this.TreeEntities = new System.Windows.Forms.TreeView();
             this.TimerTreeEntityFilter = new System.Windows.Forms.Timer(this.components);
-            this.Minimap = new SpellforceDataEditor.SFMap.map_controls.MapMinimap();
+            this.RenderWindow = new OpenTK.GLControl();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
@@ -282,10 +281,9 @@
             this.importHeightmapToolStripMenuItem,
             this.exportHeightmapToolStripMenuItem,
             this.slopebasedPaintToolStripMenuItem,
-            this.visibilitySettingsToolStripMenuItem,
-            this.minimapSettingsToolStripMenuItem});
+            this.visibilitySettingsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
             // importHeightmapToolStripMenuItem
@@ -315,13 +313,6 @@
             this.visibilitySettingsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.visibilitySettingsToolStripMenuItem.Text = "Visibility settings";
             this.visibilitySettingsToolStripMenuItem.Click += new System.EventHandler(this.visibilitySettingsToolStripMenuItem_Click);
-            // 
-            // minimapSettingsToolStripMenuItem
-            // 
-            this.minimapSettingsToolStripMenuItem.Name = "minimapSettingsToolStripMenuItem";
-            this.minimapSettingsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-            this.minimapSettingsToolStripMenuItem.Text = "Minimap settings";
-            this.minimapSettingsToolStripMenuItem.Click += new System.EventHandler(this.minimapSettingsToolStripMenuItem_Click);
             // 
             // OpenMap
             // 
@@ -1773,12 +1764,15 @@
             this.TimerTreeEntityFilter.Interval = 500;
             this.TimerTreeEntityFilter.Tick += new System.EventHandler(this.TimerTreeEntityFilter_Tick);
             // 
-            // Minimap
+            // RenderWindow
             // 
-            this.Minimap.Location = new System.Drawing.Point(0, 170);
-            this.Minimap.Name = "Minimap";
-            this.Minimap.Visible = false;
-            this.Minimap.TabIndex = 9;
+            this.RenderWindow.BackColor = System.Drawing.Color.Black;
+            this.RenderWindow.Location = new System.Drawing.Point(4, 176);
+            this.RenderWindow.Name = "RenderWindow";
+            this.RenderWindow.Size = new System.Drawing.Size(1092, 463);
+            this.RenderWindow.TabIndex = 11;
+            this.RenderWindow.VSync = false;
+            this.RenderWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
             // 
             // MapEditorForm
             // 
@@ -1787,17 +1781,16 @@
             this.ClientSize = new System.Drawing.Size(1100, 668);
             this.Controls.Add(this.PanelObjectSelector);
             this.Controls.Add(this.PanelUtility);
-            this.Controls.Add(this.Minimap);
             this.Controls.Add(this.PanelInspector);
             this.Controls.Add(this.TabEditorModes);
             this.Controls.Add(this.StatusStrip);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.RenderWindow);
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(1005, 706);
             this.Name = "MapEditorForm";
             this.Text = "Map Editor";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MapEditorForm_FormClosing);
             this.Shown += new System.EventHandler(this.MapEditorForm_Load);
             this.Resize += new System.EventHandler(this.MapEditorForm_Resize);
@@ -1978,7 +1971,6 @@
         private System.Windows.Forms.TextBox CoopSpawnParam11;
         private System.Windows.Forms.Button ButtonTeams;
         private System.Windows.Forms.ToolStripMenuItem visibilitySettingsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem minimapSettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importHeightmapToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportHeightmapToolStripMenuItem;
         private System.Windows.Forms.Panel PanelUtility;
@@ -2016,6 +2008,6 @@
         private System.Windows.Forms.TextBox Angle;
         private System.Windows.Forms.TextBox TreeEntitytFilter;
         private System.Windows.Forms.Timer TimerTreeEntityFilter;
-        public SFMap.map_controls.MapMinimap Minimap;
+        private OpenTK.GLControl RenderWindow;
     }
 }

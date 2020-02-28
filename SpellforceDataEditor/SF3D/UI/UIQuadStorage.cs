@@ -20,7 +20,7 @@ namespace SpellforceDataEditor.SF3D.UI
     public class UIQuadStorage
     {
         public List<UIQuadStorageSpan> spans { get; private set; } = new List<UIQuadStorageSpan>();
-        Vector3[] vertices;
+        public Vector3[] vertices;
         Vector2[] uvs;
 
         public int vertex_array = -1;
@@ -39,6 +39,7 @@ namespace SpellforceDataEditor.SF3D.UI
         {
             vertices = new Vector3[quad_count * 6];
             uvs = new Vector2[quad_count * 6];
+
             pxsizes = new Vector2[quad_count];
             origins = new Vector2[quad_count];
             depths = new float[quad_count];
@@ -74,14 +75,22 @@ namespace SpellforceDataEditor.SF3D.UI
         }
 
         // for images
-        public void AllocateQuad(int span_index, Vector2 pxsize, Vector2 origin, float depth = 0)
+        public void AllocateQuad(int span_index, Vector2 pxsize, Vector2 origin, float depth, bool invert_uv)
         {
             UIQuadStorageSpan span = spans[span_index];
             pxsizes[span.start] = pxsize;
             origins[span.start] = origin;
             depths[span.start] = depth;
-            uvs_start[span.start] = new Vector2(0, 0);
-            uvs_end[span.start] = new Vector2(1, 1);
+            if (invert_uv)
+            {
+                uvs_start[span.start] = new Vector2(0, 1);
+                uvs_end[span.start] = new Vector2(1, 0);
+            }
+            else
+            {
+                uvs_start[span.start] = new Vector2(0, 0);
+                uvs_end[span.start] = new Vector2(1, 1);
+            }
 
             spans[span_index] = new UIQuadStorageSpan { start = span.start, reserved = span.reserved, used = 1, position = span.position, visible = span.visible };
             InitSpan(span_index);
@@ -113,16 +122,16 @@ namespace SpellforceDataEditor.SF3D.UI
             {
                 int offset = spans[span_index].start + i;
                 vertices[offset * 6 + 0] = new Vector3(
-                    -origins[offset].X - SFRender.SFRenderEngine.render_size.X / 2,
-                    -origins[offset].Y - SFRender.SFRenderEngine.render_size.X / 2,
+                    -origins[offset].X,
+                    -origins[offset].Y,
                     depths[offset]);
                 vertices[offset * 6 + 1] = new Vector3(
-                    pxsizes[offset].X - origins[offset].X - SFRender.SFRenderEngine.render_size.X / 2,
+                    pxsizes[offset].X - origins[offset].X,
                     vertices[offset * 6 + 0].Y,
                     depths[offset]);
                 vertices[offset * 6 + 2] = new Vector3(
                     vertices[offset * 6 + 0].X,
-                    pxsizes[offset].Y - origins[offset].Y - SFRender.SFRenderEngine.render_size.X / 2,
+                    pxsizes[offset].Y - origins[offset].Y,
                     depths[offset]);
                 vertices[offset * 6 + 3] = vertices[offset * 6 + 1];
                 vertices[offset * 6 + 4] = vertices[offset * 6 + 2];
@@ -152,6 +161,12 @@ namespace SpellforceDataEditor.SF3D.UI
             updated = false;
         }
 
+        public void SetQuadPxSize(int index, Vector2 size)
+        {
+            pxsizes[index] = size;
+            updated = false;
+        }
+
         public void ForceUpdate()
         {
             for(int s = 0; s < spans.Count; s++)
@@ -160,6 +175,7 @@ namespace SpellforceDataEditor.SF3D.UI
             updated = false;
         }
 
+        // for now entire buffer is updated
         public void Update()
         {
             if (updated)
@@ -168,10 +184,10 @@ namespace SpellforceDataEditor.SF3D.UI
             GL.BindVertexArray(vertex_array);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(0), vertices.Length * 12, vertices);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
-            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, uvs.Length * 8, uvs, BufferUsageHint.StaticDraw);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(0), uvs.Length * 8, uvs);
 
             GL.BindVertexArray(0);
 

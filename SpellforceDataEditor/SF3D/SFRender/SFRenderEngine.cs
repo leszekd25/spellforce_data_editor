@@ -27,6 +27,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         public enum RenderPass { NONE = -1, SHADOWMAP = 0, SCENE = 1, SCREENSPACE = 2, UI = 3 }
         public static SFScene scene { get; } = new SFScene();
         public static UIManager ui { get; } = new UIManager();
+
         static float CurrentDepthBias = 0;
         static RenderMode CurrentRenderMode = RenderMode.SRCALPHA_INVSRCALPHA;
 
@@ -48,7 +49,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static FrameBuffer screenspace_framebuffer = null;
         static FrameBuffer screenspace_intermediate = null;
 
-        public static Vector2 render_size { get; private set; } = new Vector2(0, 0);
+        public static Vector2 render_size = new Vector2(0, 0);
 
         static bool initialized = false;
 
@@ -76,6 +77,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
         //called only once!
         public static void Initialize(Vector2 view_size)
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.Initialize() called");
+
             if (!initialized)
             {
                 _debugProcCallbackHandle = GCHandle.Alloc(_debugProcCallback);
@@ -84,9 +87,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.Enable(EnableCap.DebugOutput);
                 GL.Enable(EnableCap.DebugOutputSynchronous);
             }
-
-
-            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.Initialize() called");
 
             shader_simple.CompileShader(Properties.Resources.vshader, Properties.Resources.fshader);
             shader_simple.AddParameter("VP");
@@ -172,7 +172,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             shader_ui.CompileShader(Properties.Resources.vshader_ui, Properties.Resources.fshader_ui);
             shader_ui.AddParameter("Tex");
-            shader_ui.AddParameter("VP");
+            shader_ui.AddParameter("ScreenSize");
             shader_ui.AddParameter("offset");
 
             scene.sun_light.Direction = -(new Vector3(0, -1, 0).Normalized());
@@ -184,9 +184,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             scene.atmosphere.FogStart = 100f;
             scene.atmosphere.FogEnd = 200f;
 
-            render_size = view_size;
-            ResizeView(view_size);
-
             GL.ClearColor(scene.atmosphere.FogColor.X, scene.atmosphere.FogColor.Y,
                           scene.atmosphere.FogColor.Z, scene.atmosphere.FogColor.W);
 
@@ -195,6 +192,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Enable(EnableCap.Blend);
             GL.DepthFunc(DepthFunction.Less);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            ApplyLight();
+            ApplyTexturingUnits();
+
+            render_size = view_size;
+            ResizeView(view_size);
 
             if (screenspace_framebuffer != null)
             {
@@ -207,8 +210,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             screenspace_framebuffer = new FrameBuffer((int)view_size.X, (int)view_size.Y, Settings.AntiAliasingSamples);
             screenspace_intermediate = new FrameBuffer((int)view_size.X, (int)view_size.Y, 0);
 
-            ApplyLight();
-            ApplyTexturingUnits();
 
             if(opaque_tex == null)
             {
@@ -226,7 +227,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             initialized = true;
 
-            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "Renderer used: " + GL.GetString(StringName.Renderer));
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.Initialize(): GPU used: " + GL.GetString(StringName.Renderer));
         }
 
         public static void ResizeView(Vector2 view_size)
@@ -242,16 +243,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 screenspace_framebuffer.Resize((int)view_size.X, (int)view_size.Y);
                 screenspace_intermediate.Resize((int)view_size.X, (int)view_size.Y);
             }
-
-            UseShader(shader_ui);
-
-            Matrix4 ortho;
-            Matrix4.CreateOrthographicOffCenter(-render_size.X, render_size.X, render_size.Y, -render_size.Y, 0.1f, 100, out ortho);
-            GL.UniformMatrix4(active_shader["VP"], true, ref ortho);
-
-            UseShader(null);
-
-            ui.ForceUpdate();
         }
 
         private static void ApplyLight()
@@ -545,8 +536,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
         {
             foreach (SFSubModel3D sbm in scene.untex_entries_simple)
             {
+                if (sbm.vertex_array == -1)
+                    continue;
                 GL.BindVertexArray(sbm.vertex_array);
-                    sbm.ReloadInstanceMatrices();
+                sbm.ReloadInstanceMatrices();
             }
 
             foreach (SFTexture tex in scene.tex_entries_simple.Keys)
@@ -755,7 +748,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         public static void RenderUI()
         {
-            foreach(SFTexture tex in ui.storages.Keys)
+            GL.Uniform2(active_shader["ScreenSize"], ref render_size);
+
+            foreach (SFTexture tex in ui.storages.Keys)
             {
                 GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
                 UIQuadStorage storage = ui.storages[tex];

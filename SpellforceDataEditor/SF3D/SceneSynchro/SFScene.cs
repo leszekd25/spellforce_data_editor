@@ -59,7 +59,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public HashSet<SFSubModel3D> untex_entries_simple = new HashSet<SFSubModel3D>();
         public Dictionary<SFTexture, HashSet<SFSubModel3D>> tex_entries_simple = new Dictionary<SFTexture, HashSet<SFSubModel3D>>();
         public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>> tex_list_animated { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>>();
-        public LinearPool<TexturedGeometryListElementSimple> untextured_list_simple { get; private set; } = new LinearPool<TexturedGeometryListElementSimple>();
 
         public void Init()
         {
@@ -166,18 +165,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
 
         // these functions manipulate scene cache, which is used by SFRenderEngine to render stuff
-        public int AddUntexturedEntrySimple(TexturedGeometryListElementSimple elem)
-        {
-            return untextured_list_simple.Add(elem);
-        }
-
-        public void ClearUntexturedEntrySimple(TexturedGeometryListElementSimple elem)
-        {
-            untextured_list_simple.Remove(elem);
-            if (untextured_list_simple.used_count == 0)
-                untextured_list_simple.Clear();
-        }
-
         public int AddTextureEntryAnimated(SFTexture tex, TexturedGeometryListElementAnimated elem)
         {
             if (!tex_list_animated.ContainsKey(tex))

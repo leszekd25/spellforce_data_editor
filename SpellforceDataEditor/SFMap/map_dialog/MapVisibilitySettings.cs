@@ -92,6 +92,12 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             MainForm.mapedittool.update_render = true;
         }
 
+        private void checkBox9_CheckedChanged(object sender, EventArgs e)
+        {
+            MainForm.mapedittool.ui.SetMinimapVisible(checkBox9.Checked);
+            MainForm.mapedittool.update_render = true;
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             if(GridColorPicker.ShowDialog() == DialogResult.OK)

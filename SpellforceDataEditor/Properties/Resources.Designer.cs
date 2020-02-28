@@ -268,7 +268,6 @@ namespace SpellforceDataEditor.Properties {
         ///    discard;
         ///
         ///  color = temp_c;
-        ///  color = clamp(color, 0.0, 1.0);
         ///}.
         /// </summary>
         internal static string fshader_ui {
@@ -563,13 +562,13 @@ namespace SpellforceDataEditor.Properties {
         ///out vec2 UV;
         ///
         ///uniform vec2 offset;
-        ///uniform mat4 VP;
+        ///uniform vec2 ScreenSize;
         ///  
         ///void main(){
         ///  // Output position of the vertex, in clip space : MVP * position
-        ///  gl_Position = VP * vec4(vertexPosition_modelspace+vec3(offset, 0), 1);
-        ///  UV = vertexUV;
-        ///}.
+        ///  
+        ///  vec2 real_pos = vec2(vertexPosition_modelspace.x+offset.x - (ScreenSize.x/2), -(vertexPosition_modelspace.y + offset.y - (ScreenSize.y/2)))*2;
+        ///  gl_Position = vec4(rea [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_ui {
             get {

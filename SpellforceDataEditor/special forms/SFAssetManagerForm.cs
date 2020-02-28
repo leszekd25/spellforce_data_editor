@@ -18,7 +18,6 @@ using SpellforceDataEditor.SFResources;
 
 namespace SpellforceDataEditor.special_forms
 {
-    
     public partial class SFAssetManagerForm : Form
     {
         class SFAssetManagerSceneInfo          // used for hot reload
@@ -74,10 +73,10 @@ namespace SpellforceDataEditor.special_forms
 
             public SFAssetManagerUI()
             {
-                font_outline = new SF3D.UI.UIFont() { space_between_letters = 1 };
+                font_outline = new SF3D.UI.UIFont() { space_between_letters = 2 };
                 font_outline.Load("font_fonttable_0512_12px_outline_l9");
 
-                font_main = new SF3D.UI.UIFont() { space_between_letters = 1 };
+                font_main = new SF3D.UI.UIFont() { space_between_letters = 2 };
                 font_main.Load("font_fonttable_0512_12px_l9");
 
                 SFRenderEngine.ui.AddStorage(font_outline.font_texture, 1024);

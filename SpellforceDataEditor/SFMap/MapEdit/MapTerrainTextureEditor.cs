@@ -13,6 +13,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public int SelectedTile = 0;
         public bool EditSimilar = false;
 
+        HashSet<SFCoord> pixels = new HashSet<SFCoord>();
+
         public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             if (b == MouseButtons.Left)
@@ -53,6 +55,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 continue;
                         }
                         map.heightmap.tile_data[j * map.width + i] = (byte)(SelectedTile);
+                        pixels.Add(new SFCoord(i, j));
                     }
                 }
 
@@ -75,7 +78,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
         public override void OnMouseUp(MouseButtons b)
         {
-            MainForm.mapedittool.Minimap.GenerateMinimap();
+            MainForm.mapedittool.ui.RedrawMinimap(pixels, (byte)(SelectedTile >= 32 ? SelectedTile - 223 : SelectedTile));
+            pixels.Clear();
+            MainForm.mapedittool.update_render = true;
             base.OnMouseUp(b);
         }
     }

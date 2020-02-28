@@ -31,12 +31,19 @@ namespace SpellforceDataEditor.SF3D.UI
             storages.Add(tex, st);
         }
 
-        public UIElementIndex AddElementImage(SFTexture tex, Vector2 size, Vector2 origin, Vector2 pos)
+        public void RemoveStorage(SFTexture tex)
+        {
+            storages[tex].Dispose();
+            tex.Dispose();
+            storages.Remove(tex);
+        }
+
+        public UIElementIndex AddElementImage(SFTexture tex, Vector2 size, Vector2 origin, Vector2 pos, bool invert_image)
         {
             UIElementIndex elem_index;
             elem_index.tex = tex;
             elem_index.span_index = storages[tex].ReserveQuads(1);
-            storages[tex].AllocateQuad(elem_index.span_index, size, origin, 0.5f);
+            storages[tex].AllocateQuad(elem_index.span_index, size, origin, 0.5f, invert_image);
             storages[tex].UpdateSpanPosition(elem_index.span_index, pos);
             return elem_index;
         }
@@ -81,6 +88,20 @@ namespace SpellforceDataEditor.SF3D.UI
         {
             storages[e.tex].spans[e.span_index].visible = visible;
         }
+        public bool GetElementVisible(UIElementIndex e)
+        {
+            return storages[e.tex].spans[e.span_index].visible;
+        }
+
+        public void SetImageSize(UIElementIndex e, Vector2 size)
+        {
+            storages[e.tex].SetQuadPxSize(storages[e.tex].spans[e.span_index].start, size);
+        }
+
+        public void UpdateElement(UIElementIndex e)
+        {
+            storages[e.tex].UpdateSpanQuads(e.span_index);
+        }
 
         public void Update()
         {
@@ -97,10 +118,7 @@ namespace SpellforceDataEditor.SF3D.UI
         public void Dispose()
         {
             foreach(var kv in storages)
-            {
-                SFResources.SFResourceManager.Textures.Dispose(kv.Key.GetName());
                 kv.Value.Dispose();
-            }
 
             storages.Clear();
         }
