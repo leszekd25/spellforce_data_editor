@@ -116,6 +116,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             PosY.Text = portal.grid_position.y.ToString();
             AngleTrackbar.Value = portal.angle;
 
+            map.selection_helper.SelectPortal(portal);
             if ((move_camera_on_select) || (portal_selected_from_list))
                 MainForm.mapedittool.SetCameraViewPoint(portal.grid_position);
             move_camera_on_select = false;

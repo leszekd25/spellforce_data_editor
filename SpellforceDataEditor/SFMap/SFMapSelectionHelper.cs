@@ -33,6 +33,13 @@ namespace SpellforceDataEditor.SFMap
         ushort preview_building_id = 0;
         ushort preview_object_id = 0;
 
+        // ui stuff
+        SF3D.UI.UIFont font_outline;
+        SF3D.UI.UIFont font_main;
+
+        SF3D.UI.UIElementIndex label_name_outline;
+        SF3D.UI.UIElementIndex label_name;
+
         public SFMapSelectionHelper()
         {
             // generate selection 3d model
@@ -90,6 +97,20 @@ namespace SpellforceDataEditor.SFMap
 
             cursor_mesh.CreateRaw(new SF3D.SFSubModel3D[] { sbm2 });
             SFResources.SFResourceManager.Models.AddManually(cursor_mesh, "_CURSOR_");
+
+            // ui
+            font_outline = new SF3D.UI.UIFont() { space_between_letters = 2 };
+            font_outline.Load("font_fonttable_0512_12px_outline_l9");
+            font_main = new SF3D.UI.UIFont() { space_between_letters = 2 };
+            font_main.Load("font_fonttable_0512_12px_l9");
+
+            SF3D.SFRender.SFRenderEngine.ui.AddStorage(font_outline.font_texture, 256);
+            SF3D.SFRender.SFRenderEngine.ui.AddStorage(font_main.font_texture, 256);
+
+            label_name_outline = SF3D.SFRender.SFRenderEngine.ui.AddElementText(font_outline, 256, new Vector2(10, 25));
+            label_name = SF3D.SFRender.SFRenderEngine.ui.AddElementText(font_main, 256, new Vector2(10, 25));
+
+            SetName("");
         }
 
         public void AssignToMap(SFMap _map)
@@ -131,6 +152,8 @@ namespace SpellforceDataEditor.SFMap
             selected_portal = null;
             offset = new Vector2(0, 0);
             selection_type = SelectionType.NONE;
+
+            SetName("");
         }
 
         public void SelectUnit(SFMapUnit unit)
@@ -139,6 +162,8 @@ namespace SpellforceDataEditor.SFMap
             selection_type = SelectionType.UNIT;
             selected_unit = unit;
             SetSelectionScale(1.0f);
+
+            SetName(SFCFF.SFCategoryManager.GetUnitName((ushort)selected_unit.game_id, true));
         }
 
         public void SelectBuilding(SFMapBuilding building)
@@ -152,6 +177,8 @@ namespace SpellforceDataEditor.SFMap
             if (data != null)
                 sel_scale = (float)(data.SelectionScaling / 2);
             SetSelectionScale(sel_scale);
+
+            SetName(SFCFF.SFCategoryManager.GetBuildingName((ushort)selected_building.game_id));
         }
 
         public void SelectObject(SFMapObject obj)
@@ -165,6 +192,8 @@ namespace SpellforceDataEditor.SFMap
             if (data != null)
                 sel_scale = (float)(data.SelectionScaling / 2);
             SetSelectionScale(sel_scale);
+
+            SetName(SFCFF.SFCategoryManager.GetObjectName((ushort)selected_object.game_id));
         }
 
         public void SelectInteractiveObject(SFMapInteractiveObject io)
@@ -178,6 +207,29 @@ namespace SpellforceDataEditor.SFMap
             if (data != null)
                 sel_scale = (float)(data.SelectionScaling / 2);
             SetSelectionScale(sel_scale);
+
+            if(selected_interactive_object.game_id == 769)   // bindstone
+            {
+                int player = map.metadata.FindPlayerBySpawnPos(io.grid_position);
+                if (player == -1)
+                    SetName(Utility.S_NONE);
+                else
+                {
+                    if (map.metadata.spawns[player].text_id == 0)
+                        SetName(Utility.S_NONAME);
+                    else
+                    {
+                        SFCFF.SFCategoryElement elem = SFCFF.SFCategoryManager.FindElementText(
+                            map.metadata.spawns[player].text_id, Settings.LanguageID);
+                        if (elem == null)
+                            SetName(Utility.S_MISSING);
+                        else
+                            SetName(Utility.CleanString(elem.variants[4]));
+                    }
+                }
+            }
+            else
+                SetName(SFCFF.SFCategoryManager.GetObjectName((ushort)selected_interactive_object.game_id));
         }
 
         public void SelectPortal(SFMapPortal p)
@@ -191,16 +243,40 @@ namespace SpellforceDataEditor.SFMap
             if (data != null)
                 sel_scale = (float)(data.SelectionScaling / 2);
             SetSelectionScale(sel_scale);
+
+            string portal_name = Utility.S_MISSING;
+            int portal_id = selected_portal.game_id;
+            int portal_index = SFCFF.SFCategoryManager.gamedata[38].GetElementIndex(portal_id);
+            if (portal_index != -1)
+            {
+                SFCFF.SFCategoryElement portal_data = SFCFF.SFCategoryManager.gamedata[38][portal_index];
+                portal_name = SFCFF.SFCategoryManager.GetTextFromElement(portal_data, 5);
+            }
+
+            SetName(portal_name);
         }
 
         // should be run once per render tick
-        public void UpdateSelection()
+        public void Update()
         {
+            // selection and ui stuff
             SetSelectionVisibility(selection_type != SelectionType.NONE);
+
+            SFMapHeightMap hmap = SF3D.SFRender.SFRenderEngine.scene.heightmap;
+            SF3D.SceneSynchro.SceneNodeCamera camera = SF3D.SFRender.SFRenderEngine.scene.camera;
+            Vector2 text_pos = new Vector2(0, 0);
+
             if (selection_type == SelectionType.UNIT)
             {
                 if (selected_unit != null)
+                {
                     SetSelectionPosition(selected_unit.grid_position);
+
+                    text_pos = camera.WorldToScreen(new Vector3(
+                        selected_unit.grid_position.x,
+                        hmap.GetRealZ(new Vector2(selected_unit.grid_position.x, hmap.height-selected_unit.grid_position.y-1)),
+                        hmap.height-selected_unit.grid_position.y-1));
+                }
             }
             else if (selection_type == SelectionType.BUILDING)
             {
@@ -214,6 +290,11 @@ namespace SpellforceDataEditor.SFMap
 
                     SetSelectionOffset(r_off);
                     SetSelectionPosition(selected_building.grid_position);
+
+                    text_pos = camera.WorldToScreen(new Vector3(
+                        selected_building.grid_position.x,
+                        hmap.GetRealZ(new Vector2(selected_building.grid_position.x, hmap.height - selected_building.grid_position.y - 1)),
+                        hmap.height - selected_building.grid_position.y - 1));
                 }
             }
             else if (selection_type == SelectionType.OBJECT)
@@ -228,6 +309,11 @@ namespace SpellforceDataEditor.SFMap
 
                     SetSelectionOffset(r_off);*/
                     SetSelectionPosition(selected_object.grid_position);
+
+                    text_pos = camera.WorldToScreen(new Vector3(
+                        selected_object.grid_position.x,
+                        hmap.GetRealZ(new Vector2(selected_object.grid_position.x, hmap.height - selected_object.grid_position.y - 1)),
+                        hmap.height - selected_object.grid_position.y - 1));
                 }
             }
             else if (selection_type == SelectionType.INTERACTIVE_OBJECT)
@@ -242,14 +328,33 @@ namespace SpellforceDataEditor.SFMap
 
                     SetSelectionOffset(r_off);*/
                     SetSelectionPosition(selected_interactive_object.grid_position);
+
+                    text_pos = camera.WorldToScreen(new Vector3(
+                        selected_interactive_object.grid_position.x,
+                        hmap.GetRealZ(new Vector2(selected_interactive_object.grid_position.x, hmap.height - selected_interactive_object.grid_position.y - 1)),
+                        hmap.height - selected_interactive_object.grid_position.y - 1));
                 }
             }
             else if (selection_type == SelectionType.PORTAL)
             {
                 if (selected_portal != null)
                     SetSelectionPosition(selected_portal.grid_position);
+
+                text_pos = camera.WorldToScreen(new Vector3(
+                    selected_portal.grid_position.x,
+                    hmap.GetRealZ(new Vector2(selected_portal.grid_position.x, hmap.height - selected_portal.grid_position.y - 1)),
+                    hmap.height - selected_portal.grid_position.y - 1));
             }
             // todo: add more selection types
+
+            text_pos.X = (text_pos.X - 0.1f) * 1.2f;
+            text_pos.Y = (text_pos.Y - 0.1f) * 1.2f;
+            text_pos.X *= SF3D.SFRender.SFRenderEngine.render_size.X;
+            text_pos.Y *= SF3D.SFRender.SFRenderEngine.render_size.Y;
+            text_pos.X = (float)Math.Floor(text_pos.X);
+            text_pos.Y = (float)Math.Floor(text_pos.Y);
+
+            SetNamePosition(text_pos);
         }
 
         // returns if cursor position changed
@@ -370,6 +475,18 @@ namespace SpellforceDataEditor.SFMap
                 preview_entity.SetAnglePlane(angle);
         }
 
+        public void SetName(string name)
+        {
+            SF3D.SFRender.SFRenderEngine.ui.SetElementText(label_name_outline, font_outline, name);
+            SF3D.SFRender.SFRenderEngine.ui.SetElementText(label_name, font_main, name);
+        }
+
+        public void SetNamePosition(Vector2 pos)
+        {
+            SF3D.SFRender.SFRenderEngine.ui.MoveElement(label_name_outline, pos);
+            SF3D.SFRender.SFRenderEngine.ui.MoveElement(label_name, pos);
+        }
+
         public void Dispose()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapSelectionHelper.Dispose() called");
@@ -378,6 +495,9 @@ namespace SpellforceDataEditor.SFMap
             sel_obj = null;
             cur_obj = null;
             ClearPreview();
+
+            font_outline.Dispose();
+            font_main.Dispose();
         }
     }
 }

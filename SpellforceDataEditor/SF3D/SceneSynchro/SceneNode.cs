@@ -34,6 +34,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         protected Vector3 scale = new Vector3(1);
         protected Matrix4 local_transform = Matrix4.Identity;
         protected Matrix4 result_transform = Matrix4.Identity;
+        protected Physics.BoundingBox aabb = new Physics.BoundingBox(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
         
         // todo: add a LocalVisible, so even when parent changes to visible while this is invisible, this is still invisible
         public virtual bool Visible
@@ -57,6 +58,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public Vector3 Scale { get { return scale; } set { scale = value; TouchLocalTransform(); TouchParents(); } }
         public Matrix4 LocalTransform { get { return local_transform; } protected set { local_transform = value; } }
         public Matrix4 ResultTransform { get { return result_transform; } protected set { result_transform = value; } }
+
+        public Physics.BoundingBox AABB { get; }
 
         public RenderFlags render_flags;
 
@@ -265,6 +268,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             set
             {
                 mesh = value;
+                if (mesh != null)
+                    aabb = mesh.aabb;
+                else
+                    aabb = new Physics.BoundingBox(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
             }
         }
         public override bool Visible
@@ -318,6 +325,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             set
             {
                 mesh = value;
+                if (mesh != null)
+                    aabb = mesh.aabb;
+                else
+                    aabb = new Physics.BoundingBox(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
             }
         }
         public SFSkeleton Skeleton { get { return skeleton; } private set { skeleton = value; } }
@@ -628,6 +639,26 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             lookat += tr;
             TouchLocalTransform(); TouchParents();
         }
+
+        // returns vector2 in screen coordinates in [0, 1] (if on screen)
+        public Vector2 WorldToScreen(Vector3 pos)
+        {
+            float dist = Vector3.Dot(pos - Position, (Lookat - Position).Normalized()) / 200f;
+
+            Vector3 top_left = Position + (frustum_vertices[4] - Position) * dist;
+            Vector3 top_right = Position + (frustum_vertices[5] - Position) * dist;
+            Vector3 bottom_left = Position + (frustum_vertices[6] - Position) * dist;
+
+            Vector3 top_point_norm = (top_right - top_left).Normalized();
+            Vector3 top_point = top_left + top_point_norm * Vector3.Dot(pos - top_left, top_point_norm);
+            
+            Vector3 left_point_norm = (bottom_left-top_left).Normalized();
+            Vector3 left_point = top_left + top_point_norm * Vector3.Dot(pos - top_left, left_point_norm);
+
+            return new Vector2(
+                Math.Sign(Vector3.Dot(pos - top_left, top_right - top_left)) * (top_point - top_left).Length / (top_right - top_left).Length,
+                Math.Sign(Vector3.Dot(pos - top_left, bottom_left - top_left)) * (left_point - top_left).Length / (bottom_left - top_left).Length);
+        }
         
         private void CalculateFrustumVertices()
         {
@@ -637,7 +668,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             Vector3 up = Vector3.Cross(forward, right);
             right *= aspect_ratio;
 
-            // 100f, Math.Pi/4 are magic for now.....
+            // 200f, Math.Pi/4 are magic for now.....
             float deviation = (float)Math.Tan(Math.PI / 4) / 2;
             Vector3 center = position + forward * 0.1f;
             Vector3 center2 = position + forward * 200f;

@@ -65,6 +65,19 @@ namespace SpellforceDataEditor.SF3D.Physics
             return new BoundingBox(ab.a - c, ab.b - c);
         }
 
+        public static BoundingBox operator+(BoundingBox ab1, BoundingBox ab2)
+        {
+            return new BoundingBox(
+                new Vector3(
+                    Math.Min(ab1.a.X, ab2.a.X),
+                    Math.Min(ab1.a.Y, ab2.a.Y),
+                    Math.Min(ab1.a.Z, ab2.a.Z)),
+                new Vector3(
+                    Math.Max(ab1.b.X, ab2.b.X),
+                    Math.Max(ab1.b.Y, ab2.b.Y),
+                    Math.Max(ab1.b.Z, ab2.b.Z)));
+        }
+
         public BoundingBox OffsetBy(Vector3 c)
         {
             return this + (c - center);

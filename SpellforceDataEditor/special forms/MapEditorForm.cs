@@ -24,15 +24,9 @@ namespace SpellforceDataEditor.special_forms
     {
         public class MapEditorUI
         {
-            SF3D.UI.UIFont font_outline;
-            SF3D.UI.UIFont font_main;
-
             SF3D.UI.UIElementIndex image_minimap;
             SF3D.UI.UIElementIndex image_minimap_frame_left;
             SF3D.UI.UIElementIndex image_minimap_frame_top;
-
-            SF3D.UI.UIElementIndex label_name_outline;
-            SF3D.UI.UIElementIndex label_name;
 
             // minimap texture
             public SF3D.SFTexture minimap_tex { get; private set; } = null;
@@ -44,12 +38,6 @@ namespace SpellforceDataEditor.special_forms
 
             public MapEditorUI()
             {
-                font_outline = new SF3D.UI.UIFont() { space_between_letters = 2 };
-                font_outline.Load("font_fonttable_0512_12px_outline_l9");
-
-                font_main = new SF3D.UI.UIFont() { space_between_letters = 2 };
-                font_main.Load("font_fonttable_0512_12px_l9");
-
                 //SFRenderEngine.ui.AddStorage(font_outline.font_texture, 256);
                 //SFRenderEngine.ui.AddStorage(font_main.font_texture, 256);
 
@@ -310,8 +298,6 @@ namespace SpellforceDataEditor.special_forms
 
             public void Dispose()
             {
-                font_outline.Dispose();
-                font_main.Dispose();
                 if(minimap_tex != null)
                     minimap_tex.Dispose();
             }
@@ -959,7 +945,7 @@ namespace SpellforceDataEditor.special_forms
             if (update_render)
             {
                 SFRenderEngine.scene.sun_light.ShadowSize = Math.Max(50f, Math.Min(zoom_level * 60f, 200f));
-                map.selection_helper.UpdateSelection();
+                map.selection_helper.Update();
                 AdjustCameraZ();
                 SFRenderEngine.UpdateVisibleChunks();
                 SFRenderEngine.scene.Update();
