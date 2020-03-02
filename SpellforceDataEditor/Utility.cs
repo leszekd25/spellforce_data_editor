@@ -18,6 +18,7 @@ namespace SpellforceDataEditor
         public const string S_MISSING = "<missing>";
         public const string S_UNKNOWN = "<unknown>";
         public const string S_NONE = "<none>";
+        public const int NO_INDEX = -1;
         public static CultureInfo ci { get; } = CultureInfo.CreateSpecificCulture("en-GB");
         
         //functions which try to convert a string to the respective type
@@ -171,7 +172,7 @@ namespace SpellforceDataEditor
                 else
                     current_end = current_center - 1;
             }
-            return -1;
+            return NO_INDEX;
         }
 
         //returns whether an object derives from given class
@@ -304,7 +305,7 @@ namespace SpellforceDataEditor
                 current_center = (current_start + current_end) / 2;    //care about overflow (though its not happening in this case)
                 val = list[current_center];
                 if (val.CompareTo(id) == 0)
-                    return -1;
+                    return Utility.NO_INDEX;
                 if (val.CompareTo(id) < 0)
                     current_start = current_center + 1;
                 else

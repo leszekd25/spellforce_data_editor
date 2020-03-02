@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor
 {
+    // a more lenient variant of ArrayPool
     public class LinearPool<T>
     {
         public int first_unused = 0;
@@ -16,7 +17,7 @@ namespace SpellforceDataEditor
 
         public int Add(T elem)
         {
-            int elem_index = -1;
+            int elem_index = Utility.NO_INDEX;
             if (first_unused == elements.Count)
             {
                 elements.Add(elem);
@@ -69,7 +70,7 @@ namespace SpellforceDataEditor
         public void Remove(T elem)
         {
             int index = elements.IndexOf(elem);
-            if (index != -1)
+            if (index != Utility.NO_INDEX)
                 RemoveAt(index);
         }
 

@@ -111,8 +111,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             SFCategory cat = SFCategoryManager.gamedata[cat_i];
             int real_elem_id = cat.GetElementIndex(cur_id);
-            bt.Tag = (real_elem_id == -1);
-            if (real_elem_id == -1)
+            bt.Tag = (real_elem_id == Utility.NO_INDEX);
+            if ((bool)bt.Tag)
             {
                 bt.Text = String.Format("Add {0} for this {1}", label1, label2);
                 bt.BackColor = Color.Yellow;
@@ -172,7 +172,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             SFCategory cat = SFCategoryManager.gamedata[cat_i];
             int real_elem_id = cat.GetElementIndex(elem_key);
-            if (real_elem_id == -1)
+            if (real_elem_id == Utility.NO_INDEX)
                 return;
             MainForm.data.Tracer_StepForward(cat_i, real_elem_id);
         }

@@ -228,7 +228,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 if (c == '0')
                 {
                     t.BackColor = SystemColors.Window;
-                    tracetable[i] = -1;
+                    tracetable[i] = Utility.NO_INDEX;
                 }
                 else
                 {
@@ -286,60 +286,60 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_sd1_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[0] != -1))
+            if ((e.Button == MouseButtons.Right) && (tracetable[0] != Utility.NO_INDEX))
                 step_into(tb_sd1, tracetable[0]);
         }
 
         private void tb_sd2_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[1] != -1))
+            if ((e.Button == MouseButtons.Right) && (tracetable[1] != Utility.NO_INDEX))
                 step_into(tb_sd2, tracetable[1]);
         }
 
         private void tb_sd3_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[2] != -1))
+            if ((e.Button == MouseButtons.Right) && (tracetable[2] != Utility.NO_INDEX))
                 step_into(tb_sd3, tracetable[2]);
         }
 
         private void tb_sd4_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[3] != -1))
+            if ((e.Button == MouseButtons.Right) && (tracetable[3] != Utility.NO_INDEX))
                 step_into(tb_sd4, tracetable[3]);
         }
 
         private void tb_sd5_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[4] != -1))
+            if ((e.Button == MouseButtons.Right) && (tracetable[4] != Utility.NO_INDEX))
                 step_into(tb_sd5, tracetable[4]);
         }
 
         private void tb_sd6_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[5] != -1))
+            if ((e.Button == MouseButtons.Right) && (tracetable[5] != Utility.NO_INDEX))
                 step_into(tb_sd6, tracetable[5]);
         }
 
         private void tb_sd7_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[6] != -1))
+            if ((e.Button == MouseButtons.Right) && (tracetable[6] != Utility.NO_INDEX))
                 step_into(tb_sd7, tracetable[6]);
         }
 
         private void tb_sd8_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[7] != -1))
+            if ((e.Button == MouseButtons.Right) && (tracetable[7] != Utility.NO_INDEX))
                 step_into(tb_sd8, tracetable[7]);
         }
 
         private void tb_sd9_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[8] != -1))
+            if ((e.Button == MouseButtons.Right) && (tracetable[8] != Utility.NO_INDEX))
                 step_into(tb_sd9, tracetable[8]);
         }
         private void tb_sd10_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[9] != -1))
+            if ((e.Button == MouseButtons.Right) && (tracetable[9] != Utility.NO_INDEX))
                 step_into(tb_sd10, tracetable[9]);
         }
     }

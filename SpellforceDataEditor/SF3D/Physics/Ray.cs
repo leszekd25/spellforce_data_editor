@@ -48,7 +48,7 @@ namespace SpellforceDataEditor.SF3D.Physics
             }
             else
             {
-                point = new Vector3(0, 0, 0);
+                point = Vector3.Zero;
                 return false;
             }
         }
@@ -70,7 +70,7 @@ namespace SpellforceDataEditor.SF3D.Physics
             }
             else
             {
-                point = new Vector3(0, 0, 0);
+                point = Vector3.Zero;
                 return false;
             }
         }
@@ -78,18 +78,19 @@ namespace SpellforceDataEditor.SF3D.Physics
         // calculates whether the ray intersects a bounding  box, does NOT calculate the point of intersection
         public bool Intersect(BoundingBox ab)
         {
+            float min_dist = 0.1f;
             // binary sampling of distance to the box
             float current_start = 0;
             float current_end = (float)Math.Sqrt(length2);
             float current_center;
             Vector3 current_point;
             float dist;
-            while(current_end - current_start >= 0.1f)
+            while(current_end - current_start >= min_dist)
             {
                 current_center = (current_start + current_end) / 2;    //care about overflow
                 current_point = start + nvector * current_center;
                 dist = ab.DistanceIsotropic(current_point);
-                if (dist <= 0.1f)
+                if (dist <= min_dist)
                     return true;
                 if (ab.DistanceIsotropic(start + nvector * current_start) < ab.DistanceIsotropic(start + nvector * current_end))
                     current_end = current_center;
@@ -103,7 +104,7 @@ namespace SpellforceDataEditor.SF3D.Physics
         // slow!
         public bool Intersect(SFModel3D mesh, Vector3 offset, out Vector3 point)
         {
-            point = new Vector3(0, 0, 0);
+            point = Vector3.Zero;
             if (mesh == null)
                 return false;
 
@@ -132,7 +133,7 @@ namespace SpellforceDataEditor.SF3D.Physics
         // since the triangles are pre-cached, this is much faster than with the 3d model
         public bool Intersect(CollisionMesh mesh, out Vector3 point)
         {
-            point = new Vector3(0, 0, 0);
+            point = Vector3.Zero;
             if (mesh == null)
                 return false;
             
@@ -152,10 +153,9 @@ namespace SpellforceDataEditor.SF3D.Physics
 
         // calculates point of intersection between a heightmap and the ray
         // this is the preferred way of checking ray collision with the heightmap
-        // NOT WORKING YET
         public bool Intersect(SFMap.SFMapHeightMap hmap, out Vector3 point)
         {
-            point = new Vector3(0, 0, 0);
+            point = Vector3.Zero;
             Vector2 ray_grid_start = new Vector2(start.X, start.Z);
             Vector2 ray_grid_grad = new Vector2(vector.X, vector.Z).Normalized();
             int chunk_size = SFMap.SFMapHeightMapGeometryPool.CHUNK_SIZE;

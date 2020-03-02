@@ -18,7 +18,7 @@ namespace SpellforceDataEditor.SF3D
 {
     public class SFSubModel3D: SFResource
     {
-        public int submodel_id = -1;
+        public int submodel_id = Utility.NO_INDEX;
         public Vector3[] vertices = null;
         public Vector2[] uvs = null;
         public Vector4[] colors = null;
@@ -30,7 +30,7 @@ namespace SpellforceDataEditor.SF3D
 
         public SFMaterial material = null;
         public Physics.BoundingBox aabb;
-        public int vertex_array = -1;
+        public int vertex_array = Utility.NO_INDEX;
         public int vertex_buffer, uv_buffer, normal_buffer, color_buffer, element_buffer, instance_matrix_buffer;
 
         public void Init()
@@ -217,7 +217,7 @@ namespace SpellforceDataEditor.SF3D
         public void Dispose()
         {
             instance_matrices.Dispose();
-            if (vertex_array != -1)
+            if (vertex_array != Utility.NO_INDEX)
             {
                 GL.DeleteBuffer(vertex_buffer);
                 GL.DeleteBuffer(normal_buffer);
@@ -226,7 +226,7 @@ namespace SpellforceDataEditor.SF3D
                 GL.DeleteBuffer(element_buffer);
                 GL.DeleteBuffer(instance_matrix_buffer);
                 GL.DeleteVertexArray(vertex_array);
-                vertex_array = -1;
+                vertex_array = Utility.NO_INDEX;
             }
             if ((material != null) && (material.texture != null))
                 SFResourceManager.Textures.Dispose(material.texture.GetName());

@@ -53,8 +53,8 @@ namespace SpellforceDataEditor.SF3D.Physics
             float alpha = (d11 * d20 - d01 * d21) * denom;
             float beta = (d00 * d21 - d01 * d20) * denom;
             //float gamma = 1.0f - alpha - beta;
-            return ((alpha >= 0) && (alpha <= 1)
-                    && (beta >= 0) && (beta <= 1)
+            return ((alpha >= 0)// && (alpha <= 1)
+                    && (beta >= 0)// && (beta <= 1)
 					&& (alpha + beta <= 1));   // <- a small improvement
                     //&& (gamma >= 0) && (gamma <= 1));
         }

@@ -14,7 +14,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
     {
         bool can_load = true;
         List<int> index_to_key = null;
-        int selected_id = -1;
+        int selected_id = Utility.NO_INDEX;
 
         public SFLuaSQLItemForm()
         {
@@ -58,7 +58,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ListItems_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListItems.SelectedIndex == -1)
+            if (ListItems.SelectedIndex == Utility.NO_INDEX)
             {
                 MMC.Text = "";
                 MFC.Text = "";
@@ -97,7 +97,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void MMC_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.items.items[selected_id].MeshMaleCold = MMC.Text.ToString();
@@ -107,7 +107,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void MFC_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.items.items[selected_id].MeshFemaleCold = MFC.Text.ToString();
@@ -117,7 +117,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void MMW_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.items.items[selected_id].MeshMaleWarm = MMW.Text.ToString();
@@ -127,7 +127,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void MFW_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.items.items[selected_id].MeshFemaleWarm = MFW.Text.ToString();
@@ -137,7 +137,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ShadowRNG_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.items.items[selected_id].ShadowRNG = 
@@ -147,7 +147,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SelectionSize_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.items.items[selected_id].SelectionSize =
@@ -157,7 +157,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void AnimSet_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.items.items[selected_id].AnimSet = AnimSet.Text.ToString();
@@ -165,7 +165,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void Race_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.items.items[selected_id].Race =
@@ -175,7 +175,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void Cat_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.items.items[selected_id].Category =
@@ -185,7 +185,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SubCat_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.items.items[selected_id].SubCategory =
@@ -195,7 +195,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ItemID_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             int previous_id = selected_id;
@@ -212,7 +212,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             int new_index = Utility.FindNewIndexOf(index_to_key, new_id);
 
             // check if the item with provided ID already exists
-            if (new_index == -1)
+            if (new_index == Utility.NO_INDEX)
             {
                 new_index = previous_index;
                 new_id = previous_id;
@@ -258,7 +258,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ButtonRemove_Click(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             int ind = ListItems.SelectedIndex;

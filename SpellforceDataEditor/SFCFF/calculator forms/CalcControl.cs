@@ -41,7 +41,7 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
             int elem_id = Utility.TryParseInt32(tb.Text);
             SFCategory cat = SFCategoryManager.gamedata[cat_i];
             int real_elem_id = cat.GetElementIndex(elem_id);
-            if (real_elem_id == -1)
+            if (real_elem_id == Utility.NO_INDEX)
                 return;
             MainForm.data.Tracer_StepForward(cat_i, real_elem_id);
         }

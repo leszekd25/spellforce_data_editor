@@ -84,7 +84,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void ListItemTypes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListItemTypes.SelectedIndex == -1)
+            if (ListItemTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int index = ListItemTypes.SelectedIndex;
@@ -95,7 +95,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void comboItemType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboItemType.SelectedIndex == -1)
+            if (comboItemType.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFCategoryElement elem = category[current_element];

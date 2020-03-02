@@ -8,8 +8,6 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
 {
     public class LuaLocalVariableRegistry
     {
-        //public LuaStack stack = null;
-        //public int start_pos = -1;
         public Dictionary<int, string> registry = new Dictionary<int, string>();
         public Dictionary<int, int> last_updated = new Dictionary<int, int>();
 
@@ -62,7 +60,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                 if (last_updated.ContainsKey(local_id))
                     return last_updated[local_id];
                 else
-                    return -1;
+                    return Utility.NO_INDEX;
             }
             else
                 throw new InvalidOperationException("Could not get last update of local id " + local_id.ToString() + ": Local already registered!");

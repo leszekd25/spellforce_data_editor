@@ -100,7 +100,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void button1_Click(object sender, EventArgs e)
         {
             int new_index;
-            if (ListRequirements.SelectedIndex == -1)
+            if (ListRequirements.SelectedIndex == Utility.NO_INDEX)
                 new_index = ListRequirements.Items.Count - 1;
             else
                 new_index = ListRequirements.SelectedIndex;
@@ -129,7 +129,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (ListRequirements.SelectedIndex == -1)
+            if (ListRequirements.SelectedIndex == Utility.NO_INDEX)
                 return;
             if (ListRequirements.Items.Count == 1)
                 return;

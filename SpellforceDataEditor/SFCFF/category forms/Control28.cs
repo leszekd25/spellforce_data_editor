@@ -94,7 +94,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void ListLevels_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListLevels.SelectedIndex == -1)
+            if (ListLevels.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int index = ListLevels.SelectedIndex;

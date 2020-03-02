@@ -34,8 +34,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             for (int i = 0; i < elem_count; i++)
                 DomainLanguages.Items.Add(((Byte)elem[5 * i + 1]).ToString());
 
-            int safe_index = -1;
-            int lang_index = -1;
+            int safe_index = Utility.NO_INDEX;
+            int lang_index = Utility.NO_INDEX;
             for(int i = 0; i < elem_count; i++)
             {
                 if (((Byte)elem[5 * i + 1]) == 1)
@@ -47,7 +47,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     safe_index = i;
             }
 
-            if (lang_index == -1)
+            if (lang_index == Utility.NO_INDEX)
                 lang_index = safe_index;
             DomainLanguages.SelectedIndex = lang_index;
         }

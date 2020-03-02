@@ -73,13 +73,13 @@ namespace SpellforceDataEditor
             }
             string str = e.Result;
             int i = str.IndexOf("Latest version:");
-            if (i == -1)
+            if (i == Utility.NO_INDEX)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Invalid update info");
                 return;
             }
             string newest_version = str.Substring(i + "Latest version:".Length).Trim();
-            if (labelVersion.Text.IndexOf(newest_version) == -1)
+            if (labelVersion.Text.IndexOf(newest_version) == Utility.NO_INDEX)
             {
                 LogUtils.Log.Info(LogUtils.LogSource.Main, "MainForm.getVersion_completed(): New editor version available");
                 linkEditor.Visible = true;

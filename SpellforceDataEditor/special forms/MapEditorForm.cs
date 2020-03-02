@@ -222,6 +222,14 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.ui.UpdateElement(image_minimap_frame_top);
             }
 
+            public void ExportMinimap(string name)
+            {
+                if (minimap_tex == null)
+                    return;
+
+                minimap_tex.Export(name);
+            }
+
             public void OnResize()
             {
                 SetMinimapSize(minimap_size);
@@ -477,10 +485,7 @@ namespace SpellforceDataEditor.special_forms
             else
                 SFCFF.SFCategoryManager.manual_SetGamedata(gamedata);
 
-            // display init
-            /*SFRenderEngine.scene.Init();
-            CreateRenderWindow();
-            InspectorHide();*/
+            SFRenderEngine.scene.root.Visible = true;
 
             // create and generate map
             map = new SFMap.SFMap();
@@ -553,9 +558,7 @@ namespace SpellforceDataEditor.special_forms
                 else
                     SFCFF.SFCategoryManager.manual_SetGamedata(gamedata);
 
-                /*SFRenderEngine.scene.Init();
-                CreateRenderWindow();
-                InspectorHide();*/
+                SFRenderEngine.scene.root.Visible = true;
 
                 map = new SFMap.SFMap();
                 try
@@ -1142,6 +1145,9 @@ namespace SpellforceDataEditor.special_forms
                 case Keys.M | Keys.Control:
                     ui.SetMinimapVisible(!ui.GetMinimapVisible());
                     update_render = true;
+                    return true;
+                case Keys.P | Keys.Control:
+                    ui.ExportMinimap("minimap");
                     return true;
                 case Keys.D1 | Keys.Control:
                     if (TabEditorModes.Enabled)

@@ -53,7 +53,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ReloadSpawnDataList()
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SpawnDataUnits.Items.Clear();
@@ -73,7 +73,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ListSpawnTypes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
             {
                 GroupName.Text = "";
                 GroupLevelRange.Text = "";
@@ -108,15 +108,15 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             ReloadSpawnDataList();
-            GroupSpawnData.SelectedIndex = -1;
+            GroupSpawnData.SelectedIndex = Utility.NO_INDEX;
         }
 
         private void GroupSpawnData_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (GroupSpawnData.SelectedIndex == -1)
+            if (GroupSpawnData.SelectedIndex == Utility.NO_INDEX)
             {
                 SpawnDataActivation.Text = "";
                 SpawnDataHours.Text = "";
@@ -174,7 +174,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void GroupName_Validated(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
@@ -183,7 +183,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void GroupLevelRange_Validated(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
@@ -192,10 +192,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void GroupGoal_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (GroupGoal.SelectedIndex == -1)
+            if (GroupGoal.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
@@ -208,7 +208,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void GroupClanSize_Validated(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
@@ -217,10 +217,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SelectedUnitID_Validated(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (GroupStartUnits.SelectedIndex == -1)
+            if (GroupStartUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
             
             int group_id = ListSpawnTypes.SelectedIndex + 1;
@@ -235,10 +235,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SpawnDataActivation_Validated(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (GroupSpawnData.SelectedIndex == -1)
+            if (GroupSpawnData.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int new_key = (int)Utility.TryParseUInt32(SpawnDataActivation.Text);
@@ -268,10 +268,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SpawnDataHours_Validated(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (GroupSpawnData.SelectedIndex == -1)
+            if (GroupSpawnData.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
@@ -295,10 +295,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SpawnDataMinutes_Validated(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (GroupSpawnData.SelectedIndex == -1)
+            if (GroupSpawnData.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
@@ -324,10 +324,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SpawnDataSeconds_Validated(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (GroupSpawnData.SelectedIndex == -1)
+            if (GroupSpawnData.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
@@ -355,13 +355,13 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SelectedSpawnDataUnitID_Validated(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (GroupSpawnData.SelectedIndex == -1)
+            if (GroupSpawnData.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (SpawnDataUnits.SelectedIndex == -1)
+            if (SpawnDataUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
@@ -432,7 +432,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void GroupUnitAdd_Click(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int key = ListSpawnTypes.SelectedIndex + 1;
@@ -471,7 +471,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SpawnDataAdd_Click(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
             
             int key = ListSpawnTypes.SelectedIndex + 1;
@@ -493,11 +493,11 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SpawnDataRemove_Click(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int index = GroupSpawnData.SelectedIndex;
-            if (index == -1)
+            if (index == Utility.NO_INDEX)
                 return;
             
             int key = ListSpawnTypes.SelectedIndex + 1;
@@ -520,10 +520,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SpawnDataUnitAdd_Click(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (GroupSpawnData.SelectedIndex == -1)
+            if (GroupSpawnData.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int key = ListSpawnTypes.SelectedIndex + 1;
@@ -549,14 +549,14 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SpawnDataUnitRemove_Click(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (GroupSpawnData.SelectedIndex == -1)
+            if (GroupSpawnData.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int index = SpawnDataUnits.SelectedIndex;
-            if (index == -1)
+            if (index == Utility.NO_INDEX)
                 return;
 
             int key = ListSpawnTypes.SelectedIndex + 1;
@@ -580,10 +580,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void GroupStartUnits_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (GroupStartUnits.SelectedIndex == -1)
+            if (GroupStartUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
@@ -592,13 +592,13 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SpawnDataUnits_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListSpawnTypes.SelectedIndex == -1)
+            if (ListSpawnTypes.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (GroupSpawnData.SelectedIndex == -1)
+            if (GroupSpawnData.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            if (SpawnDataUnits.SelectedIndex == -1)
+            if (SpawnDataUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;

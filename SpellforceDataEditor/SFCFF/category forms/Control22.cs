@@ -121,9 +121,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox1.Text = variant_repr(0);
             for(int i = 1; i <= 6; i++)
             {
-                if(get_subelem_index_by_slot_id(i) != -1)
+                if(get_subelem_index_by_slot_id(i) != Utility.NO_INDEX)
                 {
-                    ListSlots.SelectedIndex = -1;
+                    ListSlots.SelectedIndex = Utility.NO_INDEX;
                     ListSlots.SelectedIndex = i-1;
                     return;
                 }
@@ -197,7 +197,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void ListSlots_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = ListSlots.SelectedIndex;
-            if (index == -1)
+            if (index == Utility.NO_INDEX)
                 return;
 
             index = get_subelem_index_by_slot_id(index + 1);
@@ -309,7 +309,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 set_element(current_element);
             }
 
-            ListSlots.SelectedIndex = -1;
+            ListSlots.SelectedIndex = Utility.NO_INDEX;
             ListSlots.SelectedIndex = e.Index;
         }
     }

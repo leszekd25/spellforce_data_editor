@@ -15,7 +15,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 {
     public class SFShader
     {
-        public int ProgramID { get; private set; } = -1;            // shader id as assigned by OpenGL
+        public int ProgramID { get; private set; } = Utility.NO_INDEX;            // shader id as assigned by OpenGL
         private Dictionary<string, int> parameters = new Dictionary<string, int>();   // shader parameters IDs
 
         // returns shader parameter ID given parameter name
@@ -28,7 +28,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         public void CompileShader(string vshader, string fshader)
         {
             parameters.Clear();
-            if (ProgramID != -1)
+            if (ProgramID != Utility.NO_INDEX)
                 GL.DeleteShader(ProgramID);
             ProgramID = ShaderCompiler.Compile(vshader, fshader);
         }

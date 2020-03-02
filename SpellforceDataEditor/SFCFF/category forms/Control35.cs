@@ -41,7 +41,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public int GetVertexCount(int p_index)
         {
-            if (p_index == -1)
+            if (p_index == Utility.NO_INDEX)
                 return 0;
             List<int> offsets = GetOffsets();
 
@@ -59,7 +59,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            if (ListPolygons.SelectedIndex == -1)
+            if (ListPolygons.SelectedIndex == Utility.NO_INDEX)
                 return;
             set_element_variant(current_element, GetOffsets()[ListPolygons.SelectedIndex] + 2, Utility.TryParseUInt8(textBox5.Text));
         }
@@ -67,7 +67,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             vertex_index = listBox1.SelectedIndex;
-            if (vertex_index == -1)
+            if (vertex_index == Utility.NO_INDEX)
                 return;
             List<int> offsets = GetOffsets();
             textBox3.Text = variant_repr(offsets[ListPolygons.SelectedIndex] + 4 + vertex_index * 2);
@@ -91,14 +91,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            if (vertex_index == -1)
+            if (vertex_index == Utility.NO_INDEX)
                 return;
             set_element_variant(current_element, GetOffsets()[ListPolygons.SelectedIndex] + 4 + vertex_index * 2, Utility.TryParseInt16(textBox3.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            if (vertex_index == -1)
+            if (vertex_index == Utility.NO_INDEX)
                 return;
             set_element_variant(current_element, GetOffsets()[ListPolygons.SelectedIndex] + 4 + vertex_index * 2 + 1, Utility.TryParseInt16(textBox4.Text));
         }
@@ -115,17 +115,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override void show_element()
         {
             textBox1.Text = variant_repr(0);
-            vertex_index = -1;
+            vertex_index = Utility.NO_INDEX;
             listBox1_update();
         }
 
         private void buttonInsert_Click(object sender, EventArgs e)
         {
             int p_index = ListPolygons.SelectedIndex;
-            if (p_index == -1)
+            if (p_index == Utility.NO_INDEX)
                 return;
             int v_index = vertex_index;
-            if (v_index == -1)
+            if (v_index == Utility.NO_INDEX)
                 v_index = listBox1.Items.Count;
 
             SFCategoryElement elem = category[current_element];
@@ -148,10 +148,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void buttonRemove_Click(object sender, EventArgs e)
         {
             int p_index = ListPolygons.SelectedIndex;
-            if (p_index == -1)
+            if (p_index == Utility.NO_INDEX)
                 return;
             int v_index = vertex_index;
-            if (v_index == -1)
+            if (v_index == Utility.NO_INDEX)
                 return;
             if (GetVertexCount(p_index) <= 1)
                 return;
@@ -190,7 +190,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void ListPolygons_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListPolygons.SelectedIndex == -1)
+            if (ListPolygons.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             listBox1_update();
@@ -200,7 +200,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void button2_Click(object sender, EventArgs e)
         {
             int p_index = ListPolygons.SelectedIndex;
-            if (p_index == -1)
+            if (p_index == Utility.NO_INDEX)
                 p_index = ListPolygons.Items.Count;
 
             SFCategoryElement elem = category[current_element];
@@ -228,7 +228,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void button1_Click(object sender, EventArgs e)
         {
             int p_index = ListPolygons.SelectedIndex;
-            if (p_index == -1)
+            if (p_index == Utility.NO_INDEX)
                 return;
             if (ListPolygons.Items.Count <= 1)
                 return;

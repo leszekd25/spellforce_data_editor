@@ -62,8 +62,7 @@ namespace SpellforceDataEditor.SF3D.Physics
                 z1 = Math.Min(z1, v.Z);
                 z2 = Math.Max(z2, v.Z);
             }
-            aabb = new BoundingBox(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2));
-            aabb += offset;
+            aabb = new BoundingBox(new Vector3(x1, y1, z1)+offset, new Vector3(x2, y2, z2)+offset);
         }
 
         public void GenerateFromHeightmap(Vector3 off, SFMap.SFMapHeightMapGeometryPool pool, int pool_index)
@@ -97,8 +96,7 @@ namespace SpellforceDataEditor.SF3D.Physics
                 z1 = Math.Min(z1, v.Z);
                 z2 = Math.Max(z2, v.Z);
             }
-            aabb = new BoundingBox(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2));
-            aabb += offset;
+            aabb = new BoundingBox(new Vector3(x1, y1, z1)+offset, new Vector3(x2, y2, z2)+offset);
         }
     }
 }

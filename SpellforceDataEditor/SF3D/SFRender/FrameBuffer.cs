@@ -27,18 +27,18 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         public static int screen_vao { get; private set; } = -1;
 
-        static int vertices_vbo = -1;
-        static int uvs_vbo = -1;
+        static int vertices_vbo = Utility.NO_INDEX;
+        static int uvs_vbo = Utility.NO_INDEX;
         static int ref_count = 0;
 
         public int width, height;
         public RenderBufferType buff_type;
         public TextureType tex_type;
-        public int fbo = -1;
-        public int texture_color = -1;
-        public int texture_depth = -1;
-        public int texture_stencil = -1;
-        public int rbo = -1;
+        public int fbo = Utility.NO_INDEX;
+        public int texture_color = Utility.NO_INDEX;
+        public int texture_depth = Utility.NO_INDEX;
+        public int texture_stencil = Utility.NO_INDEX;
+        public int rbo = Utility.NO_INDEX;
 
         public int sample_count = 0;
 
@@ -77,15 +77,15 @@ namespace SpellforceDataEditor.SF3D.SFRender
             width = w;
             height = h;
 
-            if (fbo != -1)
+            if (fbo != Utility.NO_INDEX)
             {
-                if (rbo != -1)
+                if (rbo != Utility.NO_INDEX)
                     GL.DeleteRenderbuffer(rbo);
-                if (texture_color != -1)
+                if (texture_color != Utility.NO_INDEX)
                     GL.DeleteTexture(texture_color);
-                if (texture_depth != -1)
+                if (texture_depth != Utility.NO_INDEX)
                     GL.DeleteTexture(texture_depth);
-                if (texture_stencil != -1)
+                if (texture_stencil != Utility.NO_INDEX)
                     GL.DeleteTexture(texture_stencil);
                 GL.DeleteFramebuffer(fbo);
             }
@@ -238,7 +238,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         public void SetUpShadowmap()
         {
-            if(texture_depth != -1)
+            if(texture_depth != Utility.NO_INDEX)
             {
                 GL.BindTexture(TextureTarget.Texture2D, texture_depth);
                 GL.SamplerParameter(texture_depth, SamplerParameterName.TextureCompareMode, (int)All.CompareRefToTexture);
@@ -254,15 +254,15 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         public void Dispose()
         {
-            if(fbo != -1)
+            if(fbo != Utility.NO_INDEX)
             {
-                if(rbo != -1)
+                if(rbo != Utility.NO_INDEX)
                     GL.DeleteRenderbuffer(rbo);
-                if (texture_color != -1)
+                if (texture_color != Utility.NO_INDEX)
                     GL.DeleteTexture(texture_color);
-                if (texture_depth != -1)
+                if (texture_depth != Utility.NO_INDEX)
                     GL.DeleteTexture(texture_depth);
-                if (texture_stencil != -1)
+                if (texture_stencil != Utility.NO_INDEX)
                     GL.DeleteTexture(texture_stencil);
                 GL.DeleteFramebuffer(fbo);
             }
@@ -273,11 +273,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.DeleteBuffer(vertices_vbo);
                 GL.DeleteVertexArray(screen_vao);
             }
-            rbo = -1;
-            fbo = -1;
-            texture_color = -1;
-            texture_depth = -1;
-            texture_stencil = -1;
+            rbo = Utility.NO_INDEX;
+            fbo = Utility.NO_INDEX;
+            texture_color = Utility.NO_INDEX;
+            texture_depth = Utility.NO_INDEX;
+            texture_stencil = Utility.NO_INDEX;
         }
     }
 }

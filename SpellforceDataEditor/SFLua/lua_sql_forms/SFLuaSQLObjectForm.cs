@@ -14,7 +14,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
     {
         bool can_load = true;
         List<int> index_to_key = null;
-        int selected_id = -1;
+        int selected_id = Utility.NO_INDEX;
 
         public SFLuaSQLObjectForm()
         {
@@ -58,7 +58,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ListObjects_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(ListObjects.SelectedIndex == -1)
+            if(ListObjects.SelectedIndex == Utility.NO_INDEX)
             {
                 ObjName.Text = "";
                 Mesh.Items.Clear();
@@ -92,7 +92,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ObjName_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.objects.objects[selected_id].Name = ObjName.Text.ToString();
@@ -100,12 +100,12 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void Mesh_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             var objects = SFLuaEnvironment.objects.objects;
 
-            if (Mesh.SelectedIndex == -1)
+            if (Mesh.SelectedIndex == Utility.NO_INDEX)
                 SelectedMesh.Text = "";
             else
                 SelectedMesh.Text = objects[selected_id].Mesh[Mesh.SelectedIndex];
@@ -113,7 +113,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ButtonAddMesh_Click(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             var objects = SFLuaEnvironment.objects.objects;
@@ -126,9 +126,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ButtonRemoveMesh_Click(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
-            if (Mesh.SelectedIndex == -1)
+            if (Mesh.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             var objects = SFLuaEnvironment.objects.objects;
@@ -144,9 +144,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SelectedMesh_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
-            if (Mesh.SelectedIndex == -1)
+            if (Mesh.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             var objects = SFLuaEnvironment.objects.objects;
@@ -157,7 +157,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void CastsShadow_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.objects.objects[selected_id].Shadow = (CastsShadow.SelectedIndex == 1 ? true : false);
@@ -165,7 +165,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void IsBillboarded_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.objects.objects[selected_id].Billboarded = (IsBillboarded.SelectedIndex == 1 ? true : false);
@@ -173,7 +173,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void Scale_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.objects.objects[selected_id].Scale =
@@ -183,7 +183,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SelectionSize_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
             SFLuaEnvironment.objects.objects[selected_id].SelectionScaling =
                 Utility.TryParseDouble(SelectionSize.Text,
@@ -192,7 +192,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ObjectID_Validated(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             int previous_id = selected_id;
@@ -207,7 +207,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             ListObjects.Items.RemoveAt(previous_index);
 
             int new_index = Utility.FindNewIndexOf(index_to_key, new_id);
-            if (new_index == -1)
+            if (new_index == Utility.NO_INDEX)
             {
                 new_index = previous_index;
                 new_id = previous_id;
@@ -249,7 +249,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ButtonRemove_Click(object sender, EventArgs e)
         {
-            if (selected_id == -1)
+            if (selected_id == Utility.NO_INDEX)
                 return;
 
             int ind = ListObjects.SelectedIndex;

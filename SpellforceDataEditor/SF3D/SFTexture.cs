@@ -23,7 +23,7 @@ namespace SpellforceDataEditor.SF3D
         private int data_length_before_free = 0;                // used for GetSizeBytes
         public int width { get; private set; }
         public int height { get; private set; }
-        public int tex_id { get; private set; } = -1;
+        public int tex_id { get; private set; } = Utility.NO_INDEX;
         public uint mipMapCount { get; private set; }
         public InternalFormat format { get; private set; }
         string name = "";
@@ -440,7 +440,7 @@ namespace SpellforceDataEditor.SF3D
 
             // 3. Deinit
             GL.DeleteTexture(tex_id);
-            tex_id = -1;
+            tex_id = Utility.NO_INDEX;
 
             data = pixels;
 
@@ -450,6 +450,53 @@ namespace SpellforceDataEditor.SF3D
         public byte GetUncompressedAlpha(int x, int y)
         {
             return data[(y * width + x) * 4 + 3];
+        }
+
+        // texture format: bmp
+        public void Export(string fname)
+        {
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFTexture.Export() called, filename: " + fname + ".bmp");
+
+            if(format != InternalFormat.Rgba)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFTexture.Export(): Invalid internal format for texture export!");
+                return;
+            }
+            if(data == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFTexture.Export(): Data was freed before export!");
+                return;
+            }
+
+            FileStream fs = new FileStream(fname + ".bmp", FileMode.Create, FileAccess.Write);
+            BinaryWriter bw = new BinaryWriter(fs);
+
+            bw.Write((byte)0x42);
+            bw.Write((byte)0x4D);
+            bw.Write((uint)(54 + width * height * 3));
+            bw.Write((uint)0);
+            bw.Write((uint)54);
+            bw.Write((uint)40);
+            bw.Write((uint)width);
+            bw.Write((uint)height);
+            bw.Write((ushort)1);
+            bw.Write((ushort)24);
+            bw.Write((uint)0);
+            bw.Write((uint)0);
+            bw.Write((uint)0);
+            bw.Write((uint)0);
+            bw.Write((uint)0);
+            bw.Write((uint)0);
+
+            for(int i = 0; i < width; i++)
+                for(int j = 0; j < height; j++)
+                {
+                    bw.Write(data[(i * height + j) * 4 + 2]);
+                    bw.Write(data[(i * height + j) * 4 + 1]); 
+                    bw.Write(data[(i * height + j) * 4 + 0]);
+                }
+
+            bw.Close();
         }
 
         public void SetName(string s)
@@ -472,11 +519,11 @@ namespace SpellforceDataEditor.SF3D
 
         public void Dispose()
         {
-            if (tex_id != -1)
+            if (tex_id != Utility.NO_INDEX)
             {                
                 GL.DeleteTexture(tex_id);
                 FreeMemory();
-                tex_id = -1;
+                tex_id = Utility.NO_INDEX;
             }
         }
 

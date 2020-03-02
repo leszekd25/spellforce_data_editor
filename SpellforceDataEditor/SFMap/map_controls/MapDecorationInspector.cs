@@ -60,7 +60,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void DecGroupData_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex == -1)
+            if (e.RowIndex == Utility.NO_INDEX)
                 return;
             
             ushort new_id = Utility.TryParseUInt16(DecGroupData.Rows[e.RowIndex].Cells[0].Value.ToString());

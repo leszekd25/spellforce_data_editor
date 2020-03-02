@@ -21,7 +21,7 @@ namespace SpellforceDataEditor.SF3D
 {
     public class SFModelSkinChunk: SFResource
     {
-        public int chunk_id = -1;
+        public int chunk_id = Utility.NO_INDEX;
 
         public Vector3[] vertices = null;
         public Vector2[] uvs = null;
@@ -35,7 +35,7 @@ namespace SpellforceDataEditor.SF3D
         public int[] bones = null;
         public string bsi_name = ""+Utility.S_NONAME;
 
-        public int vertex_array = -1;
+        public int vertex_array = Utility.NO_INDEX;
         public int vertex_buffer, uv_buffer, normal_buffer, bone_index_buffer, bone_weight_buffer, element_buffer;
 
         public SFModelSkinChunk()
@@ -196,7 +196,7 @@ namespace SpellforceDataEditor.SF3D
         public void Dispose()
         {
 
-            if (vertex_array != -1)
+            if (vertex_array != Utility.NO_INDEX)
             {
                 GL.DeleteBuffer(vertex_buffer);
                 GL.DeleteBuffer(normal_buffer);
@@ -205,7 +205,7 @@ namespace SpellforceDataEditor.SF3D
                 GL.DeleteBuffer(bone_weight_buffer);
                 GL.DeleteBuffer(element_buffer);
                 GL.DeleteVertexArray(vertex_array);
-                vertex_array = -1;
+                vertex_array = Utility.NO_INDEX;
             }
             if((material != null)&&(material.texture != null))
                 SFResourceManager.Textures.Dispose(material.texture.GetName());

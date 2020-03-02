@@ -724,11 +724,11 @@ namespace SpellforceDataEditor.SFCFF
         public static SFCategoryElement FindElementText(int t_index, int t_lang)
         {
             int index = gamedata[14].FindElementIndexBinary<UInt16>(0, (UInt16)t_index);
-            if (index == -1)
+            if (index == Utility.NO_INDEX)
                 return null;
 
-            int lang_index = -1;
-            int safe_index = -1;   //will fail if there's no language id 0
+            int lang_index = Utility.NO_INDEX;
+            int safe_index = Utility.NO_INDEX;   //will fail if there's no language id 0
 
             SFCategoryElement e = new SFCategoryElement();
             SFCategoryElement e_found = gamedata[14][index];
@@ -747,9 +747,9 @@ namespace SpellforceDataEditor.SFCFF
                 }
             }
 
-            if (lang_index == -1)
+            if (lang_index == Utility.NO_INDEX)
                 lang_index = safe_index;
-            if (lang_index == -1)
+            if (lang_index == Utility.NO_INDEX)
                 return null;
 
             e.variants = e_found.CopyRaw(lang_index * 5, 5).ToList();

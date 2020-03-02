@@ -109,7 +109,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ListObjects_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListObjects.SelectedIndex == -1)
+            if (ListObjects.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             PanelProperties.Enabled = true;
@@ -130,7 +130,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ObjectID_Validated(object sender, EventArgs e)
         {
-            if (ListObjects.SelectedIndex == -1)
+            if (ListObjects.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             ushort new_object_id = Utility.TryParseUInt16(ObjectID.Text);
@@ -160,7 +160,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void NPCID_Validated(object sender, EventArgs e)
         {
-            if (ListObjects.SelectedIndex == -1)
+            if (ListObjects.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
@@ -180,7 +180,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void NPCScript_Click(object sender, EventArgs e)
         {
-            if (ListObjects.SelectedIndex == -1)
+            if (ListObjects.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
@@ -194,7 +194,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void Angle_Validated(object sender, EventArgs e)
         {
-            if (ListObjects.SelectedIndex == -1)
+            if (ListObjects.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
@@ -205,7 +205,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
         {
-            if (ListObjects.SelectedIndex == -1)
+            if (ListObjects.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
@@ -218,7 +218,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void Unknown1_Validated(object sender, EventArgs e)
         {
-            if (ListObjects.SelectedIndex == -1)
+            if (ListObjects.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
@@ -267,7 +267,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     return;
                 }
 
-            if (search_start == -1)
+            if (search_start == Utility.NO_INDEX)
                 search_start = 0;
 
             for (int i = map.object_manager.objects.Count - 1; i >= search_start; i--)
@@ -287,7 +287,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             {
                 int elem_id = Utility.TryParseUInt16(ObjectID.Text);
                 int real_elem_id = SFCFF.SFCategoryManager.gamedata[33].GetElementIndex(elem_id);
-                if (real_elem_id != -1)
+                if (real_elem_id != Utility.NO_INDEX)
                     MainForm.data.Tracer_StepForward(33, real_elem_id);
             }
         }

@@ -19,7 +19,7 @@ namespace SpellforceDataEditor.SF3D
         public InterpolatedVector3 position { get; private set; } = new InterpolatedVector3();
         public InterpolatedQuaternion rotation { get; private set; } = new InterpolatedQuaternion();
 
-        public CompressedMatrix get_matrix(float t)
+        public CompressedMatrix GetCompressedMatrixAt(float t)
         {
             return new CompressedMatrix(position.Get(t), rotation.Get(t));
         }
@@ -89,7 +89,7 @@ namespace SpellforceDataEditor.SF3D
 
         public CompressedMatrix CalculateBoneMatrix(int bone_index, float t)
         {
-            return bone_animations[bone_index].get_matrix(t);
+            return bone_animations[bone_index].GetCompressedMatrixAt(t);
         }
 
         public void SetName(string s)

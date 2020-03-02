@@ -28,7 +28,7 @@ namespace SpellforceDataEditor.SFCFF
         public int difference_index;              //index in a category that the action refers to (or other data when applicable)
         public SFCategoryElement elem_old;        //element before change
         public SFCategoryElement elem_new;        //element after change
-        public SFDiffElement(DIFF_TYPE d, int i = -1, SFCategoryElement e1 = null, SFCategoryElement e2 = null)
+        public SFDiffElement(DIFF_TYPE d, int i = Utility.NO_INDEX, SFCategoryElement e1 = null, SFCategoryElement e2 = null)
         {
             difference_type = d;
             difference_index = i;
@@ -52,7 +52,7 @@ namespace SpellforceDataEditor.SFCFF
             diff_current_index = new int[SFGameData.categoryNumber];
             for (int i = 0; i < SFGameData.categoryNumber; i++)
             {
-                diff_current_index[i] = -1;
+                diff_current_index[i] = Utility.NO_INDEX;
                 diff_data[i] = new List<SFDiffElement>();
             }
         }
@@ -63,7 +63,7 @@ namespace SpellforceDataEditor.SFCFF
             for (int i = 0; i < SFGameData.categoryNumber; i++)
             {
                 diff_data[i].Clear();
-                diff_current_index[i] = -1;
+                diff_current_index[i] = Utility.NO_INDEX;
             }
         }
 
@@ -187,11 +187,11 @@ namespace SpellforceDataEditor.SFCFF
 
             BinaryReader br = new BinaryReader(fs, Encoding.Default);
 
-            int current_category = -1;
+            int current_category = Utility.NO_INDEX;
             SFDiffElement elem;
             bool success = true;
 
-            while (br.PeekChar() != -1)
+            while (br.PeekChar() != Utility.NO_INDEX)
             {
                 elem = read_diff_element(br, SFCategoryManager.gamedata[current_category]);
                 if (elem.difference_type == SFDiffElement.DIFF_TYPE.CATEGORY)
@@ -322,7 +322,7 @@ namespace SpellforceDataEditor.SFCFF
         //returns whether there are changes that can be undone
         public bool can_undo_changes(int cat_index)
         {
-            if (cat_index == -1)
+            if (cat_index == Utility.NO_INDEX)
                 return false;
             return (diff_current_index[cat_index] >= 0);
         }
@@ -330,7 +330,7 @@ namespace SpellforceDataEditor.SFCFF
         //returns whether there are changes that can be redone
         public bool can_redo_changes(int cat_index)
         {
-            if (cat_index == -1)
+            if (cat_index == Utility.NO_INDEX)
                 return false;
             return (diff_current_index[cat_index] < diff_data[cat_index].Count-1);
         }

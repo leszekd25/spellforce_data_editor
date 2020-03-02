@@ -69,7 +69,7 @@ namespace SpellforceDataEditor.SFCFF
                         {
                             if (format[k] == 's')
                                 continue;
-                            if ((column_i != -1) && (column_i != k))
+                            if ((column_i != Utility.NO_INDEX) && (column_i != k))
                                 continue;
                             int val = elem.ToInt(j * elem_length + k);
                             if (val == query_val)
@@ -96,7 +96,7 @@ namespace SpellforceDataEditor.SFCFF
                         {
                             if (format[k] == 's')
                             {
-                                if ((column_i != -1) && (column_i != k))
+                                if ((column_i != Utility.NO_INDEX) && (column_i != k))
                                     continue;
                                 string val = Utility.CleanString(elem[j * elem_length + k]);
                                 if (val.ToLower().Contains(query))
@@ -119,7 +119,7 @@ namespace SpellforceDataEditor.SFCFF
                         {
                             if (format[k] == 's')
                                 continue;
-                            if ((column_i != -1) && (column_i != k))
+                            if ((column_i != Utility.NO_INDEX) && (column_i != k))
                                 continue;
                             UInt32 val = (UInt32)elem.ToInt(j * elem_length + k);
                             if ((val & query_val) == query_val)

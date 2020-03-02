@@ -45,7 +45,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ListHeads_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListHeads.SelectedIndex == -1)
+            if (ListHeads.SelectedIndex == Utility.NO_INDEX)
             {
                 MM.Text = "";
                 MF.Text = "";
@@ -62,7 +62,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void MM_Validated(object sender, EventArgs e)
         {
-            if (ListHeads.SelectedIndex == -1)
+            if (ListHeads.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.heads.heads[ListHeads.SelectedIndex+1].MeshMale = MM.Text.ToString();
@@ -70,7 +70,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void MF_Validated(object sender, EventArgs e)
         {
-            if (ListHeads.SelectedIndex == -1)
+            if (ListHeads.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.heads.heads[ListHeads.SelectedIndex+1].MeshFemale = MF.Text.ToString();
@@ -91,7 +91,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ButtonRemove_Click(object sender, EventArgs e)
         {
-            if (ListHeads.SelectedIndex == -1)
+            if (ListHeads.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int old_index = ListHeads.SelectedIndex;

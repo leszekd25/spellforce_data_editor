@@ -513,12 +513,6 @@
     <Compile Include="SFMap\map_controls\MapBindstoneInspector.Designer.cs">
       <DependentUpon>MapBindstoneInspector.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapMinimap.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapMinimap.Designer.cs">
-      <DependentUpon>MapMinimap.cs</DependentUpon>
-    </Compile>
     <Compile Include="SFMap\map_controls\MapMonumentInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -954,12 +948,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapBindstoneInspector.resx">
       <DependentUpon>MapBindstoneInspector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapMinimap.resx">
-      <DependentUpon>MapMinimap.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapMinimap.sq-AL.resx">
-      <DependentUpon>MapMinimap.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapMonumentInspector.resx">
       <DependentUpon>MapMonumentInspector.cs</DependentUpon>

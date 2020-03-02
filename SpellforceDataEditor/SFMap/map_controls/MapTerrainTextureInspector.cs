@@ -30,7 +30,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             map_dialog.MapSelectTile tileselectdialog = new map_dialog.MapSelectTile(map, map_dialog.MapTileSelectType.BASE);
             tileselectdialog.ShowDialog();
 
-            if(tileselectdialog.SelectedTile != -1)
+            if(tileselectdialog.SelectedTile != Utility.NO_INDEX)
             {
                 byte selected_tile = (byte)((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile;
                 if (ID == 0)

@@ -23,7 +23,7 @@ namespace SpellforceDataEditor.SF3D.UI
         public Vector3[] vertices;
         Vector2[] uvs;
 
-        public int vertex_array = -1;
+        public int vertex_array = Utility.NO_INDEX;
         public int vertex_buffer, uv_buffer;
 
         Vector2[] pxsizes;
@@ -196,12 +196,12 @@ namespace SpellforceDataEditor.SF3D.UI
 
         public void Dispose()
         {
-            if (vertex_array != -1)
+            if (vertex_array != Utility.NO_INDEX)
             {
                 GL.DeleteBuffer(vertex_buffer);
                 GL.DeleteBuffer(uv_buffer);
                 GL.DeleteVertexArray(vertex_array);
-                vertex_array = -1;
+                vertex_array = Utility.NO_INDEX;
             }
         }
     }

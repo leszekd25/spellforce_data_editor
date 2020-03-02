@@ -109,7 +109,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ListUnits_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == -1)
+            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             PanelProperties.Enabled = true;
@@ -132,7 +132,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void UnitID_Validated(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == -1)
+            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             int new_unit_id = Utility.TryParseUInt16(UnitID.Text);
@@ -154,7 +154,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void NPCID_Validated(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == -1)
+            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
@@ -174,7 +174,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void NPCScript_Click(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == -1)
+            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
@@ -188,7 +188,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void Angle_Validated(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == -1)
+            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
@@ -199,7 +199,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == -1)
+            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
@@ -213,7 +213,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void Unknown1_Validated(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == -1)
+            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
@@ -222,7 +222,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void Group_Validated(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == -1)
+            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
@@ -231,7 +231,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void Unknown2_Validated(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == -1)
+            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];

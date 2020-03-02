@@ -108,7 +108,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ListCoopCamps_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListCoopCamps.SelectedIndex == -1)
+            if (ListCoopCamps.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             PanelProperties.Enabled = true;
@@ -126,7 +126,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void CampID_Validated(object sender, EventArgs e)
         {
-            if (ListCoopCamps.SelectedIndex == -1)
+            if (ListCoopCamps.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             map.metadata.coop_spawns[ListCoopCamps.SelectedIndex].spawn_id = Utility.TryParseUInt8(CampID.Text);
@@ -134,7 +134,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void Unknown1_Validated(object sender, EventArgs e)
         {
-            if (ListCoopCamps.SelectedIndex == -1)
+            if (ListCoopCamps.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             map.metadata.coop_spawns[ListCoopCamps.SelectedIndex].spawn_certain = Utility.TryParseUInt8(Unknown1.Text);

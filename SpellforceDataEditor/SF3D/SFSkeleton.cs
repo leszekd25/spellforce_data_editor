@@ -20,6 +20,7 @@ namespace SpellforceDataEditor.SF3D
 
     public class SFSkeleton: SFResource
     {
+        public const int MAX_BONE_PER_CHUNK = 20;
         public int bone_count { get; private set; } = 0;
         public Matrix4[] bone_reference_matrices { get; private set; } = null;
         public Matrix4[] bone_inverted_matrices { get; private set; } = null;
@@ -62,7 +63,7 @@ namespace SpellforceDataEditor.SF3D
 
             Vector3[] bone_pos = null;
             Quaternion[] bone_rot = null;
-            int current_bone = -1;
+            int current_bone = Utility.NO_INDEX;
             string current_bone_name = "";
             int file_level = 0;
             float Rre = 0f;
@@ -147,7 +148,7 @@ namespace SpellforceDataEditor.SF3D
                 temp_matrix.Row3 = new Vector4(bone_pos[i], 1);
                 bone_reference_matrices[i] = temp_matrix;
             
-                if (bone_parents[i] != -1)
+                if (bone_parents[i] != Utility.NO_INDEX)
                     bone_reference_matrices[i] = bone_reference_matrices[i] * bone_reference_matrices[bone_parents[i]];
             
                 bone_inverted_matrices[i] = bone_reference_matrices[i].Inverted();
@@ -160,7 +161,7 @@ namespace SpellforceDataEditor.SF3D
         {
             for (int i = 0; i < bone_count; i++)
             {
-                if (bone_parents[i] != -1)
+                if (bone_parents[i] != Utility.NO_INDEX)
                     dest_matrices[i] = src_matrices[i] * dest_matrices[bone_parents[i]];
             }
         }

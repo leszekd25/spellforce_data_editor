@@ -29,12 +29,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public virtual bool NeedsUpdateResultTransform { get; protected set; } = true;
 
         protected bool visible = true;
-        protected Vector3 position = new Vector3(0);
-        protected Quaternion rotation = new Quaternion(0, 0, 0, 1);
-        protected Vector3 scale = new Vector3(1);
+        protected Vector3 position = Vector3.Zero;
+        protected Quaternion rotation = Quaternion.Identity;
+        protected Vector3 scale = Vector3.One;
         protected Matrix4 local_transform = Matrix4.Identity;
         protected Matrix4 result_transform = Matrix4.Identity;
-        protected Physics.BoundingBox aabb = new Physics.BoundingBox(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+        protected Physics.BoundingBox aabb = new Physics.BoundingBox(Vector3.Zero, Vector3.Zero);
         
         // todo: add a LocalVisible, so even when parent changes to visible while this is invisible, this is still invisible
         public virtual bool Visible
@@ -113,11 +113,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 Visible = false;
         }
 
-        // utility function which sets rotation of this node to a given angle (degrees) around the UP axis (0,  1, 0)
+        // utility function which sets rotation of this node to a given angle (degrees) around the UP axis (0, 1, 0)
         public void SetAnglePlane(int angle_deg)
         {
             Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2)
-                     * Quaternion.FromAxisAngle(new Vector3(0, 0, 1), MathUtils.DegToRad(angle_deg));
+                     * Quaternion.FromAxisAngle(new Vector3(0f, 0f, 1f), MathUtils.DegToRad(angle_deg));
         }
 
         // if something requires updating, notify all parents about that, root including, so the engine knows to run update routine
@@ -271,7 +271,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 if (mesh != null)
                     aabb = mesh.aabb;
                 else
-                    aabb = new Physics.BoundingBox(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+                    aabb = new Physics.BoundingBox(Vector3.Zero, Vector3.Zero);
             }
         }
         public override bool Visible
@@ -279,7 +279,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             get => base.Visible;
             set
             {
-                base.Visible = value;
+                if (Visible != value)
+                {
+                    visible = value;
+                    foreach (SceneNode n in Children)
+                        n.Visible = value;
+                }
             }
         }
 
@@ -328,7 +333,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 if (mesh != null)
                     aabb = mesh.aabb;
                 else
-                    aabb = new Physics.BoundingBox(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+                    aabb = new Physics.BoundingBox(Vector3.Zero, Vector3.Zero);
             }
         }
         public SFSkeleton Skeleton { get { return skeleton; } private set { skeleton = value; } }
@@ -356,11 +361,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             get => base.Visible;
             set
             {
-                if (value == false)
-                    ClearTexGeometry();
-                else
-                    AddTexGeometry();
-                base.Visible = value;
+                if (Visible != value)
+                {
+                    if (value == false)
+                        ClearTexGeometry();
+                    else
+                        AddTexGeometry();
+
+                    visible = value;
+                    foreach (SceneNode n in Children)
+                        n.Visible = value;
+                }
             }
         }
         // list of scene cache pointers
@@ -495,7 +506,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             if (Parent != null)
             {
-                if((Parent.GetType() == typeof(SceneNodeAnimated))&&(BoneIndex != -1))
+                if((Parent.GetType() == typeof(SceneNodeAnimated))&&(BoneIndex != Utility.NO_INDEX))
                     result_transform = local_transform * ((SceneNodeAnimated)(Parent)).Skeleton.bone_reference_matrices[BoneIndex]
                         * ((SceneNodeAnimated)(Parent)).BoneTransforms[BoneIndex] * Parent.ResultTransform;
                 else
@@ -510,7 +521,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // sets to which bone this node should be attached
         public void SetBone(string name)
         {
-            BoneIndex = -1;
+            BoneIndex = Utility.NO_INDEX;
             if (Parent == null)
                 return;
             if (((SceneNodeAnimated)Parent).Skeleton == null)
@@ -532,8 +543,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
     public class SceneNodeMapChunk: SceneNode
     {
         public SFMap.SFMapHeightMapChunk MapChunk;
-        public float DistanceToCamera { get; set; } = 0;
-        public float CameraHeightDifference { get; set; } = 0;
+        public float DistanceToCamera { get; set; } = 0f;
+        public float CameraHeightDifference { get; set; } = 0f;
 
         public SceneNodeMapChunk(string n) : base(n) { }
 
@@ -547,8 +558,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
     // camera node should not have any children or unexpected behavior might occur
     public class SceneNodeCamera: SceneNode
     {
-        private Vector3 lookat = new Vector3(0, 1, 0);
-        private Vector2 direction = new Vector2(0, 0);
+        const float EPSILON = 0.0001f;
+        const float MAX_DIR_Y = 1.5f;
+
+        private Vector3 lookat = new Vector3(0f, 1f, 0f);
+        private Vector2 direction = Vector2.Zero;
         private Matrix4 proj_matrix = new Matrix4();
         private float aspect_ratio = 1;
         private Matrix4 view_matrix = new Matrix4();
@@ -567,11 +581,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             {
                 lookat = value;
 
-                direction.X = (float)Math.Atan2(-(lookat.Z - Position.Z), lookat.X - Position.X) + 2 * 1.570796f;
-                if (Math.Abs(lookat.X - Position.Z) > 0.0001)
+                direction.X = (float)(Math.Atan2(-(lookat.Z - Position.Z), lookat.X - Position.X) + Math.PI);
+                if (Math.Abs(lookat.X - Position.Z) > EPSILON)
                 {
                     direction.Y = (float)Math.Atan2(lookat.Y - Position.Y, new Vector3(lookat.X - Position.X, -(lookat.Z - Position.Z), 0).Length);
-                    direction.Y = (direction.Y > 1.5 ? 1.5f : (direction.Y < -1.5 ? -1.5f : direction.Y));
+                    direction.Y = (direction.Y > MAX_DIR_Y ? MAX_DIR_Y : (direction.Y < -MAX_DIR_Y ? -MAX_DIR_Y : direction.Y));
                 }
                 //System.Diagnostics.Debug.WriteLine(direction.ToString());
                 TouchLocalTransform(); TouchParents();
@@ -586,7 +600,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             set
             {
                 direction = value;
-                direction.Y = (direction.Y > 1.5 ? 1.5f : (direction.Y < -1.5 ? -1.5f : direction.Y));
+                direction.Y = (direction.Y > MAX_DIR_Y ? MAX_DIR_Y : (direction.Y < -MAX_DIR_Y ? -MAX_DIR_Y : direction.Y));
                 //calculate rotation vector
                 lookat = Position + new Vector3((float)Math.Cos(direction.X) * (float)Math.Cos(direction.Y),
                                                 (float)Math.Sin(direction.Y),
@@ -643,7 +657,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // returns vector2 in screen coordinates in [0, 1] (if on screen)
         public Vector2 WorldToScreen(Vector3 pos)
         {
-            float dist = Vector3.Dot(pos - Position, (Lookat - Position).Normalized()) / 200f;
+            float dist = Vector3.Dot(pos - Position, (Lookat - Position).Normalized()) / SFRender.SFRenderEngine.max_render_distance;
 
             Vector3 top_left = Position + (frustum_vertices[4] - Position) * dist;
             Vector3 top_right = Position + (frustum_vertices[5] - Position) * dist;
@@ -670,16 +684,16 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
             // 200f, Math.Pi/4 are magic for now.....
             float deviation = (float)Math.Tan(Math.PI / 4) / 2;
-            Vector3 center = position + forward * 0.1f;
-            Vector3 center2 = position + forward * 200f;
-            frustum_vertices[0] = center + (-right - up) * deviation * 0.1f;
-            frustum_vertices[1] = center + (right - up) * deviation * 0.1f;
-            frustum_vertices[2] = center + (-right + up) * deviation * 0.1f;
-            frustum_vertices[3] = center + (right + up) * deviation * 0.1f;
-            frustum_vertices[4] = center2 + (-right - up) * deviation * 200f;
-            frustum_vertices[5] = center2 + (right - up) * deviation * 200f;
-            frustum_vertices[6] = center2 + (-right + up) * deviation * 200f;
-            frustum_vertices[7] = center2 + (right + up) * deviation * 200f;
+            Vector3 center = position + forward * SFRender.SFRenderEngine.min_render_distance;
+            Vector3 center2 = position + forward * SFRender.SFRenderEngine.max_render_distance;
+            frustum_vertices[0] = center + (-right - up) * deviation * SFRender.SFRenderEngine.min_render_distance;
+            frustum_vertices[1] = center + (right - up) * deviation * SFRender.SFRenderEngine.min_render_distance;
+            frustum_vertices[2] = center + (-right + up) * deviation * SFRender.SFRenderEngine.min_render_distance;
+            frustum_vertices[3] = center + (right + up) * deviation * SFRender.SFRenderEngine.min_render_distance;
+            frustum_vertices[4] = center2 + (-right - up) * deviation * SFRender.SFRenderEngine.max_render_distance;
+            frustum_vertices[5] = center2 + (right - up) * deviation * SFRender.SFRenderEngine.max_render_distance;
+            frustum_vertices[6] = center2 + (-right + up) * deviation * SFRender.SFRenderEngine.max_render_distance;
+            frustum_vertices[7] = center2 + (right + up) * deviation * SFRender.SFRenderEngine.max_render_distance;
         }
     }
 }

@@ -28,6 +28,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
         public static SFScene scene { get; } = new SFScene();
         public static UIManager ui { get; } = new UIManager();
 
+        public static float min_render_distance = 0.1f;
+        public static float max_render_distance = 200f;
         static float CurrentDepthBias = 0;
         static RenderMode CurrentRenderMode = RenderMode.SRCALPHA_INVSRCALPHA;
 
@@ -49,7 +51,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static FrameBuffer screenspace_framebuffer = null;
         static FrameBuffer screenspace_intermediate = null;
 
-        public static Vector2 render_size = new Vector2(0, 0);
+        public static Vector2 render_size = Vector2.Zero;
 
         static bool initialized = false;
 
@@ -181,8 +183,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             scene.ambient_light.Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
             scene.ambient_light.Strength = 0.8f;
             scene.atmosphere.FogColor = new Vector4(0.55f, 0.55f, 0.85f, 1.0f);
-            scene.atmosphere.FogStart = 100f;
-            scene.atmosphere.FogEnd = 200f;
+            scene.atmosphere.FogStart = max_render_distance * 0.5f;
+            scene.atmosphere.FogEnd = max_render_distance;
 
             GL.ClearColor(scene.atmosphere.FogColor.X, scene.atmosphere.FogColor.Y,
                           scene.atmosphere.FogColor.Z, scene.atmosphere.FogColor.W);
@@ -235,7 +237,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.ResizeView() called (view_size = " + view_size.ToString() + ")");
             render_size = view_size;
             scene.camera.ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
-                (float)Math.PI / 4, view_size.X / view_size.Y, 0.1f, 200f);
+                (float)Math.PI / 4, view_size.X / view_size.Y, min_render_distance, max_render_distance);
             scene.camera.AspectRatio = (float)(view_size.X) / view_size.Y;
             GL.Viewport(0, 0, (int)view_size.X, (int)view_size.Y);
             if (screenspace_framebuffer != null)
@@ -536,7 +538,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         {
             foreach (SFSubModel3D sbm in scene.untex_entries_simple)
             {
-                if (sbm.vertex_array == -1)
+                if (sbm.vertex_array == Utility.NO_INDEX)
                     continue;
                 GL.BindVertexArray(sbm.vertex_array);
                 sbm.ReloadInstanceMatrices();
@@ -548,7 +550,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                 foreach (SFSubModel3D sbm in submodels)
                 {
-                    if (sbm.vertex_array == -1)
+                    if (sbm.vertex_array == Utility.NO_INDEX)
                         continue;
                     GL.BindVertexArray(sbm.vertex_array);
                     sbm.ReloadInstanceMatrices();
@@ -580,7 +582,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             else if (current_pass == RenderPass.SHADOWMAP)
                 GL.BindTexture(TextureTarget.Texture2D, opaque_tex.tex_id);
 
-            Matrix4 model_mat = new Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+            Matrix4 model_mat = Matrix4.Identity;
             GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
 
             for (int i = 0; i < scene.heightmap.geometry_pool.last_used; i++)
@@ -713,7 +715,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.UniformMatrix4(active_shader["V"], false, ref v_mat);
             }
 
-            Matrix4[] bones = new Matrix4[20];
+            Matrix4[] bones = new Matrix4[SFSkeleton.MAX_BONE_PER_CHUNK];
             foreach (SFTexture tex in scene.tex_list_animated.Keys)
             {
                 //if(current_pass == RenderPass.SCENE)
@@ -736,7 +738,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         bones[j] = elem.node.BoneTransforms[chunk.bones[j]];
 
                     GL.BindVertexArray(chunk.vertex_array);
-                    GL.UniformMatrix4(active_shader["boneTransforms"], 20, false, ref bones[0].Row0.X);
+                    GL.UniformMatrix4(active_shader["boneTransforms"], SFSkeleton.MAX_BONE_PER_CHUNK, false, ref bones[0].Row0.X);
                     if(current_pass == RenderPass.SCENE)
                         SetRenderMode(chunk.material.texRenderMode);
 

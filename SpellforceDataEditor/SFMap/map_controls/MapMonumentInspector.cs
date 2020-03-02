@@ -98,7 +98,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         public void LoadNextMonument()
         {
             int new_monument = GetIOMonumentIndex(ListMonuments.Items.Count);
-            if (new_monument == -1)
+            if (new_monument == Utility.NO_INDEX)
                 return;
             SFMapInteractiveObject io = map.int_object_manager.int_objects[new_monument];
             ListMonuments.Items.Add(GetMonumentString(io));
@@ -130,7 +130,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ListMonuments_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListMonuments.SelectedIndex == -1)
+            if (ListMonuments.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             PanelProperties.Enabled = true;
@@ -157,7 +157,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void Angle_Validated(object sender, EventArgs e)
         {
-            if (ListMonuments.SelectedIndex == -1)
+            if (ListMonuments.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapInteractiveObject monument = map.int_object_manager.int_objects[GetIOMonumentIndex(ListMonuments.SelectedIndex)];
@@ -168,7 +168,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
         {
-            if (ListMonuments.SelectedIndex == -1)
+            if (ListMonuments.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapInteractiveObject monument = map.int_object_manager.int_objects[GetIOMonumentIndex(ListMonuments.SelectedIndex)];

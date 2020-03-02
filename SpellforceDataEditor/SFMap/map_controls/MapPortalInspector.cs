@@ -37,7 +37,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             {
                 int portal_id = portal.game_id;
                 int portal_index = SFCFF.SFCategoryManager.gamedata[38].GetElementIndex(portal_id);
-                if (portal_index != -1)
+                if (portal_index != Utility.NO_INDEX)
                 {
                     SFCFF.SFCategoryElement portal_data = SFCFF.SFCategoryManager.gamedata[38][portal_index];
                     ret += SFCFF.SFCategoryManager.GetTextFromElement(portal_data, 5);
@@ -106,7 +106,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ListPortals_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListPortals.SelectedIndex == -1)
+            if (ListPortals.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             PanelProperties.Enabled = true;
@@ -125,7 +125,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void PortalID_Validated(object sender, EventArgs e)
         {
-            if (ListPortals.SelectedIndex == -1)
+            if (ListPortals.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             map.portal_manager.portals[ListPortals.SelectedIndex].game_id = Utility.TryParseUInt16(PortalID.Text);
@@ -133,7 +133,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void Angle_Validated(object sender, EventArgs e)
         {
-            if (ListPortals.SelectedIndex == -1)
+            if (ListPortals.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapPortal portal = map.portal_manager.portals[ListPortals.SelectedIndex];
@@ -144,7 +144,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
         {
-            if (ListPortals.SelectedIndex == -1)
+            if (ListPortals.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapPortal portal = map.portal_manager.portals[ListPortals.SelectedIndex];
@@ -172,7 +172,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             {
                 int elem_id = Utility.TryParseUInt16(PortalID.Text);
                 int real_elem_id = SFCFF.SFCategoryManager.gamedata[38].GetElementIndex(elem_id);
-                if (real_elem_id != -1)
+                if (real_elem_id != Utility.NO_INDEX)
                     MainForm.data.Tracer_StepForward(38, real_elem_id);
             }
         }

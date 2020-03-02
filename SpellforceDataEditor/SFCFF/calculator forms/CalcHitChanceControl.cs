@@ -44,13 +44,13 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
 
             // unit stuff
             int index = SFCategoryManager.gamedata[17].GetElementIndex(unit_id);
-            if (index == -1)
+            if (index == Utility.NO_INDEX)
                 return;
             ushort stats_id = (ushort)SFCategoryManager.gamedata[17][index][2];
 
             // unit stats
             int index2 = SFCategoryManager.gamedata[3].GetElementIndex((int)stats_id);
-            if (index2 == -1)
+            if (index2 == Utility.NO_INDEX)
                 return;
             SFCategoryElement stats = SFCategoryManager.gamedata[3][index2];
             
@@ -60,7 +60,7 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
 
             // get unit eq
             int index3 = SFCategoryManager.gamedata[18].GetElementIndex(unit_id);
-            if (index3 != -1)
+            if (index3 != Utility.NO_INDEX)
             {
                 SFCategoryElement items = SFCategoryManager.gamedata[18][index];
                 int item_count = items.variants.Count / 3;
@@ -69,7 +69,7 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
                     //item stats
                     ushort item_id = (ushort)items[3 * i + 2];
                     int index4 = SFCategoryManager.gamedata[7].GetElementIndex((int)item_id);
-                    if (index4 == -1)
+                    if (index4 == Utility.NO_INDEX)
                         continue;
 
                     SFCategoryElement item = SFCategoryManager.gamedata[7][index4];

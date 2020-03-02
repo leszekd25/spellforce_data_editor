@@ -126,7 +126,7 @@ namespace SpellforceDataEditor.SF3D.Physics
                         break;
                     outside |= vertex_test_result;
                 }
-                if (outside == 255)
+                if (outside == 255)       // equivalent to "each vertex is outside of at least one plane of the convex hull"
                     return true;
             }
             return false;

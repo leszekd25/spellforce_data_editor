@@ -197,7 +197,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void ListSlots_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = ListSlots.SelectedIndex;
-            if (index == -1)
+            if (index == Utility.NO_INDEX)
                 return;
 
             index = get_subelem_index_by_slot_id(index + 1);
@@ -309,7 +309,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 set_element(current_element);
             }
 
-            ListSlots.SelectedIndex = -1;
+            ListSlots.SelectedIndex = Utility.NO_INDEX;
             ListSlots.SelectedIndex = e.Index;
         }
     }

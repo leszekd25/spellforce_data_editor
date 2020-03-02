@@ -39,7 +39,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
     {
         List<IRValue> stack = new List<IRValue>();
         LuaLocalVariableRegistry locals = new LuaLocalVariableRegistry();
-        int start_pos = -1;
+        int start_pos = Utility.NO_INDEX;
         List<int> instr_ids = new List<int>();
         int total_arg_count = 0;
 
@@ -461,7 +461,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                                 if (loc_pos >= 0)
                                     continue;
 
-                                loc_pos = -1;
+                                loc_pos = Utility.NO_INDEX;
 
                                 //if loc_pos = -1, search for next parent chunk 
                                 if (parent_chunk.parent == null)
@@ -529,7 +529,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                                 if (loc_pos >= 0)
                                     continue;
 
-                                loc_pos = -1;
+                                loc_pos = Utility.NO_INDEX;
 
                                 //if loc_pos = -1, search for next parent chunk 
                                 if (parent_chunk.parent == null)
@@ -616,7 +616,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                                 if (loc_pos >= 0)
                                     continue;
 
-                                loc_pos = -1;
+                                loc_pos = Utility.NO_INDEX;
 
                                 //if loc_pos = -1, search for next parent chunk 
                                 if (parent_chunk.parent == null)

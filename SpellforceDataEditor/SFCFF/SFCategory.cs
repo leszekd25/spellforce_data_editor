@@ -166,12 +166,12 @@ namespace SpellforceDataEditor.SFCFF
         public Object[] GetMultipleElementsFromBuffer(BinaryReader sr, char char_load)
         {
             List<Object> elements_loaded = new List<Object>();
-            int cur_id = -1;
+            int cur_id = Utility.NO_INDEX;
             while (true)
             {
                 if (sr.BaseStream.Position >= sr.BaseStream.Length)
                     break;
-                int next_id = -1;
+                int next_id = Utility.NO_INDEX;
                 if (char_load == 'B')
                 {
                     next_id = sr.ReadByte();
@@ -182,10 +182,10 @@ namespace SpellforceDataEditor.SFCFF
                     next_id = sr.ReadUInt16();
                     sr.BaseStream.Seek(-2, SeekOrigin.Current);
                 }
-                if (next_id == -1)
+                if (next_id == Utility.NO_INDEX)
                     break;
                 current_string = 0;
-                if ((next_id == cur_id) || (cur_id == -1))
+                if ((next_id == cur_id) || (cur_id == Utility.NO_INDEX))
                 {
                     cur_id = next_id;
                     for (int i = 0; i < elem_format.Length; i++)
@@ -204,7 +204,7 @@ namespace SpellforceDataEditor.SFCFF
         {
             for (int i = 0; i < elements.Count; i++)
             {
-                if (((T)elements[i].variants[v_index]).CompareTo(value) == 0)
+                if (((T)elements[i].variants[v_index]).CompareTo(value) == 0)   // if elements[i] == value
                     return elements[i];
             }
             LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.find_element(): Element not found (variant index = " + v_index.ToString() + ", value = " + value.ToString() + ", category: " + category_name + ")");
@@ -221,7 +221,7 @@ namespace SpellforceDataEditor.SFCFF
                     return i;
             }
             LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.find_element_index(): Element not found (variant index = " + v_index.ToString() + ", value = " + value.ToString() + ", category: " + category_name + ")");
-            return -1;
+            return Utility.NO_INDEX;
         }
 
         //searches for an element given column index and searched value and returns it if it exists
@@ -270,7 +270,7 @@ namespace SpellforceDataEditor.SFCFF
                     current_end = current_center - 1;
             }
     
-            return -1;
+            return Utility.NO_INDEX;
         }
 
         //puts a new element (as a list of variants) to a buffer
@@ -390,9 +390,9 @@ namespace SpellforceDataEditor.SFCFF
         public virtual int GetElementID(int index)
         {
             if (index >= elements.Count)
-                return -1;
+                return Utility.NO_INDEX;
             if (index < 0)
-                return -1;
+                return Utility.NO_INDEX;
             
             switch(elem_format[0])
             {
@@ -403,7 +403,7 @@ namespace SpellforceDataEditor.SFCFF
                 case 'I':
                     return (int)(UInt32)elements[index].variants[0];
                 default:
-                    return -1;
+                    return Utility.NO_INDEX;
             }
         }
 
@@ -419,7 +419,7 @@ namespace SpellforceDataEditor.SFCFF
                 case 'I':
                     return FindElementIndexBinary(0, (UInt32)id);
                 default:
-                    return -1;
+                    return Utility.NO_INDEX;
             }
         }
 
@@ -777,13 +777,13 @@ namespace SpellforceDataEditor.SFCFF
                 total_text += "\r\nPart of set: " + txt;
             }
 
-            if (special == 4)
+            if ((special & 4) == 4)
                 total_text += "\r\nQuest item (can not be sold)";
-            else if (special == 8)
+            if ((special & 8) == 8)
                 total_text += "\r\nQuest item (can be sold)";
-            else if (special == 16)
+            if ((special & 16) == 16)
                 total_text += "\r\nYou need to meet all item requirements to use this item";
-            else if (special != 0)
+            if ((special & (0b11100011)) != 0)
                 total_text += "\r\nUnknown optional data";
             return total_text;
         }
@@ -1248,18 +1248,18 @@ namespace SpellforceDataEditor.SFCFF
         public override Object[] GetElementFromBuffer(BinaryReader sr)
         {
             List<Object> elements_loaded = new List<Object>();
-            int cur_id = -1;
+            int cur_id = Utility.NO_INDEX;
             while (true)
             {
                 if (sr.BaseStream.Position >= sr.BaseStream.Length)
                     break;
-                int next_id = -1;
+                int next_id = Utility.NO_INDEX;
                 next_id = sr.ReadUInt16();
                 sr.BaseStream.Seek(-2, SeekOrigin.Current);
-                if (next_id == -1)
+                if (next_id == Utility.NO_INDEX)
                     break;
                 current_string = 0;
-                if ((next_id == cur_id) || (cur_id == -1))
+                if ((next_id == cur_id) || (cur_id == Utility.NO_INDEX))
                 {
                     cur_id = next_id;
                     for (int i = 0; i < elem_format.Length; i++)
@@ -1486,18 +1486,18 @@ namespace SpellforceDataEditor.SFCFF
         public override Object[] GetElementFromBuffer(BinaryReader sr)
         {
             List<Object> elements_loaded = new List<Object>();
-            int cur_id = -1;
+            int cur_id = Utility.NO_INDEX;
             while (true)
             {
                 if (sr.BaseStream.Position >= sr.BaseStream.Length)
                     break;
-                int next_id = -1;
+                int next_id = Utility.NO_INDEX;
                 next_id = sr.ReadUInt16();
                 sr.BaseStream.Seek(-2, SeekOrigin.Current);
-                if (next_id == -1)
+                if (next_id == Utility.NO_INDEX)
                     break;
                 current_string = 0;
-                if ((next_id == cur_id) || (cur_id == -1))
+                if ((next_id == cur_id) || (cur_id == Utility.NO_INDEX))
                 {
                     cur_id = next_id;
                     for (int i = 0; i < elem_format.Length; i++)

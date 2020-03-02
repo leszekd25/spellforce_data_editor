@@ -18,7 +18,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
 
         public object Pop()
         {
-            if (Pos == -1)
+            if (Pos == Utility.NO_INDEX)
                 throw new AccessViolationException("LuaStack.Pop(): Stack is empty!");
             object o = stack[Pos];
             stack.RemoveAt(Pos);

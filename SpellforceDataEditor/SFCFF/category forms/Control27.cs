@@ -56,7 +56,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void ListSkills_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListSkills.SelectedIndex == -1)
+            if (ListSkills.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             textBox1.Text = variant_repr(ListSkills.SelectedIndex * 3 + 2);
