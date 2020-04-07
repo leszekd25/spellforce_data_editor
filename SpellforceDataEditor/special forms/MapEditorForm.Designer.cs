@@ -185,6 +185,7 @@
             this.TreeEntities = new System.Windows.Forms.TreeView();
             this.TimerTreeEntityFilter = new System.Windows.Forms.Timer(this.components);
             this.RenderWindow = new OpenTK.GLControl();
+            this.EntityHidePreview = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
@@ -289,28 +290,28 @@
             // importHeightmapToolStripMenuItem
             // 
             this.importHeightmapToolStripMenuItem.Name = "importHeightmapToolStripMenuItem";
-            this.importHeightmapToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.importHeightmapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.importHeightmapToolStripMenuItem.Text = "Import heightmap";
             this.importHeightmapToolStripMenuItem.Click += new System.EventHandler(this.importHeightmapToolStripMenuItem_Click);
             // 
             // exportHeightmapToolStripMenuItem
             // 
             this.exportHeightmapToolStripMenuItem.Name = "exportHeightmapToolStripMenuItem";
-            this.exportHeightmapToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.exportHeightmapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exportHeightmapToolStripMenuItem.Text = "Export heightmap";
             this.exportHeightmapToolStripMenuItem.Click += new System.EventHandler(this.exportHeightmapToolStripMenuItem_Click);
             // 
             // slopebasedPaintToolStripMenuItem
             // 
             this.slopebasedPaintToolStripMenuItem.Name = "slopebasedPaintToolStripMenuItem";
-            this.slopebasedPaintToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.slopebasedPaintToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.slopebasedPaintToolStripMenuItem.Text = "Slope-based paint";
             this.slopebasedPaintToolStripMenuItem.Click += new System.EventHandler(this.slopebasedPaintToolStripMenuItem_Click);
             // 
             // visibilitySettingsToolStripMenuItem
             // 
             this.visibilitySettingsToolStripMenuItem.Name = "visibilitySettingsToolStripMenuItem";
-            this.visibilitySettingsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.visibilitySettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.visibilitySettingsToolStripMenuItem.Text = "Visibility settings";
             this.visibilitySettingsToolStripMenuItem.Click += new System.EventHandler(this.visibilitySettingsToolStripMenuItem_Click);
             // 
@@ -407,6 +408,7 @@
             // 
             // TabPageEntities
             // 
+            this.TabPageEntities.Controls.Add(this.EntityHidePreview);
             this.TabPageEntities.Controls.Add(this.PanelMonumentType);
             this.TabPageEntities.Controls.Add(this.EditCoopCampTypes);
             this.TabPageEntities.Controls.Add(this.PanelEntityPlacementSelect);
@@ -1774,6 +1776,17 @@
             this.RenderWindow.VSync = false;
             this.RenderWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
             // 
+            // EntityHidePreview
+            // 
+            this.EntityHidePreview.AutoSize = true;
+            this.EntityHidePreview.Location = new System.Drawing.Point(730, 94);
+            this.EntityHidePreview.Name = "EntityHidePreview";
+            this.EntityHidePreview.Size = new System.Drawing.Size(88, 17);
+            this.EntityHidePreview.TabIndex = 14;
+            this.EntityHidePreview.Text = "Hide preview";
+            this.EntityHidePreview.UseVisualStyleBackColor = true;
+            this.EntityHidePreview.CheckedChanged += new System.EventHandler(this.EntityHidePreview_CheckedChanged);
+            // 
             // MapEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1801,6 +1814,7 @@
             this.TabPageDecorations.ResumeLayout(false);
             this.TabPageDecorations.PerformLayout();
             this.TabPageEntities.ResumeLayout(false);
+            this.TabPageEntities.PerformLayout();
             this.PanelMonumentType.ResumeLayout(false);
             this.PanelMonumentType.PerformLayout();
             this.PanelEntityPlacementSelect.ResumeLayout(false);
@@ -2009,5 +2023,6 @@
         private System.Windows.Forms.TextBox TreeEntitytFilter;
         private System.Windows.Forms.Timer TimerTreeEntityFilter;
         private OpenTK.GLControl RenderWindow;
+        private System.Windows.Forms.CheckBox EntityHidePreview;
     }
 }

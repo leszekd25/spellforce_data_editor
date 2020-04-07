@@ -27,6 +27,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             checkBox7.Checked = Settings.OverlaysVisible;
             checkBox8.Checked = Settings.DisplayGrid;
             checkBox9.Checked = MainForm.mapedittool.ui.GetMinimapVisible();
+            checkBox10.Checked = MainForm.mapedittool.ui.GetMinimapIconsVisible();
 
             button1.BackColor = Color.FromArgb(((byte)Settings.GridColor.X*255), 
                                                ((byte)Settings.GridColor.Y*255), 
@@ -96,6 +97,13 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void checkBox9_CheckedChanged(object sender, EventArgs e)
         {
             MainForm.mapedittool.ui.SetMinimapVisible(checkBox9.Checked);
+            checkBox10.Enabled = checkBox9.Checked;
+            MainForm.mapedittool.update_render = true;
+        }
+
+        private void checkBox10_CheckedChanged(object sender, EventArgs e)
+        {
+            MainForm.mapedittool.ui.SetMinimapIconsVisible(checkBox10.Checked);
             MainForm.mapedittool.update_render = true;
         }
 

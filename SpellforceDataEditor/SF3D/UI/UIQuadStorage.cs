@@ -22,15 +22,17 @@ namespace SpellforceDataEditor.SF3D.UI
         public List<UIQuadStorageSpan> spans { get; private set; } = new List<UIQuadStorageSpan>();
         public Vector3[] vertices;
         Vector2[] uvs;
+        Vector4[] colors;
 
         public int vertex_array = Utility.NO_INDEX;
-        public int vertex_buffer, uv_buffer;
+        public int vertex_buffer, uv_buffer, color_buffer;
 
         Vector2[] pxsizes;
         Vector2[] origins;
         float[] depths;
         Vector2[] uvs_start;
         Vector2[] uvs_end;
+        Vector4[] quad_cols;
 
         int cur_quad = 0;
         public bool updated { get; private set; } = false;
@@ -39,16 +41,19 @@ namespace SpellforceDataEditor.SF3D.UI
         {
             vertices = new Vector3[quad_count * 6];
             uvs = new Vector2[quad_count * 6];
+            colors = new Vector4[quad_count * 6];
 
             pxsizes = new Vector2[quad_count];
             origins = new Vector2[quad_count];
             depths = new float[quad_count];
             uvs_start = new Vector2[quad_count];
             uvs_end = new Vector2[quad_count];
+            quad_cols = new Vector4[quad_count];
 
             vertex_array = GL.GenVertexArray();
             vertex_buffer = GL.GenBuffer();
             uv_buffer = GL.GenBuffer();
+            color_buffer = GL.GenBuffer();
 
             GL.BindVertexArray(vertex_array);
 
@@ -62,9 +67,15 @@ namespace SpellforceDataEditor.SF3D.UI
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
 
+            GL.BindBuffer(BufferTarget.ArrayBuffer, color_buffer);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, colors.Length * 16, colors, BufferUsageHint.StaticDraw);
+            GL.EnableVertexAttribArray(2);
+            GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, 0, 0);
+
             GL.BindVertexArray(0);
         }
 
+        // creates a span which reserves a sequence of X quads from storage
         public int ReserveQuads(int quad_count)
         {
             spans.Add(new UIQuadStorageSpan() { start = cur_quad, reserved = quad_count, used = 0, visible = true, position = new Vector2(0, 0) });
@@ -75,6 +86,7 @@ namespace SpellforceDataEditor.SF3D.UI
         }
 
         // for images
+        // sets span to use only 1 quad, and sets its geometry+display data, after which the span is initialized
         public void AllocateQuad(int span_index, Vector2 pxsize, Vector2 origin, float depth, bool invert_uv)
         {
             UIQuadStorageSpan span = spans[span_index];
@@ -91,12 +103,28 @@ namespace SpellforceDataEditor.SF3D.UI
                 uvs_start[span.start] = new Vector2(0, 0);
                 uvs_end[span.start] = new Vector2(1, 1);
             }
+            quad_cols[span.start] = Vector4.One;
 
             spans[span_index] = new UIQuadStorageSpan { start = span.start, reserved = span.reserved, used = 1, position = span.position, visible = span.visible };
             InitSpan(span_index);
         }
 
+        public void SetQuad(int span_index, int quad_index, Vector2 pxsize, Vector2 origin, Vector2 uv_start, Vector2 uv_end, float depth, Vector4 col)
+        {
+            UIQuadStorageSpan span = spans[span_index];
+            int qid = span.start + quad_index;
+            pxsizes[qid] = pxsize;
+            origins[qid] = origin;
+            depths[qid] = depth;
+            uvs_start[qid] = uv_start;
+            uvs_end[qid] = uv_end;
+            quad_cols[qid] = col;
+
+            spans[span_index].used = Math.Max(spans[span_index].used, quad_index + 1);
+        }
+
         // for text
+        // sets span to use N quads, sets their geometry+display data, after which the span is initialized
         public void AllocateQuadsUV(int span_index, Vector2[] _pxsizes, Vector2[] _origins, Vector2[] _uvs_start, Vector2[] _uvs_end, float depth = 0)
         {
             UIQuadStorageSpan span = spans[span_index];
@@ -106,6 +134,8 @@ namespace SpellforceDataEditor.SF3D.UI
             Array.Copy(_uvs_end, 0, uvs_end, span.start, _uvs_end.Length);
             for (int i = 0; i < _pxsizes.Length; i++)
                 depths[span.start + i] = depth;
+            for (int i = 0; i < _pxsizes.Length; i++)
+                quad_cols[span.start + i] = Vector4.One;
 
             spans[span_index] = new UIQuadStorageSpan { start = span.start, reserved = span.reserved, used = _pxsizes.Length, position = span.position, visible = span.visible };
             InitSpan(span_index);
@@ -116,6 +146,7 @@ namespace SpellforceDataEditor.SF3D.UI
             spans[span_index].position = pos;
         }
 
+        // updates quad vertices of the span, accordingly to previously set data
         public void UpdateSpanQuads(int span_index)
         {
             for (int i = 0; i < spans[span_index].used; i++)
@@ -142,10 +173,8 @@ namespace SpellforceDataEditor.SF3D.UI
             }
         }
 
-        public void InitSpan(int span_index)
+        public void UpdateSpanUVs(int span_index)
         {
-            UpdateSpanQuads(span_index);
-
             for (int i = 0; i < spans[span_index].used; i++)
             {
                 int offset = spans[span_index].start + i;
@@ -157,8 +186,36 @@ namespace SpellforceDataEditor.SF3D.UI
                 uvs[offset * 6 + 4] = new Vector2(uvs_start[offset].X, uvs_end[offset].Y);
                 uvs[offset * 6 + 5] = new Vector2(uvs_end[offset].X, uvs_end[offset].Y);
             }
+        }
+
+        public void UpdateSpanColors(int span_index)
+        {
+            for (int i = 0; i < spans[span_index].used; i++)
+            {
+                int offset = spans[span_index].start + i;
+
+                colors[offset * 6 + 0] = quad_cols[offset];
+                colors[offset * 6 + 1] = quad_cols[offset];
+                colors[offset * 6 + 2] = quad_cols[offset];
+                colors[offset * 6 + 3] = quad_cols[offset];
+                colors[offset * 6 + 4] = quad_cols[offset];
+                colors[offset * 6 + 5] = quad_cols[offset];
+            }
+        }
+
+        // initializes span, updating its vertices and uvs, and notifying that the geometry data is ready to be passed to gpu
+        public void InitSpan(int span_index)
+        {
+            UpdateSpanQuads(span_index);
+            UpdateSpanUVs(span_index);
+            UpdateSpanColors(span_index);
 
             updated = false;
+        }
+
+        public void ResetSpan(int span_index)
+        {
+            spans[span_index].used = 0;
         }
 
         public void SetQuadPxSize(int index, Vector2 size)
@@ -189,6 +246,9 @@ namespace SpellforceDataEditor.SF3D.UI
             GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
             GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(0), uvs.Length * 8, uvs);
 
+            GL.BindBuffer(BufferTarget.ArrayBuffer, color_buffer);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(0), colors.Length * 16, colors);
+
             GL.BindVertexArray(0);
 
             updated = true;
@@ -200,6 +260,7 @@ namespace SpellforceDataEditor.SF3D.UI
             {
                 GL.DeleteBuffer(vertex_buffer);
                 GL.DeleteBuffer(uv_buffer);
+                GL.DeleteBuffer(color_buffer);
                 GL.DeleteVertexArray(vertex_array);
                 vertex_array = Utility.NO_INDEX;
             }

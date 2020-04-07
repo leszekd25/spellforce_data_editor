@@ -496,6 +496,8 @@ namespace SpellforceDataEditor.SFMap
             cur_obj = null;
             ClearPreview();
 
+            SF3D.SFRender.SFRenderEngine.ui.RemoveStorage(font_outline.font_texture);
+            SF3D.SFRender.SFRenderEngine.ui.RemoveStorage(font_main.font_texture);
             font_outline.Dispose();
             font_main.Dispose();
         }

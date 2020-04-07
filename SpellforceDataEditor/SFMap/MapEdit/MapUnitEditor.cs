@@ -42,6 +42,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).LoadNextUnit();
                         selected_unit = map.unit_manager.units.Count - 1;
                         MainForm.mapedittool.InspectorSelect(map.unit_manager.units[selected_unit]);
+
+                        MainForm.mapedittool.ui.RedrawMinimapIcons();
                     }
 
                     first_click = true;
@@ -72,6 +74,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                     map.DeleteUnit(unit_map_index);
                     ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).RemoveUnit(unit_map_index);
+
+                    MainForm.mapedittool.ui.RedrawMinimapIcons();
                 }
             }
         }

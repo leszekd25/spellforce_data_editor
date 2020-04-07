@@ -44,6 +44,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         MainForm.mapedittool.InspectorSelect(map.building_manager.buildings[selected_building]);
 
                         first_click = true;
+
+                        MainForm.mapedittool.ui.RedrawMinimapIcons();
                     }
                 }
                 else if(button == MouseButtons.Right)
@@ -81,6 +83,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                     map.DeleteBuilding(building_map_index);
                     ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).RemoveBuilding(building_map_index);
+
+                    MainForm.mapedittool.ui.RedrawMinimapIcons();
                 }
             }
         }

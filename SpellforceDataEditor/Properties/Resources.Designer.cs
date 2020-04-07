@@ -256,8 +256,9 @@ namespace SpellforceDataEditor.Properties {
         ///   Looks up a localized string similar to #version 330 core
         ///
         ///in vec2 UV;
+        ///in vec4 color;
         ///
-        ///out vec4 color;
+        ///out vec4 out_color;
         ///
         ///uniform sampler2D Tex;
         ///
@@ -267,7 +268,7 @@ namespace SpellforceDataEditor.Properties {
         ///  if(temp_c.a == 0.0)
         ///    discard;
         ///
-        ///  color = temp_c;
+        ///  out_color = temp_c * color;
         ///}.
         /// </summary>
         internal static string fshader_ui {
@@ -333,6 +334,15 @@ namespace SpellforceDataEditor.Properties {
             get {
                 object obj = ResourceManager.GetObject("object_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         
@@ -558,8 +568,10 @@ namespace SpellforceDataEditor.Properties {
         ///// Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec2 vertexUV;
+        ///layout(location = 2) in vec4 vertexColor;
         ///
         ///out vec2 UV;
+        ///out vec4 color;
         ///
         ///uniform vec2 offset;
         ///uniform vec2 ScreenSize;
@@ -567,8 +579,7 @@ namespace SpellforceDataEditor.Properties {
         ///void main(){
         ///  // Output position of the vertex, in clip space : MVP * position
         ///  
-        ///  vec2 real_pos = vec2(vertexPosition_modelspace.x+offset.x - (ScreenSize.x/2), -(vertexPosition_modelspace.y + offset.y - (ScreenSize.y/2)))*2;
-        ///  gl_Position = vec4(rea [rest of string was truncated]&quot;;.
+        ///  vec2 real_pos = vec2(vertexPosition_modelspace.x+offset.x - (ScreenSize.x/2), -(vertexPosition_modelspace.y  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_ui {
             get {

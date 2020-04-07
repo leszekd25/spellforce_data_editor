@@ -62,6 +62,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]);
 
                         first_click = true;
+
+                        MainForm.mapedittool.ui.RedrawMinimapIcons();
                     }
                 }
                 else if (b == MouseButtons.Right)
@@ -119,6 +121,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 map.metadata.spawns.RemoveAt(i);
                                 break;
                             }
+
+                        MainForm.mapedittool.ui.RedrawMinimapIcons();
                     }
                 }
             }

@@ -24,28 +24,46 @@ namespace SpellforceDataEditor.special_forms
     {
         public class MapEditorUI
         {
+            public enum MapEditorUIIconType { UNIT = 0, BUILDING = 1 }
+            public const int COLOR_ENEMY = 0;
+            public const int COLOR_NEUTRAL = 1;
+            public const int COLOR_ALLY = 2;
+            public const int COLOR_MONUMENT = 3;
+            public const int COLOR_PORTAL = 4;
+            public const int COLOR_WHITE = 5;
+
+            static Vector4[] minimap_icons_colors =
+            {
+                new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+                new Vector4(0.0f, 1.0f, 1.0f, 1.0f),
+                new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+                new Vector4(1.0f, 1.0f, 0.3f, 1.0f),
+                new Vector4(1.0f, 1.0f, 0.7f, 1.0f),
+                new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
+            };
+
+
             SF3D.UI.UIElementIndex image_minimap;
             SF3D.UI.UIElementIndex image_minimap_frame_left;
             SF3D.UI.UIElementIndex image_minimap_frame_top;
+            SF3D.UI.UIElementIndex image_minimap_icons_border;
+            SF3D.UI.UIElementIndex image_minimap_icons;
+            int next_icon = 0;
+            bool icons_visible = true;
 
             // minimap texture
             public SF3D.SFTexture minimap_tex { get; private set; } = null;
+            public SF3D.SFTexture minimap_icons_tex { get; private set; } = null;
 
+            SFMap.SFMap map = null;
             int minimap_size;
             bool resizing = false;
             bool clicked = false;
             SFCoord clicked_pos = new SFCoord(0, 0);
 
-            public MapEditorUI()
+            public MapEditorUI(SFMap.SFMap _map)
             {
-                //SFRenderEngine.ui.AddStorage(font_outline.font_texture, 256);
-                //SFRenderEngine.ui.AddStorage(font_main.font_texture, 256);
-
-                //label_name_outline = SFRenderEngine.ui.AddElementText(font_outline, 256, new Vector2(0, 25));
-                //label_name = SFRenderEngine.ui.AddElementText(font_main, 256, new Vector2(0, 25));
-
-                //SFRenderEngine.ui.SetElementText(label_name_outline, font_outline, "test font");
-                //SFRenderEngine.ui.SetElementText(label_name, font_main, "test font");
+                map = _map;
             }
 
             public void InitMinimap(int m_width, int m_height)
@@ -60,9 +78,24 @@ namespace SpellforceDataEditor.special_forms
                 image_minimap = SFRenderEngine.ui.AddElementImage(minimap_tex, new Vector2(m_width, m_height), new Vector2(0, 0), new Vector2(0, 0), true);
                 image_minimap_frame_left = SFRenderEngine.ui.AddElementImage(SFRenderEngine.opaque_tex, new Vector2(3, m_height), new Vector2(0, 0), new Vector2(0, 0), false);
                 image_minimap_frame_top = SFRenderEngine.ui.AddElementImage(SFRenderEngine.opaque_tex, new Vector2(m_width, 3), new Vector2(0, 0), new Vector2(0, 0), false);
+
+                // minimap icons
+                int tex_code = SFResources.SFResourceManager.Textures.Load("ui_oth1");
+                if ((tex_code != 0) && (tex_code != -1))
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SF3D, "MapEditorUI.InitMinimap(): Could not load texture (texture name = ui_oth1)");
+                    throw new Exception("MapEditorUI.InitMinimap(): Could not load texture ui_oth1");
+                }
+                minimap_icons_tex = SFResources.SFResourceManager.Textures.Get("ui_oth1");
+
+                // 2000 units, 1000 buildings, 500 interactive objects, 100 portals
+                SFRenderEngine.ui.AddStorage(minimap_icons_tex, 7200);
+                image_minimap_icons_border = SFRenderEngine.ui.AddElementMulti(minimap_icons_tex, 3600);
+                image_minimap_icons = SFRenderEngine.ui.AddElementMulti(minimap_icons_tex, 3600);
             }
 
-            public void RedrawMinimap(SFMap.SFMap map)
+            // full map redraw
+            public void RedrawMinimap()
             {
                 if (minimap_tex == null)
                     return;
@@ -107,7 +140,8 @@ namespace SpellforceDataEditor.special_forms
                 minimap_tex.UpdateImage();
             }
 
-            public void RedrawMinimap(SFMap.SFMap map, HashSet<SFCoord> pixels, byte tile_id)
+            // redraw only selected pixels, and set them to chosen color
+            public void RedrawMinimap(HashSet<SFCoord> pixels, byte tile_id)
             {
                 if (minimap_tex == null)
                     return;
@@ -144,7 +178,8 @@ namespace SpellforceDataEditor.special_forms
                 minimap_tex.UpdateImage();
             }
 
-            public void RedrawMinimap(SFMap.SFMap map, HashSet<SFCoord> pixels)
+            // only redraw selected pixels
+            public void RedrawMinimap(HashSet<SFCoord> pixels)
             {
                 if (minimap_tex == null)
                     return;
@@ -191,6 +226,108 @@ namespace SpellforceDataEditor.special_forms
                 minimap_tex.UpdateImage();
             }
 
+            public void ClearMinimapIcons()
+            {
+                SFRenderEngine.ui.ClearElementMulti(image_minimap_icons_border);
+                SFRenderEngine.ui.ClearElementMulti(image_minimap_icons);
+                next_icon = 0;
+            }
+
+            public void AddMinimapIcon(MapEditorUIIconType icon_type, int color_index, SFCoord pos)
+            {
+                if (next_icon >= 3600)
+                    return;
+
+                pos = new SFCoord(pos.x, map.height - pos.y - 1);
+                Vector2 final_icon_center_offset = new Vector2((float)Math.Round((float)(pos.x * minimap_size) / minimap_tex.width), (float)Math.Round((float)(pos.y * minimap_size) / minimap_tex.height));
+                if(icon_type == MapEditorUIIconType.BUILDING)
+                {
+                    SFRenderEngine.ui.SetElementMultiQuad(image_minimap_icons_border, next_icon, new Vector2(7, 7), -(final_icon_center_offset - new Vector2(3, 3)), new Vector2(244, 54), new Vector2(251, 61), minimap_icons_colors[color_index]);
+                    SFRenderEngine.ui.SetElementMultiQuad(image_minimap_icons, next_icon, new Vector2(5, 5), -(final_icon_center_offset - new Vector2(2, 2)), new Vector2(245, 43), new Vector2(250, 48), minimap_icons_colors[color_index]);
+                }
+                else
+                {
+                    SFRenderEngine.ui.SetElementMultiQuad(image_minimap_icons_border, next_icon, new Vector2(4, 4), -(final_icon_center_offset - new Vector2(1, 1)), new Vector2(244, 94), new Vector2(248, 98), minimap_icons_colors[color_index]);
+                    SFRenderEngine.ui.SetElementMultiQuad(image_minimap_icons, next_icon, new Vector2(2, 2), -(final_icon_center_offset - new Vector2(0, 0)), new Vector2(245, 87), new Vector2(247, 89), minimap_icons_colors[color_index]);
+                }
+
+                next_icon += 1;
+            }
+
+            private int GetUnitRelationToMainChar(int unit_id)
+            {
+                // clan player = 11
+                var unit_data = SFCFF.SFCategoryManager.gamedata[17].FindElementBinary(0, (ushort)unit_id);
+                if (unit_data == null)
+                    return 1;
+                var unit_stats_data = SFCFF.SFCategoryManager.gamedata[3].FindElementBinary(0, (ushort)unit_data[2]);
+                if (unit_stats_data == null)
+                    return 1;
+                var race_data = SFCFF.SFCategoryManager.gamedata[15].FindElementBinary(0, (byte)unit_stats_data[2]);
+                if (race_data == null)
+                    return 1;
+                var clan_data = SFCFF.SFCategoryManager.gamedata[16].FindElementBinary(0, (byte)((ushort)race_data[9]));
+                if (clan_data == null)
+                    return 1;
+                var player_relation = (byte)clan_data[32];
+                if (player_relation == 0)
+                    return 1;
+                if (player_relation == 100)
+                    return 2;
+                if (player_relation == 156)
+                    return 0;
+                return 1;
+            }
+
+            private int GetBuildingRelationToMainChar(SFMapBuilding bld)
+            {
+                // clan player = 11
+                SFCFF.SFCategoryElement race_data;
+                if (bld.race_id == 0)
+                {
+                    var building_data = SFCFF.SFCategoryManager.gamedata[23].FindElementBinary(0, (ushort)bld.game_id);
+                    if (building_data == null)
+                        return 1;
+                    race_data = SFCFF.SFCategoryManager.gamedata[15].FindElementBinary(0, (byte)building_data[1]);
+                }
+                else
+                    race_data = SFCFF.SFCategoryManager.gamedata[15].FindElementBinary(0, (byte)bld.race_id);
+                if (race_data == null)
+                    return 1;
+                var clan_data = SFCFF.SFCategoryManager.gamedata[16].FindElementBinary(0, (byte)((ushort)race_data[9]));
+                if (clan_data == null)
+                    return 1;
+                var player_relation = (byte)clan_data[32];
+                if (player_relation == 0)
+                    return 1;
+                if (player_relation == 100)
+                    return 2;
+                if (player_relation == 156)
+                    return 0;
+                return 1;
+            }
+
+            public void RedrawMinimapIcons()
+            {
+                ClearMinimapIcons();
+                foreach (var unit in map.unit_manager.units)
+                    AddMinimapIcon(MapEditorUIIconType.UNIT, GetUnitRelationToMainChar(unit.game_id), unit.grid_position);
+                foreach (var building in map.building_manager.buildings)
+                    AddMinimapIcon(MapEditorUIIconType.BUILDING, GetBuildingRelationToMainChar(building), building.grid_position);
+                foreach(var obj in map.object_manager.objects)
+                {
+                    if (obj.npc_id > 0)
+                        AddMinimapIcon(MapEditorUIIconType.UNIT, 5, obj.grid_position);
+                }
+                foreach (var iobject in map.int_object_manager.int_objects)
+                    AddMinimapIcon(MapEditorUIIconType.BUILDING, 3, iobject.grid_position);
+                foreach (var portal in map.portal_manager.portals)
+                    AddMinimapIcon(MapEditorUIIconType.BUILDING, 4, portal.grid_position);
+                SFRenderEngine.ui.UpdateElementAll(image_minimap_icons_border);
+                SFRenderEngine.ui.UpdateElementAll(image_minimap_icons);
+
+            }
+
             public void SetMinimapVisible(bool visible)
             {
                 if (minimap_tex == null)
@@ -199,6 +336,19 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.ui.SetElementVisible(image_minimap, visible);
                 SFRenderEngine.ui.SetElementVisible(image_minimap_frame_left, visible);
                 SFRenderEngine.ui.SetElementVisible(image_minimap_frame_top, visible);
+
+                SFRenderEngine.ui.SetElementVisible(image_minimap_icons_border, visible & icons_visible);
+                SFRenderEngine.ui.SetElementVisible(image_minimap_icons, visible & icons_visible);
+            }
+
+            public void SetMinimapIconsVisible(bool visible)
+            {
+                if (minimap_tex == null)
+                    return;
+
+                icons_visible = visible;
+                SFRenderEngine.ui.SetElementVisible(image_minimap_icons_border, GetMinimapVisible() & icons_visible);
+                SFRenderEngine.ui.SetElementVisible(image_minimap_icons, GetMinimapVisible() & icons_visible);
             }
 
             public void SetMinimapSize(int size)
@@ -216,10 +366,12 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.ui.MoveElement(image_minimap, new Vector2(SFRenderEngine.render_size.X - size, SFRenderEngine.render_size.Y - size));
                 SFRenderEngine.ui.MoveElement(image_minimap_frame_left, new Vector2(SFRenderEngine.render_size.X - size - 3, SFRenderEngine.render_size.Y - size));
                 SFRenderEngine.ui.MoveElement(image_minimap_frame_top, new Vector2(SFRenderEngine.render_size.X - size - 3, SFRenderEngine.render_size.Y - size - 3));
+                SFRenderEngine.ui.MoveElement(image_minimap_icons_border, new Vector2(SFRenderEngine.render_size.X - size, SFRenderEngine.render_size.Y - size));
+                SFRenderEngine.ui.MoveElement(image_minimap_icons, new Vector2(SFRenderEngine.render_size.X - size, SFRenderEngine.render_size.Y - size));
 
-                SFRenderEngine.ui.UpdateElement(image_minimap);
-                SFRenderEngine.ui.UpdateElement(image_minimap_frame_left);
-                SFRenderEngine.ui.UpdateElement(image_minimap_frame_top);
+                SFRenderEngine.ui.UpdateElementGeometry(image_minimap);
+                SFRenderEngine.ui.UpdateElementGeometry(image_minimap_frame_left);
+                SFRenderEngine.ui.UpdateElementGeometry(image_minimap_frame_top);
             }
 
             public void ExportMinimap(string name)
@@ -245,7 +397,10 @@ namespace SpellforceDataEditor.special_forms
                 if (resizing)
                 {
                     if (mouse_pressed == false)
+                    {
                         resizing = false;
+                        RedrawMinimapIcons();
+                    }
                     else
                     {
                         float s = Math.Max(SFRenderEngine.render_size.X - mx, SFRenderEngine.render_size.Y - my);
@@ -296,18 +451,30 @@ namespace SpellforceDataEditor.special_forms
                 return SFRenderEngine.ui.GetElementVisible(image_minimap);
             }
 
+            public bool GetMinimapIconsVisible()
+            {
+                return icons_visible;
+            }
+
             public void UninitMinimap()
             {
                 SFRenderEngine.ui.RemoveStorage(minimap_tex);
                 SFRenderEngine.ui.RemoveStorage(SFRenderEngine.opaque_tex);
+                SFRenderEngine.ui.RemoveStorage(minimap_icons_tex);
+
                 minimap_tex.Dispose();
                 minimap_tex = null;
+                minimap_icons_tex.Dispose();
+                minimap_icons_tex = null;
             }
 
             public void Dispose()
             {
+                map = null;
                 if(minimap_tex != null)
                     minimap_tex.Dispose();
+                if (minimap_icons_tex != null)
+                    minimap_icons_tex.Dispose();
             }
         }
 
@@ -500,10 +667,11 @@ namespace SpellforceDataEditor.special_forms
             SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
             ResetCamera();
 
-            ui = new MapEditorUI();
+            ui = new MapEditorUI(map);
             ui.InitMinimap(map.width, map.height);
-            ui.RedrawMinimap(map);
             ui.SetMinimapSize(256);
+            ui.RedrawMinimap();
+            ui.RedrawMinimapIcons();
 
             RenderWindow.Invalidate();
 
@@ -588,10 +756,11 @@ namespace SpellforceDataEditor.special_forms
                 SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
                 ResetCamera();
 
-                ui = new MapEditorUI();
+                ui = new MapEditorUI(map);
                 ui.InitMinimap(map.width, map.height);
-                ui.RedrawMinimap(map);
                 ui.SetMinimapSize(256);
+                ui.RedrawMinimap();
+                ui.RedrawMinimapIcons();
 
                 RenderWindow.Invalidate();
 
@@ -1148,6 +1317,10 @@ namespace SpellforceDataEditor.special_forms
                     return true;
                 case Keys.P | Keys.Control:
                     ui.ExportMinimap("minimap");
+                    return true;
+                case Keys.V | Keys.Control:
+                    if (TabEditorModes.SelectedIndex == 2)
+                        EntityHidePreview.Checked = !EntityHidePreview.Checked;
                     return true;
                 case Keys.D1 | Keys.Control:
                     if (TabEditorModes.Enabled)
@@ -1754,6 +1927,7 @@ namespace SpellforceDataEditor.special_forms
         {
             EditCoopCampTypes.Location = PanelEntityPlacementSelect.Location;
             PanelMonumentType.Location = PanelEntityPlacementSelect.Location;
+            EntityHidePreview.Location = new Point(486, 94);
             if (RadioEntityModeUnit.Checked)
             {
                 RadioEntityModeUnit.Checked = false;
@@ -1954,6 +2128,8 @@ namespace SpellforceDataEditor.special_forms
 
             if (TabEditorModes.SelectedIndex != 2)
                 return;
+            if (EntityHidePreview.Checked)
+                return;
 
             if (RadioEntityModeUnit.Checked)
             {
@@ -2004,6 +2180,14 @@ namespace SpellforceDataEditor.special_forms
             if(RadioEntityModeObject.Checked)
                 GetObjectNodesByName(TreeEntitytFilter.Text);
             TimerTreeEntityFilter.Stop();
+        }
+
+        private void EntityHidePreview_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EntityHidePreview.Checked)
+                map.selection_helper.ClearPreview();
+            else
+                ConfirmPlacementEntity();
         }
 
         private void RadioEntityModeUnit_CheckedChanged(object sender, EventArgs e)
@@ -2873,5 +3057,6 @@ namespace SpellforceDataEditor.special_forms
             exporthmap_form.FormClosed -= new FormClosedEventHandler(exporthmap_FormClosed);
             exporthmap_form = null;
         }
+
     }
 }

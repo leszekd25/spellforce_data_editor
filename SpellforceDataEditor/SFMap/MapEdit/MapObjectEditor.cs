@@ -51,6 +51,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         MainForm.mapedittool.InspectorSelect(map.object_manager.objects[selected_object]);
 
                         first_click = true;
+
+                        MainForm.mapedittool.ui.RedrawMinimapIcons();
                     }
                 }
                 else if(button == MouseButtons.Right)
@@ -87,6 +89,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                     map.DeleteObject(object_map_index);
                     ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).RemoveObject(object_map_index);
+
+                    MainForm.mapedittool.ui.RedrawMinimapIcons();
                 }
             }
         }

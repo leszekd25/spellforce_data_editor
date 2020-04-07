@@ -219,7 +219,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
         public override void OnMouseUp(MouseButtons b)
         {
-            MainForm.mapedittool.ui.RedrawMinimap(map, pixels);
+            MainForm.mapedittool.ui.RedrawMinimap(pixels);
             pixels.Clear();
             MainForm.mapedittool.update_render = true;
             base.OnMouseUp(b);

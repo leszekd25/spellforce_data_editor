@@ -18,6 +18,7 @@ namespace SpellforceDataEditor.SF3D.UI
     {
         public Dictionary<SFTexture, UIQuadStorage> storages { get; private set; } = new Dictionary<SFTexture, UIQuadStorage>();
 
+        // creates new storage with X quads - can only have one storage per texture
         public void AddStorage(SFTexture tex, int quad_count)
         {
             if(storages.ContainsKey(tex))
@@ -31,13 +32,14 @@ namespace SpellforceDataEditor.SF3D.UI
             storages.Add(tex, st);
         }
 
+        // deletes storage for given texture
         public void RemoveStorage(SFTexture tex)
         {
             storages[tex].Dispose();
-            tex.Dispose();
             storages.Remove(tex);
         }
 
+        // creates a new element which consists of a single image, and sets it immediately
         public UIElementIndex AddElementImage(SFTexture tex, Vector2 size, Vector2 origin, Vector2 pos, bool invert_image)
         {
             UIElementIndex elem_index;
@@ -48,6 +50,16 @@ namespace SpellforceDataEditor.SF3D.UI
             return elem_index;
         }
 
+        // creates a new element which consists of multiple images, but doesnt set them immediately
+        public UIElementIndex AddElementMulti(SFTexture tex, int count)
+        {
+            UIElementIndex elem_index;
+            elem_index.tex = tex;
+            elem_index.span_index = storages[tex].ReserveQuads(count);
+            return elem_index;
+        }
+
+        // creates a new element which consists of multiple images that correspond to letters of font, and sets max length of the text displaed with this element and its position
         public UIElementIndex AddElementText(UIFont font, int max_length, Vector2 pos)
         {
             UIElementIndex elem_index;
@@ -55,6 +67,12 @@ namespace SpellforceDataEditor.SF3D.UI
             elem_index.span_index = storages[font.font_texture].ReserveQuads(max_length);
             storages[font.font_texture].UpdateSpanPosition(elem_index.span_index, pos);
             return elem_index;
+        }
+
+        public void SetElementMultiQuad(UIElementIndex elem, int quad_index, Vector2 size, Vector2 origin, Vector2 px_start, Vector2 px_end, Vector4 col)
+        {
+            UIQuadStorage storage = storages[elem.tex];
+            storage.SetQuad(elem.span_index, quad_index, size, origin, new Vector2(px_start.X / elem.tex.width, px_start.Y / elem.tex.height), new Vector2(px_end.X / elem.tex.width, px_end.Y / elem.tex.height), 0.5f, col);
         }
 
         public void SetElementText(UIElementIndex elem, UIFont font, string text)
@@ -79,6 +97,11 @@ namespace SpellforceDataEditor.SF3D.UI
             storages[elem.tex].AllocateQuadsUV(elem.span_index, _pxsizes, _origins, _uvs_start, _uvs_end, 0.5f);
         }
 
+        public void ClearElementMulti(UIElementIndex elem)
+        {
+            storages[elem.tex].ResetSpan(elem.span_index);
+        }
+
         public void MoveElement(UIElementIndex e, Vector2 pos)
         {
             storages[e.tex].UpdateSpanPosition(e.span_index, pos);
@@ -87,6 +110,10 @@ namespace SpellforceDataEditor.SF3D.UI
         public void SetElementVisible(UIElementIndex e, bool visible)
         {
             storages[e.tex].spans[e.span_index].visible = visible;
+        }
+        public Vector2 GetElementPosition(UIElementIndex e)
+        {
+            return storages[e.tex].spans[e.span_index].position;
         }
         public bool GetElementVisible(UIElementIndex e)
         {
@@ -98,9 +125,14 @@ namespace SpellforceDataEditor.SF3D.UI
             storages[e.tex].SetQuadPxSize(storages[e.tex].spans[e.span_index].start, size);
         }
 
-        public void UpdateElement(UIElementIndex e)
+        public void UpdateElementGeometry(UIElementIndex e)
         {
             storages[e.tex].UpdateSpanQuads(e.span_index);
+        }
+
+        public void UpdateElementAll(UIElementIndex e)
+        {
+            storages[e.tex].InitSpan(e.span_index);
         }
 
         public void Update()

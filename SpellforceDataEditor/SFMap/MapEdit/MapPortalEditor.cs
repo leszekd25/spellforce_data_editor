@@ -44,6 +44,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         MainForm.mapedittool.InspectorSelect(map.portal_manager.portals[selected_portal]);
 
                         first_click = true;
+
+                        MainForm.mapedittool.ui.RedrawMinimapIcons();
                     }
                 }
                 else if(b == MouseButtons.Right)
@@ -81,6 +83,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                     map.DeletePortal(portal_map_index);
                     ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).RemovePortal(portal_map_index);
+
+                    MainForm.mapedittool.ui.RedrawMinimapIcons();
                 }
             }
         }

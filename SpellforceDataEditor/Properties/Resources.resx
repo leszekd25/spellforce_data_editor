@@ -803,8 +803,9 @@ void main(){
     <value>#version 330 core
 
 in vec2 UV;
+in vec4 color;
 
-out vec4 color;
+out vec4 out_color;
 
 uniform sampler2D Tex;
 
@@ -814,7 +815,7 @@ void main(){
   if(temp_c.a == 0.0)
     discard;
 
-  color = temp_c;
+  out_color = temp_c * color;
 }</value>
   </data>
   <data name="vshader_ui" xml:space="preserve">
@@ -823,8 +824,10 @@ void main(){
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec2 vertexUV;
+layout(location = 2) in vec4 vertexColor;
 
 out vec2 UV;
+out vec4 color;
 
 uniform vec2 offset;
 uniform vec2 ScreenSize;
@@ -836,6 +839,10 @@ void main(){
   gl_Position = vec4(real_pos/ScreenSize, vertexPosition_modelspace.z, 1.0);
 
   UV = vertexUV;
+  color = vertexColor;
 }</value>
+  </data>
+  <data name="String1" xml:space="preserve">
+    <value />
   </data>
 </root>
