@@ -79,7 +79,7 @@ namespace SpellforceDataEditor.SFLua
             else
             {
                 MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", fname);
-                BinaryReader br = new BinaryReader(ms);
+                BinaryReader br = new BinaryReader(ms, Encoding.ASCII);
                 LuaDecompiler.LuaBinaryScript scr = new LuaDecompiler.LuaBinaryScript(br);
                 br.Close();
 

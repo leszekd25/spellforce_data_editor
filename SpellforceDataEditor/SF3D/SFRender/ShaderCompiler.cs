@@ -17,15 +17,20 @@ namespace SpellforceDataEditor.SF3D.SFRender
 {
     static public class ShaderCompiler
     {
-        static public int Compile(string vertex_shader, string fragment_shader)
+        static public int Compile(HashSet<string> defines, string vertex_shader, string fragment_shader)
         {
+            // generate define preamble
+            string define_preamble = "#version 330\r\n";
+            foreach (string s in defines)
+                define_preamble += "#define " + s + " 1\r\n";
+
             int VertexShaderID = GL.CreateShader(ShaderType.VertexShader);
             int FragmentShaderID = GL.CreateShader(ShaderType.FragmentShader);
 
             //read vertex shader
-            string VertexShaderCode = vertex_shader;
+            string VertexShaderCode = define_preamble + vertex_shader;
             //read fragment shader
-            string FragmentShaderCode = fragment_shader;
+            string FragmentShaderCode = define_preamble + fragment_shader;
 
             //System.Diagnostics.Debug.WriteLine("Compiling " + vertex_shader);
             GL.ShaderSource(VertexShaderID, VertexShaderCode);

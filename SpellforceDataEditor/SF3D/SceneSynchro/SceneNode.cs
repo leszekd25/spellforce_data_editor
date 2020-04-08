@@ -354,6 +354,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
         public SFAnimation Animation { get; private set; } = null;
         public Matrix4[] BoneTransforms = null;
+        public Matrix4[][] BoneTransformsPerSkinChunk = null;
         public float AnimCurrentTime { get; private set; } = 0;
         public bool AnimPlaying { get; set; } = false;
         public override bool Visible
@@ -383,11 +384,22 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // also this bypasses resource system (for now), so they need to be managed elsewhere
         public void SetSkeletonSkin(SFSkeleton _skeleton, SFModelSkin _skin)
         {
+            BoneTransformsPerSkinChunk = null;
             if (_skeleton != null)
             {
                 BoneTransforms = new Matrix4[_skeleton.bone_count];
                 for (int i = 0; i < _skeleton.bone_count; i++)
                     BoneTransforms[i] = Matrix4.Identity;
+                if(_skin != null)
+                {
+                    BoneTransformsPerSkinChunk = new Matrix4[_skin.submodels.Length][];
+                    for(int i = 0; i < _skin.submodels.Length; i++)
+                    {
+                        BoneTransformsPerSkinChunk[i] = new Matrix4[SFSkeleton.MAX_BONE_PER_CHUNK];
+                        for (int j = 0; j < SFSkeleton.MAX_BONE_PER_CHUNK; j++)
+                            BoneTransformsPerSkinChunk[i][j] = Matrix4.Identity;
+                    }
+                }
             }
             else
                 BoneTransforms = null;
@@ -413,7 +425,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             else  // looping
                 AnimCurrentTime = t - (int)(t / Animation.max_time);
 
-            if(BoneTransforms != null)
+            if((BoneTransforms != null)&&(AnimPlaying))
                 UpdateBoneTransforms();
         }
 
@@ -425,6 +437,18 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             skeleton.CalculateTransformation(BoneTransforms, ref BoneTransforms);
             for (int i = 0; i < BoneTransforms.Length; i++)
                 BoneTransforms[i] = skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
+
+            UpdateBoneTransformsPerSkinChunk();
+        }
+
+        private void UpdateBoneTransformsPerSkinChunk()
+        {
+            if (BoneTransformsPerSkinChunk == null)
+                return;
+
+            for (int i = 0; i < BoneTransformsPerSkinChunk.GetLength(0); i++)
+                for (int j = 0; j < Skin.submodels[i].bones.Length; j++)
+                    BoneTransformsPerSkinChunk[i][j] = BoneTransforms[Skin.submodels[i].bones[j]];
         }
 
         protected override void UpdateTime(float t)

@@ -127,9 +127,9 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
             int size = br.ReadInt32();
             if (size == 0)
                 return "";
-            string s = "";
-            for (int i = 0; i < size - 1; i++)
-                s += (char)br.ReadByte();
+            string s = new String(br.ReadChars(size - 1));
+            /*for (int i = 0; i < size - 1; i++)
+                s += (char)br.ReadByte();*/
             br.ReadByte();
             return s;
         }
@@ -303,7 +303,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                 LuaBinaryHeader.Validate(br);
                 func = new LuaBinaryFunction(br);
             }
-            catch(Exception)
+            catch(Exception e)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaBinaryScript(): Error reading script from memory");
                 func = null;

@@ -57,7 +57,7 @@ namespace SpellforceDataEditor.SF3D
             return vec;
         }
 
-        public int Load(MemoryStream ms)
+        public int Load(MemoryStream ms, object custom_data)
         {
             StreamReader sr = new StreamReader(ms);
 

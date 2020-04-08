@@ -25,6 +25,8 @@ namespace SpellforceDataEditor.SF3D
         public int height { get; private set; }
         public int tex_id { get; private set; } = Utility.NO_INDEX;
         public uint mipMapCount { get; private set; }
+
+        public bool ignore_mipmap_level_settings { get; set; } = false;
         public InternalFormat format { get; private set; }
         string name = "";
 
@@ -35,13 +37,16 @@ namespace SpellforceDataEditor.SF3D
 
         public SFTexture(MemoryStream ms)
         {
-            Load(ms);
+            Load(ms, null);
             Init();
         }
 
         // returns whether provided mip map level is valid, considering user settings
         public bool IsValidMipMapLevel(int level)
         {
+            if (ignore_mipmap_level_settings)
+                return true;
+
             bool ret = ((level >= Settings.IgnoredMipMapsCount) || (level == mipMapCount - 1) || (mipMapCount <= Settings.IgnoredMipMapsCount));
 
             int size_skip = 0; int _w = width; int _h = height;
@@ -73,10 +78,10 @@ namespace SpellforceDataEditor.SF3D
                     {
                         if (min_allowed_level > level) min_allowed_level = level;
 
-                        byte[] mipMapData = new byte[size];
-                        Array.Copy(data, offset, mipMapData, 0, size);//  data.Skip(offset).Take(size).ToArray();
+                       // byte[] mipMapData = new byte[size];
+                       // Array.Copy(data, offset, mipMapData, 0, size);//  data.Skip(offset).Take(size).ToArray();
                         GL.CompressedTexImage2D(TextureTarget.Texture2D, level - min_allowed_level, format, w, h,
-                            0, size, mipMapData);
+                            0, size, ref data[offset]);
                         offset += size;
                     }
 
@@ -93,10 +98,10 @@ namespace SpellforceDataEditor.SF3D
                     {
                         if (min_allowed_level > level) min_allowed_level = level;
 
-                        byte[] mipMapData = new byte[size];
-                        Array.Copy(data, offset, mipMapData, 0, size);//  data.Skip(offset).Take(size).ToArray();
+                        //byte[] mipMapData = new byte[size];
+                        //Array.Copy(data, offset, mipMapData, 0, size);//  data.Skip(offset).Take(size).ToArray();
                         GL.TexImage2D(TextureTarget.Texture2D, level - min_allowed_level, PixelInternalFormat.Rgba, w, h,
-                            0, PixelFormat.Rgba, PixelType.UnsignedByte, mipMapData);
+                            0, PixelFormat.Rgba, PixelType.UnsignedByte, ref data[offset]);
                         offset += size;
                     }
 
@@ -117,8 +122,11 @@ namespace SpellforceDataEditor.SF3D
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
-        public int Load(MemoryStream ms)
+        public int Load(MemoryStream ms, object custom_data)
         {
+            if (custom_data != null)
+                ignore_mipmap_level_settings = (((int)custom_data) == 1);
+
             BinaryReader br = new BinaryReader(ms);
 
             if (LoadDDS(br) != 0)

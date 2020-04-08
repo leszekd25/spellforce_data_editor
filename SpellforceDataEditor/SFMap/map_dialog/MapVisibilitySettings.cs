@@ -79,6 +79,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void checkBox6_CheckedChanged(object sender, EventArgs e)
         {
             Settings.VisualizeHeight = checkBox6.Checked;
+            SF3D.SFRender.SFRenderEngine.RecompileMainShaders();
             MainForm.mapedittool.update_render = true;
         }
 
@@ -91,6 +92,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void checkBox8_CheckedChanged(object sender, EventArgs e)
         {
             Settings.DisplayGrid = checkBox8.Checked;
+            SF3D.SFRender.SFRenderEngine.RecompileMainShaders();
             MainForm.mapedittool.update_render = true;
         }
 

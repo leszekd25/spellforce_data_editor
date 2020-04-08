@@ -42,7 +42,7 @@ namespace SpellforceDataEditor.SF3D
             return;
         }
 
-        public int Load(MemoryStream ms)
+        public int Load(MemoryStream ms, object custom_data)
         {
             BinaryReader br = new BinaryReader(ms);
 

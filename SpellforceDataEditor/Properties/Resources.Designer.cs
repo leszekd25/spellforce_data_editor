@@ -91,9 +91,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///
-        ///in vec3 fragmentPosition;
+        ///   Looks up a localized string similar to in vec3 fragmentPosition;
         ///in vec3 fragmentNormal;
         ///in vec2 UV;
         ///in vec4 fragmentColor;
@@ -109,11 +107,13 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 AmbientColor;
         ///uniform sampler2D DiffuseTex;
         ///uniform sampler2D ShadowMap;
-        ///uniform bool texture_used;
-        ///uniform bool apply_shading;
-        ///uniform bool drop_alpha;
         ///uniform vec4 FogColor;
-        ///uniform float FogStart;        /// [rest of string was truncated]&quot;;.
+        ///uniform float FogStart;
+        ///uniform float FogEnd;
+        ///uniform float DepthBias;
+        ///
+        ///vec2 poissonDisk[4] = vec2[](
+        ///  vec2( -0.94201624,  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader {
             get {
@@ -122,8 +122,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///out vec4 FragColor;
+        ///   Looks up a localized string similar to out vec4 FragColor;
         ///  
         ///in vec2 TexCoords;
         ///
@@ -142,7 +141,7 @@ namespace SpellforceDataEditor.Properties {
         ///    }
         ///    FragColor = vec4(color, color, color, 1.0);*/
         ///    // this is for final render
-        ///    FragColor = texture(screenT [rest of string was truncated]&quot;;.
+        ///    FragColor = texture(screenTexture, TexCoords); [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_framebuffer_simple {
             get {
@@ -151,9 +150,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///
-        ///in vec3 fragmentPosition;
+        ///   Looks up a localized string similar to in vec3 fragmentPosition;
         ///in vec2 UV;
         ///in vec3 fragmentNormal;
         ///in vec4 fragmentPositionLightSpace;
@@ -164,8 +161,6 @@ namespace SpellforceDataEditor.Properties {
         ///uniform mat4 M;
         ///
         ///uniform int GridSize;
-        ///uniform bool VisualizeHeight;
-        ///uniform bool DisplayGrid;
         ///uniform vec4 GridColor;
         ///uniform float SunStrength;
         ///uniform vec3 SunDirection;
@@ -176,7 +171,9 @@ namespace SpellforceDataEditor.Properties {
         ///uniform float FogStart;
         ///uniform float FogEnd;
         ///
-        ///uniform s [rest of string was truncated]&quot;;.
+        ///uniform sampler2DArray myTextureSampler;
+        ///uniform sampler2D ShadowMap;
+        ///uniform sampler2 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_hmap {
             get {
@@ -185,9 +182,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///
-        ///in vec4 fragmentColor;
+        ///   Looks up a localized string similar to in vec4 fragmentColor;
         ///
         ///out vec4 color;
         ///
@@ -202,9 +197,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///
-        ///in vec2 UV;
+        ///   Looks up a localized string similar to in vec2 UV;
         ///uniform sampler2D DiffuseTexture;
         ///
         ///void main()
@@ -221,9 +214,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///
-        ///in vec3 fragmentPosition;
+        ///   Looks up a localized string similar to in vec3 fragmentPosition;
         ///in vec2 UV;
         ///in vec3 fragmentNormal;
         ///in vec4 fragmentPositionLightSpace;
@@ -238,13 +229,13 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 AmbientColor;
         ///uniform sampler2D DiffuseTex;
         ///uniform sampler2D ShadowMap;
-        ///uniform bool apply_shading;
         ///uniform vec4 FogColor;
         ///uniform float FogStart;
         ///uniform float FogEnd;
         ///
         ///vec2 poissonDisk[4] = vec2[](
-        ///  vec2( -0.94201 [rest of string was truncated]&quot;;.
+        ///  vec2( -0.94201624, -0.39906216 ),
+        ///  vec2( 0.94558609, -0.768907 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_skel {
             get {
@@ -253,9 +244,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///
-        ///in vec2 UV;
+        ///   Looks up a localized string similar to in vec2 UV;
         ///in vec4 color;
         ///
         ///out vec4 out_color;
@@ -367,9 +356,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///
-        ///// Input vertex data, different for all executions of this shader.
+        ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec3 vertexNormal;
         ///layout(location = 2) in vec2 vertexUV;
@@ -383,7 +370,8 @@ namespace SpellforceDataEditor.Properties {
         ///out vec4 fragmentPositionLightSpace;
         ///out mat4 M;
         ///
-        ///// Values that stay constant for the whole me [rest of string was truncated]&quot;;.
+        ///// Values that stay constant for the whole mesh.
+        ///uniform mat4 VP; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader {
             get {
@@ -392,8 +380,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///layout (location = 0) in vec2 aPos;
+        ///   Looks up a localized string similar to layout (location = 0) in vec2 aPos;
         ///layout (location = 1) in vec2 aTexCoords;
         ///
         ///out vec2 TexCoords;
@@ -411,9 +398,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///
-        ///// Input vertex data, different for all executions of this shader.
+        ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec3 vertexNormal;
         /////layout(location = 2) in vec3 texID;
@@ -428,7 +413,8 @@ namespace SpellforceDataEditor.Properties {
         ///
         ///// Values that stay constant for the whole mesh.
         ///uniform mat4 VP;
-        ///uniform mat4  [rest of string was truncated]&quot;;.
+        ///uniform mat4 LSM;
+        ///uniform mat4 M; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_hmap {
             get {
@@ -437,9 +423,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///
-        ///// Input vertex data, different for all executions of this shader.
+        ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///
         ///out vec4 fragmentColor;
@@ -461,8 +445,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///layout(location = 0) in vec3 vertexPosition_modelspace;
+        ///   Looks up a localized string similar to layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec3 vertexNormal;
         ///layout(location = 2) in vec2 vertexUV;
         ///layout(location = 3) in vec4 vertexColor;
@@ -485,9 +468,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///
-        ///// Input vertex data, different for all executions of this shader.
+        ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec2 vertexUV;
         ///layout(location = 2) in vec3 vertexNormal;
@@ -503,7 +484,10 @@ namespace SpellforceDataEditor.Properties {
         ///  
         ///void main(){
         ///  vec4 Vertex;
-        ///  vec4 newVerte [rest of string was truncated]&quot;;.
+        ///  vec4 newVertex;
+        ///  int index;
+        ///
+        ///  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_shadowmap_animated {
             get {
@@ -512,9 +496,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///
-        ///// Input vertex data, different for all executions of this shader.
+        ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec3 vertexNormal;
         ///layout(location = 2) in vec2 vertexUV;
@@ -529,7 +511,7 @@ namespace SpellforceDataEditor.Properties {
         ///  
         ///void main(){
         ///  // Output position of the vertex, in clip space : MVP * position
-        ///  gl_Posit [rest of string was truncated]&quot;;.
+        ///  gl_Position = LSM * M* vec4(v [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_shadowmap_heightmap {
             get {
@@ -538,9 +520,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///
-        ///// Input vertex data, different for all executions of this shader.
+        ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec2 vertexUV;
         ///layout(location = 2) in vec3 vertexNormal;
@@ -554,7 +534,8 @@ namespace SpellforceDataEditor.Properties {
         ///
         ///// Values that stay constant for the whole mesh.
         ///uniform mat4 P;
-        ///uniform ma [rest of string was truncated]&quot;;.
+        ///uniform mat4 V;
+        ///uniform mat4 L [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_skel {
             get {
@@ -563,9 +544,7 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///
-        ///// Input vertex data, different for all executions of this shader.
+        ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec2 vertexUV;
         ///layout(location = 2) in vec4 vertexColor;
@@ -579,7 +558,7 @@ namespace SpellforceDataEditor.Properties {
         ///void main(){
         ///  // Output position of the vertex, in clip space : MVP * position
         ///  
-        ///  vec2 real_pos = vec2(vertexPosition_modelspace.x+offset.x - (ScreenSize.x/2), -(vertexPosition_modelspace.y  [rest of string was truncated]&quot;;.
+        ///  vec2 real_pos = vec2(vertexPosition_modelspace.x+offset.x - (ScreenSize.x/2), -(vertexPosition_modelspace.y + offset.y - (ScreenS [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_ui {
             get {

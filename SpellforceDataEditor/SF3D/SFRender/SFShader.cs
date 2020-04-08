@@ -17,6 +17,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
     {
         public int ProgramID { get; private set; } = Utility.NO_INDEX;            // shader id as assigned by OpenGL
         private Dictionary<string, int> parameters = new Dictionary<string, int>();   // shader parameters IDs
+        private HashSet<string> defines = new HashSet<string>();                  // shader defines
 
         // returns shader parameter ID given parameter name
         public int this[string name]
@@ -29,14 +30,28 @@ namespace SpellforceDataEditor.SF3D.SFRender
         {
             parameters.Clear();
             if (ProgramID != Utility.NO_INDEX)
-                GL.DeleteShader(ProgramID);
-            ProgramID = ShaderCompiler.Compile(vshader, fshader);
+                GL.DeleteProgram(ProgramID);
+            ProgramID = ShaderCompiler.Compile(defines, vshader, fshader);
         }
 
         // adds shader parameter
         public void AddParameter(string name)
         {
             parameters[name] = GL.GetUniformLocation(ProgramID, name);
+        }
+
+        public void SetDefine(string name, bool exists)
+        {
+            if (defines.Contains(name))
+            {
+                if (!exists)
+                    defines.Remove(name);
+            }
+            else
+            {
+                if (exists)
+                    defines.Add(name);
+            }
         }
     }
 }

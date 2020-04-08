@@ -89,7 +89,7 @@ namespace SpellforceDataEditor.SF3D
             //needs_matrix_reload = false;
         }
 
-        public int Load(MemoryStream ms)
+        public int Load(MemoryStream ms, object custom_data)
         {
             return 0;
         }
@@ -246,11 +246,11 @@ namespace SpellforceDataEditor.SF3D
 
         public SFModel3D(MemoryStream ms)
         {
-            Load(ms);
+            Load(ms, null);
             Init();
         }
 
-        public int Load(MemoryStream ms)
+        public int Load(MemoryStream ms, object custom_data)
         {
             BinaryReader br = new BinaryReader(ms);
 

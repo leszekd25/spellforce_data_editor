@@ -29,6 +29,8 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 
         private void LoadTextures()
         {
+            map.heightmap.texture_manager.GenerateBaseImages();
+
             for (int i = 1; i < 32; i++)
             {
                 map_controls.MapTerrainTextureControl mttc = new map_controls.MapTerrainTextureControl();

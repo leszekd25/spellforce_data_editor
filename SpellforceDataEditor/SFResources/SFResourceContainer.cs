@@ -40,7 +40,7 @@ namespace SpellforceDataEditor.SFResources
         }
 
         // name of the resource in the pak files
-        public int Load(string rname)
+        public int Load(string rname, object custom_data = null)
         {
             // if resource is already loaded, increase reference count to that resource and return -1
             if (cont.ContainsKey(rname))
@@ -74,7 +74,7 @@ namespace SpellforceDataEditor.SFResources
             string prev_res = SFResourceManager.current_resource;
             SFResourceManager.current_resource = rname;
             T resource = new T();
-            int res_code = resource.Load(ms);
+            int res_code = resource.Load(ms, custom_data);
             SFResourceManager.current_resource = prev_res;
             //end of stack
 
@@ -97,7 +97,7 @@ namespace SpellforceDataEditor.SFResources
         }
 
         // memorystream with data, name for the resource
-        public int LoadFromMemory(MemoryStream ms, string rname)
+        public int LoadFromMemory(MemoryStream ms, string rname, object custom_data = null)
         {
             if (cont.ContainsKey(rname))
             {
@@ -114,7 +114,7 @@ namespace SpellforceDataEditor.SFResources
             string prev_res = SFResourceManager.current_resource;
             SFResourceManager.current_resource = rname;
             T resource = new T();
-            int res_code = resource.Load(ms);
+            int res_code = resource.Load(ms, custom_data);
             SFResourceManager.current_resource = prev_res;
             //end of stack
             if (res_code != 0)

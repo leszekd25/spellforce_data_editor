@@ -23,9 +23,9 @@ namespace SpellforceDataEditor
             {
                 Application.Run(new MainForm());
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.Main, "Program.Main() terminated due to error! Exception data: " + e.ToString()+" # "+e.Message);
+                LogUtils.Log.Error(LogUtils.LogSource.Main, "Program.Main() terminated due to error! Exception data: " + e.ToString() + " # " + e.Message);
             }
             finally
             {

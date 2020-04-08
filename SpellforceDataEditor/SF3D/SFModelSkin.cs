@@ -87,7 +87,7 @@ namespace SpellforceDataEditor.SF3D
             GL.BindVertexArray(0);
         }
 
-        public int Load(MemoryStream ms)
+        public int Load(MemoryStream ms, object custom_data)
         {
             BinaryReader br = new BinaryReader(ms);
 
@@ -224,7 +224,7 @@ namespace SpellforceDataEditor.SF3D
                 submodel.Init();
         }
 
-        public int Load(MemoryStream ms)
+        public int Load(MemoryStream ms, object custom_data)
         {
             BinaryReader br = new BinaryReader(ms);
 
@@ -239,7 +239,7 @@ namespace SpellforceDataEditor.SF3D
                 SFModelSkinChunk chunk = new SFModelSkinChunk();
                 submodels[i] = chunk;
                 chunk.chunk_id = i;
-                int return_code = chunk.Load(ms);
+                int return_code = chunk.Load(ms, null);
                 if (return_code != 0)
                 {
                     LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkin.Load(): Could not load skin chunk (chunk ID = " + i.ToString() + ")");

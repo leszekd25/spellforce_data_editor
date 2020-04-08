@@ -30,7 +30,7 @@ namespace SpellforceDataEditor.SF3D
 
         }
 
-        public int Load(MemoryStream ms)
+        public int Load(MemoryStream ms, object custom_data)
         {
             BinaryReader br = new BinaryReader(ms);
             modelnum = br.ReadInt32();

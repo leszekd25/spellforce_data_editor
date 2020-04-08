@@ -50,6 +50,7 @@ namespace SpellforceDataEditor.SFMap
         public SFTexture[] base_texture_bank { get; private set; } = new SFTexture[MAX_USED_TEXTURES];
 
         public Image[] texture_base_image = new Image[TEXTURES_AVAILABLE + 1]; // all base textures in the game
+        public bool base_images_loaded { get; private set; } = false;
 
         SFTexture texture_tile_mixer = null;
 
@@ -124,7 +125,7 @@ namespace SpellforceDataEditor.SFMap
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.LoadTerrainTexture(): Could not find texture " + filename);
                 throw new Exception("SFMapTerrainTextureManager.Init(): Can't find texture!");
             }
-            int res_code = tex.Load(ms);
+            int res_code = tex.Load(ms, null);
             if (res_code != 0)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.LoadTerrainTexture(): Could not load texture " + filename);
@@ -211,8 +212,6 @@ namespace SpellforceDataEditor.SFMap
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int)All.Repeat);
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
 
-            // generate button images (TODO: optimize this)
-            GenerateBaseImages();
             GenerateTileImages();
             
             // create uniform buffer object for tiledata
@@ -351,12 +350,16 @@ namespace SpellforceDataEditor.SFMap
         // generates previews for all existing terrain textures in game
         public void GenerateBaseImages()
         {
+            if (base_images_loaded)
+                return;
+
             for(int i = 1; i <= TEXTURES_AVAILABLE; i++)
             {
                 SFTexture tex = LoadTerrainTexture(i+TEXTURES_AVAILABLE);
                 texture_base_image[i] = CreateBitmapFromTexture(tex);
                 tex.Dispose();
             }
+            base_images_loaded = true;
         }
 
         // operates on 64x64 mipmap, hardcoded for now...

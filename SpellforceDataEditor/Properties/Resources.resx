@@ -118,9 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="fshader_skel" xml:space="preserve">
-    <value>#version 330 core
-
-in vec3 fragmentPosition;
+    <value>in vec3 fragmentPosition;
 in vec2 UV;
 in vec3 fragmentNormal;
 in vec4 fragmentPositionLightSpace;
@@ -135,7 +133,6 @@ uniform float AmbientStrength;
 uniform vec4 AmbientColor;
 uniform sampler2D DiffuseTex;
 uniform sampler2D ShadowMap;
-uniform bool apply_shading;
 uniform vec4 FogColor;
 uniform float FogStart;
 uniform float FogEnd;
@@ -170,8 +167,7 @@ void main(){
     discard;
 
   float brightness = 1.0;
-  if(apply_shading)
-  {
+  #ifdef APPLY_SHADING
     // calculate brightness resulting from light coming from sun
     mat3 normalMatrix = transpose(inverse(mat3(M)));
     vec3 normal = normalize(normalMatrix * fragmentNormal);
@@ -180,7 +176,7 @@ void main(){
     // calculate shadow
     brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
     brightness = clamp(brightness, 0, 1);  
-  }
+  #endif // APPLY_SHADING
 
   // calculate output color
   vec4 ambient_color = AmbientColor * AmbientStrength;
@@ -197,9 +193,7 @@ void main(){
 }</value>
   </data>
   <data name="vshader_skel" xml:space="preserve">
-    <value>#version 330 core
-
-// Input vertex data, different for all executions of this shader.
+    <value>// Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec2 vertexUV;
 layout(location = 2) in vec3 vertexNormal;
@@ -256,9 +250,7 @@ void main(){
 }</value>
   </data>
   <data name="vshader" xml:space="preserve">
-    <value>#version 330 core
-
-// Input vertex data, different for all executions of this shader.
+    <value>// Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec2 vertexUV;
@@ -288,9 +280,7 @@ void main(){
 }</value>
   </data>
   <data name="vshader_overlay" xml:space="preserve">
-    <value>#version 330 core
-
-// Input vertex data, different for all executions of this shader.
+    <value>// Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 
 out vec4 fragmentColor;
@@ -306,9 +296,7 @@ void main(){
 }</value>
   </data>
   <data name="fshader" xml:space="preserve">
-    <value>#version 330 core
-
-in vec3 fragmentPosition;
+    <value>in vec3 fragmentPosition;
 in vec3 fragmentNormal;
 in vec2 UV;
 in vec4 fragmentColor;
@@ -324,9 +312,6 @@ uniform float AmbientStrength;
 uniform vec4 AmbientColor;
 uniform sampler2D DiffuseTex;
 uniform sampler2D ShadowMap;
-uniform bool texture_used;
-uniform bool apply_shading;
-uniform bool drop_alpha;
 uniform vec4 FogColor;
 uniform float FogStart;
 uniform float FogEnd;
@@ -357,22 +342,12 @@ float CalculateShadow(vec4 FPLS, float b){
 }
 
 void main(){
-  vec4 temp_c;
-  if(texture_used)
-    temp_c = texture(DiffuseTex, UV);
-  else
-    temp_c = fragmentColor;
-  if (drop_alpha)
-  {
-    if(temp_c.a &lt; 0.5)
-      discard;
-  }
-  else if(temp_c.a == 0.0)
+  vec4 temp_c = fragmentColor * texture(DiffuseTex, UV);
+  if(temp_c.a == 0.0)
     discard;
 
   float brightness = 1.0;
-  if(apply_shading)
-  {
+  #ifdef APPLY_SHADING
     // calculate brightness resulting from light coming from sun
     mat3 normalMatrix = transpose(inverse(mat3(M)));
     vec3 normal = normalize(normalMatrix * fragmentNormal);
@@ -381,7 +356,7 @@ void main(){
     // calculate shadow
     brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
     brightness = clamp(brightness, 0, 1);  
-  }
+  #endif // APPLY_SHADING
 
 
   // calculate output color
@@ -402,9 +377,7 @@ void main(){
 }</value>
   </data>
   <data name="fshader_overlay" xml:space="preserve">
-    <value>#version 330 core
-
-in vec4 fragmentColor;
+    <value>in vec4 fragmentColor;
 
 out vec4 color;
 
@@ -413,9 +386,7 @@ void main(){
 }</value>
   </data>
   <data name="fshader_hmap" xml:space="preserve">
-    <value>#version 330 core
-
-in vec3 fragmentPosition;
+    <value>in vec3 fragmentPosition;
 in vec2 UV;
 in vec3 fragmentNormal;
 in vec4 fragmentPositionLightSpace;
@@ -426,8 +397,6 @@ out vec4 color;
 uniform mat4 M;
 
 uniform int GridSize;
-uniform bool VisualizeHeight;
-uniform bool DisplayGrid;
 uniform vec4 GridColor;
 uniform float SunStrength;
 uniform vec3 SunDirection;
@@ -503,8 +472,7 @@ float CalculateGridIntensity(float x, float y, float d)
 
 void main(){
   float gridintensity = 0;
-  if(DisplayGrid)
-  {
+  #ifdef DISPLAY_GRID
     float depth = gl_FragCoord.z / gl_FragCoord.w;
     for(int i = 0; i &lt; 4; i++)
     {
@@ -514,18 +482,18 @@ void main(){
     }
     gridintensity += CalculateGridIntensity(vpos_orig.x, vpos_orig.y, depth)*2;
     gridintensity /= 6;
-  }
+  #endif // DISPLAY_GRID
 
-  if(VisualizeHeight)
-  {
+  #ifdef VISUALIZE_HEIGHT
     float height = vpos_orig.z;
     float c = ((height/2)-floor(height/2))*0.3;
     highp int col_index = int(mod(height/2, 3));
     color = clamp(hmap_visualization_colors[col_index]+vec4(c, c, c, 1.0), 0.0, 1.0);
     color = mix(color, vec4(1, 1, 1, 1), gridintensity);
     return;
-  }
-
+  #endif // VISUALIZE_HEIGHT
+  
+  #ifndef VISUALIZE_HEIGHT
   // calculate brightness resulting from light coming from sun
   mat3 normalMatrix = transpose(inverse(mat3(M)));
   vec3 normal = normalize(normalMatrix * fragmentNormal);
@@ -587,12 +555,11 @@ void main(){
   float dist = gl_FragCoord.z / gl_FragCoord.w;
   float fog_factor = clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0);
   color = mix(color, FogColor, fog_factor);
+  #endif // VISUALIZE_HEIGHT
 }</value>
   </data>
   <data name="vshader_hmap" xml:space="preserve">
-    <value>#version 330 core
-
-// Input vertex data, different for all executions of this shader.
+    <value>// Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexNormal;
 //layout(location = 2) in vec3 texID;
@@ -658,8 +625,7 @@ void main(){
     <value>..\Resources\unit_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="fshader_framebuffer_simple" xml:space="preserve">
-    <value>#version 330 core
-out vec4 FragColor;
+    <value>out vec4 FragColor;
   
 in vec2 TexCoords;
 
@@ -682,8 +648,7 @@ void main()
 }</value>
   </data>
   <data name="vshader_framebuffer" xml:space="preserve">
-    <value>#version 330 core
-layout (location = 0) in vec2 aPos;
+    <value>layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec2 aTexCoords;
 
 out vec2 TexCoords;
@@ -695,9 +660,7 @@ void main()
 }</value>
   </data>
   <data name="fshader_shadowmap" xml:space="preserve">
-    <value>#version 330 core
-
-in vec2 UV;
+    <value>in vec2 UV;
 uniform sampler2D DiffuseTexture;
 
 void main()
@@ -708,8 +671,7 @@ void main()
 }</value>
   </data>
   <data name="vshader_shadowmap" xml:space="preserve">
-    <value>#version 330 core
-layout(location = 0) in vec3 vertexPosition_modelspace;
+    <value>layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec2 vertexUV;
 layout(location = 3) in vec4 vertexColor;
@@ -726,9 +688,7 @@ void main()
 }</value>
   </data>
   <data name="vshader_shadowmap_animated" xml:space="preserve">
-    <value>#version 330 core
-
-// Input vertex data, different for all executions of this shader.
+    <value>// Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec2 vertexUV;
 layout(location = 2) in vec3 vertexNormal;
@@ -778,9 +738,7 @@ void main(){
 }</value>
   </data>
   <data name="vshader_shadowmap_heightmap" xml:space="preserve">
-    <value>#version 330 core
-
-// Input vertex data, different for all executions of this shader.
+    <value>// Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec2 vertexUV;
@@ -800,9 +758,7 @@ void main(){
 }</value>
   </data>
   <data name="fshader_ui" xml:space="preserve">
-    <value>#version 330 core
-
-in vec2 UV;
+    <value>in vec2 UV;
 in vec4 color;
 
 out vec4 out_color;
@@ -819,9 +775,7 @@ void main(){
 }</value>
   </data>
   <data name="vshader_ui" xml:space="preserve">
-    <value>#version 330 core
-
-// Input vertex data, different for all executions of this shader.
+    <value>// Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec2 vertexUV;
 layout(location = 2) in vec4 vertexColor;

@@ -14,7 +14,7 @@ namespace SpellforceDataEditor.SFResources
 {
     public interface SFResource
     {
-        int Load(MemoryStream ms);
+        int Load(MemoryStream ms, object custom_data);
         void Init();
         void Dispose();
         void SetName(string s);

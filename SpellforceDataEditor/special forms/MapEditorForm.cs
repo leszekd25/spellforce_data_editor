@@ -80,7 +80,7 @@ namespace SpellforceDataEditor.special_forms
                 image_minimap_frame_top = SFRenderEngine.ui.AddElementImage(SFRenderEngine.opaque_tex, new Vector2(m_width, 3), new Vector2(0, 0), new Vector2(0, 0), false);
 
                 // minimap icons
-                int tex_code = SFResources.SFResourceManager.Textures.Load("ui_oth1");
+                int tex_code = SFResources.SFResourceManager.Textures.Load("ui_oth1", (int)1);
                 if ((tex_code != 0) && (tex_code != -1))
                 {
                     LogUtils.Log.Error(LogUtils.LogSource.SF3D, "MapEditorUI.InitMinimap(): Could not load texture (texture name = ui_oth1)");
@@ -1305,10 +1305,12 @@ namespace SpellforceDataEditor.special_forms
                     return true;
                 case Keys.G | Keys.Control:
                     Settings.DisplayGrid = !Settings.DisplayGrid;
+                    SF3D.SFRender.SFRenderEngine.RecompileMainShaders();
                     update_render = true;
                     return true;
                 case Keys.H | Keys.Control:
                     Settings.VisualizeHeight = !Settings.VisualizeHeight;
+                    SF3D.SFRender.SFRenderEngine.RecompileMainShaders();
                     update_render = true;
                     return true;
                 case Keys.M | Keys.Control:
