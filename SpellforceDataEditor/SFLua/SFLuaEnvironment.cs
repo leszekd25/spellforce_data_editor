@@ -207,7 +207,7 @@ namespace SpellforceDataEditor.SFLua
                         if (!Directory.Exists(SFUnPak.SFUnPak.game_directory_name + "\\script\\p" + platform_id.ToString()))
                             Directory.CreateDirectory(SFUnPak.SFUnPak.game_directory_name + "\\script\\p" + platform_id.ToString());
 
-                        File.Create("@" + SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
+                        using (var f = File.Create(SFUnPak.SFUnPak.game_directory_name + "\\" + fname));
                     }
                     else
                         return -2;
