@@ -191,14 +191,15 @@ namespace SpellforceDataEditor.SFMap
         public bool generated = false;
 
         // heightmap
-        int pool_index = -1;
+        public int pool_index = -1;
+        public SF3D.Physics.BoundingBox aabb;
 
-        public SF3D.Physics.CollisionMesh collision_cache = new SF3D.Physics.CollisionMesh();
+        //public SF3D.Physics.CollisionMesh collision_cache = new SF3D.Physics.CollisionMesh();
 
         // lake
         public SFModel3D lake_model = null;    // generated here, but owned by ResourceManager
 
-        //public SF3D.Physics.BoundingBox aabb;
+
         public List<SFMapBuilding> buildings = new List<SFMapBuilding>();
         public List<SFMapObject> objects = new List<SFMapObject>();
         public List<SFMapInteractiveObject> int_objects = new List<SFMapInteractiveObject>();
@@ -218,7 +219,8 @@ namespace SpellforceDataEditor.SFMap
 
             pool_index = hmap.geometry_pool.BuildNewChunk(hmap, ix, iy);
 
-            collision_cache.GenerateFromHeightmap(new Vector3(0, 0, 0), hmap.geometry_pool, pool_index);
+            //collision_cache.GenerateFromHeightmap(new Vector3(0, 0, 0), hmap.geometry_pool, pool_index);
+            GenerateAABB();
             Init();
 
             RebuildLake();
@@ -227,7 +229,7 @@ namespace SpellforceDataEditor.SFMap
             generated = true;
         }
 
-        public void GenerateTemporaryAABB()
+        private void GenerateTemporaryAABB()
         {
             int size = width;
 
@@ -242,7 +244,32 @@ namespace SpellforceDataEditor.SFMap
                         max_height = h;
                 }
             }
-            collision_cache.aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, 0, iy * size), new Vector3((ix + 1) * size, max_height / 100.0f, (iy * size) + size));
+            aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, 0, iy * size), new Vector3((ix + 1) * size, max_height / 100.0f, (iy * size) + size));
+        }
+
+        public void GenerateAABB()
+        {
+            if(pool_index == -1)
+            {
+                GenerateTemporaryAABB();
+                return;
+            }
+
+            int size = width;
+
+            int o1 = SFMapHeightMapGeometryPool.CHUNK_SIZE + 1;
+            int o2 = o1 * o1 * pool_index;
+
+            float y1, y2;
+            y1 = 10000;
+            y2 = -10000;
+            for (int i = 0; i < (SFMapHeightMapGeometryPool.CHUNK_SIZE + 1) * (SFMapHeightMapGeometryPool.CHUNK_SIZE + 1); i++)
+            {
+                Vector3 v = hmap.geometry_pool.vertices_pool[i + o2];
+                y1 = Math.Min(y1, v.Y);
+                y2 = Math.Max(y2, v.Y);
+            }
+            aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, y1, iy * size), new Vector3((ix + 1) * size, y2, (iy * size) + size));
         }
 
         public void Init()
@@ -261,7 +288,7 @@ namespace SpellforceDataEditor.SFMap
                 pool_index = -1;
             }
 
-            collision_cache.triangles = null;
+            //collision_cache.triangles = null;
 
             if (lake_model != null)
             {
@@ -279,10 +306,11 @@ namespace SpellforceDataEditor.SFMap
             if (!visible)
                 return;
 
-            collision_cache = new SF3D.Physics.CollisionMesh();
+            //collision_cache = new SF3D.Physics.CollisionMesh();
             hmap.geometry_pool.UpdateChunk(pool_index, hmap, ix, iy);
 
-            collision_cache.GenerateFromHeightmap(new Vector3(0, 0, 0), hmap.geometry_pool, pool_index);
+            //collision_cache.GenerateFromHeightmap(new Vector3(0, 0, 0), hmap.geometry_pool, pool_index);
+            GenerateAABB();
 
 
             // fix all object positions (without lakes for now...)
@@ -539,7 +567,7 @@ namespace SpellforceDataEditor.SFMap
 
             hmap = null;
             owner = null;
-            collision_cache = null;
+            //collision_cache = null;
         }
 
         public void AddUnit(SFMapUnit u)
@@ -805,7 +833,7 @@ namespace SpellforceDataEditor.SFMap
                     chunk_node.MapChunk.iy = i;
                     chunk_node.MapChunk.width = SFMapHeightMapGeometryPool.CHUNK_SIZE;
                     chunk_node.MapChunk.height = SFMapHeightMapGeometryPool.CHUNK_SIZE;
-                    chunk_node.MapChunk.GenerateTemporaryAABB();
+                    chunk_node.MapChunk.GenerateAABB();
                     chunk_node.Update(0);
                 }
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate(): Chunks generated: " + chunk_nodes.Length.ToString());

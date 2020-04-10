@@ -187,7 +187,7 @@ namespace SpellforceDataEditor.special_forms
             // create grid model
             Vector3[] vertices = new Vector3[] { new Vector3(-1, 0, -1), new Vector3(-1, 0, 1), new Vector3(1, 0, -1), new Vector3(1, 0, 1) };
             Vector2[] uvs = new Vector2[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) };
-            Vector4[] colors = new Vector4[] { new Vector4(0.5f), new Vector4(0.5f), new Vector4(0.5f), new Vector4(0.5f) };
+            Vector4[] colors = new Vector4[] { new Vector4(1f), new Vector4(1f), new Vector4(1f), new Vector4(1f) };
             Vector3[] normals = new Vector3[] { new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0) };
             uint[] indices = new uint[] { 0, 1, 2, 1, 3, 2 };
             SFMaterial material = new SFMaterial();

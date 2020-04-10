@@ -29,6 +29,7 @@ namespace SpellforceDataEditor.SFMap
         public SFMapWeatherManager weather_manager { get; private set; } = null;
         public SFMapMetaData metadata { get; private set; } = null;
         public SFMapSelectionHelper selection_helper { get; private set; } = new SFMapSelectionHelper();
+        public SFMapOcean ocean { get; private set; } = new SFMapOcean();
         //public SFMapNPCManager npc_manager { get; private set; } = null;
         public SFCFF.SFGameData gamedata { get; private set; } = null;
         public uint PlatformID { get; private set; } = 6666;
@@ -706,6 +707,8 @@ namespace SpellforceDataEditor.SFMap
 
             // selection helper stuff
             selection_helper.AssignToMap(this);
+            ocean.map = this;
+            ocean.CreateOceanObject();
 
             FindPlatformID(filename);
 
@@ -1348,6 +1351,8 @@ namespace SpellforceDataEditor.SFMap
 
             // selection helper stuff
             selection_helper.AssignToMap(this);
+            ocean.map = this;
+            ocean.CreateOceanObject();
 
             // done
 
@@ -1366,6 +1371,8 @@ namespace SpellforceDataEditor.SFMap
                 metadata.Unload();             // minimap texture
             if(selection_helper!=null)
                 selection_helper.Dispose();    // selection 3d mesh
+            if (ocean != null)
+                ocean.Dispose();
             building_manager = null;
             unit_manager = null;
             object_manager = null;
@@ -1373,7 +1380,10 @@ namespace SpellforceDataEditor.SFMap
             decoration_manager = null;
             portal_manager = null;
             lake_manager = null;
+            heightmap = null;
             metadata = null;
+            selection_helper = null;
+            ocean = null;
             //npc_manager = null;
         }
 

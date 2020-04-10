@@ -147,18 +147,17 @@ namespace SpellforceDataEditor.SF3D.SFRender
             screenspace_framebuffer = new FrameBuffer((int)view_size.X, (int)view_size.Y, Settings.AntiAliasingSamples);
             screenspace_intermediate = new FrameBuffer((int)view_size.X, (int)view_size.Y, 0);
 
-
-            if(opaque_tex == null)
+            if(opaque_tex != null)
+                opaque_tex.Dispose();
+            
+            opaque_tex = new SFTexture();
+            byte[] tex_data = new byte[] { 255, 255, 255, 255 };
+            using (MemoryStream ms = new MemoryStream(tex_data))
             {
-                opaque_tex = new SFTexture();
-                byte[] tex_data = new byte[] { 255, 255, 255, 255 };
-                using (MemoryStream ms = new MemoryStream(tex_data))
+                using (BinaryReader br = new BinaryReader(ms))
                 {
-                    using (BinaryReader br = new BinaryReader(ms))
-                    {
-                        opaque_tex.LoadUncompressedRGBA(br, 1, 1, 0);
-                        opaque_tex.Init();
-                    }
+                    opaque_tex.LoadUncompressedRGBA(br, 1, 1, 0);
+                    opaque_tex.Init();
                 }
             }
 
@@ -413,13 +412,13 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 {
                     SceneNodeMapChunk chunk_node = scene.heightmap.chunk_nodes[j];
                     chunk_node.DistanceToCamera = Vector2.Distance(
-                        new Vector2(chunk_node.MapChunk.collision_cache.aabb.center.X, 
-                                    chunk_node.MapChunk.collision_cache.aabb.center.Z),
+                        new Vector2(chunk_node.MapChunk.aabb.center.X, 
+                                    chunk_node.MapChunk.aabb.center.Z),
                         new Vector2(scene.camera.Position.X, scene.camera.Position.Z));
-                    chunk_node.CameraHeightDifference = scene.camera.Position.Y - chunk_node.MapChunk.collision_cache.aabb.b.Y;
+                    chunk_node.CameraHeightDifference = scene.camera.Position.Y - chunk_node.MapChunk.aabb.b.Y;
                     if (chunk_node.DistanceToCamera > 224)  // magic number: zFar+aspect_ratio*sqrt2*chunk size
                         continue;
-                    if (!chunk_node.MapChunk.collision_cache.aabb.IsOutsideOfConvexHull(scene.camera.FrustumPlanes))
+                    if (!chunk_node.MapChunk.aabb.IsOutsideOfConvexHull(scene.camera.FrustumPlanes))
                         vis_chunks_per_task[i].Add(chunk_node);
                 }
             });
@@ -669,7 +668,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
                 foreach (SFSubModel3D sbm in submodels)
                 {
-                    GL.BindVertexArray(sbm.vertex_array);
                     if (current_pass == RenderPass.SCENE)
                     {
                         //GL.Uniform1(active_shader["apply_shading"], sbm.material.matFlags);
@@ -679,6 +677,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         else
                             SetDepthBias(0);
                     }
+                    else if(current_pass == RenderPass.SHADOWMAP)
+                    {
+                        if (!sbm.material.casts_shadow)
+                            continue;
+                    }
+                    GL.BindVertexArray(sbm.vertex_array);
                     //GL.Uniform1(active_shader["apply_shading"], (mat.apply_shading ? 1 : 0));
 
                     GL.DrawElementsInstanced(PrimitiveType.Triangles, (int)sbm.face_indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero, sbm.instance_matrices.Count);

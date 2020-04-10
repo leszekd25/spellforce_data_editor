@@ -151,6 +151,36 @@ namespace SpellforceDataEditor.SF3D.Physics
             return false;
         }
 
+        private bool IntersectGeomPool(SFMap.SFMapHeightMapGeometryPool geom_pool, int offset, out Vector3 point)
+        {
+            point = Vector3.Zero;
+            if (offset == -1)
+                return false;
+
+            int o1 = SFMap.SFMapHeightMapGeometryPool.CHUNK_SIZE + 1;
+            int o2 = o1 * o1 * offset;
+            for(int i = 0; i < o1 - 1; i++)
+            {
+                for(int j = 0; j < o1 - 1; j++)
+                {
+                    Triangle tr1 = new Triangle(
+                        geom_pool.vertices_pool[o2 + i * o1 + j],
+                        geom_pool.vertices_pool[o2 + i * o1 + j + 1],
+                        geom_pool.vertices_pool[o2 + i * o1 + j + o1]);
+                    if (Intersect(tr1, out point))
+                        return true;
+                    Triangle tr2 = new Triangle(
+                        geom_pool.vertices_pool[o2 + i * o1 + j + 1],
+                        geom_pool.vertices_pool[o2 + i * o1 + j + o1 +1],
+                        geom_pool.vertices_pool[o2 + i * o1 + j + o1]);
+                    if (Intersect(tr2, out point))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         // calculates point of intersection between a heightmap and the ray
         // this is the preferred way of checking ray collision with the heightmap
         public bool Intersect(SFMap.SFMapHeightMap hmap, out Vector3 point)
@@ -158,6 +188,7 @@ namespace SpellforceDataEditor.SF3D.Physics
             point = Vector3.Zero;
             Vector2 ray_grid_start = new Vector2(start.X, start.Z);
             Vector2 ray_grid_grad = new Vector2(vector.X, vector.Z).Normalized();
+            float h1, h2;
             int chunk_size = SFMap.SFMapHeightMapGeometryPool.CHUNK_SIZE;
 
 
@@ -172,21 +203,14 @@ namespace SpellforceDataEditor.SF3D.Physics
                 chunk_size / 2 + (int)Math.Floor(ray_grid_start.X / chunk_size) * chunk_size,
                 chunk_size / 2 + (int)Math.Floor(ray_grid_start.Y / chunk_size) * chunk_size);
 
-            float distance_travelled = 0;
+            float distance_travelled = 0; // on the ground
+            float distance_coeff = 1/(Vector3.Dot(nvector, new Vector3(ray_grid_grad.X, 0, ray_grid_grad.Y)));  // real ray distance travelled is distance_travelled * distance_coeff
             float lgt = Length;
-            while (distance_travelled < lgt)
+            while (distance_travelled * distance_coeff < lgt)
             {
-                // check if current chunk center is in bounds
-                if(!((hmap.width < chunk_center.x) || (0 > chunk_center.x) || (hmap.height < chunk_center.y) || (0 > chunk_center.y)))
-                {
-                    // check if collision happens on the map chunk right here
-                    SFMap.SFMapHeightMapChunk hmap_chunk = hmap.GetChunk(new SFMap.SFCoord(chunk_center.x, hmap.map.width-chunk_center.y-1));
-                    if ((hmap_chunk.collision_cache != null)&&(hmap_chunk.collision_cache.triangles != null))
-                    {
-                        if (Intersect(hmap_chunk.collision_cache, out point))
-                            return true;
-                    }
-                }
+                SFMap.SFCoord new_chunk_center;
+
+                h1 = (start + distance_travelled * distance_coeff * nvector).Y;
 
                 // move ray forward
                 if (ray_grid_grad.X == 0)
@@ -194,7 +218,7 @@ namespace SpellforceDataEditor.SF3D.Physics
                     float coeff_y = Math.Abs((ray_grid_start.Y - next_grid_y) / ray_grid_grad.Y);
                     ray_grid_start += ray_grid_grad * coeff_y;
                     distance_travelled += coeff_y;
-                    chunk_center = new SFMap.SFCoord(chunk_center.x, chunk_center.y+(ray_grid_grad.Y > 0 ? chunk_size : -chunk_size));
+                    new_chunk_center = new SFMap.SFCoord(chunk_center.x, chunk_center.y + (ray_grid_grad.Y > 0 ? chunk_size : -chunk_size));
                     next_grid_y += (ray_grid_grad.Y > 0 ? chunk_size : -chunk_size);
                 }
                 else if (ray_grid_grad.Y == 0)
@@ -202,7 +226,7 @@ namespace SpellforceDataEditor.SF3D.Physics
                     float coeff_x = Math.Abs((ray_grid_start.X - next_grid_x) / ray_grid_grad.X);
                     ray_grid_start += ray_grid_grad * coeff_x;
                     distance_travelled += coeff_x;
-                    chunk_center = new SFMap.SFCoord(chunk_center.x + (ray_grid_grad.X > 0 ? chunk_size : -chunk_size), chunk_center.y);
+                    new_chunk_center = new SFMap.SFCoord(chunk_center.x + (ray_grid_grad.X > 0 ? chunk_size : -chunk_size), chunk_center.y);
                     next_grid_x += (ray_grid_grad.X > 0 ? chunk_size : -chunk_size);
                 }
                 else
@@ -211,19 +235,50 @@ namespace SpellforceDataEditor.SF3D.Physics
                     float coeff_y = Math.Abs((ray_grid_start.Y - next_grid_y) / ray_grid_grad.Y);
                     if (coeff_x > coeff_y)           // will move 1 up/down on the grid
                     {
-                        ray_grid_start += ray_grid_grad * coeff_y; 
+                        ray_grid_start += ray_grid_grad * coeff_y;
                         distance_travelled += coeff_y;
-                        chunk_center = new SFMap.SFCoord(chunk_center.x, chunk_center.y + (ray_grid_grad.Y > 0 ? chunk_size : -chunk_size));
+                        new_chunk_center = new SFMap.SFCoord(chunk_center.x, chunk_center.y + (ray_grid_grad.Y > 0 ? chunk_size : -chunk_size));
                         next_grid_y += (ray_grid_grad.Y > 0 ? chunk_size : -chunk_size);
                     }
                     else
                     {
-                        ray_grid_start += ray_grid_grad * coeff_x; 
+                        ray_grid_start += ray_grid_grad * coeff_x;
                         distance_travelled += coeff_x;
-                        chunk_center = new SFMap.SFCoord(chunk_center.x + (ray_grid_grad.X > 0 ? chunk_size : -chunk_size), chunk_center.y);
+                        new_chunk_center = new SFMap.SFCoord(chunk_center.x + (ray_grid_grad.X > 0 ? chunk_size : -chunk_size), chunk_center.y);
                         next_grid_x += (ray_grid_grad.X > 0 ? chunk_size : -chunk_size);
                     }
                 }
+
+                h2 = (start + distance_travelled * distance_coeff * nvector).Y;
+
+                if(h1 > h2)
+                {
+                    float tmp = h2;
+                    h2 = h1;
+                    h1 = tmp;
+                }
+
+                // check if current chunk center is in bounds
+                if (!((hmap.width < chunk_center.x) || (0 > chunk_center.x) || (hmap.height < chunk_center.y) || (0 > chunk_center.y)))
+                {
+                    // check if collision happens on the map chunk right here
+                    SFMap.SFMapHeightMapChunk hmap_chunk = hmap.GetChunk(new SFMap.SFCoord(chunk_center.x, hmap.map.width-chunk_center.y-1));
+                    if(hmap_chunk.generated)
+                    {
+                        if (((hmap_chunk.aabb.a.Y <= h2) && (hmap_chunk.aabb.a.Y >= h1))
+                            || ((hmap_chunk.aabb.b.Y <= h2) && (hmap_chunk.aabb.b.Y >= h1))
+                            || ((hmap_chunk.aabb.a.Y <= h2) && (hmap_chunk.aabb.b.Y >= h2))
+                            || ((hmap_chunk.aabb.a.Y <= h1) && (hmap_chunk.aabb.b.Y >= h2)))
+                        {
+                            if (IntersectGeomPool(hmap.geometry_pool, hmap_chunk.pool_index, out point))
+                                return true;
+                            //if (Intersect(hmap_chunk.collision_cache, out point))
+                                //return true;
+                        }
+                    }
+                }
+
+                chunk_center = new_chunk_center;
 
                 // check if ray out of bounds
                 if ((hmap.width < chunk_center.x) && (ray_grid_grad.X > 0))

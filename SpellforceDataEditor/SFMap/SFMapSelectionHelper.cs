@@ -11,8 +11,8 @@ namespace SpellforceDataEditor.SFMap
     {
         enum SelectionType { NONE, UNIT, BUILDING, OBJECT, INTERACTIVE_OBJECT, PORTAL }
 
-        static SF3D.SFModel3D selection_mesh = new SF3D.SFModel3D();
-        static SF3D.SFModel3D cursor_mesh = new SF3D.SFModel3D();
+        static SF3D.SFModel3D selection_mesh = null;
+        static SF3D.SFModel3D cursor_mesh = null;
         SFMap map = null;
         SF3D.SceneSynchro.SceneNodeSimple sel_obj = null;
         SF3D.SceneSynchro.SceneNodeSimple cur_obj = null;
@@ -43,6 +43,8 @@ namespace SpellforceDataEditor.SFMap
         public SFMapSelectionHelper()
         {
             // generate selection 3d model
+            selection_mesh = new SF3D.SFModel3D();
+
             Vector3[] vertices = new Vector3[8];
             Vector2[] uvs = new Vector2[8];
             Vector4[] colors = new Vector4[8];
@@ -72,6 +74,8 @@ namespace SpellforceDataEditor.SFMap
             SFResources.SFResourceManager.Models.AddManually(selection_mesh, "_SELECTION_");
 
             // generate mouse cursor selected position gizmo
+            cursor_mesh = new SF3D.SFModel3D();
+
             float g = 0.06f;   // gizmo width
             float h = 20.0f;   // gizmo height
             vertices[0] = new Vector3(-g, 0, -g);

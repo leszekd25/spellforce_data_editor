@@ -18,8 +18,6 @@ namespace SpellforceDataEditor.special_forms
         public bool Shift;
     }
 
-
-
     public partial class MapEditorForm : Form
     {
         public class MapEditorUI
@@ -108,7 +106,7 @@ namespace SpellforceDataEditor.special_forms
                     {
                         coord = new SFCoord(i, j);
                         float col_str = 1.0f;
-                        if (hmap.GetZ(coord) != 0)
+                        if (hmap.GetZ(coord) > 300)
                         {
                             col = hmap.texture_manager.tile_average_color[hmap.GetTileFixed(coord)];
 
@@ -156,7 +154,7 @@ namespace SpellforceDataEditor.special_forms
                     if (hmap.lake_data[j * hmap.width + i] != 0)
                         continue;
                     // shading
-                    if (hmap.GetZ(p) != 0)
+                    if (hmap.GetZ(p) > 300)
                     {
                         Vector3 normal = hmap.GetVertexNormal(i, j);
                         float col_str = (Vector3.Dot(normal, new Vector3(0, 1, 0)) / 2) + 0.5f;
@@ -203,7 +201,7 @@ namespace SpellforceDataEditor.special_forms
                     {
                         Color col = hmap.texture_manager.tile_average_color[hmap.GetTileFixed(p)];
                         // shading
-                        if (hmap.GetZ(p) != 0)
+                        if (hmap.GetZ(p) > 300)
                         {
                             Vector3 normal = hmap.GetVertexNormal(i, j);
                             float col_str = (Vector3.Dot(normal, new Vector3(0, 1, 0)) / 2) + 0.5f;
@@ -1118,6 +1116,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 SFRenderEngine.scene.sun_light.ShadowSize = Math.Max(50f, Math.Min(zoom_level * 60f, 200f));
                 map.selection_helper.Update();
+                map.ocean.SetPosition(SFRenderEngine.scene.camera.Position);
                 AdjustCameraZ();
                 SFRenderEngine.UpdateVisibleChunks();
                 SFRenderEngine.scene.Update();

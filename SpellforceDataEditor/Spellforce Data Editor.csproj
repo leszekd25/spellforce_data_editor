@@ -644,6 +644,7 @@
     <Compile Include="SFMap\SFMapMetaData.cs" />
     <Compile Include="SFMap\SFMapNPCManager.cs" />
     <Compile Include="SFMap\SFMapObjectManager.cs" />
+    <Compile Include="SFMap\SFMapOcean.cs" />
     <Compile Include="SFMap\SFMapPortalManager.cs" />
     <Compile Include="SFMap\SFMapSelectionHelper.cs" />
     <Compile Include="SFMap\SFMapTerrainTextureManager.cs" />
