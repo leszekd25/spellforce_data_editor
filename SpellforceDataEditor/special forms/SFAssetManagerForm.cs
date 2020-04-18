@@ -15,6 +15,7 @@ using SpellforceDataEditor.SF3D.SceneSynchro;
 using SpellforceDataEditor.SF3D.SFRender;
 using SpellforceDataEditor.SFSound;
 using SpellforceDataEditor.SFResources;
+using SpellforceDataEditor.SFEffect;
 
 namespace SpellforceDataEditor.special_forms
 {
@@ -149,6 +150,8 @@ namespace SpellforceDataEditor.special_forms
 
         SFAssetManagerUI ui = null;
 
+        public EffectEditorForm effect_editor { get; private set; } = null;
+
 
         public SFAssetManagerForm()
         {
@@ -279,23 +282,26 @@ namespace SpellforceDataEditor.special_forms
             PanelSound.Hide();
         }
 
+        private void ClearState()
+        {
+            ListEntries.Items.Clear();
+            ListAnimations.Items.Clear();
+            ResetScene();
+            SFResourceManager.Animations.DisposeAll();     // they're not being cleared, and its relatively fast compared to other stuff
+            dynamic_render = false;
+            sound_engine.UnloadSound();
+            TimerSoundDuration.Stop();
+            trackSoundDuration.Value = 0;
+            //SFResourceManager.DisposeAll();
+            HideAllPanels();
+            synchronized = false;
+            ui.SetName(""); ui.SetLabel1(""); ui.SetLabel2(""); ui.SetLabel3("");
+        }
+
         private void ComboBrowseMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ComboBrowseMode.SelectedIndex != -1)     // when changing from X to Y, it first changes to -1, so its ok to ignore this
-            {
-                ListEntries.Items.Clear();
-                ListAnimations.Items.Clear();
-                ResetScene();
-                SFResourceManager.Animations.DisposeAll();     // they're not being cleared, and its relatively fast compared to other stuff
-                dynamic_render = false;
-                sound_engine.UnloadSound();
-                TimerSoundDuration.Stop();
-                trackSoundDuration.Value = 0;
-                //SFResourceManager.DisposeAll();
-                HideAllPanels();
-                synchronized = false;
-                ui.SetName(""); ui.SetLabel1(""); ui.SetLabel2(""); ui.SetLabel3("");
-            }
+                ClearState();
 
             if(ComboBrowseMode.SelectedIndex == 0)
             {
@@ -1194,6 +1200,33 @@ namespace SpellforceDataEditor.special_forms
             if (grid_node != null)
                 grid_node.Visible = !grid_node.Visible;
             update_render = true;
+        }
+
+        private void runEffectEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ClearState();
+            ComboBrowseMode.SelectedIndex = -1;
+            ComboBrowseMode.Visible = false;
+
+            effect_editor = new EffectEditorForm();
+            effect_editor.FormClosed += new FormClosedEventHandler(this.effectEditor_FormClosed);
+            effect_editor.Show();
+
+            SceneNodeSimple eff_node = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "", "effect_root");
+        }
+
+        private void effectEditor_FormClosed(object sender, EventArgs e)
+        {
+            effect_editor.FormClosed -= new FormClosedEventHandler(this.effectEditor_FormClosed);
+            effect_editor = null;
+
+            ClearState();
+            ComboBrowseMode.Visible = true;
+        }
+
+        public void ExternalRunEffect(EffectObject effect)
+        {
+
         }
     }
 }

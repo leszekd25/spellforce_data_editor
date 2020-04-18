@@ -22,6 +22,70 @@ namespace SpellforceDataEditor.SF3D
         int GetSizeBytes();
     }
 
+    public class InterpolatedDouble : IInterpolatedValue<Double>
+    {
+        List<Double> value = new List<Double>();
+        List<float> time = new List<float>();
+        float max_time = -1;
+
+        public void Add(Double v, float t)
+        {
+            if (t >= max_time)
+            {
+                value.Add(v);
+                time.Add(t);
+                max_time = t;
+            }
+            else
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedDouble.Add(): Invalid time parameter (time = " + t.ToString() + ", max_time = " + max_time.ToString());
+                throw new InvalidOperationException("Invalid time parameter (t <= max_time)");
+            }
+        }
+
+        public Double Get(float t)
+        {
+            int size = value.Count;
+            if (size == 0)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedDouble.Get(): Data is empty!");
+                throw new IndexOutOfRangeException("Array is empty");
+            }
+            if (size == 1)
+                return value[0];
+
+            if (t < 0)
+                t = 0;
+            if (t > max_time)
+                t = max_time;
+
+            for (int i = 0; i < time.Count; i++)
+            {
+                if (time[i] >= t)
+                {
+                    if (i == 0)
+                        return value[0];
+
+                    float t1 = time[i - 1];
+                    return value[i - 1] + ((t - t1) / (time[i] - t1)) * (value[i] - value[i - 1]);
+                }
+            }
+
+            LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedDouble.Get(): Data is malformed!!!!");
+            throw new ArithmeticException("Invalid data");
+        }
+
+        public float GetMaxTime()
+        {
+            return max_time;
+        }
+
+        public int GetSizeBytes()
+        {
+            return 4 * time.Count + 8 * value.Count;
+        }
+    }
+
     public class InterpolatedVector3: IInterpolatedValue<Vector3>
     {
         List<Vector3> value = new List<Vector3>();

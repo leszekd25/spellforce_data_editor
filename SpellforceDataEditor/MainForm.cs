@@ -23,7 +23,7 @@ namespace SpellforceDataEditor
 
         public MainForm()
         {
-            /*MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", "object\\object_effect_helper.lua");
+            /*MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", "script\\p23\\clanrtsspawnp23.lua");
             BinaryReader br = new BinaryReader(ms);
             SFLua.LuaDecompiler.LuaBinaryScript scr = new SFLua.LuaDecompiler.LuaBinaryScript(br);
             scr.func.DumpAll();
@@ -32,7 +32,7 @@ namespace SpellforceDataEditor
             var chunk = dec.Decompile(scr.func);
             StringWriter sw = new StringWriter();
             chunk.WriteLuaString(sw);
-            File.WriteAllText("func_dec.txt", sw.ToString*/
+            File.WriteAllText("func_dec2.txt", sw.ToString());*/
 
             LogUtils.Log.Info(LogUtils.LogSource.Main, "MainForm() called");
             InitializeComponent();

@@ -146,13 +146,16 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // updates the node and all children nodes
         public void Update(float t)
         {
-            UpdateTime(t);
-            UpdateTransform();
-            if(Visible)
+            if (Visible)
+            {
+                UpdateTime(t);
+                UpdateTransform();
+
                 OnGatherSceneInstances();
 
-            foreach (SceneNode node in Children)
-                node.Update(t);
+                foreach (SceneNode node in Children)
+                    node.Update(t);
+            }
         }
 
         // updates local transform if needed, and result transform if needed
@@ -286,6 +289,20 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         n.Visible = value;
                 }
             }
+        }
+
+        public bool Billboarded { get; set; } = false;
+
+        protected override void UpdateTransform()
+        {
+            if(Billboarded)
+            {
+                SceneNodeCamera camera = SFRender.SFRenderEngine.scene.camera;
+                Rotation = Matrix4.LookAt(camera.Position, Position, new Vector3(0, 1, 0)).ExtractRotation();
+                rotation.Conjugate();
+            }
+
+            base.UpdateTransform();
         }
 
         public SceneNodeSimple(string n) : base(n) { }

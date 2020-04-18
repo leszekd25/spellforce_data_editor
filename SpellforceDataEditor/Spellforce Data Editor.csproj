@@ -427,6 +427,99 @@
     <Compile Include="SF3D\SFRender\SFShader.cs" />
     <Compile Include="SFChunkFile\SFChunkFile.cs" />
     <Compile Include="SFChunkFile\SFChunkFileChunk.cs" />
+    <Compile Include="SFEffect\EffectObject.cs" />
+    <Compile Include="SFEffect\effect_controls\EffectObjectControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\EffectObjectControl.Designer.cs">
+      <DependentUpon>EffectObjectControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleAnimationControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleAnimationControl.Designer.cs">
+      <DependentUpon>ParticleAnimationControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleChooseControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleChooseControl.Designer.cs">
+      <DependentUpon>ParticleChooseControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleColorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleColorControl.Designer.cs">
+      <DependentUpon>ParticleColorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleSoundControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleSoundControl.Designer.cs">
+      <DependentUpon>ParticleSoundControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFEffect\ParticleTargetColor.cs" />
+    <Compile Include="SFEffect\ParticleGlobalTrail.cs" />
+    <Compile Include="SFEffect\effect_controls\ParticleGlobalTrailControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleGlobalTrailControl.Designer.cs">
+      <DependentUpon>ParticleGlobalTrailControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleMovieEffectControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleMovieEffectControl.Designer.cs">
+      <DependentUpon>ParticleMovieEffectControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleNumbersControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleNumbersControl.Designer.cs">
+      <DependentUpon>ParticleNumbersControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleRotationControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleRotationControl.Designer.cs">
+      <DependentUpon>ParticleRotationControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleScaleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleScaleControl.Designer.cs">
+      <DependentUpon>ParticleScaleControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleTargetColorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleTargetColorControl.Designer.cs">
+      <DependentUpon>ParticleTargetColorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleTrailControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleTrailControl.Designer.cs">
+      <DependentUpon>ParticleTrailControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleTranslationControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFEffect\effect_controls\ParticleTranslationControl.Designer.cs">
+      <DependentUpon>ParticleTranslationControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFEffect\ParticleMovieEffect.cs" />
+    <Compile Include="SFEffect\ParticleAnimation.cs" />
+    <Compile Include="SFEffect\ParticleChoose.cs" />
+    <Compile Include="SFEffect\ParticleColor.cs" />
+    <Compile Include="SFEffect\ParticleMovie.cs" />
+    <Compile Include="SFEffect\ParticleNumbers.cs" />
+    <Compile Include="SFEffect\ParticlePath.cs" />
+    <Compile Include="SFEffect\ParticleRotation.cs" />
+    <Compile Include="SFEffect\ParticleScale.cs" />
+    <Compile Include="SFEffect\ParticleSound.cs" />
+    <Compile Include="SFEffect\ParticleTrail.cs" />
+    <Compile Include="SFEffect\ParticleTranslation.cs" />
     <Compile Include="SFLua\ILuaParsable.cs" />
     <Compile Include="SFLua\LuaDecompiler\Assignment.cs" />
     <Compile Include="SFLua\LuaDecompiler\Chunk.cs" />
@@ -673,6 +766,12 @@
     </Compile>
     <Compile Include="special forms\CalculatorsForm.Designer.cs">
       <DependentUpon>CalculatorsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="special forms\EffectEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\EffectEditorForm.Designer.cs">
+      <DependentUpon>EffectEditorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="special forms\ExtractionSettingsForm.cs">
       <SubType>Form</SubType>
@@ -929,6 +1028,45 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SFEffect\effect_controls\EffectObjectControl.resx">
+      <DependentUpon>EffectObjectControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFEffect\effect_controls\ParticleAnimationControl.resx">
+      <DependentUpon>ParticleAnimationControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFEffect\effect_controls\ParticleChooseControl.resx">
+      <DependentUpon>ParticleChooseControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFEffect\effect_controls\ParticleColorControl.resx">
+      <DependentUpon>ParticleColorControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFEffect\effect_controls\ParticleGlobalTrailControl.resx">
+      <DependentUpon>ParticleGlobalTrailControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFEffect\effect_controls\ParticleMovieEffectControl.resx">
+      <DependentUpon>ParticleMovieEffectControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFEffect\effect_controls\ParticleNumbersControl.resx">
+      <DependentUpon>ParticleNumbersControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFEffect\effect_controls\ParticleRotationControl.resx">
+      <DependentUpon>ParticleRotationControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFEffect\effect_controls\ParticleScaleControl.resx">
+      <DependentUpon>ParticleScaleControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFEffect\effect_controls\ParticleSoundControl.resx">
+      <DependentUpon>ParticleSoundControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFEffect\effect_controls\ParticleTargetColorControl.resx">
+      <DependentUpon>ParticleTargetColorControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFEffect\effect_controls\ParticleTrailControl.resx">
+      <DependentUpon>ParticleTrailControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFEffect\effect_controls\ParticleTranslationControl.resx">
+      <DependentUpon>ParticleTranslationControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SFLua\lua_controls\LuaDecTestForm.resx">
       <DependentUpon>LuaDecTestForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -1015,6 +1153,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\CalculatorsForm.resx">
       <DependentUpon>CalculatorsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="special forms\EffectEditorForm.resx">
+      <DependentUpon>EffectEditorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\ExtractionSettingsForm.resx">
       <DependentUpon>ExtractionSettingsForm.cs</DependentUpon>
