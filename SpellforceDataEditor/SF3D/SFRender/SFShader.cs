@@ -40,6 +40,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             parameters[name] = GL.GetUniformLocation(ProgramID, name);
         }
 
+        // sets shader #define constant for conditional compilation
         public void SetDefine(string name, bool exists)
         {
             if (defines.Contains(name))

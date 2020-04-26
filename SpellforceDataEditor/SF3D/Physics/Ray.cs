@@ -263,7 +263,7 @@ namespace SpellforceDataEditor.SF3D.Physics
                 {
                     // check if collision happens on the map chunk right here
                     SFMap.SFMapHeightMapChunk hmap_chunk = hmap.GetChunk(new SFMap.SFCoord(chunk_center.x, hmap.map.width-chunk_center.y-1));
-                    if(hmap_chunk.generated)
+                    if(hmap_chunk.visible)
                     {
                         if (((hmap_chunk.aabb.a.Y <= h2) && (hmap_chunk.aabb.a.Y >= h1))
                             || ((hmap_chunk.aabb.b.Y <= h2) && (hmap_chunk.aabb.b.Y >= h1))
@@ -272,8 +272,6 @@ namespace SpellforceDataEditor.SF3D.Physics
                         {
                             if (IntersectGeomPool(hmap.geometry_pool, hmap_chunk.pool_index, out point))
                                 return true;
-                            //if (Intersect(hmap_chunk.collision_cache, out point))
-                                //return true;
                         }
                     }
                 }

@@ -26,7 +26,7 @@ namespace SpellforceDataEditor.SF3D
         public uint[] face_indices = null;
 
         public ArrayPool<Matrix4> instance_matrices = new ArrayPool<Matrix4>();
-        //public bool needs_matrix_reload = false;
+        public bool needs_matrix_reload = false;
 
         public SFMaterial material = null;
         public Physics.BoundingBox aabb;
@@ -86,7 +86,6 @@ namespace SpellforceDataEditor.SF3D
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, instance_matrix_buffer);
             GL.BufferData<Matrix4>(BufferTarget.ArrayBuffer, instance_matrices.Count * 64, instance_matrices.GetData(), BufferUsageHint.StreamDraw);
-            //needs_matrix_reload = false;
         }
 
         public int Load(MemoryStream ms, object custom_data)
@@ -153,10 +152,13 @@ namespace SpellforceDataEditor.SF3D
             if ((tex_code != 0) && (tex_code != -1))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModel3D.Load(): Could not load texture (texture name = " + matname + ")");
-                return tex_code;
+                tex = SFRender.SFRenderEngine.opaque_tex;
             }
-            tex = SFResourceManager.Textures.Get(matname);
-            tex.FreeMemory();
+            else
+            {
+                tex = SFResourceManager.Textures.Get(matname);
+                tex.FreeMemory();
+            }
 
             material.texture = tex;
             //System.Diagnostics.Debug.WriteLine(tex.ToString());
@@ -187,7 +189,7 @@ namespace SpellforceDataEditor.SF3D
                 material = new SFMaterial();
                 material.indexStart = 0;
                 material.indexCount = (uint)face_indices.Length;
-                material.texture = null;
+                material.texture = SFRender.SFRenderEngine.opaque_tex;
             }
             else
                 material = _material;
@@ -228,7 +230,7 @@ namespace SpellforceDataEditor.SF3D
                 GL.DeleteVertexArray(vertex_array);
                 vertex_array = Utility.NO_INDEX;
             }
-            if ((material != null) && (material.texture != null))
+            if ((material != null) && (material.texture != null) && (material.texture != SFRender.SFRenderEngine.opaque_tex))
                 SFResourceManager.Textures.Dispose(material.texture.GetName());
         }
     }

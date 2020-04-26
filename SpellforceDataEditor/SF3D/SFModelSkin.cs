@@ -35,9 +35,6 @@ namespace SpellforceDataEditor.SF3D
         public int[] bones = null;
         public string bsi_name = ""+Utility.S_NONAME;
 
-        public int vertex_array = Utility.NO_INDEX;
-        public int vertex_buffer, uv_buffer, normal_buffer, bone_index_buffer, bone_weight_buffer, element_buffer;
-
         public SFModelSkinChunk()
         {
 
@@ -46,45 +43,6 @@ namespace SpellforceDataEditor.SF3D
         public void Init()
         {
 
-            vertex_array = GL.GenVertexArray();
-            vertex_buffer = GL.GenBuffer();
-            normal_buffer = GL.GenBuffer();
-            uv_buffer = GL.GenBuffer();
-            bone_index_buffer = GL.GenBuffer();
-            bone_weight_buffer = GL.GenBuffer();
-            element_buffer = GL.GenBuffer();
-
-            GL.BindVertexArray(vertex_array);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
-            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, uvs.Length * 8, uvs, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Length * 12, normals, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(2);
-            GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bone_index_buffer);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, bone_indices.Length * 16, bone_indices, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(3);
-            GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bone_weight_buffer);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, bone_weights.Length * 16, bone_weights, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(4);
-            GL.VertexAttribPointer(4, 4, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
-            GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, face_indices.Length * 4, face_indices, BufferUsageHint.StaticDraw);
-
-            GL.BindVertexArray(0);
         }
 
         public int Load(MemoryStream ms, object custom_data)
@@ -157,12 +115,16 @@ namespace SpellforceDataEditor.SF3D
 
             SFTexture tex = null;
             int tex_code = SFResourceManager.Textures.Load(matname);
-            if ((tex_code != 0)&&(tex_code != -1))
+            if ((tex_code != 0) && (tex_code != -1))
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkinChunk.Load(): Could not load texture (texture name = " + matname + ")");
-                return tex_code;
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModelSkin.Load(): Could not load texture (texture name = " + matname + ")");
+                tex = SFRender.SFRenderEngine.opaque_tex;
             }
-            tex = SFResourceManager.Textures.Get(matname);
+            else
+            {
+                tex = SFResourceManager.Textures.Get(matname);
+                tex.FreeMemory();
+            }
             material.texture = tex;
             material.indexStart = 0;
             material.indexCount = (uint)face_indices.Length;
@@ -184,44 +146,77 @@ namespace SpellforceDataEditor.SF3D
 
         public int GetSizeBytes()
         {
-            return 12 * vertices.Length
-                 + 8 * uvs.Length
-                 + 12 * normals.Length
-                 + 16 * bone_indices.Length
-                 + 16 * bone_weights.Length
-                 + 4 * face_indices.Length
-                 + 4 * bones.Length;
+            return 0;
         }
 
         public void Dispose()
         {
 
-            if (vertex_array != Utility.NO_INDEX)
-            {
-                GL.DeleteBuffer(vertex_buffer);
-                GL.DeleteBuffer(normal_buffer);
-                GL.DeleteBuffer(uv_buffer);
-                GL.DeleteBuffer(bone_index_buffer);
-                GL.DeleteBuffer(bone_weight_buffer);
-                GL.DeleteBuffer(element_buffer);
-                GL.DeleteVertexArray(vertex_array);
-                vertex_array = Utility.NO_INDEX;
-            }
-            if((material != null)&&(material.texture != null))
-                SFResourceManager.Textures.Dispose(material.texture.GetName());
-            SFResourceManager.BSIs.Dispose(GetName());
         }
     }
 
     public class SFModelSkin: SFResource
     {
+        public Vector3[] vertices = null;
+        public Vector2[] uvs = null;
+        public Vector3[] normals = null;
+        public Vector4[] bone_indices = null;
+        public Vector4[] bone_weights = null;
+
+        public uint[] face_indices = null;
+
+        public SFMaterial[] materials = null;
+        public int[][] bones = null;
+        public string bsi_name = "" + Utility.S_NONAME;
+
+        public int vertex_array = Utility.NO_INDEX;
+        public int vertex_buffer, uv_buffer, normal_buffer, bone_index_buffer, bone_weight_buffer, element_buffer;
+
+
         public SFModelSkinChunk[] submodels { get; private set; } = null;
         string name = "";
 
         public void Init()
         {
-            foreach (SFModelSkinChunk submodel in submodels)
-                submodel.Init();
+            vertex_array = GL.GenVertexArray();
+            vertex_buffer = GL.GenBuffer();
+            normal_buffer = GL.GenBuffer();
+            uv_buffer = GL.GenBuffer();
+            bone_index_buffer = GL.GenBuffer();
+            bone_weight_buffer = GL.GenBuffer();
+            element_buffer = GL.GenBuffer();
+
+            GL.BindVertexArray(vertex_array);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
+            GL.EnableVertexAttribArray(0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
+            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, uvs.Length * 8, uvs, BufferUsageHint.StaticDraw);
+            GL.EnableVertexAttribArray(1);
+            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Length * 12, normals, BufferUsageHint.StaticDraw);
+            GL.EnableVertexAttribArray(2);
+            GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bone_index_buffer);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, bone_indices.Length * 16, bone_indices, BufferUsageHint.StaticDraw);
+            GL.EnableVertexAttribArray(3);
+            GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bone_weight_buffer);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, bone_weights.Length * 16, bone_weights, BufferUsageHint.StaticDraw);
+            GL.EnableVertexAttribArray(4);
+            GL.VertexAttribPointer(4, 4, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
+            GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, face_indices.Length * 4, face_indices, BufferUsageHint.StaticDraw);
+
+            GL.BindVertexArray(0);
         }
 
         public int Load(MemoryStream ms, object custom_data)
@@ -246,7 +241,53 @@ namespace SpellforceDataEditor.SF3D
                     return return_code;
                 }
             }
+
+            Merge();
+
             return 0;
+        }
+
+        public void Merge()
+        {
+            int vcount = 0;
+            int fcount = 0;
+            for(int i = 0; i < submodels.Length; i++)
+            {
+                vcount += submodels[i].vertices.Length;
+                fcount += submodels[i].face_indices.Length;
+            }
+
+            vertices = new Vector3[vcount]; normals = new Vector3[vcount]; uvs = new Vector2[vcount];
+            bone_indices = new Vector4[vcount]; bone_weights = new Vector4[vcount];
+            face_indices = new uint[fcount];
+            bones = new int[submodels.Length][];
+            materials = new SFMaterial[submodels.Length];
+            bsi_name = submodels[0].bsi_name;
+
+            vcount = 0;
+            fcount = 0;
+
+            for(int i = 0; i < submodels.Length; i++)
+            {
+                Array.Copy(submodels[i].vertices, 0, vertices, vcount, submodels[i].vertices.Length);
+                Array.Copy(submodels[i].uvs, 0, uvs, vcount, submodels[i].uvs.Length);
+                Array.Copy(submodels[i].normals, 0, normals, vcount, submodels[i].normals.Length);
+                Array.Copy(submodels[i].bone_indices, 0, bone_indices, vcount, submodels[i].bone_indices.Length);
+                Array.Copy(submodels[i].bone_weights, 0, bone_weights, vcount, submodels[i].bone_weights.Length);
+
+                for (int j = 0; j < submodels[i].face_indices.Length; j++)
+                    face_indices[j + fcount] = (uint)(submodels[i].face_indices[j] + vcount);
+
+                bones[i] = submodels[i].bones;
+                materials[i] = submodels[i].material;
+                materials[i].indexStart = (uint)fcount;
+                materials[i].indexCount = (uint)submodels[i].face_indices.Length;
+
+                vcount += submodels[i].vertices.Length;
+                fcount += submodels[i].face_indices.Length;
+            }
+
+            submodels = null;
         }
 
         public void SetName(string s)
@@ -261,21 +302,35 @@ namespace SpellforceDataEditor.SF3D
 
         public int GetSizeBytes()
         {
-            if (submodels == null)
-                return 0;
-
-            int ret = 0;
-            for (int i = 0; i < submodels.Length; i++)
-                ret += submodels[i].GetSizeBytes();
-            return ret;
+            return 12 * vertices.Length
+                 + 8 * uvs.Length
+                 + 12 * normals.Length
+                 + 16 * bone_indices.Length
+                 + 16 * bone_weights.Length
+                 + 4 * face_indices.Length
+                 + 4 * bones.Length;
         }
 
         public void Dispose()
         {
-            if(submodels!=null)
-                foreach (SFModelSkinChunk submodel in submodels)
-                 submodel.Dispose();
-            submodels = null;
+            if (vertex_array != Utility.NO_INDEX)
+            {
+                GL.DeleteBuffer(vertex_buffer);
+                GL.DeleteBuffer(normal_buffer);
+                GL.DeleteBuffer(uv_buffer);
+                GL.DeleteBuffer(bone_index_buffer);
+                GL.DeleteBuffer(bone_weight_buffer);
+                GL.DeleteBuffer(element_buffer);
+                GL.DeleteVertexArray(vertex_array);
+                vertex_array = Utility.NO_INDEX;
+            }
+            if(materials != null)
+            {
+                for(int i = 0; i < materials.Length; i++)
+                    if ((materials[i] != null) && (materials[i].texture != null))
+                        SFResourceManager.Textures.Dispose(materials[i].texture.GetName());
+            }
+            SFResourceManager.BSIs.Dispose(GetName());
         }
     }
 }

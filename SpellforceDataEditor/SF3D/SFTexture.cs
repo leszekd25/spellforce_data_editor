@@ -460,6 +460,23 @@ namespace SpellforceDataEditor.SF3D
             return data[(y * width + x) * 4 + 3];
         }
 
+        public void custom_WhiteToAlpha()
+        {
+            if(format != InternalFormat.Rgba)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFTexture.custom_WhiteToAlpha(): Format is not RGBA!");
+                return;
+            }
+
+            for(int i = 0; i < data.Length; i += 4)
+            {
+                data[i + 3] = (byte)(255 - data[i + 0]);
+                data[i + 0] = 0;
+                data[i + 1] = 0;
+                data[i + 2] = 0;
+            }
+        }
+
         // texture format: bmp
         public void Export(string fname)
         {

@@ -125,7 +125,6 @@ namespace SpellforceDataEditor.SFMap
         }
 
         // should be updated after lake_start or lake_depth was modified
-        // this method further modifies lake_start and lake_depth
         public void UpdateLake(SFMapLake lake)
         {
             int lake_index = lakes.IndexOf(lake);

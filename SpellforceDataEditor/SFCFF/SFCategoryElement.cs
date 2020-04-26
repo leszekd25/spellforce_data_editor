@@ -64,36 +64,6 @@ namespace SpellforceDataEditor.SFCFF
             return s;
         }
 
-        //creates a new element with identical contents as the original
-        public SFCategoryElement GetCopy()
-        {
-            SFCategoryElement elem = new SFCategoryElement();
-            foreach (object v in variants)
-            {
-                Type t = v.GetType();
-                if (t == typeof(byte[]))
-                {
-                    byte[] barr = new byte[((byte[])v).Length];
-                    Array.Copy(((byte[])v), barr, barr.Length);
-                    elem.AddVariant(barr);
-                }
-                else if (t == typeof(SByte))
-                    elem.AddVariant((SByte)v);
-                else if (t == typeof(Byte))
-                    elem.AddVariant((Byte)v);
-                else if (t == typeof(Int16))
-                    elem.AddVariant((Int16)v);
-                else if (t == typeof(UInt16))
-                    elem.AddVariant((UInt16)v);
-                else if (t == typeof(Int32))
-                    elem.AddVariant((Int32)v);
-                else if (t == typeof(UInt32))
-                    elem.AddVariant((UInt32)v);
-            }
-
-            return elem;
-        }
-
         //returns whether the contents in compared elements are identical
         public bool SameAs(SFCategoryElement elem)
         {
@@ -179,6 +149,15 @@ namespace SpellforceDataEditor.SFCFF
         {
             for (int i = 0; i < data.Length; i++)
                 variants.Insert(index_start + i, data[i]);
+        }
+
+        // creates a new element with identical contents as the original
+        public SFCategoryElement GetCopy()
+        {
+            SFCategoryElement elem = new SFCategoryElement();
+            elem.PasteRaw(CopyRaw(0, variants.Count), 0);
+
+            return elem;
         }
     }
 }

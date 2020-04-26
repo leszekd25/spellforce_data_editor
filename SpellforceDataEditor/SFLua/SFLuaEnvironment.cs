@@ -99,30 +99,33 @@ namespace SpellforceDataEditor.SFLua
 
             MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", fname);
             if (ms == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaEnvironment.GetDecompiledString(): Could not find file "+fname+" in game paks!");
                 return -2;
+            }
             else
             {
                 BinaryReader br = new BinaryReader(ms);
-                LuaDecompiler.LuaBinaryScript scr = null;
-                try
+
+                LuaDecompiler.LuaBinaryScript scr = new LuaDecompiler.LuaBinaryScript(br);
+                if(scr.func == null)
                 {
-                    scr = new LuaDecompiler.LuaBinaryScript(br);
-                }
-                catch (Exception)
-                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaEnvironment.GetDecompiledString(): Could not load binary script from file "+fname);
                     return -3;
                 }
+
                 br.Close();
 
                 LuaDecompiler.Decompiler dec = new LuaDecompiler.Decompiler();
                 LuaDecompiler.Node res;
-                
+
                 try
                 {
                     res = dec.Decompile(scr.func);
                 }
                 catch (Exception)
                 {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaEnvironment.GetDecompiledString(): Could not decompile binary script " + fname);
                     return -4;
                 }
 
@@ -135,6 +138,7 @@ namespace SpellforceDataEditor.SFLua
                 }
                 catch (Exception)
                 {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaEnvironment.GetDecompiledString(): Could not generate result from decompiled script " + fname);
                     return -5;
                 }
 
@@ -293,6 +297,8 @@ namespace SpellforceDataEditor.SFLua
 
         public static void LoadSQL(bool force = true)
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaEnvironment.LoadSQL() called");
+
             if ((!force) && (data_loaded))
                 return;
 
@@ -333,6 +339,8 @@ namespace SpellforceDataEditor.SFLua
 
         public static void UnloadSQL()
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaEnvironment.UnloadSQL() called");
+
             if (!data_loaded)
                 return;
             coop_spawns.Unload();

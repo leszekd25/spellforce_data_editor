@@ -1,4 +1,8 @@
-﻿using System;
+﻿/* UIQuadStorageSpan serves as a pointer to internal UI quad data, and certain state information
+ * UIQuadStorage holds all quad data which gets sent to GPU: vertices, uvs, colors
+ * */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,6 +41,8 @@ namespace SpellforceDataEditor.SF3D.UI
         int cur_quad = 0;
         public bool updated { get; private set; } = false;
 
+        // initializes the storage with given amount of quads
+        // reserved space is 268 bytes per quad (?)
         public void Init(int quad_count)
         {
             vertices = new Vector3[quad_count * 6];
@@ -109,6 +115,7 @@ namespace SpellforceDataEditor.SF3D.UI
             InitSpan(span_index);
         }
 
+        // sets a single quad from the span according to the parameters
         public void SetQuad(int span_index, int quad_index, Vector2 pxsize, Vector2 origin, Vector2 uv_start, Vector2 uv_end, float depth, Vector4 col)
         {
             UIQuadStorageSpan span = spans[span_index];
@@ -213,6 +220,7 @@ namespace SpellforceDataEditor.SF3D.UI
             updated = false;
         }
 
+        // resets the span to 0 quads
         public void ResetSpan(int span_index)
         {
             spans[span_index].used = 0;

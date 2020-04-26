@@ -121,7 +121,6 @@ namespace SpellforceDataEditor.SFCFF
         }
 
         //puts a single variant to a buffer
-        //s_size refers to a string length (for if the variant holds a string)
         public void WriteVariantToBuffer(BinaryWriter sw, object var)
         {
             Type t = var.GetType();
@@ -150,7 +149,7 @@ namespace SpellforceDataEditor.SFCFF
             Object[] objs = new Object[elem_format.Length];
             if (sr.BaseStream.Position + elem_format.Length > sr.BaseStream.Length)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory[): Can't read past buffer! category: " + category_name);
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory(): Can't read past buffer! category: " + category_name);
 
                 throw new EndOfStreamException();
             }
@@ -1206,6 +1205,13 @@ namespace SpellforceDataEditor.SFCFF
         public override Object[] GetElementFromBuffer(BinaryReader sr)
         {
             return GetMultipleElementsFromBuffer(sr, 'H');
+        }
+
+        public override string GetElementString(int index)
+        {
+            UInt16 unit_id = (UInt16)this[index][0];
+            string txt_unit = SFCategoryManager.GetUnitName(unit_id);
+            return unit_id.ToString() + " " + txt_unit;
         }
     }
 

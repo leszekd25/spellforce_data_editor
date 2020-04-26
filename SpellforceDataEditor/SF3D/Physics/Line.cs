@@ -24,12 +24,14 @@ namespace SpellforceDataEditor.SF3D.Physics
             vector = (end - start).Normalized();
         }
 
+        // distance from point to line
         public float Distance(Vector3 p)
         {
             Vector3 diff = point - p;
             return (diff - (Vector3.Dot(diff, vector) * vector)).Length;
         }
 
+        // distance from point to line, squared
         public float Distance2(Vector3 p)
         {
             Vector3 diff = point - p;

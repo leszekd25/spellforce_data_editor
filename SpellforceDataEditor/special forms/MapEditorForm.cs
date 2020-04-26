@@ -37,7 +37,8 @@ namespace SpellforceDataEditor.special_forms
                 new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
                 new Vector4(1.0f, 1.0f, 0.3f, 1.0f),
                 new Vector4(1.0f, 1.0f, 0.7f, 1.0f),
-                new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
+                new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                new Vector4(0.8f, 0.0f, 0.8f, 1.0f)  // ERROR
             };
 
 
@@ -257,16 +258,16 @@ namespace SpellforceDataEditor.special_forms
                 // clan player = 11
                 var unit_data = SFCFF.SFCategoryManager.gamedata[17].FindElementBinary(0, (ushort)unit_id);
                 if (unit_data == null)
-                    return 1;
+                    return 6;
                 var unit_stats_data = SFCFF.SFCategoryManager.gamedata[3].FindElementBinary(0, (ushort)unit_data[2]);
                 if (unit_stats_data == null)
-                    return 1;
+                    return 6;
                 var race_data = SFCFF.SFCategoryManager.gamedata[15].FindElementBinary(0, (byte)unit_stats_data[2]);
                 if (race_data == null)
-                    return 1;
+                    return 6;
                 var clan_data = SFCFF.SFCategoryManager.gamedata[16].FindElementBinary(0, (byte)((ushort)race_data[9]));
                 if (clan_data == null)
-                    return 1;
+                    return 6;
                 var player_relation = (byte)clan_data[32];
                 if (player_relation == 0)
                     return 1;
@@ -274,7 +275,7 @@ namespace SpellforceDataEditor.special_forms
                     return 2;
                 if (player_relation == 156)
                     return 0;
-                return 1;
+                return 6;
             }
 
             private int GetBuildingRelationToMainChar(SFMapBuilding bld)
@@ -285,16 +286,16 @@ namespace SpellforceDataEditor.special_forms
                 {
                     var building_data = SFCFF.SFCategoryManager.gamedata[23].FindElementBinary(0, (ushort)bld.game_id);
                     if (building_data == null)
-                        return 1;
+                        return 6;
                     race_data = SFCFF.SFCategoryManager.gamedata[15].FindElementBinary(0, (byte)building_data[1]);
                 }
                 else
                     race_data = SFCFF.SFCategoryManager.gamedata[15].FindElementBinary(0, (byte)bld.race_id);
                 if (race_data == null)
-                    return 1;
+                    return 6;
                 var clan_data = SFCFF.SFCategoryManager.gamedata[16].FindElementBinary(0, (byte)((ushort)race_data[9]));
                 if (clan_data == null)
-                    return 1;
+                    return 6;
                 var player_relation = (byte)clan_data[32];
                 if (player_relation == 0)
                     return 1;
@@ -302,7 +303,7 @@ namespace SpellforceDataEditor.special_forms
                     return 2;
                 if (player_relation == 156)
                     return 0;
-                return 1;
+                return 6;
             }
 
             public void RedrawMinimapIcons()
@@ -454,18 +455,6 @@ namespace SpellforceDataEditor.special_forms
                 return icons_visible;
             }
 
-            public void UninitMinimap()
-            {
-                SFRenderEngine.ui.RemoveStorage(minimap_tex);
-                SFRenderEngine.ui.RemoveStorage(SFRenderEngine.opaque_tex);
-                SFRenderEngine.ui.RemoveStorage(minimap_icons_tex);
-
-                minimap_tex.Dispose();
-                minimap_tex = null;
-                minimap_icons_tex.Dispose();
-                minimap_icons_tex = null;
-            }
-
             public void Dispose()
             {
                 map = null;
@@ -565,7 +554,7 @@ namespace SpellforceDataEditor.special_forms
         private void MapEditorForm_Resize(object sender, EventArgs e)
         {
             TabEditorModes.Width = this.Width - 22;
-            TabEditorModes.Padding = new Point(Math.Max(100, ((this.Width - 350)) / TabEditorModes.TabPages.Count / 2), TabEditorModes.Padding.Y);
+            TabEditorModes.Padding = new Point(Math.Max(10, ((this.Width - 350)) / TabEditorModes.TabPages.Count / 2), TabEditorModes.Padding.Y);
             ResizeWindow();
 
             PanelUtility.Location = new Point(this.Width - PanelUtility.Width, StatusStrip.Location.Y);
@@ -662,6 +651,7 @@ namespace SpellforceDataEditor.special_forms
             map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
             map.selection_helper.SetCursorVisibility(true);
 
+            SFRenderEngine.scene.camera.SetParent(SFRenderEngine.scene.root);
             SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
             ResetCamera();
 
@@ -751,6 +741,7 @@ namespace SpellforceDataEditor.special_forms
                 map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
                 map.selection_helper.SetCursorVisibility(true);
 
+                SFRenderEngine.scene.camera.SetParent(SFRenderEngine.scene.root);
                 SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
                 ResetCamera();
 
@@ -868,7 +859,7 @@ namespace SpellforceDataEditor.special_forms
             foreach (SF3D.SFTexture tex in SFRenderEngine.scene.tex_entries_simple.Keys)
                 SFRenderEngine.scene.tex_entries_simple[tex].Clear();
             SFRenderEngine.scene.tex_entries_simple.Clear();
-            SFRenderEngine.scene.untex_entries_simple.Clear();
+            //SFRenderEngine.scene.untex_entries_simple.Clear();
             
             //ui.UninitMinimap();
             ui.Dispose();
@@ -1045,6 +1036,10 @@ namespace SpellforceDataEditor.special_forms
                         // on click action
                         if ((mouse_pressed) && (selected_editor != null))
                         {
+                            System.Diagnostics.Debug.WriteLine("IX " + map.heightmap.GetChunk(inv_cursor_coord).ix.ToString()
+                                + " | IY " + map.heightmap.GetChunk(inv_cursor_coord).iy.ToString()
+                                + " | RET "+ map.heightmap.GetChunk(inv_cursor_coord).pool_index.ToString()
+                                + " | PRESS");
                             selected_editor.OnMousePress(inv_cursor_coord, mouse_last_pressed, ref special_pressed);
                             update_render = true;
                             update_ui = true;

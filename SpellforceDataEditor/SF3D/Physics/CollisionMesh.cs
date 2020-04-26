@@ -1,6 +1,8 @@
 ﻿/*
  * CollisionMesh is a geometrical object composed of a set of triangles
  * It's used to quickly calculate intersection point between a ray and an arbitrary geometrical shape
+ * 
+ * Currently unused...
  * */
 
 using System;

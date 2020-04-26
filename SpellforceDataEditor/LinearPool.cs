@@ -10,7 +10,7 @@ namespace SpellforceDataEditor
     public class LinearPool<T>
     {
         public int first_unused = 0;
-        public int last_used = -1;
+        public int last_used = Utility.NO_INDEX;
         public int used_count = 0;
         public List<T> elements { get; private set; } = new List<T>();
         public List<bool> elem_active { get; set; } = new List<bool>();

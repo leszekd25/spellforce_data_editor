@@ -24,7 +24,7 @@ namespace SpellforceDataEditor.SF3D
         ONE_INVSRCALPHA,
         ONE_ONE,
         DESTCOLOR_SRCCOLOR,
-        DESTCOLOR_ZERO,
+        DESTCOLOR_ZERO
     }
 
     public class SFMaterial

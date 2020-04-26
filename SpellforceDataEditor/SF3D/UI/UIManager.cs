@@ -1,4 +1,8 @@
-﻿using System;
+﻿/* UIManager is a container for storages, and allows creating UI primitives: text and images
+ * UIElementIndex is used as an identifier for individual ui elements
+ * */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +25,7 @@ namespace SpellforceDataEditor.SF3D.UI
         // creates new storage with X quads - can only have one storage per texture
         public void AddStorage(SFTexture tex, int quad_count)
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "UIManager.AddStorage() called, texture name: " + tex.GetName());
             if(storages.ContainsKey(tex))
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "UIManager.AddStorage(): There already exists a storage for texture " + tex.GetName() + "!");
@@ -35,6 +40,7 @@ namespace SpellforceDataEditor.SF3D.UI
         // deletes storage for given texture
         public void RemoveStorage(SFTexture tex)
         {
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "UIManager.RemoveStorage() called, texture name: " + tex.GetName());
             storages[tex].Dispose();
             storages.Remove(tex);
         }
@@ -69,12 +75,14 @@ namespace SpellforceDataEditor.SF3D.UI
             return elem_index;
         }
 
+        // sets a single quad of multi element
         public void SetElementMultiQuad(UIElementIndex elem, int quad_index, Vector2 size, Vector2 origin, Vector2 px_start, Vector2 px_end, Vector4 col)
         {
             UIQuadStorage storage = storages[elem.tex];
             storage.SetQuad(elem.span_index, quad_index, size, origin, new Vector2(px_start.X / elem.tex.width, px_start.Y / elem.tex.height), new Vector2(px_end.X / elem.tex.width, px_end.Y / elem.tex.height), 0.5f, col);
         }
 
+        // sets the text of text element
         public void SetElementText(UIElementIndex elem, UIFont font, string text)
         {
             // generate text quads

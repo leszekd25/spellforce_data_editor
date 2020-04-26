@@ -25,6 +25,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public List<SceneNode> Children { get; protected set; } = new List<SceneNode>();
 
         // if true, on the  next  update  local transform will be  updated
+        protected bool needsanyupdate = true;
+        public virtual bool NeedsAnyUpdate { get { return needsanyupdate; } protected set { needsanyupdate = value; } }
         public virtual bool NeedsUpdateLocalTransform { get; protected set; } = true;
         public virtual bool NeedsUpdateResultTransform { get; protected set; } = true;
 
@@ -123,8 +125,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // if something requires updating, notify all parents about that, root including, so the engine knows to run update routine
         protected void TouchParents()
         {
-            NeedsUpdateLocalTransform = true;
-            if ((Parent != null) && (Parent.NeedsUpdateLocalTransform != true))
+            NeedsAnyUpdate = true;
+            if ((Parent != null) && (Parent.NeedsAnyUpdate != true))
                 Parent.TouchParents();
         }
 
@@ -138,6 +140,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // if one result transform changes, so must all subsequent result transforms
         protected void TouchResultTransform()
         {
+            NeedsAnyUpdate = true;
             NeedsUpdateResultTransform = true;
             foreach (SceneNode node in Children)
                 node.TouchResultTransform();
@@ -149,12 +152,16 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (Visible)
             {
                 UpdateTime(t);
-                UpdateTransform();
+
+                if (needsanyupdate)
+                    UpdateTransform();
 
                 OnGatherSceneInstances();
 
                 foreach (SceneNode node in Children)
                     node.Update(t);
+
+                needsanyupdate = false;
             }
         }
 
@@ -221,6 +228,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return Parent.GetFullPath() + '.' + this.Name;
         }
 
+        // called when the node is determined to be rendered on the next frame
         protected virtual void OnGatherSceneInstances()
         {
 
@@ -270,9 +278,14 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
             set
             {
+                if (mesh != null)
+                    TouchInstance();
                 mesh = value;
                 if (mesh != null)
+                {
                     aabb = mesh.aabb;
+                    TouchInstance();
+                }
                 else
                     aabb = new Physics.BoundingBox(Vector3.Zero, Vector3.Zero);
             }
@@ -285,12 +298,26 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 if (Visible != value)
                 {
                     visible = value;
+                    TouchInstance();
                     foreach (SceneNode n in Children)
                         n.Visible = value;
                 }
             }
         }
 
+        public override bool NeedsAnyUpdate 
+        { 
+            get 
+            {
+                return needsanyupdate;
+            } 
+            protected set 
+            { 
+                needsanyupdate = value;
+                if(needsanyupdate)
+                    TouchInstance();
+            } 
+        }
         public bool Billboarded { get; set; } = false;
 
         protected override void UpdateTransform()
@@ -307,17 +334,26 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         public SceneNodeSimple(string n) : base(n) { }
 
+        private void TouchInstance()
+        {
+            if ((Mesh != null)&&(Mesh.submodels != null))
+                for (int i = 0; i < Mesh.submodels.Length; i++)
+                    Mesh.submodels[i].needs_matrix_reload = true;
+        }
+
         protected override void OnGatherSceneInstances()
         {
-            if(Mesh != null)
+            if ((Mesh != null) && (Mesh.submodels != null))
                 for (int i = 0; i < Mesh.submodels.Length; i++)
-                    Mesh.submodels[i].instance_matrices.AddElem(this.ResultTransform);
+                    if(Mesh.submodels[i].needs_matrix_reload)
+                        Mesh.submodels[i].instance_matrices.AddElem(this.ResultTransform);
         }
 
         // disposes mesh used by this node (reference counted, dw)
         protected override void InternalDispose()
         {
-            if(Mesh != null)
+            TouchInstance();
+            if (Mesh != null)
             {
                 SFResources.SFResourceManager.Models.Dispose(Mesh.GetName());
                 Mesh = null;
@@ -409,8 +445,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     BoneTransforms[i] = Matrix4.Identity;
                 if(_skin != null)
                 {
-                    BoneTransformsPerSkinChunk = new Matrix4[_skin.submodels.Length][];
-                    for(int i = 0; i < _skin.submodels.Length; i++)
+                    BoneTransformsPerSkinChunk = new Matrix4[_skin.bones.GetLength(0)][];
+                    for(int i = 0; i < _skin.bones.GetLength(0); i++)
                     {
                         BoneTransformsPerSkinChunk[i] = new Matrix4[SFSkeleton.MAX_BONE_PER_CHUNK];
                         for (int j = 0; j < SFSkeleton.MAX_BONE_PER_CHUNK; j++)
@@ -464,8 +500,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 return;
 
             for (int i = 0; i < BoneTransformsPerSkinChunk.GetLength(0); i++)
-                for (int j = 0; j < Skin.submodels[i].bones.Length; j++)
-                    BoneTransformsPerSkinChunk[i][j] = BoneTransforms[Skin.submodels[i].bones[j]];
+                for (int j = 0; j < Skin.bones[i].Length; j++)
+                    BoneTransformsPerSkinChunk[i][j] = BoneTransforms[Skin.bones[i][j]];
         }
 
         protected override void UpdateTime(float t)
@@ -477,7 +513,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // also do this if transparent = true, let transparent object list deal with those
         private void ClearTexGeometry()
         {
-            if (TextureGeometryIndex == null)
+            SF3D.SFRender.SFRenderEngine.scene.an_nodes.Remove(this);
+            /*if (TextureGeometryIndex == null)
                 return;
 
             foreach (TexGeometryLinkAnimated link in TextureGeometryIndex)
@@ -487,13 +524,15 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     SFRender.SFRenderEngine.scene.tex_list_animated.Remove(link.texture);
             }
 
-                TextureGeometryIndex = null;
+                TextureGeometryIndex = null;*/
         }
 
         // adds elements drawn by this node to scene cache
         // also do this if transparent = false, let transparent object list deal with those
         private void AddTexGeometry()
         {
+            SF3D.SFRender.SFRenderEngine.scene.an_nodes.Add(this);
+            /*
             if (TextureGeometryIndex != null)
                 ClearTexGeometry();
             if (skin == null)
@@ -509,7 +548,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 elem.node = this;
                 elem.submodel_index = i;
                 TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntryAnimated(skin.submodels[i].material.texture, elem);
-            }
+            }*/
         }
 
         // disposes skeleton and skin used by this node (reference counted)
@@ -538,7 +577,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
     public class SceneNodeBone : SceneNode
     {
         // parent must be SceneNodeAnimated
-        private int BoneIndex = -1;
+        private int BoneIndex = Utility.NO_INDEX;
         public override bool NeedsUpdateLocalTransform { get { return true; } }
 
         public SceneNodeBone(string n) : base(n) { }
@@ -715,6 +754,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 Math.Sign(Vector3.Dot(pos - top_left, bottom_left - top_left)) * (left_point - top_left).Length / (bottom_left - top_left).Length);
         }
         
+        // calculates vertices of camera frustum
         private void CalculateFrustumVertices()
         {
             // get forward, up, right direction

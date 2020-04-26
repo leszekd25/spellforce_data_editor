@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using SpellforceDataEditor.SF3D;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System.IO;
 
 namespace SpellforceDataEditor.SFMap
 {
@@ -102,6 +103,8 @@ namespace SpellforceDataEditor.SFMap
             active[ret] = true;
             used_count += 1;
 
+            //System.Diagnostics.Debug.WriteLine("IX " + ix.ToString() + " | IY " + iy.ToString() + " | RET " + ret.ToString());
+
             // generate geometry for the chunk
             UpdateChunk(ret, hmap, ix, iy);
 
@@ -180,6 +183,67 @@ namespace SpellforceDataEditor.SFMap
         }
     }
 
+    public class SFMapHeightMapChunkPointShadow
+    {
+        public SFMapHeightMap hmap = null;
+        public int vertex_array = Utility.NO_INDEX;
+        public int vertex_buffer, uv_buffer;
+
+        public ArrayPool<Vector3> vertices = new ArrayPool<Vector3>();
+        public ArrayPool<Vector2> uvs = new ArrayPool<Vector2>();
+
+        public void Init()
+        {
+            vertex_array = GL.GenVertexArray();
+            vertex_buffer = GL.GenBuffer();
+            uv_buffer = GL.GenBuffer();
+
+            GL.BindVertexArray(vertex_array);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
+            GL.EnableVertexAttribArray(0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
+            GL.EnableVertexAttribArray(1);
+            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindVertexArray(0);
+        }
+
+        public void Add(SFCoord pos, float size)
+        {
+
+        }
+
+        public void Update()
+        {
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Count * 12, vertices.GetData(), BufferUsageHint.StreamDraw);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
+            GL.BufferData(BufferTarget.ArrayBuffer, uvs.Count * 8, uvs.GetData(), BufferUsageHint.StreamDraw);
+        }
+
+        public void Clear()
+        {
+            vertices.Clear();
+            uvs.Clear();
+        }
+
+        public void Dispose()
+        {
+            if (vertex_array != Utility.NO_INDEX)
+            {
+                GL.DeleteBuffer(vertex_buffer);
+                GL.DeleteBuffer(uv_buffer);
+                GL.DeleteVertexArray(vertex_array);
+                vertex_array = Utility.NO_INDEX;
+            }
+            hmap = null;
+        }
+    }
+
     public class SFMapHeightMapChunk
     {
         public SFMapHeightMap hmap = null;
@@ -188,13 +252,11 @@ namespace SpellforceDataEditor.SFMap
         public int id, ix, iy;
         public bool visible = false;
         public bool decoration_visible = false;
-        public bool generated = false;
+        public bool unit_visible = false;
 
         // heightmap
         public int pool_index = -1;
         public SF3D.Physics.BoundingBox aabb;
-
-        //public SF3D.Physics.CollisionMesh collision_cache = new SF3D.Physics.CollisionMesh();
 
         // lake
         public SFModel3D lake_model = null;    // generated here, but owned by ResourceManager
@@ -215,18 +277,13 @@ namespace SpellforceDataEditor.SFMap
 
             Degenerate();
 
-            id = iy * (hmap.width / width) + ix;
-
             pool_index = hmap.geometry_pool.BuildNewChunk(hmap, ix, iy);
 
-            //collision_cache.GenerateFromHeightmap(new Vector3(0, 0, 0), hmap.geometry_pool, pool_index);
             GenerateAABB();
             Init();
 
             RebuildLake();
             UpdateSettingsVisible();
-
-            generated = true;
         }
 
         private void GenerateTemporaryAABB()
@@ -279,24 +336,17 @@ namespace SpellforceDataEditor.SFMap
 
         public void Degenerate()
         {
-            if (!generated)
-                return;
-
             if (pool_index != -1)
             {
                 hmap.geometry_pool.FreeChunk(pool_index);
                 pool_index = -1;
             }
 
-            //collision_cache.triangles = null;
-
             if (lake_model != null)
             {
                 SFResources.SFResourceManager.Models.Dispose(lake_model.GetName());
                 lake_model = null;
             }
-
-            generated = false;
         }
 
 
@@ -306,10 +356,7 @@ namespace SpellforceDataEditor.SFMap
             if (!visible)
                 return;
 
-            //collision_cache = new SF3D.Physics.CollisionMesh();
             hmap.geometry_pool.UpdateChunk(pool_index, hmap, ix, iy);
-
-            //collision_cache.GenerateFromHeightmap(new Vector3(0, 0, 0), hmap.geometry_pool, pool_index);
             GenerateAABB();
 
 
@@ -494,6 +541,8 @@ namespace SpellforceDataEditor.SFMap
                     visible = true;
                     decoration_visible = true;
 
+                    owner.Update(0);                  // sets model matrix, needed for lake generation
+
                     Generate();
                 }
             }
@@ -522,10 +571,67 @@ namespace SpellforceDataEditor.SFMap
             }
         }
 
+        public void UpdateUnitVisible(float camera_dist, float camera_hdiff)
+        {
+            if (unit_visible)
+            {
+                if ((camera_dist > 91) || (camera_hdiff > 104))  // magic number...
+                {
+                    unit_visible = false;
+                    foreach (SFMapUnit u in units)
+                    {
+                        var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());
+                        node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = false;
+                        node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = true;
+                    }
+                }
+            }
+            else
+            {
+                if ((camera_dist <= 91) && (camera_hdiff <= 104))
+                {
+                    unit_visible = true;
+                    if (Settings.DecorationsVisible)
+                        foreach (SFMapUnit u in units)
+                        {
+                            var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());
+                            node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = true;
+                            node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = false;
+                        }
+                }
+            }
+        }
+
         public void UpdateSettingsVisible()
         {
-            foreach (SFMapUnit u in units)
-                owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName()).Visible = Settings.UnitsVisible;
+            if (Settings.UnitsVisible)
+            {
+                if (unit_visible)
+                    foreach (SFMapUnit u in units)
+                    {
+                        var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());
+                        node.Visible = true;
+                        node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = true;
+                        node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = false;
+                    }
+                else
+                    foreach (SFMapUnit u in units)
+                    {
+                        var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());
+                        node.Visible = true;
+                        node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = false;
+                        node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = true;
+                    }
+            }
+            else
+                foreach (SFMapUnit u in units)
+                {
+                    var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());
+                    node.Visible = true;
+                    node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = false;
+                    node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = false;
+                }
+
             foreach (SFMapBuilding b in buildings)
                 owner.FindNode<SF3D.SceneSynchro.SceneNode>(b.GetObjectName()).Visible = Settings.BuildingsVisible;
             foreach (SFMapObject o in objects)
@@ -567,7 +673,6 @@ namespace SpellforceDataEditor.SFMap
 
             hmap = null;
             owner = null;
-            //collision_cache = null;
         }
 
         public void AddUnit(SFMapUnit u)
@@ -674,6 +779,8 @@ namespace SpellforceDataEditor.SFMap
         public int overlay_texture_decals = -1;
         public int overlay_active_texture = -1;
 
+        public SFTexture pointshadow_tex = null;
+
         public SFMapHeightMap(int w, int h)
         {
             width = w;
@@ -729,6 +836,28 @@ namespace SpellforceDataEditor.SFMap
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
             GL.ActiveTexture(TextureUnit.Texture0);
+
+            // point shadow texture for map units
+
+            pointshadow_tex = new SFTexture();
+            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf0.pak", "texture\\system_element_pointshadow_l6.tga");
+            if (ms == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapHeightMap(): Could not find texture system_element_pointshadow.tga");
+                pointshadow_tex = SF3D.SFRender.SFRenderEngine.opaque_tex;
+            }
+            int res_code = pointshadow_tex.Load(ms, null);
+            if (res_code != 0)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapHeightMap(): Could not load texture system_element_pointshadow.tga");
+                pointshadow_tex = SF3D.SFRender.SFRenderEngine.opaque_tex;
+            }
+            else
+            {
+                pointshadow_tex.custom_WhiteToAlpha();
+                pointshadow_tex.Init();
+            }
+            ms.Close();
         }
 
         public void UpdateTileMap()
@@ -831,10 +960,10 @@ namespace SpellforceDataEditor.SFMap
                     chunk_node.MapChunk.owner = chunk_nodes[i * chunk_count_x + j];
                     chunk_node.MapChunk.ix = j;
                     chunk_node.MapChunk.iy = i;
+                    chunk_node.MapChunk.id = i * (width / SFMapHeightMapGeometryPool.CHUNK_SIZE) + j;
                     chunk_node.MapChunk.width = SFMapHeightMapGeometryPool.CHUNK_SIZE;
                     chunk_node.MapChunk.height = SFMapHeightMapGeometryPool.CHUNK_SIZE;
                     chunk_node.MapChunk.GenerateAABB();
-                    chunk_node.Update(0);
                 }
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate(): Chunks generated: " + chunk_nodes.Length.ToString());
         }
@@ -1196,6 +1325,12 @@ namespace SpellforceDataEditor.SFMap
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Unload() called");
             if (map == null)
                 return;
+
+            if(pointshadow_tex != null)
+            {
+                pointshadow_tex.Dispose();
+                pointshadow_tex = null;
+            }
 
             if (tile_data_texture != -1)
             {

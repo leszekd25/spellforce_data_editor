@@ -1,4 +1,8 @@
-﻿using System;
+﻿/* UIFont is a wrapper around a texture which extracts characters as quad data, used in UI manager
+ * 
+ * */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -64,20 +68,16 @@ namespace SpellforceDataEditor.SF3D.UI
                 int c_wend = cell_size-1;
                 for(int x = 0; x < cell_size; x++)
                 {
+                    var alpha = font_texture.GetUncompressedAlpha(x + c_x * cell_size, c_y * cell_size + cell_size - 1);
                     if (c_wstart == -1)
                     {
-                        if (font_texture.GetUncompressedAlpha(x + c_x * cell_size, c_y * cell_size + cell_size - 1) != 0)
-                        {
+                        if (alpha != 0)
                             c_wstart = x;
-                        }
                     }
-                    else
+                    else if(alpha == 0)
                     {
-                        if(font_texture.GetUncompressedAlpha(x + c_x * cell_size, c_y * cell_size + cell_size - 1) == 0)
-                        {
-                            c_wend = x-1;
-                            break;
-                        }
+                        c_wend = x-1;
+                        break;
                     }
                 }
                 if (c_wstart == -1)        // empty character -> ignore
