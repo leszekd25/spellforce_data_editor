@@ -19,4 +19,4 @@ Most of the features are now complete (but might be buggy), including: creating/
 # How to use
 To use the application, simply unzip it wherever you feel like.
 
-Latest version: 26.04.2020.1
+Latest version: 02.05.2020.1
