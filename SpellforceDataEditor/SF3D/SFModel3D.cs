@@ -99,6 +99,12 @@ namespace SpellforceDataEditor.SF3D
             vcount = br.ReadInt32();
             fcount = br.ReadInt32();
 
+            if(vcount == 0)
+            {
+                br.BaseStream.Position += 206;
+                return 1;
+            }
+
             vertices = new Vector3[vcount]; normals = new Vector3[vcount]; uvs = new Vector2[vcount]; colors = new Vector4[vcount];
             face_indices = new uint[fcount * 3];
             material = new SFMaterial();
@@ -262,21 +268,32 @@ namespace SpellforceDataEditor.SF3D
 
             int modelnum = (int)header[1];
 
-            submodels = new SFSubModel3D[modelnum];
+            List<SFSubModel3D> tmp_submodels = new List<SFSubModel3D>();
+            int failed_submodels = 0;
             for(int i=0; i<modelnum; i++)
             {
                 SFSubModel3D sbm = new SFSubModel3D();
-                submodels[i] = sbm;
-                sbm.submodel_id = i;
                 int return_code = sbm.Load(br);
-                if (return_code != 0)
+                if (return_code == 1)
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModel3D.Load(): Submodel ID " + i.ToString() + " was empty, skipping");
+                    failed_submodels += 1;
+                }
+                else if (return_code != 0)
                 {
                     LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModel3D.Load(): Could not load submodel (submodel ID = " + i.ToString() + ")");
                     return return_code;
                 }
+                else
+                {
+                    tmp_submodels.Add(sbm);
+                    sbm.submodel_id = i - failed_submodels;
+                }
+
                 if (i != modelnum - 1)
                     br.BaseStream.Position += 2;
             }
+            submodels = tmp_submodels.ToArray();
             
             // bbox
             float x1, x2, y1, y2, z1, z2;

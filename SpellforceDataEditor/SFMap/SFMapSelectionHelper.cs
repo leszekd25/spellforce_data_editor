@@ -32,6 +32,7 @@ namespace SpellforceDataEditor.SFMap
         ushort preview_unit_id = 0;
         ushort preview_building_id = 0;
         ushort preview_object_id = 0;
+        Vector2 preview_entity_offset = Vector2.Zero;
 
         // ui stuff
         SF3D.UI.UIFont font_outline;
@@ -371,7 +372,9 @@ namespace SpellforceDataEditor.SFMap
                 cur_obj.Position = new Vector3(pos.x, z, pos.y);
 
                 if (preview_entity != null)
-                    preview_entity.Position = new Vector3(pos.x, z + 0.2f, pos.y);
+                {
+                    preview_entity.Position = new Vector3(pos.x - preview_entity_offset.X, z + 0.2f, pos.y + preview_entity_offset.Y);
+                }
 
                 return true;
             }
@@ -385,6 +388,9 @@ namespace SpellforceDataEditor.SFMap
 
         public void ClearPreview()
         {
+            if (preview_building_id != 0)
+                map.building_manager.RemoveBuildingCollisionBoundary(preview_building_id);
+
             preview_type = SelectionType.NONE;
             if (preview_entity != null)
             {
@@ -399,6 +405,8 @@ namespace SpellforceDataEditor.SFMap
             ClearPreview();
             preview_entity = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeEmpty(SF3D.SFRender.SFRenderEngine.scene.root, "_PREVIEW_");
             preview_entity.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+
+            preview_entity_offset = Vector2.Zero;
         }
 
         public void SetPreviewUnit(ushort unit_id)
@@ -449,8 +457,17 @@ namespace SpellforceDataEditor.SFMap
             // get building
             preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneBuilding(building_id, "_BUILDING_" + building_id.ToString()));
             preview_entity.Scale = new OpenTK.Vector3(100 / 128f);
+            map.building_manager.AddBuildingCollisionBoundary(building_id);
 
             preview_building_id = building_id;
+
+            Vector2 off = map.building_manager.building_collision[building_id].collision_mesh.origin;
+            float angle = 0;
+            Vector2 r_off = new Vector2(off.X, off.Y);
+            r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
+            r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
+
+            preview_entity_offset = r_off;
         }
 
         public void SetPreviewObject(ushort object_id)

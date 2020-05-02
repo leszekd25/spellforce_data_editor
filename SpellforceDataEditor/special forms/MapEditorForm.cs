@@ -860,10 +860,13 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.scene.tex_entries_simple[tex].Clear();
             SFRenderEngine.scene.tex_entries_simple.Clear();
             //SFRenderEngine.scene.untex_entries_simple.Clear();
-            
+
             //ui.UninitMinimap();
-            ui.Dispose();
-            ui = null;
+            if (ui != null)
+            {
+                ui.Dispose();
+                ui = null;
+            }
             SFRenderEngine.ui.Dispose();
 
             if (MainForm.viewer != null)
