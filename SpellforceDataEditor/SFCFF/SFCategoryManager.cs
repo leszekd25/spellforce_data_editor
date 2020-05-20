@@ -679,6 +679,7 @@ namespace SpellforceDataEditor.SFCFF
         {
             if (gamedata == gd)
             {
+                categorySpecial_RuneHeroes.generate();
                 ready = true;
                 return;
             }

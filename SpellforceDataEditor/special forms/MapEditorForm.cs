@@ -712,7 +712,9 @@ namespace SpellforceDataEditor.special_forms
                 if (MainForm.data != null)
                     MainForm.data.mapeditor_set_gamedata(gamedata);
                 else
+                {
                     SFCFF.SFCategoryManager.manual_SetGamedata(gamedata);
+                }
 
                 SFRenderEngine.scene.root.Visible = true;
 
@@ -1227,8 +1229,8 @@ namespace SpellforceDataEditor.special_forms
             int ystart = RenderWindow.Location.Y;
             int yend = StatusStrip.Location.Y;
             int w_height = Math.Max(100, yend - ystart - 3);
-            int w_width = this.Width - 22 - (PanelInspector.Visible ? PanelInspector.Width : 0)
-                - (PanelObjectSelector.Visible ? PanelObjectSelector.Width : 0);
+            int w_width = Math.Max(100, this.Width - 22 - (PanelInspector.Visible ? PanelInspector.Width : 0)
+                - (PanelObjectSelector.Visible ? PanelObjectSelector.Width : 0));
             int xstart = (PanelObjectSelector.Visible ? PanelObjectSelector.Location.X + PanelObjectSelector.Width + 3 : 0);
             PanelObjectSelector.Height = w_height;
             TreeEntities.Height = w_height - 32;
@@ -2122,7 +2124,6 @@ namespace SpellforceDataEditor.special_forms
 
         private void ConfirmPlacementEntity()
         {
-            map.selection_helper.ClearPreview();
             map.selection_helper.SetPreviewAngle(0);
 
             if (TabEditorModes.SelectedIndex != 2)
