@@ -14,7 +14,7 @@ namespace SpellforceDataEditor.SFMap
         public SFCoord grid_position = new SFCoord(0, 0);
         public int id = -1;
         public int game_id = -1;
-        public int angle = 0;
+        public int unknown_flags = 0;
         public int npc_id = 0;
         public int unknown = 0;
         public int group = 0;
@@ -42,11 +42,11 @@ namespace SpellforceDataEditor.SFMap
         public List<SFMapUnit> units { get; private set; } = new List<SFMapUnit>();
         public SFMap map = null;
 
-        public SFMapUnit AddUnit(int id, SFCoord position, int angle)
+        public SFMapUnit AddUnit(int id, SFCoord position, int flags)
         {
             SFMapUnit unit = new SFMapUnit();
             unit.grid_position = position;
-            unit.angle = angle;
+            unit.unknown_flags = flags;
             unit.game_id = id;
             units.Add(unit);
 

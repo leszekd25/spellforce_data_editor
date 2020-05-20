@@ -118,7 +118,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             NPCID.Text = unit.npc_id.ToString();
             PosX.Text = unit.grid_position.x.ToString();
             PosY.Text = unit.grid_position.y.ToString();
-            AngleTrackbar.Value = unit.angle;
+            Flags.Text = unit.unknown_flags.ToString();
             Unknown1.Text = unit.unknown.ToString();
             Group.Text = unit.group.ToString();
             Unknown2.Text = unit.unknown2.ToString();
@@ -186,30 +186,14 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 MessageBox.Show("Could not open " + fname);
         }
 
-        private void Angle_Validated(object sender, EventArgs e)
+        private void Flags_Validated(object sender, EventArgs e)
         {
             if (ListUnits.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
-
-            int v = Utility.TryParseUInt16(Angle.Text, (ushort)unit.angle);
-            AngleTrackbar.Value = (v >= 0 ? (v <= 359 ? v : 359) : 0);
+            unit.unknown_flags = Utility.TryParseUInt16(Flags.Text);
         }
-
-        private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
-        {
-            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
-                return;
-
-            SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
-            Angle.Text = AngleTrackbar.Value.ToString();
-            unit.angle = AngleTrackbar.Value;
-            map.RotateUnit(ListUnits.SelectedIndex, unit.angle);
-
-            MainForm.mapedittool.update_render = true;
-        }
-
 
         private void Unknown1_Validated(object sender, EventArgs e)
         {

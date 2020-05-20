@@ -425,6 +425,7 @@
     <Compile Include="SF3D\SFModelSkin.cs" />
     <Compile Include="SF3D\SFRender\SFRenderEngine.cs" />
     <Compile Include="SF3D\SFRender\SFShader.cs" />
+    <Compile Include="SFCFF\CustomScript.cs" />
     <Compile Include="SFChunkFile\SFChunkFile.cs" />
     <Compile Include="SFChunkFile\SFChunkFileChunk.cs" />
     <Compile Include="SFEffect\EffectObject.cs" />

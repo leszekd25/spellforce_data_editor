@@ -698,6 +698,7 @@ namespace SpellforceDataEditor.SFCFF
             {
                 categorySpecial_RuneHeroes.generate();
                 ready = true;
+                //CustomScript.WeaponsToFile(true);
             }
 
             return result;
@@ -925,11 +926,23 @@ namespace SpellforceDataEditor.SFCFF
             return SFCategoryManager.GetTextFromElement(rune_elem, 1);
         }
 
-        /*//returns data value given its address
-        public static object get_variant(int cat, int elem, int ind)
+        // gets min unit level, given skill level
+        public static int GetMinUnitLevel(int level)
         {
-            return gamedata[cat][elem][ind];
-        }*/
+            SFCategoryElement lvl_elem = gamedata[32].FindElement<byte>(5, (byte)level);
+            if (lvl_elem == null)
+                return 0;
+            return (byte)lvl_elem[0];
+        }
+
+        // gets max skill level, given unit level
+        public static int GetMaxSkillLevel(int level)
+        {
+            SFCategoryElement lvl_elem = gamedata[32].FindElementBinary<byte>(0, (byte)level);
+            if (lvl_elem == null)
+                return 0;
+            return (byte)lvl_elem[5];
+        }
 
         //frees all data, only empty categories remain
         public static void UnloadAll()

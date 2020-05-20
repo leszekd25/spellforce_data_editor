@@ -198,7 +198,7 @@ namespace SpellforceDataEditor.SFMap
                         int x = br.ReadInt16();
                         int y = br.ReadInt16();
                         SFCoord pos = new SFCoord(x, y);
-                        int angle = br.ReadInt16();
+                        int flags = br.ReadInt16();
                         int unit_id = br.ReadInt16();
                         int npc_id = br.ReadUInt16();
                         int unknown = br.ReadUInt16();
@@ -206,7 +206,7 @@ namespace SpellforceDataEditor.SFMap
                         int unknown2 = 0;
                         if (c12.header.ChunkDataType >= 5)
                             unknown2 = br.ReadByte();
-                        AddUnit(unit_id, pos, angle, npc_id, unknown, group, unknown2);
+                        AddUnit(unit_id, pos, flags, npc_id, unknown, group, unknown2);
                     }
                 }
                 c12.Close();
@@ -1035,7 +1035,7 @@ namespace SpellforceDataEditor.SFMap
                     {
                         bw.Write((short)unit_manager.units[i].grid_position.x);
                         bw.Write((short)unit_manager.units[i].grid_position.y);
-                        bw.Write((short)unit_manager.units[i].angle);
+                        bw.Write((short)unit_manager.units[i].unknown_flags);
                         bw.Write((short)unit_manager.units[i].game_id);
                         bw.Write((short)unit_manager.units[i].npc_id);
                         bw.Write((short)unit_manager.units[i].unknown);
@@ -1851,10 +1851,10 @@ namespace SpellforceDataEditor.SFMap
             return 0;
         }
 
-        public void AddUnit(int game_id, SFCoord pos, int angle, int npc_id, int unknown, int group, int unknown2)
+        public void AddUnit(int game_id, SFCoord pos, int flags, int npc_id, int unknown, int group, int unknown2)
         {
             // 1. add new unit in unit manager
-            SFMapUnit unit = unit_manager.AddUnit(game_id, pos, angle);
+            SFMapUnit unit = unit_manager.AddUnit(game_id, pos, flags);
             unit.npc_id = npc_id;
             unit.unknown = unknown;
             unit.group = group;
@@ -1867,7 +1867,7 @@ namespace SpellforceDataEditor.SFMap
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.SceneSynchro.SceneNode obj = heightmap.GetChunkNode(unit.grid_position).FindNode<SF3D.SceneSynchro.SceneNode>(unit.GetObjectName());
             obj.Position = heightmap.GetFixedPosition(pos);
-            obj.SetAnglePlane(angle);
+            obj.SetAnglePlane(0);
             // find unit scale
             int unit_index = gamedata[17].GetElementIndex(game_id);
             if (unit_index == -1)
@@ -1976,7 +1976,7 @@ namespace SpellforceDataEditor.SFMap
             // object transform
             float z = heightmap.GetZ(unit.grid_position) / 100.0f;
             obj.Position = heightmap.GetFixedPosition(unit.grid_position);
-            obj.SetAnglePlane(unit.angle);
+            obj.SetAnglePlane(0);
             // unit scale
             int unit_index = gamedata[17].GetElementIndex(unit.game_id);
             if (unit_index == -1)
