@@ -358,6 +358,7 @@ namespace SpellforceDataEditor.special_forms
             if ((cat_e >= SFCategoryManager.gamedata[cat_i].GetElementCount())||(cat_e < 0))
                 return;
 
+            BringToFront();
             CategorySelect.Focus();
 
             diff_resolve_current_element();

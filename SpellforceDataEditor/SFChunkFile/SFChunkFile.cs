@@ -174,7 +174,13 @@ namespace SpellforceDataEditor.SFChunkFile
             {
                 long offset = br.BaseStream.Position;
                 SFChunkFileChunkHeader header = SFChunkFileChunk.ReadChunkHeader(br, false);
+                if ((header.ChunkDataLength < 0)|| (br.BaseStream.Position + (cm == 3 ? 16 : 12) + header.ChunkDataLength > br.BaseStream.Length))
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GenerateLookupDict(): Malformed chunk found, stopping here");
+                    break;
+                }
                 lookup_dict.Add(new SFChunkLookupKey(header.ChunkID, header.ChunkOccurence), offset);
+
                 br.BaseStream.Position += (cm==3?16:12)+header.ChunkDataLength;
             }
         }

@@ -649,6 +649,12 @@
     <Compile Include="SFMap\map_controls\MapLakeInspector.Designer.cs">
       <DependentUpon>MapLakeInspector.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFMap\map_controls\MapQuickSelectControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_controls\MapQuickSelectControl.Designer.cs">
+      <DependentUpon>MapQuickSelectControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFMap\map_controls\MapTerrainTextureControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -740,6 +746,7 @@
     <Compile Include="SFMap\SFMapObjectManager.cs" />
     <Compile Include="SFMap\SFMapOcean.cs" />
     <Compile Include="SFMap\SFMapPortalManager.cs" />
+    <Compile Include="SFMap\SFMapQuickSelectHelper.cs" />
     <Compile Include="SFMap\SFMapSelectionHelper.cs" />
     <Compile Include="SFMap\SFMapTerrainTextureManager.cs" />
     <Compile Include="SFMap\SFMapUnitManager.cs" />
@@ -1106,6 +1113,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapLakeInspector.resx">
       <DependentUpon>MapLakeInspector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_controls\MapQuickSelectControl.resx">
+      <DependentUpon>MapQuickSelectControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_controls\MapTerrainTextureControl.resx">
       <DependentUpon>MapTerrainTextureControl.cs</DependentUpon>

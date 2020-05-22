@@ -362,6 +362,12 @@ namespace SpellforceDataEditor.SFMap
             SetNamePosition(text_pos);
         }
 
+        public void SetPreviewEntityGridPosition(SFCoord pos)
+        {
+            float z = map.heightmap.GetZ(new SFCoord(pos.x, map.height - pos.y - 1)) / 100.0f;
+            preview_entity.Position = new Vector3(pos.x - preview_entity_offset.X, z + 0.2f, pos.y + preview_entity_offset.Y);
+        }
+
         // returns if cursor position changed
         public bool SetCursorPosition(SFCoord pos)
         {
@@ -372,9 +378,7 @@ namespace SpellforceDataEditor.SFMap
                 cur_obj.Position = new Vector3(pos.x, z, pos.y);
 
                 if (preview_entity != null)
-                {
-                    preview_entity.Position = new Vector3(pos.x - preview_entity_offset.X, z + 0.2f, pos.y + preview_entity_offset.Y);
-                }
+                    SetPreviewEntityGridPosition(pos);
 
                 return true;
             }
@@ -423,6 +427,7 @@ namespace SpellforceDataEditor.SFMap
 
             // get unit
             preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(unit_id, "_UNIT_" + unit_id.ToString()));
+            preview_entity.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("_UNIT_" + unit_id.ToString() + ".Billboard").Visible = false;
 
             int unit_index = map.gamedata[17].GetElementIndex(unit_id);
             if (unit_index == -1)
@@ -437,9 +442,12 @@ namespace SpellforceDataEditor.SFMap
                 unit_size = Math.Max((ushort)unit_data[19], (ushort)40) / 100.0f;
             }
 
-            preview_entity.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
+            preview_entity.Scale = new OpenTK.Vector3(unit_size * 100 / 128); 
+            SetPreviewEntityGridPosition(cursor_position);
 
             preview_unit_id = unit_id;
+
+            MainForm.mapedittool.update_render = true;
         }
 
         public void SetPreviewBuilding(ushort building_id)
@@ -467,7 +475,10 @@ namespace SpellforceDataEditor.SFMap
             r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
             r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
 
-            preview_entity_offset = r_off;
+            preview_entity_offset = r_off; 
+            SetPreviewEntityGridPosition(cursor_position);
+
+            MainForm.mapedittool.update_render = true;
         }
 
         public void SetPreviewObject(ushort object_id)
@@ -485,8 +496,11 @@ namespace SpellforceDataEditor.SFMap
             // get building
             preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(object_id, "_OBJECT_" + object_id.ToString(), true));
             preview_entity.Scale = new OpenTK.Vector3(100 / 128f);
+            SetPreviewEntityGridPosition(cursor_position);
 
             preview_object_id = object_id;
+
+            MainForm.mapedittool.update_render = true;
         }
 
         public void SetPreviewAngle(ushort angle)

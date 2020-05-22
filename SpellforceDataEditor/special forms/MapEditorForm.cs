@@ -504,6 +504,10 @@ namespace SpellforceDataEditor.special_forms
         Dictionary<string, TreeNode> building_tree = null;
         Dictionary<string, TreeNode> obj_tree = null;
 
+        SFMapQuickSelectHelper qs_unit = new SFMapQuickSelectHelper();
+        SFMapQuickSelectHelper qs_building = new SFMapQuickSelectHelper();
+        SFMapQuickSelectHelper qs_object = new SFMapQuickSelectHelper();
+
         public MapEditorUI ui { get; private set; } = null;
 
         public MapEditorForm()
@@ -1323,25 +1327,145 @@ namespace SpellforceDataEditor.special_forms
                     if (TabEditorModes.SelectedIndex == 2)
                         EntityHidePreview.Checked = !EntityHidePreview.Checked;
                     return true;
+                case Keys.D1:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        EntityID.Text = QuickSelect_GetCurrent().ID[0].ToString();
+                        ConfirmPlacementEntity();
+                    }
+                    return base.ProcessDialogKey(keyData);
+                case Keys.D2:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        EntityID.Text = QuickSelect_GetCurrent().ID[1].ToString();
+                        ConfirmPlacementEntity();
+                    }
+                    return base.ProcessDialogKey(keyData);
+                case Keys.D3:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        EntityID.Text = QuickSelect_GetCurrent().ID[2].ToString();
+                        ConfirmPlacementEntity();
+                    }
+                    return base.ProcessDialogKey(keyData);
+                case Keys.D4:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        EntityID.Text = QuickSelect_GetCurrent().ID[3].ToString();
+                        ConfirmPlacementEntity();
+                    }
+                    return base.ProcessDialogKey(keyData);
+                case Keys.D5:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        EntityID.Text = QuickSelect_GetCurrent().ID[4].ToString();
+                        ConfirmPlacementEntity();
+                    }
+                    return base.ProcessDialogKey(keyData);
+                case Keys.D6:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        EntityID.Text = QuickSelect_GetCurrent().ID[5].ToString();
+                        ConfirmPlacementEntity();
+                    }
+                    return base.ProcessDialogKey(keyData);
+                case Keys.D7:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        EntityID.Text = QuickSelect_GetCurrent().ID[6].ToString();
+                        ConfirmPlacementEntity();
+                    }
+                    return base.ProcessDialogKey(keyData);
+                case Keys.D8:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        EntityID.Text = QuickSelect_GetCurrent().ID[7].ToString();
+                        ConfirmPlacementEntity();
+                    }
+                    return base.ProcessDialogKey(keyData);
+                case Keys.D9:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        EntityID.Text = QuickSelect_GetCurrent().ID[8].ToString();
+                        ConfirmPlacementEntity();
+                    }
+                    return base.ProcessDialogKey(keyData);
+                case Keys.D0:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        EntityID.Text = QuickSelect_GetCurrent().ID[9].ToString();
+                        ConfirmPlacementEntity();
+                    }
+                    return base.ProcessDialogKey(keyData);
                 case Keys.D1 | Keys.Control:
-                    if (TabEditorModes.Enabled)
-                        TabEditorModes.SelectedIndex = 0;
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        QuickSelect_GetCurrent().ID[0] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect.UpdateIDs();
+                    }
                     return true;
                 case Keys.D2 | Keys.Control:
-                    if (TabEditorModes.Enabled)
-                        TabEditorModes.SelectedIndex = 1;
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        QuickSelect_GetCurrent().ID[1] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect.UpdateIDs();
+                    }
                     return true;
                 case Keys.D3 | Keys.Control:
-                    if (TabEditorModes.Enabled)
-                        TabEditorModes.SelectedIndex = 2;
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        QuickSelect_GetCurrent().ID[2] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect.UpdateIDs();
+                    }
                     return true;
                 case Keys.D4 | Keys.Control:
-                    if (TabEditorModes.Enabled)
-                        TabEditorModes.SelectedIndex = 3;
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        QuickSelect_GetCurrent().ID[3] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect.UpdateIDs();
+                    }
                     return true;
                 case Keys.D5 | Keys.Control:
-                    if (TabEditorModes.Enabled)
-                        TabEditorModes.SelectedIndex = 4;
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        QuickSelect_GetCurrent().ID[4] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect.UpdateIDs();
+                    }
+                    return true;
+                case Keys.D6 | Keys.Control:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        QuickSelect_GetCurrent().ID[5] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect.UpdateIDs();
+                    }
+                    return true;
+                case Keys.D7 | Keys.Control:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        QuickSelect_GetCurrent().ID[6] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect.UpdateIDs();
+                    }
+                    return true;
+                case Keys.D8 | Keys.Control:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        QuickSelect_GetCurrent().ID[7] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect.UpdateIDs();
+                    }
+                    return true;
+                case Keys.D9 | Keys.Control:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        QuickSelect_GetCurrent().ID[8] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect.UpdateIDs();
+                    }
+                    return true;
+                case Keys.D0 | Keys.Control:
+                    if (QuickSelect_GetCurrent() != null)
+                    {
+                        QuickSelect_GetCurrent().ID[9] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect.UpdateIDs();
+                    }
                     return true;
                 case Keys.ControlKey | Keys.Control:
                     special_pressed.Ctrl = true;
@@ -1929,6 +2053,8 @@ namespace SpellforceDataEditor.special_forms
             EditCoopCampTypes.Location = PanelEntityPlacementSelect.Location;
             PanelMonumentType.Location = PanelEntityPlacementSelect.Location;
             EntityHidePreview.Location = new Point(486, 94);
+            QuickSelect.Location = new Point(PanelEntityPlacementSelect.Location.X + PanelEntityPlacementSelect.Width + 6, PanelEntityPlacementSelect.Location.Y);
+            QuickSelect.QsRef = null;
             if (RadioEntityModeUnit.Checked)
             {
                 RadioEntityModeUnit.Checked = false;
@@ -1964,6 +2090,45 @@ namespace SpellforceDataEditor.special_forms
                 RadioModeMonuments.Checked = false;
                 RadioModeMonuments.Checked = true;
             }
+            QuickSelect.UpdateIDs();
+        }
+
+        // quick select utilities
+        private SFMapQuickSelectHelper QuickSelect_GetCurrent()
+        {
+            if (!TabEditorModes.Enabled)
+                return null;
+            if (TabEditorModes.SelectedIndex != 2)
+                return null;
+
+            if (RadioEntityModeUnit.Checked)
+                return qs_unit;
+            if (RadioEntityModeBuilding.Checked)
+                return qs_building;
+            if (RadioEntityModeObject.Checked)
+                return qs_object;
+
+            return null;
+        }
+
+        public void external_QuickSelect_OnSet(int index, ushort id)
+        {
+            if (QuickSelect_GetCurrent() == null)
+                return;
+
+            QuickSelect_GetCurrent().ID[index] = id;
+        }
+
+        public int external_QuickSelect_DetermineCategory()
+        {
+            int cat_id = -1;
+            if (RadioEntityModeUnit.Checked)
+                cat_id = 17;
+            else if (RadioEntityModeObject.Checked)
+                cat_id = 33;
+            else if (RadioEntityModeBuilding.Checked)
+                cat_id = 23;
+            return cat_id;
         }
 
         // this tree code is very ugly, i wish you could instantiate TreeNodeCollection outside of TreeView
@@ -2210,6 +2375,8 @@ namespace SpellforceDataEditor.special_forms
             PanelMonumentType.Visible = false;
             PanelObjectAngle.Visible = false;
 
+            QuickSelect.QsRef = qs_unit;
+
             EntityID.Text = "0";
             ConfirmPlacementEntity();
         }
@@ -2397,6 +2564,8 @@ namespace SpellforceDataEditor.special_forms
             PanelMonumentType.Visible = false;
             PanelObjectAngle.Visible = false;
 
+            QuickSelect.QsRef = qs_building;
+
             EntityID.Text = "0";
             ConfirmPlacementEntity();
         }
@@ -2576,7 +2745,9 @@ namespace SpellforceDataEditor.special_forms
             PanelEntityPlacementSelect.Visible = true;
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
-            PanelObjectAngle.Visible = true;
+            PanelObjectAngle.Visible = true; 
+            
+            QuickSelect.QsRef = qs_object;
 
             EntityID.Text = "0";
             ConfirmPlacementEntity();

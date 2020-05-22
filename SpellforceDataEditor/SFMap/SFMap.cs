@@ -1866,6 +1866,7 @@ namespace SpellforceDataEditor.SFMap
 
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.SceneSynchro.SceneNode obj = heightmap.GetChunkNode(unit.grid_position).FindNode<SF3D.SceneSynchro.SceneNode>(unit.GetObjectName());
+            obj.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = false;
             obj.Position = heightmap.GetFixedPosition(pos);
             obj.SetAnglePlane(0);
             // find unit scale
@@ -1968,7 +1969,8 @@ namespace SpellforceDataEditor.SFMap
             SF3D.SceneSynchro.SceneNode unit_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(unit.GetObjectName());
             if (unit_node != null)
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(unit_node);
-            SF3D.SceneSynchro.SceneNode obj = SFRenderEngine.scene.AddSceneUnit(new_unit_id, unit.GetObjectName());
+            SF3D.SceneSynchro.SceneNode obj = SFRenderEngine.scene.AddSceneUnit(new_unit_id, unit.GetObjectName()); 
+            obj.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = false;
             obj.SetParent(chunk_node);
 
             unit.game_id = new_unit_id;

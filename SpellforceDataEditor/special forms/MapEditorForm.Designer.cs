@@ -55,6 +55,7 @@
             this.label14 = new System.Windows.Forms.Label();
             this.PanelDecalGroups = new System.Windows.Forms.Panel();
             this.TabPageEntities = new System.Windows.Forms.TabPage();
+            this.EntityHidePreview = new System.Windows.Forms.CheckBox();
             this.PanelMonumentType = new System.Windows.Forms.Panel();
             this.MonumentHero = new System.Windows.Forms.RadioButton();
             this.label15 = new System.Windows.Forms.Label();
@@ -185,7 +186,7 @@
             this.TreeEntities = new System.Windows.Forms.TreeView();
             this.TimerTreeEntityFilter = new System.Windows.Forms.Timer(this.components);
             this.RenderWindow = new OpenTK.GLControl();
-            this.EntityHidePreview = new System.Windows.Forms.CheckBox();
+            this.QuickSelect = new SpellforceDataEditor.SFMap.map_controls.MapQuickSelectControl();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
@@ -290,28 +291,28 @@
             // importHeightmapToolStripMenuItem
             // 
             this.importHeightmapToolStripMenuItem.Name = "importHeightmapToolStripMenuItem";
-            this.importHeightmapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importHeightmapToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.importHeightmapToolStripMenuItem.Text = "Import heightmap";
             this.importHeightmapToolStripMenuItem.Click += new System.EventHandler(this.importHeightmapToolStripMenuItem_Click);
             // 
             // exportHeightmapToolStripMenuItem
             // 
             this.exportHeightmapToolStripMenuItem.Name = "exportHeightmapToolStripMenuItem";
-            this.exportHeightmapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportHeightmapToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.exportHeightmapToolStripMenuItem.Text = "Export heightmap";
             this.exportHeightmapToolStripMenuItem.Click += new System.EventHandler(this.exportHeightmapToolStripMenuItem_Click);
             // 
             // slopebasedPaintToolStripMenuItem
             // 
             this.slopebasedPaintToolStripMenuItem.Name = "slopebasedPaintToolStripMenuItem";
-            this.slopebasedPaintToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.slopebasedPaintToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.slopebasedPaintToolStripMenuItem.Text = "Slope-based paint";
             this.slopebasedPaintToolStripMenuItem.Click += new System.EventHandler(this.slopebasedPaintToolStripMenuItem_Click);
             // 
             // visibilitySettingsToolStripMenuItem
             // 
             this.visibilitySettingsToolStripMenuItem.Name = "visibilitySettingsToolStripMenuItem";
-            this.visibilitySettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.visibilitySettingsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.visibilitySettingsToolStripMenuItem.Text = "Visibility settings";
             this.visibilitySettingsToolStripMenuItem.Click += new System.EventHandler(this.visibilitySettingsToolStripMenuItem_Click);
             // 
@@ -408,6 +409,7 @@
             // 
             // TabPageEntities
             // 
+            this.TabPageEntities.Controls.Add(this.QuickSelect);
             this.TabPageEntities.Controls.Add(this.EntityHidePreview);
             this.TabPageEntities.Controls.Add(this.PanelMonumentType);
             this.TabPageEntities.Controls.Add(this.EditCoopCampTypes);
@@ -420,6 +422,17 @@
             this.TabPageEntities.TabIndex = 2;
             this.TabPageEntities.Text = "Entities";
             this.TabPageEntities.UseVisualStyleBackColor = true;
+            // 
+            // EntityHidePreview
+            // 
+            this.EntityHidePreview.AutoSize = true;
+            this.EntityHidePreview.Location = new System.Drawing.Point(730, 94);
+            this.EntityHidePreview.Name = "EntityHidePreview";
+            this.EntityHidePreview.Size = new System.Drawing.Size(88, 17);
+            this.EntityHidePreview.TabIndex = 14;
+            this.EntityHidePreview.Text = "Hide preview";
+            this.EntityHidePreview.UseVisualStyleBackColor = true;
+            this.EntityHidePreview.CheckedChanged += new System.EventHandler(this.EntityHidePreview_CheckedChanged);
             // 
             // PanelMonumentType
             // 
@@ -1776,16 +1789,14 @@
             this.RenderWindow.VSync = false;
             this.RenderWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
             // 
-            // EntityHidePreview
+            // QuickSelect
             // 
-            this.EntityHidePreview.AutoSize = true;
-            this.EntityHidePreview.Location = new System.Drawing.Point(730, 94);
-            this.EntityHidePreview.Name = "EntityHidePreview";
-            this.EntityHidePreview.Size = new System.Drawing.Size(88, 17);
-            this.EntityHidePreview.TabIndex = 14;
-            this.EntityHidePreview.Text = "Hide preview";
-            this.EntityHidePreview.UseVisualStyleBackColor = true;
-            this.EntityHidePreview.CheckedChanged += new System.EventHandler(this.EntityHidePreview_CheckedChanged);
+            this.QuickSelect.Location = new System.Drawing.Point(731, 4);
+            this.QuickSelect.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.QuickSelect.Name = "QuickSelect";
+            this.QuickSelect.Size = new System.Drawing.Size(480, 84);
+            this.QuickSelect.TabIndex = 15;
+            this.QuickSelect.Visible = false;
             // 
             // MapEditorForm
             // 
@@ -2024,5 +2035,6 @@
         private System.Windows.Forms.Timer TimerTreeEntityFilter;
         private OpenTK.GLControl RenderWindow;
         private System.Windows.Forms.CheckBox EntityHidePreview;
+        private SFMap.map_controls.MapQuickSelectControl QuickSelect;
     }
 }
