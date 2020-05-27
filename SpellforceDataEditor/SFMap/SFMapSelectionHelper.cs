@@ -392,9 +392,6 @@ namespace SpellforceDataEditor.SFMap
 
         public void ClearPreview()
         {
-            if (preview_building_id != 0)
-                map.building_manager.RemoveBuildingCollisionBoundary(preview_building_id);
-
             preview_type = SelectionType.NONE;
             if (preview_entity != null)
             {

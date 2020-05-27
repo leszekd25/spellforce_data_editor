@@ -3052,6 +3052,18 @@ namespace SpellforceDataEditor.special_forms
 
             map.metadata.map_type = SFMapType.COOP;
 
+            if (map.metadata.minimap == null)
+            {
+                byte[] image_data = new byte[128 * 128 * 3];
+                for (int i = 0; i < 128 * 128 * 3; i++)
+                    image_data[i] = (byte)((i * 1024) / 3);
+                map.metadata.minimap = new SFMapMinimap();
+                map.metadata.minimap.width = 128;
+                map.metadata.minimap.height = 128;
+                map.metadata.minimap.texture_data = image_data;
+                map.metadata.minimap.GenerateTexture();
+            }
+
             ButtonTeams.Visible = true;
             PanelCoopParams.Visible = true;
             UpdateCoopSpawnParameters();
@@ -3063,6 +3075,18 @@ namespace SpellforceDataEditor.special_forms
                 return;
 
             map.metadata.map_type = SFMapType.MULTIPLAYER;
+
+            if (map.metadata.minimap == null)
+            {
+                byte[] image_data = new byte[128 * 128 * 3];
+                for (int i = 0; i < 128 * 128 * 3; i++)
+                    image_data[i] = (byte)((i * 1024) / 3);
+                map.metadata.minimap = new SFMapMinimap();
+                map.metadata.minimap.width = 128;
+                map.metadata.minimap.height = 128;
+                map.metadata.minimap.texture_data = image_data;
+                map.metadata.minimap.GenerateTexture();
+            }
 
             ButtonTeams.Visible = true;
             PanelCoopParams.Visible = false;

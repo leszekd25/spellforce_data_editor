@@ -40,7 +40,6 @@ namespace SpellforceDataEditor.SFMap
 
     public class SFMapBuildingCollisionBoundary
     {
-        public int reference_count = 1;
         public SFMapCollisionBoundary collision_mesh { get; private set; } = null;
         public SF3D.SFModel3D b_outline { get; private set; } = new SF3D.SFModel3D();
 
@@ -111,55 +110,49 @@ namespace SpellforceDataEditor.SFMap
         {
             // add new collision boundary (PENDING TESTS!!!!!!!!!!!)
             if (building_collision.ContainsKey((ushort)id))
-                building_collision[(ushort)id].reference_count += 1;
-            else
+                return;
+
+            SFMapCollisionBoundary cb = new SFMapCollisionBoundary();
+            // load building origin vector
+            Vector2 org = new Vector2(0, 0);
+            int org_index = map.gamedata[23].GetElementIndex(id);
+            if (org_index != -1)
             {
-                SFMapCollisionBoundary cb = new SFMapCollisionBoundary();
-                // load building origin vector
-                Vector2 org = new Vector2(0, 0);
-                int org_index = map.gamedata[23].GetElementIndex(id);
-                if(org_index != -1)
-                {
-                    SFCFF.SFCategoryElement org_data = map.gamedata[23][org_index]; // 6, 7
-                    org.X = ((short)org_data[6]) / 100.0f;
-                    org.Y = ((short)org_data[7]) / 100.0f;
-                }
-                // load building collision data from gamedata
-                int col_index = map.gamedata[24].GetElementIndex(id);
-                if (col_index != -1)
-                {
-                    SFCFF.SFCategoryElement col_data = map.gamedata[24][col_index];
+                SFCFF.SFCategoryElement org_data = map.gamedata[23][org_index]; // 6, 7
+                org.X = ((short)org_data[6]) / 100.0f;
+                org.Y = ((short)org_data[7]) / 100.0f;
+            }
+            // load building collision data from gamedata
+            int col_index = map.gamedata[24].GetElementIndex(id);
+            if (col_index != -1)
+            {
+                SFCFF.SFCategoryElement col_data = map.gamedata[24][col_index];
 
-                    int current_col_offset = 0;
-                    while (current_col_offset < col_data.variants.Count)
+                int current_col_offset = 0;
+                while (current_col_offset < col_data.variants.Count)
+                {
+                    int vertex_count = (byte)col_data.variants[current_col_offset + 3];
+
+                    Vector2[] vertex_list = new Vector2[vertex_count];
+                    for (int i = 0; i < vertex_count; i++)
                     {
-                        int vertex_count = (byte)col_data.variants[current_col_offset + 3];
-
-                        Vector2[] vertex_list = new Vector2[vertex_count];
-                        for (int i = 0; i < vertex_count; i++)
-                        {
-                            vertex_list[i] = new Vector2();
-                            vertex_list[i].X = (float)((short)(col_data.variants[current_col_offset + 4 + i * 2 + 0])) / 128;
-                            vertex_list[i].Y = -(float)((short)(col_data.variants[current_col_offset + 4 + i * 2 + 1])) / 128;
-                        }
-                        cb.AddPolygon(new SFMapCollisionPolygon2D(vertex_list, org));
-
-                        current_col_offset += 4 + 2 * vertex_count;
+                        vertex_list[i] = new Vector2();
+                        vertex_list[i].X = (float)((short)(col_data.variants[current_col_offset + 4 + i * 2 + 0])) / 128;
+                        vertex_list[i].Y = -(float)((short)(col_data.variants[current_col_offset + 4 + i * 2 + 1])) / 128;
                     }
+                    cb.AddPolygon(new SFMapCollisionPolygon2D(vertex_list, org));
 
-                    building_collision.Add((byte)id, new SFMapBuildingCollisionBoundary(cb, org));
+                    current_col_offset += 4 + 2 * vertex_count;
                 }
+
+                building_collision.Add((byte)id, new SFMapBuildingCollisionBoundary(cb, org));
             }
         }
 
         public void RemoveBuildingCollisionBoundary(int id)
         {
             if (building_collision.ContainsKey((ushort)id))
-            {
-                building_collision[(ushort)id].reference_count -= 1;
-                if (building_collision[(ushort)id].reference_count == 0)
-                    building_collision.Remove((ushort)id);
-            }
+                building_collision.Remove((ushort)id);
         }
 
         public bool BoundaryFits(int id, SFCoord pos, int angle, HashSet<SFCoord> cells_taken)
@@ -234,7 +227,6 @@ namespace SpellforceDataEditor.SFMap
 
         public void RemoveBuilding(SFMapBuilding b)
         {
-            RemoveBuildingCollisionBoundary(b.game_id);
             buildings.Remove(b);
 
             SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(b.grid_position);

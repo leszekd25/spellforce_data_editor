@@ -1678,7 +1678,6 @@ namespace SpellforceDataEditor.SFMap
             SF3D.SceneSynchro.SceneNode bld_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(building.GetObjectName());
             if (bld_node != null)
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(bld_node);
-            building_manager.RemoveBuildingCollisionBoundary(building.game_id);
             building_manager.AddBuildingCollisionBoundary(new_building_id);
             SF3D.SceneSynchro.SceneNode _obj = SFRenderEngine.scene.AddSceneBuilding(new_building_id, building.GetObjectName());
             _obj.SetParent(chunk_node);
