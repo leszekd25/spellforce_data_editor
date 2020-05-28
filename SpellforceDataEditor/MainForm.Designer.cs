@@ -56,7 +56,7 @@
             // bGDEditor
             // 
             this.bGDEditor.Location = new System.Drawing.Point(175, 47);
-            this.bGDEditor.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bGDEditor.Margin = new System.Windows.Forms.Padding(4);
             this.bGDEditor.Name = "bGDEditor";
             this.bGDEditor.Size = new System.Drawing.Size(153, 28);
             this.bGDEditor.TabIndex = 1;
@@ -68,7 +68,7 @@
             // 
             this.bAssets.ForeColor = System.Drawing.Color.Crimson;
             this.bAssets.Location = new System.Drawing.Point(336, 47);
-            this.bAssets.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bAssets.Margin = new System.Windows.Forms.Padding(4);
             this.bAssets.Name = "bAssets";
             this.bAssets.Size = new System.Drawing.Size(153, 28);
             this.bAssets.TabIndex = 2;
@@ -80,7 +80,7 @@
             // 
             this.bMods.ForeColor = System.Drawing.Color.Crimson;
             this.bMods.Location = new System.Drawing.Point(336, 82);
-            this.bMods.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bMods.Margin = new System.Windows.Forms.Padding(4);
             this.bMods.Name = "bMods";
             this.bMods.Size = new System.Drawing.Size(153, 28);
             this.bMods.TabIndex = 4;
@@ -108,7 +108,7 @@
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(80, 16);
             this.labelVersion.TabIndex = 6;
-            this.labelVersion.Text = "27.05.2020.1";
+            this.labelVersion.Text = "28.05.2020.1";
             // 
             // linkEditor
             // 
@@ -129,7 +129,7 @@
             // 
             this.bMap.ForeColor = System.Drawing.Color.Crimson;
             this.bMap.Location = new System.Drawing.Point(175, 82);
-            this.bMap.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bMap.Margin = new System.Windows.Forms.Padding(4);
             this.bMap.Name = "bMap";
             this.bMap.Size = new System.Drawing.Size(153, 28);
             this.bMap.TabIndex = 8;
@@ -151,7 +151,7 @@
             // 
             this.ButtonSpecifyGameDirectory.ForeColor = System.Drawing.Color.Crimson;
             this.ButtonSpecifyGameDirectory.Location = new System.Drawing.Point(175, 11);
-            this.ButtonSpecifyGameDirectory.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ButtonSpecifyGameDirectory.Margin = new System.Windows.Forms.Padding(4);
             this.ButtonSpecifyGameDirectory.Name = "ButtonSpecifyGameDirectory";
             this.ButtonSpecifyGameDirectory.Size = new System.Drawing.Size(153, 28);
             this.ButtonSpecifyGameDirectory.TabIndex = 10;
@@ -162,7 +162,7 @@
             // ButtonAbout
             // 
             this.ButtonAbout.Location = new System.Drawing.Point(336, 154);
-            this.ButtonAbout.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ButtonAbout.Margin = new System.Windows.Forms.Padding(4);
             this.ButtonAbout.Name = "ButtonAbout";
             this.ButtonAbout.Size = new System.Drawing.Size(153, 28);
             this.ButtonAbout.TabIndex = 11;
@@ -184,7 +184,7 @@
             this.bSQLEdit.BackColor = System.Drawing.SystemColors.ControlLight;
             this.bSQLEdit.ForeColor = System.Drawing.Color.Crimson;
             this.bSQLEdit.Location = new System.Drawing.Point(175, 118);
-            this.bSQLEdit.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bSQLEdit.Margin = new System.Windows.Forms.Padding(4);
             this.bSQLEdit.Name = "bSQLEdit";
             this.bSQLEdit.Size = new System.Drawing.Size(153, 28);
             this.bSQLEdit.TabIndex = 13;
@@ -210,7 +210,7 @@
             this.Controls.Add(this.bAssets);
             this.Controls.Add(this.bGDEditor);
             this.Controls.Add(this.label1);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainForm";
             this.Text = "SpellForce Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
