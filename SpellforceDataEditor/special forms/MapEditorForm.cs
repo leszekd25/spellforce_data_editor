@@ -508,6 +508,8 @@ namespace SpellforceDataEditor.special_forms
         SFMapQuickSelectHelper qs_building = new SFMapQuickSelectHelper();
         SFMapQuickSelectHelper qs_object = new SFMapQuickSelectHelper();
 
+        List<int> heightmap_mode_values = new List<int>(new int[3] { 20, 300, 5 });
+
         public MapEditorUI ui { get; private set; } = null;
 
         public MapEditorForm()
@@ -1618,7 +1620,6 @@ namespace SpellforceDataEditor.special_forms
             }
 
             EntityID.Text = "0";
-
             ConfirmPlacementEntity();
         }
 
@@ -1722,6 +1723,7 @@ namespace SpellforceDataEditor.special_forms
         public void HMapEditSetHeight(int h)
         {
             TerrainValue.Text = h.ToString();
+            UpdateHeightmapModeValueCache();
         }
 
         private void BrushSizeVal_Validated(object sender, EventArgs e)
@@ -1758,7 +1760,30 @@ namespace SpellforceDataEditor.special_forms
             int v = Utility.TryParseUInt16(TerrainValue.Text);
             TerrainTrackbar.Value = (v < TerrainTrackbar.Minimum ? TerrainTrackbar.Minimum :
                                       (v > TerrainTrackbar.Maximum ? TerrainTrackbar.Maximum : v));
+
+            UpdateHeightmapModeValueCache();
+
             ((MapHeightMapEditor)selected_editor).Value = v;
+        }
+
+        private void UpdateHeightmapModeValueCache()
+        {
+            int v = Utility.TryParseUInt16(TerrainValue.Text);
+
+            switch (GetHeightMapEditMode())
+            {
+                case HMapEditMode.RAISE:
+                    heightmap_mode_values[0] = v;
+                    break;
+                case HMapEditMode.SET:
+                    heightmap_mode_values[1] = v;
+                    break;
+                case HMapEditMode.SMOOTH:
+                    heightmap_mode_values[2] = v;
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void TerrainTrackbar_ValueChanged(object sender, EventArgs e)
@@ -1767,6 +1792,7 @@ namespace SpellforceDataEditor.special_forms
                 return;
             TerrainValue.Text = TerrainTrackbar.Value.ToString();
             ((MapHeightMapEditor)selected_editor).Value = TerrainTrackbar.Value;
+            UpdateHeightmapModeValueCache();
         }
 
         private void RadioIntConstant_CheckedChanged(object sender, EventArgs e)
@@ -1793,18 +1819,24 @@ namespace SpellforceDataEditor.special_forms
         {
             ((MapHeightMapEditor)selected_editor).EditMode = GetHeightMapEditMode();
             TerrainValueLabel.Text = "Strength";
+            ((MapHeightMapEditor)selected_editor).Value = heightmap_mode_values[0];
+            TerrainValue.Text = heightmap_mode_values[0].ToString();
         }
 
         private void RadioModeSet_CheckedChanged(object sender, EventArgs e)
         {
             ((MapHeightMapEditor)selected_editor).EditMode = GetHeightMapEditMode();
-            TerrainValueLabel.Text = "Value";
+            TerrainValueLabel.Text = "Value"; 
+            ((MapHeightMapEditor)selected_editor).Value = heightmap_mode_values[1];
+            TerrainValue.Text = heightmap_mode_values[1].ToString();
         }
 
         private void RadioModeSmooth_CheckedChanged(object sender, EventArgs e)
         {
             ((MapHeightMapEditor)selected_editor).EditMode = GetHeightMapEditMode();
             TerrainValueLabel.Text = "Strength %";
+            ((MapHeightMapEditor)selected_editor).Value = heightmap_mode_values[2];
+            TerrainValue.Text = heightmap_mode_values[2].ToString();
         }
 
         // TERRAIN FLAGS
@@ -2292,7 +2324,10 @@ namespace SpellforceDataEditor.special_forms
             map.selection_helper.SetPreviewAngle(0);
 
             if (TabEditorModes.SelectedIndex != 2)
+            {
+                map.selection_helper.ResetPreview();
                 return;
+            }
             if (EntityHidePreview.Checked)
                 return;
 

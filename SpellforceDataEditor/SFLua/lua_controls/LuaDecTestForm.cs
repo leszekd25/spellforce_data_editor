@@ -43,7 +43,7 @@ namespace SpellforceDataEditor.SFLua.lua_controls
                 string new_fname = Path.GetFileNameWithoutExtension(fo.Name) + "_d.lua";
 
                 FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
-                BinaryReader br = new BinaryReader(fs);
+                BinaryReader br = new BinaryReader(fs, Encoding.Default);
                 try
                 {
                     LuaDecompiler.LuaBinaryScript scr = new LuaDecompiler.LuaBinaryScript(br);
