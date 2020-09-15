@@ -253,6 +253,7 @@ namespace SpellforceDataEditor.special_forms
             SFCategory ctg = SFCategoryManager.gamedata[CategorySelect.SelectedIndex];
             if (selected_category_index != CategorySelect.SelectedIndex)
             {
+                ButtonElemAdd.BackColor = SystemColors.Control;
                 ButtonElemInsert.BackColor = SystemColors.Control;
                 insert_copy_element = null;
             }
@@ -279,6 +280,7 @@ namespace SpellforceDataEditor.special_forms
             ClearSearchButton.Enabled = false;
             ContinueSearchButton.Enabled = false;
 
+            ButtonElemAdd.BackColor = SystemColors.Control;
             ButtonElemInsert.BackColor = SystemColors.Control;
 
             undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
@@ -504,7 +506,58 @@ namespace SpellforceDataEditor.special_forms
             Tracer_Clear();
         }
 
-        //what happens when you add an element to a category
+
+        //what happens when you insert an element to a category
+        //can copy stored elements
+        private void ButtonElemAdd_Click(object sender, EventArgs e)
+        {
+            resolve_category_index();
+
+            SFCategory ctg = SFCategoryManager.gamedata[real_category_index];
+            List<SFCategoryElement> elems = ctg.elements;
+
+            int current_elem = elems.Count-1;
+            int last_id = ctg.GetElementID(current_elem);
+
+            SFCategoryElement elem;
+            if (insert_copy_element == null)
+                elem = ctg.GetEmptyElement();
+            else
+                elem = insert_copy_element.GetCopy();
+
+            if (ctg.GetElementFormat()[0] == 'B')
+                elem[0] = (byte)(last_id + 1);
+            else if (ctg.GetElementFormat()[0] == 'H')
+                elem[0] = (ushort)(last_id + 1);
+            else if (ctg.GetElementFormat()[0] == 'I')
+                elem[0] = (uint)(last_id + 1);
+            else
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "ButtonElemAdd_Click(): Unknown category format");
+                throw new Exception("Unknown category format");
+            }
+
+
+            elems.Insert(current_elem + 1, elem);
+            ElementSelect.Items.Insert(current_elem + 1, ctg.GetElementString(current_elem + 1));
+            for (int i = current_elem + 1; i < current_indices.Count; i++)
+                current_indices[i] = current_indices[i] + 1;
+            current_indices.Insert(current_elem + 1, current_elem + 1);
+
+            if (!synchronized_with_mapeditor)
+            {
+                diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, current_elem, null, elem));
+
+                undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
+                redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
+            }
+
+            Tracer_Clear();
+
+            ElementSelect.SelectedIndex = current_elem + 1;
+        }
+
+        //what happens when you insert an element to a category
         //can copy stored elements
         private void ButtonElemInsert_Click(object sender, EventArgs e)
         {
@@ -538,6 +591,8 @@ namespace SpellforceDataEditor.special_forms
             }
 
             Tracer_Clear();
+
+            ElementSelect.SelectedIndex = current_elem + 1;
         }
 
         //what happens when you remove element from category
@@ -679,6 +734,7 @@ namespace SpellforceDataEditor.special_forms
 
             panelElemManipulate.Visible = false;
             panelElemCopy.Visible = false;
+            ButtonElemAdd.BackColor = SystemColors.Control;
             ButtonElemInsert.BackColor = SystemColors.Control;
             insert_copy_element = null;
 
@@ -903,6 +959,7 @@ namespace SpellforceDataEditor.special_forms
                 return;
 
             insert_copy_element = SFCategoryManager.gamedata[selected_category_index][selected_element_index].GetCopy();
+            ButtonElemAdd.BackColor = Color.Yellow;
             ButtonElemInsert.BackColor = Color.Yellow;
         }
 
@@ -913,6 +970,7 @@ namespace SpellforceDataEditor.special_forms
                 return;
 
             insert_copy_element = null;
+            ButtonElemAdd.BackColor = SystemColors.Control;
             ButtonElemInsert.BackColor = SystemColors.Control;
         }
 

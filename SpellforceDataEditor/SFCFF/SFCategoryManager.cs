@@ -21,14 +21,22 @@ namespace SpellforceDataEditor.SFCFF
             switch(spell_id)
             {
                 case 1:   //fireburst
-                case 147: //fireball
+                case 147: //fireball (effect)
                 case 159: //fireburst (firestarter)
                 case 234: //fireburst (chain effect)
-                case 239: //fireball (chain effect)
                     p[0] = "Initial damage";
                     p[1] = "Damage per tick";
                     p[2] = "Tick count";
                     p[3] = "Time between ticks (ms)";
+                    break;
+                case 13:  //fireball (cast)
+                case 239: //fireball (chain cast)
+                    p[0] = "Unused";
+                    p[1] = "Unused";
+                    p[2] = "Unused";
+                    p[3] = "Unused";
+                    p[4] = "Sub-effect ID";
+                    p[10] = "0000100000";
                     break;
                 case 2:   //healing
                 case 45:  //greater healing
@@ -111,14 +119,14 @@ namespace SpellforceDataEditor.SFCFF
                     p[1] = "Sub-effect ID";
                     p[10] = "0100000000";
                     break;
-                case 13:  //fireball (cast)
+                /*case 13:  //fireball (cast)
                     p[0] = "Initial damage";
                     p[1] = "Damage per tick";
                     p[2] = "Tick count";
                     p[3] = "Tick duration (ms)";
                     p[4] = "Sub-effect ID";
                     p[10] = "0000100000";
-                    break;
+                    break;*/
                 case 14:  //icestrike
                 case 145: //icestrike (wave)
                 case 235: //icestrike (chain effect)
@@ -541,10 +549,17 @@ namespace SpellforceDataEditor.SFCFF
                     p[2] = "Area radius";
                     break;
                 case 187: //area roots
+                    p[0] = "Time between ticks (ms)";
+                    p[1] = "Damage per tick";
+                    p[2] = "Tick count";
+                    p[3] = "Radius";
+                    p[4] = "Max level affected";
+                    p[5] = Utility.S_UNKNOWN;
+                    break;
                 case 189: //roots
                     p[0] = "Time between ticks (ms)";
                     p[1] = "Damage per tick";
-                    p[2] = Utility.S_UNKNOWN;
+                    p[2] = "Tick count";
                     p[3] = Utility.S_UNKNOWN;
                     p[4] = "Max level affected";
                     p[5] = Utility.S_UNKNOWN;
@@ -583,7 +598,7 @@ namespace SpellforceDataEditor.SFCFF
                 case 200: //area of darkness
                     p[0] = "Duration (ms)";
                     p[1] = "Effect strength (%)";
-                    p[1] = "Unknown (radius?)";
+                    p[2] = "Unknown (radius?)";
                     break;
                 case 207: //area freeze
                     p[0] = "Freeze duration (ms)";
@@ -609,19 +624,19 @@ namespace SpellforceDataEditor.SFCFF
                     break;
                 case 215: //area hypnotize
                     p[0] = "Time between ticks (ms)";
-                    p[1] = Utility.S_UNKNOWN;
+                    p[1] = "Tick count";
                     p[2] = "Max level affected";
-                    p[3] = Utility.S_UNKNOWN;
-                    p[4] = Utility.S_UNKNOWN;
+                    p[3] = "Radius";
+                    p[4] = "Targets affected";
                     break;
                 case 216: //area confuse
                     p[0] = "Duration";
                     p[1] = "Max level affected";
-                    p[2] = Utility.S_UNKNOWN;
-                    p[3] = Utility.S_UNKNOWN;
+                    p[2] = "Radius";
+                    p[3] = "Targets affected";
                     break;
                 case 218: //manashield
-                    p[0] = Utility.S_UNKNOWN;
+                    p[0] = "Duration (ms)";
                     break;
                 case 219: //manashift
                     p[0] = "Area radius";

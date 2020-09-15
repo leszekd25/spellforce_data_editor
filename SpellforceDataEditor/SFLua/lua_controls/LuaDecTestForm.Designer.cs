@@ -40,6 +40,7 @@
             this.ButtonDecDirectory = new System.Windows.Forms.Button();
             this.DecFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.DecDirectoryDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.ReplaceOrigScriptsCheckbox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // Progress
@@ -137,11 +138,22 @@
             this.DecFileDialog.Filter = "Lua scripts|*.lua";
             this.DecFileDialog.Multiselect = true;
             // 
+            // ReplaceOrigScriptsCheckbox
+            // 
+            this.ReplaceOrigScriptsCheckbox.AutoSize = true;
+            this.ReplaceOrigScriptsCheckbox.Location = new System.Drawing.Point(12, 73);
+            this.ReplaceOrigScriptsCheckbox.Name = "ReplaceOrigScriptsCheckbox";
+            this.ReplaceOrigScriptsCheckbox.Size = new System.Drawing.Size(135, 17);
+            this.ReplaceOrigScriptsCheckbox.TabIndex = 14;
+            this.ReplaceOrigScriptsCheckbox.Text = "Replace original scripts";
+            this.ReplaceOrigScriptsCheckbox.UseVisualStyleBackColor = true;
+            // 
             // LuaDecompilerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(389, 164);
+            this.Controls.Add(this.ReplaceOrigScriptsCheckbox);
             this.Controls.Add(this.ButtonDecDirectory);
             this.Controls.Add(this.ButtonDecSingle);
             this.Controls.Add(this.ScriptsFailed);
@@ -175,5 +187,6 @@
         private System.Windows.Forms.Button ButtonDecDirectory;
         private System.Windows.Forms.OpenFileDialog DecFileDialog;
         private System.Windows.Forms.FolderBrowserDialog DecDirectoryDialog;
+        private System.Windows.Forms.CheckBox ReplaceOrigScriptsCheckbox;
     }
 }

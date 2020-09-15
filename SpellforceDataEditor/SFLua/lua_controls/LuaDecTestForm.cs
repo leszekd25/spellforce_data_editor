@@ -40,15 +40,16 @@ namespace SpellforceDataEditor.SFLua.lua_controls
                 string fname = fnames[i];
                 FileInfo fo = new FileInfo(fname);
                 string file_dir = fo.DirectoryName;
-                string new_fname = Path.GetFileNameWithoutExtension(fo.Name) + "_d.lua";
+                string new_fname = Path.GetFileNameWithoutExtension(fo.Name) + (ReplaceOrigScriptsCheckbox.Checked ? ".lua" : "_d.lua");
 
                 FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
-                BinaryReader br = new BinaryReader(fs, Encoding.Default);
+                BinaryReader br = new BinaryReader(fs, Encoding.GetEncoding(1252));
                 try
                 {
                     LuaDecompiler.LuaBinaryScript scr = new LuaDecompiler.LuaBinaryScript(br);
                     LuaDecompiler.Decompiler dec = new LuaDecompiler.Decompiler();
                     LuaDecompiler.Node n = dec.Decompile(scr.func);
+                    br.Close();
 
 
                     StringWriter sw = new StringWriter();
@@ -57,7 +58,7 @@ namespace SpellforceDataEditor.SFLua.lua_controls
 
                     decompiled_scripts += 1;
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     failed_scripts += 1;
                     LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaDecompilerForm.DecompileFiles(): Failed to decompile script "

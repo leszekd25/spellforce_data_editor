@@ -73,6 +73,7 @@
             this.panelElemCopy = new System.Windows.Forms.Panel();
             this.ButtonElemClear = new System.Windows.Forms.Button();
             this.ButtonElemCopy = new System.Windows.Forms.Button();
+            this.ButtonElemAdd = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -360,17 +361,18 @@
             // 
             // panelElemManipulate
             // 
+            this.panelElemManipulate.Controls.Add(this.ButtonElemAdd);
             this.panelElemManipulate.Controls.Add(this.ButtonElemRemove);
             this.panelElemManipulate.Controls.Add(this.ButtonElemInsert);
             this.panelElemManipulate.Location = new System.Drawing.Point(313, 54);
             this.panelElemManipulate.Name = "panelElemManipulate";
-            this.panelElemManipulate.Size = new System.Drawing.Size(76, 62);
+            this.panelElemManipulate.Size = new System.Drawing.Size(76, 93);
             this.panelElemManipulate.TabIndex = 11;
             this.panelElemManipulate.Visible = false;
             // 
             // ButtonElemRemove
             // 
-            this.ButtonElemRemove.Location = new System.Drawing.Point(3, 33);
+            this.ButtonElemRemove.Location = new System.Drawing.Point(3, 62);
             this.ButtonElemRemove.Name = "ButtonElemRemove";
             this.ButtonElemRemove.Size = new System.Drawing.Size(69, 23);
             this.ButtonElemRemove.TabIndex = 1;
@@ -380,7 +382,7 @@
             // 
             // ButtonElemInsert
             // 
-            this.ButtonElemInsert.Location = new System.Drawing.Point(4, 4);
+            this.ButtonElemInsert.Location = new System.Drawing.Point(4, 33);
             this.ButtonElemInsert.Name = "ButtonElemInsert";
             this.ButtonElemInsert.Size = new System.Drawing.Size(69, 23);
             this.ButtonElemInsert.TabIndex = 0;
@@ -453,7 +455,7 @@
             // 
             this.panelElemCopy.Controls.Add(this.ButtonElemClear);
             this.panelElemCopy.Controls.Add(this.ButtonElemCopy);
-            this.panelElemCopy.Location = new System.Drawing.Point(313, 122);
+            this.panelElemCopy.Location = new System.Drawing.Point(313, 153);
             this.panelElemCopy.Name = "panelElemCopy";
             this.panelElemCopy.Size = new System.Drawing.Size(76, 62);
             this.panelElemCopy.TabIndex = 12;
@@ -478,6 +480,16 @@
             this.ButtonElemCopy.Text = "Copy";
             this.ButtonElemCopy.UseVisualStyleBackColor = true;
             this.ButtonElemCopy.Click += new System.EventHandler(this.ButtonElemCopy_Click);
+            // 
+            // ButtonElemAdd
+            // 
+            this.ButtonElemAdd.Location = new System.Drawing.Point(4, 4);
+            this.ButtonElemAdd.Name = "ButtonElemAdd";
+            this.ButtonElemAdd.Size = new System.Drawing.Size(69, 23);
+            this.ButtonElemAdd.TabIndex = 2;
+            this.ButtonElemAdd.Text = "Add";
+            this.ButtonElemAdd.UseVisualStyleBackColor = true;
+            this.ButtonElemAdd.Click += new System.EventHandler(this.ButtonElemAdd_Click);
             // 
             // SpelllforceCFFEditor
             // 
@@ -561,5 +573,6 @@
         private System.Windows.Forms.ToolStripMenuItem specialToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findAllReferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem calculatorsToolStripMenuItem;
+        private System.Windows.Forms.Button ButtonElemAdd;
     }
 }
