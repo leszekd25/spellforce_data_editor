@@ -13,6 +13,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
         bool move_camera_on_select = false;
         bool bindstone_selected_from_list = true;
 
+        bool trackbar_clicked = false;
+
         public MapBindstoneInspector()
         {
             InitializeComponent();
@@ -192,7 +194,19 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[GetIOBindstoneIndex(ListBindstones.SelectedIndex)];
 
             int v = Utility.TryParseUInt16(Angle.Text, (ushort)bindstone.angle);
-            AngleTrackbar.Value = (v >= 0 ? (v <= 359 ? v : 359) : 0);
+            v = (v >= 0 ? (v <= 359 ? v : 359) : 0);
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.BINDSTONE,
+                index = ListBindstones.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.ANGLE,
+                PreChangeProperty = bindstone.angle,
+                PostChangeProperty = v
+            });
+
+            AngleTrackbar.Value = v;
         }
 
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
@@ -206,6 +220,31 @@ namespace SpellforceDataEditor.SFMap.map_controls
             map.RotateInteractiveObject(GetIOBindstoneIndex(ListBindstones.SelectedIndex), bindstone.angle);
 
             MainForm.mapedittool.update_render = true;
+        }
+
+        // this is to make sure the undo/redo queue only receives the latest angle changed as an action to perform
+        private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
+        {
+            trackbar_clicked = true;
+        }
+
+        private void AngleTrackbar_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (!trackbar_clicked)
+                return;
+
+            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[GetIOBindstoneIndex(ListBindstones.SelectedIndex)];
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.BINDSTONE,
+                index = ListBindstones.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.ANGLE,
+                PreChangeProperty = bindstone.angle,
+                PostChangeProperty = AngleTrackbar.Value
+            });
+
+            trackbar_clicked = false;
         }
 
         private void TextID_Validated(object sender, EventArgs e)
@@ -222,6 +261,16 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     + bindstone.grid_position.ToString());
                 return;
             }
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.BINDSTONE,
+                index = ListBindstones.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.ID,
+                PreChangeProperty = map.metadata.spawns[player].text_id,
+                PostChangeProperty = Utility.TryParseUInt16(TextID.Text, map.metadata.spawns[player].text_id)
+            });
 
             map.metadata.spawns[player].text_id = Utility.TryParseUInt16(TextID.Text, map.metadata.spawns[player].text_id);
             ListBindstones.Items[ListBindstones.SelectedIndex] = GetBindstoneString(bindstone);
@@ -240,9 +289,19 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     "MapBindstoneInspector.Unknown_Validated(): Can't find player at position "
                     + bindstone.grid_position.ToString());
                 return;
-            }
+            } 
 
-            map.metadata.spawns[player].unknown = Utility.TryParseInt16(TextID.Text, map.metadata.spawns[player].unknown);
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.BINDSTONE,
+                index = ListBindstones.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.BINDSTONEUNKNOWN,
+                PreChangeProperty = map.metadata.spawns[player].unknown,
+                PostChangeProperty = Utility.TryParseInt16(Unknown.Text, map.metadata.spawns[player].unknown)
+            });
+
+            map.metadata.spawns[player].unknown = Utility.TryParseInt16(Unknown.Text, map.metadata.spawns[player].unknown);
         }
 
         private void TextID_MouseDown(object sender, MouseEventArgs e)

@@ -100,6 +100,9 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                 list[i].tile_image.Location = new Point(list[i].tile_image.Location.X - 73, list[i].tile_image.Location.Y);
                 list[i].tile_weight_textbox.Location = new Point(list[i].tile_weight_textbox.Location.X - 73, list[i].tile_weight_textbox.Location.Y);
             }
+            foreach (Control c in panel_tex.Controls)
+                if ((c.Tag != null) && (c.Tag is int) && (((int)c.Tag) > tex_index))
+                    c.Tag = ((int)c.Tag) - 1;
             add_button.Location = new Point(add_button.Location.X - 73, add_button.Location.Y);
         }
 
@@ -187,11 +190,18 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         {
             float slope_limit = (float)Math.Cos(SlopeValueTrackbar.Value * Math.PI / 180);
 
+            map_operators.MapOperatorTerrainTexture op_texture = new map_operators.MapOperatorTerrainTexture();
+
             for(int y=0;y<map.height;y++)
                 for(int x=0;x<map.width; x++)
                 {
                     if (map.heightmap.height_data[y * map.width + x] == 0)
                         continue;
+
+                    SFCoord coord = new SFCoord(x, y);
+
+                    if (!op_texture.PreOperatorTextures.ContainsKey(coord))
+                        op_texture.PreOperatorTextures.Add(coord, map.heightmap.tile_data[y * map.width + x]);
 
                     OpenTK.Vector3 normal = map.heightmap.GetVertexNormal(x, y);
                     if (normal.Y < slope_limit)   // above
@@ -199,6 +209,9 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                     else                          // below
                         map.heightmap.tile_data[y * map.width + x] = ChooseTile(tex_below, wsum_below);
                 }
+
+            op_texture.Finish(map);
+            MainForm.mapedittool.op_queue.Push(op_texture);
         }
 
         private void ButtonApply_Click(object sender, EventArgs e)

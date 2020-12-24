@@ -121,33 +121,18 @@ namespace SpellforceDataEditor.SFMap
 
             d.game_id = new_id;
         }
-
-        public byte GetDecAssignment(SFCoord pos)
-        {
-            return dec_assignment[pos.y * 1024 - pos.x + 1024 - 1];
-        }
         
-        public byte GetFixedDecAssignment(SFCoord pos)
+        public byte GetDecAssignment(SFCoord pos)
         {
             return dec_assignment[pos.x * 1024 + pos.y - 1];
         }
 
         public void SetDecAssignment(SFCoord pos, byte dec)
         {
-            dec_assignment[pos.y * 1024 - pos.x + 1024 - 1] = dec;
-        }
-
-        public void SetFixedDecAssignment(SFCoord pos, byte dec)
-        {
             dec_assignment[pos.x * 1024 + pos.y - 1] = dec;
         }
 
         public SFCoord GetDecPosition(int offset)
-        {
-            return new SFCoord(1024 - (offset % 1024) - 1, offset / 1024);
-        }
-
-        public SFCoord GetFixedDecPosition(int offset)
         {
             return new SFCoord(offset / 1024, (offset % 1024) + 1);
         }
@@ -161,7 +146,7 @@ namespace SpellforceDataEditor.SFMap
                 if(dec_assignment[i] != 0)
                 {
                     // choose decoration
-                    pos = GetFixedDecPosition(i);
+                    pos = GetDecPosition(i);
                     ushort dec_id = dec_groups[dec_assignment[i]].ChooseRandom();
                     if (dec_id != 0)
                         map.AddDecoration(dec_id, pos);
@@ -170,11 +155,12 @@ namespace SpellforceDataEditor.SFMap
         }
 
         // assumes positions are valid
-        public void ModifyDecorations(HashSet<SFCoord> pos, int dec_type)
+        // fast version
+        public void SetDecorationsToGroup(HashSet<SFCoord> pos, int dec_type)
         {
             foreach(SFCoord p in pos)
             {
-                SetFixedDecAssignment(p, (byte)dec_type);
+                SetDecAssignment(p, (byte)dec_type);
 
                 SFMapHeightMapChunk chunk = map.heightmap.GetChunk(p);
                 SFMapDecoration dec = null;
@@ -206,7 +192,8 @@ namespace SpellforceDataEditor.SFMap
         }
 
         // updates decorations at positions
-        public void ModifyDecorations(byte dec_type)
+        // used when group changes its decal objects
+        public void UpdateDecorationsOfGroup(byte dec_type)
         {
             if (dec_type == 0)
                 return;
@@ -214,7 +201,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 if (dec_assignment[i] == dec_type)
                 {
-                    SFCoord p = GetFixedDecPosition(i);
+                    SFCoord p = GetDecPosition(i);
                     SFMapHeightMapChunk chunk = map.heightmap.GetChunk(p);
                     SFMapDecoration dec = null;
                     foreach (SFMapDecoration d in chunk.decorations)
@@ -240,6 +227,43 @@ namespace SpellforceDataEditor.SFMap
                         // else               // otherwise do nothing lol
                         //     ;
                     }
+                }
+            }
+        }
+
+        // sets decorations to given groups
+        // slower, but universal
+        public void SetDecorations(Dictionary<SFCoord, byte> decals)
+        {
+            foreach (SFCoord p in decals.Keys)
+            {
+                byte g = decals[p];
+                SetDecAssignment(p, g);
+
+                SFMapHeightMapChunk chunk = map.heightmap.GetChunk(p);
+                SFMapDecoration dec = null;
+                foreach (SFMapDecoration d in chunk.decorations)
+                    if (d.grid_position == p)
+                    {
+                        dec = d;
+                        break;
+                    }
+
+                if (dec != null)    // if there exists a decoration at position
+                {
+                    ushort dec_id = dec_groups[g].ChooseRandom();
+                    if (dec_id != 0)   // if chosen decoration id is not 0, simply replace
+                        ReplaceDecoration(dec, dec_id);
+                    else               // else, remove (this happens if group 0 or empty group is chosen as well)
+                        RemoveDecoration(dec);
+                }
+                else                // if theres no existing decoration at position
+                {
+                    ushort dec_id = dec_groups[g].ChooseRandom();
+                    if (dec_id != 0)   // if chosen decoration id is not 0, add new decoration at position
+                        map.AddDecoration(dec_id, p);
+                    // else               // otherwise do nothing lol
+                    //    ;
                 }
             }
         }

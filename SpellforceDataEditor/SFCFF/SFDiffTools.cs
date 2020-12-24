@@ -143,7 +143,7 @@ namespace SpellforceDataEditor.SFCFF
         {
             FileStream fs = new FileStream(fname, FileMode.OpenOrCreate, FileAccess.Write);
             fs.SetLength(0);
-            BinaryWriter bw = new BinaryWriter(fs, Encoding.Default);
+            BinaryWriter bw = new BinaryWriter(fs, Encoding.GetEncoding(1252));
 
             bw.Write((Byte)SFDiffElement.DIFF_TYPE.MD5);
             bw.Write(SFCategoryManager.gamedata.gamedata_md5.ToCharArray());
@@ -185,7 +185,7 @@ namespace SpellforceDataEditor.SFCFF
                 return false;
             }
 
-            BinaryReader br = new BinaryReader(fs, Encoding.Default);
+            BinaryReader br = new BinaryReader(fs, Encoding.GetEncoding(1252));
 
             int current_category = Utility.NO_INDEX;
             SFDiffElement elem;

@@ -198,7 +198,7 @@ namespace SpellforceDataEditor.SFUnPak
             pak_fname = path;
             pak_file = fs;
 
-            pak_stream = new BinaryReader(fs, Encoding.Default);
+            pak_stream = new BinaryReader(fs, Encoding.GetEncoding(1252));
             try
             {
                 pak_header.get(pak_stream);
@@ -290,7 +290,7 @@ namespace SpellforceDataEditor.SFUnPak
                 LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Open(): Could not open pak file" + pak_fname);
                 return -2;
             }
-            pak_stream = new BinaryReader(pak_file, Encoding.Default);
+            pak_stream = new BinaryReader(pak_file, Encoding.GetEncoding(1252));
             return 0;
         }
 

@@ -895,6 +895,9 @@ namespace SpellforceDataEditor.SFMap
         // refreshes currently active overlay
         public void RefreshOverlay()
         {
+            if (overlay_active_texture == Utility.NO_INDEX)
+                return;
+
             GL.ActiveTexture(TextureUnit.Texture3);
             GL.BindTexture(TextureTarget.Texture2D, overlay_active_texture);
             if(overlay_active_texture == overlay_texture_flags)
@@ -1046,6 +1049,32 @@ namespace SpellforceDataEditor.SFMap
                 }
 
             return 0;
+        }
+
+        public void GetBoxFromArea(IEnumerable<SFCoord> area, out SFCoord tl, out SFCoord br)
+        {
+            int t, l, r, b;
+            if(area.Count() == 0)
+            {
+                tl = new SFCoord(0, 0); br = new SFCoord(0, 0); return;
+            }
+            t = area.First<SFCoord>().y; l = area.First<SFCoord>().x;
+            b = area.First<SFCoord>().y; r = area.First<SFCoord>().x;
+
+            foreach(SFCoord p in area)
+            {
+                if (p.x < l)
+                    l = p.x;
+                if (p.x > r)
+                    r = p.x;
+                if (p.y < t)
+                    t = p.y;
+                if (p.y > b)
+                    b = p.y;
+            }
+
+            tl = new SFCoord(l, t);
+            br = new SFCoord(r, b);
         }
 
         public ushort GetZ(SFCoord pos)

@@ -13,6 +13,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public int selected_building { get; set; } = -1;    // unit index
         public int placement_building { get; set; } = 0;
 
+        // undo/redo
+        map_operators.MapOperatorEntityChangeProperty op_change_pos = null;
+
         public override void OnMousePress(SFCoord pos, MouseButtons button, ref special_forms.SpecialKeysPressed specials)
         {
             if (map == null)
@@ -28,16 +31,27 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 {
                     if (!map.heightmap.CanMoveToPosition(pos))
                         return;
+
+                    // undo/redo
+                    SFCoord previous_pos = new SFCoord(0, 0);
+
                     // if dragging unit, just move selected unit, dont create a new one
-                    if ((specials.Shift)&&(selected_building != -1))
+                    if ((specials.Shift) && (selected_building != -1))
+                    {
+                        // undo/redo
+                        previous_pos = map.building_manager.buildings[selected_building].grid_position;
+
                         map.MoveBuilding(selected_building, pos);
-                    else if(!first_click)
+                    }
+                    else if (!first_click)
                     {
                         ushort new_building_id = (ushort)placement_building;
                         if (map.gamedata[23].GetElementIndex(new_building_id) == -1)
                             return;
                         // create new building and drag it until mouse released
-                        map.AddBuilding(new_building_id, pos, 0, 0, 1, -1);
+                        map.AddBuilding(new_building_id, pos, 0, 0, 1, -1); 
+                        // undo/redo
+                        previous_pos = pos;
 
                         ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).LoadNextBuilding();
                         selected_building = map.building_manager.buildings.Count - 1;
@@ -46,6 +60,22 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         first_click = true;
 
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
+
+                        // undo/redo
+                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
+                        { type = map_operators.MapOperatorEntityType.BUILDING, id = new_building_id, position = pos, is_adding = true });
+                    }
+
+                    // undo/redo
+                    if ((selected_building != Utility.NO_INDEX) && (!first_click))
+                    {
+                        op_change_pos = new map_operators.MapOperatorEntityChangeProperty()
+                        {
+                            type = map_operators.MapOperatorEntityType.BUILDING,
+                            index = selected_building,
+                            property = map_operators.MapOperatorEntityProperty.POSITION,
+                            PreChangeProperty = previous_pos
+                        };
                     }
                 }
                 else if(button == MouseButtons.Right)
@@ -81,6 +111,15 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if (building_map_index == selected_building)
                         MainForm.mapedittool.InspectorSelect(null);
 
+                    // undo/redo
+                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
+                    { 
+                        type = map_operators.MapOperatorEntityType.BUILDING, 
+                        id = map.building_manager.buildings[building_map_index].game_id, 
+                        position = map.building_manager.buildings[building_map_index].grid_position,
+                        is_adding = false
+                    });
+
                     map.DeleteBuilding(building_map_index);
                     ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).RemoveBuilding(building_map_index);
 
@@ -94,8 +133,22 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             if (b == MouseButtons.Left)
             {
                 first_click = false;
-                if(selected_building != -1)
+                if (selected_building != -1)
+                {
+                    // undo/redo
+                    if (op_change_pos != null)
+                    {
+                        op_change_pos.PostChangeProperty = map.building_manager.buildings[selected_building].grid_position;
+                        if (!op_change_pos.PreChangeProperty.Equals(op_change_pos.PostChangeProperty))
+                        {
+                            op_change_pos.Finish(map);
+                            MainForm.mapedittool.op_queue.Push(op_change_pos);
+                        }
+                    }
+                    op_change_pos = null;
+
                     MainForm.mapedittool.InspectorSelect(map.building_manager.buildings[selected_building]);
+                }
             }
         }
     }

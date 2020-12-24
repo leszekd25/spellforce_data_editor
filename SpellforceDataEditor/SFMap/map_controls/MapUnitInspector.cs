@@ -140,8 +140,18 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (unit.game_id == new_unit_id)
                 return;
 
-            if (SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(new_unit_id) == -1)
+            if (SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(new_unit_id) == Utility.NO_INDEX)
                 return;
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.UNIT,
+                index = ListUnits.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.ID,
+                PreChangeProperty = unit.game_id,
+                PostChangeProperty = new_unit_id
+            });
 
             map.ReplaceUnit(ListUnits.SelectedIndex, (ushort)new_unit_id);
 
@@ -169,6 +179,16 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 NPCID.Text = unit.npc_id.ToString();
             }
 
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.UNIT,
+                index = ListUnits.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.NPCID,
+                PreChangeProperty = unit.npc_id,
+                PostChangeProperty = npc_id
+            });
+
             unit.npc_id = npc_id;
         }
 
@@ -192,6 +212,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.UNIT,
+                index = ListUnits.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.UNITFLAGS,
+                PreChangeProperty = unit.unknown_flags,
+                PostChangeProperty = (int)Utility.TryParseUInt16(Flags.Text)
+            });
+
             unit.unknown_flags = Utility.TryParseUInt16(Flags.Text);
         }
 
@@ -201,6 +232,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.UNIT,
+                index = ListUnits.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.UNITUNKNOWN,
+                PreChangeProperty = unit.unknown,
+                PostChangeProperty = (int)Utility.TryParseUInt16(Unknown1.Text)
+            });
+
             unit.unknown = Utility.TryParseUInt16(Unknown1.Text);
         }
 
@@ -210,6 +252,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.UNIT,
+                index = ListUnits.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.UNITGROUP,
+                PreChangeProperty = unit.group,
+                PostChangeProperty = (int)Utility.TryParseUInt16(Group.Text)
+            });
+
             unit.group = Utility.TryParseUInt16(Group.Text);
         }
 
@@ -219,6 +272,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.UNIT,
+                index = ListUnits.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.UNITUNKNOWN2,
+                PreChangeProperty = unit.unknown2,
+                PostChangeProperty = (int)Utility.TryParseUInt16(Unknown2.Text)
+            });
+
             unit.unknown2 = Utility.TryParseUInt16(Unknown2.Text);
         }
 

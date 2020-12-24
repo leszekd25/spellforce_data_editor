@@ -54,7 +54,7 @@ namespace SpellforceDataEditor.SFCFF
 
             fs.Seek(0, SeekOrigin.Begin);
 
-            BinaryReader br = new BinaryReader(fs, Encoding.Default);
+            BinaryReader br = new BinaryReader(fs, Encoding.GetEncoding(1252));
 
             int result = 0;
 
@@ -93,7 +93,7 @@ namespace SpellforceDataEditor.SFCFF
             FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write);
             fs.SetLength(0);
 
-            BinaryWriter bw = new BinaryWriter(fs, Encoding.Default);
+            BinaryWriter bw = new BinaryWriter(fs, Encoding.GetEncoding(1252));
 
             bw.Write(mainHeader);
 

@@ -36,6 +36,9 @@
             this.saveMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -186,6 +189,7 @@
             this.TreeEntities = new System.Windows.Forms.TreeView();
             this.TimerTreeEntityFilter = new System.Windows.Forms.Timer(this.components);
             this.RenderWindow = new OpenTK.GLControl();
+            this.operationHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.QuickSelect = new SpellforceDataEditor.SFMap.map_controls.MapQuickSelectControl();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
@@ -223,6 +227,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
             this.toolsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -276,6 +281,32 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.undoToolStripMenuItem,
+            this.redoToolStripMenuItem,
+            this.operationHistoryToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // undoToolStripMenuItem
+            // 
+            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
+            // 
+            // redoToolStripMenuItem
+            // 
+            this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
+            this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.redoToolStripMenuItem.Text = "Redo";
+            this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -1688,7 +1719,7 @@
             this.MapTypeCampaign.TabIndex = 8;
             this.MapTypeCampaign.Text = "Campaign";
             this.MapTypeCampaign.UseVisualStyleBackColor = true;
-            this.MapTypeCampaign.CheckedChanged += new System.EventHandler(this.MapTypeCampaign_CheckedChanged);
+            this.MapTypeCampaign.Click += new System.EventHandler(this.MapTypeCampaign_Click);
             // 
             // MapTypeCoop
             // 
@@ -1699,7 +1730,7 @@
             this.MapTypeCoop.TabIndex = 9;
             this.MapTypeCoop.Text = "Coop";
             this.MapTypeCoop.UseVisualStyleBackColor = true;
-            this.MapTypeCoop.CheckedChanged += new System.EventHandler(this.MapTypeCoop_CheckedChanged);
+            this.MapTypeCoop.Click += new System.EventHandler(this.MapTypeCoop_Click);
             // 
             // MapTypeMultiplayer
             // 
@@ -1710,7 +1741,7 @@
             this.MapTypeMultiplayer.TabIndex = 10;
             this.MapTypeMultiplayer.Text = "Multiplayer";
             this.MapTypeMultiplayer.UseVisualStyleBackColor = true;
-            this.MapTypeMultiplayer.CheckedChanged += new System.EventHandler(this.MapTypeMultiplayer_CheckedChanged);
+            this.MapTypeMultiplayer.Click += new System.EventHandler(this.MapTypeMultiplayer_Click);
             // 
             // PanelUtility
             // 
@@ -1789,11 +1820,19 @@
             this.RenderWindow.VSync = false;
             this.RenderWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
             // 
+            // operationHistoryToolStripMenuItem
+            // 
+            this.operationHistoryToolStripMenuItem.Name = "operationHistoryToolStripMenuItem";
+            this.operationHistoryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.operationHistoryToolStripMenuItem.Text = "Operation history...";
+            this.operationHistoryToolStripMenuItem.Click += new System.EventHandler(this.operationHistoryToolStripMenuItem_Click);
+            // 
             // QuickSelect
             // 
             this.QuickSelect.Location = new System.Drawing.Point(731, 4);
-            this.QuickSelect.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.QuickSelect.Margin = new System.Windows.Forms.Padding(2);
             this.QuickSelect.Name = "QuickSelect";
+            this.QuickSelect.QsRef = null;
             this.QuickSelect.Size = new System.Drawing.Size(480, 84);
             this.QuickSelect.TabIndex = 15;
             this.QuickSelect.Visible = false;
@@ -2036,5 +2075,9 @@
         private OpenTK.GLControl RenderWindow;
         private System.Windows.Forms.CheckBox EntityHidePreview;
         private SFMap.map_controls.MapQuickSelectControl QuickSelect;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem operationHistoryToolStripMenuItem;
     }
 }

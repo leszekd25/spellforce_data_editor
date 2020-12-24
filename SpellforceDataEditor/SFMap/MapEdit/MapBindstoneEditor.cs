@@ -13,6 +13,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public int selected_intobj { get; private set; } = -1;       // interactive object index
         public int selected_bindstone { get; private set; } = -1;    // spawn index
 
+        // undo/redo
+        map_operators.MapOperatorEntityChangeProperty op_change_pos = null;
+
         public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             // 1. find clicked bindstone if it exists
@@ -42,8 +45,14 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if (!map.heightmap.CanMoveToPosition(pos))
                         return;
 
-                    if ((specials.Shift) && (selected_intobj != -1))
+                    // undo/redo
+                    SFCoord previous_pos = new SFCoord(0, 0);
+
+                    if ((specials.Shift) && (selected_intobj != Utility.NO_INDEX))
                     {
+                        // undo/redo
+                        previous_pos = map.int_object_manager.int_objects[selected_intobj].grid_position;
+
                         int player = map.metadata.FindPlayerBySpawnPos(map.int_object_manager.int_objects[selected_intobj].grid_position);
 
                         map.MoveInteractiveObject(selected_intobj, pos);
@@ -53,6 +62,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     else if (!first_click)
                     {
                         map.AddInteractiveObject(769, pos, 0, 1);
+                        // undo/redo
+                        previous_pos = pos;
+
                         map.metadata.spawns.Add(new SFMapSpawn());
                         map.metadata.spawns[map.metadata.spawns.Count - 1].pos = pos;
 
@@ -61,10 +73,27 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         MainForm.mapedittool.InspectorSelect(
                             map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]);
 
-                        first_click = true;
 
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
+
+                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
+                        { type = map_operators.MapOperatorEntityType.BINDSTONE, id = 0, position = pos, is_adding = true });
                     }
+
+                    // undo/redo
+                    if ((selected_bindstone != Utility.NO_INDEX) && (!first_click))
+                    {
+                        op_change_pos = new map_operators.MapOperatorEntityChangeProperty()
+                        {
+                            type = map_operators.MapOperatorEntityType.BINDSTONE,
+                            index = bindstone_index,
+                            property = map_operators.MapOperatorEntityProperty.POSITION,
+                            PreChangeProperty = previous_pos
+                        };
+                    }
+
+                    first_click = true;
+
                 }
                 else if (b == MouseButtons.Right)
                 {
@@ -119,6 +148,14 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             if (int_obj.grid_position == map.metadata.spawns[i].pos)
                             {
                                 map.metadata.spawns.RemoveAt(i);
+                                // undo/redo
+                                MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
+                                {
+                                    type = map_operators.MapOperatorEntityType.BINDSTONE,
+                                    id = i,
+                                    position = int_obj.grid_position,
+                                    is_adding = false
+                                });
                                 break;
                             }
 
@@ -134,7 +171,21 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 first_click = false;
                 if (selected_bindstone != -1)
+                {
+                    // undo/redo
+                    if (op_change_pos != null)
+                    {
+                        op_change_pos.PostChangeProperty = map.int_object_manager.int_objects[selected_intobj].grid_position;
+                        if (!op_change_pos.PreChangeProperty.Equals(op_change_pos.PostChangeProperty))
+                        {
+                            op_change_pos.Finish(map);
+                            MainForm.mapedittool.op_queue.Push(op_change_pos);
+                        }
+                    }
+                    op_change_pos = null;
+
                     MainForm.mapedittool.InspectorSelect(map.int_object_manager.int_objects[selected_intobj]);
+                }
             }
         }
     }

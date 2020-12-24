@@ -15,12 +15,17 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
         HashSet<SFCoord> pixels = new HashSet<SFCoord>();
 
+        map_operators.MapOperatorTerrainTexture op_texture = null;
+
         public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             if (b == MouseButtons.Left)
             {
                 if(SelectedTile == 0)
                     return;
+
+                if (op_texture == null)
+                    op_texture = new map_operators.MapOperatorTerrainTexture();
 
                 // if 1-31, increase to 224-254
                 if (SelectedTile < 32)
@@ -43,10 +48,14 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 {
                     for (int j = topleft.y; j <= bottomright.y; j++)
                     {
-                        if (Brush.GetInvertedDistanceNormalized(new SFCoord(i, j)) == 1f)
+                        SFCoord coord = new SFCoord(i, j);
+
+                        if (Brush.GetInvertedDistanceNormalized(coord) == 1f)
                             continue;
+
                         if (map.heightmap.height_data[j * map.width + i] == 0)
                             continue;
+
                         if (EditSimilar)
                         {
                             bool b_mov = map.heightmap.texture_manager.texture_tiledata[SelectedTile].blocks_movement ^
@@ -54,8 +63,13 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             if (b_mov)
                                 continue;
                         }
+
+                        if (!op_texture.PreOperatorTextures.ContainsKey(coord))
+                            op_texture.PreOperatorTextures.Add(coord, map.heightmap.tile_data[j * map.width + i]);
+
                         map.heightmap.tile_data[j * map.width + i] = (byte)(SelectedTile);
-                        pixels.Add(new SFCoord(i, j));
+
+                        pixels.Add(coord);
                     }
                 }
 
@@ -78,6 +92,17 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
         public override void OnMouseUp(MouseButtons b)
         {
+            if (op_texture != null)
+            {
+                if (op_texture.PreOperatorTextures.Count != 0)
+                {
+                    op_texture.Finish(map);
+
+                    MainForm.mapedittool.op_queue.Push(op_texture);
+                }
+            }
+            op_texture = null;
+
             MainForm.mapedittool.ui.RedrawMinimap(pixels, (byte)(SelectedTile >= 32 ? SelectedTile - 223 : SelectedTile));
             pixels.Clear();
             MainForm.mapedittool.update_render = true;

@@ -21,11 +21,12 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         {
             if (map == null)
                 return;
-            byte lake_index = map.heightmap.lake_data[pos.y * map.width + pos.x];
+            int lake_index = map.lake_manager.GetLakeIndexAt(pos);
 
+            MainForm.mapedittool.op_queue.OpenCluster();
             if (button == MouseButtons.Left)
             {
-                if (lake_index == 0)
+                if (lake_index == Utility.NO_INDEX)
                 {
                     if (map.lake_manager.AddLake(pos, 0, 0) != null)
                     {
@@ -34,21 +35,22 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
                 }
                 else
-                    SelectLake(map.lake_manager.lakes[lake_index - 1]);
+                    SelectLake(map.lake_manager.lakes[lake_index]);
             }
             else if (button == MouseButtons.Right)
             {
-                if (lake_index != 0)
+                if (lake_index != Utility.NO_INDEX)
                 {
-                    if (map.lake_manager.lakes[lake_index - 1] == selected_lake)
+                    if (map.lake_manager.lakes[lake_index] == selected_lake)
                         SelectLake(null);
-                    HashSet<SFCoord> tmp_cells = map.lake_manager.lakes[lake_index - 1].cells;
-                    map.lake_manager.RemoveLake(map.lake_manager.lakes[lake_index - 1]);
+                    HashSet<SFCoord> tmp_cells = map.lake_manager.lakes[lake_index].cells;
+                    map.lake_manager.RemoveLake(map.lake_manager.lakes[lake_index]);
                     MainForm.mapedittool.ui.RedrawMinimap(tmp_cells);
                 }
                 else
                     SelectLake(null);
             }
+            MainForm.mapedittool.op_queue.CloseCluster();
 
             MainForm.mapedittool.update_render = true;
         }

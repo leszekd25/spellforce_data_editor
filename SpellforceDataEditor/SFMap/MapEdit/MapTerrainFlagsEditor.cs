@@ -14,6 +14,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public MapBrush Brush { get; set; }
         public TerrainFlagType FlagType { get; set; }
 
+        map_operators.MapOperatorTerrainFlag op_flag = null;
+
         public override void OnMousePress(SFCoord pos, MouseButtons button, ref special_forms.SpecialKeysPressed specials)
         {
             int size = (int)Brush.size;
@@ -44,6 +46,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             else
                 throw new Exception("MapTerrainFlagsEditor.OnMousePress(): Invalid flag value!");
 
+            if (op_flag == null)
+                op_flag = new map_operators.MapOperatorTerrainFlag();
+
             if (button == MouseButtons.Left)
             {
                 for (int i = topleft.x; i <= bottomright.x; i++)
@@ -62,6 +67,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 overlay_color = 10;
                             else if ((overlay_color == 5) && ((cur_color == 2) || (cur_color == 9) || (cur_color == 10)))
                                 overlay_color = 10;
+
+                            if (!op_flag.PreOperatorFlags.ContainsKey(p))
+                                op_flag.PreOperatorFlags.Add(p, cur_color);
 
                             map.heightmap.overlay_data_flags[j * map.width + i] = overlay_color;
                         }
@@ -115,6 +123,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 else
                                     overlay_color = cur_color;
                             }
+
+                            if (!op_flag.PreOperatorFlags.ContainsKey(p))
+                                op_flag.PreOperatorFlags.Add(p, cur_color);
+
                             map.heightmap.overlay_data_flags[j * map.width + i] = overlay_color;
                         }
                     }
@@ -122,6 +134,23 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             }
 
             map.heightmap.RefreshOverlay();
+        }
+
+        public override void OnMouseUp(MouseButtons b)
+        {
+            // submit operators
+            if (op_flag != null)
+            {
+                if (op_flag.PreOperatorFlags.Count != 0)
+                {
+                    op_flag.Finish(map);
+
+                    MainForm.mapedittool.op_queue.Push(op_flag);
+                }
+            }
+            op_flag = null;
+
+            base.OnMouseUp(b);
         }
     }
 }

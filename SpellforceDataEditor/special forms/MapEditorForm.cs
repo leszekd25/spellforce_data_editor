@@ -140,7 +140,7 @@ namespace SpellforceDataEditor.special_forms
             }
 
             // redraw only selected pixels, and set them to chosen color
-            public void RedrawMinimap(HashSet<SFCoord> pixels, byte tile_id)
+            public void RedrawMinimap(IEnumerable<SFCoord> pixels, byte tile_id)
             {
                 if (minimap_tex == null)
                     return;
@@ -150,10 +150,11 @@ namespace SpellforceDataEditor.special_forms
                 Color col = hmap.texture_manager.tile_average_color[tile_id];
                 foreach (SFCoord p in pixels)
                 {
+                    if (map.lake_manager.GetLakeIndexAt(p) != Utility.NO_INDEX)
+                        continue;
+
                     int i = p.x;
                     int j = p.y;
-                    if (hmap.lake_data[j * hmap.width + i] != 0)
-                        continue;
                     // shading
                     if (hmap.GetZ(p) > 300)
                     {
@@ -178,7 +179,7 @@ namespace SpellforceDataEditor.special_forms
             }
 
             // only redraw selected pixels
-            public void RedrawMinimap(HashSet<SFCoord> pixels)
+            public void RedrawMinimap(IEnumerable<SFCoord> pixels)
             {
                 if (minimap_tex == null)
                     return;
@@ -189,9 +190,9 @@ namespace SpellforceDataEditor.special_forms
                 {
                     int i = p.x;
                     int j = p.y;
-                    if (hmap.lake_data[j * hmap.width + i] != 0)
+                    if (map.lake_manager.GetLakeIndexAt(p) != Utility.NO_INDEX)
                     {
-                        Color col = map.lake_manager.GetLakeMinimapColor(map.lake_manager.lakes[hmap.lake_data[j*hmap.width+i]-1].type);
+                        Color col = map.lake_manager.GetLakeMinimapColor(map.lake_manager.lakes[map.lake_manager.GetLakeIndexAt(p)].type);
 
                         minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 0] = col.R;
                         minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 1] = col.G;
@@ -465,7 +466,117 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
+        // operator is a controller that can perform an action and its reverse
+        // in context of map editor, such operators include: heightmap edition, removing lake etc.
+        // this class allows performing actions in specific order, and reversing them in specific order
+        // essentially, this is an implementation of undo/redo function in map editor
+        public class MapEditorOperatorQueue
+        {
+            public List<SFMap.map_operators.IMapOperator> operators { get; private set; } = new List<SFMap.map_operators.IMapOperator>();
+            public int current_operator { get; set; } = Utility.NO_INDEX;
 
+            // operator queue can contain clusters
+            // cluster is a sub-list of operators
+            // a cluster is open in the queue if it's the last operator in the list, and if it's not finished
+            // only one cluster can be open at any time
+            public bool IsClusterOpen()
+            {
+                return ((operators.Count != 0)
+                    && (operators[operators.Count - 1] is SFMap.map_operators.MapOperatorCluster)
+                    && (!operators[operators.Count - 1].Finished));
+            }
+
+            // add new operator to the queue
+            // if a cluster is open, add the operator to the cluster instead
+            public void Push(SFMap.map_operators.IMapOperator op)
+            {
+                while ((operators.Count - 1) > current_operator)
+                    operators.RemoveAt(operators.Count - 1);
+
+                if (IsClusterOpen())
+                {
+                    ((SFMap.map_operators.MapOperatorCluster)(operators[operators.Count - 1])).SubOperators.Add(op);
+                }
+                else
+                {
+                    operators.Add(op);
+                    current_operator += 1;
+                }
+
+                if (MainForm.mapedittool.undohistory_form != null)
+                    MainForm.mapedittool.undohistory_form.OnAddOperator();
+            }
+
+            // opens a new cluster
+            // will do nothing if a cluster is already open
+            public void OpenCluster()
+            {
+                if(IsClusterOpen())
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "MapEditorOperatorQueue.OpenCluster(): Another cluster is already open, skipping");
+                    return;
+                }
+
+                SFMap.map_operators.MapOperatorCluster op_cluster = new SFMap.map_operators.MapOperatorCluster();
+                Push(op_cluster);
+            }
+
+            // closes the currently open cluster
+            // does nothing if there's no open clusters
+            public void CloseCluster()
+            {
+                if (IsClusterOpen())
+                {
+                    operators[operators.Count - 1].Finish(null);
+
+                    // if no changes are in the cluster, it's safe to remove it
+                    if(((SFMap.map_operators.MapOperatorCluster)(operators[operators.Count - 1])).SubOperators.Count == 0)
+                    {
+                        operators.RemoveAt(current_operator);
+                        current_operator -= 1; 
+                        
+                        if (MainForm.mapedittool.undohistory_form != null)
+                            MainForm.mapedittool.undohistory_form.OnRemoveOperator();
+                    }
+                }
+                else
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "MapEditorOperatorQueue.CloseCluster(): Not a cluster, or already closed!");
+
+
+            }
+            
+            // implementation of Undo function
+            // given the current state of the map, operator performs reverse of the action it contains
+            // will do nothing if there are no actions to undo
+            public void Undo(SFMap.SFMap map)
+            {
+                if (current_operator == Utility.NO_INDEX)
+                    return;
+
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorOperatorQueue.Undo(): operator " + operators[current_operator].ToString());
+                operators[current_operator].Revert(map);
+                current_operator -= 1;
+
+                if (MainForm.mapedittool.undohistory_form != null)
+                    MainForm.mapedittool.undohistory_form.OnUndo();
+            }
+
+            // implementation of Redo function
+            // given the current state of the map, operator performs action it contains
+            // will do nothing if there are no actions to redo
+            public void Redo(SFMap.SFMap map)
+            {
+                if (current_operator == operators.Count - 1)
+                    return;
+
+                current_operator += 1;
+                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorOperatorQueue.Redo(): operator " + operators[current_operator].ToString());
+                operators[current_operator].Apply(map);
+
+                if (MainForm.mapedittool.undohistory_form != null)
+                    MainForm.mapedittool.undohistory_form.OnRedo();
+            }
+        }
 
 
         SFMap.SFMap map = null;
@@ -499,6 +610,7 @@ namespace SpellforceDataEditor.special_forms
         SFMap.map_dialog.MapVisibilitySettings visibility_form = null;
         SFMap.map_dialog.MapImportHeightmapDialog importhmap_form = null;
         SFMap.map_dialog.MapExportHeightmapDialog exporthmap_form = null;
+        SFMap.map_dialog.MapOperatorHistoryViewer undohistory_form = null;
 
         Dictionary<string, TreeNode> unit_tree = null;
         Dictionary<string, TreeNode> building_tree = null;
@@ -511,6 +623,8 @@ namespace SpellforceDataEditor.special_forms
         List<int> heightmap_mode_values = new List<int>(new int[3] { 20, 300, 5 });
 
         public MapEditorUI ui { get; private set; } = null;
+
+        public MapEditorOperatorQueue op_queue { get; private set; } = null;
 
         public MapEditorForm()
         {
@@ -593,6 +707,16 @@ namespace SpellforceDataEditor.special_forms
             this.Close();
         }
 
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            op_queue?.Undo(map);
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            op_queue?.Redo(map);
+        }
+
         private int CreateMap()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap() called");
@@ -667,6 +791,9 @@ namespace SpellforceDataEditor.special_forms
             ui.RedrawMinimap();
             ui.RedrawMinimapIcons();
 
+            op_queue = new MapEditorOperatorQueue();
+
+            // finishing actions
             RenderWindow.Invalidate();
 
             if (MainForm.data != null)
@@ -759,6 +886,8 @@ namespace SpellforceDataEditor.special_forms
                 ui.RedrawMinimap();
                 ui.RedrawMinimapIcons();
 
+                op_queue = new MapEditorOperatorQueue();
+
                 RenderWindow.Invalidate();
 
                 if (MainForm.data != null)
@@ -844,6 +973,8 @@ namespace SpellforceDataEditor.special_forms
                 importhmap_form.Close();
             if (exporthmap_form != null)
                 exporthmap_form.Close();
+            if (undohistory_form != null)
+                undohistory_form.Close();
 
             TabEditorModes.Enabled = false;
             InspectorClear();
@@ -876,6 +1007,8 @@ namespace SpellforceDataEditor.special_forms
                 ui = null;
             }
             SFRenderEngine.ui.Dispose();
+
+            op_queue = null;
 
             if (MainForm.viewer != null)
                 MainForm.viewer.ResetScene();
@@ -1159,7 +1292,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void SetSpecificText(SFCoord pos)
         {
-            byte dec_assign = map.decoration_manager.GetFixedDecAssignment(pos);
+            byte dec_assign = map.decoration_manager.GetDecAssignment(pos);
             SpecificText.Text = "H: " + map.heightmap.GetHeightAt(pos.x, pos.y).ToString() + "  "
                               + "T: " + map.heightmap.GetTileFixed(pos).ToString() + "  "
                               + "D: " + (dec_assign == 0 ? "X" : dec_assign.ToString());
@@ -2043,6 +2176,22 @@ namespace SpellforceDataEditor.special_forms
             terrain_brush.shape = GetTerrainBrushShape();
         }
 
+        public void external_operator_ModifyTextureSet()
+        {
+            if (TabEditorModes.SelectedIndex != 1)
+                return;
+
+            ((SFMap.map_controls.MapTerrainTextureInspector)selected_inspector).RefreshTexturePreview();
+        }
+
+        public void external_operator_TileChangeState(byte tile_index)
+        {
+            if (TabEditorModes.SelectedIndex != 1)
+                return;
+
+            ((SFMap.map_controls.MapTerrainTextureInspector)selected_inspector).UpdateTile(tile_index);
+        }
+
         private void RadioTileTypeBase_CheckedChanged(object sender, EventArgs e)
         {
             if (RadioTileTypeBase.Checked)
@@ -2064,6 +2213,10 @@ namespace SpellforceDataEditor.special_forms
         {
             SFMap.map_dialog.MapModifyTextureSet mmts = new SFMap.map_dialog.MapModifyTextureSet(map);
             mmts.ShowDialog();
+
+            if (mmts.operator_modify_texture_set.PreOperatorTextureIDMap.Count != 0)
+                op_queue.Push(mmts.operator_modify_texture_set);
+
             update_render = true;
             ReselectTextureMode();
         }
@@ -3002,6 +3155,9 @@ namespace SpellforceDataEditor.special_forms
 
         public void UpdateDecGroup(int i)
         {
+            if (TabEditorModes.SelectedIndex != 3)
+                return;
+
             PanelDecalGroups.Controls[i].BackColor = GetDecGroupButtonColor(i);
         }
 
@@ -3069,23 +3225,12 @@ namespace SpellforceDataEditor.special_forms
             CoopSpawnParam34.Text = map.metadata.coop_spawn_params[2].param4.ToString();
         }
 
-        private void MapTypeCampaign_CheckedChanged(object sender, EventArgs e)
+        public void SetMapType(SFMapType mt)
         {
-            if (MapTypeCampaign.Checked == false)
+            if (map == null)
                 return;
 
-            map.metadata.map_type = SFMapType.CAMPAIGN;
-
-            ButtonTeams.Visible = false;
-            PanelCoopParams.Visible = false;
-        }
-
-        private void MapTypeCoop_CheckedChanged(object sender, EventArgs e)
-        {
-            if (MapTypeCoop.Checked == false)
-                return;
-
-            map.metadata.map_type = SFMapType.COOP;
+            map.metadata.map_type = mt;
 
             if (map.metadata.minimap == null)
             {
@@ -3099,32 +3244,53 @@ namespace SpellforceDataEditor.special_forms
                 map.metadata.minimap.GenerateTexture();
             }
 
-            ButtonTeams.Visible = true;
-            PanelCoopParams.Visible = true;
-            UpdateCoopSpawnParameters();
+            switch(mt)
+            {
+                case SFMapType.CAMPAIGN:
+                    ButtonTeams.Visible = false;
+                    PanelCoopParams.Visible = false;
+
+                    MapTypeCampaign.Checked = true;
+                    break;
+                case SFMapType.COOP:
+                    ButtonTeams.Visible = true;
+                    PanelCoopParams.Visible = true;
+                    UpdateCoopSpawnParameters();
+
+                    MapTypeCoop.Checked = true;
+                    break;
+                case SFMapType.MULTIPLAYER:
+
+                    ButtonTeams.Visible = true;
+                    PanelCoopParams.Visible = false;
+
+                    MapTypeMultiplayer.Checked = true;
+                    break;
+            }
         }
 
-        private void MapTypeMultiplayer_CheckedChanged(object sender, EventArgs e)
+        private void MapTypeCampaign_Click(object sender, EventArgs e)
         {
-            if (MapTypeMultiplayer.Checked == false)
-                return;
+            op_queue.Push(new SFMap.map_operators.MapOperatorChangeMapType()
+            { PreOperatorMapType = map.metadata.map_type, PostOperatorMapType = SFMapType.CAMPAIGN });
 
-            map.metadata.map_type = SFMapType.MULTIPLAYER;
+            SetMapType(SFMapType.CAMPAIGN);
+        }
 
-            if (map.metadata.minimap == null)
-            {
-                byte[] image_data = new byte[128 * 128 * 3];
-                for (int i = 0; i < 128 * 128 * 3; i++)
-                    image_data[i] = (byte)((i * 1024) / 3);
-                map.metadata.minimap = new SFMapMinimap();
-                map.metadata.minimap.width = 128;
-                map.metadata.minimap.height = 128;
-                map.metadata.minimap.texture_data = image_data;
-                map.metadata.minimap.GenerateTexture();
-            }
+        private void MapTypeCoop_Click(object sender, EventArgs e)
+        {
+            op_queue.Push(new SFMap.map_operators.MapOperatorChangeMapType()
+            { PreOperatorMapType = map.metadata.map_type, PostOperatorMapType = SFMapType.COOP });
 
-            ButtonTeams.Visible = true;
-            PanelCoopParams.Visible = false;
+            SetMapType(SFMapType.COOP);
+        }
+
+        private void MapTypeMultiplayer_Click(object sender, EventArgs e)
+        {
+            op_queue.Push(new SFMap.map_operators.MapOperatorChangeMapType()
+            { PreOperatorMapType = map.metadata.map_type, PostOperatorMapType = SFMapType.MULTIPLAYER });
+
+            SetMapType(SFMapType.MULTIPLAYER);
         }
 
         private void CoopSpawnParam11_Validated(object sender, EventArgs e)
@@ -3219,6 +3385,40 @@ namespace SpellforceDataEditor.special_forms
             teamcomp_form = null;
         }
 
+        // these 3 below are UGLY, think of something to rid of them
+
+        public void external_operator_AddOrRemoveTeamComp()
+        {
+            if (teamcomp_form != null)
+                teamcomp_form.external_RefreshTeamcompList();
+        }
+
+        public void external_operator_AddTeamMember(SFMapTeamPlayer player)
+        {
+            if (teamcomp_form == null)
+                return;
+
+            teamcomp_form.AddTeamMemberEntry(player);
+            teamcomp_form.FindAvailablePlayers();
+        }
+
+        public void external_operator_RemoveTeamMember(int index)
+        {
+            if (teamcomp_form == null)
+                return;
+
+            teamcomp_form.RemoveTeamMemberEntry(index);
+            teamcomp_form.FindAvailablePlayers();
+        }
+
+        public void external_operator_SetPlayerState(int teamcomp_index, int team_index, int teamplayer_index)
+        {
+            if (teamcomp_form == null)
+                return;
+
+            teamcomp_form.UpdatePlayerDataUI(teamcomp_index, team_index, teamplayer_index);
+        }
+
         private void visibilitySettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (map == null)
@@ -3288,5 +3488,26 @@ namespace SpellforceDataEditor.special_forms
             exporthmap_form = null;
         }
 
+        private void operationHistoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (map == null)
+                return;
+
+            if (undohistory_form != null)
+            {
+                undohistory_form.BringToFront();
+                return;
+            }
+
+            undohistory_form = new SFMap.map_dialog.MapOperatorHistoryViewer();
+            undohistory_form.FormClosed += new FormClosedEventHandler(undohistory_FormClosed);
+            undohistory_form.Show();
+        }
+
+        private void undohistory_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            undohistory_form.FormClosed -= new FormClosedEventHandler(undohistory_FormClosed);
+            undohistory_form = null;
+        }
     }
 }

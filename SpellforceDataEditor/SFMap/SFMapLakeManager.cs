@@ -63,6 +63,12 @@ namespace SpellforceDataEditor.SFMap
             lake.z_diff = z_diff;
             lake.type = type;
 
+            if ((MainForm.mapedittool != null) && (MainForm.mapedittool.op_queue != null) && (MainForm.mapedittool.op_queue.IsClusterOpen())) 
+            {
+                map_operators.MapOperatorLake op_lake = new map_operators.MapOperatorLake() { pos = start, z_diff = z_diff, type = type, change_add = true };
+                MainForm.mapedittool.op_queue.Push(op_lake);
+            }
+
             UpdateLake(lake);
 
             if(lake.cells.Count == 0)
@@ -72,6 +78,11 @@ namespace SpellforceDataEditor.SFMap
             }
             else
                 return lake;
+        }
+
+        public int GetLakeIndexAt(SFCoord pos)
+        {
+            return map.heightmap.lake_data[pos.x + pos.y * map.width] - 1;
         }
 
         public void RemoveLake(SFMapLake lake)
@@ -90,6 +101,11 @@ namespace SpellforceDataEditor.SFMap
                 if (map.heightmap.lake_data[i] > lake_index + 1)
                     map.heightmap.lake_data[i] -= 1;
 
+            if ((MainForm.mapedittool != null) && (MainForm.mapedittool.op_queue != null) && (MainForm.mapedittool.op_queue.IsClusterOpen()))
+            {
+                map_operators.MapOperatorLake op_lake = new map_operators.MapOperatorLake() { pos = lake.start, z_diff = lake.z_diff, type = lake.type, change_add = false };
+                MainForm.mapedittool.op_queue.Push(op_lake);
+            }
             lakes.Remove(lake);
             
             var map_nodes = map.heightmap.GetAreaMapNodes(lake.cells);

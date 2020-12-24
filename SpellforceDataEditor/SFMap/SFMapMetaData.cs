@@ -155,6 +155,24 @@ namespace SpellforceDataEditor.SFMap
             return false;
         }
 
+        // only use this to add team comps!
+        public void InsertTeamComp(SFMapMultiplayerTeamComposition tc)
+        {
+            for (int i = 0; i < multi_teams.Count; i++)
+            {
+                if (tc.team_count == multi_teams[i].team_count)
+                    throw new Exception("SFMapMetaData.InsertTeamComp(): Can't add another team comp with same team count!");
+                else if(tc.team_count < multi_teams[i].team_count)
+                {
+                    multi_teams.Insert(i, tc);
+                    return;
+                }
+            }
+
+            // if new team comp has the biggest team count, append the list with it
+            multi_teams.Add(tc);
+        }
+
         public SFMapMultiplayerTeamComposition GetTeamCompByTeamNumber(int num)
         {
             for (int i = 0; i < multi_teams.Count; i++)

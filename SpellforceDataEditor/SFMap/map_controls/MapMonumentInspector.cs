@@ -13,6 +13,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
         bool move_camera_on_select = false;
         bool monument_selected_from_list = true;
 
+        bool trackbar_clicked = false;
+
         public MapMonumentInspector()
         {
             InitializeComponent();
@@ -35,18 +37,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         // returned value >= argument value, or -1
         private int GetIOMonumentIndex(int index)
         {
-            int found_monuments = 0;
-            for (int i = 0; i < map.int_object_manager.int_objects.Count; i++)
-            {
-                SFMapInteractiveObject io = map.int_object_manager.int_objects[i];
-                if ((io.game_id >= 771) && (io.game_id <= 777))
-                {
-                    if (found_monuments == index)
-                        return i;
-                    found_monuments += 1;
-                }
-            }
-            return -1;
+            return GetMonumentIndex(map.int_object_manager.int_objects[index]);
         }
 
         private int GetMonumentIndex(SFMapInteractiveObject o)
@@ -163,7 +154,19 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SFMapInteractiveObject monument = map.int_object_manager.int_objects[GetIOMonumentIndex(ListMonuments.SelectedIndex)];
 
             int v = Utility.TryParseUInt16(Angle.Text, (ushort)monument.angle);
-            AngleTrackbar.Value = (v >= 0 ? (v <= 359 ? v : 359) : 0);
+            v = (v >= 0 ? (v <= 359 ? v : 359) : 0);
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.MONUMENT,
+                index = ListMonuments.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.ANGLE,
+                PreChangeProperty = monument.angle,
+                PostChangeProperty = v
+            });
+
+            AngleTrackbar.Value = v;
         }
 
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
@@ -177,6 +180,31 @@ namespace SpellforceDataEditor.SFMap.map_controls
             map.RotateInteractiveObject(GetIOMonumentIndex(ListMonuments.SelectedIndex), monument.angle);
 
             MainForm.mapedittool.update_render = true;
+        }
+
+        // this is to make sure the undo/redo queue only receives the latest angle changed as an action to perform
+        private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
+        {
+            trackbar_clicked = true;
+        }
+
+        private void AngleTrackbar_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (!trackbar_clicked)
+                return;
+
+            SFMapInteractiveObject monument = map.int_object_manager.int_objects[GetIOMonumentIndex(ListMonuments.SelectedIndex)];
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.MONUMENT,
+                index = ListMonuments.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.ANGLE,
+                PreChangeProperty = monument.angle,
+                PostChangeProperty = AngleTrackbar.Value
+            });
+
+            trackbar_clicked = false;
         }
     }
 }

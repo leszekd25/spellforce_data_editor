@@ -25,6 +25,36 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SelectedCustomTileMixImage3.delegate_onpress = OnCustomTileMixPress;
         }
 
+        // tile index 0: invalid
+        // tile index >= 32: custom tile
+        // tile index >= 224: base tile
+        public void UpdateTile(byte tile_index)
+        {
+            if (tile_index < 32)
+                throw new Exception("MapTerrainTextureInspector.UpdateTile(): Invalid tile index!");
+
+            if (inspectortype == TerrainTileType.CUSTOM)
+            {
+                map.heightmap.texture_manager.UpdateUniformTileData(tile_index, tile_index);
+                map.heightmap.texture_manager.RefreshTilePreview(tile_index);
+                SelectedCustomTileTex.SetImage(map.heightmap.texture_manager.texture_tile_image[tile_index], 0);
+
+                foreach (MapTerrainTextureControl c in PanelTiles.Controls)
+                {
+                    if (c.ID == (int)tile_index)
+                    {
+                        c.SetImage(map.heightmap.texture_manager.texture_tile_image[tile_index], tile_index);
+                        break;
+                    }
+                }
+            }
+
+            TileBlocksMovement.Checked = map.heightmap.texture_manager.texture_tiledata[tile_index].blocks_movement;
+            TileBlocksVision.Checked = map.heightmap.texture_manager.texture_tiledata[tile_index].blocks_vision;
+
+            MainForm.mapedittool.update_render = true;
+        }
+
         public void OnCustomTileMixPress(int ID)
         {
             map_dialog.MapSelectTile tileselectdialog = new map_dialog.MapSelectTile(map, map_dialog.MapTileSelectType.BASE);
@@ -33,6 +63,13 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if(tileselectdialog.SelectedTile != Utility.NO_INDEX)
             {
                 byte selected_tile = (byte)((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile;
+
+                map_operators.MapOperatorTileChangeState op_tcs = new map_operators.MapOperatorTileChangeState()
+                {
+                    tile_index = selected_tile,
+                    PreOperatorTileState = map.heightmap.texture_manager.texture_tiledata[selected_tile]
+                };
+
                 if (ID == 0)
                 {
                     map.heightmap.texture_manager.texture_tiledata[selected_tile].ind1 = (byte)tileselectdialog.SelectedTile;
@@ -57,18 +94,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 else
                     throw new Exception("MapTerrainTextureInspector.OnCustomTileMixPress(): Invalid button ID!");
 
-                map.heightmap.texture_manager.UpdateUniformTileData(selected_tile, selected_tile);
-                map.heightmap.texture_manager.RefreshTilePreview(selected_tile);
-                SelectedCustomTileTex.SetImage(map.heightmap.texture_manager.texture_tile_image[selected_tile], 0);
+                op_tcs.Finish(map);
+                MainForm.mapedittool.op_queue.Push(op_tcs);
 
-                foreach (MapTerrainTextureControl c in PanelTiles.Controls)
-                {
-                    if (c.ID == (int)selected_tile)
-                    {
-                        c.SetImage(map.heightmap.texture_manager.texture_tile_image[selected_tile], selected_tile);
-                        break;
-                    }
-                }
+                UpdateTile(selected_tile);
             }
         }
 
@@ -167,10 +196,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             inspectortype = type;
-            if (type == TerrainTileType.BASE)
-                LoadBaseTextures();
-            else
-                LoadCustomTextures();
+            RefreshTexturePreview();
         }
 
         public void SelectTileType(byte ttype)
@@ -202,64 +228,72 @@ namespace SpellforceDataEditor.SFMap.map_controls
             }
         }
 
+        public void RefreshTexturePreview()
+        {
+            if ((MainForm.mapedittool.selected_editor != null) && (MainForm.mapedittool.selected_editor is MapEdit.MapTerrainTextureEditor))
+                ((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile = 0;
+
+            if (inspectortype == TerrainTileType.BASE)
+                LoadBaseTextures();
+            else
+                LoadCustomTextures();
+        }
+
         private void TexWeight1_Validated(object sender, EventArgs e)
         {
             byte selected_tile = (byte)((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile;
             TexWeight1.Text = Utility.TryParseUInt8(TexWeight1.Text).ToString();
+
+            map_operators.MapOperatorTileChangeState op_tcs = new map_operators.MapOperatorTileChangeState()
+            {
+                tile_index = selected_tile,
+                PreOperatorTileState = map.heightmap.texture_manager.texture_tiledata[selected_tile]
+            };
+
             map.heightmap.texture_manager.texture_tiledata[selected_tile].weight1 = Utility.TryParseUInt8(TexWeight1.Text);
 
-            map.heightmap.texture_manager.UpdateUniformTileData(selected_tile, selected_tile);
-            map.heightmap.texture_manager.RefreshTilePreview(selected_tile);
-            SelectedCustomTileTex.SetImage(map.heightmap.texture_manager.texture_tile_image[selected_tile], 0);
+            op_tcs.Finish(map);
+            MainForm.mapedittool.op_queue.Push(op_tcs);
 
-            foreach(MapTerrainTextureControl c in PanelTiles.Controls)
-            {
-                if(c.ID == (int)selected_tile)
-                {
-                    c.SetImage(map.heightmap.texture_manager.texture_tile_image[selected_tile], selected_tile);
-                    break;
-                }
-            }
+            UpdateTile(selected_tile);
         }
 
         private void TexWeight2_Validated(object sender, EventArgs e)
         {
             byte selected_tile = (byte)((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile;
             TexWeight2.Text = Utility.TryParseUInt8(TexWeight2.Text).ToString();
+
+            map_operators.MapOperatorTileChangeState op_tcs = new map_operators.MapOperatorTileChangeState()
+            {
+                tile_index = selected_tile,
+                PreOperatorTileState = map.heightmap.texture_manager.texture_tiledata[selected_tile]
+            };
+
             map.heightmap.texture_manager.texture_tiledata[selected_tile].weight2 = Utility.TryParseUInt8(TexWeight2.Text);
 
-            map.heightmap.texture_manager.UpdateUniformTileData(selected_tile, selected_tile);
-            map.heightmap.texture_manager.RefreshTilePreview(selected_tile);
-            SelectedCustomTileTex.SetImage(map.heightmap.texture_manager.texture_tile_image[selected_tile], 0);
+            op_tcs.Finish(map);
+            MainForm.mapedittool.op_queue.Push(op_tcs);
 
-            foreach (MapTerrainTextureControl c in PanelTiles.Controls)
-            {
-                if (c.ID == (int)selected_tile)
-                {
-                    c.SetImage(map.heightmap.texture_manager.texture_tile_image[selected_tile], selected_tile);
-                    break;
-                }
-            }
+            UpdateTile(selected_tile);
         }
 
         private void TexWeight3_Validated(object sender, EventArgs e)
         {
             byte selected_tile = (byte)((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile;
             TexWeight3.Text = Utility.TryParseUInt8(TexWeight3.Text).ToString();
+
+            map_operators.MapOperatorTileChangeState op_tcs = new map_operators.MapOperatorTileChangeState()
+            {
+                tile_index = selected_tile,
+                PreOperatorTileState = map.heightmap.texture_manager.texture_tiledata[selected_tile]
+            };
+
             map.heightmap.texture_manager.texture_tiledata[selected_tile].weight3 = Utility.TryParseUInt8(TexWeight3.Text);
 
-            map.heightmap.texture_manager.UpdateUniformTileData(selected_tile, selected_tile);
-            map.heightmap.texture_manager.RefreshTilePreview(selected_tile);
-            SelectedCustomTileTex.SetImage(map.heightmap.texture_manager.texture_tile_image[selected_tile], 0);
+            op_tcs.Finish(map);
+            MainForm.mapedittool.op_queue.Push(op_tcs);
 
-            foreach (MapTerrainTextureControl c in PanelTiles.Controls)
-            {
-                if (c.ID == (int)selected_tile)
-                {
-                    c.SetImage(map.heightmap.texture_manager.texture_tile_image[selected_tile], selected_tile);
-                    break;
-                }
-            }
+            UpdateTile(selected_tile);
         }
 
         private void ButtonAddCustomTile_Click(object sender, EventArgs e)
@@ -271,8 +305,15 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     break;
                 new_tile += 1;
             }
+
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorAddOrRemoveTileType()
+            {
+                tile_index = new_tile,
+                is_adding = true
+            });
+
             map.heightmap.texture_manager.tile_defined[new_tile] = true;
-            LoadCustomTextures();
+            RefreshTexturePreview();
         }
 
         private void ButtonRemoveCustomTile_Click(object sender, EventArgs e)
@@ -283,22 +324,59 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if(map.heightmap.texture_manager.tile_defined[selected_tile] == true)
             {
-                ((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile = 0;
+                MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorAddOrRemoveTileType()
+                {
+                    tile_index = selected_tile,
+                    is_adding = false
+                });
+
                 map.heightmap.texture_manager.tile_defined[selected_tile] = false;
-                LoadCustomTextures();
+                RefreshTexturePreview();
             }
         }
 
-        private void TileBlocksMovement_CheckedChanged(object sender, EventArgs e)
+        public void SetTileBlocksMovement(byte tile_index, bool blocks_movement)
         {
-            byte selected_tile = (byte)((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile;
-            map.heightmap.texture_manager.texture_tiledata[selected_tile].blocks_movement = TileBlocksMovement.Checked;
+            map.heightmap.texture_manager.texture_tiledata[tile_index].blocks_movement = blocks_movement;
+            TileBlocksMovement.Checked = blocks_movement;
         }
 
-        private void TileBlocksVision_CheckedChanged(object sender, EventArgs e)
+        public void SetTileBlocksVision(byte tile_index, bool blocks_vision)
+        {
+            map.heightmap.texture_manager.texture_tiledata[tile_index].blocks_vision = blocks_vision;
+            TileBlocksVision.Checked = blocks_vision;
+        }
+
+        private void TileBlocksMovement_Click(object sender, EventArgs e)
         {
             byte selected_tile = (byte)((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile;
-            map.heightmap.texture_manager.texture_tiledata[selected_tile].blocks_vision = TileBlocksVision.Checked;
+
+            map_operators.MapOperatorTileChangeState op_tcs = new map_operators.MapOperatorTileChangeState()
+            {
+                tile_index = selected_tile,
+                PreOperatorTileState = map.heightmap.texture_manager.texture_tiledata[selected_tile]
+            };
+
+            SetTileBlocksMovement(selected_tile, !TileBlocksMovement.Checked);
+
+            op_tcs.Finish(map);
+            MainForm.mapedittool.op_queue.Push(op_tcs);
+        }
+
+        private void TileBlocksVision_Click(object sender, EventArgs e)
+        {
+            byte selected_tile = (byte)((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile;
+
+            map_operators.MapOperatorTileChangeState op_tcs = new map_operators.MapOperatorTileChangeState()
+            {
+                tile_index = selected_tile,
+                PreOperatorTileState = map.heightmap.texture_manager.texture_tiledata[selected_tile]
+            };
+
+            SetTileBlocksVision(selected_tile, !TileBlocksVision.Checked);
+
+            op_tcs.Finish(map);
+            MainForm.mapedittool.op_queue.Push(op_tcs);
         }
     }
 }

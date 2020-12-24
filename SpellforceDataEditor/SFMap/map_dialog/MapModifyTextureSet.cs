@@ -15,6 +15,8 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         SFMap map = null;
         int selected_base = -1;
 
+        public map_operators.MapOperatorModifyTextureSet operator_modify_texture_set = new map_operators.MapOperatorModifyTextureSet();
+
         public MapModifyTextureSet()
         {
             InitializeComponent();
@@ -63,6 +65,14 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         {
             if (selected_base == -1)
                 return;
+
+            if (operator_modify_texture_set.PreOperatorTextureIDMap.ContainsKey(selected_base))
+                operator_modify_texture_set.PostOperatorTextureIDMap[selected_base] = ID;
+            else
+            {
+                operator_modify_texture_set.PreOperatorTextureIDMap.Add(selected_base, map.heightmap.texture_manager.texture_id[selected_base]);
+                operator_modify_texture_set.PostOperatorTextureIDMap.Add(selected_base, ID);
+            }
 
             map.heightmap.texture_manager.SetBaseTexture(selected_base, ID);
             foreach (map_controls.MapTerrainTextureControl c in PanelTextureSet.Controls)

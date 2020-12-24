@@ -13,6 +13,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
         bool move_camera_on_select = false;
         bool building_selected_from_list = true;
 
+        bool trackbar_clicked = false;
+
         public MapBuildingInspector()
         {
             InitializeComponent();
@@ -147,6 +149,16 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (map.gamedata[23].GetElementIndex(new_building_id) == Utility.NO_INDEX)
                 return;
 
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.BUILDING,
+                index = ListBuildings.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.ID,
+                PreChangeProperty = building.game_id,
+                PostChangeProperty = new_building_id
+            });
+
             map.ReplaceBuilding(ListBuildings.SelectedIndex, new_building_id);
 
             LabelBuildingName.Text = SFCFF.SFCategoryManager.GetBuildingName(new_building_id);
@@ -171,6 +183,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 MessageBox.Show("Duplicate NPC ID " + npc_id + " found. Unable to change selected building ID.");
                 NPCID.Text = building.npc_id.ToString();
             }
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.BUILDING,
+                index = ListBuildings.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.NPCID,
+                PreChangeProperty = building.npc_id,
+                PostChangeProperty = npc_id
+            });
+
 
             building.npc_id = npc_id;
         }
@@ -197,7 +220,19 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
 
             int v = Utility.TryParseUInt16(Angle.Text, (ushort)building.angle);
-            AngleTrackbar.Value = (v >= 0 ? (v <= 359 ? v : 359) : 0);
+            v = (v >= 0 ? (v <= 359 ? v : 359) : 0);
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.BUILDING,
+                index = ListBuildings.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.ANGLE,
+                PreChangeProperty = building.angle,
+                PostChangeProperty = v
+            });
+
+            AngleTrackbar.Value = v;
         }
 
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
@@ -213,6 +248,31 @@ namespace SpellforceDataEditor.SFMap.map_controls
             MainForm.mapedittool.update_render = true;
         }
 
+        // this is to make sure the undo/redo queue only receives the latest angle changed as an action to perform
+        private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
+        {
+            trackbar_clicked = true;
+        }
+
+        private void AngleTrackbar_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (!trackbar_clicked)
+                return;
+
+            SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.BUILDING,
+                index = ListBuildings.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.ANGLE,
+                PreChangeProperty = building.angle,
+                PostChangeProperty = AngleTrackbar.Value
+            });
+
+            trackbar_clicked = false;
+        }
+
 
         private void Level_Validated(object sender, EventArgs e)
         {
@@ -220,6 +280,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.BUILDING,
+                index = ListBuildings.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.BUILDINGLEVEL,
+                PreChangeProperty = building.level,
+                PostChangeProperty = Utility.TryParseUInt16(Level.Text)
+            });
+
             building.level = Utility.TryParseUInt16(Level.Text);
         }
 
@@ -229,6 +300,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.BUILDING,
+                index = ListBuildings.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.BUILDINGRACE,
+                PreChangeProperty = building.race_id,
+                PostChangeProperty = Utility.TryParseUInt16(RaceID.Text)
+            });
+
             building.race_id = Utility.TryParseUInt16(RaceID.Text);
         }
 

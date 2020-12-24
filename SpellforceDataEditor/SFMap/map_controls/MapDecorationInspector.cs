@@ -49,7 +49,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 {
                     if (map.decoration_manager.dec_assignment[i] == selected_dec_group)
                     {
-                        SFCoord p = map.decoration_manager.GetFixedDecPosition(i);
+                        SFCoord p = map.decoration_manager.GetDecPosition(i);
                         map.heightmap.overlay_data_decals[p.y * map.width + p.x] = 6;
                     }
                 }
@@ -65,10 +65,21 @@ namespace SpellforceDataEditor.SFMap.map_controls
             
             ushort new_id = Utility.TryParseUInt16(DecGroupData.Rows[e.RowIndex].Cells[0].Value.ToString());
             byte new_weight = Utility.TryParseUInt8(DecGroupData.Rows[e.RowIndex].Cells[1].Value.ToString());
+
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorDecorationModifyGroup()
+            {
+                group = selected_dec_group,
+                index = e.RowIndex + 1,
+                PreOperatorID = map.decoration_manager.dec_groups[selected_dec_group].dec_id[e.RowIndex + 1],
+                PreOperatorWeight = map.decoration_manager.dec_groups[selected_dec_group].weight[e.RowIndex + 1],
+                PostOperatorID = new_id,
+                PostOperatorWeight = new_weight
+            });
+
             map.decoration_manager.dec_groups[selected_dec_group].SetDecoration(e.RowIndex + 1, new_id, new_weight);
             if (e.ColumnIndex == 0)
             {
-                map.decoration_manager.ModifyDecorations((byte)selected_dec_group);
+                map.decoration_manager.UpdateDecorationsOfGroup((byte)selected_dec_group);
                 MainForm.mapedittool.update_render = true;
             }
             MainForm.mapedittool.UpdateDecGroup(selected_dec_group);

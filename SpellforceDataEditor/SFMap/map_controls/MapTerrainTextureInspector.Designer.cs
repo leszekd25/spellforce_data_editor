@@ -80,6 +80,7 @@
             // 
             // TileBlocksVision
             // 
+            this.TileBlocksVision.AutoCheck = false;
             this.TileBlocksVision.AutoSize = true;
             this.TileBlocksVision.Location = new System.Drawing.Point(127, 3);
             this.TileBlocksVision.Name = "TileBlocksVision";
@@ -87,10 +88,11 @@
             this.TileBlocksVision.TabIndex = 1;
             this.TileBlocksVision.Text = "Blocks vision";
             this.TileBlocksVision.UseVisualStyleBackColor = true;
-            this.TileBlocksVision.CheckedChanged += new System.EventHandler(this.TileBlocksVision_CheckedChanged);
+            this.TileBlocksVision.Click += new System.EventHandler(this.TileBlocksVision_Click);
             // 
             // TileBlocksMovement
             // 
+            this.TileBlocksMovement.AutoCheck = false;
             this.TileBlocksMovement.AutoSize = true;
             this.TileBlocksMovement.Location = new System.Drawing.Point(3, 3);
             this.TileBlocksMovement.Name = "TileBlocksMovement";
@@ -98,7 +100,7 @@
             this.TileBlocksMovement.TabIndex = 0;
             this.TileBlocksMovement.Text = "Blocks movement";
             this.TileBlocksMovement.UseVisualStyleBackColor = true;
-            this.TileBlocksMovement.CheckedChanged += new System.EventHandler(this.TileBlocksMovement_CheckedChanged);
+            this.TileBlocksMovement.Click += new System.EventHandler(this.TileBlocksMovement_Click);
             // 
             // PanelTileMixer
             // 

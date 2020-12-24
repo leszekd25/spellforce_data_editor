@@ -12,6 +12,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         bool first_click = false;
         public int selected_spawn { get; private set; } = -1;    // spawn index
 
+        // undo/redo
+        map_operators.MapOperatorEntityChangeProperty op_change_pos = null;
+
         public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             SFMapObject obj = null;
@@ -35,18 +38,29 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if (!map.heightmap.CanMoveToPosition(pos))
                         return;
 
-                    if ((specials.Shift)&&(selected_spawn != -1))
+                    // undo/redo
+                    SFCoord previous_pos = new SFCoord(0, 0);
+
+                    if ((specials.Shift) && (selected_spawn != Utility.NO_INDEX))
+                    {
+                        // undo/redo
+                        previous_pos = map.metadata.coop_spawns[selected_spawn].spawn_obj.grid_position;
+
                         map.MoveObject(map.object_manager.objects.IndexOf(map.metadata.coop_spawns[selected_spawn].spawn_obj), pos);
-                    else if(!first_click)
+                    }
+                    else if (!first_click)
                     {
                         ushort new_object_id = 2541;
-                        if (map.gamedata[33].GetElementIndex(new_object_id) == -1)
+                        if (map.gamedata[33].GetElementIndex(new_object_id) == Utility.NO_INDEX)
                             return;
                         // create new spawn and drag it until mouse released
                         map.AddObject(new_object_id, pos, 0, 0, 0);
+                        // undo/redo
+                        previous_pos = pos;
+
                         map.metadata.coop_spawns.Add(
                             new SFMapCoopAISpawn(map.object_manager.objects[map.object_manager.objects.Count - 1], 0, 0));
-                        
+
                         // add mesh to the object
                         SF3D.SceneSynchro.SceneNode obj_node =
                             map.heightmap.GetChunkNode(pos)
@@ -60,8 +74,25 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         selected_spawn = map.metadata.coop_spawns.Count - 1;
                         MainForm.mapedittool.InspectorSelect(map.metadata.coop_spawns[selected_spawn]);
 
-                        first_click = true;
+                        // undo/redo
+                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
+                        { type = map_operators.MapOperatorEntityType.COOPCAMP, id = 0, position = pos, is_adding = true });
                     }
+
+
+                    // undo/redo
+                    if ((selected_spawn != Utility.NO_INDEX) && (!first_click))
+                    {
+                        op_change_pos = new map_operators.MapOperatorEntityChangeProperty()
+                        {
+                            type = map_operators.MapOperatorEntityType.COOPCAMP,
+                            index = selected_spawn,
+                            property = map_operators.MapOperatorEntityProperty.POSITION,
+                            PreChangeProperty = previous_pos
+                        };
+                    }
+
+                    first_click = true;
                 }
                 else if(b == MouseButtons.Right)
                 {
@@ -100,6 +131,15 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if (map.metadata.coop_spawns.IndexOf(spawn) == selected_spawn)
                         MainForm.mapedittool.InspectorSelect(null);
 
+                    // undo/redo
+                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
+                    {
+                        type = map_operators.MapOperatorEntityType.COOPCAMP,
+                        id = spawn.spawn_id,
+                        position = obj.grid_position,
+                        is_adding = false
+                    });
+
                     map.DeleteObject(object_map_index);
                     ((map_controls.MapCoopCampInspector)MainForm.mapedittool.selected_inspector)
                         .RemoveCoopCamp(map.metadata.coop_spawns.IndexOf(spawn));
@@ -114,7 +154,20 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 first_click = false;
                 if (selected_spawn != -1)
+                {
+                    // undo/redo
+                    if (op_change_pos != null)
+                    {
+                        op_change_pos.PostChangeProperty = map.metadata.coop_spawns[selected_spawn].spawn_obj.grid_position;
+                        if (!op_change_pos.PreChangeProperty.Equals(op_change_pos.PostChangeProperty))
+                        {
+                            op_change_pos.Finish(map);
+                            MainForm.mapedittool.op_queue.Push(op_change_pos);
+                        }
+                    }
+                    op_change_pos = null;
                     MainForm.mapedittool.InspectorSelect(map.metadata.coop_spawns[selected_spawn]);
+                }
             }
         }
     }

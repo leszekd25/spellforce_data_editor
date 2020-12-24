@@ -131,6 +131,8 @@
             this.AngleTrackbar.TabIndex = 20;
             this.AngleTrackbar.TickFrequency = 45;
             this.AngleTrackbar.ValueChanged += new System.EventHandler(this.AngleTrackbar_ValueChanged);
+            this.AngleTrackbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AngleTrackbar_MouseDown);
+            this.AngleTrackbar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AngleTrackbar_MouseUp);
             // 
             // Angle
             // 

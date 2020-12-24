@@ -539,6 +539,7 @@
     <Compile Include="SFLua\LuaDecompiler\Primitive.cs" />
     <Compile Include="SFLua\LuaDecompiler\Return.cs" />
     <Compile Include="SFLua\LuaDecompiler\Table.cs" />
+    <Compile Include="SFLua\LuaDialogBuilderNode.cs" />
     <Compile Include="SFLua\LuaParser\LuaScript.cs" />
     <Compile Include="SFLua\LuaParser\LuaTable.cs" />
     <Compile Include="SFLua\lua_controls\LuaDecTestForm.cs">
@@ -546,6 +547,12 @@
     </Compile>
     <Compile Include="SFLua\lua_controls\LuaDecTestForm.Designer.cs">
       <DependentUpon>LuaDecTestForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaDialogBuilderForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFLua\lua_controls\LuaDialogBuilderForm.Designer.cs">
+      <DependentUpon>LuaDialogBuilderForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SFLua\lua_sql\ILuaSQL.cs" />
     <Compile Include="SFLua\lua_sql\SFLuaSQLBuilding.cs" />
@@ -583,6 +590,7 @@
     <Compile Include="SFLua\lua_sql_forms\SFLuaSQLRtsCoopSpawnForm.Designer.cs">
       <DependentUpon>SFLuaSQLRtsCoopSpawnForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFLua\SFLuaDialog.cs" />
     <Compile Include="SFLua\SFLuaEnvironment.cs" />
     <Compile Include="SFMap\MapEdit\MapMonumentEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapBrush.cs" />
@@ -709,6 +717,12 @@
     <Compile Include="SFMap\map_dialog\MapModifyTextureSet.Designer.cs">
       <DependentUpon>MapModifyTextureSet.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFMap\map_dialog\MapOperatorHistoryViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFMap\map_dialog\MapOperatorHistoryViewer.Designer.cs">
+      <DependentUpon>MapOperatorHistoryViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFMap\map_dialog\MapPromptNewMap.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -733,6 +747,7 @@
     <Compile Include="SFMap\map_dialog\MapVisibilitySettings.Designer.cs">
       <DependentUpon>MapVisibilitySettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFMap\map_operators\MapOperator.cs" />
     <Compile Include="SFMap\SFCoord.cs" />
     <Compile Include="SFMap\SFMap.cs" />
     <Compile Include="SFMap\SFMapBuildingManager.cs" />
@@ -1078,6 +1093,9 @@
     <EmbeddedResource Include="SFLua\lua_controls\LuaDecTestForm.resx">
       <DependentUpon>LuaDecTestForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SFLua\lua_controls\LuaDialogBuilderForm.resx">
+      <DependentUpon>LuaDialogBuilderForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SFLua\lua_sql_forms\SFLuaSQLBuildingForm.resx">
       <DependentUpon>SFLuaSQLBuildingForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -1143,6 +1161,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_dialog\MapModifyTextureSet.resx">
       <DependentUpon>MapModifyTextureSet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFMap\map_dialog\MapOperatorHistoryViewer.resx">
+      <DependentUpon>MapOperatorHistoryViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_dialog\MapPromptNewMap.resx">
       <DependentUpon>MapPromptNewMap.cs</DependentUpon>
@@ -1257,6 +1278,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SFCFF\data_controls\" />
+    <Folder Include="SFLua\lua_dialog_controls\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

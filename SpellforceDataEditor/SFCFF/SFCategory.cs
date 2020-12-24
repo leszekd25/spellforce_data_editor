@@ -313,7 +313,7 @@ namespace SpellforceDataEditor.SFCFF
             sr.Read(block_buffer, 0, (int)(block_length));
             
             MemoryStream ms = new MemoryStream(block_buffer);
-            BinaryReader mr = new BinaryReader(ms, Encoding.Default);
+            BinaryReader mr = new BinaryReader(ms, Encoding.GetEncoding(1252));
             while (mr.BaseStream.Position < mr.BaseStream.Length)
             {
                 SFCategoryElement elem = new SFCategoryElement();

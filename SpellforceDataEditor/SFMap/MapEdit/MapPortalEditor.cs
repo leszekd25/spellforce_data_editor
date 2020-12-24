@@ -12,6 +12,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         bool first_click = false;
         public int selected_portal { get; private set; } = -1;    // spawn index
 
+        // undo/redo
+        map_operators.MapOperatorEntityChangeProperty op_change_pos = null;
+
         public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             SFMapPortal portal = null;
@@ -33,19 +36,43 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if (!map.heightmap.CanMoveToPosition(pos))
                         return;
 
-                    if ((specials.Shift)&&(selected_portal != -1))
+                    // undo/redo
+                    SFCoord previous_pos = new SFCoord(0, 0);
+
+                    if ((specials.Shift) && (selected_portal != Utility.NO_INDEX))
+                    {
+                        // undo/redo
+                        previous_pos = map.portal_manager.portals[selected_portal].grid_position;
+
                         map.MovePortal(selected_portal, pos);
-                    else if(!first_click)
+                    }
+                    else if (!first_click)
                     {
                         map.AddPortal(0, pos, 0);
+                        // undo/redo
+                        previous_pos = pos;
 
                         ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).LoadNextPortal();
                         selected_portal = map.portal_manager.portals.Count - 1;
                         MainForm.mapedittool.InspectorSelect(map.portal_manager.portals[selected_portal]);
 
-                        first_click = true;
-
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
+
+                        // undo/redo
+                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
+                        { type = map_operators.MapOperatorEntityType.PORTAL, id = 0, position = pos, is_adding = true });
+                    }
+
+                    // undo/redo
+                    if ((selected_portal != Utility.NO_INDEX) && (!first_click))
+                    {
+                        op_change_pos = new map_operators.MapOperatorEntityChangeProperty()
+                        {
+                            type = map_operators.MapOperatorEntityType.PORTAL,
+                            index = selected_portal,
+                            property = map_operators.MapOperatorEntityProperty.POSITION,
+                            PreChangeProperty = previous_pos
+                        };
                     }
                 }
                 else if(b == MouseButtons.Right)
@@ -81,6 +108,15 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if (portal_map_index == selected_portal)
                         MainForm.mapedittool.InspectorSelect(null);
 
+                    // undo/redo
+                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
+                    {
+                        type = map_operators.MapOperatorEntityType.PORTAL,
+                        id = map.portal_manager.portals[portal_map_index].game_id,
+                        position = map.portal_manager.portals[portal_map_index].grid_position,
+                        is_adding = false
+                    });
+
                     map.DeletePortal(portal_map_index);
                     ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).RemovePortal(portal_map_index);
 
@@ -95,7 +131,21 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 first_click = false;
                 if (selected_portal != -1)
+                {   
+                    // undo/redo
+                    if (op_change_pos != null)
+                    {
+                        op_change_pos.PostChangeProperty = map.portal_manager.portals[selected_portal].grid_position;
+                        if (!op_change_pos.PreChangeProperty.Equals(op_change_pos.PostChangeProperty))
+                        {
+                            op_change_pos.Finish(map);
+                            MainForm.mapedittool.op_queue.Push(op_change_pos);
+                        }
+                    }
+                    op_change_pos = null;
+
                     MainForm.mapedittool.InspectorSelect(map.portal_manager.portals[selected_portal]);
+                }
             }
         }
     }

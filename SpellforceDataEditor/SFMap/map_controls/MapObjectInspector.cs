@@ -13,6 +13,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
         bool move_camera_on_select = false;
         bool object_selected_from_list = true;
 
+        bool trackbar_clicked = false;
+
         public MapObjectInspector()
         {
             InitializeComponent();
@@ -147,8 +149,18 @@ namespace SpellforceDataEditor.SFMap.map_controls
             }
 
             // check if new object exists
-            if (map.gamedata[33].GetElementIndex(new_object_id) == -1)
+            if (map.gamedata[33].GetElementIndex(new_object_id) == Utility.NO_INDEX)
                 return;
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.OBJECT,
+                index = ListObjects.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.ID,
+                PreChangeProperty = obj.game_id,
+                PostChangeProperty = new_object_id
+            });
 
             map.ReplaceObject(ListObjects.SelectedIndex, new_object_id);
 
@@ -175,6 +187,16 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 NPCID.Text = obj.npc_id.ToString();
             }
 
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.OBJECT,
+                index = ListObjects.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.NPCID,
+                PreChangeProperty = obj.npc_id,
+                PostChangeProperty = npc_id
+            });
+
             obj.npc_id = npc_id;
         }
 
@@ -200,7 +222,19 @@ namespace SpellforceDataEditor.SFMap.map_controls
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
 
             int v = Utility.TryParseUInt16(Angle.Text, (ushort)obj.angle);
-            AngleTrackbar.Value = (v >= 0 ? (v <= 359 ? v : 359) : 0);
+            v = (v >= 0 ? (v <= 359 ? v : 359) : 0);
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.OBJECT,
+                index = ListObjects.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.ANGLE,
+                PreChangeProperty = obj.angle,
+                PostChangeProperty = v
+            });
+
+            AngleTrackbar.Value = v;
         }
 
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
@@ -216,12 +250,49 @@ namespace SpellforceDataEditor.SFMap.map_controls
             MainForm.mapedittool.update_render = true;
         }
 
+        // this is to make sure the undo/redo queue only receives the latest angle changed as an action to perform
+        private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
+        {
+            trackbar_clicked = true;
+        }
+
+        private void AngleTrackbar_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (!trackbar_clicked)
+                return;
+
+            SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.OBJECT,
+                index = ListObjects.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.ANGLE,
+                PreChangeProperty = obj.angle,
+                PostChangeProperty = AngleTrackbar.Value
+            });
+
+            trackbar_clicked = false;
+        }
+
+
         private void Unknown1_Validated(object sender, EventArgs e)
         {
             if (ListObjects.SelectedIndex == Utility.NO_INDEX)
                 return;
 
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
+
+            // undo/redo
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
+            {
+                type = map_operators.MapOperatorEntityType.OBJECT,
+                index = ListObjects.SelectedIndex,
+                property = map_operators.MapOperatorEntityProperty.OBJECTUNKNOWN,
+                PreChangeProperty = obj.unknown1,
+                PostChangeProperty = Utility.TryParseUInt16(Unknown1.Text)
+            });
+
             obj.unknown1 = Utility.TryParseUInt16(Unknown1.Text);
         }
 

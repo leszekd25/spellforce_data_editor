@@ -50,7 +50,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             }
             else if (b == MouseButtons.Right)
             {
-                byte new_dec_group = map.decoration_manager.GetFixedDecAssignment(new SFCoord(pos.x, pos.y));
+                byte new_dec_group = map.decoration_manager.GetDecAssignment(new SFCoord(pos.x, pos.y));
                 // selection
             }
         }
@@ -59,7 +59,11 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         {
             if (is_adding)
             {
-                map.decoration_manager.ModifyDecorations(selection, selected_dec_group);
+                map_operators.MapOperatorDecorationPaint dec_op = new map_operators.MapOperatorDecorationPaint();
+                foreach (SFCoord p in selection)
+                    dec_op.PreOperatorDecals.Add(p, map.decoration_manager.GetDecAssignment(p));
+
+                map.decoration_manager.SetDecorationsToGroup(selection, selected_dec_group);
 
                 selection.Clear();
                 is_adding = false;
@@ -72,6 +76,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                     map.heightmap.RefreshOverlay();
                 }
+
+                dec_op.Finish(map);
+                MainForm.mapedittool.op_queue.Push(dec_op);
 
                 MainForm.mapedittool.update_render = true;
             }

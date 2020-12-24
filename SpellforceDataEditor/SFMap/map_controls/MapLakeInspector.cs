@@ -10,7 +10,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 {
     public partial class MapLakeInspector : SpellforceDataEditor.SFMap.map_controls.MapInspector
     {
-        SFMapLake selected_lake = null;
+        public SFMapLake selected_lake { get; private set; } = null;
 
         public MapLakeInspector()
         {
@@ -49,6 +49,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void LakeTypeWater_CheckedChanged(object sender, EventArgs e)
         {
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorLakeType()
+            {
+                lake_index = map.lake_manager.GetLakeIndexAt(selected_lake.start),
+                PreOperatorType = selected_lake.type,
+                PostOperatorType = 0
+            });
             selected_lake.type = 0;
             map.lake_manager.UpdateLake(selected_lake);
             MainForm.mapedittool.update_render = true;
@@ -56,6 +62,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void LakeTypeSwamp_CheckedChanged(object sender, EventArgs e)
         {
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorLakeType()
+            {
+                lake_index = map.lake_manager.GetLakeIndexAt(selected_lake.start),
+                PreOperatorType = selected_lake.type,
+                PostOperatorType = 1
+            });
             selected_lake.type = 1;
             map.lake_manager.UpdateLake(selected_lake);
             MainForm.mapedittool.update_render = true;
@@ -63,6 +75,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void LakeTypeLava_CheckedChanged(object sender, EventArgs e)
         {
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorLakeType()
+            {
+                lake_index = map.lake_manager.GetLakeIndexAt(selected_lake.start),
+                PreOperatorType = selected_lake.type,
+                PostOperatorType = 2
+            });
             selected_lake.type = 2;
             map.lake_manager.UpdateLake(selected_lake);
             MainForm.mapedittool.update_render = true;
@@ -70,6 +88,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void LakeTypeIce_CheckedChanged(object sender, EventArgs e)
         {
+            MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorLakeType()
+            {
+                lake_index = map.lake_manager.GetLakeIndexAt(selected_lake.start),
+                PreOperatorType = selected_lake.type,
+                PostOperatorType = 3
+            });
             selected_lake.type = 3;
             map.lake_manager.UpdateLake(selected_lake);
             MainForm.mapedittool.update_render = true;
