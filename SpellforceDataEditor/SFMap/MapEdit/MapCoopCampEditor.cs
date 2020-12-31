@@ -15,6 +15,14 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         // undo/redo
         map_operators.MapOperatorEntityChangeProperty op_change_pos = null;
 
+        public override void Select(int index)
+        {
+            if (first_click)
+                return;
+
+            selected_spawn = index;
+        }
+
         public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             SFMapObject obj = null;
@@ -65,13 +73,13 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         SF3D.SceneSynchro.SceneNode obj_node =
                             map.heightmap.GetChunkNode(pos)
                             .FindNode<SF3D.SceneSynchro.SceneNode>(
-                                map.object_manager.objects[map.object_manager.objects.Count - 1].GetObjectName());
+                                map.object_manager.objects[map.object_manager.objects.Count - 1].GetName());
 
                         string m = "editor_dummy_spawnpoint";
                         SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name + "_SPAWNCIRCLE");
 
                         ((map_controls.MapCoopCampInspector)MainForm.mapedittool.selected_inspector).LoadNextCoopCamp();
-                        selected_spawn = map.metadata.coop_spawns.Count - 1;
+                        Select(map.metadata.coop_spawns.Count - 1);
                         MainForm.mapedittool.InspectorSelect(map.metadata.coop_spawns[selected_spawn]);
 
                         // undo/redo
@@ -96,7 +104,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 }
                 else if(b == MouseButtons.Right)
                 {
-                    selected_spawn = -1;
+                    Select(Utility.NO_INDEX);
                     MainForm.mapedittool.InspectorSelect(null);
                 }
             }
@@ -117,7 +125,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
                     else
                     {
-                        selected_spawn = spawn_map_index;
+                        Select(spawn_map_index);
                         MainForm.mapedittool.InspectorSelect(spawn);
                     }
                 }
@@ -129,7 +137,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         return;
 
                     if (map.metadata.coop_spawns.IndexOf(spawn) == selected_spawn)
+                    {
+                        Select(Utility.NO_INDEX);
                         MainForm.mapedittool.InspectorSelect(null);
+                    }    
 
                     // undo/redo
                     MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()

@@ -19,6 +19,15 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         // undo/redo
         map_operators.MapOperatorEntityChangeProperty op_change_pos = null;
 
+        public override void Select(int index)
+        {
+            if (first_click)
+                return;
+
+            selected_monument = index;
+            selected_intobj = (selected_monument == Utility.NO_INDEX ? Utility.NO_INDEX : map.int_object_manager.monuments_index[index]);
+        }
+
         public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             // 1. find clicked bindstone if it exists
@@ -26,17 +35,15 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             int monument_index = -1;
             SFMapInteractiveObject int_obj = null;
 
-            foreach (SFMapInteractiveObject io in map.int_object_manager.int_objects)
+            for (int i = 0; i < map.int_object_manager.monuments_index.Count; i++)
             {
-                intobj_index += 1;
-                if ((io.game_id >= 771)&&(io.game_id <= 777))
+                int j = map.int_object_manager.monuments_index[i];
+                if (SFCoord.Distance(map.int_object_manager.int_objects[j].grid_position, pos) <= 2)
                 {
-                    monument_index += 1;
-                    if (SFCoord.Distance(io.grid_position, pos) <= 5)
-                    {
-                        int_obj = io;
-                        break;
-                    }
+                    intobj_index = j;
+                    monument_index = i;
+                    int_obj = map.int_object_manager.int_objects[j];
+                    break;
                 }
             }
 
@@ -72,8 +79,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         previous_pos = pos;
 
                         ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).LoadNextMonument();
-                        selected_intobj = intobj_index;
-                        selected_monument = monument_index;
+                        Select(map.int_object_manager.monuments_index.Count - 1);
                         MainForm.mapedittool.InspectorSelect(
                             map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]);
 
@@ -98,9 +104,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 }
                 else if(b == MouseButtons.Right)
                 {
-                    selected_monument = -1;
-                    selected_intobj = -1;
-
+                    Select(Utility.NO_INDEX);
                     MainForm.mapedittool.InspectorSelect(null);
                 }
             }
@@ -115,24 +119,25 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
                     else
                     {
-                        selected_monument = monument_index;
-                        selected_intobj = intobj_index;
-
+                        Select(monument_index);
                         MainForm.mapedittool.InspectorSelect(
                             map.int_object_manager.int_objects[selected_intobj]);
                     }
                 }
                 else if (b == MouseButtons.Right)
                 {
-                   if (selected_intobj == intobj_index)
+                    if (selected_intobj == intobj_index)
+                    {
+                        Select(Utility.NO_INDEX);
                         MainForm.mapedittool.InspectorSelect(null);
+                    }
 
                     // undo/redo
                     MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
                     {
                         type = map_operators.MapOperatorEntityType.MONUMENT,
                         id = map.int_object_manager.int_objects[intobj_index].game_id,
-                        position = map.object_manager.objects[intobj_index].grid_position,
+                        position = map.int_object_manager.int_objects[intobj_index].grid_position,
                         is_adding = false
                     });
 

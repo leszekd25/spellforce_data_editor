@@ -180,8 +180,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
             int npc_id = Utility.TryParseInt32(NPCID.Text);
 
             // find if any npc exists
-            object entity = map.FindNPCEntity(npc_id);
-            if ((entity != null) && ((SFMapObject)entity) != obj)
+            SFMapEntity entity = map.FindNPCEntity(npc_id);
+            if ((entity != null) && (!(entity is SFMapObject) || ((SFMapObject)entity) != obj))
             {
                 MessageBox.Show("Duplicate NPC ID " + npc_id + " found. Unable to change selected unit ID.");
                 NPCID.Text = obj.npc_id.ToString();

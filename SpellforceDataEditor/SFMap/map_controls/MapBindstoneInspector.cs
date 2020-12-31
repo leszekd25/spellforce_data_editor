@@ -28,43 +28,18 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ReloadList()
         {
-            ListBindstones.Items.Clear();
-            foreach (SFMapInteractiveObject io in map.int_object_manager.int_objects)
-                if (io.game_id == 769)
-                    ListBindstones.Items.Add(GetBindstoneString(io));
-        }
-
-        // returned value >= argument value, or -1
-        private int GetIOBindstoneIndex(int index)
-        {
-            int found_bindstones = 0;
-            for (int i = 0; i < map.int_object_manager.int_objects.Count; i++)
-            {
-                SFMapInteractiveObject io = map.int_object_manager.int_objects[i];
-                if (io.game_id == 769)
-                {
-                    if (found_bindstones == index)
-                        return i;
-                    found_bindstones += 1;
-                }
-            }
-            return -1;
+            ListBindstones.Items.Clear(); 
+            foreach (int i in map.int_object_manager.bindstones_index)
+                ListBindstones.Items.Add(GetBindstoneString(map.int_object_manager.int_objects[i]));
         }
 
         private int GetBindstoneIndex(SFMapInteractiveObject o)
         {
-            int found_bindstones = 0;
-            for (int i = 0; i < map.int_object_manager.int_objects.Count; i++)
-            {
-                SFMapInteractiveObject io = map.int_object_manager.int_objects[i];
-                if (io.game_id == 769)
-                {
-                    if (o == io)
-                        return found_bindstones;
-                    found_bindstones += 1;
-                }
-            }
-            return -1;
+            int i = map.int_object_manager.int_objects.IndexOf(o);
+            if (i != Utility.NO_INDEX)
+                return map.int_object_manager.bindstones_index.IndexOf(i);
+
+            return Utility.NO_INDEX;
         }
 
         private int GetPlayerIndexByBindstone(SFMapInteractiveObject o)
@@ -77,20 +52,18 @@ namespace SpellforceDataEditor.SFMap.map_controls
             int player = GetPlayerIndexByBindstone(io);
             if (player == Utility.NO_INDEX)
                 return "Bindstone at " + io.grid_position.ToString();
-            else
-            {
-                if(map.metadata.spawns[player].text_id == 0)
-                    return "Bindstone at " + io.grid_position.ToString();
-                else
-                {
-                    SFCFF.SFCategoryElement elem = SFCFF.SFCategoryManager.FindElementText(
-                        map.metadata.spawns[player].text_id, Settings.LanguageID);
-                    if(elem == null)
-                        return "Bindstone at " + io.grid_position.ToString();
-                    string ret = Utility.CleanString(elem.variants[4]);
-                    return ret + " " + io.grid_position.ToString();
-                }
-            }
+            
+            if(map.metadata.spawns[player].text_id == 0)
+                return "Bindstone at " + io.grid_position.ToString();
+                
+            SFCFF.SFCategoryElement elem = SFCFF.SFCategoryManager.FindElementText(
+                map.metadata.spawns[player].text_id, Settings.LanguageID);
+            if(elem == null)
+                return "Bindstone at " + io.grid_position.ToString();
+
+            string ret = Utility.CleanString(elem.variants[4]);
+            return ret + " " + io.grid_position.ToString();
+
         }
 
         private void ShowList()
@@ -118,10 +91,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         public void LoadNextBindstone()
         {
-            int new_bindstone = GetIOBindstoneIndex(ListBindstones.Items.Count);
-            if (new_bindstone == Utility.NO_INDEX)
+            if (ListBindstones.Items.Count >= map.int_object_manager.bindstones_index.Count)
                 return;
-            SFMapInteractiveObject io = map.int_object_manager.int_objects[new_bindstone];
+
+            SFMapInteractiveObject io = map.int_object_manager.int_objects[map.int_object_manager.bindstones_index[ListBindstones.Items.Count]];
             ListBindstones.Items.Add(GetBindstoneString(io));
         }
 
@@ -155,7 +128,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             PanelProperties.Enabled = true;
-            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[GetIOBindstoneIndex(ListBindstones.SelectedIndex)];
+            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[map.int_object_manager.bindstones_index[ListBindstones.SelectedIndex]];
             int player = GetPlayerIndexByBindstone(bindstone);
             if (player == -1)
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap,
@@ -191,7 +164,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (ListBindstones.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[GetIOBindstoneIndex(ListBindstones.SelectedIndex)];
+            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[map.int_object_manager.bindstones_index[ListBindstones.SelectedIndex]];
 
             int v = Utility.TryParseUInt16(Angle.Text, (ushort)bindstone.angle);
             v = (v >= 0 ? (v <= 359 ? v : 359) : 0);
@@ -214,10 +187,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (ListBindstones.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[GetIOBindstoneIndex(ListBindstones.SelectedIndex)];
+            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[map.int_object_manager.bindstones_index[ListBindstones.SelectedIndex]];
             Angle.Text = AngleTrackbar.Value.ToString();
             bindstone.angle = AngleTrackbar.Value;
-            map.RotateInteractiveObject(GetIOBindstoneIndex(ListBindstones.SelectedIndex), bindstone.angle);
+            map.RotateInteractiveObject(map.int_object_manager.bindstones_index[ListBindstones.SelectedIndex], bindstone.angle);
 
             MainForm.mapedittool.update_render = true;
         }
@@ -233,7 +206,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (!trackbar_clicked)
                 return;
 
-            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[GetIOBindstoneIndex(ListBindstones.SelectedIndex)];
+            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[map.int_object_manager.bindstones_index[ListBindstones.SelectedIndex]];
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
             {
@@ -252,7 +225,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (ListBindstones.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[GetIOBindstoneIndex(ListBindstones.SelectedIndex)];
+            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[map.int_object_manager.bindstones_index[ListBindstones.SelectedIndex]];
             int player = GetPlayerIndexByBindstone(bindstone);
             if (player == Utility.NO_INDEX)
             {
@@ -281,7 +254,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (ListBindstones.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[GetIOBindstoneIndex(ListBindstones.SelectedIndex)];
+            SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[map.int_object_manager.bindstones_index[ListBindstones.SelectedIndex]];
             int player = GetPlayerIndexByBindstone(bindstone);
             if (player == Utility.NO_INDEX)
             {

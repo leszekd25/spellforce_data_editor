@@ -19,11 +19,7 @@ namespace SpellforceDataEditor.SFMap
         Vector2 offset = new Vector2(0, 0);
         SFCoord cursor_position = new SFCoord(0, 0);
 
-        SFMapUnit selected_unit = null;
-        SFMapBuilding selected_building = null;
-        SFMapObject selected_object = null;
-        SFMapInteractiveObject selected_interactive_object = null;
-        SFMapPortal selected_portal = null;
+        SFMapEntity selected_entity = null;
         SelectionType selection_type = SelectionType.NONE;
 
         SF3D.SceneSynchro.SceneNode preview_entity = null;
@@ -150,11 +146,7 @@ namespace SpellforceDataEditor.SFMap
 
         public void CancelSelection()
         {
-            selected_unit = null;
-            selected_building = null;
-            selected_object = null;
-            selected_interactive_object = null;
-            selected_portal = null;
+            selected_entity = null;
             offset = new Vector2(0, 0);
             selection_type = SelectionType.NONE;
 
@@ -165,17 +157,17 @@ namespace SpellforceDataEditor.SFMap
         {
             CancelSelection();
             selection_type = SelectionType.UNIT;
-            selected_unit = unit;
+            selected_entity = unit;
             SetSelectionScale(1.0f);
 
-            SetName(SFCFF.SFCategoryManager.GetUnitName((ushort)selected_unit.game_id, true));
+            SetName(SFCFF.SFCategoryManager.GetUnitName((ushort)selected_entity.game_id, true));
         }
 
         public void SelectBuilding(SFMapBuilding building)
         {
             CancelSelection();
             selection_type = SelectionType.BUILDING;
-            selected_building = building;
+            selected_entity = building;
 
             float sel_scale = 0.0f;
             SFLua.lua_sql.SFLuaSQLBuildingData data = SFLua.SFLuaEnvironment.buildings[building.game_id];
@@ -183,14 +175,14 @@ namespace SpellforceDataEditor.SFMap
                 sel_scale = (float)(data.SelectionScaling / 2);
             SetSelectionScale(sel_scale);
 
-            SetName(SFCFF.SFCategoryManager.GetBuildingName((ushort)selected_building.game_id));
+            SetName(SFCFF.SFCategoryManager.GetBuildingName((ushort)selected_entity.game_id));
         }
 
         public void SelectObject(SFMapObject obj)
         {
             CancelSelection();
             selection_type = SelectionType.OBJECT;
-            selected_object = obj;
+            selected_entity = obj;
 
             float sel_scale = 0.0f;
             SFLua.lua_sql.SFLuaSQLObjectData data = SFLua.SFLuaEnvironment.objects[obj.game_id];
@@ -198,14 +190,14 @@ namespace SpellforceDataEditor.SFMap
                 sel_scale = (float)(data.SelectionScaling / 2);
             SetSelectionScale(sel_scale);
 
-            SetName(SFCFF.SFCategoryManager.GetObjectName((ushort)selected_object.game_id));
+            SetName(SFCFF.SFCategoryManager.GetObjectName((ushort)selected_entity.game_id));
         }
 
         public void SelectInteractiveObject(SFMapInteractiveObject io)
         {
             CancelSelection();
             selection_type = SelectionType.INTERACTIVE_OBJECT;
-            selected_interactive_object = io;
+            selected_entity = io;
 
             float sel_scale = 0.0f;
             SFLua.lua_sql.SFLuaSQLObjectData data = SFLua.SFLuaEnvironment.objects[io.game_id];
@@ -213,7 +205,7 @@ namespace SpellforceDataEditor.SFMap
                 sel_scale = (float)(data.SelectionScaling / 2);
             SetSelectionScale(sel_scale);
 
-            if(selected_interactive_object.game_id == 769)   // bindstone
+            if(selected_entity.game_id == 769)   // bindstone
             {
                 int player = map.metadata.FindPlayerBySpawnPos(io.grid_position);
                 if (player == -1)
@@ -234,14 +226,14 @@ namespace SpellforceDataEditor.SFMap
                 }
             }
             else
-                SetName(SFCFF.SFCategoryManager.GetObjectName((ushort)selected_interactive_object.game_id));
+                SetName(SFCFF.SFCategoryManager.GetObjectName((ushort)selected_entity.game_id));
         }
 
         public void SelectPortal(SFMapPortal p)
         {
             CancelSelection();
             selection_type = SelectionType.PORTAL;
-            selected_portal = p;
+            selected_entity = p;
 
             float sel_scale = 0.0f;
             SFLua.lua_sql.SFLuaSQLObjectData data = SFLua.SFLuaEnvironment.objects[778];
@@ -250,7 +242,7 @@ namespace SpellforceDataEditor.SFMap
             SetSelectionScale(sel_scale);
 
             string portal_name = Utility.S_MISSING;
-            int portal_id = selected_portal.game_id;
+            int portal_id = selected_entity.game_id;
             int portal_index = SFCFF.SFCategoryManager.gamedata[38].GetElementIndex(portal_id);
             if (portal_index != -1)
             {
@@ -271,85 +263,26 @@ namespace SpellforceDataEditor.SFMap
             SF3D.SceneSynchro.SceneNodeCamera camera = SF3D.SFRender.SFRenderEngine.scene.camera;
             Vector2 text_pos = new Vector2(0, 0);
 
-            if (selection_type == SelectionType.UNIT)
+            if(selected_entity != null)
             {
-                if (selected_unit != null)
+                if(selection_type == SelectionType.BUILDING)//same with interactive object and object, todo...
                 {
-                    SetSelectionPosition(selected_unit.grid_position);
-
-                    text_pos = camera.WorldToScreen(new Vector3(
-                        selected_unit.grid_position.x,
-                        hmap.GetRealZ(new Vector2(selected_unit.grid_position.x, hmap.height-selected_unit.grid_position.y-1)),
-                        hmap.height-selected_unit.grid_position.y-1));
-                }
-            }
-            else if (selection_type == SelectionType.BUILDING)
-            {
-                if (selected_building != null)
-                {
-                    Vector2 off = map.building_manager.building_collision[(ushort)selected_building.game_id].collision_mesh.origin;
-                    float angle = (float)(selected_building.angle * Math.PI / 180);
+                    Vector2 off = map.building_manager.building_collision[(ushort)selected_entity.game_id].collision_mesh.origin;
+                    float angle = (float)(selected_entity.angle * Math.PI / 180);
                     Vector2 r_off = new Vector2(off.X, off.Y);
                     r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
                     r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
 
                     SetSelectionOffset(r_off);
-                    SetSelectionPosition(selected_building.grid_position);
-
-                    text_pos = camera.WorldToScreen(new Vector3(
-                        selected_building.grid_position.x,
-                        hmap.GetRealZ(new Vector2(selected_building.grid_position.x, hmap.height - selected_building.grid_position.y - 1)),
-                        hmap.height - selected_building.grid_position.y - 1));
                 }
-            }
-            else if (selection_type == SelectionType.OBJECT)
-            {
-                if (selected_object != null)
-                {
-                    /*Vector2 off = map.building_manager.building_collision[(ushort)selected_building.game_id].collision_mesh.origin;
-                    float angle = (float)(selected_building.angle * Math.PI / 180);
-                    Vector2 r_off = new Vector2(off.X, off.Y);
-                    r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
-                    r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
-
-                    SetSelectionOffset(r_off);*/
-                    SetSelectionPosition(selected_object.grid_position);
-
-                    text_pos = camera.WorldToScreen(new Vector3(
-                        selected_object.grid_position.x,
-                        hmap.GetRealZ(new Vector2(selected_object.grid_position.x, hmap.height - selected_object.grid_position.y - 1)),
-                        hmap.height - selected_object.grid_position.y - 1));
-                }
-            }
-            else if (selection_type == SelectionType.INTERACTIVE_OBJECT)
-            {
-                if (selected_interactive_object != null)
-                {
-                    /*Vector2 off = map.building_manager.building_collision[(ushort)selected_building.game_id].collision_mesh.origin;
-                    float angle = (float)(selected_building.angle * Math.PI / 180);
-                    Vector2 r_off = new Vector2(off.X, off.Y);
-                    r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
-                    r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
-
-                    SetSelectionOffset(r_off);*/
-                    SetSelectionPosition(selected_interactive_object.grid_position);
-
-                    text_pos = camera.WorldToScreen(new Vector3(
-                        selected_interactive_object.grid_position.x,
-                        hmap.GetRealZ(new Vector2(selected_interactive_object.grid_position.x, hmap.height - selected_interactive_object.grid_position.y - 1)),
-                        hmap.height - selected_interactive_object.grid_position.y - 1));
-                }
-            }
-            else if (selection_type == SelectionType.PORTAL)
-            {
-                if (selected_portal != null)
-                    SetSelectionPosition(selected_portal.grid_position);
+                SetSelectionPosition(selected_entity.grid_position);
 
                 text_pos = camera.WorldToScreen(new Vector3(
-                    selected_portal.grid_position.x,
-                    hmap.GetRealZ(new Vector2(selected_portal.grid_position.x, hmap.height - selected_portal.grid_position.y - 1)),
-                    hmap.height - selected_portal.grid_position.y - 1));
+                    selected_entity.grid_position.x,
+                    hmap.GetRealZ(new Vector2(selected_entity.grid_position.x, hmap.height - selected_entity.grid_position.y - 1)),
+                    hmap.height - selected_entity.grid_position.y - 1));
             }
+
             // todo: add more selection types
 
             text_pos.X = (text_pos.X - 0.1f) * 1.2f;

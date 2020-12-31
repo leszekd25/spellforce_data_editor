@@ -46,10 +46,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public override string ToString()
         {
-            string s = "cluster: ";
-            foreach (var op in SubOperators)
-                s += op.ToString()+", ";
-            return s;
+            return "cluster ("+SubOperators.Count+" sub-operators)";
         }
     }
 
@@ -452,7 +449,6 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     if (MainForm.mapedittool.selected_inspector is map_controls.MapUnitInspector)
                     {
                         ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).LoadNextUnit();
-                        MainForm.mapedittool.InspectorSelect(map.unit_manager.units[map.unit_manager.units.Count - 1]);
                     }
                     break;
                 case MapOperatorEntityType.BUILDING:
@@ -461,7 +457,6 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     if (MainForm.mapedittool.selected_inspector is map_controls.MapBuildingInspector)
                     {
                         ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).LoadNextBuilding();
-                        MainForm.mapedittool.InspectorSelect(map.building_manager.buildings[map.building_manager.buildings.Count - 1]);
                     }
                     break;
                 case MapOperatorEntityType.OBJECT:
@@ -470,7 +465,6 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     if (MainForm.mapedittool.selected_inspector is map_controls.MapObjectInspector)
                     {
                         ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).LoadNextObject();
-                        MainForm.mapedittool.InspectorSelect(map.object_manager.objects[map.object_manager.objects.Count - 1]);
                     }
                     break;
                 case MapOperatorEntityType.COOPCAMP:
@@ -482,7 +476,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     SF3D.SceneSynchro.SceneNode obj_node =
                         map.heightmap.GetChunkNode(position)
                         .FindNode<SF3D.SceneSynchro.SceneNode>(
-                            map.object_manager.objects[map.object_manager.objects.Count - 1].GetObjectName());
+                            map.object_manager.objects[map.object_manager.objects.Count - 1].GetName());
 
                     string m = "editor_dummy_spawnpoint";
                     SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name + "_SPAWNCIRCLE");
@@ -490,7 +484,6 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     if (MainForm.mapedittool.selected_inspector is map_controls.MapCoopCampInspector)
                     {
                         ((map_controls.MapCoopCampInspector)MainForm.mapedittool.selected_inspector).LoadNextCoopCamp();
-                        MainForm.mapedittool.InspectorSelect(map.metadata.coop_spawns[map.metadata.coop_spawns.Count - 1]);
                     }
                     break;
                 case MapOperatorEntityType.BINDSTONE:
@@ -502,8 +495,6 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     if (MainForm.mapedittool.selected_inspector is map_controls.MapBindstoneInspector)
                     {
                         ((map_controls.MapBindstoneInspector)MainForm.mapedittool.selected_inspector).LoadNextBindstone();
-                        MainForm.mapedittool.InspectorSelect(
-                            map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]);
                     }
                     break;
                 case MapOperatorEntityType.PORTAL:
@@ -511,7 +502,6 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     if (MainForm.mapedittool.selected_inspector is map_controls.MapPortalInspector)
                     {
                         ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).LoadNextPortal();
-                        MainForm.mapedittool.InspectorSelect(map.portal_manager.portals[map.portal_manager.portals.Count - 1]);
                     }
                     break;
                 case MapOperatorEntityType.MONUMENT:
@@ -524,7 +514,6 @@ namespace SpellforceDataEditor.SFMap.map_operators
                         if (MainForm.mapedittool.selected_inspector is map_controls.MapMonumentInspector)
                         {
                             ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).LoadNextMonument();
-                            MainForm.mapedittool.InspectorSelect(map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]);
                         }
                     }
                     break;
@@ -544,7 +533,10 @@ namespace SpellforceDataEditor.SFMap.map_operators
                             if (MainForm.mapedittool.selected_inspector is map_controls.MapUnitInspector)
                             {
                                 if (i == ((MapEdit.MapUnitEditor)MainForm.mapedittool.selected_editor).selected_unit)
+                                {
+                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
                                     MainForm.mapedittool.InspectorSelect(null);
+                                }
 
                                 map.DeleteUnit(i);
 
@@ -563,7 +555,10 @@ namespace SpellforceDataEditor.SFMap.map_operators
                             if (MainForm.mapedittool.selected_inspector is map_controls.MapBuildingInspector)
                             {
                                 if (i == ((MapEdit.MapBuildingEditor)MainForm.mapedittool.selected_editor).selected_building)
+                                {
+                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
                                     MainForm.mapedittool.InspectorSelect(null);
+                                }
 
                                 map.DeleteBuilding(i);
 
@@ -582,7 +577,10 @@ namespace SpellforceDataEditor.SFMap.map_operators
                             if (MainForm.mapedittool.selected_inspector is map_controls.MapObjectInspector)
                             {
                                 if (i == ((MapEdit.MapObjectEditor)MainForm.mapedittool.selected_editor).selected_object)
+                                {
+                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
                                     MainForm.mapedittool.InspectorSelect(null);
+                                }
 
                                 map.DeleteObject(i);
 
@@ -601,7 +599,10 @@ namespace SpellforceDataEditor.SFMap.map_operators
                             if (MainForm.mapedittool.selected_inspector is map_controls.MapCoopCampInspector)
                             {
                                 if (i == ((MapEdit.MapCoopCampEditor)MainForm.mapedittool.selected_editor).selected_spawn)
+                                {
+                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
                                     MainForm.mapedittool.InspectorSelect(null);
+                                }
 
                                 map.DeleteObject(map.object_manager.objects.IndexOf(map.metadata.coop_spawns[i].spawn_obj));
 
@@ -625,7 +626,10 @@ namespace SpellforceDataEditor.SFMap.map_operators
                             if (MainForm.mapedittool.selected_inspector is map_controls.MapBindstoneInspector)
                             {
                                 if (i == ((MapEdit.MapBindstoneEditor)MainForm.mapedittool.selected_editor).selected_bindstone)
+                                {
+                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
                                     MainForm.mapedittool.InspectorSelect(null);
+                                }
 
                                 // find object to delete
                                 for (int j = 0; j < map.int_object_manager.int_objects.Count; j++)
@@ -660,7 +664,10 @@ namespace SpellforceDataEditor.SFMap.map_operators
                             if (MainForm.mapedittool.selected_inspector is map_controls.MapPortalInspector)
                             {
                                 if (i == ((MapEdit.MapPortalEditor)MainForm.mapedittool.selected_editor).selected_portal)
+                                {
+                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
                                     MainForm.mapedittool.InspectorSelect(null);
+                                }
 
                                 map.DeletePortal(i);
 
@@ -673,32 +680,26 @@ namespace SpellforceDataEditor.SFMap.map_operators
                         }
                     break;
                 case MapOperatorEntityType.MONUMENT:
-                    {
-                        int monument_index = -1;
-                        for (int i = 0; i < map.int_object_manager.int_objects.Count; i++)
+                    for(int i = 0; i < map.int_object_manager.monuments_index.Count; i++)
+                        if(map.int_object_manager.int_objects[map.int_object_manager.monuments_index[i]].grid_position == position)
                         {
-                            SFMapInteractiveObject io = map.int_object_manager.int_objects[i];
-                            if ((io.game_id >= 771) && (io.game_id <= 777))
+                            if (MainForm.mapedittool.selected_inspector is map_controls.MapMonumentInspector)
                             {
-                                monument_index += 1;
-                                if(io.grid_position == position)
+                                if (i == ((MapEdit.MapMonumentEditor)MainForm.mapedittool.selected_editor).selected_monument)
                                 {
-                                    if (MainForm.mapedittool.selected_inspector is map_controls.MapMonumentInspector)
-                                    {
-                                        if (monument_index == ((MapEdit.MapMonumentEditor)MainForm.mapedittool.selected_editor).selected_monument)
-                                            MainForm.mapedittool.InspectorSelect(null);
-
-                                        map.DeleteInteractiveObject(i);
-
-                                        ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).RemoveMonument(i);
-                                    }
-                                    else
-                                        map.DeleteInteractiveObject(i);
-                                    break;
+                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
+                                    MainForm.mapedittool.InspectorSelect(null);
                                 }
+
+                                map.DeleteInteractiveObject(map.int_object_manager.monuments_index[i]);
+
+                                ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).RemoveMonument(i);
                             }
+                            else
+                                map.DeleteInteractiveObject(map.int_object_manager.monuments_index[i]);
+
+                            break;
                         }
-                    }
                     break;
             }
 

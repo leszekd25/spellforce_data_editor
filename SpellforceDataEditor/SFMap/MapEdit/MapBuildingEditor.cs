@@ -16,6 +16,16 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         // undo/redo
         map_operators.MapOperatorEntityChangeProperty op_change_pos = null;
 
+        // select entity
+        // if editor is being currently used, selection fails
+        public override void Select(int index)
+        {
+            if (first_click)
+                return;
+
+            selected_building = index;
+        }
+
         public override void OnMousePress(SFCoord pos, MouseButtons button, ref special_forms.SpecialKeysPressed specials)
         {
             if (map == null)
@@ -54,7 +64,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         previous_pos = pos;
 
                         ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).LoadNextBuilding();
-                        selected_building = map.building_manager.buildings.Count - 1;
+                        Select(map.building_manager.buildings.Count - 1);
                         MainForm.mapedittool.InspectorSelect(map.building_manager.buildings[selected_building]);
 
                         first_click = true;
@@ -80,7 +90,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 }
                 else if(button == MouseButtons.Right)
                 {
-                    selected_building = -1;
+                    Select(Utility.NO_INDEX);
                     MainForm.mapedittool.InspectorSelect(null);
                 }
             }
@@ -101,7 +111,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
                     else
                     {
-                        selected_building = building_map_index;
+                        Select(building_map_index);
                         MainForm.mapedittool.InspectorSelect(map.building_manager.buildings[selected_building]);
                     }
                 }

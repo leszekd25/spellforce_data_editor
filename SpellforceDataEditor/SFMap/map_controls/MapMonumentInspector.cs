@@ -29,31 +29,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void ReloadList()
         {
             ListMonuments.Items.Clear();
-            foreach (SFMapInteractiveObject io in map.int_object_manager.int_objects)
-                if ((io.game_id >= 771)&&(io.game_id <= 777))
-                    ListMonuments.Items.Add(GetMonumentString(io));
-        }
-        
-        // returned value >= argument value, or -1
-        private int GetIOMonumentIndex(int index)
-        {
-            return GetMonumentIndex(map.int_object_manager.int_objects[index]);
+            foreach (int i in map.int_object_manager.monuments_index)
+                ListMonuments.Items.Add(GetMonumentString(map.int_object_manager.int_objects[i]));
         }
 
         private int GetMonumentIndex(SFMapInteractiveObject o)
         {
-            int found_monuments = 0;
-            for (int i = 0; i < map.int_object_manager.int_objects.Count; i++)
-            {
-                SFMapInteractiveObject io = map.int_object_manager.int_objects[i];
-                if ((io.game_id >= 771) && (io.game_id <= 777))
-                {
-                    if (o == io)
-                        return found_monuments;
-                    found_monuments += 1;
-                }
-            }
-            return -1;
+            int i = map.int_object_manager.int_objects.IndexOf(o);
+            if(i != Utility.NO_INDEX)
+                return map.int_object_manager.monuments_index.IndexOf(i);
+
+            return Utility.NO_INDEX;
         }
 
         private string GetMonumentString(SFMapInteractiveObject io)
@@ -88,10 +74,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         public void LoadNextMonument()
         {
-            int new_monument = GetIOMonumentIndex(ListMonuments.Items.Count);
-            if (new_monument == Utility.NO_INDEX)
+            if (ListMonuments.Items.Count >= map.int_object_manager.monuments_index.Count)
                 return;
-            SFMapInteractiveObject io = map.int_object_manager.int_objects[new_monument];
+
+            SFMapInteractiveObject io = map.int_object_manager.int_objects[map.int_object_manager.monuments_index[ListMonuments.Items.Count]];
             ListMonuments.Items.Add(GetMonumentString(io));
         }
 
@@ -125,7 +111,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             PanelProperties.Enabled = true;
-            SFMapInteractiveObject monument = map.int_object_manager.int_objects[GetIOMonumentIndex(ListMonuments.SelectedIndex)];
+            SFMapInteractiveObject monument = map.int_object_manager.int_objects[map.int_object_manager.monuments_index[ListMonuments.SelectedIndex]];
             PosX.Text = monument.grid_position.x.ToString();
             PosY.Text = monument.grid_position.y.ToString();
             AngleTrackbar.Value = monument.angle;
@@ -151,7 +137,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (ListMonuments.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            SFMapInteractiveObject monument = map.int_object_manager.int_objects[GetIOMonumentIndex(ListMonuments.SelectedIndex)];
+            SFMapInteractiveObject monument = map.int_object_manager.int_objects[map.int_object_manager.monuments_index[ListMonuments.SelectedIndex]];
 
             int v = Utility.TryParseUInt16(Angle.Text, (ushort)monument.angle);
             v = (v >= 0 ? (v <= 359 ? v : 359) : 0);
@@ -174,10 +160,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (ListMonuments.SelectedIndex == Utility.NO_INDEX)
                 return;
 
-            SFMapInteractiveObject monument = map.int_object_manager.int_objects[GetIOMonumentIndex(ListMonuments.SelectedIndex)];
+            SFMapInteractiveObject monument = map.int_object_manager.int_objects[map.int_object_manager.monuments_index[ListMonuments.SelectedIndex]];
             Angle.Text = AngleTrackbar.Value.ToString();
             monument.angle = AngleTrackbar.Value;
-            map.RotateInteractiveObject(GetIOMonumentIndex(ListMonuments.SelectedIndex), monument.angle);
+            map.RotateInteractiveObject(map.int_object_manager.monuments_index[ListMonuments.SelectedIndex], monument.angle);
 
             MainForm.mapedittool.update_render = true;
         }
@@ -193,7 +179,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (!trackbar_clicked)
                 return;
 
-            SFMapInteractiveObject monument = map.int_object_manager.int_objects[GetIOMonumentIndex(ListMonuments.SelectedIndex)];
+            SFMapInteractiveObject monument = map.int_object_manager.int_objects[map.int_object_manager.monuments_index[ListMonuments.SelectedIndex]];
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
             {

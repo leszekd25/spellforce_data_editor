@@ -262,7 +262,7 @@ namespace SpellforceDataEditor.SF3D.Physics
                 if (!((hmap.width < chunk_center.x) || (0 > chunk_center.x) || (hmap.height < chunk_center.y) || (0 > chunk_center.y)))
                 {
                     // check if collision happens on the map chunk right here
-                    SFMap.SFMapHeightMapChunk hmap_chunk = hmap.GetChunk(new SFMap.SFCoord(chunk_center.x, hmap.map.width-chunk_center.y-1));
+                    SFMap.SFMapHeightMapChunk hmap_chunk = hmap.GetChunk(new SFMap.SFCoord(chunk_center.x, hmap.width-chunk_center.y-1));
                     if(hmap_chunk.visible)
                     {
                         if (((hmap_chunk.aabb.a.Y <= h2) && (hmap_chunk.aabb.a.Y >= h1))

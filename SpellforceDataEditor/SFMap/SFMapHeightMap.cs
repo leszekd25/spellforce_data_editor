@@ -11,21 +11,26 @@ using System.IO;
 
 namespace SpellforceDataEditor.SFMap
 {
+    // represents pool of physical heightmap chunks
+    // each heightmap chunk points to exactly one physical heightmap chunk, for rendering purposes
     public class SFMapHeightMapGeometryPool
     {
-        public const int POOL_SIZE = 768;
-        public const int CHUNK_SIZE = 16;
+        public const int POOL_SIZE = 768;          // how many heightmap chunks are at most allowed
+        public const int CHUNK_SIZE = 16;          // width/height of one chunk
 
+        // opengl VAO and VBOs
         public int vertex_array = -1;
         public int position_buffer, normal_buffer, element_buffer;
 
+        // geometry data for all chunks is found in one buffer per attribute
         public Vector3[] vertices_pool = new Vector3[POOL_SIZE * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1)];    // vec3
         public Vector3[] normals_pool = new Vector3[POOL_SIZE * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1)];     // vec3
         public ushort[] indices_pool = new ushort[6 * POOL_SIZE * (CHUNK_SIZE * CHUNK_SIZE)];       // ushort, 6 per quad
-
+        // each chunk would use the same indices, so here's a copy of those for quick memory copy operation
         public ushort[] indices_base = new ushort[6 * (CHUNK_SIZE * CHUNK_SIZE)];
-
+        // a chunk is only rendered if it's active per this array
         public bool[] active = new bool[POOL_SIZE];
+
         public int first_unused = 0;
         public int last_used = -1;
         public int used_count = 0;
@@ -80,7 +85,9 @@ namespace SpellforceDataEditor.SFMap
             GL.BindVertexArray(0);
         }
 
-        // returns position of the chunk in memory
+        // creates new chunk and returns its index in the pool
+        // arguments: heightmap, chunk xoffset, chunk yoffset (offsets are multiplied by CHUNK_SIZE)
+        // will fail if there's no room for a new chunk
         public int BuildNewChunk(SFMapHeightMap hmap, int ix, int iy)
         {
             if (used_count == POOL_SIZE)
@@ -111,6 +118,8 @@ namespace SpellforceDataEditor.SFMap
             return ret;
         }
 
+        // updates chunk geometry (both CPU- and GPU-based buffers)
+        // arguments: chunk index in the pool, heightmap, chunk xoffset, chunk yoffset (offsets are multiplied by CHUNK_SIZE)
         public void UpdateChunk(int offset, SFMapHeightMap hmap, int ix, int iy)
         {
             float flatten_factor = 100.0f;
@@ -150,6 +159,8 @@ namespace SpellforceDataEditor.SFMap
                 ref normals_pool[(CHUNK_SIZE + 1) * (CHUNK_SIZE + 1) * offset]);
         }
 
+        // frees chunk from use
+        // note that this doesn't free the memory, only marks it as unused, so it can still be used as valid chunk rendering-wise
         public void FreeChunk(int offset)
         {
             if (active[offset])
@@ -170,6 +181,7 @@ namespace SpellforceDataEditor.SFMap
             }
         }
 
+        // frees VAO and VBOs
         public void Unload()
         {
             if (vertex_array != -1)
@@ -183,66 +195,6 @@ namespace SpellforceDataEditor.SFMap
         }
     }
 
-    public class SFMapHeightMapChunkPointShadow
-    {
-        public SFMapHeightMap hmap = null;
-        public int vertex_array = Utility.NO_INDEX;
-        public int vertex_buffer, uv_buffer;
-
-        public ArrayPool<Vector3> vertices = new ArrayPool<Vector3>();
-        public ArrayPool<Vector2> uvs = new ArrayPool<Vector2>();
-
-        public void Init()
-        {
-            vertex_array = GL.GenVertexArray();
-            vertex_buffer = GL.GenBuffer();
-            uv_buffer = GL.GenBuffer();
-
-            GL.BindVertexArray(vertex_array);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindVertexArray(0);
-        }
-
-        public void Add(SFCoord pos, float size)
-        {
-
-        }
-
-        public void Update()
-        {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Count * 12, vertices.GetData(), BufferUsageHint.StreamDraw);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
-            GL.BufferData(BufferTarget.ArrayBuffer, uvs.Count * 8, uvs.GetData(), BufferUsageHint.StreamDraw);
-        }
-
-        public void Clear()
-        {
-            vertices.Clear();
-            uvs.Clear();
-        }
-
-        public void Dispose()
-        {
-            if (vertex_array != Utility.NO_INDEX)
-            {
-                GL.DeleteBuffer(vertex_buffer);
-                GL.DeleteBuffer(uv_buffer);
-                GL.DeleteVertexArray(vertex_array);
-                vertex_array = Utility.NO_INDEX;
-            }
-            hmap = null;
-        }
-    }
 
     public class SFMapHeightMapChunk
     {
@@ -261,7 +213,7 @@ namespace SpellforceDataEditor.SFMap
         // lake
         public SFModel3D lake_model = null;    // generated here, but owned by ResourceManager
 
-
+        // all entities on map are stored per chunk
         public List<SFMapBuilding> buildings = new List<SFMapBuilding>();
         public List<SFMapObject> objects = new List<SFMapObject>();
         public List<SFMapInteractiveObject> int_objects = new List<SFMapInteractiveObject>();
@@ -269,7 +221,7 @@ namespace SpellforceDataEditor.SFMap
         public List<SFMapPortal> portals = new List<SFMapPortal>();
         public List<SFMapDecoration> decorations = new List<SFMapDecoration>();
 
-
+        // generates heightmap chunk (allocates physical chunk and turns stuff visible)
         public void Generate()
         {
             if (!visible)
@@ -280,12 +232,12 @@ namespace SpellforceDataEditor.SFMap
             pool_index = hmap.geometry_pool.BuildNewChunk(hmap, ix, iy);
 
             GenerateAABB();
-            Init();
 
             RebuildLake();
             UpdateSettingsVisible();
         }
 
+        // only used when there's no physical heightmap chunk associated with this chunk
         private void GenerateTemporaryAABB()
         {
             int size = width;
@@ -304,6 +256,8 @@ namespace SpellforceDataEditor.SFMap
             aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, 0, iy * size), new Vector3((ix + 1) * size, max_height / 100.0f, (iy * size) + size));
         }
 
+        // generates bounding box for the heightmap
+        // bounding box is used for chunk visibility calculations, and for ray collision
         public void GenerateAABB()
         {
             if(pool_index == -1)
@@ -329,11 +283,7 @@ namespace SpellforceDataEditor.SFMap
             aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, y1, iy * size), new Vector3((ix + 1) * size, y2, (iy * size) + size));
         }
 
-        public void Init()
-        {
-            
-        }
-
+        // frees physical heightmap chunk from use, and destroys lake model associated with this chunk
         public void Degenerate()
         {
             if (pool_index != -1)
@@ -349,8 +299,8 @@ namespace SpellforceDataEditor.SFMap
             }
         }
 
-
-        // for heightmap edit only
+        // updates physical heightmap chunk, fixes entity positions
+        // called by heightmap when a chunk is modified
         public void RebuildGeometry()
         {
             if (!visible)
@@ -363,17 +313,17 @@ namespace SpellforceDataEditor.SFMap
             // fix all object positions (without lakes for now...)
             foreach (SFMapUnit u in units)
             {
-                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());
+                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetName());
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(u.grid_position) / 100.0f, _obj.Position.Z);
             }
             foreach (SFMapObject o in objects)
             {
-                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(o.GetObjectName());
+                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(o.GetName());
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(o.grid_position) / 100.0f, _obj.Position.Z);
             }
             foreach (SFMapInteractiveObject io in int_objects)
             {
-                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(io.GetObjectName());
+                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(io.GetName());
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(io.grid_position) / 100.0f, _obj.Position.Z);
             }
             foreach (SFMapDecoration d in decorations)
@@ -383,12 +333,12 @@ namespace SpellforceDataEditor.SFMap
             }
             foreach (SFMapBuilding b in buildings)
             {
-                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(b.GetObjectName());
+                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(b.GetName());
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(b.grid_position) / 100.0f, _obj.Position.Z);
             }
             foreach (SFMapPortal p in portals)
             {
-                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(p.GetObjectName());
+                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(p.GetName());
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(p.grid_position) / 100.0f, _obj.Position.Z);
             }
         }
@@ -400,7 +350,7 @@ namespace SpellforceDataEditor.SFMap
             public float lake_height;    // height of the lake at particular cell
         }
 
-        // for lake edit only
+        // updates lake model in correspondence with lake data for this chunk
         public void RebuildLake()
         {
             if (!visible)
@@ -522,13 +472,13 @@ namespace SpellforceDataEditor.SFMap
             SFResources.SFResourceManager.Models.AddManually(lake_model, "LAKE_" + ix.ToString() + "_" + iy.ToString());
         }
 
-        // only happens after visibility actually changes
         public void UpdateVisible(bool vis)
         {
             if (visible)
             {
                 if (!vis)
                 {
+                    // visibility switches from visible to invisible
                     visible = false;
 
                     Degenerate();
@@ -538,6 +488,7 @@ namespace SpellforceDataEditor.SFMap
             {
                 if (vis)
                 {
+                    // visibility switches from invisible to visible
                     visible = true;
                     decoration_visible = true;
 
@@ -580,7 +531,7 @@ namespace SpellforceDataEditor.SFMap
                     unit_visible = false;
                     foreach (SFMapUnit u in units)
                     {
-                        var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());
+                        var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetName());
                         node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = false;
                         node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = true;
                     }
@@ -594,7 +545,7 @@ namespace SpellforceDataEditor.SFMap
                     if (Settings.DecorationsVisible)
                         foreach (SFMapUnit u in units)
                         {
-                            var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());
+                            var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetName());
                             node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = true;
                             node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = false;
                         }
@@ -604,42 +555,24 @@ namespace SpellforceDataEditor.SFMap
 
         public void UpdateSettingsVisible()
         {
-            if (Settings.UnitsVisible)
+            bool vis1 = Settings.UnitsVisible & unit_visible;
+            bool vis2 = Settings.UnitsVisible & (!unit_visible);
+            foreach (SFMapUnit u in units)
             {
-                if (unit_visible)
-                    foreach (SFMapUnit u in units)
-                    {
-                        var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());
-                        node.Visible = true;
-                        node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = true;
-                        node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = false;
-                    }
-                else
-                    foreach (SFMapUnit u in units)
-                    {
-                        var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());
-                        node.Visible = true;
-                        node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = false;
-                        node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = true;
-                    }
+                var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetName());
+                node.Visible = true;
+                node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = vis1;
+                node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = vis2;
             }
-            else
-                foreach (SFMapUnit u in units)
-                {
-                    var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());
-                    node.Visible = true;
-                    node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = false;
-                    node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = false;
-                }
 
             foreach (SFMapBuilding b in buildings)
-                owner.FindNode<SF3D.SceneSynchro.SceneNode>(b.GetObjectName()).Visible = Settings.BuildingsVisible;
+                owner.FindNode<SF3D.SceneSynchro.SceneNode>(b.GetName()).Visible = Settings.BuildingsVisible;
             foreach (SFMapObject o in objects)
-                owner.FindNode<SF3D.SceneSynchro.SceneNode>(o.GetObjectName()).Visible = Settings.ObjectsVisible;
+                owner.FindNode<SF3D.SceneSynchro.SceneNode>(o.GetName()).Visible = Settings.ObjectsVisible;
             foreach (SFMapInteractiveObject io in int_objects)
-                owner.FindNode<SF3D.SceneSynchro.SceneNode>(io.GetObjectName()).Visible = Settings.ObjectsVisible;
+                owner.FindNode<SF3D.SceneSynchro.SceneNode>(io.GetName()).Visible = Settings.ObjectsVisible;
             foreach (SFMapPortal p in portals)
-                owner.FindNode<SF3D.SceneSynchro.SceneNode>(p.GetObjectName()).Visible = Settings.ObjectsVisible;
+                owner.FindNode<SF3D.SceneSynchro.SceneNode>(p.GetName()).Visible = Settings.ObjectsVisible;
 
             if ((Settings.DecorationsVisible) && (decoration_visible))
                 foreach (SFMapDecoration d in decorations)
@@ -779,8 +712,6 @@ namespace SpellforceDataEditor.SFMap
         public int overlay_texture_decals = -1;
         public int overlay_active_texture = -1;
 
-        public SFTexture pointshadow_tex = null;
-
         public SFMapHeightMap(int w, int h)
         {
             width = w;
@@ -836,28 +767,6 @@ namespace SpellforceDataEditor.SFMap
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
             GL.ActiveTexture(TextureUnit.Texture0);
-
-            // point shadow texture for map units
-
-            pointshadow_tex = new SFTexture();
-            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf0.pak", "texture\\system_element_pointshadow_l6.tga");
-            if (ms == null)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapHeightMap(): Could not find texture system_element_pointshadow.tga");
-                pointshadow_tex = SF3D.SFRender.SFRenderEngine.opaque_tex;
-            }
-            int res_code = pointshadow_tex.Load(ms, null);
-            if (res_code != 0)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapHeightMap(): Could not load texture system_element_pointshadow.tga");
-                pointshadow_tex = SF3D.SFRender.SFRenderEngine.opaque_tex;
-            }
-            else
-            {
-                pointshadow_tex.custom_WhiteToAlpha();
-                pointshadow_tex.Init();
-            }
-            ms.Close();
         }
 
         public void UpdateTileMap()
@@ -988,13 +897,6 @@ namespace SpellforceDataEditor.SFMap
 
             SFCoord hmap_offset = new SFCoord((width - bitmap.Width) / 2, (height - bitmap.Height) / 2);
 
-            // rebuild every chunk on the map if the newmap size is different from current map dimension
-            /*if (newmap_size < width)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapHeightMap.Import(): New heightmap is smaller than the current one!");
-                return -2;
-            }*/
-
             // if only_change_height is set to true and new map size is greater than the current one, reorder the chunks
             if (newmap_size > width)
             {
@@ -1051,6 +953,7 @@ namespace SpellforceDataEditor.SFMap
             return 0;
         }
 
+        // returns bounding box for given area
         public void GetBoxFromArea(IEnumerable<SFCoord> area, out SFCoord tl, out SFCoord br)
         {
             int t, l, r, b;
@@ -1077,16 +980,19 @@ namespace SpellforceDataEditor.SFMap
             br = new SFCoord(r, b);
         }
 
+        // returns height for given grid position (as found in map file, 0 = lowest, 65535 - highest available)
         public ushort GetZ(SFCoord pos)
         {
             return height_data[pos.y * width + pos.x];
         }
 
+        // returns whether a posiiton is within map bounds
         private bool FitsInMap(SFCoord p)
         {
             return ((p.x >= 0) && (p.x < width) && (p.y >= 0) && (p.y < height));
         }
 
+        // returns height for given grid position (physical height)
         public float GetRealZ(Vector2 pos)
         {
             short left = (short)pos.X;
@@ -1123,6 +1029,7 @@ namespace SpellforceDataEditor.SFMap
             return (b > 223 ? (byte)(b - 223) : b);
         }
 
+        // helper function for GetIslandByHeight()
         public void ResetMask()
         {
             for (int i = 0; i < width * height; i++)
@@ -1143,9 +1050,11 @@ namespace SpellforceDataEditor.SFMap
             temporary_mask[start.y * width + start.x] = true;
             to_be_checked.Enqueue(start);
 
+            // for each coordinate from the queue, add up to 4 neighbors to the queue if they're unchecked and fulfill the criteria
             while (to_be_checked.Count != 0)
             {
                 cur_pos = to_be_checked.Dequeue();
+                // every position that's in the queue will belong to an island
                 island.Add(cur_pos);
 
                 next_pos = cur_pos; next_pos.x += 1;
@@ -1177,6 +1086,7 @@ namespace SpellforceDataEditor.SFMap
             return island;
         }
 
+        // rebuilds heightmap chunks within the given bounding box
         public void RebuildGeometry(SFCoord topleft, SFCoord bottomright)
         {
             int chunk_count_x = width / SFMapHeightMapGeometryPool.CHUNK_SIZE;
@@ -1192,6 +1102,7 @@ namespace SpellforceDataEditor.SFMap
                     chunk_nodes[(chunk_count_y - j - 1) * chunk_count_x + i].MapChunk.RebuildGeometry();
         }
 
+        // rebuilds heightmap texturing within the given bounding box
         public void RebuildTerrainTexture(SFCoord topleft, SFCoord bottomright)
         {
             int chunk_count_x = width / SFMapHeightMapGeometryPool.CHUNK_SIZE;
@@ -1228,55 +1139,8 @@ namespace SpellforceDataEditor.SFMap
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
         }
 
-        public List<HashSet<SFCoord>> GetSeparateIslands(HashSet<SFCoord> src)
-        {
-            HashSet<SFCoord> src_copy = new HashSet<SFCoord>();
-            foreach (SFCoord p in src)
-                src_copy.Add(p);
-            List<HashSet<SFCoord>> result = new List<HashSet<SFCoord>>();
-            while (src_copy.Count != 0)
-            {
-                SFCoord start = src_copy.First();
-                Queue<SFCoord> island_queue = new Queue<SFCoord>();
-                HashSet<SFCoord> island = new HashSet<SFCoord>();
-                island_queue.Enqueue(start);
-                src_copy.Remove(start);
-                while (island_queue.Count != 0)
-                {
-                    SFCoord next_pos = island_queue.Dequeue();
-                    SFCoord new_pos = next_pos;
-                    island.Add(next_pos);
-
-                    new_pos = next_pos + new SFCoord(1, 0);
-                    if (src_copy.Contains(new_pos))
-                    {
-                        island_queue.Enqueue(new_pos);
-                        src_copy.Remove(new_pos);
-                    }
-                    new_pos = next_pos + new SFCoord(-1, 0);
-                    if (src_copy.Contains(new_pos))
-                    {
-                        island_queue.Enqueue(new_pos);
-                        src_copy.Remove(new_pos);
-                    }
-                    new_pos = next_pos + new SFCoord(0, 1);
-                    if (src_copy.Contains(new_pos))
-                    {
-                        island_queue.Enqueue(new_pos);
-                        src_copy.Remove(new_pos);
-                    }
-                    new_pos = next_pos + new SFCoord(0, -1);
-                    if (src_copy.Contains(new_pos))
-                    {
-                        island_queue.Enqueue(new_pos);
-                        src_copy.Remove(new_pos);
-                    }
-                }
-                result.Add(island);
-            }
-            return result;
-        }
-
+        // returns all scene chunk nodes that contain any of the points
+        // it's pretty slow though...
         public List<SF3D.SceneSynchro.SceneNodeMapChunk> GetAreaMapNodes(HashSet<SFCoord> points)
         {
             List<SF3D.SceneSynchro.SceneNodeMapChunk> list = new List<SF3D.SceneSynchro.SceneNodeMapChunk>();
@@ -1304,15 +1168,15 @@ namespace SpellforceDataEditor.SFMap
             foreach (SFMapUnit u in chunk.units)
                 if (u.grid_position == pos)
                     return false;
+            // check if building is on position
+            if (building_data[pos.y * width + pos.x] != 0)
+                return false;
             // check if another object is on position
             foreach (SFMapObject o in chunk.objects)
                 if (o.grid_position == pos)
                     return false;
             // check if lake is on position
             if (lake_data[pos.y * width + pos.x] != 0)
-                return false;
-            // check if building is on position
-            if (building_data[pos.y * width + pos.x] != 0)
                 return false;
 
             return true;
@@ -1329,6 +1193,7 @@ namespace SpellforceDataEditor.SFMap
             return false;
         }
 
+        // returns heightmap vertex normal
         // https://www.gamedev.net/forums/topic/163625-fast-way-to-calculate-heightmap-normals/
         public Vector3 GetVertexNormal(int x, int y)
         {
@@ -1354,12 +1219,6 @@ namespace SpellforceDataEditor.SFMap
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Unload() called");
             if (map == null)
                 return;
-
-            if(pointshadow_tex != null)
-            {
-                pointshadow_tex.Dispose();
-                pointshadow_tex = null;
-            }
 
             if (tile_data_texture != -1)
             {
@@ -1395,6 +1254,7 @@ namespace SpellforceDataEditor.SFMap
             map = null;
         }
 
+        // when visibility settings change, this is called
         public void SetVisibilitySettings()
         {
             foreach (var chunk in visible_chunks)

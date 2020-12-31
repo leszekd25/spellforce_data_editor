@@ -6,18 +6,13 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor.SFMap
 {
-    public class SFMapObject
+    public class SFMapObject: SFMapEntity
     {
         static int max_id = 0;
 
-        public SFCoord grid_position = new SFCoord(0, 0);
-        public int id = -1;
-        public int game_id = -1;
-        public int angle = 0;
-        public int npc_id = 0;
         public int unknown1 = 0;
 
-        public string GetObjectName()
+        public override string GetName()
         {
             return "OBJECT_" + id.ToString();
         }
@@ -26,11 +21,6 @@ namespace SpellforceDataEditor.SFMap
         {
             id = max_id;
             max_id += 1;
-        }
-
-        public override string ToString()
-        {
-            return GetObjectName();
         }
     }
 
@@ -48,7 +38,7 @@ namespace SpellforceDataEditor.SFMap
             obj.unknown1 = unk1;
             objects.Add(obj);
 
-            string obj_name = obj.GetObjectName();
+            string obj_name = obj.GetName();
 
             SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, obj_name, true);
             // custom resource mesh setting :^)
@@ -64,7 +54,7 @@ namespace SpellforceDataEditor.SFMap
             objects.Remove(o);
             
             SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(o.grid_position);
-            SF3D.SceneSynchro.SceneNode obj_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(o.GetObjectName());
+            SF3D.SceneSynchro.SceneNode obj_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(o.GetName());
             if (obj_node != null)
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(obj_node);
 

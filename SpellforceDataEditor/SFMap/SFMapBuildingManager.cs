@@ -7,21 +7,16 @@ using OpenTK;
 
 namespace SpellforceDataEditor.SFMap
 {
-    public class SFMapBuilding
+    public class SFMapBuilding: SFMapEntity
     {
         static int max_id = 0;
 
-        public SFCoord grid_position = new SFCoord(0, 0);
-        public int id = -1;
-        public int game_id = -1;
-        public int angle = 0;
-        public int npc_id = 0;
         public int level = 1;
         public int race_id = 0;
         // debug only
         public SF3D.SceneSynchro.SceneNodeSimple boundary_outline = null;
 
-        public string GetObjectName()
+        public override string GetName()
         {
             return "BUILDING_" + id.ToString();
         }
@@ -30,11 +25,6 @@ namespace SpellforceDataEditor.SFMap
         {
             id = max_id;
             max_id += 1;
-        }
-
-        public override string ToString()
-        {
-            return GetObjectName();
         }
     }
 
@@ -210,7 +200,7 @@ namespace SpellforceDataEditor.SFMap
             /*foreach (SFCoord p in pot_cells_taken)
                 map.heightmap.building_data[p.y * map.width + p.x] = (ushort)buildings.Count;*/
 
-            string bld_name = bld.GetObjectName();
+            string bld_name = bld.GetName();
             SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneBuilding(id, bld_name);
             node.SetParent(map.heightmap.GetChunkNode(position));
 
@@ -230,7 +220,7 @@ namespace SpellforceDataEditor.SFMap
             buildings.Remove(b);
 
             SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(b.grid_position);
-            SF3D.SceneSynchro.SceneNode bld_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(b.GetObjectName());
+            SF3D.SceneSynchro.SceneNode bld_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(b.GetName());
             if (bld_node != null)
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(bld_node);
 

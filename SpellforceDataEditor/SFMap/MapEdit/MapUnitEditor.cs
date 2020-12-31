@@ -16,6 +16,16 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         // undo/redo
         map_operators.MapOperatorEntityChangeProperty op_change_pos = null;
 
+        // select entity
+        // if editor is being currently used, selection fails
+        public override void Select(int index)
+        {
+            if (first_click)
+                return;
+
+            selected_unit = index;
+        }
+
         public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             if (map == null)
@@ -53,7 +63,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         previous_pos = pos;
 
                         ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).LoadNextUnit();
-                        selected_unit = map.unit_manager.units.Count - 1;
+                        Select(map.unit_manager.units.Count - 1);
                         MainForm.mapedittool.InspectorSelect(map.unit_manager.units[selected_unit]);
 
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
@@ -79,9 +89,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 }
                 else if (b == MouseButtons.Right)
                 {
-                    selected_unit = -1;
-
                     MainForm.mapedittool.InspectorSelect(null);
+                    Select(Utility.NO_INDEX);
                 }
             }
             else
@@ -92,14 +101,26 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                 if (b == MouseButtons.Left)
                 {
-                    selected_unit = unit_map_index;
-                    MainForm.mapedittool.InspectorSelect(unit);
+                    // if dragging unit, just move selected unit, dont create a new one
+                    if ((specials.Shift) && (selected_unit != -1))
+                    {
+                        if (map.heightmap.CanMoveToPosition(pos))
+                            map.MoveUnit(selected_unit, pos);
+                    }
+                    else
+                    {
+                        Select(unit_map_index);
+                        MainForm.mapedittool.InspectorSelect(map.unit_manager.units[selected_unit]);
+                    }
                 }
                 // delete unit
                 else if (b == MouseButtons.Right)
                 {
                     if (unit_map_index == selected_unit)
+                    {
                         MainForm.mapedittool.InspectorSelect(null);
+                        Select(Utility.NO_INDEX);
+                    }
 
                     // undo/redo
                     MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()

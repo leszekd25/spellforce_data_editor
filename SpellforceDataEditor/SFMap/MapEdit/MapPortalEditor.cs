@@ -15,6 +15,16 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         // undo/redo
         map_operators.MapOperatorEntityChangeProperty op_change_pos = null;
 
+        // select entity
+        // if editor is being currently used, selection fails
+        public override void Select(int index)
+        {
+            if (first_click)
+                return;
+
+            selected_portal = index;
+        }
+
         public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             SFMapPortal portal = null;
@@ -53,7 +63,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         previous_pos = pos;
 
                         ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).LoadNextPortal();
-                        selected_portal = map.portal_manager.portals.Count - 1;
+                        Select(map.portal_manager.portals.Count - 1); 
                         MainForm.mapedittool.InspectorSelect(map.portal_manager.portals[selected_portal]);
 
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
@@ -77,7 +87,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 }
                 else if(b == MouseButtons.Right)
                 {
-                    selected_portal = -1;
+                    Select(Utility.NO_INDEX);
                     MainForm.mapedittool.InspectorSelect(null);
                 }
             }
@@ -98,7 +108,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
                     else
                     {
-                        selected_portal = portal_map_index;
+                        Select(portal_map_index);
                         MainForm.mapedittool.InspectorSelect(portal);
                     }
                 }
@@ -106,7 +116,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 else if (b == MouseButtons.Right)
                 {
                     if (portal_map_index == selected_portal)
+                    {
+                        Select(Utility.NO_INDEX);
                         MainForm.mapedittool.InspectorSelect(null);
+                    }
 
                     // undo/redo
                     MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()

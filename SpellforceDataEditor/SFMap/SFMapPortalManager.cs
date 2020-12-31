@@ -6,16 +6,11 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor.SFMap
 {
-    public class SFMapPortal
+    public class SFMapPortal: SFMapEntity
     {
         static int max_id = 0;
 
-        public SFCoord grid_position = new SFCoord(0, 0);
-        public int id = -1;
-        public int game_id = -1;
-        public int angle = 0;
-
-        public string GetObjectName()
+        public override string GetName()
         {
             return "PORTAL_" + id.ToString();
         }
@@ -24,11 +19,6 @@ namespace SpellforceDataEditor.SFMap
         {
             id = max_id;
             max_id += 1;
-        }
-
-        public override string ToString()
-        {
-            return GetObjectName();
         }
     }
 
@@ -45,7 +35,7 @@ namespace SpellforceDataEditor.SFMap
             ptl.angle = angle;
             portals.Add(ptl);
 
-            string ptl_name = ptl.GetObjectName();
+            string ptl_name = ptl.GetName();
 
             SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(778, ptl_name, true);
             node.SetParent(map.heightmap.GetChunkNode(position));
@@ -57,7 +47,7 @@ namespace SpellforceDataEditor.SFMap
             portals.Remove(portal);
             
             SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(portal.grid_position);
-            SF3D.SceneSynchro.SceneNode ptl_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(portal.GetObjectName());
+            SF3D.SceneSynchro.SceneNode ptl_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(portal.GetName());
             if (ptl_node != null)
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(ptl_node);
 

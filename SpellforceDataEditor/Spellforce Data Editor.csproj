@@ -753,11 +753,11 @@
     <Compile Include="SFMap\SFMapBuildingManager.cs" />
     <Compile Include="SFMap\SFMapCollisionBoundary.cs" />
     <Compile Include="SFMap\SFMapDecorationManager.cs" />
+    <Compile Include="SFMap\SFMapEntity.cs" />
     <Compile Include="SFMap\SFMapHeightMap.cs" />
     <Compile Include="SFMap\SFMapInteractiveObjectManager.cs" />
     <Compile Include="SFMap\SFMapLakeManager.cs" />
     <Compile Include="SFMap\SFMapMetaData.cs" />
-    <Compile Include="SFMap\SFMapNPCManager.cs" />
     <Compile Include="SFMap\SFMapObjectManager.cs" />
     <Compile Include="SFMap\SFMapOcean.cs" />
     <Compile Include="SFMap\SFMapPortalManager.cs" />

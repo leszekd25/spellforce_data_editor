@@ -26,7 +26,7 @@ namespace SpellforceDataEditor.SFMap.MapGen
         }
     }
 
-    public class SeparableKernel:LatticeKernel
+    public class SeparableKernel: LatticeKernel
     {
         protected float[] k_vector;
 

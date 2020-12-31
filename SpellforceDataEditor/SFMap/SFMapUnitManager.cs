@@ -7,20 +7,16 @@ using SpellforceDataEditor.SF3D;
 
 namespace SpellforceDataEditor.SFMap
 {
-    public class SFMapUnit
+    public class SFMapUnit: SFMapEntity
     {
         static int max_id = 0;
 
-        public SFCoord grid_position = new SFCoord(0, 0);
-        public int id = -1;
-        public int game_id = -1;
         public int unknown_flags = 0;
-        public int npc_id = 0;
         public int unknown = 0;
         public int group = 0;
         public int unknown2 = 0;
 
-        public string GetObjectName()
+        public override string GetName()
         {
             return "UNIT_" + id.ToString();
         }
@@ -29,11 +25,6 @@ namespace SpellforceDataEditor.SFMap
         {
             id = max_id;
             max_id += 1;
-        }
-
-        public override string ToString()
-        {
-            return GetObjectName();
         }
     }
 
@@ -50,7 +41,7 @@ namespace SpellforceDataEditor.SFMap
             unit.game_id = id;
             units.Add(unit);
 
-            string obj_name = unit.GetObjectName();
+            string obj_name = unit.GetName();
             SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(id, obj_name);
             node.SetParent(map.heightmap.GetChunkNode(position));
             
@@ -65,7 +56,7 @@ namespace SpellforceDataEditor.SFMap
             units.Remove(u);
             
             SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(u.grid_position);
-            SF3D.SceneSynchro.SceneNode unit_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetObjectName());
+            SF3D.SceneSynchro.SceneNode unit_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetName());
             if (unit_node != null)
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(unit_node);
 

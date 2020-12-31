@@ -16,6 +16,16 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         // undo/redo
         map_operators.MapOperatorEntityChangeProperty op_change_pos = null;
 
+        // select entity
+        // if editor is being currently used, selection fails
+        public override void Select(int index)
+        {
+            if (first_click)
+                return;
+
+            selected_object = index;
+        }
+
         public override void OnMousePress(SFCoord pos, MouseButtons button, ref special_forms.SpecialKeysPressed specials)
         {
             if (map == null)
@@ -53,7 +63,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         // undo/redo
                         previous_pos = pos;
 
-                        selected_object = map.object_manager.objects.Count - 1;
+                        ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).LoadNextObject();
+                        Select(map.object_manager.objects.Count - 1);
 
                         special_forms.MapEditorForm.AngleInfo angle_info = MainForm.mapedittool.GetAngleInfo();
                         UInt16 angle = angle_info.angle;
@@ -62,7 +73,6 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         map.RotateObject(selected_object, angle);
                         map.object_manager.objects[selected_object].angle = angle;
 
-                        ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).LoadNextObject();
                         MainForm.mapedittool.InspectorSelect(map.object_manager.objects[selected_object]);
 
 
@@ -93,7 +103,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 }
                 else if(button == MouseButtons.Right)
                 {
-                    selected_object = -1;
+                    Select(Utility.NO_INDEX);
                     MainForm.mapedittool.InspectorSelect(null);
                 }
             }
@@ -113,7 +123,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
                     else
                     {
-                        selected_object = object_map_index;
+                        Select(object_map_index);
                         MainForm.mapedittool.InspectorSelect(map.object_manager.objects[selected_object]);
                     }
                 }
@@ -121,9 +131,12 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 else if (button == MouseButtons.Right)
                 {
                     if (object_map_index == selected_object)
+                    {
+                        Select(Utility.NO_INDEX);
                         MainForm.mapedittool.InspectorSelect(null);
+                    }
 
-                    // undo/redo
+                        // undo/redo
                     MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
                     { 
                         type = map_operators.MapOperatorEntityType.OBJECT,

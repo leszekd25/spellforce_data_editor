@@ -11,6 +11,11 @@ namespace SpellforceDataEditor.SFMap.MapEdit
     {
         public SFMap map = null;
 
+        public virtual void Select(int index)
+        {
+
+        }
+
         public virtual void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
 
