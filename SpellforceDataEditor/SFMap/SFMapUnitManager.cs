@@ -33,13 +33,16 @@ namespace SpellforceDataEditor.SFMap
         public List<SFMapUnit> units { get; private set; } = new List<SFMapUnit>();
         public SFMap map = null;
 
-        public SFMapUnit AddUnit(int id, SFCoord position, int flags)
+        public SFMapUnit AddUnit(int id, SFCoord position, int flags, int index)
         {
             SFMapUnit unit = new SFMapUnit();
             unit.grid_position = position;
             unit.unknown_flags = flags;
             unit.game_id = id;
-            units.Add(unit);
+
+            if (index == -1)
+                index = units.Count;
+            units.Insert(index, unit);
 
             string obj_name = unit.GetName();
             SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(id, obj_name);

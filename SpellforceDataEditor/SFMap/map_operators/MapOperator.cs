@@ -10,6 +10,9 @@ namespace SpellforceDataEditor.SFMap.map_operators
     {
         // returns whether operator is ready to use
         bool Finished { get; set; }
+        // if this is set to true, operator will call Apply() when it's pushed to queue
+        // this is helpful to remove duplicate code where possible
+        bool ApplyOnPush { get; set; }
         // operator holds map state before and after the action is performed
         // map state before is filled out when the operator is created
         // map state after is filled out in this function, which is called after the action is performed
@@ -25,6 +28,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
     public class MapOperatorCluster: IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public List<IMapOperator> SubOperators = new List<IMapOperator>();
 
         public void Finish(SFMap map)
@@ -53,6 +57,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
     public class MapOperatorTerrainHeight : IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public Dictionary<SFCoord, ushort> PreOperatorHeights = new Dictionary<SFCoord, ushort>();
         public Dictionary<SFCoord, ushort> PostOperatorHeights = new Dictionary<SFCoord, ushort>();
 
@@ -101,6 +106,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
     public class MapOperatorTerrainTexture : IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public Dictionary<SFCoord, byte> PreOperatorTextures = new Dictionary<SFCoord, byte>();
         public Dictionary<SFCoord, byte> PostOperatorTextures = new Dictionary<SFCoord, byte>();
 
@@ -148,6 +154,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
     public class MapOperatorTerrainFlag: IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public Dictionary<SFCoord, byte> PreOperatorFlags = new Dictionary<SFCoord, byte>();
         public Dictionary<SFCoord, byte> PostOperatorFlags = new Dictionary<SFCoord, byte>();
 
@@ -190,9 +197,11 @@ namespace SpellforceDataEditor.SFMap.map_operators
     public class MapOperatorLake: IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public SFCoord pos;
         public short z_diff;
         public int type;
+        public int lake_index;
         public bool change_add;
 
         public void Finish(SFMap map)
@@ -209,7 +218,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Apply(SFMap map)
         {
             if (change_add)
-                map.lake_manager.AddLake(pos, z_diff, type);
+                map.lake_manager.AddLake(pos, z_diff, type, lake_index);
             else
             {
                 int lake_index = map.lake_manager.GetLakeIndexAt(pos);
@@ -225,7 +234,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Revert(SFMap map)
         {
             if (!change_add)
-                map.lake_manager.AddLake(pos, z_diff, type);
+                map.lake_manager.AddLake(pos, z_diff, type, lake_index);
             else
             {
                 int lake_index = map.lake_manager.GetLakeIndexAt(pos);
@@ -240,13 +249,14 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public override string ToString()
         {
-            return "set_lake (pos: " + pos.ToString() + ", mode: " + (change_add ? "add" : "remove") + ")";
+            return "set_lake (index: "+lake_index.ToString()+", pos: " + pos.ToString() + ", mode: " + (change_add ? "add" : "remove") + ")";
         }
     }
 
     public class MapOperatorLakeType: IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public int lake_index;
         public int PreOperatorType;
         public int PostOperatorType;
@@ -258,6 +268,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void UpdateMap(SFMap map)
         {
+            map.lake_manager.RebuildLake(map.lake_manager.lakes[lake_index]);
             MainForm.mapedittool.ui.RedrawMinimap();
             MainForm.mapedittool.update_render = true;
         }
@@ -292,14 +303,14 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public override string ToString()
         {
-            return "set_type (lake_id: " + lake_index.ToString();
+            return "set_type (index: " + lake_index.ToString() + ", type: " + PreOperatorType.ToString() + " -> " + PostOperatorType.ToString() + ")";
         }
     }
 
     public class MapOperatorModifyTextureSet : IMapOperator
     {
         public bool Finished { get; set; } = false;
-        public int base_texture_index;
+        public bool ApplyOnPush { get; set; } = false;
         public Dictionary<int, int> PreOperatorTextureIDMap = new Dictionary<int, int>();
         public Dictionary<int, int> PostOperatorTextureIDMap = new Dictionary<int, int>();
 
@@ -331,13 +342,14 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public override string ToString()
         {
-            return "modify_texture_set";
+            return "modify_texture_set (texture count: " + PreOperatorTextureIDMap.Count.ToString() + ")";
         }
     }
 
     public class MapOperatorAddOrRemoveTileType: IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public int tile_index;
         public bool is_adding = true;
 
@@ -376,13 +388,14 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public override string ToString()
         {
-            return (is_adding ? "add_tile" : "remove_tile");
+            return (is_adding ? "add_tile" : "remove_tile") + " (index: " + tile_index.ToString() + ")";
         }
     }
 
     public class MapOperatorTileChangeState: IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public byte tile_index;
         public SFMapTerrainTextureTileData PreOperatorTileState;
         public SFMapTerrainTextureTileData PostOperatorTileState;
@@ -413,19 +426,16 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public override string ToString()
         {
-            return "tile_change_state";
+            return "tile_change_state (index: " + tile_index.ToString() + ", state: " + PreOperatorTileState.ToString() + " -> " + PostOperatorTileState.ToString() + ")";
         }
     }
 
-    public enum MapOperatorEntityType { UNIT = 0, BUILDING = 1, OBJECT = 2, COOPCAMP = 3, BINDSTONE = 4, PORTAL = 5, MONUMENT = 6 }
-
-    public class MapOperatorEntityAddOrRemove : IMapOperator
+    public class MapOperatorUnitAddOrRemove : IMapOperator
     {
         public bool Finished { get; set; } = false;
-        public MapOperatorEntityType type;
-        public int id;
-        public short angle;
-        public SFCoord position;
+        public bool ApplyOnPush { get; set; } = false;
+        public SFMapUnit unit;
+        public int index;
         public bool is_adding;    // true - entityadd, false: entityremove
 
         public void Finish(SFMap map)
@@ -439,271 +449,32 @@ namespace SpellforceDataEditor.SFMap.map_operators
             MainForm.mapedittool.update_render = true;
         }
 
-        public void Add(SFMap map)
+        private void Add(SFMap map)
         {
-            switch (type)
+            map.AddUnit(unit.game_id, unit.grid_position, unit.unknown_flags, unit.npc_id, unit.unknown, unit.group, unit.unknown2, index);
+
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapUnitInspector)
             {
-                case MapOperatorEntityType.UNIT:
-                    map.AddUnit(id, position, 0, 0, 0, 0, 0);
-
-                    if (MainForm.mapedittool.selected_inspector is map_controls.MapUnitInspector)
-                    {
-                        ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).LoadNextUnit();
-                    }
-                    break;
-                case MapOperatorEntityType.BUILDING:
-                    map.AddBuilding(id, position, 0, 0, 1, -1);
-
-                    if (MainForm.mapedittool.selected_inspector is map_controls.MapBuildingInspector)
-                    {
-                        ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).LoadNextBuilding();
-                    }
-                    break;
-                case MapOperatorEntityType.OBJECT:
-                    map.AddObject(id, position, 0, 0, 0);
-
-                    if (MainForm.mapedittool.selected_inspector is map_controls.MapObjectInspector)
-                    {
-                        ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).LoadNextObject();
-                    }
-                    break;
-                case MapOperatorEntityType.COOPCAMP:
-                    map.AddObject(2541, position, 0, 0, 0);
-                    map.metadata.coop_spawns.Add(
-                        new SFMapCoopAISpawn(map.object_manager.objects[map.object_manager.objects.Count - 1], id, 0));
-
-                    // add mesh to the object
-                    SF3D.SceneSynchro.SceneNode obj_node =
-                        map.heightmap.GetChunkNode(position)
-                        .FindNode<SF3D.SceneSynchro.SceneNode>(
-                            map.object_manager.objects[map.object_manager.objects.Count - 1].GetName());
-
-                    string m = "editor_dummy_spawnpoint";
-                    SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name + "_SPAWNCIRCLE");
-
-                    if (MainForm.mapedittool.selected_inspector is map_controls.MapCoopCampInspector)
-                    {
-                        ((map_controls.MapCoopCampInspector)MainForm.mapedittool.selected_inspector).LoadNextCoopCamp();
-                    }
-                    break;
-                case MapOperatorEntityType.BINDSTONE:
-                    map.AddInteractiveObject(769, position, 0, 1);
-                    map.metadata.spawns.Add(new SFMapSpawn());
-                    map.metadata.spawns[map.metadata.spawns.Count - 1].pos = position;
-
-
-                    if (MainForm.mapedittool.selected_inspector is map_controls.MapBindstoneInspector)
-                    {
-                        ((map_controls.MapBindstoneInspector)MainForm.mapedittool.selected_inspector).LoadNextBindstone();
-                    }
-                    break;
-                case MapOperatorEntityType.PORTAL:
-                    map.AddPortal(id, position, 0); 
-                    if (MainForm.mapedittool.selected_inspector is map_controls.MapPortalInspector)
-                    {
-                        ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).LoadNextPortal();
-                    }
-                    break;
-                case MapOperatorEntityType.MONUMENT:
-                    {
-                        byte unk_byte = 1;
-                        if (id == 777)
-                            unk_byte = 5;
-
-                        map.AddInteractiveObject(id, position, 0, unk_byte);
-                        if (MainForm.mapedittool.selected_inspector is map_controls.MapMonumentInspector)
-                        {
-                            ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).LoadNextMonument();
-                        }
-                    }
-                    break;
+                ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).LoadNextUnit(index);
             }
-
-            UpdateMap(map);
         }
 
-        public void Remove(SFMap map)
+        private void Remove(SFMap map)
         {
-            switch (type)
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapUnitInspector)
             {
-                case MapOperatorEntityType.UNIT:
-                    for (int i = 0; i < map.unit_manager.units.Count; i++)
-                        if (map.unit_manager.units[i].grid_position == position)
-                        {
-                            if (MainForm.mapedittool.selected_inspector is map_controls.MapUnitInspector)
-                            {
-                                if (i == ((MapEdit.MapUnitEditor)MainForm.mapedittool.selected_editor).selected_unit)
-                                {
-                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
-                                    MainForm.mapedittool.InspectorSelect(null);
-                                }
+                if (index == ((MapEdit.MapUnitEditor)MainForm.mapedittool.selected_editor).selected_unit)
+                {
+                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
+                    MainForm.mapedittool.InspectorSelect(null);
+                }
 
-                                map.DeleteUnit(i);
+                map.DeleteUnit(index);
 
-                                ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).RemoveUnit(i);
-                            }
-                            else
-                                map.DeleteUnit(i);
-
-                            break;
-                        }
-                    break;
-                case MapOperatorEntityType.BUILDING:
-                    for (int i = 0; i < map.building_manager.buildings.Count; i++)
-                        if (map.building_manager.buildings[i].grid_position == position)
-                        {
-                            if (MainForm.mapedittool.selected_inspector is map_controls.MapBuildingInspector)
-                            {
-                                if (i == ((MapEdit.MapBuildingEditor)MainForm.mapedittool.selected_editor).selected_building)
-                                {
-                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
-                                    MainForm.mapedittool.InspectorSelect(null);
-                                }
-
-                                map.DeleteBuilding(i);
-
-                                ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).RemoveBuilding(i);
-                            }
-                            else
-                                map.DeleteBuilding(i);
-
-                            break;
-                        }
-                    break;
-                case MapOperatorEntityType.OBJECT:
-                    for (int i = 0; i < map.object_manager.objects.Count; i++)
-                        if (map.object_manager.objects[i].grid_position == position)
-                        {
-                            if (MainForm.mapedittool.selected_inspector is map_controls.MapObjectInspector)
-                            {
-                                if (i == ((MapEdit.MapObjectEditor)MainForm.mapedittool.selected_editor).selected_object)
-                                {
-                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
-                                    MainForm.mapedittool.InspectorSelect(null);
-                                }
-
-                                map.DeleteObject(i);
-
-                                ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).RemoveObject(i);
-                            }
-                            else
-                                map.DeleteObject(i);
-
-                            break;
-                        }
-                    break;
-                case MapOperatorEntityType.COOPCAMP:
-                    for (int i = 0; i < map.metadata.coop_spawns.Count; i++)
-                        if (map.metadata.coop_spawns[i].spawn_obj.grid_position == position)
-                        {
-                            if (MainForm.mapedittool.selected_inspector is map_controls.MapCoopCampInspector)
-                            {
-                                if (i == ((MapEdit.MapCoopCampEditor)MainForm.mapedittool.selected_editor).selected_spawn)
-                                {
-                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
-                                    MainForm.mapedittool.InspectorSelect(null);
-                                }
-
-                                map.DeleteObject(map.object_manager.objects.IndexOf(map.metadata.coop_spawns[i].spawn_obj));
-
-                                ((map_controls.MapCoopCampInspector)MainForm.mapedittool.selected_inspector).RemoveCoopCamp(i);
-                                map.metadata.coop_spawns.Remove(map.metadata.coop_spawns[i]);
-                            }
-                            else
-                            {
-                                map.DeleteObject(map.object_manager.objects.IndexOf(map.metadata.coop_spawns[i].spawn_obj));
-
-                                map.metadata.coop_spawns.Remove(map.metadata.coop_spawns[i]);
-                            }
-
-                            break;
-                        }
-                    break;
-                case MapOperatorEntityType.BINDSTONE:
-                    for (int i = 0; i < map.metadata.spawns.Count; i++)
-                        if (map.metadata.spawns[i].pos == position)
-                        {
-                            if (MainForm.mapedittool.selected_inspector is map_controls.MapBindstoneInspector)
-                            {
-                                if (i == ((MapEdit.MapBindstoneEditor)MainForm.mapedittool.selected_editor).selected_bindstone)
-                                {
-                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
-                                    MainForm.mapedittool.InspectorSelect(null);
-                                }
-
-                                // find object to delete
-                                for (int j = 0; j < map.int_object_manager.int_objects.Count; j++)
-                                    if (map.int_object_manager.int_objects[j].grid_position == position)
-                                    {
-                                        map.DeleteInteractiveObject(j);
-                                        break;
-                                    }
-
-                                ((map_controls.MapBindstoneInspector)MainForm.mapedittool.selected_inspector).RemoveBindstone(i);
-                                map.metadata.spawns.RemoveAt(i);
-                            }
-                            else
-                            {
-                                // find object to delete
-                                for (int j = 0; j < map.int_object_manager.int_objects.Count; j++)
-                                    if (map.int_object_manager.int_objects[j].grid_position == position)
-                                    {
-                                        map.DeleteInteractiveObject(j);
-                                        break;
-                                    }
-
-                                map.metadata.spawns.RemoveAt(i);
-                            }
-                            break;
-                        }
-                    break;
-                case MapOperatorEntityType.PORTAL:
-                    for (int i = 0; i < map.portal_manager.portals.Count; i++)
-                        if (map.portal_manager.portals[i].grid_position == position)
-                        {
-                            if (MainForm.mapedittool.selected_inspector is map_controls.MapPortalInspector)
-                            {
-                                if (i == ((MapEdit.MapPortalEditor)MainForm.mapedittool.selected_editor).selected_portal)
-                                {
-                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
-                                    MainForm.mapedittool.InspectorSelect(null);
-                                }
-
-                                map.DeletePortal(i);
-
-                                ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).RemovePortal(i);
-                            }
-                            else
-                                map.DeletePortal(i);
-
-                            break;
-                        }
-                    break;
-                case MapOperatorEntityType.MONUMENT:
-                    for(int i = 0; i < map.int_object_manager.monuments_index.Count; i++)
-                        if(map.int_object_manager.int_objects[map.int_object_manager.monuments_index[i]].grid_position == position)
-                        {
-                            if (MainForm.mapedittool.selected_inspector is map_controls.MapMonumentInspector)
-                            {
-                                if (i == ((MapEdit.MapMonumentEditor)MainForm.mapedittool.selected_editor).selected_monument)
-                                {
-                                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
-                                    MainForm.mapedittool.InspectorSelect(null);
-                                }
-
-                                map.DeleteInteractiveObject(map.int_object_manager.monuments_index[i]);
-
-                                ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).RemoveMonument(i);
-                            }
-                            else
-                                map.DeleteInteractiveObject(map.int_object_manager.monuments_index[i]);
-
-                            break;
-                        }
-                    break;
+                ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).RemoveUnit(index);
             }
-
-            UpdateMap(map);
+            else
+                map.DeleteUnit(index);
         }
 
         public void Apply(SFMap map)
@@ -712,6 +483,8 @@ namespace SpellforceDataEditor.SFMap.map_operators
                 Add(map);
             else
                 Remove(map);
+
+            UpdateMap(map);
         }
 
         public void Revert(SFMap map)
@@ -720,13 +493,486 @@ namespace SpellforceDataEditor.SFMap.map_operators
                 Remove(map);
             else
                 Add(map);
+
+            UpdateMap(map);
         }
 
         public override string ToString()
         {
-            return (is_adding ? "add_entity" : "remove_entity") + " (type: " + type.ToString() + ", id: " + id.ToString() + ", pos: " + position.ToString() + ")";
+            return (is_adding ? "add_unit" : "remove_unit") + " (index: " + index.ToString() + ", id: " + unit.game_id.ToString() + ", pos: " + unit.grid_position.ToString() + ")";
         }
     }
+
+
+    public class MapOperatorBuildingAddOrRemove : IMapOperator
+    {
+        public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
+        public SFMapBuilding building;
+        public int index;
+        public bool is_adding;    // true - entityadd, false: entityremove
+
+        public void Finish(SFMap map)
+        {
+            Finished = true;
+        }
+
+        private void UpdateMap(SFMap map)
+        {
+            MainForm.mapedittool.ui.RedrawMinimapIcons();
+            MainForm.mapedittool.update_render = true;
+        }
+
+        private void Add(SFMap map)
+        {
+            map.AddBuilding(building.game_id, building.grid_position, building.angle, building.npc_id, building.level, building.race_id, index);
+
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapBuildingInspector)
+            {
+                ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).LoadNextBuilding(index);
+            }
+        }
+
+        private void Remove(SFMap map)
+        {
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapBuildingInspector)
+            {
+                if (index == ((MapEdit.MapBuildingEditor)MainForm.mapedittool.selected_editor).selected_building)
+                {
+                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
+                    MainForm.mapedittool.InspectorSelect(null);
+                }
+
+                map.DeleteBuilding(index);
+
+                ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).RemoveBuilding(index);
+            }
+            else
+                map.DeleteBuilding(index);
+        }
+
+        public void Apply(SFMap map)
+        {
+            if (is_adding)
+                Add(map);
+            else
+                Remove(map);
+
+            UpdateMap(map);
+        }
+
+        public void Revert(SFMap map)
+        {
+            if (is_adding)
+                Remove(map);
+            else
+                Add(map);
+
+            UpdateMap(map);
+        }
+
+        public override string ToString()
+        {
+            return (is_adding ? "add_building" : "remove_unit") + " (index: " + index.ToString() + ", id: " + building.game_id.ToString() + ", pos: " + building.grid_position.ToString() + ")";
+        }
+    }
+
+    public class MapOperatorObjectAddOrRemove : IMapOperator
+    {
+        public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
+        public SFMapObject obj;
+        public int index;
+        public bool is_adding;    // true - entityadd, false: entityremove
+
+        public void Finish(SFMap map)
+        {
+            Finished = true;
+        }
+
+        private void UpdateMap(SFMap map)
+        {
+            MainForm.mapedittool.ui.RedrawMinimapIcons();
+            MainForm.mapedittool.update_render = true;
+        }
+
+        private void Add(SFMap map)
+        {
+            map.AddObject(obj.game_id, obj.grid_position, obj.angle, obj.npc_id, obj.unknown1, index);
+
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapObjectInspector)
+            {
+                ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).LoadNextObject(index);
+            }
+        }
+
+        private void Remove(SFMap map)
+        {
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapObjectInspector)
+            {
+                if (index == ((MapEdit.MapObjectEditor)MainForm.mapedittool.selected_editor).selected_object)
+                {
+                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
+                    MainForm.mapedittool.InspectorSelect(null);
+                }
+
+                map.DeleteObject(index);
+
+                ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).RemoveObject(index);
+            }
+            else
+                map.DeleteObject(index);
+        }
+
+        public void Apply(SFMap map)
+        {
+            if (is_adding)
+                Add(map);
+            else
+                Remove(map);
+
+            UpdateMap(map);
+        }
+
+        public void Revert(SFMap map)
+        {
+            if (is_adding)
+                Remove(map);
+            else
+                Add(map);
+
+            UpdateMap(map);
+        }
+
+        public override string ToString()
+        {
+            return (is_adding ? "add_object" : "remove_object") + " (index: " + index.ToString() + ", id: " + obj.game_id.ToString() + ", pos: " + obj.grid_position.ToString() + ")";
+        }
+    }
+
+    public class MapOperatorCoopCampAddOrRemove : IMapOperator
+    {
+        public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
+        public SFCoord position;
+        public int obj_index;
+        public int coopcamp_id;
+        public int coopcamp_unknown;
+        public int coopcamp_index;
+        public bool is_adding;    // true - entityadd, false: entityremove
+
+        public void Finish(SFMap map)
+        {
+            Finished = true;
+        }
+
+        private void UpdateMap(SFMap map)
+        {
+            MainForm.mapedittool.ui.RedrawMinimapIcons();
+            MainForm.mapedittool.update_render = true;
+        }
+
+        private void Add(SFMap map)
+        {
+            map.AddObject(2541, position, 0, 0, 0, obj_index);
+            map.metadata.coop_spawns.Insert(coopcamp_index,
+                new SFMapCoopAISpawn(map.object_manager.objects[obj_index], coopcamp_id, coopcamp_unknown));
+
+            // add mesh to the object
+            SF3D.SceneSynchro.SceneNode obj_node =
+                map.heightmap.GetChunkNode(position)
+                .FindNode<SF3D.SceneSynchro.SceneNode>(
+                    map.object_manager.objects[obj_index].GetName());
+
+            string m = "editor_dummy_spawnpoint";
+            SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name + "_SPAWNCIRCLE");
+
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapCoopCampInspector)
+            {
+                ((map_controls.MapCoopCampInspector)MainForm.mapedittool.selected_inspector).LoadNextCoopCamp(coopcamp_index);
+            }
+        }
+
+        private void Remove(SFMap map)
+        {
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapCoopCampInspector)
+            {
+                if (coopcamp_index == ((MapEdit.MapCoopCampEditor)MainForm.mapedittool.selected_editor).selected_spawn)
+                {
+                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
+                    MainForm.mapedittool.InspectorSelect(null);
+                }
+
+                map.DeleteObject(obj_index);
+
+                ((map_controls.MapCoopCampInspector)MainForm.mapedittool.selected_inspector).RemoveCoopCamp(coopcamp_index);
+                map.metadata.coop_spawns.Remove(map.metadata.coop_spawns[coopcamp_index]);
+            }
+            else
+            {
+                map.DeleteObject(obj_index);
+
+                map.metadata.coop_spawns.Remove(map.metadata.coop_spawns[coopcamp_index]);
+            }
+        }
+
+        public void Apply(SFMap map)
+        {
+            if (is_adding)
+                Add(map);
+            else
+                Remove(map);
+
+            UpdateMap(map);
+        }
+
+        public void Revert(SFMap map)
+        {
+            if (is_adding)
+                Remove(map);
+            else
+                Add(map);
+
+            UpdateMap(map);
+        }
+
+        public override string ToString()
+        {
+            return (is_adding ? "add_coopcamp" : "remove_coopcamp") + " (index: " + coopcamp_index.ToString() + ", id: " + coopcamp_id.ToString() + ", pos: " + position.ToString() + ")";
+        }
+    }
+
+    public class MapOperatorBindstoneAddOrRemove : IMapOperator
+    {
+        public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
+        public int intobj_index;
+        public SFCoord bindstone_pos;
+        public ushort bindstone_textid;
+        public short bindstone_unknown;
+        public int bindstone_index;
+        public int player_index;
+        public bool is_adding;    // true - entityadd, false: entityremove
+
+        public void Finish(SFMap map)
+        {
+            Finished = true;
+        }
+
+        private void UpdateMap(SFMap map)
+        {
+            MainForm.mapedittool.ui.RedrawMinimapIcons();
+            MainForm.mapedittool.update_render = true;
+        }
+
+        private void Add(SFMap map)
+        {
+            map.AddInteractiveObject(769, bindstone_pos, 0, 1, intobj_index);
+            map.metadata.spawns.Insert(player_index, new SFMapSpawn() { bindstone_index = bindstone_index, pos = bindstone_pos, text_id = bindstone_textid, unknown = bindstone_unknown });
+
+
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapBindstoneInspector)
+            {
+                ((map_controls.MapBindstoneInspector)MainForm.mapedittool.selected_inspector).LoadNextBindstone(bindstone_index);
+            }
+        }
+
+        private void Remove(SFMap map)
+        {
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapBindstoneInspector)
+            {
+                if (bindstone_index == ((MapEdit.MapBindstoneEditor)MainForm.mapedittool.selected_editor).selected_bindstone)
+                {
+                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
+                    MainForm.mapedittool.InspectorSelect(null);
+                }
+
+                map.DeleteInteractiveObject(intobj_index);
+
+                ((map_controls.MapBindstoneInspector)MainForm.mapedittool.selected_inspector).RemoveBindstone(bindstone_index);
+                map.metadata.spawns.RemoveAt(player_index);
+            }
+            else
+            {
+                map.DeleteInteractiveObject(intobj_index);
+
+                map.metadata.spawns.RemoveAt(player_index);
+            }
+        }
+
+        public void Apply(SFMap map)
+        {
+            if (is_adding)
+                Add(map);
+            else
+                Remove(map);
+
+            UpdateMap(map);
+        }
+
+        public void Revert(SFMap map)
+        {
+            if (is_adding)
+                Remove(map);
+            else
+                Add(map);
+
+            UpdateMap(map);
+        }
+
+        public override string ToString()
+        {
+            return (is_adding ? "add_bindstone" : "remove_bindstone") + " (index: " + bindstone_index.ToString() + ", id: " + bindstone_textid.ToString() + ", pos: " + bindstone_pos.ToString() + ")";
+        }
+    }
+
+    public class MapOperatorPortalAddOrRemove : IMapOperator
+    {
+        public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
+        public SFMapPortal portal;
+        public int index;
+        public bool is_adding;    // true - entityadd, false: entityremove
+
+        public void Finish(SFMap map)
+        {
+            Finished = true;
+        }
+
+        private void UpdateMap(SFMap map)
+        {
+            MainForm.mapedittool.ui.RedrawMinimapIcons();
+            MainForm.mapedittool.update_render = true;
+        }
+
+        private void Add(SFMap map)
+        {
+            map.AddPortal(portal.game_id, portal.grid_position, portal.angle, index);
+
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapPortalInspector)
+            {
+                ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).LoadNextPortal(index);
+            }
+        }
+
+        private void Remove(SFMap map)
+        {
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapPortalInspector)
+            {
+                if (index == ((MapEdit.MapPortalEditor)MainForm.mapedittool.selected_editor).selected_portal)
+                {
+                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
+                    MainForm.mapedittool.InspectorSelect(null);
+                }
+
+                map.DeletePortal(index);
+
+                ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).RemovePortal(index);
+            }
+            else
+                map.DeletePortal(index);
+        }
+
+        public void Apply(SFMap map)
+        {
+            if (is_adding)
+                Add(map);
+            else
+                Remove(map);
+
+            UpdateMap(map);
+        }
+
+        public void Revert(SFMap map)
+        {
+            if (is_adding)
+                Remove(map);
+            else
+                Add(map);
+
+            UpdateMap(map);
+        }
+
+        public override string ToString()
+        {
+            return (is_adding ? "add_portal" : "remove_portal") + " (index: " + index.ToString() + ", id: " + portal.game_id.ToString() + ", pos: " + portal.grid_position.ToString() + ")";
+        }
+    }
+
+    public class MapOperatorMonumentAddOrRemove : IMapOperator
+    {
+        public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
+        public int intobj_index;
+        public SFMapInteractiveObject intobj;
+        public int monument_index;
+        public bool is_adding;    // true - entityadd, false: entityremove
+
+        public void Finish(SFMap map)
+        {
+            Finished = true;
+        }
+
+        private void UpdateMap(SFMap map)
+        {
+            MainForm.mapedittool.ui.RedrawMinimapIcons();
+            MainForm.mapedittool.update_render = true;
+        }
+
+        private void Add(SFMap map)
+        {
+            map.AddInteractiveObject(intobj.game_id, intobj.grid_position, intobj.angle, intobj.unk_byte, intobj_index);
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapMonumentInspector)
+            {
+                ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).LoadNextMonument(monument_index);
+            }
+        }
+
+        private void Remove(SFMap map)
+        {
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapMonumentInspector)
+            {
+                if (monument_index == ((MapEdit.MapMonumentEditor)MainForm.mapedittool.selected_editor).selected_monument)
+                {
+                    MainForm.mapedittool.selected_editor.Select(Utility.NO_INDEX);
+                    MainForm.mapedittool.InspectorSelect(null);
+                }
+
+                map.DeleteInteractiveObject(intobj_index);
+
+                ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).RemoveMonument(monument_index);
+            }
+            else
+                map.DeleteInteractiveObject(intobj_index);
+        }
+
+        public void Apply(SFMap map)
+        {
+            if (is_adding)
+                Add(map);
+            else
+                Remove(map);
+
+            UpdateMap(map);
+        }
+
+        public void Revert(SFMap map)
+        {
+            if (is_adding)
+                Remove(map);
+            else
+                Add(map);
+
+            UpdateMap(map);
+        }
+
+        public override string ToString()
+        {
+            return (is_adding ? "add_monument" : "remove_monument") + " (index: " + monument_index.ToString() + ", id: " + (intobj.game_id-771).ToString() + ", pos: " + intobj.grid_position.ToString() + ")";
+        }
+    }
+
+    public enum MapOperatorEntityType { UNIT = 0, BUILDING = 1, OBJECT = 2, COOPCAMP = 3, BINDSTONE = 4, PORTAL = 5, MONUMENT = 6 }
 
     public enum MapOperatorEntityProperty
     { 
@@ -738,6 +984,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
     public class MapOperatorEntityChangeProperty: IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public MapOperatorEntityType type;
         public int index;
         public MapOperatorEntityProperty property;
@@ -871,25 +1118,19 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     }
                 case MapOperatorEntityType.BINDSTONE:
                     {
-                        SFMapInteractiveObject int_obj = null;
-                        int int_obj_index = Utility.NO_INDEX;
-                        for(int i = 0; i < map.int_object_manager.int_objects.Count; i++)
-                            if(map.int_object_manager.int_objects[i].grid_position == map.metadata.spawns[index].pos)
-                            {
-                                int_obj = map.int_object_manager.int_objects[i];
-                                int_obj_index = i;
-                                break;
-                            }
+                        SFMapInteractiveObject int_obj = map.int_object_manager.int_objects[map.int_object_manager.bindstones_index[index]];
+                        int int_obj_index = map.int_object_manager.bindstones_index[index];
+                        int player = map.metadata.FindPlayerByBindstoneIndex(index);
 
                         switch (property)
                         {
                             case MapOperatorEntityProperty.ID:   // text id
-                                map.metadata.spawns[index].text_id = (ushort)(int)prop;
+                                map.metadata.spawns[player].text_id = (ushort)(int)prop;
                                 break;
                             case MapOperatorEntityProperty.POSITION:
                                 if(int_obj_index != Utility.NO_INDEX)
                                     map.MoveInteractiveObject(int_obj_index, (SFCoord)prop);
-                                map.metadata.spawns[index].pos = (SFCoord)prop;
+                                map.metadata.spawns[player].pos = (SFCoord)prop;
                                 break;
                             case MapOperatorEntityProperty.ANGLE:
                                 if (int_obj_index != Utility.NO_INDEX)
@@ -899,7 +1140,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
                                 }
                                 break;
                             case MapOperatorEntityProperty.BINDSTONEUNKNOWN:
-                                map.metadata.spawns[index].unknown = (short)(int)prop;
+                                map.metadata.spawns[player].unknown = (short)(int)prop;
                                 break;
                             default:
                                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "MapOperatorEntityChangeProperty.ChangeProperty(): Invalid property " + property.ToString() + " for entity of type " + type.ToString());
@@ -930,15 +1171,8 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     }
                 case MapOperatorEntityType.MONUMENT:
                     {
-                        SFMapInteractiveObject int_obj = null;
-                        int int_obj_index = Utility.NO_INDEX;
-                        for (int i = 0; i < map.int_object_manager.int_objects.Count; i++)
-                            if (map.int_object_manager.int_objects[i].grid_position == map.metadata.spawns[index].pos)
-                            {
-                                int_obj = map.int_object_manager.int_objects[i];
-                                int_obj_index = i;
-                                break;
-                            }
+                        SFMapInteractiveObject int_obj = map.int_object_manager.int_objects[map.int_object_manager.monuments_index[index]];
+                        int int_obj_index = map.int_object_manager.monuments_index[index];
 
                         switch (property)
                         {
@@ -977,13 +1211,15 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public override string ToString()
         {
-            return "change_entity_property (type = " + type.ToString() + ", property = " + property.ToString() + ", index = " + index.ToString() + ")";
+            return "change_entity_property (type = " + type.ToString() + ", property = " + property.ToString() + ", index = " + index.ToString()
+                + ", value: " + PreChangeProperty.ToString() + " -> " + PostChangeProperty.ToString() + ")";
         }
     }
 
     public class MapOperatorDecorationPaint: IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public Dictionary<SFCoord, byte> PreOperatorDecals = new Dictionary<SFCoord, byte>();
         public Dictionary<SFCoord, byte> PostOperatorDecals = new Dictionary<SFCoord, byte>();
 
@@ -1022,6 +1258,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
     public class MapOperatorDecorationModifyGroup: IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public int group = -1;
         public int index = -1;
         public ushort PreOperatorID;
@@ -1054,13 +1291,15 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public override string ToString()
         {
-            return "modify_decal_group (index: " + index.ToString() + ")";
+            return "modify_decal_group (group: " + group.ToString() + ", index: " + index.ToString() + ", id: " + PreOperatorID.ToString() + " -> " + PostOperatorID.ToString()
+                + ", weight: " + PreOperatorWeight.ToString() + " -> " + PostOperatorWeight.ToString() + ")";
         }
     }
 
     public class MapOperatorChangeMapType: IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public SFMapType PreOperatorMapType;
         public SFMapType PostOperatorMapType;
 
@@ -1081,13 +1320,14 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public override string ToString()
         {
-            return "set_map_type";
+            return "set_map_type (type: " + PreOperatorMapType.ToString() + " -> " + PostOperatorMapType.ToString() + ")";
         }
     }
 
     public class MapOperatorMultiplayerAddOrRemoveTeamComp: IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public SFMapMultiplayerTeamComposition team_comp = null;
         public bool is_adding = true;
 
@@ -1131,13 +1371,14 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public override string ToString()
         {
-            return (is_adding ? "add_teamcomp" : "remove_teamcomp");
+            return (is_adding ? "add_teamcomp" : "remove_teamcomp") + " (teamcomp size: " + team_comp.team_count.ToString() + ")";
         }
     }
 
     public class MapOperatorMultiplayerMovePlayer: IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public int player_index;
         public int comp_index;
         public SFMapTeamPlayer player;
@@ -1157,7 +1398,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public void RemovePlayer(SFMap map, int teamcomp_index, int team_index, int teamplayer_index)
         {
-            map.metadata.multi_teams[teamplayer_index].players[team_index].RemoveAt(teamplayer_index);
+            map.metadata.multi_teams[teamcomp_index].players[team_index].RemoveAt(teamplayer_index);
             MainForm.mapedittool.external_operator_RemoveTeamMember(teamplayer_index);
         }
 
@@ -1179,7 +1420,8 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public override string ToString()
         {
-            return "team_move_player";
+            return "team_move_player (comp_index: " + comp_index.ToString() + ", team: "
+                + PreOperatorPlayerTeam.ToString() + " -> " + PostOperatorPlayerTeam.ToString() + ", player index: " + player_index.ToString() + ")";
         }
     }
 
@@ -1187,6 +1429,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
     public class MapOperatorMultiplayerSetPlayerState: IMapOperator
     {
         public bool Finished { get; set; } = false;
+        public bool ApplyOnPush { get; set; } = false;
         public int player_index;
         public int team_index;
         public int comp_index;
@@ -1234,7 +1477,9 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public override string ToString()
         {
-            return "player_set_state";
+            return "player_set_state (comp_index: " + comp_index.ToString()
+                + ", team: " + team_index.ToString() + ", player index: " + player_index.ToString() + ", state_type: " + state_type.ToString()
+                + ", state: " + PreOperatorState.ToString() + " -> " + PostOperatorState.ToString() + ")";
         }
     }
 }

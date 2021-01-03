@@ -81,7 +81,7 @@
             this.LakeTypeIce.TabStop = true;
             this.LakeTypeIce.Text = "Ice";
             this.LakeTypeIce.UseVisualStyleBackColor = true;
-            this.LakeTypeIce.CheckedChanged += new System.EventHandler(this.LakeTypeIce_CheckedChanged);
+            this.LakeTypeIce.Click += new System.EventHandler(this.LakeTypeIce_Click);
             // 
             // LakeTypeSwamp
             // 
@@ -93,7 +93,7 @@
             this.LakeTypeSwamp.TabStop = true;
             this.LakeTypeSwamp.Text = "Swamp";
             this.LakeTypeSwamp.UseVisualStyleBackColor = true;
-            this.LakeTypeSwamp.CheckedChanged += new System.EventHandler(this.LakeTypeSwamp_CheckedChanged);
+            this.LakeTypeSwamp.Click += new System.EventHandler(this.LakeTypeSwamp_Click);
             // 
             // LakeTypeLava
             // 
@@ -105,7 +105,7 @@
             this.LakeTypeLava.TabStop = true;
             this.LakeTypeLava.Text = "Lava";
             this.LakeTypeLava.UseVisualStyleBackColor = true;
-            this.LakeTypeLava.CheckedChanged += new System.EventHandler(this.LakeTypeLava_CheckedChanged);
+            this.LakeTypeLava.Click += new System.EventHandler(this.LakeTypeLava_Click);
             // 
             // LakeTypeWater
             // 
@@ -117,7 +117,7 @@
             this.LakeTypeWater.TabStop = true;
             this.LakeTypeWater.Text = "Water";
             this.LakeTypeWater.UseVisualStyleBackColor = true;
-            this.LakeTypeWater.CheckedChanged += new System.EventHandler(this.LakeTypeWater_CheckedChanged);
+            this.LakeTypeWater.Click += new System.EventHandler(this.LakeTypeWater_Click);
             // 
             // label2
             // 

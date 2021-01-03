@@ -63,17 +63,17 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         // undo/redo
                         previous_pos = pos;
 
-                        ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).LoadNextBuilding();
+                        ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).LoadNextBuilding(map.building_manager.buildings.Count - 1);
                         Select(map.building_manager.buildings.Count - 1);
-                        MainForm.mapedittool.InspectorSelect(map.building_manager.buildings[selected_building]);
+                        MainForm.mapedittool.InspectorSelect(map.building_manager.buildings[map.building_manager.buildings.Count - 1]);
 
                         first_click = true;
 
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
 
                         // undo/redo
-                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
-                        { type = map_operators.MapOperatorEntityType.BUILDING, id = new_building_id, position = pos, is_adding = true });
+                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorBuildingAddOrRemove()
+                        { building = map.building_manager.buildings[map.building_manager.buildings.Count - 1], index = map.building_manager.buildings.Count - 1, is_adding = true });
                     }
 
                     // undo/redo
@@ -122,11 +122,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         MainForm.mapedittool.InspectorSelect(null);
 
                     // undo/redo
-                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
+                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorBuildingAddOrRemove()
                     { 
-                        type = map_operators.MapOperatorEntityType.BUILDING, 
-                        id = map.building_manager.buildings[building_map_index].game_id, 
-                        position = map.building_manager.buildings[building_map_index].grid_position,
+                        building = map.building_manager.buildings[building_map_index],
+                        index = building_map_index,
                         is_adding = false
                     });
 

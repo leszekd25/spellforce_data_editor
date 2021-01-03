@@ -16,6 +16,7 @@ namespace SpellforceDataEditor.SFMap
 
     public class SFMapSpawn
     {
+        public int bindstone_index;
         public SFCoord pos;
         public ushort text_id;
         public short unknown;
@@ -116,17 +117,8 @@ namespace SpellforceDataEditor.SFMap
             }
         }
 
-        public int GetPlayerBySpawnPos(SFCoord pos)
+        public int CreateNewPlayer(SFCoord pos)
         {
-            if (spawns == null)
-                spawns = new List<SFMapSpawn>();
-
-            for (int i = 0; i < spawns.Count; i++)
-                if (pos == spawns[i].pos)
-                    return i;
-
-            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapMetaData.GetPlayerBySpawnPos(): Spawn not found at position "+pos.ToString()+", creating new spawn");
-
             spawns.Add(new SFMapSpawn());
             spawns[spawns.Count - 1].pos = pos;
             return spawns.Count - 1;
@@ -141,8 +133,21 @@ namespace SpellforceDataEditor.SFMap
                 if (pos == spawns[i].pos)
                     return i;
 
-            return -1;
+            return Utility.NO_INDEX;
         }
+
+        public int FindPlayerByBindstoneIndex(int index)
+        {
+            if (spawns == null)
+                spawns = new List<SFMapSpawn>();
+
+            for (int i = 0; i < spawns.Count; i++)
+                if (index == spawns[i].bindstone_index)
+                    return i;
+
+            return Utility.NO_INDEX;
+        }
+
 
         public bool GetCoopAISpawnByObject(SFMapObject o, ref SFMapCoopAISpawn sp)
         {

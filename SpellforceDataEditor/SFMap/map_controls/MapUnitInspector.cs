@@ -28,7 +28,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             ListUnits.Items.Clear();
             for (int i = 0; i < map.unit_manager.units.Count; i++)
-                LoadNextUnit();
+                LoadNextUnit(i);
         }
 
         private void ShowList()
@@ -67,14 +67,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
             ListUnits.Items.RemoveAt(index);
         }
 
-        public void LoadNextUnit()
+        public void LoadNextUnit(int index)
         {
-            if (ListUnits.Items.Count >= map.unit_manager.units.Count)
-                return;
-
-            string unit_name = SFCFF.SFCategoryManager.GetUnitName((ushort)map.unit_manager.units[ListUnits.Items.Count].game_id, true);
-            unit_name += " " + map.unit_manager.units[ListUnits.Items.Count].grid_position.ToString();
-            ListUnits.Items.Add(unit_name);
+            string unit_name = SFCFF.SFCategoryManager.GetUnitName((ushort)map.unit_manager.units[index].game_id, true);
+            unit_name += " " + map.unit_manager.units[index].grid_position.ToString();
+            ListUnits.Items.Insert(index, unit_name);
         }
 
         private void MapUnitInspector_Resize(object sender, EventArgs e)

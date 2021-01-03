@@ -78,7 +78,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         // undo/redo
                         previous_pos = pos;
 
-                        ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).LoadNextMonument();
+                        ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).LoadNextMonument(map.int_object_manager.monuments_index.Count - 1);
                         Select(map.int_object_manager.monuments_index.Count - 1);
                         MainForm.mapedittool.InspectorSelect(
                             map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]);
@@ -86,8 +86,13 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
 
                         // undo/redo
-                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
-                        { type = map_operators.MapOperatorEntityType.MONUMENT, id = new_object_id, position = pos, is_adding = true });
+                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorMonumentAddOrRemove()
+                        {
+                            intobj = map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1],
+                            intobj_index = map.int_object_manager.int_objects.Count - 1,
+                            monument_index = map.int_object_manager.monuments_index.Count - 1,
+                            is_adding = true
+                        });
                     }
 
                     // undo/redo
@@ -96,7 +101,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         op_change_pos = new map_operators.MapOperatorEntityChangeProperty()
                         {
                             type = map_operators.MapOperatorEntityType.MONUMENT,
-                            index = monument_index,
+                            index = selected_monument,
                             property = map_operators.MapOperatorEntityProperty.POSITION,
                             PreChangeProperty = previous_pos
                         };
@@ -133,11 +138,11 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
 
                     // undo/redo
-                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
+                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorMonumentAddOrRemove()
                     {
-                        type = map_operators.MapOperatorEntityType.MONUMENT,
-                        id = map.int_object_manager.int_objects[intobj_index].game_id,
-                        position = map.int_object_manager.int_objects[intobj_index].grid_position,
+                        intobj = map.int_object_manager.int_objects[intobj_index],
+                        intobj_index = intobj_index,
+                        monument_index = monument_index,
                         is_adding = false
                     });
 

@@ -62,15 +62,15 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         // undo/redo
                         previous_pos = pos;
 
-                        ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).LoadNextPortal();
+                        ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).LoadNextPortal(map.portal_manager.portals.Count - 1);
                         Select(map.portal_manager.portals.Count - 1); 
                         MainForm.mapedittool.InspectorSelect(map.portal_manager.portals[selected_portal]);
 
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
 
                         // undo/redo
-                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
-                        { type = map_operators.MapOperatorEntityType.PORTAL, id = 0, position = pos, is_adding = true });
+                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorPortalAddOrRemove()
+                        { portal = map.portal_manager.portals[map.portal_manager.portals.Count - 1], index = map.portal_manager.portals.Count - 1, is_adding = true });
                     }
 
                     // undo/redo
@@ -122,11 +122,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
 
                     // undo/redo
-                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
+                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorPortalAddOrRemove()
                     {
-                        type = map_operators.MapOperatorEntityType.PORTAL,
-                        id = map.portal_manager.portals[portal_map_index].game_id,
-                        position = map.portal_manager.portals[portal_map_index].grid_position,
+                        portal = map.portal_manager.portals[portal_map_index],
+                        index  = portal_map_index,
                         is_adding = false
                     });
 

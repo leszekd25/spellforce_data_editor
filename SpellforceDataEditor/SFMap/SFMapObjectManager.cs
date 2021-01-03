@@ -29,14 +29,17 @@ namespace SpellforceDataEditor.SFMap
         public List<SFMapObject> objects { get; private set; } = new List<SFMapObject>();
         public SFMap map = null;
 
-        public SFMapObject AddObject(int id, SFCoord position, int angle, int unk1)
+        public SFMapObject AddObject(int id, SFCoord position, int angle, int unk1, int index)
         {
             SFMapObject obj = new SFMapObject();
             obj.grid_position = position;
             obj.game_id = id;
             obj.angle = angle;
             obj.unknown1 = unk1;
-            objects.Add(obj);
+
+            if (index == -1)
+                index = objects.Count;
+            objects.Insert(index, obj);
 
             string obj_name = obj.GetName();
 

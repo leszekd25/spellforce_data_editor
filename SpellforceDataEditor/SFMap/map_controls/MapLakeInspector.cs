@@ -47,8 +47,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 selected_lake = null;
         }
 
-        private void LakeTypeWater_CheckedChanged(object sender, EventArgs e)
+        private void LakeTypeWater_Click(object sender, EventArgs e)
         {
+            if (selected_lake.type == 0)
+                return;
+
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorLakeType()
             {
                 lake_index = map.lake_manager.GetLakeIndexAt(selected_lake.start),
@@ -56,12 +59,15 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PostOperatorType = 0
             });
             selected_lake.type = 0;
-            map.lake_manager.UpdateLake(selected_lake);
+            map.lake_manager.RebuildLake(selected_lake);
             MainForm.mapedittool.update_render = true;
         }
 
-        private void LakeTypeSwamp_CheckedChanged(object sender, EventArgs e)
+        private void LakeTypeSwamp_Click(object sender, EventArgs e)
         {
+            if (selected_lake.type == 1)
+                return;
+
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorLakeType()
             {
                 lake_index = map.lake_manager.GetLakeIndexAt(selected_lake.start),
@@ -69,12 +75,15 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PostOperatorType = 1
             });
             selected_lake.type = 1;
-            map.lake_manager.UpdateLake(selected_lake);
+            map.lake_manager.RebuildLake(selected_lake);
             MainForm.mapedittool.update_render = true;
         }
 
-        private void LakeTypeLava_CheckedChanged(object sender, EventArgs e)
+        private void LakeTypeLava_Click(object sender, EventArgs e)
         {
+            if (selected_lake.type == 2)
+                return;
+
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorLakeType()
             {
                 lake_index = map.lake_manager.GetLakeIndexAt(selected_lake.start),
@@ -82,12 +91,15 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PostOperatorType = 2
             });
             selected_lake.type = 2;
-            map.lake_manager.UpdateLake(selected_lake);
+            map.lake_manager.RebuildLake(selected_lake);
             MainForm.mapedittool.update_render = true;
         }
 
-        private void LakeTypeIce_CheckedChanged(object sender, EventArgs e)
+        private void LakeTypeIce_Click(object sender, EventArgs e)
         {
+            if (selected_lake.type == 3)
+                return;
+
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorLakeType()
             {
                 lake_index = map.lake_manager.GetLakeIndexAt(selected_lake.start),
@@ -95,7 +107,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PostOperatorType = 3
             });
             selected_lake.type = 3;
-            map.lake_manager.UpdateLake(selected_lake);
+            map.lake_manager.RebuildLake(selected_lake);
             MainForm.mapedittool.update_render = true;
         }
     }

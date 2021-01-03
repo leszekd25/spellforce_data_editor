@@ -102,7 +102,7 @@
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(70, 13);
             this.labelVersion.TabIndex = 6;
-            this.labelVersion.Text = "15.09.2020.1";
+            this.labelVersion.Text = "03.01.2021.1";
             // 
             // linkEditor
             // 

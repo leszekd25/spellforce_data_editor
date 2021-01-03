@@ -14,6 +14,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         bool portal_selected_from_list = true;
 
         bool trackbar_clicked = false;
+        int trackbar_initial_angle = -1;
 
         public MapPortalInspector()
         {
@@ -28,8 +29,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ReloadList()
         {
-            foreach (SFMapPortal portal in map.portal_manager.portals)
-                ListPortals.Items.Add(GetPortalString(portal));
+            for (int i = 0; i < map.portal_manager.portals.Count; i++)
+                LoadNextPortal(i);
         }
 
         private string GetPortalString(SFMapPortal portal)
@@ -72,14 +73,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
             ListPortals.Items.RemoveAt(index);
         }
 
-        public void LoadNextPortal()
+        public void LoadNextPortal(int index)
         {
-            if (ListPortals.Items.Count >= map.portal_manager.portals.Count)
-                return;
+            SFMapPortal portal = map.portal_manager.portals[index];
 
-            SFMapPortal portal = map.portal_manager.portals[ListPortals.Items.Count];
-
-            ListPortals.Items.Add(GetPortalString(portal));
+            ListPortals.Items.Insert(index, GetPortalString(portal));
         }
 
         private void HideList()
@@ -182,7 +180,16 @@ namespace SpellforceDataEditor.SFMap.map_controls
         // this is to make sure the undo/redo queue only receives the latest angle changed as an action to perform
         private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
         {
+            if (ListPortals.SelectedIndex == Utility.NO_INDEX)
+                return;
+
             trackbar_clicked = true;
+
+            if (trackbar_initial_angle == -1)
+            {
+                SFMapPortal portal = map.portal_manager.portals[ListPortals.SelectedIndex];
+                trackbar_initial_angle = portal.angle;
+            }
         }
 
         private void AngleTrackbar_MouseUp(object sender, MouseEventArgs e)
@@ -190,15 +197,13 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (!trackbar_clicked)
                 return;
 
-            SFMapPortal portal = map.portal_manager.portals[ListPortals.SelectedIndex];
-
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
             {
                 type = map_operators.MapOperatorEntityType.PORTAL,
                 index = ListPortals.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.ANGLE,
-                PreChangeProperty = portal.angle,
+                PreChangeProperty = trackbar_initial_angle,
                 PostChangeProperty = AngleTrackbar.Value
             });
 

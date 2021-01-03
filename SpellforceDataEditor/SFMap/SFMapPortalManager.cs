@@ -27,13 +27,16 @@ namespace SpellforceDataEditor.SFMap
         public List<SFMapPortal> portals { get; private set; } = new List<SFMapPortal>();
         public SFMap map = null;
 
-        public SFMapPortal AddPortal(int id, SFCoord position, int angle)
+        public SFMapPortal AddPortal(int id, SFCoord position, int angle, int index)
         {
             SFMapPortal ptl = new SFMapPortal();
             ptl.grid_position = position;
             ptl.game_id = id;
             ptl.angle = angle;
-            portals.Add(ptl);
+
+            if (index == -1)
+                index = portals.Count;
+            portals.Insert(index, ptl);
 
             string ptl_name = ptl.GetName();
 

@@ -78,13 +78,20 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         string m = "editor_dummy_spawnpoint";
                         SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name + "_SPAWNCIRCLE");
 
-                        ((map_controls.MapCoopCampInspector)MainForm.mapedittool.selected_inspector).LoadNextCoopCamp();
+                        ((map_controls.MapCoopCampInspector)MainForm.mapedittool.selected_inspector).LoadNextCoopCamp(map.metadata.coop_spawns.Count - 1);
                         Select(map.metadata.coop_spawns.Count - 1);
                         MainForm.mapedittool.InspectorSelect(map.metadata.coop_spawns[selected_spawn]);
 
                         // undo/redo
-                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
-                        { type = map_operators.MapOperatorEntityType.COOPCAMP, id = 0, position = pos, is_adding = true });
+                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorCoopCampAddOrRemove()
+                        {
+                            coopcamp_id = 0,
+                            coopcamp_unknown = 0,
+                            coopcamp_index = map.metadata.coop_spawns.Count - 1,
+                            obj_index = map.object_manager.objects.Count - 1,
+                            position = pos,
+                            is_adding = true
+                        });
                     }
 
 
@@ -143,10 +150,12 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }    
 
                     // undo/redo
-                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
+                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorCoopCampAddOrRemove()
                     {
-                        type = map_operators.MapOperatorEntityType.COOPCAMP,
-                        id = spawn.spawn_id,
+                        coopcamp_id = spawn.spawn_id,
+                        coopcamp_unknown = spawn.spawn_certain,
+                        coopcamp_index = map.metadata.coop_spawns.IndexOf(spawn),
+                        obj_index = object_map_index,
                         position = obj.grid_position,
                         is_adding = false
                     });

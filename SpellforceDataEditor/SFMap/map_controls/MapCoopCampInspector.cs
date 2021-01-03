@@ -27,11 +27,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void ReloadList()
         {
             ListCoopCamps.Items.Clear();
-            if (map.metadata.coop_spawns == null)
-                return;
-
-            foreach (SFMapCoopAISpawn spawn in map.metadata.coop_spawns)
-                ListCoopCamps.Items.Add(GetCoopSpawnString(spawn));
+            for (int i = 0; i < map.metadata.coop_spawns.Count; i++)
+                LoadNextCoopCamp(i);
         }
 
         private string GetCoopSpawnString(SFMapCoopAISpawn spawn)
@@ -67,19 +64,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
             ListCoopCamps.Items.RemoveAt(index);
         }
 
-        public void LoadNextCoopCamp()
+        public void LoadNextCoopCamp(int index)
         {
-            if (ListCoopCamps.Items.Count >= map.metadata.coop_spawns.Count)
-                return;
-
-            SFMapCoopAISpawn spawn = map.metadata.coop_spawns[ListCoopCamps.Items.Count];
-            string ret = "";
-            if (SFLua.SFLuaEnvironment.coop_spawns.coop_spawn_types != null)
-                if (SFLua.SFLuaEnvironment.coop_spawns.coop_spawn_types.ContainsKey(spawn.spawn_id))
-                    ret += SFLua.SFLuaEnvironment.coop_spawns.coop_spawn_types[spawn.spawn_id].name + " ";
-            ret += spawn.spawn_obj.grid_position.ToString();
-
-            ListCoopCamps.Items.Add(ret);
+            ListCoopCamps.Items.Insert(index, GetCoopSpawnString(map.metadata.coop_spawns[index]));
         }
 
         private void HideList()

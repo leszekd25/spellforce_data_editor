@@ -169,7 +169,7 @@ namespace SpellforceDataEditor.SFMap
             return true;
         }
 
-        public SFMapBuilding AddBuilding(int id, SFCoord position, int angle, int npc_id, int level, int race_id)
+        public SFMapBuilding AddBuilding(int id, SFCoord position, int angle, int npc_id, int level, int race_id, int index)
         {
             AddBuildingCollisionBoundary(id);
             HashSet<SFCoord> pot_cells_taken = new HashSet<SFCoord>();
@@ -194,7 +194,10 @@ namespace SpellforceDataEditor.SFMap
                 int bld_id = SFCFF.SFCategoryManager.gamedata[23].GetElementIndex(id);
                 bld.race_id = (byte)SFCFF.SFCategoryManager.gamedata[23][bld_id][1];
             }
-            buildings.Add(bld);
+
+            if (index == -1)
+                index = buildings.Count;
+            buildings.Insert(index, bld);
 
             // todo: this is broken and MUST be fixed
             /*foreach (SFCoord p in pot_cells_taken)

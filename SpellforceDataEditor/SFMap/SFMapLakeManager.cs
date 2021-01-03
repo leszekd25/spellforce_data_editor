@@ -53,31 +53,43 @@ namespace SpellforceDataEditor.SFMap
         public List<SFMapLake> lakes { get; private set; } = new List<SFMapLake>();
         public SFMap map = null;
 
-        public SFMapLake AddLake(SFCoord start, short z_diff, int type)
+        // ugly 4th parameter to make undo/redo work
+        public SFMapLake AddLake(SFCoord start, short z_diff, int type, int lake_index = -1)
         {
+            if (lake_index == -1)
+                lake_index = lakes.Count;
+
             ushort lake_level = (ushort)(map.heightmap.GetZ(start) + z_diff);
 
+            // shift lakes forward by one, to preserve lake ordering
+            for (int i = 0; i < map.width * map.height; i++)
+                if (map.heightmap.lake_data[i] >= lake_index + 1)
+                    map.heightmap.lake_data[i] += 1;
+
             SFMapLake lake = new SFMapLake();
-            lakes.Add(lake);
+            lakes.Insert(lake_index, lake);
             lake.start = start;
             lake.z_diff = z_diff;
             lake.type = type;
 
-            if ((MainForm.mapedittool != null) && (MainForm.mapedittool.op_queue != null) && (MainForm.mapedittool.op_queue.IsClusterOpen())) 
-            {
-                map_operators.MapOperatorLake op_lake = new map_operators.MapOperatorLake() { pos = start, z_diff = z_diff, type = type, change_add = true };
-                MainForm.mapedittool.op_queue.Push(op_lake);
-            }
-
             UpdateLake(lake);
 
-            if(lake.cells.Count == 0)
+            if (lake.cells.Count == 0)
             {
                 RemoveLake(lake);
                 return null;
             }
-            else
+            /*else
+            {
+                lake_index = lakes.IndexOf(lake);
+                if ((MainForm.mapedittool != null) && (MainForm.mapedittool.op_queue != null) && (MainForm.mapedittool.op_queue.IsClusterOpen()))
+                {
+                    map_operators.MapOperatorLake op_lake = new map_operators.MapOperatorLake() { pos = start, z_diff = z_diff, type = type, lake_index = lake_index, change_add = true };
+                    MainForm.mapedittool.op_queue.Push(op_lake);
+                }
                 return lake;
+            }*/
+            return lake;
         }
 
         public int GetLakeIndexAt(SFCoord pos)
@@ -97,20 +109,19 @@ namespace SpellforceDataEditor.SFMap
             foreach (SFCoord p in lake.cells)
                 map.heightmap.lake_data[p.y * map.width + p.x] = 0;
 
+            // shift lakes back by one, to preserve lake ordering
             for (int i = 0; i < map.width * map.height; i++)
                 if (map.heightmap.lake_data[i] > lake_index + 1)
                     map.heightmap.lake_data[i] -= 1;
 
-            if ((MainForm.mapedittool != null) && (MainForm.mapedittool.op_queue != null) && (MainForm.mapedittool.op_queue.IsClusterOpen()))
+            if ((lake.cells.Count > 0) && (MainForm.mapedittool != null) && (MainForm.mapedittool.op_queue != null) && (MainForm.mapedittool.op_queue.IsClusterOpen()))
             {
-                map_operators.MapOperatorLake op_lake = new map_operators.MapOperatorLake() { pos = lake.start, z_diff = lake.z_diff, type = lake.type, change_add = false };
+                map_operators.MapOperatorLake op_lake = new map_operators.MapOperatorLake() { pos = lake.start, z_diff = lake.z_diff, type = lake.type, lake_index = lake_index, change_add = false };
                 MainForm.mapedittool.op_queue.Push(op_lake);
             }
             lakes.Remove(lake);
-            
-            var map_nodes = map.heightmap.GetAreaMapNodes(lake.cells);
-            foreach (var node in map_nodes)
-                node.MapChunk.RebuildLake();
+
+            RebuildLake(lake);
         }
 
         public string GetLakeTextureName(int type)
@@ -177,6 +188,12 @@ namespace SpellforceDataEditor.SFMap
             foreach (SFCoord p in lake.cells)
                 map.heightmap.lake_data[p.y * map.width + p.x] = (byte)(lake_index+1);
 
+            RebuildLake(lake);
+        }
+
+        // updates all heightmap nodes (rebuilds lake mesh for each of those)
+        public void RebuildLake(SFMapLake lake)
+        {
             var map_nodes = map.heightmap.GetAreaMapNodes(lake.cells);
             foreach (var node in map_nodes)
                 node.MapChunk.RebuildLake();

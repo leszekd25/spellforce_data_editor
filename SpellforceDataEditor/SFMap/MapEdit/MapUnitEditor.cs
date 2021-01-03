@@ -62,15 +62,15 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         // undo/redo
                         previous_pos = pos;
 
-                        ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).LoadNextUnit();
+                        ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).LoadNextUnit(map.unit_manager.units.Count - 1);
                         Select(map.unit_manager.units.Count - 1);
-                        MainForm.mapedittool.InspectorSelect(map.unit_manager.units[selected_unit]);
+                        MainForm.mapedittool.InspectorSelect(map.unit_manager.units[map.unit_manager.units.Count - 1]);
 
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
 
                         // undo/redo
-                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
-                        { type = map_operators.MapOperatorEntityType.UNIT, id = new_unit_id, position = pos, is_adding = true });
+                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorUnitAddOrRemove
+                        { unit = map.unit_manager.units[map.unit_manager.units.Count-1], index = map.unit_manager.units.Count - 1, is_adding = true });
                     }
 
                     // undo/redo
@@ -123,8 +123,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
 
                     // undo/redo
-                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
-                    { type = map_operators.MapOperatorEntityType.UNIT, id = map.unit_manager.units[unit_map_index].game_id, position = map.unit_manager.units[unit_map_index].grid_position, is_adding = false });
+                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorUnitAddOrRemove
+                    { unit = map.unit_manager.units[unit_map_index], index = unit_map_index, is_adding = false });
 
                     map.DeleteUnit(unit_map_index);
                     ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).RemoveUnit(unit_map_index);

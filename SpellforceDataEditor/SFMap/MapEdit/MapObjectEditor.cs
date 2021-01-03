@@ -63,7 +63,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         // undo/redo
                         previous_pos = pos;
 
-                        ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).LoadNextObject();
+                        ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).LoadNextObject(map.object_manager.objects.Count - 1);
                         Select(map.object_manager.objects.Count - 1);
 
                         special_forms.MapEditorForm.AngleInfo angle_info = MainForm.mapedittool.GetAngleInfo();
@@ -80,8 +80,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                         // undo/redo
                         MainForm.mapedittool.op_queue.OpenCluster();
-                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
-                        { type = map_operators.MapOperatorEntityType.OBJECT, id = new_object_id, position = pos, is_adding = true });
+                        MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorObjectAddOrRemove()
+                        { obj = map.object_manager.objects[selected_object], index = selected_object, is_adding = true });
                         MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
                         { type = map_operators.MapOperatorEntityType.OBJECT, index = selected_object, property = map_operators.MapOperatorEntityProperty.ANGLE, PreChangeProperty = 0, PostChangeProperty = (int)angle });
                         MainForm.mapedittool.op_queue.CloseCluster();
@@ -137,11 +137,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
 
                         // undo/redo
-                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityAddOrRemove()
+                    MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorObjectAddOrRemove()
                     { 
-                        type = map_operators.MapOperatorEntityType.OBJECT,
-                        id = map.object_manager.objects[object_map_index].game_id,
-                        position = map.object_manager.objects[object_map_index].grid_position,
+                        obj = map.object_manager.objects[object_map_index],
+                        index = object_map_index,
                         is_adding = false 
                     });
 

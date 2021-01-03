@@ -14,6 +14,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         bool object_selected_from_list = true;
 
         bool trackbar_clicked = false;
+        int trackbar_initial_angle = -1;
 
         public MapObjectInspector()
         {
@@ -30,7 +31,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             ListObjects.Items.Clear();
             for (int i = 0; i < map.object_manager.objects.Count; i++)
-                LoadNextObject();
+                LoadNextObject(i);
         }
 
         private void ShowList()
@@ -69,14 +70,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
             ListObjects.Items.RemoveAt(index);
         }
 
-        public void LoadNextObject()
+        public void LoadNextObject(int index)
         {
-            if (ListObjects.Items.Count >= map.object_manager.objects.Count)
-                return;
-
-            string object_name = SFCFF.SFCategoryManager.GetObjectName((ushort)map.object_manager.objects[ListObjects.Items.Count].game_id);
-            object_name += " " + map.object_manager.objects[ListObjects.Items.Count].grid_position.ToString();
-            ListObjects.Items.Add(object_name);
+            string object_name = SFCFF.SFCategoryManager.GetObjectName((ushort)map.object_manager.objects[index].game_id);
+            object_name += " " + map.object_manager.objects[index].grid_position.ToString();
+            ListObjects.Items.Insert(index, object_name);
         }
 
         private void MapObjectInspector_Resize(object sender, EventArgs e)
@@ -253,7 +251,16 @@ namespace SpellforceDataEditor.SFMap.map_controls
         // this is to make sure the undo/redo queue only receives the latest angle changed as an action to perform
         private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
         {
+            if (ListObjects.SelectedIndex == Utility.NO_INDEX)
+                return;
+
             trackbar_clicked = true;
+
+            if (trackbar_initial_angle == -1)
+            {
+                SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
+                trackbar_initial_angle = obj.angle;
+            }
         }
 
         private void AngleTrackbar_MouseUp(object sender, MouseEventArgs e)
@@ -261,18 +268,18 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (!trackbar_clicked)
                 return;
 
-            SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
             {
                 type = map_operators.MapOperatorEntityType.OBJECT,
                 index = ListObjects.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.ANGLE,
-                PreChangeProperty = obj.angle,
+                PreChangeProperty = trackbar_initial_angle,
                 PostChangeProperty = AngleTrackbar.Value
             });
 
             trackbar_clicked = false;
+            trackbar_initial_angle = -1;
         }
 
 

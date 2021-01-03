@@ -14,6 +14,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         bool building_selected_from_list = true;
 
         bool trackbar_clicked = false;
+        int trackbar_initial_angle = -1;
 
         public MapBuildingInspector()
         {
@@ -30,7 +31,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             ListBuildings.Items.Clear();
             for (int i = 0; i < map.building_manager.buildings.Count; i++)
-                LoadNextBuilding();
+                LoadNextBuilding(i);
         }
 
         private void ShowList()
@@ -70,14 +71,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
             ListBuildings.Items.RemoveAt(index);
         }
 
-        public void LoadNextBuilding()
+        public void LoadNextBuilding(int index)
         {
-            if (ListBuildings.Items.Count >= map.building_manager.buildings.Count)
-                return;
-
-            string building_name = SFCFF.SFCategoryManager.GetBuildingName((ushort)map.building_manager.buildings[ListBuildings.Items.Count].game_id);
-            building_name += " " + map.building_manager.buildings[ListBuildings.Items.Count].grid_position.ToString();
-            ListBuildings.Items.Add(building_name);
+            string building_name = SFCFF.SFCategoryManager.GetBuildingName((ushort)map.building_manager.buildings[index].game_id);
+            building_name += " " + map.building_manager.buildings[index].grid_position.ToString();
+            ListBuildings.Items.Insert(index, building_name);
         }
 
         private void MapBuildingInspector_Resize(object sender, EventArgs e)
@@ -251,7 +249,16 @@ namespace SpellforceDataEditor.SFMap.map_controls
         // this is to make sure the undo/redo queue only receives the latest angle changed as an action to perform
         private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
         {
+            if (ListBuildings.SelectedIndex == Utility.NO_INDEX)
+                return;
+
             trackbar_clicked = true;
+
+            if (trackbar_initial_angle == -1)
+            {
+                SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
+                trackbar_initial_angle = building.angle;
+            }
         }
 
         private void AngleTrackbar_MouseUp(object sender, MouseEventArgs e)
@@ -259,18 +266,18 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (!trackbar_clicked)
                 return;
 
-            SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
             {
                 type = map_operators.MapOperatorEntityType.BUILDING,
                 index = ListBuildings.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.ANGLE,
-                PreChangeProperty = building.angle,
+                PreChangeProperty = trackbar_initial_angle,
                 PostChangeProperty = AngleTrackbar.Value
             });
 
             trackbar_clicked = false;
+            trackbar_initial_angle = -1;
         }
 
 

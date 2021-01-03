@@ -472,6 +472,7 @@ namespace SpellforceDataEditor.special_forms
         // essentially, this is an implementation of undo/redo function in map editor
         public class MapEditorOperatorQueue
         {
+            public SFMap.SFMap map = null;
             public List<SFMap.map_operators.IMapOperator> operators { get; private set; } = new List<SFMap.map_operators.IMapOperator>();
             public int current_operator { get; set; } = Utility.NO_INDEX;
 
@@ -501,6 +502,8 @@ namespace SpellforceDataEditor.special_forms
                 {
                     operators.Add(op);
                     current_operator += 1;
+                    if(op.ApplyOnPush)
+                        op.Apply(map);
                 }
 
                 if (MainForm.mapedittool.undohistory_form != null)
@@ -538,6 +541,11 @@ namespace SpellforceDataEditor.special_forms
                         if (MainForm.mapedittool.undohistory_form != null)
                             MainForm.mapedittool.undohistory_form.OnRemoveOperator();
                     }
+                    else
+                    {
+                        if(operators[operators.Count-1].ApplyOnPush)
+                            operators[operators.Count - 1].Apply(map);
+                    }
                 }
                 else
                     LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "MapEditorOperatorQueue.CloseCluster(): Not a cluster, or already closed!");
@@ -548,7 +556,7 @@ namespace SpellforceDataEditor.special_forms
             // implementation of Undo function
             // given the current state of the map, operator performs reverse of the action it contains
             // will do nothing if there are no actions to undo
-            public void Undo(SFMap.SFMap map)
+            public void Undo()
             {
                 if (current_operator == Utility.NO_INDEX)
                     return;
@@ -564,7 +572,7 @@ namespace SpellforceDataEditor.special_forms
             // implementation of Redo function
             // given the current state of the map, operator performs action it contains
             // will do nothing if there are no actions to redo
-            public void Redo(SFMap.SFMap map)
+            public void Redo()
             {
                 if (current_operator == operators.Count - 1)
                     return;
@@ -709,12 +717,12 @@ namespace SpellforceDataEditor.special_forms
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            op_queue?.Undo(map);
+            op_queue?.Undo();
         }
 
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            op_queue?.Redo(map);
+            op_queue?.Redo();
         }
 
         private int CreateMap()
@@ -792,6 +800,7 @@ namespace SpellforceDataEditor.special_forms
             ui.RedrawMinimapIcons();
 
             op_queue = new MapEditorOperatorQueue();
+            op_queue.map = map;
 
             // finishing actions
             RenderWindow.Invalidate();
@@ -887,6 +896,7 @@ namespace SpellforceDataEditor.special_forms
                 ui.RedrawMinimapIcons();
 
                 op_queue = new MapEditorOperatorQueue();
+                op_queue.map = map;
 
                 RenderWindow.Invalidate();
 
@@ -1008,6 +1018,7 @@ namespace SpellforceDataEditor.special_forms
             }
             SFRenderEngine.ui.Dispose();
 
+            op_queue.map = null;
             op_queue = null;
 
             if (MainForm.viewer != null)
@@ -1293,9 +1304,11 @@ namespace SpellforceDataEditor.special_forms
         private void SetSpecificText(SFCoord pos)
         {
             byte dec_assign = map.decoration_manager.GetDecAssignment(pos);
+            int lake_assign = map.lake_manager.GetLakeIndexAt(pos);
             SpecificText.Text = "H: " + map.heightmap.GetHeightAt(pos.x, pos.y).ToString() + "  "
                               + "T: " + map.heightmap.GetTileFixed(pos).ToString() + "  "
-                              + "D: " + (dec_assign == 0 ? "X" : dec_assign.ToString());
+                              + "D: " + (dec_assign == 0 ? "X" : dec_assign.ToString()) + " "
+                              + "L: " + (lake_assign == -1 ? "X" : lake_assign.ToString());
         }
 
         private void AddCameraZoom(int delta)
@@ -3272,25 +3285,19 @@ namespace SpellforceDataEditor.special_forms
         private void MapTypeCampaign_Click(object sender, EventArgs e)
         {
             op_queue.Push(new SFMap.map_operators.MapOperatorChangeMapType()
-            { PreOperatorMapType = map.metadata.map_type, PostOperatorMapType = SFMapType.CAMPAIGN });
-
-            SetMapType(SFMapType.CAMPAIGN);
+            { PreOperatorMapType = map.metadata.map_type, PostOperatorMapType = SFMapType.CAMPAIGN, ApplyOnPush = true });
         }
 
         private void MapTypeCoop_Click(object sender, EventArgs e)
         {
             op_queue.Push(new SFMap.map_operators.MapOperatorChangeMapType()
-            { PreOperatorMapType = map.metadata.map_type, PostOperatorMapType = SFMapType.COOP });
-
-            SetMapType(SFMapType.COOP);
+            { PreOperatorMapType = map.metadata.map_type, PostOperatorMapType = SFMapType.COOP, ApplyOnPush = true });
         }
 
         private void MapTypeMultiplayer_Click(object sender, EventArgs e)
         {
             op_queue.Push(new SFMap.map_operators.MapOperatorChangeMapType()
-            { PreOperatorMapType = map.metadata.map_type, PostOperatorMapType = SFMapType.MULTIPLAYER });
-
-            SetMapType(SFMapType.MULTIPLAYER);
+            { PreOperatorMapType = map.metadata.map_type, PostOperatorMapType = SFMapType.MULTIPLAYER, ApplyOnPush = true });
         }
 
         private void CoopSpawnParam11_Validated(object sender, EventArgs e)

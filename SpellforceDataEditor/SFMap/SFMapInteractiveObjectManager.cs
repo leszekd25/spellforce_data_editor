@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpellforceDataEditor.SFMap
 {
-    public enum SFMapInteractiveObjectType { OTHER = 0, COOP_CAMP, BINDSTONE, MONUMENT }
+    public enum SFMapInteractiveObjectType { OTHER = 0, BINDSTONE, MONUMENT }
 
     public class SFMapInteractiveObject: SFMapEntity
     {
@@ -30,42 +30,70 @@ namespace SpellforceDataEditor.SFMap
     {
         public List<SFMapInteractiveObject> int_objects { get; private set; } = new List<SFMapInteractiveObject>();
         public List<SFMapInteractiveObjectType> int_object_types { get; private set; } = new List<SFMapInteractiveObjectType>();
-        public List<int> coop_camps_index { get; private set; } = new List<int>();
         public List<int> bindstones_index { get; private set; } = new List<int>();
         public List<int> monuments_index { get; private set; } = new List<int>();
         public SFMap map = null;
 
-        public SFMapInteractiveObject AddInteractiveObject(int id, SFCoord position, int angle, int unk_byte)
+        public SFMapInteractiveObject AddInteractiveObject(int id, SFCoord position, int angle, int unk_byte, int index)
         {
             SFMapInteractiveObject obj = new SFMapInteractiveObject();
             obj.grid_position = position;
             obj.game_id = id;
             obj.angle = angle;
             obj.unk_byte = unk_byte;
-            int_objects.Add(obj);
+
+            if (index == -1)
+                index = int_objects.Count;
+            int_objects.Insert(index, obj);
 
             // find out object type and submit metadata
-            if (id == 2541)
+            if (id == 769)
             {
-                coop_camps_index.Add(int_objects.Count - 1);
-                int_object_types.Add(SFMapInteractiveObjectType.COOP_CAMP);
-            }
-            else if (id == 769)
-            {
-                bindstones_index.Add(int_objects.Count - 1);
-                int_object_types.Add(SFMapInteractiveObjectType.BINDSTONE);
+                // find where to put the element
+                int new_bindstone_index = 0;
+                for(int i = 0; i < index; i++)
+                {
+                    if (int_objects[i].game_id == 769)
+                        new_bindstone_index += 1;
+                }
+
+                // all bindstone indices that point to a to-be-shifted bindstone are increased
+                for (int i = 0; i < bindstones_index.Count; i++)
+                {
+                    if (bindstones_index[i] >= index)
+                        bindstones_index[i] += 1;
+                }
+
+                bindstones_index.Insert(new_bindstone_index, index);
+                int_object_types.Insert(index, SFMapInteractiveObjectType.BINDSTONE);
             }
             else if ((id >= 771) && (id <= 777))
-            {
-                monuments_index.Add(int_objects.Count - 1);
-                int_object_types.Add(SFMapInteractiveObjectType.MONUMENT);
+            {                
+                // find where to put the element
+                int new_monument_index = 0;
+                for (int i = 0; i < index; i++)
+                {
+                    if ((int_objects[i].game_id >= 771) && (int_objects[i].game_id <= 777))
+                        new_monument_index += 1;
+                }
+
+                // all monument indices that point to a to-be-shifted monument are increased
+                for (int i = 0; i < monuments_index.Count; i++)
+                {
+                    if (monuments_index[i] >= index)
+                        monuments_index[i] += 1;
+                }
+
+                monuments_index.Insert(new_monument_index, index);
+                int_object_types.Insert(index, SFMapInteractiveObjectType.MONUMENT);
             }
             else
-                int_object_types.Add(SFMapInteractiveObjectType.OTHER);
+                int_object_types.Insert(index, SFMapInteractiveObjectType.OTHER);
 
             string obj_name = obj.GetName();
             SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, obj_name, true);
             node.SetParent(map.heightmap.GetChunkNode(position));
+
             return obj;
         }
 
@@ -78,9 +106,6 @@ namespace SpellforceDataEditor.SFMap
             List<int> index_to_modify = null;
             switch(int_object_types[obj_index])
             {
-                case SFMapInteractiveObjectType.COOP_CAMP:
-                    index_to_modify = coop_camps_index;
-                    break;
                 case SFMapInteractiveObjectType.BINDSTONE:
                     index_to_modify = bindstones_index;
                     break;

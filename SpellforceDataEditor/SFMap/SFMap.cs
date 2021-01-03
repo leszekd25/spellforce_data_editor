@@ -485,14 +485,14 @@ namespace SpellforceDataEditor.SFMap
 
                         // discard spawns which do not have bindstones at specified positions
                         SFCoord pos = new SFCoord(x, y);
-                        bool bindstone_exists = false;
-                        foreach (SFMapInteractiveObject io in int_object_manager.int_objects)
-                            if ((io.game_id == 769) && (io.grid_position == pos))
+                        int bindstone_index = Utility.NO_INDEX;
+                        for(int j = 0; j < int_object_manager.bindstones_index.Count; j++)
+                            if(int_object_manager.int_objects[int_object_manager.bindstones_index[j]].grid_position == pos)
                             {
-                                bindstone_exists = true;
+                                bindstone_index = j;
                                 break;
                             }
-                        if (!bindstone_exists)
+                        if (bindstone_index == Utility.NO_INDEX)
                         {
                             LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Spawn data not associated with bindstone, removing (position: " + pos.ToString() + ")");
                             player_count -= 1;
@@ -504,6 +504,7 @@ namespace SpellforceDataEditor.SFMap
                         metadata.spawns[i].pos = pos;
                         metadata.spawns[i].text_id = text_id;
                         metadata.spawns[i].unknown = unknown;
+                        metadata.spawns[i].bindstone_index = bindstone_index;
                     }
                     metadata.player_count = player_count;
                 }
@@ -546,7 +547,10 @@ namespace SpellforceDataEditor.SFMap
                                     short x = br.ReadInt16();
                                     short y = br.ReadInt16();
                                     ushort text_id = br.ReadUInt16();
-                                    tcomp.players[i].Add(new SFMapTeamPlayer(metadata.GetPlayerBySpawnPos(new SFCoord(x, y)), text_id));
+
+                                    int player = metadata.FindPlayerBySpawnPos(new SFCoord(x, y));
+
+                                    tcomp.players[i].Add(new SFMapTeamPlayer(player, text_id));
                                 }
                                 p_num = br.ReadInt32();
                             }
@@ -582,7 +586,10 @@ namespace SpellforceDataEditor.SFMap
                                     ushort text_id = br.ReadUInt16();
                                     string s1 = Utility.ReadSFString(br);
                                     string s2 = Utility.ReadSFString(br);
-                                    tcomp.players[i].Add(new SFMapTeamPlayer(metadata.GetPlayerBySpawnPos(new SFCoord(x, y)), text_id, s1, s2));
+
+                                    int player = metadata.FindPlayerBySpawnPos(new SFCoord(x, y));
+
+                                    tcomp.players[i].Add(new SFMapTeamPlayer(player, text_id, s1, s2));
 
                                 }
                                 p_num = br.ReadInt32();
@@ -1392,9 +1399,9 @@ namespace SpellforceDataEditor.SFMap
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
         }
 
-        public void AddObject(int game_id, SFCoord pos, int angle, int npc_id, int unk1)
+        public void AddObject(int game_id, SFCoord pos, int angle, int npc_id, int unk1, int index = -1)
         {
-            SFMapObject obj = object_manager.AddObject(game_id, pos, angle, unk1);
+            SFMapObject obj = object_manager.AddObject(game_id, pos, angle, unk1, index);
             obj.npc_id = npc_id;
             /*if (npc_id != 0)
                 npc_manager.AddNPCRef(npc_id, obj);*/
@@ -1502,9 +1509,9 @@ namespace SpellforceDataEditor.SFMap
             return 0;
         }
 
-        public void AddInteractiveObject(int game_id, SFCoord pos, int angle, int unk_byte)
+        public void AddInteractiveObject(int game_id, SFCoord pos, int angle, int unk_byte, int index = -1)
         {
-            SFMapInteractiveObject obj = int_object_manager.AddInteractiveObject(game_id, pos, angle, unk_byte);
+            SFMapInteractiveObject obj = int_object_manager.AddInteractiveObject(game_id, pos, angle, unk_byte, index);
 
             float z = heightmap.GetZ(pos) / 100.0f;
 
@@ -1612,9 +1619,9 @@ namespace SpellforceDataEditor.SFMap
             return 0;
         }
 
-        public void AddBuilding(int game_id, SFCoord pos, int angle, int npc_id, int lvl, int race_id)
+        public void AddBuilding(int game_id, SFCoord pos, int angle, int npc_id, int lvl, int race_id, int index = -1)
         {
-            SFMapBuilding bld = building_manager.AddBuilding(game_id, pos, angle, npc_id, lvl, race_id);
+            SFMapBuilding bld = building_manager.AddBuilding(game_id, pos, angle, npc_id, lvl, race_id, index);
             /*if (npc_id != 0)
                 npc_manager.AddNPCRef(npc_id, bld);*/
 
@@ -1761,9 +1768,9 @@ namespace SpellforceDataEditor.SFMap
             return 0;
         }
 
-        public void AddPortal(int game_id, SFCoord pos, int angle)
+        public void AddPortal(int game_id, SFCoord pos, int angle, int index = -1)
         {
-            SFMapPortal ptl = portal_manager.AddPortal(game_id, pos, angle);
+            SFMapPortal ptl = portal_manager.AddPortal(game_id, pos, angle, index);
 
 
             float z = heightmap.GetZ(pos) / 100.0f;
@@ -1839,10 +1846,10 @@ namespace SpellforceDataEditor.SFMap
             return 0;
         }
 
-        public void AddUnit(int game_id, SFCoord pos, int flags, int npc_id, int unknown, int group, int unknown2)
+        public void AddUnit(int game_id, SFCoord pos, int flags, int npc_id, int unknown, int group, int unknown2, int index = -1)
         {
             // 1. add new unit in unit manager
-            SFMapUnit unit = unit_manager.AddUnit(game_id, pos, flags);
+            SFMapUnit unit = unit_manager.AddUnit(game_id, pos, flags, index);
             unit.npc_id = npc_id;
             unit.unknown = unknown;
             unit.group = group;
