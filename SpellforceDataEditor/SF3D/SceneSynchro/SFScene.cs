@@ -49,15 +49,15 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         private bool time_flowing = false;
 
         public SceneNode root;   // tree with all visible objects; invisible objects are not connected to root
-        public SFMap.SFMapHeightMap heightmap = null;  // contains heightmap chunk scene nodes
+        public SFMap.SFMap map = null;  // contains heightmap and lakes
         public SceneNodeCamera camera;
 
         public LightingAmbient ambient_light { get; } = new LightingAmbient();
         public LightingSun sun_light { get; } = new LightingSun();
         public Atmosphere atmosphere { get; } = new Atmosphere();
-        // render engine takes these lists and renders stuff from the lists, one list for each texture for each shader
-        public Dictionary<SFTexture, HashSet<SFSubModel3D>> tex_entries_simple = new Dictionary<SFTexture, HashSet<SFSubModel3D>>();
-        public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>> tex_list_animated { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementAnimated>>();
+
+        public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>> tex_list_simple { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>>();
+
         public HashSet<SceneNodeAnimated> an_nodes = new HashSet<SceneNodeAnimated>();
 
         public void Init()
@@ -164,6 +164,26 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
         }
 
+        // temporary revert to non-instanced simple meshes
+        public int AddTextureEntrySimple(SFTexture tex, TexturedGeometryListElementSimple elem)
+        {
+            if (!tex_list_simple.ContainsKey(tex))
+                tex_list_simple.Add(tex, new LinearPool<TexturedGeometryListElementSimple>());
+
+            return tex_list_simple[tex].Add(elem);
+        }
+
+        public void ClearTextureEntrySimple(SFTexture tex, TexturedGeometryListElementSimple elem)
+        {
+            if (!tex_list_simple.ContainsKey(tex))
+                return;
+
+            tex_list_simple[tex].Remove(elem);
+
+            if (tex_list_simple[tex].used_count == 0)
+                tex_list_simple.Remove(tex);
+        }
+
         // these functions add basic node types to scene
         public SceneNode AddSceneNodeEmpty(SceneNode parent, string new_node_name)
         {
@@ -182,17 +202,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (loaded_model)
             {
                 new_node.Mesh = SFResourceManager.Models.Get(model_name);
-                for (int i = 0; i < new_node.Mesh.submodels.Length; i++)
-                {
-                    SFSubModel3D sbm = new_node.Mesh.submodels[i];
-                    if (sbm.material.texture != null)
-                    {
-                        if (!tex_entries_simple.ContainsKey(sbm.material.texture))
-                            tex_entries_simple.Add(sbm.material.texture, new HashSet<SFSubModel3D>());
-                        if (!tex_entries_simple[sbm.material.texture].Contains(sbm))
-                            tex_entries_simple[sbm.material.texture].Add(sbm);
-                    }
-                }
             }
 
             return new_node;
@@ -506,12 +515,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             delta_timer.Stop();
             deltatime = delta_timer.ElapsedMilliseconds / (float)1000;
             delta_timer.Restart();
-
-            // for instanced rendering
-            foreach (var tex_entry in tex_entries_simple.Values)
-                foreach (SFSubModel3D sbm in tex_entry)
-                    if (sbm.needs_matrix_reload)
-                        sbm.instance_matrices.Clear();
 
             root.Update(current_time);
 

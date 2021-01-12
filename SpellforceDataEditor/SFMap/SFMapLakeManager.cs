@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SpellforceDataEditor.SF3D;
 
 using OpenTK;
 
@@ -51,6 +52,8 @@ namespace SpellforceDataEditor.SFMap
     public class SFMapLakeManager
     {
         public List<SFMapLake> lakes { get; private set; } = new List<SFMapLake>();
+        public List<bool> lake_visible { get; private set; } = new List<bool>();
+
         public SFMap map = null;
 
         // ugly 4th parameter to make undo/redo work
@@ -68,6 +71,7 @@ namespace SpellforceDataEditor.SFMap
 
             SFMapLake lake = new SFMapLake();
             lakes.Insert(lake_index, lake);
+            lake_visible.Insert(lake_index, true);
             lake.start = start;
             lake.z_diff = z_diff;
             lake.type = type;
@@ -97,6 +101,14 @@ namespace SpellforceDataEditor.SFMap
             return map.heightmap.lake_data[pos.x + pos.y * map.width] - 1;
         }
 
+        private void DisposeLakeMesh(SFMapLake lake)
+        {
+            string mesh_name = lake.GetObjectName();
+            SFModel3D mesh = SFResources.SFResourceManager.Models.Get(mesh_name);
+            if (mesh != null)
+                SFResources.SFResourceManager.Models.Dispose(mesh_name);
+        }
+
         public void RemoveLake(SFMapLake lake)
         {
             int lake_index = lakes.IndexOf(lake);
@@ -119,9 +131,10 @@ namespace SpellforceDataEditor.SFMap
                 map_operators.MapOperatorLake op_lake = new map_operators.MapOperatorLake() { pos = lake.start, z_diff = lake.z_diff, type = lake.type, lake_index = lake_index, change_add = false };
                 MainForm.mapedittool.op_queue.Push(op_lake);
             }
-            lakes.Remove(lake);
+            lakes.RemoveAt(lake_index);
+            lake_visible.RemoveAt(lake_index);
 
-            RebuildLake(lake);
+            DisposeLakeMesh(lake);
         }
 
         public string GetLakeTextureName(int type)
@@ -191,12 +204,85 @@ namespace SpellforceDataEditor.SFMap
             RebuildLake(lake);
         }
 
-        // updates all heightmap nodes (rebuilds lake mesh for each of those)
+        /*// updates all heightmap nodes (rebuilds lake mesh for each of those)
         public void RebuildLake(SFMapLake lake)
         {
             var map_nodes = map.heightmap.GetAreaMapNodes(lake.cells);
             foreach (var node in map_nodes)
                 node.MapChunk.RebuildLake();
+        }*/
+
+        public void RebuildLake(SFMapLake lake)
+        {
+            DisposeLakeMesh(lake);
+
+            // generate mesh
+            SFSubModel3D submodel = new SFSubModel3D();
+            int v_count = lake.cells.Count * 4;
+            int i_count = lake.cells.Count * 6;
+
+            int k = 0;
+            Vector3[] vertices = new Vector3[v_count];
+            Vector2[] uvs = new Vector2[v_count];
+            byte[] colors = new byte[v_count * 4];
+            Vector3[] normals = new Vector3[v_count];
+            uint[] indices = new uint[i_count];
+
+            float lake_height = ((map.heightmap.GetZ(lake.start) + lake.z_diff)) / 100.0f;
+            // generate geometry for each lake type
+            foreach (SFCoord pos in lake.cells)
+            {
+                vertices[k * 4 + 0] = new Vector3((float)(pos.x) - 0.5f, lake_height, (float)(map.height - pos.y - 1) - 0.5f);
+                vertices[k * 4 + 1] = new Vector3((float)(pos.x + 1) - 0.5f, lake_height, (float)(map.height - pos.y - 1) - 0.5f);
+                vertices[k * 4 + 2] = new Vector3((float)(pos.x) - 0.5f, lake_height, (float)(map.height - pos.y) - 0.5f);
+                vertices[k * 4 + 3] = new Vector3((float)(pos.x + 1) - 0.5f, lake_height, (float)(map.height - pos.y) - 0.5f);
+                uvs[k * 4 + 0] = new Vector2(pos.x / 4.0f, pos.y / 4.0f);
+                uvs[k * 4 + 1] = new Vector2((pos.x + 1) / 4.0f, pos.y / 4.0f);
+                uvs[k * 4 + 2] = new Vector2(pos.x / 4.0f, (pos.y + 1) / 4.0f);
+                uvs[k * 4 + 3] = new Vector2((pos.x + 1) / 4.0f, (pos.y + 1) / 4.0f);
+                for (int i = 0; i < 16; i++)
+                    colors[k * 16 + i] = 0xFF;
+                normals[k * 4 + 0] = new Vector3(0, 1, 0);
+                normals[k * 4 + 1] = new Vector3(0, 1, 0);
+                normals[k * 4 + 2] = new Vector3(0, 1, 0);
+                normals[k * 4 + 3] = new Vector3(0, 1, 0);
+                indices[k * 6 + 0] = (uint)(k * 4 + 0);
+                indices[k * 6 + 1] = (uint)(k * 4 + 1);
+                indices[k * 6 + 2] = (uint)(k * 4 + 2);
+                indices[k * 6 + 3] = (uint)(k * 4 + 1);
+                indices[k * 6 + 4] = (uint)(k * 4 + 2);
+                indices[k * 6 + 5] = (uint)(k * 4 + 3);
+
+                k += 1;
+            }
+            // generate material for this geometry
+            SFMaterial material = new SFMaterial();
+            material.indexStart = (uint)0;
+            material.indexCount = (uint)(i_count);
+
+            string tex_name = GetLakeTextureName(lake.type);
+            SFTexture tex = null;
+            int tex_code = SFResources.SFResourceManager.Textures.Load(tex_name);
+            if ((tex_code != 0) && (tex_code != -1))
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapLake.Generate(): Could not load texture (texture name = " + tex_name + ")");
+            else
+            {
+                tex = SFResources.SFResourceManager.Textures.Get(tex_name);
+                tex.FreeMemory();
+            }
+            material.texture = tex;
+            
+            submodel.CreateRaw(vertices, uvs, colors, normals, indices, material);
+
+            SFModel3D mesh = new SFModel3D();
+            mesh.CreateRaw(new SFSubModel3D[] { submodel });
+            SFResources.SFResourceManager.Models.AddManually(mesh, lake.GetObjectName());
+        }
+
+        public void Dispose()
+        {
+            foreach (var lake in lakes)
+                DisposeLakeMesh(lake);
         }
     }
 }

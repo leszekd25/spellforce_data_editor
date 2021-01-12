@@ -20,7 +20,7 @@ namespace SpellforceDataEditor.SFMap
 
             Vector3[] vertices = new Vector3[4];
             Vector2[] uvs = new Vector2[4];
-            Vector4[] colors = new Vector4[4];
+            byte[] colors = new byte[16];
             Vector3[] normals = new Vector3[4];
 
             vertices[0] = new Vector3(-256, 0f, -256);
@@ -33,8 +33,14 @@ namespace SpellforceDataEditor.SFMap
             uvs[3] = new Vector2(SFMapHeightMapGeometryPool.CHUNK_SIZE, SFMapHeightMapGeometryPool.CHUNK_SIZE);
             for (int i = 0; i < 4; i++)
             {
-                colors[i] = new Vector4(0.2f, 0.7f, 0.9f, 0.7f);
                 normals[i] = new Vector3(0.0f, 1.0f, 0.0f);
+            }
+            for(int i = 0; i < 4; i++)
+            {
+                colors[4 * i + 0] = 0x33;
+                colors[4 * i + 1] = 0xB2;
+                colors[4 * i + 2] = 0xD4;
+                colors[4 * i + 3] = 0xB2;
             }
 
             uint[] indices = { 0, 1, 2, 1, 3, 2 };

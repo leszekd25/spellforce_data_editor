@@ -44,7 +44,7 @@ namespace SpellforceDataEditor.SFMap
 
             Vector3[] vertices = new Vector3[8];
             Vector2[] uvs = new Vector2[8];
-            Vector4[] colors = new Vector4[8];
+            byte[] colors = new byte[32];
             Vector3[] normals = new Vector3[8];
 
             vertices[0] = new Vector3(-0.5f, 0.1f, -0.5f);
@@ -57,7 +57,10 @@ namespace SpellforceDataEditor.SFMap
             vertices[7] = new Vector3(0.4f, 0.1f, 0.4f);
             for (int i = 0; i < 8; i++)
             {
-                colors[i] = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+                colors[4 * i + 0] = 0;
+                colors[4 * i + 1] = 0xFF;
+                colors[4 * i + 2] = 0;
+                colors[4 * i + 3] = 0xFF;
                 normals[i] = new Vector3(0.0f, 1.0f, 0.0f);
             }
 
@@ -85,7 +88,10 @@ namespace SpellforceDataEditor.SFMap
             vertices[7] = new Vector3(g, h, g);
             for (int i = 0; i < 8; i++)
             {
-                colors[i] = new Vector4(1.0f, 1.0f, 0.4f, 1.0f);
+                colors[4 * i + 0] = 0xFF;
+                colors[4 * i + 1] = 0xFF;
+                colors[4 * i + 2] = 0x66;
+                colors[4 * i + 3] = 0xFF;
                 normals[i] = new Vector3(0.0f, 1.0f, 0.0f);
             }
 
@@ -259,7 +265,7 @@ namespace SpellforceDataEditor.SFMap
             // selection and ui stuff
             SetSelectionVisibility(selection_type != SelectionType.NONE);
 
-            SFMapHeightMap hmap = SF3D.SFRender.SFRenderEngine.scene.heightmap;
+            SFMapHeightMap hmap = SF3D.SFRender.SFRenderEngine.scene.map.heightmap;
             SF3D.SceneSynchro.SceneNodeCamera camera = SF3D.SFRender.SFRenderEngine.scene.camera;
             Vector2 text_pos = new Vector2(0, 0);
 

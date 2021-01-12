@@ -7,6 +7,11 @@ using OpenTK;
 
 namespace SpellforceDataEditor.SF3D.SceneSynchro
 {
+    public class TexturedGeometryListElementSimple
+    {
+        public SceneNodeSimple node;
+        public int submodel_index;
+    }
 
     public class TexturedGeometryListElementAnimated
     {

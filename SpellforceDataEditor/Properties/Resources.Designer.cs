@@ -96,10 +96,11 @@ namespace SpellforceDataEditor.Properties {
         ///in vec2 UV;
         ///in vec4 fragmentColor;
         ///in vec4 fragmentPositionLightSpace;
-        ///in mat4 M;
+        /////in mat4 M;
         ///
         ///out vec4 color;
         ///
+        ///uniform mat4 M;
         ///uniform float SunStrength;
         ///uniform vec3 SunDirection;
         ///uniform vec4 SunColor;
@@ -113,7 +114,7 @@ namespace SpellforceDataEditor.Properties {
         ///uniform float DepthBias;
         ///
         ///vec2 poissonDisk[4] = vec2[](
-        ///  vec2( -0.94201624,  [rest of string was truncated]&quot;;.
+        ///   [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader {
             get {
@@ -359,19 +360,19 @@ namespace SpellforceDataEditor.Properties {
         ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec3 vertexNormal;
-        ///layout(location = 2) in vec2 vertexUV;
-        ///layout(location = 3) in vec4 vertexColor;
-        ///layout(location = 4) in mat4 instanceMatrix;
+        ///layout(location = 2) in vec4 vertexColor;
+        ///layout(location = 3) in vec2 vertexUV;
+        /////layout(location = 4) in mat4 instanceMatrix;
         ///
         ///out vec3 fragmentPosition;
         ///out vec3 fragmentNormal;
-        ///out vec2 UV;
         ///out vec4 fragmentColor;
+        ///out vec2 UV;
         ///out vec4 fragmentPositionLightSpace;
-        ///out mat4 M;
+        /////out mat4 M;
         ///
         ///// Values that stay constant for the whole mesh.
-        ///uniform mat4 VP; [rest of string was truncated]&quot;;.
+        ///uniform mat4 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader {
             get {
@@ -449,15 +450,16 @@ namespace SpellforceDataEditor.Properties {
         ///layout(location = 1) in vec3 vertexNormal;
         ///layout(location = 2) in vec2 vertexUV;
         ///layout(location = 3) in vec4 vertexColor;
-        ///layout(location = 4) in mat4 instanceMatrix;
+        /////layout(location = 4) in mat4 instanceMatrix;
         ///
         ///out vec2 UV;
         ///
+        ///uniform mat4 M;
         ///uniform mat4 LSM;  // light space matrix
         ///
         ///void main()
         ///{
-        ///    gl_Position = LSM * instanceMatrix * vec4(vertexPosition_modelspace, 1.0);
+        ///    gl_Position = LSM * M * vec4(vertexPosition_modelspace, 1.0);
         ///    UV = vertexUV;
         ///}.
         /// </summary>

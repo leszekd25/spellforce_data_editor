@@ -48,7 +48,7 @@ namespace SpellforceDataEditor.SFMap
 
             Vector3[] vertices = new Vector3[seg_count*4];
             Vector2[] uvs = new Vector2[seg_count * 4];
-            Vector4[] colors = new Vector4[seg_count * 4];
+            byte[] colors = new byte[seg_count * 16];
             Vector3[] normals = new Vector3[seg_count * 4];
             uint[] indices = new uint[seg_count * 6];
 
@@ -80,8 +80,12 @@ namespace SpellforceDataEditor.SFMap
             for(int i = 0; i < uvs.Length; i++)
             {
                 uvs[i] = new Vector2(0, 0);
-                colors[i] = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
             }
+            for(int i = 0; i < colors.Length; i++)
+            {
+                colors[i] = 0xFF;
+            }
+
             SF3D.SFSubModel3D sbm = new SF3D.SFSubModel3D();
             sbm.CreateRaw(vertices, uvs, colors, normals, indices, null);
 

@@ -100,35 +100,6 @@ namespace SpellforceDataEditor.SF3D.Physics
             return false;
         }
 
-        // calculates point of intersection between a 3D model and the ray
-        // slow!
-        public bool Intersect(SFModel3D mesh, Vector3 offset, out Vector3 point)
-        {
-            point = Vector3.Zero;
-            if (mesh == null)
-                return false;
-
-            BoundingBox ab = mesh.aabb + offset;
-            if (!Intersect(ab))
-                return false;
-
-            Ray r = this - offset;
-            foreach (SFSubModel3D sbm in mesh.submodels)
-            {
-                int triangle_count = sbm.face_indices.Length / 3;
-                for (int i = 0; i < triangle_count; i++)
-                {
-                    Triangle t = new Triangle(sbm.vertices[sbm.face_indices[i * 3 + 2]],
-                        sbm.vertices[sbm.face_indices[i * 3 + 0]],
-                        sbm.vertices[sbm.face_indices[i * 3 + 1]]);
-                    if (r.Intersect(t, out point))
-                        return true;
-                }
-            }
-
-            return false;
-        }
-
         // calculates point of intersection between a collision mesh and the ray
         // since the triangles are pre-cached, this is much faster than with the 3d model
         public bool Intersect(CollisionMesh mesh, out Vector3 point)

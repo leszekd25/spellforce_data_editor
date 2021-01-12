@@ -427,8 +427,8 @@ namespace SpellforceDataEditor.special_forms
                     if ((mouse_pressed) && (!clicked))
                     {
                         clicked_pos = new SFCoord(
-                            SFRenderEngine.scene.heightmap.width -  (int)(((SFRenderEngine.render_size.X - mx)) * (SFRenderEngine.scene.heightmap.width / (float)minimap_size)) - 1,
-                            (int)((SFRenderEngine.render_size.Y - my) * (SFRenderEngine.scene.heightmap.height / (float)minimap_size)));
+                            SFRenderEngine.scene.map.heightmap.width -  (int)(((SFRenderEngine.render_size.X - mx)) * (SFRenderEngine.scene.map.heightmap.width / (float)minimap_size)) - 1,
+                            (int)((SFRenderEngine.render_size.Y - my) * (SFRenderEngine.scene.map.heightmap.height / (float)minimap_size)));
                         clicked = true;
                     }
 
@@ -674,7 +674,8 @@ namespace SpellforceDataEditor.special_forms
 
                 SFRenderEngine.scene.root = null;
                 SFRenderEngine.scene.camera = null;
-                SFRenderEngine.scene.heightmap = null;
+                SFRenderEngine.scene.map = null;
+                SF3D.SFSubModel3D.Cache.Dispose();
                 DestroyRenderWindow();
             }
         }
@@ -783,7 +784,7 @@ namespace SpellforceDataEditor.special_forms
             map = new SFMap.SFMap();
             map.CreateDefault(map_size, generator, gamedata, StatusText);
 
-            SFRenderEngine.scene.heightmap = map.heightmap;
+            SFRenderEngine.scene.map = map;
             InitEditorMode();
 
             map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
@@ -879,7 +880,7 @@ namespace SpellforceDataEditor.special_forms
                     return -4;
                 }
 
-                SFRenderEngine.scene.heightmap = map.heightmap;
+                SFRenderEngine.scene.map = map;
                 InitEditorMode();
 
                 map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
@@ -1002,13 +1003,14 @@ namespace SpellforceDataEditor.special_forms
             else
                 SFCFF.SFCategoryManager.UnloadAll();
 
-            SFRenderEngine.scene.heightmap = null;
+            SFRenderEngine.scene.map = null;
             SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
 
-            foreach (SF3D.SFTexture tex in SFRenderEngine.scene.tex_entries_simple.Keys)
-                SFRenderEngine.scene.tex_entries_simple[tex].Clear();
-            SFRenderEngine.scene.tex_entries_simple.Clear();
-            //SFRenderEngine.scene.untex_entries_simple.Clear();
+            foreach (var tex in SFRenderEngine.scene.tex_list_simple.Keys)
+                SFRenderEngine.scene.tex_list_simple[tex].Clear();
+            SFRenderEngine.scene.tex_list_simple.Clear();
+
+            SF3D.SFSubModel3D.Cache.Clear();
 
             //ui.UninitMinimap();
             if (ui != null)

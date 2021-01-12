@@ -18,74 +18,27 @@ namespace SpellforceDataEditor.SF3D
 {
     public class SFSubModel3D: SFResource
     {
+        public static MeshCache Cache;
+
+
+
         public int submodel_id = Utility.NO_INDEX;
-        public Vector3[] vertices = null;
-        public Vector2[] uvs = null;
-        public Vector4[] colors = null;
-        public Vector3[] normals = null;
+        public int cache_index = Utility.NO_INDEX;
+
+        public byte[] vertex_data = null;     // 12+12+4+8+4 (empty) = 40 bytes per vertex
         public uint[] face_indices = null;
 
-        public ArrayPool<Matrix4> instance_matrices = new ArrayPool<Matrix4>();
-        public bool needs_matrix_reload = false;
+        //public ArrayPool<Matrix4> instance_matrices = new ArrayPool<Matrix4>();
+        //public bool needs_matrix_reload = false;
 
         public SFMaterial material = null;
         public Physics.BoundingBox aabb;
-        public int vertex_array = Utility.NO_INDEX;
-        public int vertex_buffer, uv_buffer, normal_buffer, color_buffer, element_buffer, instance_matrix_buffer;
+        /*public int vertex_array = Utility.NO_INDEX;
+        public int vertex_buffer, element_buffer;//, instance_matrix_buffer;*/
 
         public void Init()
         {
-            vertex_array = GL.GenVertexArray();
-            vertex_buffer = GL.GenBuffer();
-            uv_buffer = GL.GenBuffer();
-            normal_buffer = GL.GenBuffer();
-            color_buffer = GL.GenBuffer();
-            element_buffer = GL.GenBuffer();
-            instance_matrix_buffer = GL.GenBuffer();
-
-            GL.BindVertexArray(vertex_array);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Length * 12, normals, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, uv_buffer);
-            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, uvs.Length * 8, uvs, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(2);
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, color_buffer);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, colors.Length * 16, colors, BufferUsageHint.StaticDraw);
-            GL.EnableVertexAttribArray(3);
-            GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, 0, 0);
-
-            // matrix takes 4 registers
-            GL.BindBuffer(BufferTarget.ArrayBuffer, instance_matrix_buffer);
-            GL.BufferData<Matrix4>(BufferTarget.ArrayBuffer, instance_matrices.Count * 64, instance_matrices.GetData(), BufferUsageHint.StreamDraw);
-            for (int i = 0; i < 4; i++)
-            {
-                GL.EnableVertexAttribArray(4 + i);
-                GL.VertexAttribPointer(4 + i, 4, VertexAttribPointerType.Float, false, 64, 16 * i);
-                GL.VertexAttribDivisor(4 + i, 1);
-            }
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
-            GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, face_indices.Length * 4, face_indices, BufferUsageHint.StaticDraw);
-
-            GL.BindVertexArray(0);
-        }
-
-        // ASSUMES VAO IS ALREADY BOUND!!
-        public void ReloadInstanceMatrices()
-        {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, instance_matrix_buffer);
-            GL.BufferData<Matrix4>(BufferTarget.ArrayBuffer, instance_matrices.Count * 64, instance_matrices.GetData(), BufferUsageHint.StreamDraw);
+            cache_index = Cache.AddMesh(vertex_data, face_indices);
         }
 
         public int Load(MemoryStream ms, object custom_data)
@@ -105,24 +58,10 @@ namespace SpellforceDataEditor.SF3D
                 return 1;
             }
 
-            vertices = new Vector3[vcount]; normals = new Vector3[vcount]; uvs = new Vector2[vcount]; colors = new Vector4[vcount];
-            face_indices = new uint[fcount * 3];
-            material = new SFMaterial();
+            // vertex_data taken directly from file: vertices, normals, colors, uvs
+            vertex_data = br.ReadBytes(vcount * 40);
 
-            for (int j = 0; j < vcount; j++)
-            {
-                Vector3 pos = new Vector3();
-                pos.X = br.ReadSingle(); pos.Y = br.ReadSingle(); pos.Z = br.ReadSingle();
-                Vector3 nor = new Vector3();
-                nor.X = br.ReadSingle(); nor.Y = br.ReadSingle(); nor.Z = br.ReadSingle();
-                Vector4 col = new Vector4();
-                for (int k = 0; k < 4; k++)
-                    col[k] = (float)((int)(br.ReadByte())) / 255.0f;
-                Vector2 uv = new Vector2();
-                uv.X = br.ReadSingle(); uv.Y = br.ReadSingle();
-                br.ReadInt32();
-                vertices[j] = pos; normals[j] = nor; uvs[j] = uv; colors[j] = col;
-            }
+            face_indices = new uint[fcount * 3];
 
             for (int j = 0; j < fcount; j++)
             {
@@ -179,16 +118,34 @@ namespace SpellforceDataEditor.SF3D
             return 0;
         }
 
-        public int CreateRaw(Vector3[] _vertices, Vector2[] _uvs, Vector4[] _colors, Vector3[] _normals, uint[] _indices, SFMaterial _material)
+        public int CreateRaw(Vector3[] _vertices, Vector2[] _uvs, byte[] _colors, Vector3[] _normals, uint[] _indices, SFMaterial _material)
         {
             // reset first
             Dispose();
-            instance_matrices = new ArrayPool<Matrix4>();
+            //instance_matrices = new ArrayPool<Matrix4>();
 
-            vertices = _vertices;
-            uvs = _uvs;
-            colors = _colors;
-            normals = _normals;
+            vertex_data = new byte[_vertices.Length * 40];
+            using (MemoryStream ms = new MemoryStream(vertex_data))
+            {
+                using (BinaryWriter bw = new BinaryWriter(ms))
+                {
+                    for(int i = 0; i < _vertices.Length; i++)
+                    {
+                        bw.Write(_vertices[i].X);
+                        bw.Write(_vertices[i].Y);
+                        bw.Write(_vertices[i].Z);
+                        bw.Write(_normals[i].X);
+                        bw.Write(_normals[i].Y);
+                        bw.Write(_normals[i].Z);
+                        for (int j = 0; j < 4; j++)
+                            bw.Write(_colors[4 * i + j]);
+                        bw.Write(_uvs[i].X);
+                        bw.Write(_uvs[i].Y);
+                        bw.Write((int)0);
+                    }
+                }
+            }
+
             face_indices = _indices;
             if (_material == null)
             {
@@ -203,6 +160,24 @@ namespace SpellforceDataEditor.SF3D
             return 0;
         }
 
+        public IEnumerable<Vector3> GetVertices()
+        {
+            using (MemoryStream ms = new MemoryStream(vertex_data))
+            {
+                using (BinaryReader br = new BinaryReader(ms))
+                {
+                    for (int i = 0; i < vertex_data.Length; i+= 40)
+                    {
+                        br.BaseStream.Position = i;
+                        float x = br.ReadSingle();
+                        float y = br.ReadSingle();
+                        float z = br.ReadSingle();
+                        yield return new Vector3(x, y, z);
+                    }
+                }
+            }
+        }
+
         public void SetName(string s)
         {
 
@@ -215,27 +190,26 @@ namespace SpellforceDataEditor.SF3D
 
         public int GetSizeBytes()
         {
-            return 12 * vertices.Length
-                 + 8 * uvs.Length
-                 + 16 * colors.Length
-                 + 12 * normals.Length
+            return 40 * vertex_data.Length
                  + 4 * face_indices.Length;
         }
 
         public void Dispose()
         {
-            instance_matrices.Dispose();
-            if (vertex_array != Utility.NO_INDEX)
+            if(cache_index != Utility.NO_INDEX)
+            {
+                Cache.RemoveMesh(cache_index);
+                cache_index = Utility.NO_INDEX;
+            }
+            //instance_matrices.Dispose();
+            /*if (vertex_array != Utility.NO_INDEX)
             {
                 GL.DeleteBuffer(vertex_buffer);
-                GL.DeleteBuffer(normal_buffer);
-                GL.DeleteBuffer(uv_buffer);
-                GL.DeleteBuffer(color_buffer);
                 GL.DeleteBuffer(element_buffer);
-                GL.DeleteBuffer(instance_matrix_buffer);
+                //GL.DeleteBuffer(instance_matrix_buffer);
                 GL.DeleteVertexArray(vertex_array);
                 vertex_array = Utility.NO_INDEX;
-            }
+            }*/
             if ((material != null) && (material.texture != null) && (material.texture != SFRender.SFRenderEngine.opaque_tex))
                 SFResourceManager.Textures.Dispose(material.texture.GetName());
         }
@@ -340,7 +314,7 @@ namespace SpellforceDataEditor.SF3D
             z2 = -10000;
             foreach (SFSubModel3D sbm in submodels)
             {
-                foreach (Vector3 v in sbm.vertices)
+                foreach (Vector3 v in sbm.GetVertices())
                 {
                     x1 = Math.Min(x1, v.X);
                     x2 = Math.Max(x2, v.X);

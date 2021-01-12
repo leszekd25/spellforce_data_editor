@@ -179,6 +179,7 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.Initialize(new Vector2(glControl1.ClientSize.Width, glControl1.ClientSize.Height));
             SFRenderEngine.scene.camera.Position = new Vector3(0, 2, 6);
             SFRenderEngine.scene.camera.Lookat = new Vector3(0, 0, 0);
+
             glControl1.MouseWheel += new MouseEventHandler(glControl1_MouseWheel);
             glControl1.MakeCurrent();
 
@@ -190,7 +191,7 @@ namespace SpellforceDataEditor.special_forms
             // create grid model
             Vector3[] vertices = new Vector3[] { new Vector3(-1, 0, -1), new Vector3(-1, 0, 1), new Vector3(1, 0, -1), new Vector3(1, 0, 1) };
             Vector2[] uvs = new Vector2[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) };
-            Vector4[] colors = new Vector4[] { new Vector4(1f), new Vector4(1f), new Vector4(1f), new Vector4(1f) };
+            byte[] colors = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
             Vector3[] normals = new Vector3[] { new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0) };
             uint[] indices = new uint[] { 0, 1, 2, 1, 3, 2 };
             SFMaterial material = new SFMaterial();
@@ -236,6 +237,13 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
             SFRenderEngine.scene.root = null;
             SFRenderEngine.scene.camera = null;
+
+            foreach (var tex in SFRenderEngine.scene.tex_list_simple.Keys)
+                SFRenderEngine.scene.tex_list_simple[tex].Clear();
+            SFRenderEngine.scene.tex_list_simple.Clear();
+
+            SFSubModel3D.Cache.Clear();
+            SFSubModel3D.Cache.Dispose();
             SFRenderEngine.ui.Dispose();
             ui.Dispose();
             SFResourceManager.DisposeAll();
@@ -406,7 +414,7 @@ namespace SpellforceDataEditor.special_forms
                     int submodel_count = obj_s1.Mesh.submodels.Length;
                     foreach (var sbm in obj_s1.Mesh.submodels)
                     {
-                        vert_count += sbm.vertices.Length;
+                        vert_count += sbm.vertex_data.Length / 40;
                         face_count += sbm.face_indices.Length / 3;
                     }
                     ui.SetLabel1("Submodels: " + submodel_count.ToString() + ", vertices: " + vert_count.ToString() + ", faces: " + face_count.ToString());

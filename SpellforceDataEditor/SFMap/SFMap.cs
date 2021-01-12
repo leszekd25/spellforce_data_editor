@@ -1374,6 +1374,8 @@ namespace SpellforceDataEditor.SFMap
                 selection_helper.Dispose();    // selection 3d mesh
             if (ocean != null)
                 ocean.Dispose();
+            if (lake_manager != null)
+                lake_manager.Dispose();
             building_manager = null;
             unit_manager = null;
             object_manager = null;

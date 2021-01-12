@@ -35,7 +35,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         protected Quaternion rotation = Quaternion.Identity;
         protected Vector3 scale = Vector3.One;
         protected Matrix4 local_transform = Matrix4.Identity;
-        protected Matrix4 result_transform = Matrix4.Identity;
+        //protected Matrix4 result_transform = Matrix4.Identity;
         protected Physics.BoundingBox aabb = new Physics.BoundingBox(Vector3.Zero, Vector3.Zero);
         
         // todo: add a LocalVisible, so even when parent changes to visible while this is invisible, this is still invisible
@@ -59,7 +59,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public Quaternion Rotation { get { return rotation; } set { rotation = value; TouchLocalTransform(); TouchParents(); } }
         public Vector3 Scale { get { return scale; } set { scale = value; TouchLocalTransform(); TouchParents(); } }
         public Matrix4 LocalTransform { get { return local_transform; } protected set { local_transform = value; } }
-        public Matrix4 ResultTransform { get { return result_transform; } protected set { result_transform = value; } }
+        public Matrix4 ResultTransform = Matrix4.Identity;
 
         public Physics.BoundingBox AABB { get; }
 
@@ -156,7 +156,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 if (needsanyupdate)
                     UpdateTransform();
 
-                OnGatherSceneInstances();
+                //OnGatherSceneInstances();
 
                 foreach (SceneNode node in Children)
                     node.Update(t);
@@ -181,9 +181,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if(NeedsUpdateResultTransform)
             {
                 if (Parent != null)
-                    result_transform = local_transform * Parent.ResultTransform;
+                    ResultTransform = local_transform * Parent.ResultTransform;
                 else
-                    result_transform = local_transform;
+                    ResultTransform = local_transform;
                 NeedsUpdateResultTransform = false;
             }
         }
@@ -226,12 +226,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (Parent == null)
                 return this.Name;
             return Parent.GetFullPath() + '.' + this.Name;
-        }
-
-        // called when the node is determined to be rendered on the next frame
-        protected virtual void OnGatherSceneInstances()
-        {
-
         }
 
         // disposes node and all resources its using
@@ -278,16 +272,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
             set
             {
-                if (mesh != null)
-                    TouchInstance();
                 mesh = value;
-                if (mesh != null)
+                if (mesh == null)
                 {
-                    aabb = mesh.aabb;
-                    TouchInstance();
-                }
-                else
+                    ClearTexGeometry();
                     aabb = new Physics.BoundingBox(Vector3.Zero, Vector3.Zero);
+                }
+                else if (Visible)
+                {
+                    AddTexGeometry();
+                    aabb = mesh.aabb;
+                }
             }
         }
         public override bool Visible
@@ -298,26 +293,22 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 if (Visible != value)
                 {
                     visible = value;
-                    TouchInstance();
+                    if (value == false)
+                    {
+                        ClearTexGeometry();
+                    }
+                    else
+                    {
+                        AddTexGeometry();
+                    }
                     foreach (SceneNode n in Children)
                         n.Visible = value;
                 }
             }
         }
+        // list of scene cache pointers
+        public TexGeometryLinkSimple[] TextureGeometryIndex { get; private set; } = null;
 
-        public override bool NeedsAnyUpdate 
-        { 
-            get 
-            {
-                return needsanyupdate;
-            } 
-            protected set 
-            { 
-                needsanyupdate = value;
-                if(needsanyupdate)
-                    TouchInstance();
-            } 
-        }
         public bool Billboarded { get; set; } = false;
 
         protected override void UpdateTransform()
@@ -334,25 +325,49 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         public SceneNodeSimple(string n) : base(n) { }
 
-        private void TouchInstance()
+        // adds elements drawn by this node to scene cache
+        // todo: also do this if transparent = false, let transparent object list deal with those
+        private void ClearTexGeometry()
         {
-            if ((Mesh != null)&&(Mesh.submodels != null))
-                for (int i = 0; i < Mesh.submodels.Length; i++)
-                    Mesh.submodels[i].needs_matrix_reload = true;
+            if (TextureGeometryIndex == null)
+                return;
+
+            foreach (TexGeometryLinkSimple link in TextureGeometryIndex)
+            {
+                {
+                    SFRender.SFRenderEngine.scene.tex_list_simple[link.texture].RemoveAt(link.index);
+                    if (SFRender.SFRenderEngine.scene.tex_list_simple[link.texture].used_count == 0)
+                        SFRender.SFRenderEngine.scene.tex_list_simple.Remove(link.texture);
+                }
+            }
+
+            TextureGeometryIndex = null;
         }
 
-        protected override void OnGatherSceneInstances()
+        // adds elements drawn by this node to scene cache
+        // todo: also do this if transparent = false, let transparent object list deal with those
+        private void AddTexGeometry()
         {
-            if ((Mesh != null) && (Mesh.submodels != null))
-                for (int i = 0; i < Mesh.submodels.Length; i++)
-                    if(Mesh.submodels[i].needs_matrix_reload)
-                        Mesh.submodels[i].instance_matrices.AddElem(this.ResultTransform);
+            if (TextureGeometryIndex != null)
+                ClearTexGeometry();
+            if (mesh == null)
+                return;
+
+            TextureGeometryIndex = new TexGeometryLinkSimple[mesh.submodels.Length];
+
+            for (int i = 0; i < Mesh.submodels.Length; i++)
+            {
+                TexturedGeometryListElementSimple elem = new TexturedGeometryListElementSimple();
+                elem.node = this;
+                elem.submodel_index = i;
+                TextureGeometryIndex[i].texture = mesh.submodels[i].material.texture;
+                TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntrySimple(mesh.submodels[i].material.texture, elem);
+            }
         }
 
         // disposes mesh used by this node (reference counted, dw)
         protected override void InternalDispose()
         {
-            TouchInstance();
             if (Mesh != null)
             {
                 SFResources.SFResourceManager.Models.Dispose(Mesh.GetName());
@@ -587,13 +602,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (Parent != null)
             {
                 if((Parent.GetType() == typeof(SceneNodeAnimated))&&(BoneIndex != Utility.NO_INDEX))
-                    result_transform = local_transform * ((SceneNodeAnimated)(Parent)).Skeleton.bone_reference_matrices[BoneIndex]
+                    ResultTransform = local_transform * ((SceneNodeAnimated)(Parent)).Skeleton.bone_reference_matrices[BoneIndex]
                         * ((SceneNodeAnimated)(Parent)).BoneTransforms[BoneIndex] * Parent.ResultTransform;
                 else
-                    result_transform = local_transform * Parent.ResultTransform;
+                    ResultTransform = local_transform * Parent.ResultTransform;
             }
             else
-                result_transform = local_transform;
+                ResultTransform = local_transform;
 
             TouchLocalTransform();
         }

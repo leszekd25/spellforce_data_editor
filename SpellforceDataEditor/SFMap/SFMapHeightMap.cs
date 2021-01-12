@@ -17,6 +17,7 @@ namespace SpellforceDataEditor.SFMap
     {
         public const int POOL_SIZE = 768;          // how many heightmap chunks are at most allowed
         public const int CHUNK_SIZE = 16;          // width/height of one chunk
+        public const int INDICES_COUNT_PER_CHUNK = (2 * (CHUNK_SIZE+1) * (CHUNK_SIZE));//6 * (CHUNK_SIZE * CHUNK_SIZE);       // how many indices are there in one chunk
 
         // opengl VAO and VBOs
         public int vertex_array = -1;
@@ -25,9 +26,11 @@ namespace SpellforceDataEditor.SFMap
         // geometry data for all chunks is found in one buffer per attribute
         public Vector3[] vertices_pool = new Vector3[POOL_SIZE * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1)];    // vec3
         public Vector3[] normals_pool = new Vector3[POOL_SIZE * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1)];     // vec3
-        public ushort[] indices_pool = new ushort[6 * POOL_SIZE * (CHUNK_SIZE * CHUNK_SIZE)];       // ushort, 6 per quad
+
         // each chunk would use the same indices, so here's a copy of those for quick memory copy operation
-        public ushort[] indices_base = new ushort[6 * (CHUNK_SIZE * CHUNK_SIZE)];
+        public ushort[] indices_base = new ushort[INDICES_COUNT_PER_CHUNK];
+
+        public ushort[] indices_pool = new ushort[POOL_SIZE * INDICES_COUNT_PER_CHUNK];       // ushort, 6 per quad
         // a chunk is only rendered if it's active per this array
         public bool[] active = new bool[POOL_SIZE];
 
@@ -39,21 +42,34 @@ namespace SpellforceDataEditor.SFMap
         {
             // generate indices base
             for (uint i = 0; i < CHUNK_SIZE; i++)
-                for (uint j = 0; j < CHUNK_SIZE; j++)
+            {
+                for (uint j = 0; j < CHUNK_SIZE + 1; j++)
                 {
+                    indices_base[2 * (i * (CHUNK_SIZE + 1) + j) + 0] = (ushort)(i * (CHUNK_SIZE + 1) + j);
+                    indices_base[2 * (i * (CHUNK_SIZE + 1) + j) + 1] = (ushort)((i + 1) * (CHUNK_SIZE + 1) + j);
+                    /*
                     indices_base[6 * (i * CHUNK_SIZE + j) + 0] = (ushort)(i * (CHUNK_SIZE + 1) + j);
                     indices_base[6 * (i * CHUNK_SIZE + j) + 1] = (ushort)(i * (CHUNK_SIZE + 1) + j + 1);
                     indices_base[6 * (i * CHUNK_SIZE + j) + 2] = (ushort)(i * (CHUNK_SIZE + 1) + j + (CHUNK_SIZE + 1));
                     indices_base[6 * (i * CHUNK_SIZE + j) + 3] = (ushort)(i * (CHUNK_SIZE + 1) + j + 1);
                     indices_base[6 * (i * CHUNK_SIZE + j) + 4] = (ushort)(i * (CHUNK_SIZE + 1) + j + (CHUNK_SIZE + 2));
-                    indices_base[6 * (i * CHUNK_SIZE + j) + 5] = (ushort)(i * (CHUNK_SIZE + 1) + j + (CHUNK_SIZE + 1));
+                    indices_base[6 * (i * CHUNK_SIZE + j) + 5] = (ushort)(i * (CHUNK_SIZE + 1) + j + (CHUNK_SIZE + 1));*/
                 }
+
+                i += 1;
+
+                for (uint j = 0; j < CHUNK_SIZE + 1; j++)
+                {
+                    indices_base[2 * (i * (CHUNK_SIZE + 1) + j) + 0] = (ushort)(i * (CHUNK_SIZE + 1) + (CHUNK_SIZE - j));
+                    indices_base[2 * (i * (CHUNK_SIZE + 1) + j) + 1] = (ushort)((i + 1) * (CHUNK_SIZE + 1) + (CHUNK_SIZE - j));
+                }
+            }
 
             for (int i = 0; i < POOL_SIZE; i++)
             {
                 active[i] = false;
                 // indices generated only once per run
-                Array.Copy(indices_base, 0, indices_pool, 6 * i * (CHUNK_SIZE * CHUNK_SIZE), 6 * (CHUNK_SIZE * CHUNK_SIZE));
+                Array.Copy(indices_base, 0, indices_pool, i * INDICES_COUNT_PER_CHUNK, INDICES_COUNT_PER_CHUNK);
             }
 
             Init();
@@ -210,9 +226,6 @@ namespace SpellforceDataEditor.SFMap
         public int pool_index = -1;
         public SF3D.Physics.BoundingBox aabb;
 
-        // lake
-        public SFModel3D lake_model = null;    // generated here, but owned by ResourceManager
-
         // all entities on map are stored per chunk
         public List<SFMapBuilding> buildings = new List<SFMapBuilding>();
         public List<SFMapObject> objects = new List<SFMapObject>();
@@ -233,7 +246,6 @@ namespace SpellforceDataEditor.SFMap
 
             GenerateAABB();
 
-            RebuildLake();
             UpdateSettingsVisible();
         }
 
@@ -283,7 +295,7 @@ namespace SpellforceDataEditor.SFMap
             aabb = new SF3D.Physics.BoundingBox(new Vector3(ix * size, y1, iy * size), new Vector3((ix + 1) * size, y2, (iy * size) + size));
         }
 
-        // frees physical heightmap chunk from use, and destroys lake model associated with this chunk
+        // frees physical heightmap chunk from use, and hide lake model associated with this chunk
         public void Degenerate()
         {
             if (pool_index != -1)
@@ -292,11 +304,11 @@ namespace SpellforceDataEditor.SFMap
                 pool_index = -1;
             }
 
-            if (lake_model != null)
+            /*if (lake_model != null)
             {
                 SFResources.SFResourceManager.Models.Dispose(lake_model.GetName());
                 lake_model = null;
-            }
+            }*/
         }
 
         // updates physical heightmap chunk, fixes entity positions
@@ -341,135 +353,6 @@ namespace SpellforceDataEditor.SFMap
                 SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(p.GetName());
                 _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(p.grid_position) / 100.0f, _obj.Position.Z);
             }
-        }
-
-        struct SFMapLakeCellInfo
-        {
-            public byte lake_id;          // lake id (each lake has uniquely assigned id)
-            public short lake_type;       // lake type (water, lava, swamp, ice)
-            public float lake_height;    // height of the lake at particular cell
-        }
-
-        // updates lake model in correspondence with lake data for this chunk
-        public void RebuildLake()
-        {
-            if (!visible)
-                return;
-            // these are lake ids... different lake ids != different lake types
-            // one material dedicated to each lake type on the chunk!
-            Dictionary<SFCoord, SFMapLakeCellInfo> lake_info = new Dictionary<SFCoord, SFMapLakeCellInfo>();
-            Dictionary<short, int> lake_types = new Dictionary<short, int>();
-
-            int chunk_count = hmap.width / width;
-            int row_start = (chunk_count - iy - 1) * height;
-            int col_start = ix * width;
-
-            for (int i = 0; i < height; i++)
-                for (int j = 0; j < width; j++)
-                {
-                    SFCoord pos = new SFCoord(j, width - i - 1);
-                    SFMapLakeCellInfo lc_info = new SFMapLakeCellInfo();
-                    int index = ((row_start + i) * hmap.width) + col_start + j;
-                    byte lake_index = hmap.lake_data[index];
-                    if (lake_index != 0)
-                    {
-                        SFMapLake lake_object = hmap.map.lake_manager.lakes[lake_index - 1];
-                        lc_info.lake_id = lake_index;
-                        lc_info.lake_type = (short)lake_object.type;
-                        if (!lake_types.ContainsKey(lc_info.lake_type))
-                            lake_types.Add(lc_info.lake_type, 1);
-                        else
-                            lake_types[lc_info.lake_type] += 1;
-                        lc_info.lake_height = ((hmap.GetZ(lake_object.start) + lake_object.z_diff)) / 100.0f;
-                        lake_info.Add(pos, lc_info);
-                    }
-                }
-
-            if (lake_model != null)
-            {
-                SFResources.SFResourceManager.Models.Dispose(lake_model.GetName());
-                lake_model = null;
-            }
-
-            int total_cell_count = 0;
-            foreach (short t in lake_types.Keys)
-                total_cell_count += lake_types[t];
-            if (total_cell_count == 0)
-                return;
-
-            // generate submodels
-            SFSubModel3D[] submodels = new SFSubModel3D[lake_types.Count];
-
-            int submodel_index = 0;
-            foreach (short t in lake_types.Keys)
-            {
-                int k = 0;
-                Vector3[] vertices = new Vector3[lake_info.Keys.Count * 4];
-                Vector2[] uvs = new Vector2[lake_info.Keys.Count * 4];
-                Vector4[] colors = new Vector4[lake_info.Keys.Count * 4];
-                Vector3[] normals = new Vector3[lake_info.Keys.Count * 4];
-                uint[] indices = new uint[lake_info.Keys.Count * 6];
-                // generate geometry for each lake type
-                foreach (SFCoord pos in lake_info.Keys)
-                {
-                    SFMapLakeCellInfo lc_info = lake_info[pos];
-                    if (lc_info.lake_type != t)
-                        continue;
-
-                    float real_z = lc_info.lake_height;
-
-                    vertices[k * 4 + 0] = new Vector3((float)(pos.x) - 0.5f, real_z, (float)(pos.y) - 0.5f);
-                    vertices[k * 4 + 1] = new Vector3((float)(pos.x + 1) - 0.5f, real_z, (float)(pos.y) - 0.5f);
-                    vertices[k * 4 + 2] = new Vector3((float)(pos.x) - 0.5f, real_z, (float)(pos.y + 1) - 0.5f);
-                    vertices[k * 4 + 3] = new Vector3((float)(pos.x + 1) - 0.5f, real_z, (float)(pos.y + 1) - 0.5f);
-                    uvs[k * 4 + 0] = new Vector2(pos.x / 4.0f, pos.y / 4.0f);
-                    uvs[k * 4 + 1] = new Vector2((pos.x + 1) / 4.0f, pos.y / 4.0f);
-                    uvs[k * 4 + 2] = new Vector2(pos.x / 4.0f, (pos.y + 1) / 4.0f);
-                    uvs[k * 4 + 3] = new Vector2((pos.x + 1) / 4.0f, (pos.y + 1) / 4.0f);
-                    colors[k * 4 + 0] = new Vector4(1, 1, 1, 1);
-                    colors[k * 4 + 1] = new Vector4(1, 1, 1, 1);
-                    colors[k * 4 + 2] = new Vector4(1, 1, 1, 1);
-                    colors[k * 4 + 3] = new Vector4(1, 1, 1, 1);
-                    normals[k * 4 + 0] = new Vector3(0, 1, 0);
-                    normals[k * 4 + 1] = new Vector3(0, 1, 0);
-                    normals[k * 4 + 2] = new Vector3(0, 1, 0);
-                    normals[k * 4 + 3] = new Vector3(0, 1, 0);
-                    indices[k * 6 + 0] = (uint)(k * 4 + 0);
-                    indices[k * 6 + 1] = (uint)(k * 4 + 1);
-                    indices[k * 6 + 2] = (uint)(k * 4 + 2);
-                    indices[k * 6 + 3] = (uint)(k * 4 + 1);
-                    indices[k * 6 + 4] = (uint)(k * 4 + 2);
-                    indices[k * 6 + 5] = (uint)(k * 4 + 3);
-
-                    k += 1;
-                }
-                // generate material for this geometry
-                SFMaterial material = new SFMaterial();
-                material.indexStart = (uint)0;
-                material.indexCount = (uint)(lake_info.Keys.Count * 6);
-
-                string tex_name = hmap.map.lake_manager.GetLakeTextureName(t);
-                SFTexture tex = null;
-                int tex_code = SFResources.SFResourceManager.Textures.Load(tex_name);
-                if ((tex_code != 0) && (tex_code != -1))
-                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapLake.Generate(): Could not load texture (texture name = " + tex_name + ")");
-                else
-                {
-                    tex = SFResources.SFResourceManager.Textures.Get(tex_name);
-                    tex.FreeMemory();
-                }
-                material.texture = tex;
-
-                SFSubModel3D sbm = new SFSubModel3D();
-                sbm.CreateRaw(vertices, uvs, colors, normals, indices, material);
-                sbm.instance_matrices.AddElem(owner.ResultTransform);
-                submodels[submodel_index] = sbm;
-                submodel_index += 1;
-            }
-
-            lake_model = new SFModel3D();
-            lake_model.CreateRaw(submodels);
-            SFResources.SFResourceManager.Models.AddManually(lake_model, "LAKE_" + ix.ToString() + "_" + iy.ToString());
         }
 
         public void UpdateVisible(bool vis)
@@ -589,12 +472,6 @@ namespace SpellforceDataEditor.SFMap
             {
                 hmap.geometry_pool.FreeChunk(pool_index);
                 pool_index = -1;
-            }
-
-            if (lake_model != null)
-            {
-                SFResources.SFResourceManager.Models.Dispose(lake_model.GetName());
-                lake_model = null;
             }
 
             units.Clear();

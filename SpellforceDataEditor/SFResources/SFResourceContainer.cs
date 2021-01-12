@@ -19,6 +19,7 @@ namespace SpellforceDataEditor.SFResources
     {
         Dictionary<string, T> cont =new Dictionary<string, T>();
         Dictionary<string, int> reference_count = new Dictionary<string, int>();
+        Dictionary<string, bool> remove_when_unused = new Dictionary<string, bool>();
         string prefix_path = "";
         string[] suffix_extensions = null;
         int total_size = 0;
@@ -90,6 +91,7 @@ namespace SpellforceDataEditor.SFResources
             resource.SetName(rname);
             cont.Add(rname, resource);
             reference_count.Add(rname, 1);
+            remove_when_unused.Add(rname, true);
             // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
             ms.Close();
             //System.Diagnostics.Debug.WriteLine("LOADED " + rname + suffix_extension);
@@ -145,7 +147,8 @@ namespace SpellforceDataEditor.SFResources
             res.Init();
             res.SetName(rname);
             cont.Add(rname, res);
-            reference_count.Add(rname, 0);
+            reference_count.Add(rname, 1);
+            remove_when_unused.Add(rname, true);
             // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.AddManually(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
 
             return 0;
@@ -164,18 +167,38 @@ namespace SpellforceDataEditor.SFResources
 
             if (reference_count[rname] <= 0)
             {
-                if (reference_count[rname] != 0)
-                    LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Negative reference count!");
-                LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Removing resource "+rname);
+                if (remove_when_unused[rname])
+                {
+                    if (reference_count[rname] != 0)
+                        LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Negative reference count!");
+                    LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Removing resource " + rname);
 
-                total_size -= cont[rname].GetSizeBytes();
-                cont[rname].Dispose();
-                cont.Remove(rname);
-                reference_count.Remove(rname);
-                return 1;
+                    total_size -= cont[rname].GetSizeBytes();
+                    cont[rname].Dispose();
+                    cont.Remove(rname);
+                    reference_count.Remove(rname);
+                    remove_when_unused.Remove(rname);
+                    return 1;
+                }
             }
             //System.Diagnostics.Debug.WriteLine("DISPOSED " + rname + suffix_extension);
             return 0;
+        }
+
+        // if a given resource has remove_when_unused set to true, it will be removed when reference count goes to 0
+        public void SetRemoveWhenUnused(string rname, bool remove)
+        {
+            if(!cont.ContainsKey(rname))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.SetRemoveWhenUnused(): Resource " + rname + " does not exist!");
+                return;
+            }
+            remove_when_unused[rname] = remove;
+            if((remove)&&(reference_count[rname] <= 0))
+            {
+                reference_count[rname] = 1;
+                Dispose(rname);
+            }
         }
 
         public T Get(string rname)
@@ -211,20 +234,20 @@ namespace SpellforceDataEditor.SFResources
             return total_size;
         }
 
-        // removes all resources no matter the reference counters
+        // removes all resources no matter the reference counters or if remove when unused is marked true
         public void DisposeAll()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.DisposeAll() called");
 
-            string[] names = cont.Keys.ToArray();
-            foreach (string rname in names)
+            foreach (string rname in cont.Keys)
             {
                 LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.DisposeAll(): Removing resource " + rname);
 
                 cont[rname].Dispose();
-                cont.Remove(rname);
-                reference_count.Remove(rname);
             }
+            cont.Clear();
+            reference_count.Clear();
+            remove_when_unused.Clear();
             total_size = 0;
         }
     }
