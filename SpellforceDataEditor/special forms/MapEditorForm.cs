@@ -657,6 +657,8 @@ namespace SpellforceDataEditor.special_forms
 
             SFRenderEngine.scene.Init();
             CreateRenderWindow();
+            // set light direction (move somewhere else in the future, before this function is called)
+            SFRenderEngine.scene.sun_light.SetLightDirection(-new Vector3(1, -1, 1).Normalized());
             InspectorHide();
 
             this.WindowState = FormWindowState.Maximized;
@@ -1338,12 +1340,6 @@ namespace SpellforceDataEditor.special_forms
         {
             if (map != null)
             {
-                // set light direction (move somewhere else in the future, before this function is called)
-                SFRenderEngine.scene.sun_light.SetLightDirection(
-                    -new Vector3((float)Math.Cos(SFRenderEngine.scene.frame_counter / 100f), 
-                    -1f,
-                    (float)Math.Sin(SFRenderEngine.scene.frame_counter / 100f)));
-
                 Vector2 p = new Vector2(SFRenderEngine.scene.camera.Position.X, SFRenderEngine.scene.camera.Position.Z);
                 float z = map.heightmap.GetRealZ(p);
 
@@ -1516,7 +1512,7 @@ namespace SpellforceDataEditor.special_forms
                     return true;
                 case Keys.F | Keys.Control:
                     //SFRenderEngine.prepare_dump = true;
-                    SFRenderEngine.render_shadowmap_depth = !SFRenderEngine.render_shadowmap_depth;
+                    //SFRenderEngine.render_shadowmap_depth = !SFRenderEngine.render_shadowmap_depth;
                     update_render = true;
                     return true;
                 case Keys.P | Keys.Control:
@@ -1909,6 +1905,7 @@ namespace SpellforceDataEditor.special_forms
             PanelStrength.Visible = true;
             PanelTerrainSettings.Visible = true;
             PanelWeather.Visible = false;
+            PanelAtmoPreview.Visible = false;
 
             terrain_brush.size = (float)Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
@@ -2068,6 +2065,7 @@ namespace SpellforceDataEditor.special_forms
             PanelStrength.Visible = false;
             PanelTerrainSettings.Visible = false;
             PanelWeather.Visible = false;
+            PanelAtmoPreview.Visible = false;
 
             terrain_brush.size = (float)Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
@@ -2105,6 +2103,7 @@ namespace SpellforceDataEditor.special_forms
             PanelStrength.Visible = false;
             PanelTerrainSettings.Visible = false;
             PanelWeather.Visible = false;
+            PanelAtmoPreview.Visible = false;
 
             InspectorSet(new SFMap.map_controls.MapLakeInspector());
 
@@ -2113,6 +2112,12 @@ namespace SpellforceDataEditor.special_forms
         }
 
         // WEATHER
+        private void UpdateSunDirection()
+        {
+            SFRenderEngine.scene.sun_light.SetAzimuthAltitude(SunAzimuthTrackbar.Value, SunAltitudeTrackbar.Value);
+            update_render = true;
+        }
+
         private void RadioWeather_CheckedChanged(object sender, EventArgs e)
         {
             if (!RadioWeather.Checked)
@@ -2128,11 +2133,14 @@ namespace SpellforceDataEditor.special_forms
             PanelTerrainSettings.Visible = false;
             PanelWeather.Visible = true;
             PanelWeather.Location = PanelBrushShape.Location;
+            PanelAtmoPreview.Visible = true;
+            PanelAtmoPreview.Location = new Point(PanelWeather.Location.X + PanelWeather.Width + 3, PanelWeather.Location.Y);
 
             map.heightmap.overlay_active_texture = -1;
             update_render = true;
 
             UpdateWeatherPanel();
+            UpdateAtmoPanel();
         }
 
         private void UpdateWeatherPanel()
@@ -2147,6 +2155,13 @@ namespace SpellforceDataEditor.special_forms
             WLavanight.Text = map.weather_manager.weather[7].ToString();
         }
 
+        private void UpdateAtmoPanel()
+        {
+            SunAzimuthVal.Text = ((int)(SFRenderEngine.scene.sun_light.Azimuth)).ToString();
+            SunAzimuthTrackbar.Value = ((int)(SFRenderEngine.scene.sun_light.Azimuth));
+            SunAltitudeVal.Text = ((int)(SFRenderEngine.scene.sun_light.Altitude)).ToString();
+            SunAltitudeTrackbar.Value = ((int)(SFRenderEngine.scene.sun_light.Altitude));
+        }
 
         private void WClear_Validated(object sender, EventArgs e)
         {
@@ -2186,6 +2201,38 @@ namespace SpellforceDataEditor.special_forms
         private void WLavanight_Validated(object sender, EventArgs e)
         {
             map.weather_manager.weather[7] = Utility.TryParseUInt8(WLavanight.Text, map.weather_manager.weather[7]);
+        }
+
+        private void SunAzimuthVal_Validated(object sender, EventArgs e)
+        {
+            int v = Utility.TryParseInt32(SunAzimuthVal.Text, (int)(SFRenderEngine.scene.sun_light.Azimuth));
+            if (v < 0)
+                v = 0;
+            if (v > 359)
+                v = 359;
+            SunAzimuthTrackbar.Value = v;
+        }
+
+        private void SunAltitudeVal_Validated(object sender, EventArgs e)
+        {
+            int v = Utility.TryParseInt32(SunAltitudeVal.Text, (int)(SFRenderEngine.scene.sun_light.Altitude));
+            if (v < -89)
+                v = -89;
+            if (v > 89)
+                v = 89;
+            SunAltitudeTrackbar.Value = v;
+        }
+
+        private void SunAzimuthTrackbar_ValueChanged(object sender, EventArgs e)
+        {
+            SunAzimuthVal.Text = SunAzimuthTrackbar.Value.ToString();
+            UpdateSunDirection();
+        }
+
+        private void SunAltitudeTrackbar_ValueChanged(object sender, EventArgs e)
+        {
+            SunAltitudeVal.Text = SunAltitudeTrackbar.Value.ToString();
+            UpdateSunDirection();
         }
 
         // TERRAIN PAINT
@@ -3270,6 +3317,7 @@ namespace SpellforceDataEditor.special_forms
             }
 
             selected_editor = null;
+            SetMapType(map.metadata.map_type);
             InspectorSet(null);
         }
 
@@ -3296,28 +3344,29 @@ namespace SpellforceDataEditor.special_forms
 
             map.metadata.map_type = mt;
 
-            if (map.metadata.minimap == null)
+            if (map.metadata.original_minimap == null)
             {
                 byte[] image_data = new byte[128 * 128 * 3];
                 for (int i = 0; i < 128 * 128 * 3; i++)
                     image_data[i] = (byte)((i * 1024) / 3);
-                map.metadata.minimap = new SFMapMinimap();
-                map.metadata.minimap.width = 128;
-                map.metadata.minimap.height = 128;
-                map.metadata.minimap.texture_data = image_data;
-                map.metadata.minimap.GenerateTexture();
+                map.metadata.original_minimap = new SFMapMinimap();
+                map.metadata.original_minimap.width = 128;
+                map.metadata.original_minimap.height = 128;
+                map.metadata.original_minimap.data = image_data;
             }
 
             switch(mt)
             {
                 case SFMapType.CAMPAIGN:
                     ButtonTeams.Visible = false;
+                    ButtonMinimap.Visible = false;
                     PanelCoopParams.Visible = false;
 
                     MapTypeCampaign.Checked = true;
                     break;
                 case SFMapType.COOP:
                     ButtonTeams.Visible = true;
+                    ButtonMinimap.Visible = true;
                     PanelCoopParams.Visible = true;
                     UpdateCoopSpawnParameters();
 
@@ -3326,6 +3375,7 @@ namespace SpellforceDataEditor.special_forms
                 case SFMapType.MULTIPLAYER:
 
                     ButtonTeams.Visible = true;
+                    ButtonMinimap.Visible = true;
                     PanelCoopParams.Visible = false;
 
                     MapTypeMultiplayer.Checked = true;
@@ -3566,6 +3616,17 @@ namespace SpellforceDataEditor.special_forms
         {
             undohistory_form.FormClosed -= new FormClosedEventHandler(undohistory_FormClosed);
             undohistory_form = null;
+        }
+
+        private void ButtonMinimap_Click(object sender, EventArgs e)
+        {
+            SFMap.map_dialog.MapMinimapSettingsForm mmsf = new SFMap.map_dialog.MapMinimapSettingsForm();
+            mmsf.map = map;
+            mmsf.ShowDialog();
+            if (mmsf.DialogResult != DialogResult.OK)
+                return;
+
+            map.metadata.minimap_source = mmsf.new_source;
         }
     }
 }

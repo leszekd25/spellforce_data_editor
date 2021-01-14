@@ -601,11 +601,10 @@ namespace SpellforceDataEditor.SFMap
                         // load minimap
                         int width = p_num;
                         int height = br.ReadInt32();
-                        metadata.minimap = new SFMapMinimap();
-                        metadata.minimap.width = width;
-                        metadata.minimap.height = height;
-                        metadata.minimap.texture_data = br.ReadBytes(width * height * 3);
-                        metadata.minimap.GenerateTexture();
+                        metadata.original_minimap = new SFMapMinimap();
+                        metadata.original_minimap.width = width;
+                        metadata.original_minimap.height = height;
+                        metadata.original_minimap.data = br.ReadBytes(width * height * 3);
                     }
                     else
                         LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Found team composition data, but could not load it!");
@@ -1094,15 +1093,39 @@ namespace SpellforceDataEditor.SFMap
             }
             if (chunk_type != 0)
             {
-                byte[] c53_data = new byte[team_array.Length + 8 + (metadata.minimap.width * metadata.minimap.height * 3)];
+                SFMapMinimap mmap = null;
+                switch(metadata.minimap_source)
+                {
+                    case SFMapMinimapSource.ORIGINAL:
+                        mmap = metadata.original_minimap;
+                        break;
+                    case SFMapMinimapSource.EDITOR:
+                        mmap = new SFMapMinimap();
+                        mmap.FromBitmap(
+                            MainForm.mapedittool.ui.minimap_tex.ToBitmap(
+                                new SF3D.SFTexture.SFTextureToBitmapArgs()
+                                {
+                                    ConversionType = SF3D.SFTexture.SFTextureToBitmapArgType.DIMENSION,
+                                    DimWidth = 128,
+                                    DimHeight = 128
+                                }));
+                        break;
+                    case SFMapMinimapSource.CUSTOM:
+                        mmap = metadata.custom_minimap;
+                        break;
+                }
+                if (mmap == null)
+                    mmap = metadata.original_minimap;
+
+                byte[] c53_data = new byte[team_array.Length + 8 + (mmap.width * mmap.height * 3)];
                 using (MemoryStream ms = new MemoryStream(c53_data))
                 {
                     using (BinaryWriter bw = new BinaryWriter(ms))
                     {
                         bw.Write(team_array);
-                        bw.Write(metadata.minimap.width);
-                        bw.Write(metadata.minimap.height);
-                        bw.Write(metadata.minimap.texture_data);
+                        bw.Write(mmap.width);
+                        bw.Write(mmap.height);
+                        bw.Write(mmap.data);
                     }
                 }
                 f.AddChunk(53, 0, true, chunk_type, c53_data);
@@ -1323,11 +1346,10 @@ namespace SpellforceDataEditor.SFMap
             byte[] image_data = new byte[128 * 128 * 3];
             for (int i = 0; i < 128 * 128 * 3; i++)
                 image_data[i] = (byte)((i * 1024) / 3);
-            metadata.minimap = new SFMapMinimap();
-            metadata.minimap.width = 128;
-            metadata.minimap.height = 128;
-            metadata.minimap.texture_data = image_data;
-            metadata.minimap.GenerateTexture();
+            metadata.original_minimap = new SFMapMinimap();
+            metadata.original_minimap.width = 128;
+            metadata.original_minimap.height = 128;
+            metadata.original_minimap.data = image_data;
 
             // flag overlay
             for (int i = 0; i < width; i++)

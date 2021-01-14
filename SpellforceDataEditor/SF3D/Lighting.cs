@@ -13,8 +13,7 @@ namespace SpellforceDataEditor.SF3D
         public float Strength = 1.0f;
         public Vector4 Color = new Vector4(1.0f);
     }
-
-    // for some reason shadows dont want to work, need to investigate
+    
     public class LightingSun
     {
         public float Strength = 1.0f;
@@ -68,6 +67,18 @@ namespace SpellforceDataEditor.SF3D
                 else
                     Altitude = (float)(Vector3.CalculateAngle(-Vector3.UnitX, d2)*180/Math.PI);
             }
+        }
+
+        public void SetAzimuthAltitude(float az, float al)
+        {
+            Azimuth = az;
+            Altitude = al;
+
+            // construct direction from azimuth and altitude
+
+            Direction = -new Vector3((float)Math.Cos(-az * Math.PI / 180) * (float)Math.Cos(-al * Math.PI / 180),
+                            (float)Math.Sin(-al * Math.PI / 180),
+                            (float)Math.Sin(-az * Math.PI / 180) * (float)Math.Cos(-al * Math.PI / 180)).Normalized();
         }
         
         public void SetupLightView(Physics.BoundingBox aabb)

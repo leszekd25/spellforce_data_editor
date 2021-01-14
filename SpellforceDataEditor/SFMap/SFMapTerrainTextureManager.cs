@@ -315,29 +315,10 @@ namespace SpellforceDataEditor.SFMap
             return true;
         }
 
-        // operates on a 64x64 mip map level ground texture, hardcoded for now...
+        // operates on a 64x64 mip map level ground texture
         public Bitmap CreateBitmapFromTexture(SFTexture tex)
         {
-            Bitmap b = new Bitmap(tex.width / 4, tex.height / 4);
-            int ignored_level = 0;
-            while (!tex.IsValidMipMapLevel(ignored_level))
-                ignored_level += 1;
-
-            if (ignored_level > 2)
-                return b;
-
-            int offset = (tex.width * tex.height * 4) * (ignored_level > 0 ? 0 : 1)
-                       + (tex.width * tex.height) * (ignored_level > 1 ? 0 : 1);
-
-
-            for (int i = 0; i < 64; i++)
-                for (int j = 0; j < 64; j++)
-                    b.SetPixel(i, j, Color.FromArgb(
-                        255,
-                        tex.data[offset + 4 * (i * 64 + j) + 0],
-                        tex.data[offset + 4 * (i * 64 + j) + 1],
-                        tex.data[offset + 4 * (i * 64 + j) + 2]));
-            return b;
+            return tex.ToBitmap(new SFTexture.SFTextureToBitmapArgs() { ConversionType = SFTexture.SFTextureToBitmapArgType.DIMENSION, DimWidth = 64, DimHeight = 64 });
         }
 
         // generates previews for all loaded tiles

@@ -477,6 +477,61 @@ namespace SpellforceDataEditor.SF3D
             }
         }
 
+        public enum SFTextureToBitmapArgType { DIMENSION = 0, MIPMAP = 1 }    // mipmap not supported for now...
+
+        public struct SFTextureToBitmapArgs
+        {
+            // DIMENSION => look for mipmap with this dimension and get pixels from those, MIPMAP => get pixels from given mipmap
+            public SFTextureToBitmapArgType ConversionType;
+            public int DimWidth;
+            public int DimHeight;
+            public int MipmapLevel;
+        }
+
+        // create a bitmap from texture
+        // only works for uncompressed textures for now
+        public System.Drawing.Bitmap ToBitmap(SFTextureToBitmapArgs args)
+        {
+            System.Drawing.Bitmap b = null;
+
+            if (format != InternalFormat.Rgba)
+                return b;
+
+            int cur_w = width;
+            int cur_h = height;
+            int cur_mip = 0;
+
+            if (args.ConversionType == SFTextureToBitmapArgType.DIMENSION)
+            {
+                while ((cur_h != 0)&&(cur_w != 0))
+                {
+                    if ((cur_h == args.DimHeight) && (cur_w == args.DimWidth))
+                        break;
+
+                    cur_h /= 2;
+                    cur_w /= 2;
+                    cur_mip += 1;
+                }
+
+                if((cur_h == 0)||(cur_w == 0))
+                        return b;
+
+                int skip = 1 << (cur_mip);
+
+                b = new System.Drawing.Bitmap(cur_w, cur_h);
+                for (int j = 0; j < height; j += skip)
+                    for (int i = 0; i < width; i+=skip)
+                        b.SetPixel(i/skip, cur_h - 1 - j/skip, System.Drawing.Color.FromArgb(
+                            255,
+                            data[4 * (j * width + i) + 0],
+                            data[4 * (j * width + i) + 1],
+                            data[4 * (j * width + i) + 2]));
+                return b;
+            }
+            else
+                return b;
+        }
+
         // texture format: bmp
         public void Export(string fname)
         {

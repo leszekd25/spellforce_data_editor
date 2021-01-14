@@ -526,7 +526,8 @@ void main(){
   mat3 normalMatrix = transpose(inverse(mat3(M)));
   vec3 normal = normalize(normalMatrix * fragmentNormal);
   vec3 fragVec = fragmentPosition;
-  float brightness = (dot(normal, SunDirection)*1.4)-0.4; // both vectors are normalized
+  //float brightness = (dot(normal, SunDirection)*1.4)-0.4; // both vectors are normalized
+  float brightness = dot(normal, SunDirection); // both vectors are normalized
     // calculate shadow
   float calc_shadow = CalculateShadow(fragmentPositionLightSpace, brightness);
   //if(calc_shadow &lt; 1)
@@ -535,7 +536,8 @@ void main(){
   //    return;
   //}
   brightness = min(brightness, calc_shadow);
-  brightness = clamp(brightness, 0, 1);  
+  brightness = clamp(brightness, 0, 1);
+  brightness = pow(brightness, 0.6);
 
   // calculate diffuse color based on heightmap textures
   vec2 map_uv = floor(UV*4);

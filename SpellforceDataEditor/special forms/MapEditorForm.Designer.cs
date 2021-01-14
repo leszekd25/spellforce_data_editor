@@ -189,8 +189,17 @@
             this.TreeEntities = new System.Windows.Forms.TreeView();
             this.TimerTreeEntityFilter = new System.Windows.Forms.Timer(this.components);
             this.RenderWindow = new OpenTK.GLControl();
-            this.QuickSelect = new SpellforceDataEditor.SFMap.map_controls.MapQuickSelectControl();
             this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
+            this.PanelAtmoPreview = new System.Windows.Forms.Panel();
+            this.SunAzimuthVal = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.SunAzimuthTrackbar = new System.Windows.Forms.TrackBar();
+            this.SunAltitudeVal = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.SunAltitudeTrackbar = new System.Windows.Forms.TrackBar();
+            this.label37 = new System.Windows.Forms.Label();
+            this.QuickSelect = new SpellforceDataEditor.SFMap.map_controls.MapQuickSelectControl();
+            this.ButtonMinimap = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
@@ -221,6 +230,9 @@
             this.PanelUtility.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TrackbarCameraSpeed)).BeginInit();
             this.PanelObjectSelector.SuspendLayout();
+            this.PanelAtmoPreview.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SunAzimuthTrackbar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SunAltitudeTrackbar)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -875,6 +887,7 @@
             // 
             // TabPageTerrain
             // 
+            this.TabPageTerrain.Controls.Add(this.PanelAtmoPreview);
             this.TabPageTerrain.Controls.Add(this.PanelWeather);
             this.TabPageTerrain.Controls.Add(this.PanelFlags);
             this.TabPageTerrain.Controls.Add(this.PanelBrushShape);
@@ -1478,6 +1491,7 @@
             // 
             // TabPageMetadata
             // 
+            this.TabPageMetadata.Controls.Add(this.ButtonMinimap);
             this.TabPageMetadata.Controls.Add(this.ButtonTeams);
             this.TabPageMetadata.Controls.Add(this.PanelCoopParams);
             this.TabPageMetadata.Controls.Add(this.panel6);
@@ -1520,7 +1534,7 @@
             this.PanelCoopParams.Controls.Add(this.CoopSpawnParam31);
             this.PanelCoopParams.Controls.Add(this.CoopSpawnParam21);
             this.PanelCoopParams.Controls.Add(this.CoopSpawnParam11);
-            this.PanelCoopParams.Location = new System.Drawing.Point(203, 3);
+            this.PanelCoopParams.Location = new System.Drawing.Point(304, 3);
             this.PanelCoopParams.Name = "PanelCoopParams";
             this.PanelCoopParams.Size = new System.Drawing.Size(482, 108);
             this.PanelCoopParams.TabIndex = 10;
@@ -1823,6 +1837,95 @@
             this.RenderWindow.VSync = false;
             this.RenderWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
             // 
+            // TimerAnimation
+            // 
+            this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
+            // 
+            // PanelAtmoPreview
+            // 
+            this.PanelAtmoPreview.Controls.Add(this.label37);
+            this.PanelAtmoPreview.Controls.Add(this.SunAltitudeVal);
+            this.PanelAtmoPreview.Controls.Add(this.label13);
+            this.PanelAtmoPreview.Controls.Add(this.SunAltitudeTrackbar);
+            this.PanelAtmoPreview.Controls.Add(this.SunAzimuthVal);
+            this.PanelAtmoPreview.Controls.Add(this.label12);
+            this.PanelAtmoPreview.Controls.Add(this.SunAzimuthTrackbar);
+            this.PanelAtmoPreview.Location = new System.Drawing.Point(675, 82);
+            this.PanelAtmoPreview.Name = "PanelAtmoPreview";
+            this.PanelAtmoPreview.Size = new System.Drawing.Size(265, 100);
+            this.PanelAtmoPreview.TabIndex = 18;
+            this.PanelAtmoPreview.Visible = false;
+            // 
+            // SunAzimuthVal
+            // 
+            this.SunAzimuthVal.Location = new System.Drawing.Point(74, 25);
+            this.SunAzimuthVal.Name = "SunAzimuthVal";
+            this.SunAzimuthVal.Size = new System.Drawing.Size(42, 20);
+            this.SunAzimuthVal.TabIndex = 15;
+            this.SunAzimuthVal.Text = "30";
+            this.SunAzimuthVal.Validated += new System.EventHandler(this.SunAzimuthVal_Validated);
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(3, 28);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(65, 13);
+            this.label12.TabIndex = 14;
+            this.label12.Text = "Sun azimuth";
+            // 
+            // SunAzimuthTrackbar
+            // 
+            this.SunAzimuthTrackbar.AutoSize = false;
+            this.SunAzimuthTrackbar.Location = new System.Drawing.Point(122, 25);
+            this.SunAzimuthTrackbar.Maximum = 359;
+            this.SunAzimuthTrackbar.Name = "SunAzimuthTrackbar";
+            this.SunAzimuthTrackbar.Size = new System.Drawing.Size(104, 20);
+            this.SunAzimuthTrackbar.TabIndex = 13;
+            this.SunAzimuthTrackbar.TickFrequency = 45;
+            this.SunAzimuthTrackbar.Value = 30;
+            this.SunAzimuthTrackbar.ValueChanged += new System.EventHandler(this.SunAzimuthTrackbar_ValueChanged);
+            // 
+            // SunAltitudeVal
+            // 
+            this.SunAltitudeVal.Location = new System.Drawing.Point(74, 51);
+            this.SunAltitudeVal.Name = "SunAltitudeVal";
+            this.SunAltitudeVal.Size = new System.Drawing.Size(42, 20);
+            this.SunAltitudeVal.TabIndex = 18;
+            this.SunAltitudeVal.Text = "60";
+            this.SunAltitudeVal.Validated += new System.EventHandler(this.SunAltitudeVal_Validated);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(3, 54);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(63, 13);
+            this.label13.TabIndex = 17;
+            this.label13.Text = "Sun altitude";
+            // 
+            // SunAltitudeTrackbar
+            // 
+            this.SunAltitudeTrackbar.AutoSize = false;
+            this.SunAltitudeTrackbar.Location = new System.Drawing.Point(122, 51);
+            this.SunAltitudeTrackbar.Maximum = 89;
+            this.SunAltitudeTrackbar.Minimum = -89;
+            this.SunAltitudeTrackbar.Name = "SunAltitudeTrackbar";
+            this.SunAltitudeTrackbar.Size = new System.Drawing.Size(104, 20);
+            this.SunAltitudeTrackbar.TabIndex = 16;
+            this.SunAltitudeTrackbar.TickFrequency = 45;
+            this.SunAltitudeTrackbar.Value = 60;
+            this.SunAltitudeTrackbar.ValueChanged += new System.EventHandler(this.SunAltitudeTrackbar_ValueChanged);
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(90, 0);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(103, 13);
+            this.label37.TabIndex = 19;
+            this.label37.Text = "Atmosphere preview";
+            // 
             // QuickSelect
             // 
             this.QuickSelect.Location = new System.Drawing.Point(731, 4);
@@ -1833,9 +1936,15 @@
             this.QuickSelect.TabIndex = 15;
             this.QuickSelect.Visible = false;
             // 
-            // TimerAnimation
+            // ButtonMinimap
             // 
-            this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
+            this.ButtonMinimap.Location = new System.Drawing.Point(203, 3);
+            this.ButtonMinimap.Name = "ButtonMinimap";
+            this.ButtonMinimap.Size = new System.Drawing.Size(95, 108);
+            this.ButtonMinimap.TabIndex = 12;
+            this.ButtonMinimap.Text = "Minimap settings...";
+            this.ButtonMinimap.UseVisualStyleBackColor = true;
+            this.ButtonMinimap.Click += new System.EventHandler(this.ButtonMinimap_Click);
             // 
             // MapEditorForm
             // 
@@ -1910,6 +2019,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.TrackbarCameraSpeed)).EndInit();
             this.PanelObjectSelector.ResumeLayout(false);
             this.PanelObjectSelector.PerformLayout();
+            this.PanelAtmoPreview.ResumeLayout(false);
+            this.PanelAtmoPreview.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SunAzimuthTrackbar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SunAltitudeTrackbar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2079,5 +2192,14 @@
         private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem operationHistoryToolStripMenuItem;
         private System.Windows.Forms.Timer TimerAnimation;
+        private System.Windows.Forms.Panel PanelAtmoPreview;
+        private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.TextBox SunAltitudeVal;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TrackBar SunAltitudeTrackbar;
+        private System.Windows.Forms.TextBox SunAzimuthVal;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TrackBar SunAzimuthTrackbar;
+        private System.Windows.Forms.Button ButtonMinimap;
     }
 }

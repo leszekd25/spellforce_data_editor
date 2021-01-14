@@ -71,24 +71,68 @@ namespace SpellforceDataEditor.SFMap
     public class SFMapMinimap
     {
         public int width, height;
-        public byte[] texture_data = null;
-        public int tex_id = -1;
+        public byte[] data = null;
 
-        public void GenerateTexture()
+        public void FromBitmap(System.Drawing.Bitmap bmp)
         {
-            tex_id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, tex_id);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, width, height, 0, PixelFormat.Rgb, PixelType.UnsignedByte, texture_data);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+            width = bmp.Width;
+            height = bmp.Height;
+            data = new byte[width * height * 3]; // RGB8 
+            using (MemoryStream ms = new MemoryStream(data))
+            {
+                using (BinaryWriter bw = new BinaryWriter(ms))
+                {
+                    for(int i = 0; i < height; i++)
+                    {
+                        for(int j = 0; j < width; j++)
+                        {
+                            var col = bmp.GetPixel(j, height - 1 - i);
+                            bw.Write(col.B);
+                            bw.Write(col.G);
+                            bw.Write(col.R);
+                        }
+                    }
+                }
+            }
+        }
+
+        public System.Drawing.Bitmap ToBitmap()
+        {
+            System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(width, height);
+            using (MemoryStream ms = new MemoryStream(data))
+            {
+                using (BinaryReader br = new BinaryReader(ms))
+                {
+                    for (int i = 0; i < height; i++)
+                    {
+                        for (int j = 0; j < width; j++)
+                        {
+                            byte b = br.ReadByte();
+                            byte g = br.ReadByte();
+                            byte r = br.ReadByte();
+                            bmp.SetPixel(j, height - 1 - i, System.Drawing.Color.FromArgb(r, g, b));
+                        }
+                    }
+                }
+            }
+
+            return bmp;
         }
     }
+
+    public enum SFMapMinimapSource { ORIGINAL = 0, EDITOR, CUSTOM }
 
     public class SFMapMetaData
     {
         public SFMapType map_type;
         public int player_count = 0;   // actually spawn points for players, each bound to exactly one bindstone
         public List<SFMapSpawn> spawns = new List<SFMapSpawn>();
-        public SFMapMinimap minimap = null;
+
+        public SFMapMinimap original_minimap = null;
+        public SFMapMinimap new_minimap = null;
+        public SFMapMinimap custom_minimap = null;
+        public SFMapMinimapSource minimap_source = SFMapMinimapSource.ORIGINAL;
+
         public List<SFMapCoopSpawnParameters> coop_spawn_params = new List<SFMapCoopSpawnParameters>()
             {
                 new SFMapCoopSpawnParameters(),
@@ -109,12 +153,6 @@ namespace SpellforceDataEditor.SFMap
         public void Unload()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapMetaData.Unload() called");
-
-            if (minimap != null)
-            {
-                if (minimap.tex_id != -1)
-                    GL.DeleteTexture(minimap.tex_id);
-            }
         }
 
         public int CreateNewPlayer(SFCoord pos)
