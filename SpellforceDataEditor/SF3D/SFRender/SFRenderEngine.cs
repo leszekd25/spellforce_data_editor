@@ -50,6 +50,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static FrameBuffer shadowmap_depth = null;
         static FrameBuffer screenspace_framebuffer = null;
         static FrameBuffer screenspace_intermediate = null;
+        public static bool render_shadowmap_depth = false;
 
         public static Vector2 render_size = Vector2.Zero;
 
@@ -59,6 +60,16 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static int drawcalls_hmap = 0;
         static int drawcalls_ui = 0;
         static int triangles = 0;
+
+        public static bool is_rendering = false;
+        public static bool prepare_dump = false;
+        private static StringBuilder dump_sb = null;
+        private static string dump_preline = "";
+        private static Dictionary<SFTexture, int> dump_texture_binds = new Dictionary<SFTexture, int>();
+        private static Dictionary<SFTexture, int> dump_texture_simpledraw = new Dictionary<SFTexture, int>();
+        private static Dictionary<SFTexture, int> dump_texture_animdraw = new Dictionary<SFTexture, int>();
+        private static Dictionary<SFModel3D, int[]> dump_mesh_draw = new Dictionary<SFModel3D, int[]>();
+        private static Dictionary<SFModelSkin, int> dump_skin_draw = new Dictionary<SFModelSkin, int>();
 
         private static void DebugCallback(DebugSource source,
                                     DebugType type,
@@ -81,6 +92,193 @@ namespace SpellforceDataEditor.SF3D.SFRender
         private static GCHandle _debugProcCallbackHandle;
 
 
+        // frame dump utility
+        private static void DumpStart()
+        {
+            if (dump_sb != null)
+                return;
+
+            dump_sb = new StringBuilder();
+            dump_texture_binds.Clear();
+            dump_texture_simpledraw.Clear();
+            dump_texture_animdraw.Clear();
+        }
+
+        private static void DumpAddTexDict(SFTexture tex, int dict_id)
+        {
+            if (dump_sb == null)
+                return;
+
+            if (!dump_texture_binds.ContainsKey(tex))
+            {
+                dump_texture_binds.Add(tex, 0);
+                dump_texture_simpledraw.Add(tex, 0);
+                dump_texture_animdraw.Add(tex, 0);
+            }
+
+            switch (dict_id)
+            {
+                case 0:
+                    dump_texture_binds[tex] += 1;
+                    break;
+                case 1:
+                    dump_texture_simpledraw[tex] += 1;
+                    break;
+                case 2:
+                    dump_texture_animdraw[tex] += 1;
+                    break;
+            }
+        }
+
+        private static void DumpAddMeshDict(SFModel3D mesh, int submodel_index)
+        {
+            if (dump_sb == null)
+                return;
+
+            if (!dump_mesh_draw.ContainsKey(mesh))
+            {
+                dump_mesh_draw.Add(mesh, new int[mesh.submodels.Length]);
+                dump_mesh_draw[mesh].Initialize();
+            }
+
+            dump_mesh_draw[mesh][submodel_index] += 1;
+        }
+        private static void DumpAddSkinDict(SFModelSkin skin)
+        {
+            if (dump_sb == null)
+                return;
+
+            if (!dump_skin_draw.ContainsKey(skin))
+                dump_skin_draw.Add(skin, 0);
+
+            dump_skin_draw[skin] += 1;
+        }
+
+        private static void DumpLevelUp()
+        {
+            dump_preline = dump_preline + "-";
+        }
+
+        private static void DumpLevelDown()
+        {
+            if (dump_preline == "")
+                return;
+
+            dump_preline = dump_preline.Substring(1);
+        }
+
+        private static void DumpPush(string line)
+        {
+            dump_sb.AppendLine(dump_preline + line);
+        }
+
+        private static void DumpEnd()
+        {
+            if (dump_sb == null)
+                return;
+
+            DumpPush("FRAME DUMP");
+            DumpPush("");
+
+            // texture bind amount
+            int sum = 0;
+            DumpPush("Texture bind stats:");
+            DumpLevelUp();
+            foreach (var tex in dump_texture_binds.Keys)
+            {
+                if (dump_texture_binds[tex] == 0)
+                    continue;
+
+                DumpPush(tex.GetName() + ": " + dump_texture_binds[tex].ToString());
+                sum += dump_texture_binds[tex];
+            }
+            DumpPush("Total binds: " + sum.ToString());
+            DumpLevelDown();
+            DumpPush("");
+
+            sum = 0;
+            DumpPush("Simple model draws with given texture (texture name, draw count):");
+            DumpLevelUp();
+            foreach (var tex in dump_texture_simpledraw.Keys)
+            {
+                if (dump_texture_simpledraw[tex] == 0)
+                    continue;
+
+                DumpPush(tex.GetName() + ": " + dump_texture_simpledraw[tex].ToString());
+                sum += dump_texture_simpledraw[tex];
+            }
+            DumpPush("Total simple model draws: " + sum.ToString());
+            DumpLevelDown();
+            DumpPush("");
+
+            sum = 0;
+            DumpPush("Animated model draws with given texture (texture name, draw count):");
+            DumpLevelUp();
+            foreach (var tex in dump_texture_animdraw.Keys)
+            {
+                if (dump_texture_animdraw[tex] == 0)
+                    continue;
+
+                DumpPush(tex.GetName() + ": " + dump_texture_animdraw[tex].ToString());
+                sum += dump_texture_animdraw[tex];
+            }
+            DumpPush("Total animated model draws: " + sum.ToString());
+            DumpLevelDown();
+            DumpPush("");
+
+            sum = 0;
+            DumpPush("Simple model draw stats (model name, per submodel draw count, total draw count):");
+            DumpLevelUp();
+            foreach (var mesh in dump_mesh_draw.Keys)
+            {
+                int msum = 0;
+                string s = "[";
+                foreach (var i in dump_mesh_draw[mesh])
+                {
+                    s += i.ToString() + ", ";
+                    msum += i;
+                }
+                s = s.Substring(0, s.Length - 2);
+                s += "]";
+
+                if (msum == 0)
+                    continue;
+
+                DumpPush(mesh.GetName() + ": " + s.ToString() + ", " + msum.ToString());
+                sum += msum;
+            }
+            DumpPush("Total simple model draws: " + sum.ToString());
+            DumpLevelDown();
+            DumpPush("");
+
+            sum = 0;
+            DumpPush("Animated model draw stats (model name, total draw count):");
+            DumpLevelUp();
+            foreach (var skin in dump_skin_draw.Keys)
+            {
+                if (dump_skin_draw[skin] == 0)
+                    continue;
+
+                DumpPush(skin.GetName() + ": " + dump_skin_draw[skin].ToString());
+                sum += dump_skin_draw[skin];
+            }
+            DumpPush("Total animated model draws: " + sum.ToString());
+            DumpLevelDown();
+            DumpPush("");
+
+            DumpPush("Measured simple model drawcalls: " + drawcalls_simple.ToString());
+            DumpPush("Measured animated model drawcalls: " + drawcalls_anim.ToString());
+            DumpPush("Measured heightmap drawcalls: " + drawcalls_hmap.ToString());
+            DumpPush("Measured UI drawcalls: " + drawcalls_ui.ToString());
+            DumpPush("Measured triangles drawn: " + triangles.ToString());
+
+
+            File.WriteAllText("frame_dump.txt", dump_sb.ToString());
+
+            dump_sb = null;
+        }
+
+
         //called only once!
         public static void Initialize(Vector2 view_size)
         {
@@ -94,17 +292,32 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.Enable(EnableCap.DebugOutput);
                 GL.Enable(EnableCap.DebugOutputSynchronous);
 
-                // initialize static model cache
-                SFSubModel3D.Cache = new MeshCache();
-                SFSubModel3D.Cache.AddVertexAttribute(3, VertexAttribPointerType.Float, false);   // positions
-                SFSubModel3D.Cache.AddVertexAttribute(3, VertexAttribPointerType.Float, false);   // normals
-                SFSubModel3D.Cache.AddVertexAttribute(4, VertexAttribPointerType.UnsignedByte, true);   // colors
-                SFSubModel3D.Cache.AddVertexAttribute(2, VertexAttribPointerType.Float, false);   // UVs
-                SFSubModel3D.Cache.SetVertexSize(40);
-                SFSubModel3D.Cache.Init(2 << 14, 2 << 14);
+
             }
 
-            scene.sun_light.Direction = -(new Vector3(0, -1, 0).Normalized());
+            // initialize static model cache
+            if(SFSubModel3D.Cache != null)
+                SFSubModel3D.Cache.Dispose();
+            SFSubModel3D.Cache = new MeshCache();
+            SFSubModel3D.Cache.AddVertexAttribute(3, VertexAttribPointerType.Float, false);   // positions
+            SFSubModel3D.Cache.AddVertexAttribute(3, VertexAttribPointerType.Float, false);   // normals
+            SFSubModel3D.Cache.AddVertexAttribute(4, VertexAttribPointerType.UnsignedByte, true);   // colors
+            SFSubModel3D.Cache.AddVertexAttribute(2, VertexAttribPointerType.Float, false);   // UVs
+            SFSubModel3D.Cache.SetVertexSize(40);
+            SFSubModel3D.Cache.Init(2 << 14, 2 << 14);
+
+            if (SFModelSkinChunk.Cache != null)
+                SFModelSkinChunk.Cache.Dispose();
+            SFModelSkinChunk.Cache = new MeshCache();
+            SFModelSkinChunk.Cache.AddVertexAttribute(3, VertexAttribPointerType.Float, false);   // positions
+            SFModelSkinChunk.Cache.AddVertexAttribute(3, VertexAttribPointerType.Float, false);   // normals
+            SFModelSkinChunk.Cache.AddVertexAttribute(4, VertexAttribPointerType.UnsignedByte, true);   // bone weights
+            SFModelSkinChunk.Cache.AddVertexAttribute(2, VertexAttribPointerType.Float, false);   // uvs
+            SFModelSkinChunk.Cache.AddVertexAttribute(4, VertexAttribPointerType.UnsignedByte, false);
+            SFModelSkinChunk.Cache.SetVertexSize(40);
+            SFModelSkinChunk.Cache.Init(2 << 6, 2 << 6);
+
+            scene.sun_light.SetLightDirection(-(new Vector3(0, -1, 0).Normalized()));
             scene.sun_light.Color = new Vector4(1, 1, 1f, 1);
             scene.sun_light.Strength = 1.6f;
             scene.ambient_light.Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -130,6 +343,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_shadowmap_heightmap.AddParameter("DiffuseTexture");
 
             shader_framebuffer_simple.CompileShader(Properties.Resources.vshader_framebuffer, Properties.Resources.fshader_framebuffer_simple);
+            shader_framebuffer_simple.AddParameter("renderShadowMap");
+            shader_framebuffer_simple.AddParameter("ZNear");
+            shader_framebuffer_simple.AddParameter("ZFar");
 
             shader_ui.CompileShader(Properties.Resources.vshader_ui, Properties.Resources.fshader_ui);
             shader_ui.AddParameter("Tex");
@@ -157,7 +373,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 screenspace_intermediate.Dispose();
             }
             shadowmap_depth = new FrameBuffer(Settings.ShadowMapSize, Settings.ShadowMapSize, 0, FrameBuffer.TextureType.DEPTH, FrameBuffer.RenderBufferType.NONE);
-            //shadowmap_depth.SetUpShadowmap();
             screenspace_framebuffer = new FrameBuffer((int)view_size.X, (int)view_size.Y, Settings.AntiAliasingSamples);
             screenspace_intermediate = new FrameBuffer((int)view_size.X, (int)view_size.Y, 0);
 
@@ -204,6 +419,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_simple.AddParameter("FogStart");
             shader_simple.AddParameter("FogEnd");
             shader_simple.AddParameter("DepthBias");
+            shader_simple.AddParameter("ShadowDepth");
 
             shader_animated.CompileShader(Properties.Resources.vshader_skel, Properties.Resources.fshader_skel);
             shader_animated.AddParameter("P");
@@ -221,6 +437,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_animated.AddParameter("FogColor");
             shader_animated.AddParameter("FogStart");
             shader_animated.AddParameter("FogEnd");
+            shader_animated.AddParameter("ShadowDepth");
 
             shader_heightmap.CompileShader(Properties.Resources.vshader_hmap, Properties.Resources.fshader_hmap);
             shader_heightmap.AddParameter("VP");
@@ -239,6 +456,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_heightmap.AddParameter("FogColor");
             shader_heightmap.AddParameter("FogStart");
             shader_heightmap.AddParameter("FogEnd");
+            shader_heightmap.AddParameter("ShadowDepth");
             // tiledata ubo binding
             int uniform_tiledata = GL.GetUniformBlockIndex(shader_heightmap.ProgramID, "Tiles");
             GL.UniformBlockBinding(shader_heightmap.ProgramID, uniform_tiledata, 0);
@@ -525,37 +743,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
             heightmap.visible_chunks = vis_chunks;
 
-            // set light matrix and check decoration visibility
-            /*
-            float xmin, xmax, ymin, ymax, zmax;
-            xmin = 9999; ymin = 9999; xmax = -9999; ymax = -9999; zmax = -9999;
-            foreach(SceneNodeMapChunk chunk_node in vis_chunks)
-            {
-                Vector3 pos = chunk_node.Position;
-                if (pos.X-16 < xmin)
-                    xmin = pos.X-16;
-                else if (pos.X+32 > xmax)
-                    xmax = pos.X+32;
-                if (pos.Z-16 < ymin)
-                    ymin = pos.Z-16;
-                else if (pos.Z+32 > ymax)
-                    ymax = pos.Z+32;
-                if (chunk_node.MapChunk.collision_cache.aabb.b.Y > zmax)
-                    zmax = chunk_node.MapChunk.collision_cache.aabb.b.Y;
-
-                chunk_node.MapChunk.UpdateDecorationVisible(chunk_node.DistanceToCamera);
-            }
-            SF3D.Physics.BoundingBox aabb = new Physics.BoundingBox(new Vector3(xmin, 0, ymin), new Vector3(xmax, zmax+15, ymax));
-            scene.sun_light.SetupLightView(aabb);*/
-
-            // set light matrix and check decoration visibility, this also sets level of detail
-
+            // check decoration visibility
             foreach (SceneNodeMapChunk chunk_node in vis_chunks)
             {
                 chunk_node.MapChunk.UpdateDecorationVisible(chunk_node.DistanceToCamera, chunk_node.CameraHeightDifference);
                 chunk_node.MapChunk.UpdateUnitVisible(chunk_node.DistanceToCamera, chunk_node.CameraHeightDifference);
             }
-            scene.sun_light.SetupLightView(scene.camera.Position);
         }
 
         static void RenderHeightmap()
@@ -577,6 +770,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
                 GL.Uniform1(active_shader["GridSize"], heightmap.width);
                 GL.Uniform4(active_shader["GridColor"], Settings.GridColor);
+                GL.Uniform1(active_shader["ShadowDepth"], scene.sun_light.ShadowDepth);
             }
             else if (current_pass == RenderPass.SHADOWMAP)
                 GL.BindTexture(TextureTarget.Texture2D, opaque_tex.tex_id);
@@ -592,8 +786,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         DrawElementsType.UnsignedShort,
                         new IntPtr(i * SFMapHeightMapGeometryPool.INDICES_COUNT_PER_CHUNK * 2),
                         i * (SFMapHeightMapGeometryPool.CHUNK_SIZE + 1) * (SFMapHeightMapGeometryPool.CHUNK_SIZE + 1));
-                    drawcalls_hmap += 1;
-                    triangles += 2 * SFMapHeightMapGeometryPool.CHUNK_SIZE * SFMapHeightMapGeometryPool.CHUNK_SIZE;
+                    //drawcalls_hmap += 1;
+                    //triangles += 2 * SFMapHeightMapGeometryPool.CHUNK_SIZE * SFMapHeightMapGeometryPool.CHUNK_SIZE;
                 }
 
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
@@ -628,6 +822,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         continue;
                     // sbm.ReloadInstanceMatrices();
                     GL.BindTexture(TextureTarget.Texture2D, sbm.material.texture.tex_id);
+                    //DumpAddTexDict(sbm.material.texture, 0);
 
                     int vri = SFSubModel3D.Cache.Meshes[SFSubModel3D.Cache.MeshesIndex[mii]].VertexRangeIndex;
                     int eri = SFSubModel3D.Cache.Meshes[SFSubModel3D.Cache.MeshesIndex[mii]].ElementRangeIndex;
@@ -637,56 +832,13 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         DrawElementsType.UnsignedInt,
                         new IntPtr(SFSubModel3D.Cache.ElementRanges[eri].Start * 4),
                         SFSubModel3D.Cache.VertexRanges[vri].Start);
+                    //DumpAddTexDict(sbm.material.texture, 1);
+                    //DumpAddMeshDict(lake_mesh, sbm.submodel_id);
 
-                    drawcalls_simple += 1;
-                    triangles += SFSubModel3D.Cache.ElementRanges[eri].Count / 3;
+                    //drawcalls_simple += 1;
+                    //triangles += SFSubModel3D.Cache.ElementRanges[eri].Count / 3;
                 }
             }
-            /*
-            foreach (SceneNodeMapChunk chunk_node in heightmap.visible_chunks)
-            {
-                SFMapHeightMapChunk chunk = chunk_node.MapChunk;
-
-                if (chunk.lake_model == null)
-                    continue;
-
-                // get chunk position
-                GL.UniformMatrix4(active_shader["M"], false, ref chunk_node.ResultTransform);
-
-                foreach (SFSubModel3D sbm in chunk.lake_model.submodels)
-                {
-                    int mii = sbm.cache_index;
-                    if (mii == Utility.NO_INDEX)
-                        continue;
-                    // sbm.ReloadInstanceMatrices();
-                    GL.BindTexture(TextureTarget.Texture2D, sbm.material.texture.tex_id);
-
-                    int vri = SFSubModel3D.Cache.Meshes[SFSubModel3D.Cache.MeshesIndex[mii]].VertexRangeIndex;
-                    int eri = SFSubModel3D.Cache.Meshes[SFSubModel3D.Cache.MeshesIndex[mii]].ElementRangeIndex;
-
-                    GL.DrawElementsBaseVertex(PrimitiveType.Triangles,
-                        SFSubModel3D.Cache.ElementRanges[eri].Count,
-                        DrawElementsType.UnsignedInt,
-                        new IntPtr(SFSubModel3D.Cache.ElementRanges[eri].Start * 4),
-                        SFSubModel3D.Cache.VertexRanges[vri].Start);
-
-                    /*if(scene.heightmap.visible_chunks.Count == 22)
-                    {
-                        List<int> elms = new List<int>();
-                        List<Vector3> poss = new List<Vector3>();
-                        for (int i = SFSubModel3D.Cache.ElementRanges[eri].Start; i < SFSubModel3D.Cache.ElementRanges[eri].NextFree; i++)
-                        {
-                            elms.Add((int)SFSubModel3D.Cache.ElementBufferObjectData[i] + SFSubModel3D.Cache.VertexRanges[vri].Start);
-                            poss.Add(SFSubModel3D.Cache.GetVertexPos(elms[elms.Count - 1]));
-                        }
-
-                        System.Diagnostics.Debug.WriteLine(elms.Count.ToString());/*
-                    }
-
-                    drawcalls_simple += 1;
-                    triangles += SFSubModel3D.Cache.ElementRanges[eri].Count / 3;
-                }
-            }*/
         }
 
         // todo: sort transparent materials
@@ -702,11 +854,13 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                 Matrix4 vp_mat = scene.camera.ViewProjMatrix;
                 GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+                GL.Uniform1(active_shader["ShadowDepth"], scene.sun_light.ShadowDepth);
             }
 
             foreach (SFTexture tex in scene.tex_list_simple.Keys)
             {
                 GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
+                //DumpAddTexDict(tex, 0);
 
                 LinearPool<TexturedGeometryListElementSimple> elem_list = scene.tex_list_simple[tex];
                 for (int i = 0; i < elem_list.elements.Count; i++)
@@ -745,9 +899,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         DrawElementsType.UnsignedInt,
                         new IntPtr(SFSubModel3D.Cache.ElementRanges[eri].Start * 4),
                         SFSubModel3D.Cache.VertexRanges[vri].Start);
+                    //DumpAddTexDict(tex, 1);
+                    //DumpAddMeshDict(elem.node.Mesh, elem.submodel_index);
 
-                    drawcalls_simple += 1;
-                    triangles += SFSubModel3D.Cache.ElementRanges[eri].Count / 3;
+                    //drawcalls_simple += 1;
+                    //triangles += SFSubModel3D.Cache.ElementRanges[eri].Count / 3;
                 }
             }
         }
@@ -764,6 +920,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.UniformMatrix4(active_shader["P"], false, ref p_mat);
                 Matrix4 v_mat = scene.camera.ViewMatrix;
                 GL.UniformMatrix4(active_shader["V"], false, ref v_mat);
+                GL.Uniform1(active_shader["ShadowDepth"], scene.sun_light.ShadowDepth);
             }
 
             foreach(SceneNodeAnimated an in scene.an_nodes)
@@ -772,18 +929,30 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     continue;
 
                 GL.UniformMatrix4(active_shader["M"], false, ref an.ResultTransform);
-                GL.BindVertexArray(an.Skin.vertex_array);
 
-                for (int i = 0; i < an.Skin.materials.Length; i++)
+                for (int i = 0; i < an.Skin.submodels.Length; i++)
                 {
-                    GL.BindTexture(TextureTarget.Texture2D, an.Skin.materials[i].texture.tex_id);
+                    var msc = an.Skin.submodels[i];
+                    GL.BindTexture(TextureTarget.Texture2D, msc.material.texture.tex_id);
+                    //DumpAddTexDict(msc.material.texture, 0);
+
                     GL.UniformMatrix4(active_shader["boneTransforms"], SFSkeleton.MAX_BONE_PER_CHUNK, false, ref an.BoneTransformsPerSkinChunk[i][0].Row0.X);
                     if (current_pass == RenderPass.SCENE)
-                        SetRenderMode(an.Skin.materials[i].texRenderMode);
+                        SetRenderMode(msc.material.texRenderMode);
 
-                    GL.DrawElements(PrimitiveType.Triangles, (int)an.Skin.materials[i].indexCount, DrawElementsType.UnsignedInt, (int)(an.Skin.materials[i].indexStart * 4));
-                    drawcalls_anim += 1;
-                    triangles += (int)an.Skin.materials[i].indexCount / 3;
+                    int vri = SFModelSkinChunk.Cache.Meshes[SFModelSkinChunk.Cache.MeshesIndex[msc.cache_index]].VertexRangeIndex;
+                    int eri = SFModelSkinChunk.Cache.Meshes[SFModelSkinChunk.Cache.MeshesIndex[msc.cache_index]].ElementRangeIndex;
+
+                    GL.DrawElementsBaseVertex(PrimitiveType.Triangles,
+                        SFModelSkinChunk.Cache.ElementRanges[eri].Count,
+                        DrawElementsType.UnsignedInt,
+                        new IntPtr(SFModelSkinChunk.Cache.ElementRanges[eri].Start * 4),
+                        SFModelSkinChunk.Cache.VertexRanges[vri].Start);
+                    //DumpAddTexDict(msc.material.texture, 2);
+                    //DumpAddSkinDict(an.Skin);
+
+                    //drawcalls_anim += 1;
+                    //triangles += SFModelSkinChunk.Cache.ElementRanges[eri].Count / 3;
                 }
             }
         }
@@ -796,6 +965,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             foreach (SFTexture tex in ui.storages.Keys)
             {
                 GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
+                //DumpAddTexDict(tex, 0);
+
                 UIQuadStorage storage = ui.storages[tex];
                 GL.BindVertexArray(storage.vertex_array);
 
@@ -809,27 +980,28 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     GL.Uniform2(active_shader["offset"], storage.spans[i].position);
                     GL.DrawArrays(PrimitiveType.Triangles, storage.spans[i].start * 6, storage.spans[i].used * 6);
 
-                    drawcalls_ui += 1;
-                    triangles += storage.spans[i].used * 2;
+                    //drawcalls_ui += 1;
+                    //triangles += storage.spans[i].used * 2;
                 }
             }
         }
 
         public static void RenderScene()
         {
-            drawcalls_simple = 0;
-            drawcalls_anim = 0;
-            drawcalls_hmap = 0;
-            drawcalls_ui = 0;
+            //drawcalls_simple = 0;
+            //drawcalls_anim = 0;
+            //drawcalls_hmap = 0;
+            //drawcalls_ui = 0;
+
+            is_rendering = true;
+
+            //if (prepare_dump)
+            //    DumpStart();
 
             if (scene.map == null)
                 scene.sun_light.SetupLightView(new Physics.BoundingBox(new Vector3(-5, 0, -5), new Vector3(5, 30, 5)));
 
-            /*scene.sun_light.Direction = -new Vector3(
-                (float)-Math.Sin(scene.frame_counter/ 10f),
-                -1.0f,
-                (float)Math.Cos(scene.frame_counter / 10f)).Normalized();
-            ApplyLight();*/
+            ApplyLight();
 
             // render shadowmap
             current_pass = RenderPass.SHADOWMAP;
@@ -841,6 +1013,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             {
                 SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
                 GL.Enable(EnableCap.DepthTest);
+                GL.CullFace(CullFaceMode.Front);
 
                 if (scene.map != null)
                 {
@@ -848,16 +1021,20 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     RenderHeightmap();
                 }
 
+
+                GL.BindVertexArray(SFModelSkinChunk.Cache.VertexArrayObjectID);
                 UseShader(shader_shadowmap_animated);
                 RenderAnimatedObjects();
 
                 GL.BindVertexArray(SFSubModel3D.Cache.VertexArrayObjectID);
                 UseShader(shader_shadowmap);
                 RenderSimpleObjects();
+
+                GL.CullFace(CullFaceMode.Back);
             }
 
             // render actual view
-            triangles = 0;
+            //triangles = 0;
 
             current_pass = RenderPass.SCENE;
             SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
@@ -881,6 +1058,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 RenderHeightmap();
             }
 
+            GL.BindVertexArray(SFModelSkinChunk.Cache.VertexArrayObjectID);
             UseShader(shader_animated);
             RenderAnimatedObjects();
 
@@ -916,13 +1094,23 @@ namespace SpellforceDataEditor.SF3D.SFRender
             UseShader(shader_framebuffer_simple);
             GL.BindVertexArray(FrameBuffer.screen_vao);
             GL.Disable(EnableCap.DepthTest);
-            GL.BindTexture(TextureTarget.Texture2D,screenspace_intermediate.texture_color);
+            GL.BindTexture(TextureTarget.Texture2D, render_shadowmap_depth ? shadowmap_depth.texture_depth : screenspace_intermediate.texture_color);
+            GL.Uniform1(active_shader["renderShadowMap"], render_shadowmap_depth ? 1 : 0);
+            GL.Uniform1(active_shader["ZNear"], scene.sun_light.ZNear);
+            GL.Uniform1(active_shader["ZFar"], scene.sun_light.ZFar);
+            //GL.BindTexture(TextureTarget.Texture2D,screenspace_intermediate.texture_color);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
 
             UseShader(null);
             GL.BindVertexArray(0);
             current_pass = RenderPass.NONE;
 
+            is_rendering = false;
+
+            //if (prepare_dump)
+            //    DumpEnd();
+
+            //prepare_dump = false;
             //System.Diagnostics.Debug.WriteLine("DRAWCALLS: S " + drawcalls_simple.ToString() + ", A " + drawcalls_anim.ToString() + ", H " + drawcalls_hmap.ToString() + ", U " + drawcalls_ui.ToString() + " - - - TRIANGLES: " +triangles.ToString());
         }
     }

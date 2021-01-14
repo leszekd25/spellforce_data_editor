@@ -98,6 +98,47 @@ namespace SpellforceDataEditor
             return new Vector2(v.X * c - v.Y * s, v.X * s + v.Y * c);
         }
 
+        // counterclockwise, upvector = (0, 0, 1)
+        public static Vector3 RotateVec3(Vector3 v, float azimuth, float altitude)
+        {
+            float asin = (float)Math.Sin(azimuth);
+            float acos = (float)Math.Cos(azimuth);
+            float lsin = (float)Math.Sin(altitude);
+            float lcos = (float)Math.Cos(altitude);
+
+            return new Vector3(
+                v.X * lcos + v.Y * lsin * asin + v.Z * lsin * acos,
+                v.Y * acos - v.Z * asin,
+                v.X * lsin + v.Y * lcos * asin + v.Z * lcos * acos);
+        }
+
+        public static void RotateVec3Array(Vector3[] vs, Vector3 offset, float azimuth, float altitude)
+        {
+            float asin = (float)Math.Sin(azimuth);
+            float acos = (float)Math.Cos(azimuth);
+            float lsin = (float)Math.Sin(altitude);
+            float lcos = (float)Math.Cos(altitude);
+
+            for (int i = 0; i < vs.Length; i++)
+            {
+                vs[i] -= offset;
+
+                //vs[i] = Matrix3.CreateRotationY(azimuth) * vs[i];
+
+                /*vs[i] = new Vector3(
+                    vs[i].X * acos - vs[i].Z * asin,
+                    vs[i].Y,
+                    vs[i].X * asin + vs[i].Z * acos);*/
+
+                vs[i] = new Vector3(
+                    vs[i].X * lcos + vs[i].Z * lsin * asin + vs[i].Y * lsin * acos,
+                    vs[i].X * lsin + vs[i].Z * lcos * asin + vs[i].Y * lcos * acos,
+                    vs[i].Z * acos - vs[i].Y * asin);
+
+                vs[i] += offset;
+            }
+        }
+
         public static float MapRange(float v, float s1, float s2, float d1, float d2)
         {
             return d1 + ((v - s1) / (s2 - s1)) * (d2 - d1);

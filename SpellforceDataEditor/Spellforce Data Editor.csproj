@@ -82,6 +82,7 @@
     <Compile Include="LinearPool.cs" />
     <Compile Include="LogUtils\Log.cs" />
     <Compile Include="MathUtils.cs" />
+    <Compile Include="MultimediaTimer.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SF3D\ColorUtility.cs" />
     <Compile Include="SF3D\Lighting.cs" />

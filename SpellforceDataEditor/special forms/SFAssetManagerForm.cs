@@ -243,7 +243,8 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.tex_list_simple.Clear();
 
             SFSubModel3D.Cache.Clear();
-            SFSubModel3D.Cache.Dispose();
+            SFModelSkinChunk.Cache.Clear();
+
             SFRenderEngine.ui.Dispose();
             ui.Dispose();
             SFResourceManager.DisposeAll();
@@ -414,8 +415,8 @@ namespace SpellforceDataEditor.special_forms
                     int submodel_count = obj_s1.Mesh.submodels.Length;
                     foreach (var sbm in obj_s1.Mesh.submodels)
                     {
-                        vert_count += sbm.vertex_data.Length / 40;
-                        face_count += sbm.face_indices.Length / 3;
+                        vert_count += sbm.vertex_size / 40;
+                        face_count += sbm.indices_size / 12;
                     }
                     ui.SetLabel1("Submodels: " + submodel_count.ToString() + ", vertices: " + vert_count.ToString() + ", faces: " + face_count.ToString());
                 }

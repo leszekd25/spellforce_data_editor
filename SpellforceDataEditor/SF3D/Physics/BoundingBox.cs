@@ -2,6 +2,7 @@
  * (axis-aligned) BoundingBox is a minimal in volume axis-algned box a given geometric shape can fit into
  * Operations for checking if a point lies inside the box, if a plane intersects the box,
  * and if the box is outside of a convex hull are provided
+ * assumes upvector = (0, 0, 1)
  * */
 
 using System;
@@ -130,6 +131,79 @@ namespace SpellforceDataEditor.SF3D.Physics
                     return true;
             }
             return false;
+        }
+
+        // rotate bounding box along XY plane and return new rotated box
+        public BoundingBox RotatedByAzimuthAltitude(float azimuth, float altitude)
+        {
+            azimuth *= (float)(Math.PI / 180);
+            altitude *= (float)(Math.PI / 180);
+            // rotate all 8 points along the respective XY planes by azimuth, and create new bounding box from min and max of those points
+            Vector3[] vs = new Vector3[8];
+            for (int i = 0; i < 8; i++)
+                vs[i] = vertices[i];
+
+            float xmin, xmax, ymin, ymax, zmin, zmax;
+            xmin = ymin = zmin = 99999;
+            xmax = ymax = zmax = -99999;
+
+            MathUtils.RotateVec3Array(vs, center, azimuth, altitude);
+
+            for (int i = 0; i < 8; i++)
+            {
+                if (xmin > vs[i].X)
+                    xmin = vs[i].X;
+                if (xmax < vs[i].X)
+                    xmax = vs[i].X;
+                if (ymin > vs[i].Y)
+                    ymin = vs[i].Y;
+                if (ymax < vs[i].Y)
+                    ymax = vs[i].Y;
+                if (zmin > vs[i].Z)
+                    zmin = vs[i].Z;
+                if (zmax < vs[i].Z)
+                    zmax = vs[i].Z;
+            }
+
+            BoundingBox bb = new BoundingBox(new Vector3(xmin, ymin, zmin), new Vector3(xmax, ymax, zmax));
+            return this.Union(bb);
+        }
+
+        public BoundingBox Intersection(BoundingBox _aabb)
+        {
+            float dxmin, dxmax, dymin, dymax, dzmin, dzmax, dx, dy, dz;
+
+            dxmin = Math.Max(a.X, _aabb.a.X);
+            dxmax = Math.Min(b.X, _aabb.b.X);
+            dymin = Math.Max(a.Y, _aabb.a.Y);
+            dymax = Math.Min(b.Y, _aabb.b.Y);
+            dzmin = Math.Max(a.Z, _aabb.a.Z);
+            dzmax = Math.Min(b.Z, _aabb.b.Z);
+
+            dx = Math.Max(0, dxmax - dxmin);
+            dy = Math.Max(0, dymax - dymin);
+            dz = Math.Max(0, dzmax - dzmin);
+
+            return new BoundingBox(new Vector3(dxmin, dymin, dzmin), new Vector3(dxmin + dx, dymin + dy, dzmin + dz));
+        }
+
+        public BoundingBox Union(BoundingBox _aabb)
+        {
+            float dxmin, dxmax, dymin, dymax, dzmin, dzmax;
+
+            dxmin = Math.Min(a.X, _aabb.a.X);
+            dxmax = Math.Max(b.X, _aabb.b.X);
+            dymin = Math.Min(a.Y, _aabb.a.Y);
+            dymax = Math.Max(b.Y, _aabb.b.Y);
+            dzmin = Math.Min(a.Z, _aabb.a.Z);
+            dzmax = Math.Max(b.Z, _aabb.b.Z);
+
+            return new BoundingBox(new Vector3(dxmin, dymin, dzmin), new Vector3(dxmax, dymax, dzmax));
+        }
+
+        public double GetVolume()
+        {
+            return (b.X - a.X) * (b.Y - a.Y) * (b.Z - a.Z);
         }
     }
 }

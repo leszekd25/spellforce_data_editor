@@ -1011,6 +1011,7 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.tex_list_simple.Clear();
 
             SF3D.SFSubModel3D.Cache.Clear();
+            SF3D.SFModelSkinChunk.Cache.Clear();
 
             //ui.UninitMinimap();
             if (ui != null)
@@ -1070,9 +1071,12 @@ namespace SpellforceDataEditor.special_forms
 
         private void RenderWindow_Paint(object sender, PaintEventArgs e)
         {
+            var timer = System.Diagnostics.Stopwatch.StartNew();
             //RenderWindow.MakeCurrent();   // needs to only be done during resize, because cant run asset viewer anyways :^)
             SFRenderEngine.RenderScene();
             RenderWindow.SwapBuffers();
+            timer.Stop();
+            System.Diagnostics.Debug.WriteLine("TIME: " + (timer.Elapsed.Ticks / 10000f).ToString("0.##") + " ms");
         }
 
         private void RenderWindow_MouseDown(object sender, MouseEventArgs e)
@@ -1269,8 +1273,8 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.scene.sun_light.ShadowSize = Math.Max(50f, Math.Min(zoom_level * 60f, 200f));
                 map.selection_helper.Update();
                 map.ocean.SetPosition(SFRenderEngine.scene.camera.Position);
-                AdjustCameraZ();
                 SFRenderEngine.UpdateVisibleChunks();
+                AdjustCameraZ();
                 SFRenderEngine.scene.Update();
                 SFRenderEngine.ui.Update();
                 RenderWindow.Invalidate();
@@ -1327,7 +1331,6 @@ namespace SpellforceDataEditor.special_forms
                     if(zoom_level < 0.1f)
                         zoom_level = 0.1f;
                 }
-            AdjustCameraZ();
             update_render = true;
         }
 
@@ -1335,10 +1338,53 @@ namespace SpellforceDataEditor.special_forms
         {
             if (map != null)
             {
+                // set light direction (move somewhere else in the future, before this function is called)
+                SFRenderEngine.scene.sun_light.SetLightDirection(
+                    -new Vector3((float)Math.Cos(SFRenderEngine.scene.frame_counter / 100f), 
+                    -1f,
+                    (float)Math.Sin(SFRenderEngine.scene.frame_counter / 100f)));
+
                 Vector2 p = new Vector2(SFRenderEngine.scene.camera.Position.X, SFRenderEngine.scene.camera.Position.Z);
                 float z = map.heightmap.GetRealZ(p);
 
                 SFRenderEngine.scene.camera.translate(new Vector3(0, (25 * zoom_level) + z - SFRenderEngine.scene.camera.Position.Y, 0));
+
+                // calculate light bounding box
+
+                // calculate visible heightmap bounding box, using chunks that are close enough
+                float max_dist = Math.Max(
+                    60, 50 * zoom_level * (float)Math.Min(
+                        3.0f, Math.Max(
+                            0.6f, 1.0f / (0.001f + Math.Abs(
+                                Math.Tan(
+                                    SFRenderEngine.scene.camera.Direction.Y))))));
+
+                float xmin, xmax, ymin, ymax, zmin, zmax;
+                xmin = 9999; ymin = 9999; xmax = -9999; ymax = -9999; zmin = 9999; zmax = -9999;
+                foreach(SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.visible_chunks)
+                {
+                    Vector3 pos = chunk_node.Position;
+
+                    if (max_dist < (p - new Vector2(pos.X + 8, pos.Z + 8)).Length)
+                        continue;
+
+                    if (pos.X < xmin)
+                        xmin = pos.X;
+                    else if (pos.X+16 > xmax)
+                        xmax = pos.X+16;
+                    if (pos.Z < ymin)
+                        ymin = pos.Z;
+                    else if (pos.Z+16 > ymax)
+                        ymax = pos.Z+16;
+                    if (chunk_node.MapChunk.aabb.a.Y < zmin)
+                        zmin = chunk_node.MapChunk.aabb.a.Y;
+                    if (chunk_node.MapChunk.aabb.b.Y > zmax)
+                        zmax = chunk_node.MapChunk.aabb.b.Y;
+                }
+                SF3D.Physics.BoundingBox aabb = new SF3D.Physics.BoundingBox(new Vector3(xmin, zmin, ymin), new Vector3(xmax, zmax, ymax));
+
+                SFRenderEngine.scene.sun_light.SetupLightView(aabb);
+                SFRenderEngine.scene.sun_light.ShadowDepth = max_dist;
             }
         }
 
@@ -1361,7 +1407,6 @@ namespace SpellforceDataEditor.special_forms
 
             Vector3 new_camera_pos = new Vector3(pos.x + cam_shift.X, 0, map.heightmap.height - pos.y - 1 + cam_shift.Y);
             SFRenderEngine.scene.camera.translate(new_camera_pos - SFRenderEngine.scene.camera.Position);
-            AdjustCameraZ();
             update_render = true;
         }
 
@@ -1369,7 +1414,6 @@ namespace SpellforceDataEditor.special_forms
         {
             SFRenderEngine.scene.camera.Direction = new Vector2((float)(Math.PI * 3 / 2), -1.2f);
             zoom_level = 1;
-            AdjustCameraZ();
             update_render = true;
         }
 
@@ -1468,6 +1512,11 @@ namespace SpellforceDataEditor.special_forms
                     return true;
                 case Keys.M | Keys.Control:
                     ui.SetMinimapVisible(!ui.GetMinimapVisible());
+                    update_render = true;
+                    return true;
+                case Keys.F | Keys.Control:
+                    //SFRenderEngine.prepare_dump = true;
+                    SFRenderEngine.render_shadowmap_depth = !SFRenderEngine.render_shadowmap_depth;
                     update_render = true;
                     return true;
                 case Keys.P | Keys.Control:

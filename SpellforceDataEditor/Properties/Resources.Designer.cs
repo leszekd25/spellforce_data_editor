@@ -112,9 +112,9 @@ namespace SpellforceDataEditor.Properties {
         ///uniform float FogStart;
         ///uniform float FogEnd;
         ///uniform float DepthBias;
+        ///uniform float ShadowDepth;
         ///
-        ///vec2 poissonDisk[4] = vec2[](
-        ///   [rest of string was truncated]&quot;;.
+        ///vec2  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader {
             get {
@@ -128,21 +128,26 @@ namespace SpellforceDataEditor.Properties {
         ///in vec2 TexCoords;
         ///
         ///uniform sampler2D screenTexture;
+        ///uniform int renderShadowMap;
+        ///uniform float ZNear;
+        ///uniform float ZFar;
+        ///
+        ///float LinearizeDepth(float z)
+        ///{
+        ///  return (2.0 * ZNear) / (ZFar + ZNear - z * (ZFar- ZNear));	
+        ///}
+        ///
         ///void main()
         ///{
         ///    // this is for shadowmap
-        ///    /*float color = texture(screenTexture, TexCoords).r;
-        ///    if(color != 1.0)
+        ///    if(renderShadowMap == 1)
         ///    {
-        ///        if(color != 0.0)
-        ///            color = (1.0-color)*100;
-        ///        color = clamp(color, 0.0, 1.0);
-        ///        color = 1.0-color;
-        ///        //color = 0.0;
+        ///        float color = LinearizeDepth(texture(screenTexture, TexCoords).r);
+        ///        FragColor = vec4(color, color, color, 1.0);
         ///    }
-        ///    FragColor = vec4(color, color, color, 1.0);*/
-        ///    // this is for final render
-        ///    FragColor = texture(screenTexture, TexCoords); [rest of string was truncated]&quot;;.
+        ///    else
+        ///    {
+        ///        // this is [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_framebuffer_simple {
             get {
@@ -171,10 +176,10 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 FogColor;
         ///uniform float FogStart;
         ///uniform float FogEnd;
+        ///uniform float ShadowDepth;
         ///
         ///uniform sampler2DArray myTextureSampler;
-        ///uniform sampler2D ShadowMap;
-        ///uniform sampler2 [rest of string was truncated]&quot;;.
+        ///uniform sampler2D  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_hmap {
             get {
@@ -233,10 +238,11 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 FogColor;
         ///uniform float FogStart;
         ///uniform float FogEnd;
+        ///uniform float ShadowDepth;
         ///
         ///vec2 poissonDisk[4] = vec2[](
         ///  vec2( -0.94201624, -0.39906216 ),
-        ///  vec2( 0.94558609, -0.768907 [rest of string was truncated]&quot;;.
+        ///  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_skel {
             get {
@@ -446,10 +452,11 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to layout(location = 0) in vec3 vertexPosition_modelspace;
+        ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
+        ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec3 vertexNormal;
-        ///layout(location = 2) in vec2 vertexUV;
-        ///layout(location = 3) in vec4 vertexColor;
+        ///layout(location = 2) in vec4 vertexColor;
+        ///layout(location = 3) in vec2 vertexUV;
         /////layout(location = 4) in mat4 instanceMatrix;
         ///
         ///out vec2 UV;
@@ -472,10 +479,10 @@ namespace SpellforceDataEditor.Properties {
         /// <summary>
         ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
-        ///layout(location = 1) in vec2 vertexUV;
-        ///layout(location = 2) in vec3 vertexNormal;
-        ///layout(location = 3) in vec4 vertexBoneIndex;
-        ///layout(location = 4) in vec4 vertexBoneWeight;
+        ///layout(location = 1) in vec3 vertexNormal;
+        ///layout(location = 2) in vec4 vertexBoneWeight;
+        ///layout(location = 3) in vec2 vertexUV;
+        ///layout(location = 4) in vec4 vertexBoneIndex;
         ///
         ///out vec2 UV;
         ///
@@ -502,8 +509,6 @@ namespace SpellforceDataEditor.Properties {
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///layout(location = 1) in vec3 vertexNormal;
         ///layout(location = 2) in vec2 vertexUV;
-        /////layout(location = 3) in vec3 texID;
-        /////layout(location = 4) in vec3 texWeight;
         ///
         ///out vec2 UV;
         ///
@@ -513,7 +518,9 @@ namespace SpellforceDataEditor.Properties {
         ///  
         ///void main(){
         ///  // Output position of the vertex, in clip space : MVP * position
-        ///  gl_Position = LSM * M* vec4(v [rest of string was truncated]&quot;;.
+        ///  gl_Position = LSM * M* vec4(vertexPosition_modelspace,1);
+        ///  UV = vertexUV;
+        ///}.
         /// </summary>
         internal static string vshader_shadowmap_heightmap {
             get {
@@ -524,10 +531,10 @@ namespace SpellforceDataEditor.Properties {
         /// <summary>
         ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
-        ///layout(location = 1) in vec2 vertexUV;
-        ///layout(location = 2) in vec3 vertexNormal;
-        ///layout(location = 3) in vec4 vertexBoneIndex;
-        ///layout(location = 4) in vec4 vertexBoneWeight;
+        ///layout(location = 1) in vec3 vertexNormal;
+        ///layout(location = 2) in vec4 vertexBoneWeight;
+        ///layout(location = 3) in vec2 vertexUV;
+        ///layout(location = 4) in vec4 vertexBoneIndex;
         ///
         ///out vec3 fragmentPosition;
         ///out vec2 UV;

@@ -25,8 +25,10 @@ namespace SpellforceDataEditor.SF3D
         public int submodel_id = Utility.NO_INDEX;
         public int cache_index = Utility.NO_INDEX;
 
-        public byte[] vertex_data = null;     // 12+12+4+8+4 (empty) = 40 bytes per vertex
-        public uint[] face_indices = null;
+        byte[] vertex_data = null;     // 12+12+4+8+4 (empty) = 40 bytes per vertex
+        public int vertex_size;
+        uint[] face_indices = null;
+        public int indices_size;
 
         //public ArrayPool<Matrix4> instance_matrices = new ArrayPool<Matrix4>();
         //public bool needs_matrix_reload = false;
@@ -39,6 +41,10 @@ namespace SpellforceDataEditor.SF3D
         public void Init()
         {
             cache_index = Cache.AddMesh(vertex_data, face_indices);
+            vertex_size = vertex_data.Length;
+            vertex_data = null;
+            indices_size = face_indices.Length * 4;
+            face_indices = null;
         }
 
         public int Load(MemoryStream ms, object custom_data)
@@ -190,8 +196,7 @@ namespace SpellforceDataEditor.SF3D
 
         public int GetSizeBytes()
         {
-            return 40 * vertex_data.Length
-                 + 4 * face_indices.Length;
+            return vertex_size + indices_size;
         }
 
         public void Dispose()

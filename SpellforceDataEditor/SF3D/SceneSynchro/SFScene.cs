@@ -313,8 +313,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             SceneNodeAnimated uo = AddSceneNodeAnimated(anim_node, chest_name, "Chest");
             // apply flat shade
             if (uo.Skin != null)
-                foreach (SFMaterial material in uo.Skin.materials)
-                    material.flat_shade = true;
+                foreach (var msc in uo.Skin.submodels)
+                    msc.material.flat_shade = true;
 
             //get legs item (5) (animated)
             UInt16 legs_id = GetItemID(unit_eq, 5);
@@ -326,8 +326,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 {
                     uo = AddSceneNodeAnimated(anim_node, legs_name, "Legs");
                     if (uo.Skin != null)
-                        foreach (SFMaterial material in uo.Skin.materials)
-                            material.flat_shade = true;
+                        foreach (var msc in uo.Skin.submodels)
+                            msc.material.flat_shade = true;
                 }
             }
             //special case: anim_name is of "figure_hero": need to also add human head (animated)
@@ -349,8 +349,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         head_name = head_data.MeshMale;
                     uo = AddSceneNodeAnimated(anim_node, head_name, "Head");
                     if (uo.Skin != null)
-                        foreach (SFMaterial material in uo.Skin.materials)
-                            material.flat_shade = true;
+                        foreach (var msc in uo.Skin.submodels)
+                            msc.material.flat_shade = true;
                 }
             }
 

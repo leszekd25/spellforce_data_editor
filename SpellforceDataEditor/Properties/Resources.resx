@@ -136,6 +136,7 @@ uniform sampler2D ShadowMap;
 uniform vec4 FogColor;
 uniform float FogStart;
 uniform float FogEnd;
+uniform float ShadowDepth;
 
 vec2 poissonDisk[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
@@ -149,15 +150,22 @@ float CalculateShadow(vec4 FPLS, float b){
     if(ProjectionCoordinates.z &gt; 1.0)
         return 1.0;
     ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
-    float bias = min(0.05, max(0.05 * (1.0 - b), 0.005));  
+    float bias = min(0.01, max(0.01 * (1.0 - b), 0.001));  
     float result = 0.0;
     float CurrentDepth = ProjectionCoordinates.z;
+    // without sampling
+    //float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy).r;
+    //return (sign(ClosestDepth - CurrentDepth + bias) + 1.0) / 2.0;
     //shadow map sampling
     for(int i = 0; i &lt; 4; i++)
     {
         float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy+poissonDisk[i]/2000.0).r;
         result += (sign(ClosestDepth - CurrentDepth + bias) + 1.0);  // from 0 to 2
     }
+    // smooth shadow map edges
+    float dist = gl_FragCoord.z / gl_FragCoord.w;
+    dist = clamp(((ShadowDepth - dist)/ShadowDepth)*4.0, 0.0, 1.0);
+    result = max(result, (1.0 - dist) * 8.0);
     return result / 8.0;
 }
 
@@ -195,10 +203,10 @@ void main(){
   <data name="vshader_skel" xml:space="preserve">
     <value>// Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec2 vertexUV;
-layout(location = 2) in vec3 vertexNormal;
-layout(location = 3) in vec4 vertexBoneIndex;
-layout(location = 4) in vec4 vertexBoneWeight;
+layout(location = 1) in vec3 vertexNormal;
+layout(location = 2) in vec4 vertexBoneWeight;
+layout(location = 3) in vec2 vertexUV;
+layout(location = 4) in vec4 vertexBoneIndex;
 
 out vec3 fragmentPosition;
 out vec2 UV;
@@ -318,6 +326,7 @@ uniform vec4 FogColor;
 uniform float FogStart;
 uniform float FogEnd;
 uniform float DepthBias;
+uniform float ShadowDepth;
 
 vec2 poissonDisk[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
@@ -331,22 +340,31 @@ float CalculateShadow(vec4 FPLS, float b){
     if(ProjectionCoordinates.z &gt; 1.0)
         return 1.0;
     ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
-    float bias = min(0.05, max(0.05 * (1.0 - b), 0.005));  
+    float bias = min(0.01, max(0.01 * (1.0 - b), 0.001));  
     float result = 0.0;
     float CurrentDepth = ProjectionCoordinates.z;
+    // without sampling
+    //float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy).r;
+    //return (sign(ClosestDepth - CurrentDepth + bias) + 1.0) / 2.0;
     //shadow map sampling
     for(int i = 0; i &lt; 4; i++)
     {
         float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy+poissonDisk[i]/2000.0).r;
         result += (sign(ClosestDepth - CurrentDepth + bias) + 1.0);  // from 0 to 2
     }
+    // smooth shadow map edges
+    float dist = gl_FragCoord.z / gl_FragCoord.w;
+    dist = clamp(((ShadowDepth - dist)/ShadowDepth)*4.0, 0.0, 1.0);
+    result = max(result, (1.0 - dist) * 8.0);
     return result / 8.0;
 }
 
 void main(){
-  vec4 temp_c = fragmentColor * texture(DiffuseTex, UV);
-  if(temp_c.a == 0.0)
+  vec4 tex_col = texture(DiffuseTex, UV);
+  if(tex_col.a &lt; 0.5)
     discard;
+  tex_col.a = 1.0;
+  vec4 temp_c = fragmentColor * texture(DiffuseTex, UV);
 
   float brightness = 1.0;
   #ifdef APPLY_SHADING
@@ -408,6 +426,7 @@ uniform vec4 AmbientColor;
 uniform vec4 FogColor;
 uniform float FogStart;
 uniform float FogEnd;
+uniform float ShadowDepth;
 
 uniform sampler2DArray myTextureSampler;
 uniform sampler2D ShadowMap;
@@ -448,15 +467,22 @@ float CalculateShadow(vec4 FPLS, float b){
     if(ProjectionCoordinates.z &gt; 1.0)
         return 1.0;
     ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
-    float bias = min(0.05, max(0.05 * (1.0 - b), 0.005));  
+    float bias = min(0.01, max(0.01 * (1.0 - b), 0.001));  
     float result = 0.0;
     float CurrentDepth = ProjectionCoordinates.z;
+    // without sampling
+    //float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy).r;
+    //return (sign(ClosestDepth - CurrentDepth + bias) + 1.0) / 2.0;
     //shadow map sampling
     for(int i = 0; i &lt; 4; i++)
     {
         float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy+poissonDisk[i]/2000.0).r;
         result += (sign(ClosestDepth - CurrentDepth + bias) + 1.0);  // from 0 to 2
     }
+    // smooth shadow map edges
+    float dist = gl_FragCoord.z / gl_FragCoord.w;
+    dist = clamp(((ShadowDepth - dist)/ShadowDepth)*4.0, 0.0, 1.0);
+    result = max(result, (1.0 - dist) * 8.0);
     return result / 8.0;
 }
 
@@ -502,7 +528,13 @@ void main(){
   vec3 fragVec = fragmentPosition;
   float brightness = (dot(normal, SunDirection)*1.4)-0.4; // both vectors are normalized
     // calculate shadow
-  brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
+  float calc_shadow = CalculateShadow(fragmentPositionLightSpace, brightness);
+  //if(calc_shadow &lt; 1)
+  //{
+  //    color = vec4(1.0f, 1.0f, 0.0f, 1.0f);
+  //    return;
+  //}
+  brightness = min(brightness, calc_shadow);
   brightness = clamp(brightness, 0, 1);  
 
   // calculate diffuse color based on heightmap textures
@@ -632,21 +664,28 @@ void main(){
 in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
+uniform int renderShadowMap;
+uniform float ZNear;
+uniform float ZFar;
+
+float LinearizeDepth(float z)
+{
+  return (2.0 * ZNear) / (ZFar + ZNear - z * (ZFar- ZNear));	
+}
+
 void main()
 {
     // this is for shadowmap
-    /*float color = texture(screenTexture, TexCoords).r;
-    if(color != 1.0)
+    if(renderShadowMap == 1)
     {
-        if(color != 0.0)
-            color = (1.0-color)*100;
-        color = clamp(color, 0.0, 1.0);
-        color = 1.0-color;
-        //color = 0.0;
+        float color = LinearizeDepth(texture(screenTexture, TexCoords).r);
+        FragColor = vec4(color, color, color, 1.0);
     }
-    FragColor = vec4(color, color, color, 1.0);*/
-    // this is for final render
-    FragColor = texture(screenTexture, TexCoords);
+    else
+    {
+        // this is for final render
+        FragColor = texture(screenTexture, TexCoords);
+    }
 }</value>
   </data>
   <data name="vshader_framebuffer" xml:space="preserve">
@@ -673,10 +712,11 @@ void main()
 }</value>
   </data>
   <data name="vshader_shadowmap" xml:space="preserve">
-    <value>layout(location = 0) in vec3 vertexPosition_modelspace;
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexNormal;
-layout(location = 2) in vec2 vertexUV;
-layout(location = 3) in vec4 vertexColor;
+layout(location = 2) in vec4 vertexColor;
+layout(location = 3) in vec2 vertexUV;
 //layout(location = 4) in mat4 instanceMatrix;
 
 out vec2 UV;
@@ -693,10 +733,10 @@ void main()
   <data name="vshader_shadowmap_animated" xml:space="preserve">
     <value>// Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec2 vertexUV;
-layout(location = 2) in vec3 vertexNormal;
-layout(location = 3) in vec4 vertexBoneIndex;
-layout(location = 4) in vec4 vertexBoneWeight;
+layout(location = 1) in vec3 vertexNormal;
+layout(location = 2) in vec4 vertexBoneWeight;
+layout(location = 3) in vec2 vertexUV;
+layout(location = 4) in vec4 vertexBoneIndex;
 
 out vec2 UV;
 
@@ -745,8 +785,6 @@ void main(){
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec2 vertexUV;
-//layout(location = 3) in vec3 texID;
-//layout(location = 4) in vec3 texWeight;
 
 out vec2 UV;
 

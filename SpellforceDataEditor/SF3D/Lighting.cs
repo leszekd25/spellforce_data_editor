@@ -19,47 +19,74 @@ namespace SpellforceDataEditor.SF3D
     {
         public float Strength = 1.0f;
         public Vector4 Color = new Vector4(1.0f);
-        public Vector3 Direction = new Vector3(0.0f, -1.0f, 0.0f);
+        public float Azimuth;    // horizontal angle with respect to 0* corresponding to (1, 0, 0), and 90* corresponding to (0, 0, -1)
+        public float Altitude;   // vertical angle with respect to 0( corresponding to (1, 0, 0), and 90* corresponding to (0, 1, 0)
+        public Vector3 Direction { get; private set; } = new Vector3(0.0f, -1.0f, 0.0f);
         public float ShadowSize = 40;
         public Matrix4 LightProjection = Matrix4.CreateOrthographic(20, 20, 1, 100.0f);
         public Matrix4 LightMatrix { get; private set; }
+        public float ZNear;
+        public float ZFar;
+        public float ShadowDepth;
 
         public void SetupLightView(Vector3 camerapos)
         {
-            // 1. get light direction angle to the level
-            //Vector3 DirProjToLevel = new Vector3(Direction.X, 0, Direction.Z);
-            //float AngleBeta = Vector3.CalculateAngle(Direction, DirProjToLevel);
-            //float AngleAlpha = Vector3.CalculateAngle(DirProjToLevel, new Vector3(0, 0, 1));
-
-            // 2. get shadowmap aspect ratio (dependent on angle)
-            /*float ShadowFactorX = (float)(Math.Min
-                 (Math.Abs(Math.Min(Math.Abs(1 / Math.Cos(AngleAlpha)), 10) / Math.Sin(AngleBeta)), 10));
-             float ShadowFactorY = (float)(Math.Min
-                 (Math.Abs(Math.Min(Math.Abs(1 / -Math.Sin(AngleAlpha)), 10) / Math.Sin(AngleBeta)), 10));*/
-
-            float ShadowFactor = 1;// (float)Math.Min(Math.Abs(1 / Math.Sin(AngleBeta)), 10);
-
-
             SF3D.Physics.BoundingBox aabb = new Physics.BoundingBox(
-                new Vector3(camerapos.X - ShadowSize * ShadowFactor, 0, camerapos.Z - ShadowSize * ShadowFactor),
-                new Vector3(camerapos.X + ShadowSize * ShadowFactor, camerapos.Y + 100, camerapos.Z + ShadowSize * ShadowFactor));
+                new Vector3(camerapos.X - ShadowSize, 0, camerapos.Z - ShadowSize),
+                new Vector3(camerapos.X + ShadowSize, camerapos.Y + 100, camerapos.Z + ShadowSize));
             SetupLightView(aabb);
+        }
+
+        public void SetLightDirection(Vector3 dir)
+        {
+            Direction = dir;
+            // calculate azimuth and altitude
+            Vector3 d2 = dir;
+            d2.Z = 0;
+            if (d2.LengthSquared == 0)
+                Azimuth = 0;
+            else
+            {
+                d2.Normalize();
+                Azimuth = (float)(Vector3.CalculateAngle(Vector3.UnitX, d2)*180/Math.PI);
+            }
+
+            d2 = dir;
+            d2.Y = 0;
+            if(d2.LengthSquared == 0)
+            {
+                if (dir.Z > 0)
+                    Altitude = 90;
+                else
+                    Altitude = 90;
+            }
+            else
+            {
+                d2.Normalize();
+                if (dir.X > 0)
+                    Altitude = (float)(Vector3.CalculateAngle(Vector3.UnitX, d2)*180/Math.PI);
+                else
+                    Altitude = (float)(Vector3.CalculateAngle(-Vector3.UnitX, d2)*180/Math.PI);
+            }
         }
         
         public void SetupLightView(Physics.BoundingBox aabb)
         {
-            LightProjection = Matrix4.CreateOrthographic(aabb.b.X - aabb.a.X, aabb.b.Z - aabb.a.Z, 1, 1 + aabb.b.Y - aabb.a.Y);
+            // inflate bounding box to become a bounding box of a bounding sphere of the bounding box
+            float aabb_radius = (aabb.b - aabb.center).Length;
+            Vector3 rad_v = new Vector3(aabb_radius);
 
-            Vector3 camera_pos = new Vector3((aabb.b.X + aabb.a.X) / 2, aabb.b.Y, (aabb.b.Z + aabb.a.Z) / 2);
-            /*Physics.Plane levelplane = new Physics.Plane(new Vector3(camera_pos.X, 0, camera_pos.Z), new Vector3(0, 1, 0));
-            Physics.Ray r = new Physics.Ray(camera_pos, Direction) { length = 1000 };
-            Vector3 col_pos = Vector3.Zero;
-            Vector3 shift_amount = Vector3.Zero;
-            if (r.Intersect(levelplane, out col_pos))
-                shift_amount = levelplane.point - col_pos;
-            camera_pos += shift_amount;*/
+            Physics.BoundingBox rotated_aabb = new Physics.BoundingBox(aabb.center - rad_v, aabb.center + rad_v);
 
-            LightMatrix = Matrix4.LookAt(camera_pos, camera_pos-Direction+new Vector3(0, 0, 0.05f), new Vector3(0, 1, 0)) * LightProjection;
+            ZNear = 0.1f;
+            ZFar = (rotated_aabb.a - rotated_aabb.b).Length;
+
+            LightProjection = Matrix4.CreateOrthographic(rotated_aabb.b.X - rotated_aabb.a.X, rotated_aabb.b.Z - rotated_aabb.a.Z, ZNear, ZFar);
+
+            Vector3 camera_pos = rotated_aabb.center;
+            camera_pos += Direction * (ZFar / 2);
+
+            LightMatrix = Matrix4.LookAt(camera_pos, camera_pos-Direction, new Vector3(0, 1, 0)) * LightProjection; //camera_pos-Direction+new Vector3(0, 0, 0.05f)
         }
     }
 

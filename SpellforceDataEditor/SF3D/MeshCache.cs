@@ -252,49 +252,6 @@ namespace SpellforceDataEditor.SF3D
             VertexAttribTypeSize.Add(VertexAttribPointerType.UnsignedInt10F11F11FRev, 4);
             VertexAttribTypeSize.Add(VertexAttribPointerType.UnsignedInt2101010Rev, 4);
             VertexAttribTypeSize.Add(VertexAttribPointerType.UnsignedShort, 2);
-
-            // range test
-            /*MeshCacheRangeCollection test_mcrc = new MeshCacheRangeCollection();
-
-            int range_index;
-            int v_ind;
-
-            v_ind = test_mcrc.FindFirstIndex(20, out range_index);
-            test_mcrc.Insert(range_index, new MeshCacheRange() { Start = v_ind, Count = 20 });   // ind = 0, start = 0, count = 20
-            v_ind = test_mcrc.FindFirstIndex(20, out range_index);
-            test_mcrc.Insert(range_index, new MeshCacheRange() { Start = v_ind, Count = 20 });   // start = 20, count = 20
-            v_ind = test_mcrc.FindFirstIndex(15, out range_index);
-            test_mcrc.Insert(range_index, new MeshCacheRange() { Start = v_ind, Count = 15 });   // ind = 2, start = 40, count = 15
-            v_ind = test_mcrc.FindFirstIndex(30, out range_index);
-            test_mcrc.Insert(range_index, new MeshCacheRange() { Start = v_ind, Count = 30 });   // start = 55, count = 30
-            v_ind = test_mcrc.FindFirstIndex(10, out range_index);
-            test_mcrc.Insert(range_index, new MeshCacheRange() { Start = v_ind, Count = 10 });   // ind = 4 start = 85, count = 10
-
-            test_mcrc.RemoveAt(1);
-            test_mcrc.RemoveAt(2);
-
-            // [[0, 20], [40, 15], [85, 10]]
-
-            v_ind = test_mcrc.FindFirstIndex(25, out range_index);
-            test_mcrc.Insert(range_index, new MeshCacheRange() { Start = v_ind, Count = 25 });   // ind = 3, start = 55, count = 25
-            v_ind = test_mcrc.FindFirstIndex(40, out range_index);
-            test_mcrc.Insert(range_index, new MeshCacheRange() { Start = v_ind, Count = 40 });   // ind = 5, start = 95, count = 40
-            v_ind = test_mcrc.FindFirstIndex(5, out range_index);
-            test_mcrc.Insert(range_index, new MeshCacheRange() { Start = v_ind, Count = 5 });    // ind = 1, start = 20, count = 5
-
-            System.Diagnostics.Debug.Assert(test_mcrc.Ranges.Count == 6);
-            System.Diagnostics.Debug.Assert(test_mcrc.Ranges[0].Start == 0);
-            System.Diagnostics.Debug.Assert(test_mcrc.Ranges[0].Count == 20);
-            System.Diagnostics.Debug.Assert(test_mcrc.Ranges[1].Start == 20);
-            System.Diagnostics.Debug.Assert(test_mcrc.Ranges[1].Count == 5);
-            System.Diagnostics.Debug.Assert(test_mcrc.Ranges[2].Start == 40);
-            System.Diagnostics.Debug.Assert(test_mcrc.Ranges[2].Count == 15);
-            System.Diagnostics.Debug.Assert(test_mcrc.Ranges[3].Start == 55);
-            System.Diagnostics.Debug.Assert(test_mcrc.Ranges[3].Count == 25);
-            System.Diagnostics.Debug.Assert(test_mcrc.Ranges[4].Start == 85);
-            System.Diagnostics.Debug.Assert(test_mcrc.Ranges[4].Count == 10);
-            System.Diagnostics.Debug.Assert(test_mcrc.Ranges[5].Start == 95);
-            System.Diagnostics.Debug.Assert(test_mcrc.Ranges[5].Count == 40);*/
         }
 
         public MeshCache()
@@ -419,21 +376,6 @@ namespace SpellforceDataEditor.SF3D
             MeshesIndex.Add(mesh_index);
             int mesh_index_index = MeshesIndex.Count - 1;
 
-            System.Diagnostics.Debug.WriteLine(String.Format("Add mesh (VS: {0}, VC: {1}, ES: {2}, EC: {3}, MI: {4}, MII: {5}, LVU: {6}, FVU: {7}, LEU: {8}, FEU: {9}",
-                new object[]
-                {
-                    vertex_offset, 
-                    vertex_count,
-                    element_offset,
-                    element_data.Length,
-                    mesh_index, 
-                    mesh_index_index,
-                    VertexRanges.LastUsed,
-                    VertexRanges.FirstUnused,
-                    ElementRanges.LastUsed, 
-                    ElementRanges.FirstUnused
-                }));
-
             bool do_full_vertex_reload = false;
             bool do_full_element_reload = false;
 
@@ -499,20 +441,6 @@ namespace SpellforceDataEditor.SF3D
             if (element_range_index >= ElementRanges.Count)
                 return;
 
-            // 0. 
-            System.Diagnostics.Debug.WriteLine(String.Format("Del mesh (VS: {0}, VC: {1}, ES: {2}, EC: {3}, MI: {4}, MII: {5}, LVU: {6}, FVU: {7}, LEU: {8}, FEU: {9}",
-                new object[] 
-                {
-                    VertexRanges[vertex_range_index].Start,
-                    VertexRanges[vertex_range_index].Count,
-                    ElementRanges[element_range_index].Start,
-                    ElementRanges[element_range_index].Count,
-                    mesh_index, mesh_index_index,
-                    VertexRanges.LastUsed,
-                    VertexRanges.FirstUnused,
-                    ElementRanges.LastUsed,
-                    ElementRanges.FirstUnused
-                }));
             // 1. delete vertex and element ranges
             VertexRanges.RemoveAt(Meshes[mesh_index].VertexRangeIndex);
             ElementRanges.RemoveAt(Meshes[mesh_index].ElementRangeIndex);

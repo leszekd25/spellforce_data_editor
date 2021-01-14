@@ -236,22 +236,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
-        public void SetUpShadowmap()
-        {
-            if(texture_depth != Utility.NO_INDEX)
-            {
-                GL.BindTexture(TextureTarget.Texture2D, texture_depth);
-                GL.SamplerParameter(texture_depth, SamplerParameterName.TextureCompareMode, (int)All.CompareRefToTexture);
-                if (sample_count == 0)
-                {
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
-                }
-
-                GL.BindTexture(TextureTarget.Texture2D, 0);
-            }
-        }
-
         public void Dispose()
         {
             if(fbo != Utility.NO_INDEX)

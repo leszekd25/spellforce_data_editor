@@ -39,13 +39,13 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.operationHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.slopebasedPaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.visibilitySettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenMap = new System.Windows.Forms.OpenFileDialog();
-            this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
             this.DialogSaveMap = new System.Windows.Forms.SaveFileDialog();
             this.StatusStrip = new System.Windows.Forms.ToolStrip();
             this.StatusText = new System.Windows.Forms.ToolStripLabel();
@@ -189,8 +189,8 @@
             this.TreeEntities = new System.Windows.Forms.TreeView();
             this.TimerTreeEntityFilter = new System.Windows.Forms.Timer(this.components);
             this.RenderWindow = new OpenTK.GLControl();
-            this.operationHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.QuickSelect = new SpellforceDataEditor.SFMap.map_controls.MapQuickSelectControl();
+            this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
@@ -296,7 +296,7 @@
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
@@ -304,9 +304,16 @@
             // 
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
+            // 
+            // operationHistoryToolStripMenuItem
+            // 
+            this.operationHistoryToolStripMenuItem.Name = "operationHistoryToolStripMenuItem";
+            this.operationHistoryToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.operationHistoryToolStripMenuItem.Text = "Operation history...";
+            this.operationHistoryToolStripMenuItem.Click += new System.EventHandler(this.operationHistoryToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -351,10 +358,6 @@
             // 
             this.OpenMap.DefaultExt = "map";
             this.OpenMap.Filter = "Map file|*.map";
-            // 
-            // TimerAnimation
-            // 
-            this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
             // 
             // DialogSaveMap
             // 
@@ -1820,13 +1823,6 @@
             this.RenderWindow.VSync = false;
             this.RenderWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
             // 
-            // operationHistoryToolStripMenuItem
-            // 
-            this.operationHistoryToolStripMenuItem.Name = "operationHistoryToolStripMenuItem";
-            this.operationHistoryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.operationHistoryToolStripMenuItem.Text = "Operation history...";
-            this.operationHistoryToolStripMenuItem.Click += new System.EventHandler(this.operationHistoryToolStripMenuItem_Click);
-            // 
             // QuickSelect
             // 
             this.QuickSelect.Location = new System.Drawing.Point(731, 4);
@@ -1836,6 +1832,10 @@
             this.QuickSelect.Size = new System.Drawing.Size(480, 84);
             this.QuickSelect.TabIndex = 15;
             this.QuickSelect.Visible = false;
+            // 
+            // TimerAnimation
+            // 
+            this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
             // 
             // MapEditorForm
             // 
@@ -1921,7 +1921,6 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog OpenMap;
-        private System.Windows.Forms.Timer TimerAnimation;
         private System.Windows.Forms.ToolStripMenuItem saveMapToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog DialogSaveMap;
         private System.Windows.Forms.ToolStrip StatusStrip;
@@ -2079,5 +2078,6 @@
         private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem operationHistoryToolStripMenuItem;
+        private System.Windows.Forms.Timer TimerAnimation;
     }
 }
