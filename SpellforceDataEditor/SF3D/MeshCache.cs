@@ -158,6 +158,8 @@ namespace SpellforceDataEditor.SF3D
 
         int ElementBufferObjectID = 0;
 
+        int MatrixBufferID = 0;
+
 
         public MeshCacheRangeCollection VertexRanges { get; private set; } = new MeshCacheRangeCollection();
         public MeshCacheRangeCollection ElementRanges { get; private set; } = new MeshCacheRangeCollection();
@@ -172,6 +174,10 @@ namespace SpellforceDataEditor.SF3D
         public uint[] ElementBufferObjectData;
 
         List<VertexAttribDescription> VertexAttributes = new List<VertexAttribDescription>();
+
+        public bool EnableInstancing { get; }
+        public Matrix4[] MatrixBufferData;
+        public int CurrentMatrix;
 
         // resizes vertex buffer if necessary
         // note that after this, the buffer has to be fully updated (taken care of in addmesh)
@@ -193,6 +199,15 @@ namespace SpellforceDataEditor.SF3D
             uint[] NewEBOData = new uint[current_ebo_size * 2];
             Array.Copy(ElementBufferObjectData, NewEBOData, current_ebo_size);
             ElementBufferObjectData = NewEBOData;
+        }
+
+        private void MatrixBufferResizeDouble()
+        {
+            int current_mb_size = MatrixBufferData.Length;
+
+            Matrix4[] NewMBData = new Matrix4[current_mb_size * 2];
+            Array.Copy(MatrixBufferData, NewMBData, current_mb_size);
+            MatrixBufferData = NewMBData;
         }
 
 
@@ -236,6 +251,11 @@ namespace SpellforceDataEditor.SF3D
             ElementRanges.FirstUnused = max_index;
         }
 
+        private void InitMatrix(int count)
+        {
+            MatrixBufferData = new Matrix4[count];
+        }
+
         // definitions of vertex attribute sizes
         static MeshCache()
         {
@@ -254,11 +274,14 @@ namespace SpellforceDataEditor.SF3D
             VertexAttribTypeSize.Add(VertexAttribPointerType.UnsignedShort, 2);
         }
 
-        public MeshCache()
+        public MeshCache(bool enable_instancing)
         {
             VertexArrayObjectID = GL.GenVertexArray();
             VertexBufferObjectID = GL.GenBuffer();
             ElementBufferObjectID = GL.GenBuffer();
+            EnableInstancing = enable_instancing;
+            if (EnableInstancing)
+                MatrixBufferID = GL.GenBuffer();
         }
 
         // adds a vertex attribute
@@ -295,6 +318,7 @@ namespace SpellforceDataEditor.SF3D
 
             FullVertexUpload();
 
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObjectID);
             int current_offset = 0;
             for (int i = 0; i < VertexAttributes.Count; i++)
             {
@@ -303,6 +327,20 @@ namespace SpellforceDataEditor.SF3D
                 GL.EnableVertexAttribArray(i);
                 GL.VertexAttribPointer(i, VertexAttributes[i].ComponentCount, VertexAttributes[i].ComponentType, VertexAttributes[i].Normalized, BytesPerVertex, current_offset);
                 current_offset += attrib_bytesize;
+            }
+
+            if (EnableInstancing)
+            {
+                InitMatrix(20000);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, MatrixBufferID);
+                GL.BufferData(BufferTarget.ArrayBuffer, 64 * 20000, MatrixBufferData, BufferUsageHint.DynamicDraw);
+
+                for (int i = 0; i < 4; i++)
+                {
+                    GL.EnableVertexAttribArray(VertexAttributes.Count + i);
+                    GL.VertexAttribPointer(VertexAttributes.Count + i, 4, VertexAttribPointerType.Float, false, 64, 16 * i);
+                    GL.VertexAttribDivisor(VertexAttributes.Count + i, 1);
+                }
             }
 
             FullElementUpload();
@@ -350,6 +388,29 @@ namespace SpellforceDataEditor.SF3D
                 ElementRanges[element_range_indexx].Count * 4,
                 ref ElementBufferObjectData[ElementRanges[element_range_indexx].Start]);
         }
+
+        public void MatrixUpload()
+        {
+            if (!EnableInstancing)
+                return;
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, MatrixBufferID);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(0), 64 * CurrentMatrix, MatrixBufferData);
+        }
+
+        public void ResizeInstanceMatrixBuffer(int m_count)
+        {
+            if (m_count <= MatrixBufferData.Length)
+                return;
+
+            int current_mbo_size = MatrixBufferData.Length;
+
+            MatrixBufferData = new Matrix4[current_mbo_size * 2];
+            
+            GL.BindBuffer(BufferTarget.ArrayBuffer, MatrixBufferID);
+            GL.BufferData(BufferTarget.ArrayBuffer, MatrixBufferData.Length * 64, MatrixBufferData, BufferUsageHint.DynamicDraw);
+        }
+
 
         // adds mesh to the cache, returns index to the mesh index table, and that index directs to mesh data
         public int AddMesh(byte[] vertex_data, uint[] element_data)
@@ -467,6 +528,8 @@ namespace SpellforceDataEditor.SF3D
         {
             if (VertexArrayObjectID != 0)
             {
+                if (EnableInstancing)
+                    GL.DeleteBuffer(MatrixBufferID);
                 GL.DeleteBuffer(ElementBufferObjectID);
                 GL.DeleteBuffer(VertexBufferObjectID);
                 GL.DeleteVertexArray(VertexArrayObjectID);

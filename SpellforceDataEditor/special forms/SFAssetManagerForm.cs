@@ -238,9 +238,10 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.root = null;
             SFRenderEngine.scene.camera = null;
 
-            foreach (var tex in SFRenderEngine.scene.tex_list_simple.Keys)
+            /*foreach (var tex in SFRenderEngine.scene.tex_list_simple.Keys)
                 SFRenderEngine.scene.tex_list_simple[tex].Clear();
-            SFRenderEngine.scene.tex_list_simple.Clear();
+            SFRenderEngine.scene.tex_list_simple.Clear();*/
+            SFRenderEngine.scene.model_set_simple.Clear();
 
             SFSubModel3D.Cache.Clear();
             SFModelSkinChunk.Cache.Clear();

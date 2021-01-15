@@ -1008,9 +1008,10 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.map = null;
             SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
 
-            foreach (var tex in SFRenderEngine.scene.tex_list_simple.Keys)
+            /*foreach (var tex in SFRenderEngine.scene.tex_list_simple.Keys)
                 SFRenderEngine.scene.tex_list_simple[tex].Clear();
-            SFRenderEngine.scene.tex_list_simple.Clear();
+            SFRenderEngine.scene.tex_list_simple.Clear();*/
+            SFRenderEngine.scene.model_set_simple.Clear();
 
             SF3D.SFSubModel3D.Cache.Clear();
             SF3D.SFModelSkinChunk.Cache.Clear();
@@ -1511,7 +1512,7 @@ namespace SpellforceDataEditor.special_forms
                     update_render = true;
                     return true;
                 case Keys.F | Keys.Control:
-                    //SFRenderEngine.prepare_dump = true;
+                    SFRenderEngine.prepare_dump = true;
                     //SFRenderEngine.render_shadowmap_depth = !SFRenderEngine.render_shadowmap_depth;
                     update_render = true;
                     return true;

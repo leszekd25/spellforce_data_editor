@@ -17,7 +17,7 @@ namespace SpellforceDataEditor.SFResources
 {
     public class SFResourceContainer<T> where T: SFResource, new()
     {
-        Dictionary<string, T> cont =new Dictionary<string, T>();
+        Dictionary<string, T> cont = new Dictionary<string, T>();
         Dictionary<string, int> reference_count = new Dictionary<string, int>();
         Dictionary<string, bool> remove_when_unused = new Dictionary<string, bool>();
         string prefix_path = "";

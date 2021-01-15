@@ -156,7 +156,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 if (needsanyupdate)
                     UpdateTransform();
 
-                //OnGatherSceneInstances();
+                GatherSceneInstances();
 
                 foreach (SceneNode node in Children)
                     node.Update(t);
@@ -190,6 +190,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         // updates node according to the given time parameter
         protected virtual void UpdateTime(float t)
+        {
+
+        }
+
+        // used by instanced meshes (SceneNodeSimple)
+        protected virtual void GatherSceneInstances()
         {
 
         }
@@ -272,19 +278,38 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
             set
             {
-                mesh = value;
-                if (mesh == null)
+                if(mesh != null)
                 {
-                    ClearTexGeometry();
-                    aabb = new Physics.BoundingBox(Vector3.Zero, Vector3.Zero);
+                    if(value == null)
+                    {
+                        aabb = new Physics.BoundingBox(Vector3.Zero, Vector3.Zero);
+                        if (visible)
+                            ClearTexGeometry();
+                        mesh = null;
+                    }
+                    else
+                    {
+                        if (visible)
+                            ClearTexGeometry();
+                        mesh = value;
+                        if (visible)
+                            AddTexGeometry();
+                        aabb = mesh.aabb;
+                    }
                 }
-                else if (Visible)
+                else
                 {
-                    AddTexGeometry();
-                    aabb = mesh.aabb;
+                    if(value != null)
+                    {
+                        mesh = value;
+                        if (visible)
+                            AddTexGeometry();
+                        aabb = mesh.aabb;
+                    }
                 }
             }
         }
+
         public override bool Visible
         {
             get => base.Visible;
@@ -293,21 +318,23 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 if (Visible != value)
                 {
                     visible = value;
-                    if (value == false)
+                    if (mesh != null)
                     {
-                        ClearTexGeometry();
-                    }
-                    else
-                    {
-                        AddTexGeometry();
+                        if (value == false)
+                        {
+                            ClearTexGeometry();
+                        }
+                        else
+                        {
+                            AddTexGeometry();
+                        }
                     }
                     foreach (SceneNode n in Children)
                         n.Visible = value;
                 }
             }
         }
-        // list of scene cache pointers
-        public TexGeometryLinkSimple[] TextureGeometryIndex { get; private set; } = null;
+        //public int ModelIndex { get; private set; } = Utility.NO_INDEX;
 
         public bool Billboarded { get; set; } = false;
 
@@ -323,46 +350,46 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             base.UpdateTransform();
         }
 
-        public SceneNodeSimple(string n) : base(n) { }
-
-        // adds elements drawn by this node to scene cache
-        // todo: also do this if transparent = false, let transparent object list deal with those
-        private void ClearTexGeometry()
+        protected override void GatherSceneInstances()
         {
-            if (TextureGeometryIndex == null)
-                return;
-
-            foreach (TexGeometryLinkSimple link in TextureGeometryIndex)
+            if((visible)&&(mesh != null))
             {
-                {
-                    SFRender.SFRenderEngine.scene.tex_list_simple[link.texture].RemoveAt(link.index);
-                    if (SFRender.SFRenderEngine.scene.tex_list_simple[link.texture].used_count == 0)
-                        SFRender.SFRenderEngine.scene.tex_list_simple.Remove(link.texture);
-                }
+                SFSubModel3D.Cache.MatrixBufferData[mesh.MatrixOffset + mesh.CurrentMatrixIndex] = ResultTransform;
+                mesh.CurrentMatrixIndex += 1;
             }
-
-            TextureGeometryIndex = null;
         }
 
-        // adds elements drawn by this node to scene cache
-        // todo: also do this if transparent = false, let transparent object list deal with those
+        public SceneNodeSimple(string n) : base(n) { }
+
+        // removes this node from scene cache
+        // assumes mesh exists
+        private void ClearTexGeometry()
+        {
+            //if (ModelIndex == Utility.NO_INDEX)
+            //    return;
+
+            mesh.MatrixCount -= 1;
+            if (mesh.MatrixCount == 0)
+                SFRender.SFRenderEngine.scene.model_set_simple.Remove(mesh);
+
+            /*SFRender.SFRenderEngine.scene.model_list_simple[mesh].RemoveAt(ModelIndex);
+            if (SFRender.SFRenderEngine.scene.model_list_simple[mesh].used_count == 0)
+                SFRender.SFRenderEngine.scene.model_list_simple.Remove(mesh);
+
+            ModelIndex = Utility.NO_INDEX;*/
+        }
+
+        // adds this node to scene cache
+        // todo: work out transparency :)
         private void AddTexGeometry()
         {
-            if (TextureGeometryIndex != null)
-                ClearTexGeometry();
-            if (mesh == null)
-                return;
+            //if (ModelIndex != Utility.NO_INDEX)
+            //    ClearTexGeometry();
 
-            TextureGeometryIndex = new TexGeometryLinkSimple[mesh.submodels.Length];
-
-            for (int i = 0; i < Mesh.submodels.Length; i++)
-            {
-                TexturedGeometryListElementSimple elem = new TexturedGeometryListElementSimple();
-                elem.node = this;
-                elem.submodel_index = i;
-                TextureGeometryIndex[i].texture = mesh.submodels[i].material.texture;
-                TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntrySimple(mesh.submodels[i].material.texture, elem);
-            }
+            mesh.MatrixCount += 1;
+            if (mesh.MatrixCount == 1)
+                SFRender.SFRenderEngine.scene.model_set_simple.Add(mesh);
+            //ModelIndex = SFRender.SFRenderEngine.scene.AddModelEntrySimple(mesh, this);
         }
 
         // disposes mesh used by this node (reference counted, dw)

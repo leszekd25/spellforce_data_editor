@@ -224,6 +224,12 @@ namespace SpellforceDataEditor.SF3D
     {
         public SFSubModel3D[] submodels = null;
         public Physics.BoundingBox aabb;
+
+        // instance matrix data, from MeshCache
+        public int CurrentMatrixIndex = 0;       // reset every frame
+        public int MatrixOffset = 0;             // offset into MeshCache.MatrixData array  
+        public int MatrixCount = 0;              // number of matrices used; CurrentMatrixIndex stops here
+
         string name = "";
 
         public SFModel3D()

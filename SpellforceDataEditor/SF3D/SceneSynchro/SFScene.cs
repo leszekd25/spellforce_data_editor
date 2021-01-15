@@ -56,7 +56,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public LightingSun sun_light { get; } = new LightingSun();
         public Atmosphere atmosphere { get; } = new Atmosphere();
 
-        public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>> tex_list_simple { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>>();
+        //public Dictionary<SFModel3D, LinearPool<SceneNodeSimple>> model_list_simple { get; private set; } = new Dictionary<SFModel3D, LinearPool<SceneNodeSimple>>();
+        public HashSet<SFModel3D> model_set_simple { get; private set; } = new HashSet<SFModel3D>();
+        //public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>> tex_list_simple { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>>();
 
         public HashSet<SceneNodeAnimated> an_nodes = new HashSet<SceneNodeAnimated>();
 
@@ -165,24 +167,24 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
 
         // temporary revert to non-instanced simple meshes
-        public int AddTextureEntrySimple(SFTexture tex, TexturedGeometryListElementSimple elem)
+        /*public int AddModelEntrySimple(SFModel3D mesh, SceneNodeSimple node)
         {
-            if (!tex_list_simple.ContainsKey(tex))
-                tex_list_simple.Add(tex, new LinearPool<TexturedGeometryListElementSimple>());
+            if (!model_list_simple.ContainsKey(mesh))
+                model_list_simple.Add(mesh, new LinearPool<SceneNodeSimple>());
 
-            return tex_list_simple[tex].Add(elem);
+            return model_list_simple[mesh].Add(node);
         }
 
-        public void ClearTextureEntrySimple(SFTexture tex, TexturedGeometryListElementSimple elem)
+        public void ClearModelEntrySimple(SFModel3D mesh, SceneNodeSimple node)
         {
-            if (!tex_list_simple.ContainsKey(tex))
+            if (!model_list_simple.ContainsKey(mesh))
                 return;
 
-            tex_list_simple[tex].Remove(elem);
+            model_list_simple.Remove(mesh);
 
-            if (tex_list_simple[tex].used_count == 0)
-                tex_list_simple.Remove(tex);
-        }
+            if (model_list_simple[mesh].used_count == 0)
+                model_list_simple.Remove(mesh);
+        }*/
 
         // these functions add basic node types to scene
         public SceneNode AddSceneNodeEmpty(SceneNode parent, string new_node_name)
@@ -512,6 +514,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // updates root of the scene (and consequently, all children that need to be updated)
         public void Update()
         {
+            // first, clear mesh matrices
+            int cur_offset = 0;
+            foreach (var mesh in model_set_simple.ToList())
+            {
+                mesh.CurrentMatrixIndex = 0;
+                mesh.MatrixOffset = cur_offset;
+                cur_offset += mesh.MatrixCount;
+            }
+
+            SFSubModel3D.Cache.ResizeInstanceMatrixBuffer(cur_offset);
+
             delta_timer.Stop();
             deltatime = delta_timer.ElapsedMilliseconds / (float)1000;
             delta_timer.Restart();
@@ -524,6 +537,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     current_time -= scene_meta.duration;
 
             frame_counter++;
+
+            SFSubModel3D.Cache.CurrentMatrix = cur_offset;
+            SFSubModel3D.Cache.MatrixUpload();
         }
     }
 }
