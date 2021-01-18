@@ -370,9 +370,9 @@ namespace SpellforceDataEditor.SFMap
             g /= 4096;
             b /= 4096;
 
-            r = Math.Min(255, (int)(r * SF3D.SFRender.SFRenderEngine.scene.sun_light.Strength));
-            g = Math.Min(255, (int)(g * SF3D.SFRender.SFRenderEngine.scene.sun_light.Strength));
-            b = Math.Min(255, (int)(b * SF3D.SFRender.SFRenderEngine.scene.sun_light.Strength));
+            r = Math.Min(255, (int)(r * SF3D.SFRender.SFRenderEngine.scene.atmosphere.sun_light.Strength));
+            g = Math.Min(255, (int)(g * SF3D.SFRender.SFRenderEngine.scene.atmosphere.sun_light.Strength));
+            b = Math.Min(255, (int)(b * SF3D.SFRender.SFRenderEngine.scene.atmosphere.sun_light.Strength));
 
             tile_average_color[tile_id] = Color.FromArgb(r, g, b);
         }

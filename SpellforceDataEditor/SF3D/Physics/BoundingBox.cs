@@ -20,7 +20,7 @@ namespace SpellforceDataEditor.SF3D.Physics
         public Vector3 a;             // lesser of X, Y and Z coordinates are stored here
         public Vector3 b;             // greater of X, Y and Z coordinates are stored here
         private Vector3[] vertices;
-        public Vector3 center { get; private set; }
+        public Vector3 center;
 
         // automatically sets a and b to fit the definition
         public BoundingBox(Vector3 _a, Vector3 _b)
@@ -133,23 +133,14 @@ namespace SpellforceDataEditor.SF3D.Physics
             return false;
         }
 
-        // rotate bounding box along XY plane and return new rotated box
-        public BoundingBox RotatedByAzimuthAltitude(float azimuth, float altitude)
+        // limit on point coordinates is (-100000, 100000)
+        public static BoundingBox FromPoints(Vector3[] vs)
         {
-            azimuth *= (float)(Math.PI / 180);
-            altitude *= (float)(Math.PI / 180);
-            // rotate all 8 points along the respective XY planes by azimuth, and create new bounding box from min and max of those points
-            Vector3[] vs = new Vector3[8];
-            for (int i = 0; i < 8; i++)
-                vs[i] = vertices[i];
-
             float xmin, xmax, ymin, ymax, zmin, zmax;
             xmin = ymin = zmin = 99999;
             xmax = ymax = zmax = -99999;
 
-            MathUtils.RotateVec3Array(vs, center, azimuth, altitude);
-
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < vs.Length; i++)
             {
                 if (xmin > vs[i].X)
                     xmin = vs[i].X;
@@ -165,7 +156,22 @@ namespace SpellforceDataEditor.SF3D.Physics
                     zmax = vs[i].Z;
             }
 
-            BoundingBox bb = new BoundingBox(new Vector3(xmin, ymin, zmin), new Vector3(xmax, ymax, zmax));
+            return new BoundingBox(new Vector3(xmin, ymin, zmin), new Vector3(xmax, ymax, zmax));
+        }
+
+        // rotate bounding box along XY plane and return new rotated box
+        public BoundingBox RotatedByAzimuthAltitude(float azimuth, float altitude)
+        {
+            azimuth *= (float)(Math.PI / 180);
+            altitude *= (float)(Math.PI / 180);
+            // rotate all 8 points along the respective XY planes by azimuth, and create new bounding box from min and max of those points
+            Vector3[] vs = new Vector3[8];
+            for (int i = 0; i < 8; i++)
+                vs[i] = vertices[i];
+
+            MathUtils.RotateVec3Array(vs, center, azimuth, altitude);
+
+            BoundingBox bb = BoundingBox.FromPoints(vs);
             return this.Union(bb);
         }
 
@@ -199,6 +205,17 @@ namespace SpellforceDataEditor.SF3D.Physics
             dzmax = Math.Max(b.Z, _aabb.b.Z);
 
             return new BoundingBox(new Vector3(dxmin, dymin, dzmin), new Vector3(dxmax, dymax, dzmax));
+        }
+
+        public void CropMinY(float minz)
+        {
+            a.Y = minz;
+            vertices[0] = new Vector3(a);
+            vertices[1] = new Vector3(a.X, a.Y, b.Z);
+            vertices[4] = new Vector3(b.X, a.Y, a.Z);
+            vertices[5] = new Vector3(b.X, a.Y, b.Z);
+
+            center = (a + b) / 2;
         }
 
         public double GetVolume()

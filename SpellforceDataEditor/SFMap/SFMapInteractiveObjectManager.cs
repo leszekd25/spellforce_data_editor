@@ -91,8 +91,8 @@ namespace SpellforceDataEditor.SFMap
                 int_object_types.Insert(index, SFMapInteractiveObjectType.OTHER);
 
             string obj_name = obj.GetName();
-            SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, obj_name, true);
-            node.SetParent(map.heightmap.GetChunkNode(position));
+            obj.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, obj_name, true);
+            obj.node.SetParent(map.heightmap.GetChunkNode(position));
 
             return obj;
         }
@@ -122,12 +122,11 @@ namespace SpellforceDataEditor.SFMap
             }
             int_object_types.RemoveAt(obj_index);
 
-            SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(int_obj.grid_position);
-            SF3D.SceneSynchro.SceneNode obj_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(int_obj.GetName());
+            SF3D.SceneSynchro.SceneNode obj_node = int_obj.node;
             if (obj_node != null)
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(obj_node);
 
-            map.heightmap.GetChunk(int_obj.grid_position).RemoveInteractiveObject(int_obj);
+            map.heightmap.GetChunk(int_obj.grid_position).RemoveInteractiveObject(int_obj); 
         }
     }
 }

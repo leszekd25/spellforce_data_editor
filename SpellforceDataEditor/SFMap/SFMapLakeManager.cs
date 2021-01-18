@@ -18,6 +18,7 @@ namespace SpellforceDataEditor.SFMap
         public short z_diff;
         public int type;
         public int id;
+        public SF3D.SceneSynchro.SceneNodeSimple node = null;
 
         public string GetObjectName()
         {
@@ -76,6 +77,9 @@ namespace SpellforceDataEditor.SFMap
             lake.z_diff = z_diff;
             lake.type = type;
 
+            lake.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(SF3D.SFRender.SFRenderEngine.scene.root, Utility.S_NONE, lake.GetObjectName());
+            lake.node.Position = new Vector3(0, 0, 0);
+
             UpdateLake(lake);
 
             if (lake.cells.Count == 0)
@@ -83,16 +87,7 @@ namespace SpellforceDataEditor.SFMap
                 RemoveLake(lake);
                 return null;
             }
-            /*else
-            {
-                lake_index = lakes.IndexOf(lake);
-                if ((MainForm.mapedittool != null) && (MainForm.mapedittool.op_queue != null) && (MainForm.mapedittool.op_queue.IsClusterOpen()))
-                {
-                    map_operators.MapOperatorLake op_lake = new map_operators.MapOperatorLake() { pos = start, z_diff = z_diff, type = type, lake_index = lake_index, change_add = true };
-                    MainForm.mapedittool.op_queue.Push(op_lake);
-                }
-                return lake;
-            }*/
+
             return lake;
         }
 
@@ -103,10 +98,10 @@ namespace SpellforceDataEditor.SFMap
 
         private void DisposeLakeMesh(SFMapLake lake)
         {
-            string mesh_name = lake.GetObjectName();
-            SFModel3D mesh = SFResources.SFResourceManager.Models.Get(mesh_name);
-            if (mesh != null)
-                SFResources.SFResourceManager.Models.Dispose(mesh_name);
+            if (lake.node.Mesh != null)
+                SFResources.SFResourceManager.Models.Dispose(lake.GetObjectName());
+
+            lake.node.Mesh = null;
         }
 
         public void RemoveLake(SFMapLake lake)
@@ -134,7 +129,8 @@ namespace SpellforceDataEditor.SFMap
             lakes.RemoveAt(lake_index);
             lake_visible.RemoveAt(lake_index);
 
-            DisposeLakeMesh(lake);
+            //DisposeLakeMesh(lake);
+            SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(lake.node);
         }
 
         public string GetLakeTextureName(int type)
@@ -216,6 +212,9 @@ namespace SpellforceDataEditor.SFMap
         {
             DisposeLakeMesh(lake);
 
+            if (lake.cells.Count == 0)
+                return;
+
             // generate mesh
             SFSubModel3D submodel = new SFSubModel3D();
             int v_count = lake.cells.Count * 4;
@@ -257,8 +256,6 @@ namespace SpellforceDataEditor.SFMap
             }
             // generate material for this geometry
             SFMaterial material = new SFMaterial();
-            material.indexStart = (uint)0;
-            material.indexCount = (uint)(i_count);
 
             string tex_name = GetLakeTextureName(lake.type);
             SFTexture tex = null;
@@ -277,12 +274,17 @@ namespace SpellforceDataEditor.SFMap
             SFModel3D mesh = new SFModel3D();
             mesh.CreateRaw(new SFSubModel3D[] { submodel });
             SFResources.SFResourceManager.Models.AddManually(mesh, lake.GetObjectName());
+
+            lake.node.Mesh = mesh;
         }
 
         public void Dispose()
         {
             foreach (var lake in lakes)
+            {
+                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(lake.node);
                 DisposeLakeMesh(lake);
+            }
         }
     }
 }

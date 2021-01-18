@@ -658,7 +658,7 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.Init();
             CreateRenderWindow();
             // set light direction (move somewhere else in the future, before this function is called)
-            SFRenderEngine.scene.sun_light.SetLightDirection(-new Vector3(1, -1, 1).Normalized());
+            SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
             InspectorHide();
 
             this.WindowState = FormWindowState.Maximized;
@@ -792,7 +792,6 @@ namespace SpellforceDataEditor.special_forms
             map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
             map.selection_helper.SetCursorVisibility(true);
 
-            SFRenderEngine.scene.camera.SetParent(SFRenderEngine.scene.root);
             SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
             ResetCamera();
 
@@ -806,6 +805,7 @@ namespace SpellforceDataEditor.special_forms
             op_queue.map = map;
 
             // finishing actions
+            RenderWindow.Enabled = true;
             RenderWindow.Invalidate();
 
             if (MainForm.data != null)
@@ -888,7 +888,6 @@ namespace SpellforceDataEditor.special_forms
                 map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
                 map.selection_helper.SetCursorVisibility(true);
 
-                SFRenderEngine.scene.camera.SetParent(SFRenderEngine.scene.root);
                 SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
                 ResetCamera();
 
@@ -901,6 +900,7 @@ namespace SpellforceDataEditor.special_forms
                 op_queue = new MapEditorOperatorQueue();
                 op_queue.map = map;
 
+                RenderWindow.Enabled = true;
                 RenderWindow.Invalidate();
 
                 if (MainForm.data != null)
@@ -991,6 +991,8 @@ namespace SpellforceDataEditor.special_forms
 
             TabEditorModes.Enabled = false;
             InspectorClear();
+
+            RenderWindow.Enabled = false;
 
             TreeEntities.Nodes.Clear();
             unit_tree = null;
@@ -1167,7 +1169,7 @@ namespace SpellforceDataEditor.special_forms
                     float wx, wy;
                     wx = ((px / RenderWindow.Size.Width) + 0.1f) / 1.2f;
                     wy = ((py / RenderWindow.Size.Height) + 0.1f) / 1.2f;
-                    Vector3[] frustrum_vertices = SFRenderEngine.scene.camera.FrustumVertices;
+                    Vector3[] frustrum_vertices = SFRenderEngine.scene.camera.Frustum.frustum_vertices;
                     Vector3 r_start = SFRenderEngine.scene.camera.Position;
                     Vector3 r_end = frustrum_vertices[4]
                         + wx * (frustrum_vertices[5] - frustrum_vertices[4])
@@ -1273,13 +1275,14 @@ namespace SpellforceDataEditor.special_forms
             // render time
             if (update_render)
             {
-                SFRenderEngine.scene.sun_light.ShadowSize = Math.Max(50f, Math.Min(zoom_level * 60f, 200f));
-                map.selection_helper.Update();
+                AdjustCameraZ();
+                SFRenderEngine.scene.camera.Update(0);
                 map.ocean.SetPosition(SFRenderEngine.scene.camera.Position);
                 SFRenderEngine.UpdateVisibleChunks();
-                AdjustCameraZ();
+                map.selection_helper.Update();
                 SFRenderEngine.scene.Update();
                 SFRenderEngine.ui.Update();
+                UpdateSunFrustum();
                 RenderWindow.Invalidate();
                 updates_this_second += 1;
                 update_render = false;
@@ -1292,14 +1295,6 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.scene.StopTimeFlow();
             else
                 SFRenderEngine.scene.ResumeTimeFlow();
-
-            // garbage collector
-            gc_timer += 1;
-            if (gc_timer >= 8*SFRenderEngine.scene.frames_per_second)
-            {
-                GC.Collect();
-                gc_timer = 0;
-            }
         }
 
 
@@ -1345,44 +1340,50 @@ namespace SpellforceDataEditor.special_forms
                 float z = map.heightmap.GetRealZ(p);
 
                 SFRenderEngine.scene.camera.translate(new Vector3(0, (25 * zoom_level) + z - SFRenderEngine.scene.camera.Position.Y, 0));
-
-                // calculate light bounding box
-
-                // calculate visible heightmap bounding box, using chunks that are close enough
-                float max_dist = Math.Max(
-                    60, 50 * zoom_level * (float)Math.Min(
-                        3.0f, Math.Max(
-                            0.6f, 1.0f / (0.001f + Math.Abs(
-                                Math.Tan(
-                                    SFRenderEngine.scene.camera.Direction.Y))))));
-
-                float xmin, xmax, ymin, ymax, zmin, zmax;
-                xmin = 9999; ymin = 9999; xmax = -9999; ymax = -9999; zmin = 9999; zmax = -9999;
-                foreach(SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.visible_chunks)
-                {
-                    Vector3 pos = chunk_node.Position;
-
-                    if (max_dist < (p - new Vector2(pos.X + 8, pos.Z + 8)).Length)
-                        continue;
-
-                    if (pos.X < xmin)
-                        xmin = pos.X;
-                    else if (pos.X+16 > xmax)
-                        xmax = pos.X+16;
-                    if (pos.Z < ymin)
-                        ymin = pos.Z;
-                    else if (pos.Z+16 > ymax)
-                        ymax = pos.Z+16;
-                    if (chunk_node.MapChunk.aabb.a.Y < zmin)
-                        zmin = chunk_node.MapChunk.aabb.a.Y;
-                    if (chunk_node.MapChunk.aabb.b.Y > zmax)
-                        zmax = chunk_node.MapChunk.aabb.b.Y;
-                }
-                SF3D.Physics.BoundingBox aabb = new SF3D.Physics.BoundingBox(new Vector3(xmin, zmin, ymin), new Vector3(xmax, zmax, ymax));
-
-                SFRenderEngine.scene.sun_light.SetupLightView(aabb);
-                SFRenderEngine.scene.sun_light.ShadowDepth = max_dist;
             }
+        }
+
+        private void UpdateSunFrustum()
+        {
+            Vector2 p = new Vector2(SFRenderEngine.scene.camera.Position.X, SFRenderEngine.scene.camera.Position.Z);
+            // calculate light bounding box
+
+            // calculate visible heightmap bounding box, using chunks that are close enough
+            float max_dist = Math.Max(
+                60, 50 * zoom_level * (float)Math.Min(
+                    3.0f, Math.Max(
+                        0.6f, 1.0f / (0.001f + Math.Abs(
+                            Math.Tan(
+                                SFRenderEngine.scene.camera.Direction.Y))))));
+
+            float xmin, xmax, ymin, ymax, zmin, zmax;
+            xmin = 9999; ymin = 9999; xmax = -9999; ymax = -9999; zmin = 9999; zmax = -9999;
+            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.visible_chunks)
+            {
+                Vector3 pos = chunk_node.Position;
+
+                if (max_dist < (p - new Vector2(pos.X + 8, pos.Z + 8)).Length)
+                    continue;
+                // 25 * zoom_level
+
+                if (pos.X < xmin)
+                    xmin = pos.X;
+                else if (pos.X + 16 > xmax)
+                    xmax = pos.X + 16;
+                if (pos.Z < ymin)
+                    ymin = pos.Z;
+                else if (pos.Z + 16 > ymax)
+                    ymax = pos.Z + 16;
+                if (chunk_node.MapChunk.aabb.a.Y < zmin)
+                    zmin = chunk_node.MapChunk.aabb.a.Y;
+                if (chunk_node.MapChunk.aabb.b.Y > zmax)
+                    zmax = chunk_node.MapChunk.aabb.b.Y;
+            }
+            SF3D.Physics.BoundingBox aabb = new SF3D.Physics.BoundingBox(new Vector3(xmin, zmin, ymin), new Vector3(xmax, zmax, ymax));
+            //SF3D.Physics.BoundingBox aabb = SF3D.Physics.BoundingBox.FromPoints(SFRenderEngine.scene.camera.Frustum.frustum_vertices);
+
+            SFRenderEngine.scene.atmosphere.sun_light.SetupLightView(aabb);
+            SFRenderEngine.scene.atmosphere.sun_light.ShadowDepth = max_dist;
         }
 
         // attempts to center camera on the selected position with preservation of camera angle
@@ -1512,8 +1513,8 @@ namespace SpellforceDataEditor.special_forms
                     update_render = true;
                     return true;
                 case Keys.F | Keys.Control:
-                    SFRenderEngine.prepare_dump = true;
-                    //SFRenderEngine.render_shadowmap_depth = !SFRenderEngine.render_shadowmap_depth;
+                    //SFRenderEngine.prepare_dump = true;
+                    SFRenderEngine.render_shadowmap_depth = !SFRenderEngine.render_shadowmap_depth;
                     update_render = true;
                     return true;
                 case Keys.P | Keys.Control:
@@ -2115,7 +2116,7 @@ namespace SpellforceDataEditor.special_forms
         // WEATHER
         private void UpdateSunDirection()
         {
-            SFRenderEngine.scene.sun_light.SetAzimuthAltitude(SunAzimuthTrackbar.Value, SunAltitudeTrackbar.Value);
+            SFRenderEngine.scene.atmosphere.SetSunLocation(SunAzimuthTrackbar.Value, SunAltitudeTrackbar.Value);
             update_render = true;
         }
 
@@ -2158,10 +2159,10 @@ namespace SpellforceDataEditor.special_forms
 
         private void UpdateAtmoPanel()
         {
-            SunAzimuthVal.Text = ((int)(SFRenderEngine.scene.sun_light.Azimuth)).ToString();
-            SunAzimuthTrackbar.Value = ((int)(SFRenderEngine.scene.sun_light.Azimuth));
-            SunAltitudeVal.Text = ((int)(SFRenderEngine.scene.sun_light.Altitude)).ToString();
-            SunAltitudeTrackbar.Value = ((int)(SFRenderEngine.scene.sun_light.Altitude));
+            SunAzimuthVal.Text = ((int)(SFRenderEngine.scene.atmosphere.sun_light.Azimuth)).ToString();
+            SunAzimuthTrackbar.Value = ((int)(SFRenderEngine.scene.atmosphere.sun_light.Azimuth));
+            SunAltitudeVal.Text = ((int)(SFRenderEngine.scene.atmosphere.sun_light.Altitude)).ToString();
+            SunAltitudeTrackbar.Value = ((int)(SFRenderEngine.scene.atmosphere.sun_light.Altitude));
         }
 
         private void WClear_Validated(object sender, EventArgs e)
@@ -2206,7 +2207,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void SunAzimuthVal_Validated(object sender, EventArgs e)
         {
-            int v = Utility.TryParseInt32(SunAzimuthVal.Text, (int)(SFRenderEngine.scene.sun_light.Azimuth));
+            int v = Utility.TryParseInt32(SunAzimuthVal.Text, (int)(SFRenderEngine.scene.atmosphere.sun_light.Azimuth));
             if (v < 0)
                 v = 0;
             if (v > 359)
@@ -2216,7 +2217,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void SunAltitudeVal_Validated(object sender, EventArgs e)
         {
-            int v = Utility.TryParseInt32(SunAltitudeVal.Text, (int)(SFRenderEngine.scene.sun_light.Altitude));
+            int v = Utility.TryParseInt32(SunAltitudeVal.Text, (int)(SFRenderEngine.scene.atmosphere.sun_light.Altitude));
             if (v < -89)
                 v = -89;
             if (v > 89)

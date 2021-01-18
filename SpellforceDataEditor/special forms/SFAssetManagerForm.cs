@@ -195,8 +195,6 @@ namespace SpellforceDataEditor.special_forms
             Vector3[] normals = new Vector3[] { new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0) };
             uint[] indices = new uint[] { 0, 1, 2, 1, 3, 2 };
             SFMaterial material = new SFMaterial();
-            material.indexStart = (uint)0;
-            material.indexCount = (uint)6;
 
             string tex_name = "test_lake";
             SFTexture tex = null;
@@ -762,6 +760,7 @@ namespace SpellforceDataEditor.special_forms
 
             if (update_render)
             {
+                SFRenderEngine.scene.camera.Update(0);
                 SFRenderEngine.scene.Update();
                 SFRenderEngine.ui.Update();
                 glControl1.Invalidate();
@@ -1133,7 +1132,6 @@ namespace SpellforceDataEditor.special_forms
             grid_node.SetParent(null);
             SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
             SFRenderEngine.scene.root.Visible = true;
-            SFRenderEngine.scene.camera.SetParent(SFRenderEngine.scene.root);
             grid_node.SetParent(SFRenderEngine.scene.root);
             update_render = true;
         }

@@ -206,16 +206,51 @@ namespace SpellforceDataEditor.Properties {
         ///   Looks up a localized string similar to in vec2 UV;
         ///uniform sampler2D DiffuseTexture;
         ///
+        ///out vec4 col;
+        ///
         ///void main()
         ///{
         ///    if(texture(DiffuseTexture, UV).a &lt; 0.5)
         ///        discard;
-        ///    gl_FragDepth =gl_FragCoord.z;
+        ///
+        ///    float depth = gl_FragCoord.z;
+        ///
+        ///    float dx = dFdx(depth);
+        ///    float dy = dFdy(depth);
+        ///    float moment2 = depth * depth + 0.25 * (dx * dx + dy * dy);
+        ///    
+        ///    col = vec4(depth, moment2, 1.0, 1.0);
         ///}.
         /// </summary>
         internal static string fshader_shadowmap {
             get {
                 return ResourceManager.GetString("fshader_shadowmap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to out vec4 FragColor;
+        ///  
+        ///in vec2 TexCoords;
+        ///
+        ///uniform sampler2D image;
+        ///  
+        ///uniform bool horizontal;
+        ///uniform float weight[3] = float[] (0.250301, 0.221461, 0.153388);
+        ///
+        ///void main()
+        ///{             
+        ///    vec2 tex_offset = 1.0 / textureSize(image, 0); // gets size of single texel
+        ///    vec2 result = texture(image, TexCoords).rg * weight[0]; // current fragment&apos;s contribution
+        ///    if(horizontal)
+        ///    {
+        ///        for(int i = 1; i &lt; 3; ++i)
+        ///        {
+        ///            result += texture(image, TexCoords + vec2(tex_of [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string fshader_shadowmap_blur {
+            get {
+                return ResourceManager.GetString("fshader_shadowmap_blur", resourceCulture);
             }
         }
         
@@ -330,15 +365,6 @@ namespace SpellforceDataEditor.Properties {
             get {
                 object obj = ResourceManager.GetObject("object_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string String1 {
-            get {
-                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         
@@ -488,14 +514,14 @@ namespace SpellforceDataEditor.Properties {
         ///// Values that stay constant for the whole mesh.
         ///uniform mat4 LSM;
         ///uniform mat4 M;
-        ///uniform mat4 boneTransforms[20];
+        ///uniform mat4 boneTransforms[224];
         ///  
         ///void main(){
         ///  vec4 Vertex;
         ///  vec4 newVertex;
         ///  int index;
         ///
-        ///  [rest of string was truncated]&quot;;.
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_shadowmap_animated {
             get {

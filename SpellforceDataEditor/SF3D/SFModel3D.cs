@@ -79,8 +79,6 @@ namespace SpellforceDataEditor.SF3D
             br.ReadUInt16();
 
             material = new SFMaterial();
-            material.indexStart = (uint)0;
-            material.indexCount = (uint)face_indices.Length;
 
             string matname;
 
@@ -156,8 +154,6 @@ namespace SpellforceDataEditor.SF3D
             if (_material == null)
             {
                 material = new SFMaterial();
-                material.indexStart = 0;
-                material.indexCount = (uint)face_indices.Length;
                 material.texture = SFRender.SFRenderEngine.opaque_tex;
             }
             else

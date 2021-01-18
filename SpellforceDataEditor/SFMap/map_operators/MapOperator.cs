@@ -679,10 +679,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
                 new SFMapCoopAISpawn(map.object_manager.objects[obj_index], coopcamp_id, coopcamp_unknown));
 
             // add mesh to the object
-            SF3D.SceneSynchro.SceneNode obj_node =
-                map.heightmap.GetChunkNode(position)
-                .FindNode<SF3D.SceneSynchro.SceneNode>(
-                    map.object_manager.objects[obj_index].GetName());
+            SF3D.SceneSynchro.SceneNode obj_node = map.object_manager.objects[obj_index].node;
 
             string m = "editor_dummy_spawnpoint";
             SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name + "_SPAWNCIRCLE");

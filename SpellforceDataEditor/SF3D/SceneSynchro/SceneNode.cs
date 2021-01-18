@@ -447,11 +447,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     AddTexGeometry();
             }
         }
+
         public SFAnimation Animation { get; private set; } = null;
         public Matrix4[] BoneTransforms = null;
-        public Matrix4[][] BoneTransformsPerSkinChunk = null;
         public float AnimCurrentTime { get; private set; } = 0;
         public bool AnimPlaying { get; set; } = false;
+
         public override bool Visible
         {
             get => base.Visible;
@@ -470,8 +471,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 }
             }
         }
-        // list of scene cache pointers
-        public TexGeometryLinkAnimated[] TextureGeometryIndex { get; private set; } = null;
 
         public SceneNodeAnimated(string n) : base(n) { }
 
@@ -479,25 +478,15 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // also this bypasses resource system (for now), so they need to be managed elsewhere
         public void SetSkeletonSkin(SFSkeleton _skeleton, SFModelSkin _skin)
         {
-            BoneTransformsPerSkinChunk = null;
             if (_skeleton != null)
             {
                 BoneTransforms = new Matrix4[_skeleton.bone_count];
                 for (int i = 0; i < _skeleton.bone_count; i++)
                     BoneTransforms[i] = Matrix4.Identity;
-                if(_skin != null)
-                {
-                    BoneTransformsPerSkinChunk = new Matrix4[_skin.bones.GetLength(0)][];
-                    for(int i = 0; i < _skin.bones.GetLength(0); i++)
-                    {
-                        BoneTransformsPerSkinChunk[i] = new Matrix4[SFSkeleton.MAX_BONE_PER_CHUNK];
-                        for (int j = 0; j < SFSkeleton.MAX_BONE_PER_CHUNK; j++)
-                            BoneTransformsPerSkinChunk[i][j] = Matrix4.Identity;
-                    }
-                }
             }
             else
                 BoneTransforms = null;
+
             Skeleton = _skeleton;
             Skin = _skin;
         }
@@ -532,19 +521,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             skeleton.CalculateTransformation(BoneTransforms, ref BoneTransforms);
             for (int i = 0; i < BoneTransforms.Length; i++)
                 BoneTransforms[i] = skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
-
-            UpdateBoneTransformsPerSkinChunk();
         }
 
-        private void UpdateBoneTransformsPerSkinChunk()
-        {
-            if (BoneTransformsPerSkinChunk == null)
-                return;
-
-            for (int i = 0; i < BoneTransformsPerSkinChunk.GetLength(0); i++)
-                for (int j = 0; j < Skin.bones[i].Length; j++)
-                    BoneTransformsPerSkinChunk[i][j] = BoneTransforms[Skin.bones[i][j]];
-        }
 
         protected override void UpdateTime(float t)
         {
@@ -556,17 +534,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         private void ClearTexGeometry()
         {
             SF3D.SFRender.SFRenderEngine.scene.an_nodes.Remove(this);
-            /*if (TextureGeometryIndex == null)
-                return;
-
-            foreach (TexGeometryLinkAnimated link in TextureGeometryIndex)
-            {
-                SFRender.SFRenderEngine.scene.tex_list_animated[link.texture].RemoveAt(link.index);
-                if (SFRender.SFRenderEngine.scene.tex_list_animated[link.texture].used_count == 0)
-                    SFRender.SFRenderEngine.scene.tex_list_animated.Remove(link.texture);
-            }
-
-                TextureGeometryIndex = null;*/
         }
 
         // adds elements drawn by this node to scene cache
@@ -574,23 +541,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         private void AddTexGeometry()
         {
             SF3D.SFRender.SFRenderEngine.scene.an_nodes.Add(this);
-            /*
-            if (TextureGeometryIndex != null)
-                ClearTexGeometry();
-            if (skin == null)
-                return;
-
-            TextureGeometryIndex = new TexGeometryLinkAnimated[skin.submodels.Length];
-
-            for (int i = 0; i < Skin.submodels.Length; i++)
-            {
-                TextureGeometryIndex[i].texture = skin.submodels[i].material.texture;
-                // long name :^)
-                TexturedGeometryListElementAnimated elem = new TexturedGeometryListElementAnimated();
-                elem.node = this;
-                elem.submodel_index = i;
-                TextureGeometryIndex[i].index = SFRender.SFRenderEngine.scene.AddTextureEntryAnimated(skin.submodels[i].material.texture, elem);
-            }*/
         }
 
         // disposes skeleton and skin used by this node (reference counted)
@@ -689,9 +639,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         private float aspect_ratio = 1;
         private Matrix4 view_matrix = new Matrix4();
         private Matrix4 viewproj_matrix = new Matrix4();
-        private Vector3[] frustum_vertices;// = camera.get_frustrum_vertices();
-        // construct frustrum planes
-        private Physics.Plane[] frustum_planes;// = new Physics.Plane[6];
+
+        private Physics.Frustum frustum;
 
         public Vector3 Lookat
         {
@@ -736,14 +685,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public Matrix4 ViewProjMatrix { get { return viewproj_matrix; } }
         public Matrix4 ProjMatrix { get { return proj_matrix; } set { proj_matrix = value; viewproj_matrix = proj_matrix; } }
         public Matrix4 ViewMatrix { get { return view_matrix; } }
-        public Physics.Plane[] FrustumPlanes { get { return frustum_planes; } }
-        public Vector3[] FrustumVertices { get { return frustum_vertices; } }
         public float AspectRatio { get { return aspect_ratio; } set { aspect_ratio = value; } }
+        public Physics.Frustum Frustum { get { return frustum; } }
 
         public SceneNodeCamera(string s): base(s)
         {
-            frustum_vertices = new Vector3[8];
-            frustum_planes = new Physics.Plane[6];
+            frustum = new Physics.Frustum(position, (lookat-position), SFRender.SFRenderEngine.min_render_distance, SFRender.SFRenderEngine.max_render_distance, aspect_ratio);
             UpdateTransform();
         }
 
@@ -755,14 +702,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 view_matrix = Matrix4.LookAt(Position, lookat, new Vector3(0, 1, 0));
                 viewproj_matrix = view_matrix * ProjMatrix;
 
-                // calculate frustrum geometry
-                CalculateFrustumVertices();
-                frustum_planes[0] = new Physics.Plane(frustum_vertices[0], frustum_vertices[4], frustum_vertices[1]);  // top plane
-                frustum_planes[1] = new Physics.Plane(frustum_vertices[2], frustum_vertices[3], frustum_vertices[6]);  // bottom plane
-                frustum_planes[2] = new Physics.Plane(frustum_vertices[0], frustum_vertices[2], frustum_vertices[4]);  // left plane
-                frustum_planes[3] = new Physics.Plane(frustum_vertices[1], frustum_vertices[5], frustum_vertices[3]);  // right plane
-                frustum_planes[4] = new Physics.Plane(frustum_vertices[0], frustum_vertices[1], frustum_vertices[2]);  // near plane
-                frustum_planes[5] = new Physics.Plane(frustum_vertices[4], frustum_vertices[6], frustum_vertices[5]);  // far plane
+                // calculate frustum
+                frustum.start = position;
+                frustum.direction = (lookat - position);
+                frustum.aspect_ratio = aspect_ratio;
+                frustum.Calculate();
 
                 NeedsUpdateLocalTransform = false;
             }
@@ -781,9 +725,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             float dist = Vector3.Dot(pos - Position, (Lookat - Position).Normalized()) / SFRender.SFRenderEngine.max_render_distance;
 
-            Vector3 top_left = Position + (frustum_vertices[4] - Position) * dist;
-            Vector3 top_right = Position + (frustum_vertices[5] - Position) * dist;
-            Vector3 bottom_left = Position + (frustum_vertices[6] - Position) * dist;
+            Vector3 top_left = Position + (frustum.frustum_vertices[4] - Position) * dist;
+            Vector3 top_right = Position + (frustum.frustum_vertices[5] - Position) * dist;
+            Vector3 bottom_left = Position + (frustum.frustum_vertices[6] - Position) * dist;
 
             Vector3 top_point_norm = (top_right - top_left).Normalized();
             Vector3 top_point = top_left + top_point_norm * Vector3.Dot(pos - top_left, top_point_norm);
@@ -794,29 +738,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return new Vector2(
                 Math.Sign(Vector3.Dot(pos - top_left, top_right - top_left)) * (top_point - top_left).Length / (top_right - top_left).Length,
                 Math.Sign(Vector3.Dot(pos - top_left, bottom_left - top_left)) * (left_point - top_left).Length / (bottom_left - top_left).Length);
-        }
-        
-        // calculates vertices of camera frustum
-        private void CalculateFrustumVertices()
-        {
-            // get forward, up, right direction
-            Vector3 forward = (lookat - Position).Normalized();
-            Vector3 right = Vector3.Cross(forward, new Vector3(0, 1, 0)).Normalized();
-            Vector3 up = Vector3.Cross(forward, right);
-            right *= aspect_ratio;
-
-            // 200f, Math.Pi/4 are magic for now.....
-            float deviation = (float)Math.Tan(Math.PI / 4) / 2;
-            Vector3 center = position + forward * SFRender.SFRenderEngine.min_render_distance;
-            Vector3 center2 = position + forward * SFRender.SFRenderEngine.max_render_distance;
-            frustum_vertices[0] = center + (-right - up) * deviation * SFRender.SFRenderEngine.min_render_distance;
-            frustum_vertices[1] = center + (right - up) * deviation * SFRender.SFRenderEngine.min_render_distance;
-            frustum_vertices[2] = center + (-right + up) * deviation * SFRender.SFRenderEngine.min_render_distance;
-            frustum_vertices[3] = center + (right + up) * deviation * SFRender.SFRenderEngine.min_render_distance;
-            frustum_vertices[4] = center2 + (-right - up) * deviation * SFRender.SFRenderEngine.max_render_distance;
-            frustum_vertices[5] = center2 + (right - up) * deviation * SFRender.SFRenderEngine.max_render_distance;
-            frustum_vertices[6] = center2 + (-right + up) * deviation * SFRender.SFRenderEngine.max_render_distance;
-            frustum_vertices[7] = center2 + (right + up) * deviation * SFRender.SFRenderEngine.max_render_distance;
         }
     }
 }

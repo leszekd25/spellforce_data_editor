@@ -145,29 +145,34 @@ vec2 poissonDisk[4] = vec2[](
   vec2( 0.34495938, 0.29387760 )
 );
 
+float linstep(float low, float high, float v)
+{
+    return clamp((v-low)/(high-low), 0.0, 1.0);
+}
+
+// From http://fabiensanglard.net/shadowmappingVSM/index.php
+float chebyshevUpperBound(vec3 proj)
+{
+	vec2 moments = texture2D(ShadowMap, proj.xy).rg;
+
+	float variance = max(moments.y - (moments.x*moments.x), 0.000002);
+
+	float d = proj.z - moments.x;
+                   float p = float(proj.z &lt;= moments.x);
+	float p_max = variance / (variance + d*d);
+
+	return max(p, linstep(0.5, 1.0, p_max));// clamp((p_max * 1.3)-0.3, 0.0, 1.0);
+}
+
 float CalculateShadow(vec4 FPLS, float b){
     vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
     if(ProjectionCoordinates.z &gt; 1.0)
         return 1.0;
+
     ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
-    float bias = min(0.01, max(0.01 * (1.0 - b), 0.001));  
-    float result = 0.0;
-    float CurrentDepth = ProjectionCoordinates.z;
-    // without sampling
-    //float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy).r;
-    //return (sign(ClosestDepth - CurrentDepth + bias) + 1.0) / 2.0;
-    //shadow map sampling
-    for(int i = 0; i &lt; 4; i++)
-    {
-        float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy+poissonDisk[i]/2000.0).r;
-        result += (sign(ClosestDepth - CurrentDepth + bias) + 1.0);  // from 0 to 2
-    }
-    // smooth shadow map edges
-    float dist = gl_FragCoord.z / gl_FragCoord.w;
-    dist = clamp(((ShadowDepth - dist)/ShadowDepth)*4.0, 0.0, 1.0);
-    result = max(result, (1.0 - dist) * 8.0);
-    return result / 8.0;
+    return chebyshevUpperBound(ProjectionCoordinates);
 }
+
 
 void main(){
   vec4 temp_c = texture(DiffuseTex, UV);
@@ -218,7 +223,7 @@ uniform mat4 P;
 uniform mat4 V;
 uniform mat4 LSM;
 uniform mat4 M;
-uniform mat4 boneTransforms[20];
+uniform mat4 boneTransforms[224];
   
 void main(){
   vec4 Vertex;
@@ -335,29 +340,34 @@ vec2 poissonDisk[4] = vec2[](
   vec2( 0.34495938, 0.29387760 )
 );
 
+float linstep(float low, float high, float v)
+{
+    return clamp((v-low)/(high-low), 0.0, 1.0);
+}
+
+// From http://fabiensanglard.net/shadowmappingVSM/index.php
+float chebyshevUpperBound(vec3 proj)
+{
+	vec2 moments = texture2D(ShadowMap, proj.xy).rg;
+
+	float variance = max(moments.y - (moments.x*moments.x), 0.000002);
+
+	float d = proj.z - moments.x;
+                   float p = float(proj.z &lt;= moments.x);
+	float p_max = variance / (variance + d*d);
+
+	return max(p, linstep(0.5, 1.0, p_max));// clamp((p_max * 1.3)-0.3, 0.0, 1.0);
+}
+
 float CalculateShadow(vec4 FPLS, float b){
     vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
     if(ProjectionCoordinates.z &gt; 1.0)
         return 1.0;
+
     ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
-    float bias = min(0.01, max(0.01 * (1.0 - b), 0.001));  
-    float result = 0.0;
-    float CurrentDepth = ProjectionCoordinates.z;
-    // without sampling
-    //float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy).r;
-    //return (sign(ClosestDepth - CurrentDepth + bias) + 1.0) / 2.0;
-    //shadow map sampling
-    for(int i = 0; i &lt; 4; i++)
-    {
-        float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy+poissonDisk[i]/2000.0).r;
-        result += (sign(ClosestDepth - CurrentDepth + bias) + 1.0);  // from 0 to 2
-    }
-    // smooth shadow map edges
-    float dist = gl_FragCoord.z / gl_FragCoord.w;
-    dist = clamp(((ShadowDepth - dist)/ShadowDepth)*4.0, 0.0, 1.0);
-    result = max(result, (1.0 - dist) * 8.0);
-    return result / 8.0;
+    return chebyshevUpperBound(ProjectionCoordinates);
 }
+
 
 void main(){
   vec4 tex_col = texture(DiffuseTex, UV);
@@ -462,28 +472,32 @@ vec4 hmap_visualization_colors[3] = vec4[](
   vec4(0, 0, 0.3, 1.0)
 );
 
+float linstep(float low, float high, float v)
+{
+    return clamp((v-low)/(high-low), 0.0, 1.0);
+}
+
+// From http://fabiensanglard.net/shadowmappingVSM/index.php
+float chebyshevUpperBound(vec3 proj)
+{
+	vec2 moments = texture2D(ShadowMap, proj.xy).rg;
+
+	float variance = max(moments.y - (moments.x*moments.x), 0.000002);
+
+	float d = proj.z - moments.x;
+                   float p = float(proj.z &lt;= moments.x);
+	float p_max = variance / (variance + d*d);
+
+	return max(p, linstep(0.0, 1.0, p_max));
+}
+
 float CalculateShadow(vec4 FPLS, float b){
     vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
     if(ProjectionCoordinates.z &gt; 1.0)
         return 1.0;
+
     ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
-    float bias = min(0.01, max(0.01 * (1.0 - b), 0.001));  
-    float result = 0.0;
-    float CurrentDepth = ProjectionCoordinates.z;
-    // without sampling
-    //float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy).r;
-    //return (sign(ClosestDepth - CurrentDepth + bias) + 1.0) / 2.0;
-    //shadow map sampling
-    for(int i = 0; i &lt; 4; i++)
-    {
-        float ClosestDepth = texture(ShadowMap, ProjectionCoordinates.xy+poissonDisk[i]/2000.0).r;
-        result += (sign(ClosestDepth - CurrentDepth + bias) + 1.0);  // from 0 to 2
-    }
-    // smooth shadow map edges
-    float dist = gl_FragCoord.z / gl_FragCoord.w;
-    dist = clamp(((ShadowDepth - dist)/ShadowDepth)*4.0, 0.0, 1.0);
-    result = max(result, (1.0 - dist) * 8.0);
-    return result / 8.0;
+    return chebyshevUpperBound(ProjectionCoordinates);
 }
 
 float CalculateGridIntensity(float x, float y, float d)
@@ -530,7 +544,7 @@ void main(){
   float brightness = dot(normal, SunDirection); // both vectors are normalized
     // calculate shadow
   float calc_shadow = CalculateShadow(fragmentPositionLightSpace, brightness);
-  //if(calc_shadow &lt; 1)
+  //if(calc_shadow &lt; 1.0)
   //{
   //    color = vec4(1.0f, 1.0f, 0.0f, 1.0f);
   //    return;
@@ -706,11 +720,20 @@ void main()
     <value>in vec2 UV;
 uniform sampler2D DiffuseTexture;
 
+out vec4 col;
+
 void main()
 {
     if(texture(DiffuseTexture, UV).a &lt; 0.5)
         discard;
-    gl_FragDepth =gl_FragCoord.z;
+
+    float depth = gl_FragCoord.z;
+
+    float dx = dFdx(depth);
+    float dy = dFdy(depth);
+    float moment2 = depth * depth + 0.25 * (dx * dx + dy * dy);
+    
+    col = vec4(depth, moment2, 1.0, 1.0);
 }</value>
   </data>
   <data name="vshader_shadowmap" xml:space="preserve">
@@ -744,7 +767,7 @@ out vec2 UV;
 // Values that stay constant for the whole mesh.
 uniform mat4 LSM;
 uniform mat4 M;
-uniform mat4 boneTransforms[20];
+uniform mat4 boneTransforms[224];
   
 void main(){
   vec4 Vertex;
@@ -838,7 +861,37 @@ void main(){
   color = vertexColor;
 }</value>
   </data>
-  <data name="String1" xml:space="preserve">
-    <value />
+  <data name="fshader_shadowmap_blur" xml:space="preserve">
+    <value>out vec4 FragColor;
+  
+in vec2 TexCoords;
+
+uniform sampler2D image;
+  
+uniform bool horizontal;
+uniform float weight[3] = float[] (0.250301, 0.221461, 0.153388);
+
+void main()
+{             
+    vec2 tex_offset = 1.0 / textureSize(image, 0); // gets size of single texel
+    vec2 result = texture(image, TexCoords).rg * weight[0]; // current fragment's contribution
+    if(horizontal)
+    {
+        for(int i = 1; i &lt; 3; ++i)
+        {
+            result += texture(image, TexCoords + vec2(tex_offset.x * i, 0.0)).rg * weight[i];
+            result += texture(image, TexCoords - vec2(tex_offset.x * i, 0.0)).rg * weight[i];
+        }
+    }
+    else
+    {
+        for(int i = 1; i &lt; 3; ++i)
+        {
+            result += texture(image, TexCoords + vec2(0.0, tex_offset.y * i)).rg * weight[i];
+            result += texture(image, TexCoords - vec2(0.0, tex_offset.y * i)).rg * weight[i];
+        }
+    }
+    FragColor = vec4(result, 1.0, 1.0);
+}</value>
   </data>
 </root>

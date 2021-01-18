@@ -88,6 +88,7 @@
     <Compile Include="SF3D\Lighting.cs" />
     <Compile Include="SF3D\Physics\BoundingBox.cs" />
     <Compile Include="SF3D\Physics\CollisionMesh.cs" />
+    <Compile Include="SF3D\Physics\Frustum.cs" />
     <Compile Include="SF3D\Physics\Line.cs" />
     <Compile Include="SF3D\Physics\Plane.cs" />
     <Compile Include="SF3D\Physics\Ray.cs" />

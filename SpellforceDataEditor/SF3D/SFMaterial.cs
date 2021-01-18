@@ -43,8 +43,6 @@ namespace SpellforceDataEditor.SF3D
         public bool flat_shade = false;
         public bool casts_shadow = true;
 
-        public uint indexStart = 0;
-        public uint indexCount = 0;
         public bool yet_to_be_drawn = true;
 
         new public string ToString()

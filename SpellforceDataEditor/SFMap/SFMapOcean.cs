@@ -46,8 +46,6 @@ namespace SpellforceDataEditor.SFMap
             uint[] indices = { 0, 1, 2, 1, 3, 2 };
 
             SF3D.SFMaterial material = new SF3D.SFMaterial();
-            material.indexStart = (uint)0;
-            material.indexCount = (uint)6;
             material.casts_shadow = false;
 
             string tex_name = "test_ocean_relief_4_l8";

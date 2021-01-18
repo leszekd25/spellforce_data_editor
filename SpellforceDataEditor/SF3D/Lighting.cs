@@ -76,19 +76,19 @@ namespace SpellforceDataEditor.SF3D
 
             // construct direction from azimuth and altitude
 
-            Direction = -new Vector3((float)Math.Cos(-az * Math.PI / 180) * (float)Math.Cos(-al * Math.PI / 180),
-                            (float)Math.Sin(-al * Math.PI / 180),
-                            (float)Math.Sin(-az * Math.PI / 180) * (float)Math.Cos(-al * Math.PI / 180)).Normalized();
+            if(al >= 0)
+                Direction = -new Vector3((float)Math.Cos(-az * Math.PI / 180) * (float)Math.Cos(-al * Math.PI / 180),
+                                (float)Math.Sin(-al * Math.PI / 180),
+                                (float)Math.Sin(-az * Math.PI / 180) * (float)Math.Cos(-al * Math.PI / 180)).Normalized();
+            else
+                Direction = new Vector3((float)Math.Cos(-az * Math.PI / 180) * (float)Math.Cos(-al * Math.PI / 180),
+                 (float)Math.Sin(-al * Math.PI / 180),
+                 (float)Math.Sin(-az * Math.PI / 180) * (float)Math.Cos(-al * Math.PI / 180)).Normalized();
         }
         
         public void SetupLightView(Physics.BoundingBox aabb)
         {
-            // inflate bounding box to become a bounding box of a bounding sphere of the bounding box
-            float aabb_radius = (aabb.b - aabb.center).Length;
-            Vector3 rad_v = new Vector3(aabb_radius);
-
-            Physics.BoundingBox rotated_aabb = new Physics.BoundingBox(aabb.center - rad_v, aabb.center + rad_v);
-
+            Physics.BoundingBox rotated_aabb = aabb.RotatedByAzimuthAltitude(Azimuth, Altitude);
             ZNear = 0.1f;
             ZFar = (rotated_aabb.a - rotated_aabb.b).Length;
 
@@ -106,5 +106,20 @@ namespace SpellforceDataEditor.SF3D
         public Vector4 FogColor = new Vector4(100, 100, 100, 255) / 255f;
         public float FogStart = 100.0f;
         public float FogEnd = 200.0f;
+        public LightingAmbient ambient_light { get; } = new LightingAmbient();
+        public LightingSun sun_light { get; } = new LightingSun();
+        public InterpolatedColor altitude_sun_color { get; set; }
+        public InterpolatedColor altitude_ambient_color { get; set; }
+        public InterpolatedColor altitude_fog_color { get; set; }
+
+        // azimuth from 0 to 359, altitude from -90 to 90
+        public void SetSunLocation(float azimuth, float altitude)
+        {
+            sun_light.SetAzimuthAltitude(azimuth, altitude);
+
+            sun_light.Color = altitude_sun_color.Get(altitude + 90f);
+            ambient_light.Color = altitude_ambient_color.Get(altitude + 90f);
+            FogColor = altitude_fog_color.Get(altitude + 90f);
+        }
     }
 }

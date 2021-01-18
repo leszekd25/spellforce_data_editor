@@ -13,6 +13,7 @@ namespace SpellforceDataEditor.SFMap
         public SFCoord grid_position = new SFCoord(0, 0);
         public int id = -1;
         public int game_id = -1;
+        public SF3D.SceneSynchro.SceneNode node = null;
 
         public string GetObjectName()
         {
@@ -82,8 +83,9 @@ namespace SpellforceDataEditor.SFMap
             decorations.Add(dec);
 
             string dec_name = dec.GetObjectName();
-            SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, dec_name, false);
-            node.SetParent(map.heightmap.GetChunkNode(position));
+            dec.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, dec_name, false);
+            dec.node.SetParent(map.heightmap.GetChunkNode(position));
+
             
             // 3. add new unit in respective chunk
             map.heightmap.GetChunk(position).AddDecoration(dec);
@@ -94,11 +96,10 @@ namespace SpellforceDataEditor.SFMap
         public void RemoveDecoration(SFMapDecoration d)
         {
             decorations.Remove(d);
-            
-            SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(d.grid_position);
-            SF3D.SceneSynchro.SceneNode dec_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName());
-            if (dec_node != null)
-                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(dec_node);
+
+            if (d.node != null)
+                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(d.node);
+            d.node = null;
 
             map.heightmap.GetChunk(d.grid_position).RemoveDecoration(d);
         }
@@ -107,17 +108,15 @@ namespace SpellforceDataEditor.SFMap
         {
             if (d.game_id == new_id)
                 return;
-            
-            SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(d.grid_position);
-            SF3D.SceneSynchro.SceneNode dec_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName());
-            if(dec_node != null)
-                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(dec_node);
 
-            SF3D.SceneSynchro.SceneNode dec_node2 = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(new_id, d.GetObjectName(), false);
-            dec_node2.SetParent(chunk_node);
-            dec_node2.Position = map.heightmap.GetFixedPosition(d.grid_position);
-            dec_node2.Rotation = OpenTK.Quaternion.FromAxisAngle(new OpenTK.Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-            dec_node2.Scale = new OpenTK.Vector3(100 / 128f);
+            if (d.node != null)
+                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(d.node);
+
+            d.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(new_id, d.GetObjectName(), false);
+            d.node.SetParent(map.heightmap.GetChunkNode(d.grid_position));
+            d.node.Position = map.heightmap.GetFixedPosition(d.grid_position);
+            d.node.Rotation = OpenTK.Quaternion.FromAxisAngle(new OpenTK.Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+            d.node.Scale = new OpenTK.Vector3(100 / 128f);
 
             d.game_id = new_id;
         }

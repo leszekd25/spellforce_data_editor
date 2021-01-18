@@ -363,7 +363,6 @@ namespace SpellforceDataEditor.SFMap
 
             // get unit
             preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(unit_id, "_UNIT_" + unit_id.ToString()));
-            preview_entity.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("_UNIT_" + unit_id.ToString() + ".Billboard").Visible = false;
 
             int unit_index = map.gamedata[17].GetElementIndex(unit_id);
             if (unit_index == -1)

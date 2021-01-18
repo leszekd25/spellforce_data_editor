@@ -16,11 +16,17 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SpellforceDataEditor.SF3D.SFRender
 {
+    public struct FrameBufferColorAttachmentInfo
+    {
+        public PixelInternalFormat internal_format;
+        public PixelFormat format;
+        public PixelType pixeltype;
+    }
     public class FrameBuffer
     {
-        public enum RenderBufferType { NONE = 0, COLOR = 1, DEPTH = 2, STENCIL = 3, DEPTHSTENCIL = 4}
+        public enum RenderBufferType { NONE = 0, COLOR = 1, DEPTH = 2, STENCIL = 3, DEPTHSTENCIL = 4 }
         [Flags]
-        public enum TextureType { NONE = 0, COLOR = 1, DEPTH = 2, STENCIL = 4}
+        public enum TextureType { NONE = 0, COLOR = 1, DEPTH = 2, STENCIL = 4 }
 
         static float[] vertices = new float[] { -1, -3, -1, 1, 3, 1 };
         static float[] uvs = new float[] { 0, -1, 0, 1, 2, 1 };
@@ -32,19 +38,16 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static int ref_count = 0;
 
         public int width, height;
-        public RenderBufferType buff_type;
-        public TextureType tex_type;
         public int fbo = Utility.NO_INDEX;
-        public int texture_color = Utility.NO_INDEX;
+        public FrameBufferColorAttachmentInfo[] attachments;
+        public int[] texture_colors = null;
+        public bool use_depth_component;
         public int texture_depth = Utility.NO_INDEX;
-        public int texture_stencil = Utility.NO_INDEX;
         public int rbo = Utility.NO_INDEX;
 
-        public int sample_count = 0;
-
-        public FrameBuffer(int w, int h, int sc, TextureType tex = TextureType.COLOR, RenderBufferType buf = RenderBufferType.DEPTHSTENCIL)
+        public FrameBuffer(int w, int h, FrameBufferColorAttachmentInfo[] _attachments, bool use_depth)
         {
-            if(ref_count == 0)
+            if (ref_count == 0)
             {
                 screen_vao = GL.GenVertexArray();
                 GL.BindVertexArray(screen_vao);
@@ -65,9 +68,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
             ref_count += 1;
 
-            buff_type = buf;
-            tex_type = tex;
-            sample_count = sc;
+            use_depth_component = use_depth;
+            attachments = _attachments;
 
             Resize(w, h);
         }
@@ -81,177 +83,98 @@ namespace SpellforceDataEditor.SF3D.SFRender
             {
                 if (rbo != Utility.NO_INDEX)
                     GL.DeleteRenderbuffer(rbo);
-                if (texture_color != Utility.NO_INDEX)
-                    GL.DeleteTexture(texture_color);
+
+                if (texture_colors != null)
+                    foreach (int tc in texture_colors)
+                        GL.DeleteTexture(tc);
+                texture_colors = null;
+
                 if (texture_depth != Utility.NO_INDEX)
                     GL.DeleteTexture(texture_depth);
-                if (texture_stencil != Utility.NO_INDEX)
-                    GL.DeleteTexture(texture_stencil);
+
                 GL.DeleteFramebuffer(fbo);
             }
 
-            // determine renderbuffer type
-            FramebufferAttachment buff_fba_type;
-            RenderbufferStorage buff_st_type;
-            switch((int)buff_type)
-            {
-                case 1:
-                    buff_fba_type = FramebufferAttachment.ColorAttachment0;
-                    buff_st_type = RenderbufferStorage.Rgb8;
-                    break;
-                case 2:
-                    buff_fba_type = FramebufferAttachment.DepthAttachment;
-                    buff_st_type = RenderbufferStorage.DepthComponent24;
-                    break;
-                case 3:
-                    buff_fba_type = FramebufferAttachment.StencilAttachment;
-                    buff_st_type = RenderbufferStorage.StencilIndex8;
-                    break;
-                case 4:
-                    buff_fba_type = FramebufferAttachment.DepthStencilAttachment;
-                    buff_st_type = RenderbufferStorage.Depth24Stencil8;
-                    break;
-                default:
-                    buff_fba_type = FramebufferAttachment.DepthStencilAttachment;
-                    buff_st_type = RenderbufferStorage.Depth24Stencil8;
-                    break;
-            }
+            if (attachments != null)
+                texture_colors = new int[attachments.Length];
 
             fbo = GL.GenFramebuffer();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
-            if (sample_count != 0)
-            {
-                if ((tex_type & TextureType.COLOR) != 0)
+
+            if (attachments != null)
+                for (int i = 0; i < attachments.Length; i++)
                 {
-                    texture_color = GL.GenTexture();
-                    GL.BindTexture(TextureTarget.Texture2DMultisample, texture_color);
-                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, PixelInternalFormat.Rgb, width, height, true);
-                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int)All.Linear);
-                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int)All.Linear);
-                    GL.BindTexture(TextureTarget.Texture2DMultisample, 0);
-
-                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, texture_color, 0);
-                }
-
-                if ((tex_type & TextureType.DEPTH) != 0)
-                {
-                    texture_depth = GL.GenTexture();
-                    GL.BindTexture(TextureTarget.Texture2DMultisample, texture_depth);
-                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, PixelInternalFormat.DepthComponent24, width, height, true);
-                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-                    //float[] col = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
-                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureBorderColor, col);
-                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int)All.Nearest);
-                    //GL.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int)All.Nearest);
-                    GL.BindTexture(TextureTarget.Texture2DMultisample, 0);
-
-                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, texture_depth, 0);
-                }
-
-                if ((tex_type & TextureType.STENCIL) != 0)
-                {
-                    texture_stencil = GL.GenTexture();
-                    GL.BindTexture(TextureTarget.Texture2DMultisample, texture_stencil);
-                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, PixelInternalFormat.R8, width, height, true);
-                    GL.BindTexture(TextureTarget.Texture2DMultisample, 0);
-
-                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, texture_stencil, 0);
-                }
-
-                if (buff_type != RenderBufferType.NONE)
-                {
-                    rbo = GL.GenRenderbuffer();
-                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rbo);
-                    GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, sample_count, buff_st_type, width, height);
-                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
-
-                    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, buff_fba_type, RenderbufferTarget.Renderbuffer, rbo);
-                }
-            }
-            else
-            {
-                if ((tex_type & TextureType.COLOR) != 0)
-                {
-                    texture_color = GL.GenTexture();
-                    GL.BindTexture(TextureTarget.Texture2D, texture_color);
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, width, height, 0, PixelFormat.Rgb, PixelType.UnsignedByte, new IntPtr(0));
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, texture_color, 0);
-                }
-
-                if ((tex_type & TextureType.DEPTH) != 0)
-                {
-                    texture_depth = GL.GenTexture();
-                    GL.BindTexture(TextureTarget.Texture2D, texture_depth);
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, new IntPtr(0));
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-                    float[] col = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, col);
+                    texture_colors[i] = GL.GenTexture();
+                    GL.BindTexture(TextureTarget.Texture2D, texture_colors[i]);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, attachments[i].internal_format, width, height, 0, attachments[i].format, attachments[i].pixeltype, new IntPtr(0));
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, texture_depth, 0);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, (FramebufferAttachment)((int)FramebufferAttachment.ColorAttachment0 + i), TextureTarget.Texture2D, texture_colors[i], 0);
                 }
 
-                if ((tex_type & TextureType.STENCIL) != 0)
-                {
-                    texture_stencil = GL.GenTexture();
-                    GL.BindTexture(TextureTarget.Texture2D, texture_stencil);
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R8, width, height, 0, PixelFormat.StencilIndex, PixelType.UnsignedByte, new IntPtr(0));
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-                    float[] col = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, col);
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, texture_stencil, 0);
-                }
-
-                if (buff_type != RenderBufferType.NONE)
-                {
-                    rbo = GL.GenRenderbuffer();
-                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rbo);
-                    GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, buff_st_type, width, height);
-                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
-
-                    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, buff_fba_type, RenderbufferTarget.Renderbuffer, rbo);
-                }
-            }
-
-            if ((buff_type != RenderBufferType.COLOR) && ((tex_type & TextureType.COLOR) == 0))
+            if (use_depth_component)
             {
-                GL.DrawBuffer(DrawBufferMode.None);
-                GL.ReadBuffer(ReadBufferMode.None);
+                texture_depth = GL.GenTexture();
+                GL.BindTexture(TextureTarget.Texture2D, texture_depth);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, new IntPtr(0));
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, texture_depth, 0);
             }
+
+            /*rbo = GL.GenRenderbuffer();
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rbo);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Depth24Stencil8, width, height);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
+
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, rbo);*/
+
+            SetUpDrawBuffers();
+
             FramebufferErrorCode e = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
             if (e != FramebufferErrorCode.FramebufferComplete)
-                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "Framebuffer.Resize(): Error generating framebuffer! Error type "+e.ToString());
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "Framebuffer.Resize(): Error generating framebuffer! Error type " + e.ToString());
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
+        public void SetUpDrawBuffers()
+        {
+            if (attachments == null)
+            {
+                GL.DrawBuffer(DrawBufferMode.None);
+                GL.ReadBuffer(ReadBufferMode.None);
+            }
+            else
+            {
+                DrawBuffersEnum[] atts = new DrawBuffersEnum[attachments.Length];
+                for (int i = 0; i < attachments.Length; i++)
+                    atts[i] = (DrawBuffersEnum)((int)DrawBuffersEnum.ColorAttachment0 + i);
+                GL.DrawBuffers(atts.Length, atts);
+            }
+        }
+
         public void Dispose()
         {
-            if(fbo != Utility.NO_INDEX)
+            if (fbo != Utility.NO_INDEX)
             {
-                if(rbo != Utility.NO_INDEX)
+                if (rbo != Utility.NO_INDEX)
                     GL.DeleteRenderbuffer(rbo);
-                if (texture_color != Utility.NO_INDEX)
-                    GL.DeleteTexture(texture_color);
-                if (texture_depth != Utility.NO_INDEX)
+
+                if(texture_depth != Utility.NO_INDEX)
                     GL.DeleteTexture(texture_depth);
-                if (texture_stencil != Utility.NO_INDEX)
-                    GL.DeleteTexture(texture_stencil);
+                texture_depth = Utility.NO_INDEX;
+
+                if (texture_colors != null)
+                    foreach (int tc in texture_colors)
+                        GL.DeleteTexture(tc);
+
+                texture_colors = null;
                 GL.DeleteFramebuffer(fbo);
             }
+
             ref_count -= 1;
-            if(ref_count == 0)
+            if (ref_count == 0)
             {
                 GL.DeleteBuffer(uvs_vbo);
                 GL.DeleteBuffer(vertices_vbo);
@@ -259,9 +182,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
             rbo = Utility.NO_INDEX;
             fbo = Utility.NO_INDEX;
-            texture_color = Utility.NO_INDEX;
-            texture_depth = Utility.NO_INDEX;
-            texture_stencil = Utility.NO_INDEX;
         }
     }
 }

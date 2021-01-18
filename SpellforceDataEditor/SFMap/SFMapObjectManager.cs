@@ -43,12 +43,12 @@ namespace SpellforceDataEditor.SFMap
 
             string obj_name = obj.GetName();
 
-            SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, obj_name, true);
+            obj.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, obj_name, true);
             // custom resource mesh setting :^)
-            if (node.Children.Count == 0)
-                ObjectSetResourceIfAvailable(id, node);
+            if (obj.node.Children.Count == 0)
+                ObjectSetResourceIfAvailable(id, obj.node);
 
-            node.SetParent(map.heightmap.GetChunkNode(position));
+            obj.node.SetParent(map.heightmap.GetChunkNode(position));
             return obj;
         }
 
@@ -56,8 +56,7 @@ namespace SpellforceDataEditor.SFMap
         {
             objects.Remove(o);
             
-            SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(o.grid_position);
-            SF3D.SceneSynchro.SceneNode obj_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(o.GetName());
+            SF3D.SceneSynchro.SceneNode obj_node = o.node;
             if (obj_node != null)
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(obj_node);
 

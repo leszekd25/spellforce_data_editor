@@ -28,13 +28,12 @@ namespace SpellforceDataEditor.SF3D
         public int chunk_id = Utility.NO_INDEX;
         public int cache_index = Utility.NO_INDEX;
 
-        byte[] vertex_data = null;     // 12+12+4+8+4 (empty) = 40 bytes per vertex
+        public byte[] vertex_data = null;     // 12+12+4+8+4 (empty) = 40 bytes per vertex
         public int vertex_size;
 
-        uint[] face_indices = null;
+        public uint[] face_indices = null;
         public int indices_size;
 
-        public int[] bones;
         public SFMaterial material = null;
         public string bsi_name = ""+Utility.S_NONAME;
 
@@ -61,26 +60,6 @@ namespace SpellforceDataEditor.SF3D
             fcount = br.ReadInt32();
 
             vertex_data = br.ReadBytes(vcount * 40);
-            /*
-            vertices = new Vector3[vcount]; normals = new Vector3[vcount]; uvs = new Vector2[vcount];
-            bone_indices = new Vector4[vcount]; bone_weights = new Vector4[vcount];
-
-            for(int i = 0; i < vcount; i++)
-            {
-                Vector3 position = new Vector3();
-                position.X = br.ReadSingle(); position.Y = br.ReadSingle(); position.Z = br.ReadSingle();
-                Vector3 normal = new Vector3();
-                normal.X = br.ReadSingle(); normal.Y = br.ReadSingle(); normal.Z = br.ReadSingle();
-                Vector4 weight = new Vector4();
-                for (int k = 0; k < 4; k++)
-                    weight[k] = (float)((int)(br.ReadByte())) / 255.0f;
-                Vector2 uv = new Vector2();
-                uv.X = br.ReadSingle(); uv.Y = br.ReadSingle();
-                Vector4 v_bones = new Vector4();
-                for(int k = 0; k < 4; k++)
-                    v_bones[k] = (float)br.ReadByte();
-                vertices[i] = position; normals[i] = normal; uvs[i] = uv; bone_indices[i] = v_bones; bone_weights[i] = weight;
-            }*/
 
             face_indices = new uint[fcount * 3];
             for(int i = 0; i < fcount; i++)
@@ -90,19 +69,8 @@ namespace SpellforceDataEditor.SF3D
                 face_indices[i * 3 + 2] = (uint)br.ReadUInt16();
                 br.ReadUInt16();
             }
-
-            SFBoneIndex bsi = null;
-            int bsi_code = SFResourceManager.BSIs.Load(SFResourceManager.current_resource);
-            if ((bsi_code != 0)&&(bsi_code != -1))
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkinChunk.Load(): Could not load bone skin index file (BSI name = " + SFResourceManager.current_resource + ")");
-                return bsi_code;
-            }
-            bsi = SFResourceManager.BSIs.Get(SFResourceManager.current_resource);
             
             SetName(SFResourceManager.current_resource);
-            bones = new int[bsi.bone_index_remap[chunk_id].Length];
-            bsi.bone_index_remap[chunk_id].CopyTo(bones, 0);
 
             //load material
             br.ReadInt16();
@@ -136,8 +104,6 @@ namespace SpellforceDataEditor.SF3D
                 tex.FreeMemory();
             }
             material.texture = tex;
-            material.indexStart = 0;
-            material.indexCount = (uint)face_indices.Length;
 
             br.BaseStream.Position += 126;
 
@@ -176,8 +142,6 @@ namespace SpellforceDataEditor.SF3D
         public SFModelSkinChunk[] submodels { get; private set; } = null;
         string name = "";
 
-        public int[][] bones = null;
-
         public void Init()
         {
             foreach(SFModelSkinChunk msc in submodels)
@@ -186,6 +150,18 @@ namespace SpellforceDataEditor.SF3D
 
         public int Load(MemoryStream ms, object custom_data)
         {
+            // load BSI
+
+            SFBoneIndex bsi = null;
+            int bsi_code = SFResourceManager.BSIs.Load(SFResourceManager.current_resource);
+            if ((bsi_code != 0) && (bsi_code != -1))
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkinChunk.Load(): Could not load bone skin index file (BSI name = " + SFResourceManager.current_resource + ")");
+                return bsi_code;
+            }
+            bsi = SFResourceManager.BSIs.Get(SFResourceManager.current_resource);
+
+
             BinaryReader br = new BinaryReader(ms);
 
             br.ReadInt16();
@@ -207,19 +183,97 @@ namespace SpellforceDataEditor.SF3D
                 }
             }
 
-            Merge();
+            try
+            {
+                Merge(bsi);
+            }
+            catch(Exception e)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkin.Load(): Invalid skin data!");
+                SFResourceManager.BSIs.Dispose(SFResourceManager.current_resource);
+                return -1;
+            }
+
+            SFResourceManager.BSIs.Dispose(SFResourceManager.current_resource);
 
             return 0;
         }
 
-        public void Merge()
+        public void Merge(SFBoneIndex bsi)
         {
-            bones = new int[submodels.Length][];
-
+            // remap bones using BSI
             for(int i = 0; i < submodels.Length; i++)
             {
-                bones[i] = submodels[i].bones;
+                var msc = submodels[i];
+                for (int j = 0; j < msc.vertex_data.Length; j += 40)
+                {
+                    msc.vertex_data[j + 36 + 0] = (byte)bsi.bone_index_remap[i][msc.vertex_data[j + 36 + 0]];
+                    msc.vertex_data[j + 36 + 1] = (byte)bsi.bone_index_remap[i][msc.vertex_data[j + 36 + 1]];
+                    msc.vertex_data[j + 36 + 2] = (byte)bsi.bone_index_remap[i][msc.vertex_data[j + 36 + 2]];
+                    msc.vertex_data[j + 36 + 3] = (byte)bsi.bone_index_remap[i][msc.vertex_data[j + 36 + 3]];
+                }
             }
+
+            // merge similar submodels
+            // assumes materials with the same texture have the same material
+
+            // find chunks per material
+            SFModelSkinChunk[] merged_chunks = null;
+
+            List<SFTexture> tex_list = new List<SFTexture>();
+            List<List<int>> tex_chunks_list = new List<List<int>>();
+            foreach(var msc in submodels)
+            {
+                if (!tex_list.Contains(msc.material.texture))
+                {
+                    tex_list.Add(msc.material.texture);
+                    tex_chunks_list.Add(new List<int>());
+
+                }
+
+                tex_chunks_list[tex_list.IndexOf(msc.material.texture)].Add(msc.chunk_id);
+            }
+
+            merged_chunks = new SFModelSkinChunk[tex_list.Count];
+
+            // merge chunks sharing the same material
+            for(int i = 0; i < tex_list.Count; i++)
+            {
+                SFModelSkinChunk msc = new SFModelSkinChunk();
+                merged_chunks[i] = msc;
+                msc.chunk_id = i;
+
+                // get total vertex data size and total element data size
+                int vlen = 0;
+                int elen = 0;
+                foreach(var k in tex_chunks_list[i])
+                {
+                    vlen += submodels[k].vertex_data.Length;
+                    elen += submodels[k].face_indices.Length;
+                }
+
+                msc.vertex_data = new byte[vlen];
+                msc.face_indices = new uint[elen];
+
+                uint vcount = 0;
+                uint fcount = 0;
+                for(int j = 0; j < tex_chunks_list[i].Count; j++)
+                {
+                    var msc2 = submodels[tex_chunks_list[i][j]];
+                    for (int l = 0; l < msc2.face_indices.Length; l++)
+                        msc2.face_indices[l] += vcount;
+
+                    Array.Copy(msc2.vertex_data, 0, msc.vertex_data, vcount * 40, msc2.vertex_data.Length);
+                    Array.Copy(msc2.face_indices, 0, msc.face_indices, fcount, msc2.face_indices.Length);
+
+                    vcount += (uint)(msc2.vertex_data.Length / 40);
+                    fcount += (uint)(msc2.face_indices.Length);
+                }
+
+                msc.material = submodels[tex_chunks_list[i][0]].material;
+            }
+
+            submodels = merged_chunks;
         }
 
         public void SetName(string s)
@@ -237,14 +291,13 @@ namespace SpellforceDataEditor.SF3D
             int size = 0;
             for (int i = 0; i < submodels.Length; i++)
                 size += submodels[i].GetSizeBytes();
-            return size + 4 * bones.Length;
+            return size;
         }
 
         public void Dispose()
         {
             foreach (var msc in submodels)
                 msc.Dispose();
-            SFResourceManager.BSIs.Dispose(GetName());
         }
     }
 }

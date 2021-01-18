@@ -324,35 +324,17 @@ namespace SpellforceDataEditor.SFMap
 
             // fix all object positions (without lakes for now...)
             foreach (SFMapUnit u in units)
-            {
-                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetName());
-                _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(u.grid_position) / 100.0f, _obj.Position.Z);
-            }
+                u.node.Position = hmap.GetFixedPosition(u.grid_position);
             foreach (SFMapObject o in objects)
-            {
-                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(o.GetName());
-                _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(o.grid_position) / 100.0f, _obj.Position.Z);
-            }
+                o.node.Position = hmap.GetFixedPosition(o.grid_position);
             foreach (SFMapInteractiveObject io in int_objects)
-            {
-                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(io.GetName());
-                _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(io.grid_position) / 100.0f, _obj.Position.Z);
-            }
+                io.node.Position = hmap.GetFixedPosition(io.grid_position);
             foreach (SFMapDecoration d in decorations)
-            {
-                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName());
-                _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(d.grid_position) / 100.0f, _obj.Position.Z);
-            }
+                d.node.Position = hmap.GetFixedPosition(d.grid_position);
             foreach (SFMapBuilding b in buildings)
-            {
-                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(b.GetName());
-                _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(b.grid_position) / 100.0f, _obj.Position.Z);
-            }
+                b.node.Position = hmap.GetFixedPosition(b.grid_position);
             foreach (SFMapPortal p in portals)
-            {
-                SF3D.SceneSynchro.SceneNode _obj = owner.FindNode<SF3D.SceneSynchro.SceneNode>(p.GetName());
-                _obj.Position = new Vector3(_obj.Position.X, hmap.GetZ(p.grid_position) / 100.0f, _obj.Position.Z);
-            }
+                p.node.Position = hmap.GetFixedPosition(p.grid_position);
         }
 
         public void UpdateVisible(bool vis)
@@ -390,7 +372,7 @@ namespace SpellforceDataEditor.SFMap
                 {
                     decoration_visible = false;
                     foreach (SFMapDecoration d in decorations)
-                        owner.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName()).Visible = false;
+                        d.node.Visible = false;
                 }
             }
             else
@@ -400,7 +382,7 @@ namespace SpellforceDataEditor.SFMap
                     decoration_visible = true;
                     if (Settings.DecorationsVisible)
                         foreach (SFMapDecoration d in decorations)
-                            owner.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName()).Visible = true;
+                            d.node.Visible = true;
                 }
             }
         }
@@ -413,11 +395,7 @@ namespace SpellforceDataEditor.SFMap
                 {
                     unit_visible = false;
                     foreach (SFMapUnit u in units)
-                    {
-                        var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetName());
-                        node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = false;
-                        node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = true;
-                    }
+                        u.node.Visible = false;
                 }
             }
             else
@@ -425,44 +403,32 @@ namespace SpellforceDataEditor.SFMap
                 if ((camera_dist <= 91) && (camera_hdiff <= 104))
                 {
                     unit_visible = true;
-                    if (Settings.DecorationsVisible)
+                    if (Settings.UnitsVisible)
                         foreach (SFMapUnit u in units)
-                        {
-                            var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetName());
-                            node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = true;
-                            node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = false;
-                        }
+                            u.node.Visible = true;
                 }
             }
         }
 
         public void UpdateSettingsVisible()
         {
-            bool vis1 = Settings.UnitsVisible & unit_visible;
-            bool vis2 = Settings.UnitsVisible & (!unit_visible);
             foreach (SFMapUnit u in units)
-            {
-                var node = owner.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetName());
-                node.Visible = true;
-                node.FindNode<SF3D.SceneSynchro.SceneNode>("Unit").Visible = vis1;
-                node.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("Billboard").Visible = vis2;
-            }
-
+                u.node.Visible = (Settings.UnitsVisible & unit_visible);
             foreach (SFMapBuilding b in buildings)
-                owner.FindNode<SF3D.SceneSynchro.SceneNode>(b.GetName()).Visible = Settings.BuildingsVisible;
+                b.node.Visible = Settings.BuildingsVisible;
             foreach (SFMapObject o in objects)
-                owner.FindNode<SF3D.SceneSynchro.SceneNode>(o.GetName()).Visible = Settings.ObjectsVisible;
+                o.node.Visible = Settings.ObjectsVisible;
             foreach (SFMapInteractiveObject io in int_objects)
-                owner.FindNode<SF3D.SceneSynchro.SceneNode>(io.GetName()).Visible = Settings.ObjectsVisible;
+                io.node.Visible = Settings.ObjectsVisible;
             foreach (SFMapPortal p in portals)
-                owner.FindNode<SF3D.SceneSynchro.SceneNode>(p.GetName()).Visible = Settings.ObjectsVisible;
+                p.node.Visible = Settings.ObjectsVisible;
 
             if ((Settings.DecorationsVisible) && (decoration_visible))
                 foreach (SFMapDecoration d in decorations)
-                    owner.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName()).Visible = Settings.DecorationsVisible;
+                    d.node.Visible = Settings.DecorationsVisible;
             if (!Settings.DecorationsVisible)
                 foreach (SFMapDecoration d in decorations)
-                    owner.FindNode<SF3D.SceneSynchro.SceneNode>(d.GetObjectName()).Visible = Settings.DecorationsVisible;
+                    d.node.Visible = Settings.DecorationsVisible;
 
         }
 
@@ -864,7 +830,7 @@ namespace SpellforceDataEditor.SFMap
         }
 
         // returns whether a posiiton is within map bounds
-        private bool FitsInMap(SFCoord p)
+        public bool FitsInMap(SFCoord p)
         {
             return ((p.x >= 0) && (p.x < width) && (p.y >= 0) && (p.y < height));
         }

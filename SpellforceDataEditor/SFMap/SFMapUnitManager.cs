@@ -45,8 +45,8 @@ namespace SpellforceDataEditor.SFMap
             units.Insert(index, unit);
 
             string obj_name = unit.GetName();
-            SF3D.SceneSynchro.SceneNode node = SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(id, obj_name);
-            node.SetParent(map.heightmap.GetChunkNode(position));
+            unit.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(id, obj_name);
+            unit.node.SetParent(map.heightmap.GetChunkNode(position));
             
             // 3. add new unit in respective chunk
             map.heightmap.GetChunk(position).AddUnit(unit);
@@ -57,11 +57,9 @@ namespace SpellforceDataEditor.SFMap
         public void RemoveUnit(SFMapUnit u)
         {
             units.Remove(u);
-            
-            SF3D.SceneSynchro.SceneNode chunk_node = map.heightmap.GetChunkNode(u.grid_position);
-            SF3D.SceneSynchro.SceneNode unit_node = chunk_node.FindNode<SF3D.SceneSynchro.SceneNode>(u.GetName());
-            if (unit_node != null)
-                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(unit_node);
+
+            if (u.node != null)
+                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(u.node);
 
             map.heightmap.GetChunk(u.grid_position).RemoveUnit(u);
         }

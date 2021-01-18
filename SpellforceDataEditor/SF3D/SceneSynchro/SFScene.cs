@@ -48,12 +48,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public float current_time { get; private set; } = 0f;        // current scene time in seconds
         private bool time_flowing = false;
 
-        public SceneNode root;   // tree with all visible objects; invisible objects are not connected to root
+        public SceneNode root;   // tree with all objects, visible or not
         public SFMap.SFMap map = null;  // contains heightmap and lakes
-        public SceneNodeCamera camera;
+        public SceneNodeCamera camera;  // temporarily not connected to root
 
-        public LightingAmbient ambient_light { get; } = new LightingAmbient();
-        public LightingSun sun_light { get; } = new LightingSun();
+
         public Atmosphere atmosphere { get; } = new Atmosphere();
 
         //public Dictionary<SFModel3D, LinearPool<SceneNodeSimple>> model_list_simple { get; private set; } = new Dictionary<SFModel3D, LinearPool<SceneNodeSimple>>();
@@ -68,7 +67,38 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
             root = new SceneNode("Root");
             camera = new SceneNodeCamera("Camera");
-            camera.SetParent(root);
+
+            // setup lighting
+            atmosphere.sun_light.Strength = 1.6f;
+            atmosphere.ambient_light.Strength = 0.5f;
+            atmosphere.FogColor = new Vector4(0.55f, 0.55f, 0.85f, 1.0f);
+            if (atmosphere.altitude_ambient_color == null)
+            {
+                atmosphere.altitude_ambient_color = new InterpolatedColor();
+                atmosphere.altitude_sun_color = new InterpolatedColor();
+                atmosphere.altitude_fog_color = new InterpolatedColor();
+
+                atmosphere.altitude_sun_color.Add(new Vector4(0.18f, 0.25f, 0.4f, 1), 0);
+                atmosphere.altitude_sun_color.Add(new Vector4(0.18f, 0.25f, 0.4f, 1), 70);
+                atmosphere.altitude_sun_color.Add(new Vector4(0.17f, 0.10f, 0.2f, 1), 80);
+                atmosphere.altitude_sun_color.Add(new Vector4(0.15f, 0, 0.0f, 1), 89);
+                atmosphere.altitude_sun_color.Add(new Vector4(0.8f, 0, 0, 1), 90);
+                atmosphere.altitude_sun_color.Add(new Vector4(0.9f, 0.5f, 0.2f, 1), 100);
+                atmosphere.altitude_sun_color.Add(new Vector4(1, 1, 1, 1), 110);
+                atmosphere.altitude_sun_color.Add(new Vector4(1, 1, 1, 1), 180);
+                atmosphere.altitude_ambient_color.Add(new Vector4(0.2f, 0.0f, 0.4f, 1.0f), 0);
+                atmosphere.altitude_ambient_color.Add(new Vector4(0.2f, 0.0f, 0.4f, 1.0f), 80);
+                atmosphere.altitude_ambient_color.Add(new Vector4(0.5f, 0.35f, 0.6f, 1.0f), 90);
+                atmosphere.altitude_ambient_color.Add(new Vector4(0.8f, 0.7f, 1.0f, 1.0f), 100);
+                atmosphere.altitude_ambient_color.Add(new Vector4(1.0f, 1.1f, 1.2f, 1.0f), 110);
+                atmosphere.altitude_ambient_color.Add(new Vector4(1.0f, 1.1f, 1.2f, 1.0f), 180);
+                atmosphere.altitude_fog_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 0);
+                atmosphere.altitude_fog_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 80);
+                atmosphere.altitude_fog_color.Add(new Vector4(0.3f, 0.2f, 0.5f, 1.0f), 90);
+                atmosphere.altitude_fog_color.Add(new Vector4(0.45f, 0.40f, 0.72f, 1.0f), 100);
+                atmosphere.altitude_fog_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 110);
+                atmosphere.altitude_fog_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 180);
+            }
 
             delta_timer.Start();
         }
@@ -166,26 +196,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
         }
 
-        // temporary revert to non-instanced simple meshes
-        /*public int AddModelEntrySimple(SFModel3D mesh, SceneNodeSimple node)
-        {
-            if (!model_list_simple.ContainsKey(mesh))
-                model_list_simple.Add(mesh, new LinearPool<SceneNodeSimple>());
-
-            return model_list_simple[mesh].Add(node);
-        }
-
-        public void ClearModelEntrySimple(SFModel3D mesh, SceneNodeSimple node)
-        {
-            if (!model_list_simple.ContainsKey(mesh))
-                return;
-
-            model_list_simple.Remove(mesh);
-
-            if (model_list_simple[mesh].used_count == 0)
-                model_list_simple.Remove(mesh);
-        }*/
-
         // these functions add basic node types to scene
         public SceneNode AddSceneNodeEmpty(SceneNode parent, string new_node_name)
         {
@@ -251,14 +261,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public SceneNode AddSceneUnit(int unit_id, string object_name)
         {
             SceneNode unit_node = AddSceneNodeEmpty(null, object_name);    // parent to be assigned later, likely some of the cached mapchunk nodes
-
-            // add unit billboard icon, when the unit is too far away, it will be displayed instead of unit
-            SceneNodeSimple blb = AddSceneNodeSimple(unit_node, "effect_spell_iceshield05", "Billboard");
-            blb.Mesh.submodels[0].material.texRenderMode = RenderMode.SRCALPHA_ONE;
-
-            blb.Scale = new Vector3(0.5f, 0.5f, 0.5f);
-            SceneNode anim_node = AddSceneNodeEmpty(unit_node, "Unit");
-
             
             //find unit data element (cat 18)
             SFCategoryElement unit_data = SFCategoryManager.gamedata[17].FindElementBinary<UInt16>(0, (UInt16)unit_id);
@@ -312,7 +314,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
             
             //add anim model to scene
-            SceneNodeAnimated uo = AddSceneNodeAnimated(anim_node, chest_name, "Chest");
+            SceneNodeAnimated uo = AddSceneNodeAnimated(unit_node, chest_name, "Chest");
             // apply flat shade
             if (uo.Skin != null)
                 foreach (var msc in uo.Skin.submodels)
@@ -326,7 +328,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 string legs_name = SFLuaEnvironment.GetItemMesh(legs_id, is_female);
                 if (legs_name != "")
                 {
-                    uo = AddSceneNodeAnimated(anim_node, legs_name, "Legs");
+                    uo = AddSceneNodeAnimated(unit_node, legs_name, "Legs");
                     if (uo.Skin != null)
                         foreach (var msc in uo.Skin.submodels)
                             msc.material.flat_shade = true;
@@ -349,7 +351,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         head_name = head_data.MeshFemale;
                     else
                         head_name = head_data.MeshMale;
-                    uo = AddSceneNodeAnimated(anim_node, head_name, "Head");
+                    uo = AddSceneNodeAnimated(unit_node, head_name, "Head");
                     if (uo.Skin != null)
                         foreach (var msc in uo.Skin.submodels)
                             msc.material.flat_shade = true;
@@ -365,7 +367,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 if (helmet_name != "")
                 {
                     //create bone attachment
-                    SceneNodeBone bo = AddSceneNodeBone(anim_node.FindNode<SceneNodeAnimated>("Chest"), "Head", "Headbone");
+                    SceneNodeBone bo = AddSceneNodeBone(unit_node.FindNode<SceneNodeAnimated>("Chest"), "Head", "Headbone");
                     SceneNodeSimple ho = AddSceneNodeSimple(bo, helmet_name, "Helmet");
                     if (ho.Mesh != null)
                         foreach (SFSubModel3D sbm in ho.Mesh.submodels)
@@ -382,7 +384,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 if (rhand_name != "")
                 {
                     //create bone attachment
-                    SceneNodeBone bo = AddSceneNodeBone(anim_node.FindNode<SceneNodeAnimated>("Chest"), "R Hand weapon", "Rhandbone");
+                    SceneNodeBone bo = AddSceneNodeBone(unit_node.FindNode<SceneNodeAnimated>("Chest"), "R Hand weapon", "Rhandbone");
                     SceneNodeSimple ho = AddSceneNodeSimple(bo, rhand_name, "Rhand");
                     if (ho.Mesh != null)
                         foreach (SFSubModel3D sbm in ho.Mesh.submodels)
@@ -407,7 +409,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         is_shield = item_type == 9;
                     }
                     //create bone attachment
-                    SceneNodeBone bo = AddSceneNodeBone(anim_node.FindNode<SceneNodeAnimated>("Chest"), (is_shield ? "L Forearm shield" : "L Hand weapon"), "Lhandbone");
+                    SceneNodeBone bo = AddSceneNodeBone(unit_node.FindNode<SceneNodeAnimated>("Chest"), (is_shield ? "L Forearm shield" : "L Hand weapon"), "Lhandbone");
                     SceneNodeSimple ho = AddSceneNodeSimple(bo, lhand_name, "Lhand");
                     if (ho.Mesh != null)
                         foreach (SFSubModel3D sbm in ho.Mesh.submodels)
