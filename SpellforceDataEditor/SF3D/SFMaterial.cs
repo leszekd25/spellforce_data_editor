@@ -40,8 +40,9 @@ namespace SpellforceDataEditor.SF3D
         public float texTiling = 1f;
         public SFTexture texture = null;
         public bool apply_shading = true;
-        public bool flat_shade = false;
         public bool casts_shadow = true;
+        public bool transparent_pass = false;
+        public bool apply_shadow = true;
 
         public bool yet_to_be_drawn = true;
 

@@ -177,7 +177,7 @@ namespace SpellforceDataEditor.special_forms
 
             SFRenderEngine.scene.Init();
             SFRenderEngine.Initialize(new Vector2(glControl1.ClientSize.Width, glControl1.ClientSize.Height));
-            SFRenderEngine.scene.camera.Position = new Vector3(0, 2, 6);
+            SFRenderEngine.scene.camera.SetPosition(new Vector3(0, 2, 6));
             SFRenderEngine.scene.camera.Lookat = new Vector3(0, 0, 0);
 
             glControl1.MouseWheel += new MouseEventHandler(glControl1_MouseWheel);
@@ -215,7 +215,7 @@ namespace SpellforceDataEditor.special_forms
             SFResourceManager.Models.AddManually(grid_model, "_GRID_");
 
             grid_node = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "_GRID_", "_GRID_");
-            grid_node.Position = new Vector3(0, -0.01f, 0);
+            grid_node.SetPosition(new Vector3(0, -0.01f, 0));
             grid_node.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
             grid_node.Scale = new Vector3(8, 8, 8);
 
@@ -851,7 +851,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void AdjustCameraZ()
         {
-            SFRenderEngine.scene.camera.translate(new Vector3(0, (2*zoom_level)-SFRenderEngine.scene.camera.Position.Y, 0));
+            SFRenderEngine.scene.camera.translate(new Vector3(0, (2*zoom_level)-SFRenderEngine.scene.camera.position.Y, 0));
         }
 
         public void GenerateScene(int cat, int elem)
@@ -1138,7 +1138,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void ResetCamera()
         {
-            SFRenderEngine.scene.camera.Position = new Vector3(0, 1, 6);
+            SFRenderEngine.scene.camera.SetPosition(new Vector3(0, 1, 6));
             SFRenderEngine.scene.camera.Lookat = new Vector3(0, 1, 0);
             zoom_level = 1.0f;
             update_render = true;

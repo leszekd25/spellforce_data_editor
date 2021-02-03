@@ -31,12 +31,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public virtual bool NeedsUpdateResultTransform { get; protected set; } = true;
 
         protected bool visible = true;
-        protected Vector3 position = Vector3.Zero;
+        public Vector3 position = Vector3.Zero;
         protected Quaternion rotation = Quaternion.Identity;
         protected Vector3 scale = Vector3.One;
         protected Matrix4 local_transform = Matrix4.Identity;
         //protected Matrix4 result_transform = Matrix4.Identity;
-        protected Physics.BoundingBox aabb = new Physics.BoundingBox(Vector3.Zero, Vector3.Zero);
+        protected Physics.BoundingBox aabb = Physics.BoundingBox.Zero;
         
         // todo: add a LocalVisible, so even when parent changes to visible while this is invisible, this is still invisible
         public virtual bool Visible
@@ -55,7 +55,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 }
             }
         }
-        public Vector3 Position { get { return position; } set { position = value; TouchLocalTransform(); TouchParents(); } }
         public Quaternion Rotation { get { return rotation; } set { rotation = value; TouchLocalTransform(); TouchParents(); } }
         public Vector3 Scale { get { return scale; } set { scale = value; TouchLocalTransform(); TouchParents(); } }
         public Matrix4 LocalTransform { get { return local_transform; } protected set { local_transform = value; } }
@@ -120,6 +119,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2)
                      * Quaternion.FromAxisAngle(new Vector3(0f, 0f, 1f), MathUtils.DegToRad(angle_deg));
+        }
+
+        public void SetPosition(Vector3 pos)
+        {
+            position = pos;
+            TouchLocalTransform();
+            TouchParents();
         }
 
         // if something requires updating, notify all parents about that, root including, so the engine knows to run update routine
@@ -282,7 +288,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 {
                     if(value == null)
                     {
-                        aabb = new Physics.BoundingBox(Vector3.Zero, Vector3.Zero);
+                        aabb = Physics.BoundingBox.Zero;
                         if (visible)
                             ClearTexGeometry();
                         mesh = null;
@@ -343,7 +349,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if(Billboarded)
             {
                 SceneNodeCamera camera = SFRender.SFRenderEngine.scene.camera;
-                Rotation = Matrix4.LookAt(camera.Position, Position, new Vector3(0, 1, 0)).ExtractRotation();
+                Rotation = Matrix4.LookAt(camera.position, position, new Vector3(0, 1, 0)).ExtractRotation();
                 rotation.Conjugate();
             }
 
@@ -652,10 +658,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             {
                 lookat = value;
 
-                direction.X = (float)(Math.Atan2(-(lookat.Z - Position.Z), lookat.X - Position.X) + Math.PI);
-                if (Math.Abs(lookat.X - Position.Z) > EPSILON)
+                direction.X = (float)(Math.Atan2(-(lookat.Z - position.Z), lookat.X - position.X) + Math.PI);
+                if (Math.Abs(lookat.X - position.Z) > EPSILON)
                 {
-                    direction.Y = (float)Math.Atan2(lookat.Y - Position.Y, new Vector3(lookat.X - Position.X, -(lookat.Z - Position.Z), 0).Length);
+                    direction.Y = (float)Math.Atan2(lookat.Y - position.Y, new Vector3(lookat.X - position.X, -(lookat.Z - position.Z), 0).Length);
                     direction.Y = (direction.Y > MAX_DIR_Y ? MAX_DIR_Y : (direction.Y < -MAX_DIR_Y ? -MAX_DIR_Y : direction.Y));
                 }
                 //System.Diagnostics.Debug.WriteLine(direction.ToString());
@@ -673,7 +679,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 direction = value;
                 direction.Y = (direction.Y > MAX_DIR_Y ? MAX_DIR_Y : (direction.Y < -MAX_DIR_Y ? -MAX_DIR_Y : direction.Y));
                 //calculate rotation vector
-                lookat = Position + new Vector3((float)Math.Cos(direction.X) * (float)Math.Cos(direction.Y),
+                lookat = position + new Vector3((float)Math.Cos(direction.X) * (float)Math.Cos(direction.Y),
                                                 (float)Math.Sin(direction.Y),
                                                 (float)Math.Sin(direction.X) * (float)Math.Cos(direction.Y));
                 TouchLocalTransform(); TouchParents();
@@ -699,7 +705,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             if (NeedsUpdateLocalTransform)
             {
-                view_matrix = Matrix4.LookAt(Position, lookat, new Vector3(0, 1, 0));
+                view_matrix = Matrix4.LookAt(position, lookat, new Vector3(0, 1, 0));
                 viewproj_matrix = view_matrix * ProjMatrix;
 
                 // calculate frustum
@@ -723,11 +729,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // returns vector2 in screen coordinates in [0, 1] (if on screen)
         public Vector2 WorldToScreen(Vector3 pos)
         {
-            float dist = Vector3.Dot(pos - Position, (Lookat - Position).Normalized()) / SFRender.SFRenderEngine.max_render_distance;
+            float dist = Vector3.Dot(pos - position, (Lookat - position).Normalized()) / SFRender.SFRenderEngine.max_render_distance;
 
-            Vector3 top_left = Position + (frustum.frustum_vertices[4] - Position) * dist;
-            Vector3 top_right = Position + (frustum.frustum_vertices[5] - Position) * dist;
-            Vector3 bottom_left = Position + (frustum.frustum_vertices[6] - Position) * dist;
+            Vector3 top_left = position + (frustum.frustum_vertices[4] - position) * dist;
+            Vector3 top_right = position + (frustum.frustum_vertices[5] - position) * dist;
+            Vector3 bottom_left = position + (frustum.frustum_vertices[6] - position) * dist;
 
             Vector3 top_point_norm = (top_right - top_left).Normalized();
             Vector3 top_point = top_left + top_point_norm * Vector3.Dot(pos - top_left, top_point_norm);

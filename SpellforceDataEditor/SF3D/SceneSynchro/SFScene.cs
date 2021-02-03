@@ -70,8 +70,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
             // setup lighting
             atmosphere.sun_light.Strength = 1.6f;
-            atmosphere.ambient_light.Strength = 0.5f;
-            atmosphere.FogColor = new Vector4(0.55f, 0.55f, 0.85f, 1.0f);
+            atmosphere.ambient_light.Strength = 1.0f;
             if (atmosphere.altitude_ambient_color == null)
             {
                 atmosphere.altitude_ambient_color = new InterpolatedColor();
@@ -86,12 +85,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 atmosphere.altitude_sun_color.Add(new Vector4(0.9f, 0.5f, 0.2f, 1), 100);
                 atmosphere.altitude_sun_color.Add(new Vector4(1, 1, 1, 1), 110);
                 atmosphere.altitude_sun_color.Add(new Vector4(1, 1, 1, 1), 180);
-                atmosphere.altitude_ambient_color.Add(new Vector4(0.2f, 0.0f, 0.4f, 1.0f), 0);
-                atmosphere.altitude_ambient_color.Add(new Vector4(0.2f, 0.0f, 0.4f, 1.0f), 80);
-                atmosphere.altitude_ambient_color.Add(new Vector4(0.5f, 0.35f, 0.6f, 1.0f), 90);
-                atmosphere.altitude_ambient_color.Add(new Vector4(0.8f, 0.7f, 1.0f, 1.0f), 100);
-                atmosphere.altitude_ambient_color.Add(new Vector4(1.0f, 1.1f, 1.2f, 1.0f), 110);
-                atmosphere.altitude_ambient_color.Add(new Vector4(1.0f, 1.1f, 1.2f, 1.0f), 180);
+                atmosphere.altitude_ambient_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 0);
+                atmosphere.altitude_ambient_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 80);
+                atmosphere.altitude_ambient_color.Add(new Vector4(0.3f, 0.2f, 0.5f, 1.0f), 90);
+                atmosphere.altitude_ambient_color.Add(new Vector4(0.45f, 0.40f, 0.72f, 1.0f), 100);
+                atmosphere.altitude_ambient_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 110);
+                atmosphere.altitude_ambient_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 180);
                 atmosphere.altitude_fog_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 0);
                 atmosphere.altitude_fog_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 80);
                 atmosphere.altitude_fog_color.Add(new Vector4(0.3f, 0.2f, 0.5f, 1.0f), 90);
@@ -315,10 +314,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             
             //add anim model to scene
             SceneNodeAnimated uo = AddSceneNodeAnimated(unit_node, chest_name, "Chest");
-            // apply flat shade
-            if (uo.Skin != null)
-                foreach (var msc in uo.Skin.submodels)
-                    msc.material.flat_shade = true;
 
             //get legs item (5) (animated)
             UInt16 legs_id = GetItemID(unit_eq, 5);
@@ -329,9 +324,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 if (legs_name != "")
                 {
                     uo = AddSceneNodeAnimated(unit_node, legs_name, "Legs");
-                    if (uo.Skin != null)
-                        foreach (var msc in uo.Skin.submodels)
-                            msc.material.flat_shade = true;
                 }
             }
             //special case: anim_name is of "figure_hero": need to also add human head (animated)
@@ -352,9 +344,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     else
                         head_name = head_data.MeshMale;
                     uo = AddSceneNodeAnimated(unit_node, head_name, "Head");
-                    if (uo.Skin != null)
-                        foreach (var msc in uo.Skin.submodels)
-                            msc.material.flat_shade = true;
                 }
             }
 
@@ -369,9 +358,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     //create bone attachment
                     SceneNodeBone bo = AddSceneNodeBone(unit_node.FindNode<SceneNodeAnimated>("Chest"), "Head", "Headbone");
                     SceneNodeSimple ho = AddSceneNodeSimple(bo, helmet_name, "Helmet");
-                    if (ho.Mesh != null)
-                        foreach (SFSubModel3D sbm in ho.Mesh.submodels)
-                            sbm.material.flat_shade = true;
                 }
             }
 
@@ -386,9 +372,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     //create bone attachment
                     SceneNodeBone bo = AddSceneNodeBone(unit_node.FindNode<SceneNodeAnimated>("Chest"), "R Hand weapon", "Rhandbone");
                     SceneNodeSimple ho = AddSceneNodeSimple(bo, rhand_name, "Rhand");
-                    if (ho.Mesh != null)
-                        foreach (SFSubModel3D sbm in ho.Mesh.submodels)
-                            sbm.material.flat_shade = true;
                 }
             }
 
@@ -411,9 +394,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     //create bone attachment
                     SceneNodeBone bo = AddSceneNodeBone(unit_node.FindNode<SceneNodeAnimated>("Chest"), (is_shield ? "L Forearm shield" : "L Hand weapon"), "Lhandbone");
                     SceneNodeSimple ho = AddSceneNodeSimple(bo, lhand_name, "Lhand");
-                    if (ho.Mesh != null)
-                        foreach (SFSubModel3D sbm in ho.Mesh.submodels)
-                            sbm.material.flat_shade = true;
                 }
             }
 
@@ -443,7 +423,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 SceneNodeSimple n = AddSceneNodeSimple(obj_node, m, i.ToString());
                 if (n.Mesh != null)
                     foreach (SFSubModel3D sbm in n.Mesh.submodels)
+                    {
                         sbm.material.apply_shading = apply_shading;
+                        sbm.material.transparent_pass &= apply_shading;
+                        sbm.material.casts_shadow = apply_shading;
+                    }
             }
 
             return obj_node;

@@ -57,7 +57,7 @@ namespace SpellforceDataEditor.SF3D
                 if (dir.Z > 0)
                     Altitude = 90;
                 else
-                    Altitude = 90;
+                    Altitude = -90;
             }
             else
             {
@@ -104,8 +104,9 @@ namespace SpellforceDataEditor.SF3D
     public class Atmosphere
     {
         public Vector4 FogColor = new Vector4(100, 100, 100, 255) / 255f;
-        public float FogStart = 100.0f;
+        public float FogStart = 0.0f;
         public float FogEnd = 200.0f;
+        public float FogExponent = 1.5f;
         public LightingAmbient ambient_light { get; } = new LightingAmbient();
         public LightingSun sun_light { get; } = new LightingSun();
         public InterpolatedColor altitude_sun_color { get; set; }

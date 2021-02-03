@@ -183,6 +183,9 @@ namespace SpellforceDataEditor.SFMap
             GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int)All.LinearMipmapLinear);
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMagFilter, (int)All.Linear);
+            if (Settings.AnisotropicFiltering)
+                GL.TexParameter(TextureTarget.Texture2DArray, (TextureParameterName)All.TextureMaxAnisotropy, (float)Settings.MaxAnisotropy);
+
             GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8 - min_allowed_level, SizedInternalFormat.Rgba8, 256/mipmap_divisor, 256/mipmap_divisor, 32);
             for (int i = 0; i < 32; i++)
             {

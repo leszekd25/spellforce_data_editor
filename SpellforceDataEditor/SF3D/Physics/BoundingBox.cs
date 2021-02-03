@@ -222,5 +222,7 @@ namespace SpellforceDataEditor.SF3D.Physics
         {
             return (b.X - a.X) * (b.Y - a.Y) * (b.Z - a.Z);
         }
+
+        public static BoundingBox Zero = new BoundingBox(Vector3.Zero, Vector3.Zero);
     }
 }

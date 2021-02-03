@@ -116,7 +116,8 @@ namespace SpellforceDataEditor.SF3D
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.LinearMipmapLinear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
 
-            //GL.TexParameter(TextureTarget.Texture2D, All.MaxTextureMaxAnisotropyExt, 8);// RenderState.Instance.AnisotropyLevel);
+            if (Settings.AnisotropicFiltering)
+                GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)All.TextureMaxAnisotropy, (float)Settings.MaxAnisotropy);
             
 
             GL.BindTexture(TextureTarget.Texture2D, 0);

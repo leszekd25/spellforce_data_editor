@@ -78,7 +78,7 @@ namespace SpellforceDataEditor.SFMap
             lake.type = type;
 
             lake.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(SF3D.SFRender.SFRenderEngine.scene.root, Utility.S_NONE, lake.GetObjectName());
-            lake.node.Position = new Vector3(0, 0, 0);
+            lake.node.SetPosition(new Vector3(0, 0, 0));
 
             UpdateLake(lake);
 
@@ -268,6 +268,9 @@ namespace SpellforceDataEditor.SFMap
                 tex.FreeMemory();
             }
             material.texture = tex;
+            material.casts_shadow = false;
+            material.transparent_pass = true;
+            material.apply_shadow = false;
             
             submodel.CreateRaw(vertices, uvs, colors, normals, indices, material);
 

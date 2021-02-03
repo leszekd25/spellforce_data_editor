@@ -111,10 +111,9 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 FogColor;
         ///uniform float FogStart;
         ///uniform float FogEnd;
+        ///uniform float FogExponent;
         ///uniform float DepthBias;
-        ///uniform float ShadowDepth;
-        ///
-        ///vec2  [rest of string was truncated]&quot;;.
+        ///uniform [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader {
             get {
@@ -176,10 +175,10 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 FogColor;
         ///uniform float FogStart;
         ///uniform float FogEnd;
+        ///uniform float FogExponent;
         ///uniform float ShadowDepth;
         ///
-        ///uniform sampler2DArray myTextureSampler;
-        ///uniform sampler2D  [rest of string was truncated]&quot;;.
+        ///uniform sampler2DArray myTexture [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_hmap {
             get {
@@ -273,11 +272,11 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 FogColor;
         ///uniform float FogStart;
         ///uniform float FogEnd;
+        ///uniform float FogExponent;
         ///uniform float ShadowDepth;
         ///
         ///vec2 poissonDisk[4] = vec2[](
-        ///  vec2( -0.94201624, -0.39906216 ),
-        ///  [rest of string was truncated]&quot;;.
+        ///  vec2( -0 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_skel {
             get {

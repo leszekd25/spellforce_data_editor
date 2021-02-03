@@ -114,7 +114,7 @@ namespace SpellforceDataEditor.SFMap
 
             d.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(new_id, d.GetObjectName(), false);
             d.node.SetParent(map.heightmap.GetChunkNode(d.grid_position));
-            d.node.Position = map.heightmap.GetFixedPosition(d.grid_position);
+            d.node.SetPosition(map.heightmap.GetFixedPosition(d.grid_position));
             d.node.Rotation = OpenTK.Quaternion.FromAxisAngle(new OpenTK.Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
             d.node.Scale = new OpenTK.Vector3(100 / 128f);
 

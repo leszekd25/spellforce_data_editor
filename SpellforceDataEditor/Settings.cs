@@ -16,6 +16,8 @@ namespace SpellforceDataEditor
         public static int ShadowMapSize { get; private set; } = 1024;
         public static int FramesPerSecond { get; private set; } = 60;
         public static int AntiAliasingSamples { get; private set; } = 4;
+        public static bool AnisotropicFiltering { get; private set; } = true;
+        public static int MaxAnisotropy { get; set; } = 1;
 
         public static bool UnitsVisible { get; set; } = true;
         public static bool BuildingsVisible { get; set; } = true;
@@ -94,6 +96,9 @@ namespace SpellforceDataEditor
                             if (AntiAliasingSamples > 4)
                                 AntiAliasingSamples = 4;
                             AntiAliasingSamples = (AntiAliasingSamples / 2) * 2;
+                            break;
+                        case "AnisotropicFiltering":
+                            AnisotropicFiltering = (words[1] == "YES");
                             break;
 
                         case "UnitsVisible":
@@ -236,6 +241,9 @@ namespace SpellforceDataEditor
                             break;
                         case "AntiAliasingSamples":
                             words = new string[] { words[0], AntiAliasingSamples.ToString() };
+                            break;
+                        case "AnisotropicFiltering":
+                            words = new string[] { words[0], AnisotropicFiltering ? "YES" : "NO" };
                             break;
 
                         case "UnitsVisible":

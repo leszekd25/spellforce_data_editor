@@ -1170,11 +1170,11 @@ namespace SpellforceDataEditor.special_forms
                     wx = ((px / RenderWindow.Size.Width) + 0.1f) / 1.2f;
                     wy = ((py / RenderWindow.Size.Height) + 0.1f) / 1.2f;
                     Vector3[] frustrum_vertices = SFRenderEngine.scene.camera.Frustum.frustum_vertices;
-                    Vector3 r_start = SFRenderEngine.scene.camera.Position;
+                    Vector3 r_start = SFRenderEngine.scene.camera.position;
                     Vector3 r_end = frustrum_vertices[4]
                         + wx * (frustrum_vertices[5] - frustrum_vertices[4])
                         + wy * (frustrum_vertices[6] - frustrum_vertices[4]);
-                    SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start) { Length = 1000 };
+                    SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start) { Length = 200 };
 
                     Vector3 result = new Vector3(0, 0, 0);
                     bool ray_success = ray.Intersect(map.heightmap, out result);
@@ -1204,7 +1204,6 @@ namespace SpellforceDataEditor.special_forms
                         {
                             System.Diagnostics.Debug.WriteLine("IX " + map.heightmap.GetChunk(inv_cursor_coord).ix.ToString()
                                 + " | IY " + map.heightmap.GetChunk(inv_cursor_coord).iy.ToString()
-                                + " | RET "+ map.heightmap.GetChunk(inv_cursor_coord).pool_index.ToString()
                                 + " | PRESS");
                             selected_editor.OnMousePress(inv_cursor_coord, mouse_last_pressed, ref special_pressed);
                             update_render = true;
@@ -1277,7 +1276,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 AdjustCameraZ();
                 SFRenderEngine.scene.camera.Update(0);
-                map.ocean.SetPosition(SFRenderEngine.scene.camera.Position);
+                map.ocean.SetPosition(SFRenderEngine.scene.camera.position);
                 SFRenderEngine.UpdateVisibleChunks();
                 map.selection_helper.Update();
                 SFRenderEngine.scene.Update();
@@ -1336,16 +1335,16 @@ namespace SpellforceDataEditor.special_forms
         {
             if (map != null)
             {
-                Vector2 p = new Vector2(SFRenderEngine.scene.camera.Position.X, SFRenderEngine.scene.camera.Position.Z);
+                Vector2 p = new Vector2(SFRenderEngine.scene.camera.position.X, SFRenderEngine.scene.camera.position.Z);
                 float z = map.heightmap.GetRealZ(p);
 
-                SFRenderEngine.scene.camera.translate(new Vector3(0, (25 * zoom_level) + z - SFRenderEngine.scene.camera.Position.Y, 0));
+                SFRenderEngine.scene.camera.translate(new Vector3(0, (25 * zoom_level) + z - SFRenderEngine.scene.camera.position.Y, 0));
             }
         }
 
         private void UpdateSunFrustum()
         {
-            Vector2 p = new Vector2(SFRenderEngine.scene.camera.Position.X, SFRenderEngine.scene.camera.Position.Z);
+            Vector2 p = new Vector2(SFRenderEngine.scene.camera.position.X, SFRenderEngine.scene.camera.position.Z);
             // calculate light bounding box
 
             // calculate visible heightmap bounding box, using chunks that are close enough
@@ -1360,7 +1359,7 @@ namespace SpellforceDataEditor.special_forms
             xmin = 9999; ymin = 9999; xmax = -9999; ymax = -9999; zmin = 9999; zmax = -9999;
             foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.visible_chunks)
             {
-                Vector3 pos = chunk_node.Position;
+                Vector3 pos = chunk_node.position;
 
                 if (max_dist < (p - new Vector2(pos.X + 8, pos.Z + 8)).Length)
                     continue;
@@ -1400,17 +1399,17 @@ namespace SpellforceDataEditor.special_forms
             // resulting shift of camera positon from desired coordinates to canter the view on them
             Vector2 cam_shift = new Vector2((float)-Math.Sin(cam_dir.X + angle_shift),
                                             (float)Math.Cos(cam_dir.X + angle_shift)) * (25 * angle_factor * zoom_level);
-            SFRenderEngine.scene.camera.Position = new Vector3(cam_shift.X, 25, cam_shift.Y);
-            SFRenderEngine.scene.camera.Direction = cam_dir;
+            SFRenderEngine.scene.camera.SetPosition(new Vector3(cam_shift.X, 25, cam_shift.Y));
 
             Vector3 new_camera_pos = new Vector3(pos.x + cam_shift.X, 0, map.heightmap.height - pos.y - 1 + cam_shift.Y);
-            SFRenderEngine.scene.camera.translate(new_camera_pos - SFRenderEngine.scene.camera.Position);
+            SFRenderEngine.scene.camera.translate(new_camera_pos - SFRenderEngine.scene.camera.position);
             update_render = true;
         }
 
         public void ResetCamera()
         {
             SFRenderEngine.scene.camera.Direction = new Vector2((float)(Math.PI * 3 / 2), -1.2f);
+            SFRenderEngine.scene.camera.Update(0);
             zoom_level = 1;
             update_render = true;
         }

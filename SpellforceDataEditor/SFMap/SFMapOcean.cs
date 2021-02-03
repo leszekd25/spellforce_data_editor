@@ -23,10 +23,10 @@ namespace SpellforceDataEditor.SFMap
             byte[] colors = new byte[16];
             Vector3[] normals = new Vector3[4];
 
-            vertices[0] = new Vector3(-256, 0f, -256);
-            vertices[1] = new Vector3(256, 0f, -256);
-            vertices[2] = new Vector3(-256, 0f, 256);
-            vertices[3] = new Vector3(256, 0f, 256);
+            vertices[0] = new Vector3(-512, 0f, -512);
+            vertices[1] = new Vector3(512, 0f, -512);
+            vertices[2] = new Vector3(-512, 0f, 512);
+            vertices[3] = new Vector3(512, 0f, 512);
             uvs[0] = new Vector2(-SFMapHeightMapGeometryPool.CHUNK_SIZE, -SFMapHeightMapGeometryPool.CHUNK_SIZE);
             uvs[1] = new Vector2(SFMapHeightMapGeometryPool.CHUNK_SIZE, -SFMapHeightMapGeometryPool.CHUNK_SIZE);
             uvs[2] = new Vector2(-SFMapHeightMapGeometryPool.CHUNK_SIZE, SFMapHeightMapGeometryPool.CHUNK_SIZE);
@@ -59,6 +59,9 @@ namespace SpellforceDataEditor.SFMap
                 tex.FreeMemory();
             }
             material.texture = tex;
+            material.casts_shadow = false;
+            material.transparent_pass = true;
+            material.apply_shadow = false;
 
             SF3D.SFSubModel3D sbm1 = new SF3D.SFSubModel3D();
             sbm1.CreateRaw(vertices, uvs, colors, normals, indices, material);
@@ -77,7 +80,7 @@ namespace SpellforceDataEditor.SFMap
         {
             float _x = ((int)(center_pos.X / 16)) * 16;
             float _z = ((int)(center_pos.Z / 16)) * 16;
-            ocean_obj.Position = new Vector3(_x, 3, _z);
+            ocean_obj.SetPosition(new Vector3(_x, 3, _z));
         }
 
         public void Dispose()

@@ -136,6 +136,7 @@ uniform sampler2D ShadowMap;
 uniform vec4 FogColor;
 uniform float FogStart;
 uniform float FogEnd;
+uniform float FogExponent;
 uniform float ShadowDepth;
 
 vec2 poissonDisk[4] = vec2[](
@@ -201,7 +202,7 @@ void main(){
 
   // fog calculation
   float dist = gl_FragCoord.z / gl_FragCoord.w;
-  float fog_factor = clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0);
+  float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
   color = mix(color, FogColor, fog_factor);
 }</value>
   </data>
@@ -330,8 +331,11 @@ uniform sampler2D ShadowMap;
 uniform vec4 FogColor;
 uniform float FogStart;
 uniform float FogEnd;
+uniform float FogExponent;
 uniform float DepthBias;
 uniform float ShadowDepth;
+uniform bool ApplyShadow;
+uniform bool ApplyShading;
 
 vec2 poissonDisk[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
@@ -363,6 +367,8 @@ float CalculateShadow(vec4 FPLS, float b){
     vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
     if(ProjectionCoordinates.z &gt; 1.0)
         return 1.0;
+    if(!ApplyShadow)
+        return 1.0;
 
     ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
     return chebyshevUpperBound(ProjectionCoordinates);
@@ -370,22 +376,24 @@ float CalculateShadow(vec4 FPLS, float b){
 
 
 void main(){
-  vec4 tex_col = texture(DiffuseTex, UV);
-  if(tex_col.a &lt; 0.5)
-    discard;
-  tex_col.a = 1.0;
   vec4 temp_c = fragmentColor * texture(DiffuseTex, UV);
+  if(temp_c.a == 0.0)
+    discard;
 
   float brightness = 1.0;
   #ifdef APPLY_SHADING
-    // calculate brightness resulting from light coming from sun
-    mat3 normalMatrix = transpose(inverse(mat3(M)));
-    vec3 normal = normalize(normalMatrix * fragmentNormal);
-    vec3 fragVec = fragmentPosition;
-    brightness = dot(normal, SunDirection); // both vectors are normalized
+    if(ApplyShading)
+    {
+      // calculate brightness resulting from light coming from sun
+      mat3 normalMatrix = transpose(inverse(mat3(M)));
+      vec3 normal = normalize(normalMatrix * fragmentNormal);
+      vec3 fragVec = fragmentPosition;
+      brightness = dot(normal, SunDirection); // both vectors are normalized
+    }
     // calculate shadow
     brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
     brightness = clamp(brightness, 0, 1);  
+    
   #endif // APPLY_SHADING
 
 
@@ -399,7 +407,7 @@ void main(){
 
   // fog calculation
   float dist = gl_FragCoord.z / gl_FragCoord.w;
-  float fog_factor = clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0);
+  float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
   color = mix(color, FogColor, fog_factor);
 
   // depth bias
@@ -436,6 +444,7 @@ uniform vec4 AmbientColor;
 uniform vec4 FogColor;
 uniform float FogStart;
 uniform float FogEnd;
+uniform float FogExponent;
 uniform float ShadowDepth;
 
 uniform sampler2DArray myTextureSampler;
@@ -603,7 +612,7 @@ void main(){
 
   // fog calculation
   float dist = gl_FragCoord.z / gl_FragCoord.w;
-  float fog_factor = clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0);
+  float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
   color = mix(color, FogColor, fog_factor);
   #endif // VISUALIZE_HEIGHT
 }</value>

@@ -21,7 +21,7 @@ namespace SpellforceDataEditor.SF3D
         public static MeshCache Cache;
 
 
-
+        public SFModel3D owner = null;
         public int submodel_id = Utility.NO_INDEX;
         public int cache_index = Utility.NO_INDEX;
 
@@ -91,6 +91,7 @@ namespace SpellforceDataEditor.SF3D
             material.matFlags = br.ReadByte();
             material.matDepthBias = br.ReadByte();
             material.texTiling = br.ReadSingle();
+            material.transparent_pass = ((material.matFlags & 4) == 0);
             char[] chars = br.ReadChars(64);
             matname = new string(chars).ToLower();
             matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
@@ -213,6 +214,8 @@ namespace SpellforceDataEditor.SF3D
             }*/
             if ((material != null) && (material.texture != null) && (material.texture != SFRender.SFRenderEngine.opaque_tex))
                 SFResourceManager.Textures.Dispose(material.texture.GetName());
+
+            owner = null;
         }
     }
 
@@ -269,6 +272,7 @@ namespace SpellforceDataEditor.SF3D
                 {
                     tmp_submodels.Add(sbm);
                     sbm.submodel_id = i - failed_submodels;
+                    sbm.owner = this;
                 }
 
                 if (i != modelnum - 1)
@@ -296,7 +300,10 @@ namespace SpellforceDataEditor.SF3D
 
             submodels = _submodels;
             for (int i = 0; i < submodels.Length; i++)
+            {
                 submodels[i].submodel_id = i;
+                submodels[i].owner = this;
+            }
 
             // aabb
             RecalculateBoundingBox();

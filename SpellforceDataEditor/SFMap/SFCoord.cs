@@ -99,6 +99,11 @@ namespace SpellforceDataEditor.SFMap
             return ((x >= x1) && (x <= x2) && (y >= y1) && (y <= y2));
         }
 
+        public SFCoord Clamp(SFCoord topleft, SFCoord bottomright)
+        {
+            return new SFCoord(Math.Min(bottomright.x, Math.Max(topleft.x, x)), Math.Min(bottomright.y, Math.Max(topleft.y, y)));
+        }
+
         public static int DistanceManhattan(SFCoord p1, SFCoord p2)
         {
             return Math.Max(Math.Abs(p1.x - p2.x), Math.Abs(p1.y - p2.y));
