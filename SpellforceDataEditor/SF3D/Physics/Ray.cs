@@ -212,7 +212,7 @@ namespace SpellforceDataEditor.SF3D.Physics
         {
             point = Vector3.Zero;
 
-            int chunk_size = SFMap.SFMapHeightMapGeometryPool.CHUNK_SIZE;
+            int chunk_size = SFMap.SFMapHeightMapMesh.CHUNK_SIZE;
             int chunk_count = hmap.width / chunk_size;
 
             Vector2 ray_start_xz = new Vector2(start.X, start.Z);

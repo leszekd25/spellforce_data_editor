@@ -123,13 +123,6 @@ namespace SpellforceDataEditor
             {
                 vs[i] -= offset;
 
-                //vs[i] = Matrix3.CreateRotationY(azimuth) * vs[i];
-
-                /*vs[i] = new Vector3(
-                    vs[i].X * acos - vs[i].Z * asin,
-                    vs[i].Y,
-                    vs[i].X * asin + vs[i].Z * acos);*/
-
                 vs[i] = new Vector3(
                     vs[i].X * lcos + vs[i].Z * lsin * asin + vs[i].Y * lsin * acos,
                     vs[i].X * lsin + vs[i].Z * lcos * asin + vs[i].Y * lcos * acos,
@@ -142,6 +135,11 @@ namespace SpellforceDataEditor
         public static float MapRange(float v, float s1, float s2, float d1, float d2)
         {
             return d1 + ((v - s1) / (s2 - s1)) * (d2 - d1);
+        }
+
+        public static float DistanceManhattan(Vector3 v1, Vector3 v2)
+        {
+            return Math.Abs(v1.X - v2.X) + Math.Abs(v1.Y - v2.Y) + Math.Abs(v1.Z - v2.Z);
         }
     }
 }

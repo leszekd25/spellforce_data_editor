@@ -201,7 +201,9 @@ namespace SpellforceDataEditor.SF3D
                     if (IsValidMipMapLevel((int)level))
                         buf_size += size;
                     else
+                    {
                         skip_size += size;
+                    }
                     w /= 2;
                     h /= 2;
                 }
@@ -504,6 +506,17 @@ namespace SpellforceDataEditor.SF3D
 
             if (args.ConversionType == SFTextureToBitmapArgType.DIMENSION)
             {
+                int default_width = width;
+                int default_height = height;
+                for (uint level = 0; level < mipMapCount && (cur_w != 0 || cur_h != 0); ++level)
+                {
+                    if (IsValidMipMapLevel((int)level))
+                        break;
+
+                    default_width /= 2;
+                    default_height /= 2;
+                }
+
                 while ((cur_h != 0)&&(cur_w != 0))
                 {
                     if ((cur_h == args.DimHeight) && (cur_w == args.DimWidth))
@@ -520,13 +533,13 @@ namespace SpellforceDataEditor.SF3D
                 int skip = 1 << (cur_mip);
 
                 b = new System.Drawing.Bitmap(cur_w, cur_h);
-                for (int j = 0; j < height; j += skip)
-                    for (int i = 0; i < width; i+=skip)
+                for (int j = 0; j < default_height; j += skip)
+                    for (int i = 0; i < default_width; i+=skip)
                         b.SetPixel(i/skip, cur_h - 1 - j/skip, System.Drawing.Color.FromArgb(
                             255,
-                            data[4 * (j * width + i) + 0],
-                            data[4 * (j * width + i) + 1],
-                            data[4 * (j * width + i) + 2]));
+                            data[4 * (j * default_width + i) + 0],
+                            data[4 * (j * default_width + i) + 1],
+                            data[4 * (j * default_width + i) + 2]));
                 return b;
             }
             else

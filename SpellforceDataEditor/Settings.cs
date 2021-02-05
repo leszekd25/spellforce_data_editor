@@ -13,11 +13,13 @@ namespace SpellforceDataEditor
         public static int IgnoredMipMapsCount { get; private set; } = 0;
         public static int MaximumAllowedTextureSize { get; private set; } = 2048;
         public static bool EnableShadows { get; set; } = true;
-        public static int ShadowMapSize { get; private set; } = 1024;
+        public static int ShadowMapSize { get; private set; } = 2048;
         public static int FramesPerSecond { get; private set; } = 60;
         public static int AntiAliasingSamples { get; private set; } = 4;
         public static bool AnisotropicFiltering { get; private set; } = true;
+        public static bool ToneMapping { get; private set; } = true;
         public static int MaxAnisotropy { get; set; } = 1;
+        public static SFMap.SFMapHeightMapLOD TerrainLOD { get; private set; } = SFMap.SFMapHeightMapLOD.NONE;
 
         public static bool UnitsVisible { get; set; } = true;
         public static bool BuildingsVisible { get; set; } = true;
@@ -99,6 +101,15 @@ namespace SpellforceDataEditor
                             break;
                         case "AnisotropicFiltering":
                             AnisotropicFiltering = (words[1] == "YES");
+                            break;
+                        case "ToneMapping":
+                            ToneMapping = (words[1] == "YES");
+                            break;
+                        case "TerrainLOD":
+                            SFMap.SFMapHeightMapLOD tlod;
+                            if (!Enum.TryParse(words[1], out tlod))
+                                tlod = SFMap.SFMapHeightMapLOD.NONE;
+                            TerrainLOD = tlod;
                             break;
 
                         case "UnitsVisible":
@@ -244,6 +255,12 @@ namespace SpellforceDataEditor
                             break;
                         case "AnisotropicFiltering":
                             words = new string[] { words[0], AnisotropicFiltering ? "YES" : "NO" };
+                            break;
+                        case "ToneMapping":
+                            words = new string[] { words[0], ToneMapping ? "YES" : "NO" };
+                            break;
+                        case "TerrainLOD":
+                            words = new string[] { words[0], TerrainLOD.ToString() };
                             break;
 
                         case "UnitsVisible":

@@ -694,9 +694,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public float AspectRatio { get { return aspect_ratio; } set { aspect_ratio = value; } }
         public Physics.Frustum Frustum { get { return frustum; } }
 
+        // 250.0f is a magic constant for now...
         public SceneNodeCamera(string s): base(s)
         {
-            frustum = new Physics.Frustum(position, (lookat-position), SFRender.SFRenderEngine.min_render_distance, SFRender.SFRenderEngine.max_render_distance, aspect_ratio);
+            frustum = new Physics.Frustum(position, (lookat-position), SFRender.SFRenderEngine.min_render_distance, 250.0f, aspect_ratio);
             UpdateTransform();
         }
 

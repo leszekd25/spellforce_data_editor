@@ -134,6 +134,7 @@ uniform vec4 AmbientColor;
 uniform sampler2D DiffuseTex;
 uniform sampler2D ShadowMap;
 uniform vec4 FogColor;
+uniform float FogStrength;
 uniform float FogStart;
 uniform float FogEnd;
 uniform float FogExponent;
@@ -195,15 +196,22 @@ void main(){
   // calculate output color
   vec4 ambient_color = AmbientColor * AmbientStrength;
   vec4 sun_color = SunColor * SunStrength;
+  #ifndef TONEMAPPING
   color = (ambient_color*(1-brightness))+(sun_color*brightness);
   color.a = 1.0;
   color = color*temp_c;
   color = clamp(color, 0.0, 1.0);
+  #endif // TONEMAPPING
+  #ifdef TONEMAPPING
+  color = ambient_color + sun_color * brightness;
+  color.a = 1.0;
+  color = color * temp_c;
+  #endif
 
   // fog calculation
   float dist = gl_FragCoord.z / gl_FragCoord.w;
   float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
-  color = mix(color, FogColor, fog_factor);
+  color = mix(color, vec4(FogColor.rgb * FogStrength, 1.0), fog_factor);
 }</value>
   </data>
   <data name="vshader_skel" xml:space="preserve">
@@ -329,13 +337,17 @@ uniform vec4 AmbientColor;
 uniform sampler2D DiffuseTex;
 uniform sampler2D ShadowMap;
 uniform vec4 FogColor;
+uniform float FogStrength;
 uniform float FogStart;
 uniform float FogEnd;
 uniform float FogExponent;
+uniform float ObjectFadeStart;
+uniform float ObjectFadeEnd;
 uniform float DepthBias;
 uniform float ShadowDepth;
 uniform bool ApplyShadow;
 uniform bool ApplyShading;
+uniform float DistanceFade;
 
 vec2 poissonDisk[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
@@ -392,7 +404,7 @@ void main(){
     }
     // calculate shadow
     brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
-    brightness = clamp(brightness, 0, 1);  
+    brightness = clamp(brightness, 0, 1);
     
   #endif // APPLY_SHADING
 
@@ -400,15 +412,27 @@ void main(){
   // calculate output color
   vec4 ambient_color = AmbientColor * AmbientStrength;
   vec4 sun_color = SunColor * SunStrength;
+  #ifndef TONEMAPPING
   color = (ambient_color*(1-brightness))+(sun_color*brightness);
   color.a = 1.0;
   color = color*temp_c;
   color = clamp(color, 0.0, 1.0);
+  #endif // TONEMAPPING
+  #ifdef TONEMAPPING
+  color = ambient_color + sun_color * brightness;
+  color.a = 1.0;
+  color = color * temp_c;
+  #endif
 
   // fog calculation
   float dist = gl_FragCoord.z / gl_FragCoord.w;
   float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
-  color = mix(color, FogColor, fog_factor);
+  color = mix(color, vec4(FogColor.rgb * FogStrength, 1.0), fog_factor);
+  // object fade in alpha calculation
+  float alpha_factor = 1.0 - clamp((dist - ObjectFadeStart) / (ObjectFadeEnd - ObjectFadeStart), 0.0, 1.0);
+  alpha_factor += 1.0 - DistanceFade;
+  alpha_factor = clamp(alpha_factor, 0.0, 1.0);
+  color.a *=  alpha_factor;
 
   // depth bias
   gl_FragDepth = gl_FragCoord.z + DepthBias;
@@ -442,10 +466,12 @@ uniform vec4 SunColor;
 uniform float AmbientStrength;
 uniform vec4 AmbientColor;
 uniform vec4 FogColor;
+uniform float FogStrength;
 uniform float FogStart;
 uniform float FogEnd;
 uniform float FogExponent;
-uniform float ShadowDepth;
+uniform float ShadowFadeStart;
+uniform float ShadowFadeEnd;
 
 uniform sampler2DArray myTextureSampler;
 uniform sampler2D ShadowMap;
@@ -521,6 +547,11 @@ float CalculateGridIntensity(float x, float y, float d)
     return min(1, 2000*(dx+dy));
 }
 
+float lgt(vec2 v)
+{
+  return sqrt(v.x*v.x + v.y*v.y);
+}
+
 void main(){
   float gridintensity = 0;
   #ifdef DISPLAY_GRID
@@ -545,60 +576,66 @@ void main(){
   #endif // VISUALIZE_HEIGHT
   
   #ifndef VISUALIZE_HEIGHT
+  float dist = gl_FragCoord.z / gl_FragCoord.w;
   // calculate brightness resulting from light coming from sun
   mat3 normalMatrix = transpose(inverse(mat3(M)));
   vec3 normal = normalize(normalMatrix * fragmentNormal);
   vec3 fragVec = fragmentPosition;
-  //float brightness = (dot(normal, SunDirection)*1.4)-0.4; // both vectors are normalized
   float brightness = dot(normal, SunDirection); // both vectors are normalized
     // calculate shadow
   float calc_shadow = CalculateShadow(fragmentPositionLightSpace, brightness);
-  //if(calc_shadow &lt; 1.0)
-  //{
-  //    color = vec4(1.0f, 1.0f, 0.0f, 1.0f);
-  //    return;
-  //}
+  float shadow_fade_factor = pow(clamp((dist - ShadowFadeStart)/(ShadowFadeEnd-ShadowFadeStart), 0.0, 1.0), 2.0);
+  calc_shadow += shadow_fade_factor;
   brightness = min(brightness, calc_shadow);
-  brightness = clamp(brightness, 0, 1);
+  brightness = clamp(brightness, 0, 1);  
   brightness = pow(brightness, 0.6);
 
   // calculate diffuse color based on heightmap textures
   vec2 map_uv = floor(UV*4);
+  vec2 fixed_uv = vec2(UV.x, -UV.y - 0.25);
   map_uv.y = GridSize-map_uv.y-1;
   int t1 = int(texture(TileMap, (map_uv+vec2(0, -1))/GridSize).r*255);
   int t2 = int(texture(TileMap, (map_uv+vec2(1, -1))/GridSize).r*255);
   int t3 = int(texture(TileMap, (map_uv+vec2(0, 0))/GridSize).r*255);
   int t4 = int(texture(TileMap, (map_uv+vec2(1, 0))/GridSize).r*255);
-  vec4 tex1_1 = texture(myTextureSampler, vec3(UV, tex_id[t1].x))*(tex_w[t1].x/255.0f);
-  vec4 tex1_2 = texture(myTextureSampler, vec3(UV, tex_id[t1].y))*(tex_w[t1].y/255.0f);
-  vec4 tex1_3 = texture(myTextureSampler, vec3(UV, tex_id[t1].z))*(tex_w[t1].z/255.0f);
-  vec4 tex2_1 = texture(myTextureSampler, vec3(UV, tex_id[t2].x))*(tex_w[t2].x/255.0f);
-  vec4 tex2_2 = texture(myTextureSampler, vec3(UV, tex_id[t2].y))*(tex_w[t2].y/255.0f);
-  vec4 tex2_3 = texture(myTextureSampler, vec3(UV, tex_id[t2].z))*(tex_w[t2].z/255.0f);
-  vec4 tex3_1 = texture(myTextureSampler, vec3(UV, tex_id[t3].x))*(tex_w[t3].x/255.0f);
-  vec4 tex3_2 = texture(myTextureSampler, vec3(UV, tex_id[t3].y))*(tex_w[t3].y/255.0f);
-  vec4 tex3_3 = texture(myTextureSampler, vec3(UV, tex_id[t3].z))*(tex_w[t3].z/255.0f);
-  vec4 tex4_1 = texture(myTextureSampler, vec3(UV, tex_id[t4].x))*(tex_w[t4].x/255.0f);
-  vec4 tex4_2 = texture(myTextureSampler, vec3(UV, tex_id[t4].y))*(tex_w[t4].y/255.0f);
-  vec4 tex4_3 = texture(myTextureSampler, vec3(UV, tex_id[t4].z))*(tex_w[t4].z/255.0f);
+  vec4 tex1_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].x))*(tex_w[t1].x/255.0f);
+  vec4 tex1_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].y))*(tex_w[t1].y/255.0f);
+  vec4 tex1_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].z))*(tex_w[t1].z/255.0f);
+  vec4 tex2_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].x))*(tex_w[t2].x/255.0f);
+  vec4 tex2_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].y))*(tex_w[t2].y/255.0f);
+  vec4 tex2_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].z))*(tex_w[t2].z/255.0f);
+  vec4 tex3_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].x))*(tex_w[t3].x/255.0f);
+  vec4 tex3_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].y))*(tex_w[t3].y/255.0f);
+  vec4 tex3_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].z))*(tex_w[t3].z/255.0f);
+  vec4 tex4_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].x))*(tex_w[t4].x/255.0f);
+  vec4 tex4_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].y))*(tex_w[t4].y/255.0f);
+  vec4 tex4_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].z))*(tex_w[t4].z/255.0f);
   tex1_1 += tex1_2+tex1_3;
   tex2_1 += tex2_2+tex2_3;
   tex3_1 += tex3_2+tex3_3;
   tex4_1 += tex4_2+tex4_3;
-  float xt = (UV*4).x-map_uv.x;
-  float yt = (UV*4).y-(GridSize-map_uv.y-1);
-  vec4 col1 = tex2_1*xt+tex1_1*(1-xt);
-  vec4 col2 = tex4_1*xt+tex3_1*(1-xt);
-  vec4 temp_c = col1*yt+col2*(1-yt);
+  vec2 vt = vec2((UV*4).x-map_uv.x, (UV*4).y-(GridSize-map_uv.y-1));
+  // linear interpolation
+  vec4 col1 = tex2_1*vt.x+tex1_1*(1-vt.x);
+  vec4 col2 = tex4_1*vt.x+tex3_1*(1-vt.x);
+  vec4 temp_c = col1*vt.y+col2*(1-vt.y);
+
   temp_c.a = 1.0;
 
-  // calculate output color (lightning)
+  // calculate output color
   vec4 ambient_color = AmbientColor * AmbientStrength;
   vec4 sun_color = SunColor * SunStrength;
+  #ifndef TONEMAPPING
   color = (ambient_color*(1-brightness))+(sun_color*brightness);
+  color.a = 1.0;
   color = color*temp_c;
   color = clamp(color, 0.0, 1.0);
+  #endif // TONEMAPPING
+  #ifdef TONEMAPPING
+  color = ambient_color + sun_color * brightness;
   color.a = 1.0;
+  color = color * temp_c;
+  #endif
 
   // overlay
   vec2 fixed_UV = (UV*4);
@@ -611,9 +648,8 @@ void main(){
   color = mix(color, GridColor, gridintensity);
 
   // fog calculation
-  float dist = gl_FragCoord.z / gl_FragCoord.w;
   float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
-  color = mix(color, FogColor, fog_factor);
+  color = mix(color, vec4(FogColor.rgb * FogStrength, 1.0), fog_factor);
   #endif // VISUALIZE_HEIGHT
 }</value>
   </data>
@@ -901,6 +937,61 @@ void main()
         }
     }
     FragColor = vec4(result, 1.0, 1.0);
+}</value>
+  </data>
+  <data name="fshader_tonemap" xml:space="preserve">
+    <value>out vec4 FragColor;
+  
+in vec2 TexCoords;
+
+uniform sampler2D screenTexture;
+uniform float exposure;
+
+void main()
+{             
+    vec3 hdrColor = texture(screenTexture, TexCoords).rgb;
+  
+    // exposure tone mapping
+    vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
+
+    FragColor = vec4(mapped, 1.0);
+}</value>
+  </data>
+  <data name="fshader_sky" xml:space="preserve">
+    <value>out vec4 FragColor;
+  
+in vec2 TexCoords;
+
+uniform mat4 V;
+uniform float AspectRatio;
+uniform float AmbientStrength;
+uniform vec4 AmbientColor;
+uniform vec4 FogColor;
+uniform float FogStrength;
+
+vec3 CalcLookat(mat4 view, vec2 uv)
+{
+  return vec3(-view[3]-view[2]-(view[0]*AspectRatio*(uv.x-0.5)) + (view[1]*(uv.y-0.5)));
+}
+
+void main()
+{             
+    vec3 raydir = CalcLookat(V, TexCoords);
+    float horizon_closeness = clamp(1.0 - dot(normalize(raydir), vec3(0.0, 1.0, 0.0)), 0.0, 1.0);
+    vec3 skycol = vec3(mix(AmbientColor, FogColor*FogStrength, pow(horizon_closeness, 8.0)));
+    FragColor = vec4(skycol, 1.0);
+}</value>
+  </data>
+  <data name="vshader_sky" xml:space="preserve">
+    <value>layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec2 aTexCoords;
+
+out vec2 TexCoords;
+
+void main()
+{
+    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
+    TexCoords = aTexCoords;
 }</value>
   </data>
 </root>

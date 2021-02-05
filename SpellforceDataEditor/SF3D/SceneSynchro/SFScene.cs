@@ -69,34 +69,81 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             camera = new SceneNodeCamera("Camera");
 
             // setup lighting
-            atmosphere.sun_light.Strength = 1.6f;
-            atmosphere.ambient_light.Strength = 1.0f;
             if (atmosphere.altitude_ambient_color == null)
             {
-                atmosphere.altitude_ambient_color = new InterpolatedColor();
+                atmosphere.altitude_ambient_color = new InterpolatedColor();   // ambient color is sky color
+                atmosphere.altitude_ambient_strength = new InterpolatedFloat();
                 atmosphere.altitude_sun_color = new InterpolatedColor();
+                atmosphere.altitude_sun_strength = new InterpolatedFloat();
                 atmosphere.altitude_fog_color = new InterpolatedColor();
+                atmosphere.altitude_fog_strength = new InterpolatedFloat();
 
-                atmosphere.altitude_sun_color.Add(new Vector4(0.18f, 0.25f, 0.4f, 1), 0);
-                atmosphere.altitude_sun_color.Add(new Vector4(0.18f, 0.25f, 0.4f, 1), 70);
-                atmosphere.altitude_sun_color.Add(new Vector4(0.17f, 0.10f, 0.2f, 1), 80);
-                atmosphere.altitude_sun_color.Add(new Vector4(0.15f, 0, 0.0f, 1), 89);
-                atmosphere.altitude_sun_color.Add(new Vector4(0.8f, 0, 0, 1), 90);
-                atmosphere.altitude_sun_color.Add(new Vector4(0.9f, 0.5f, 0.2f, 1), 100);
-                atmosphere.altitude_sun_color.Add(new Vector4(1, 1, 1, 1), 110);
-                atmosphere.altitude_sun_color.Add(new Vector4(1, 1, 1, 1), 180);
-                atmosphere.altitude_ambient_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 0);
-                atmosphere.altitude_ambient_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 80);
-                atmosphere.altitude_ambient_color.Add(new Vector4(0.3f, 0.2f, 0.5f, 1.0f), 90);
-                atmosphere.altitude_ambient_color.Add(new Vector4(0.45f, 0.40f, 0.72f, 1.0f), 100);
-                atmosphere.altitude_ambient_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 110);
-                atmosphere.altitude_ambient_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 180);
-                atmosphere.altitude_fog_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 0);
-                atmosphere.altitude_fog_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 80);
-                atmosphere.altitude_fog_color.Add(new Vector4(0.3f, 0.2f, 0.5f, 1.0f), 90);
-                atmosphere.altitude_fog_color.Add(new Vector4(0.45f, 0.40f, 0.72f, 1.0f), 100);
-                atmosphere.altitude_fog_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 110);
-                atmosphere.altitude_fog_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 180);
+                if (Settings.ToneMapping)
+                {
+                    atmosphere.altitude_sun_color.Add(new Vector4(0.5f, 0.5f, 1.0f, 1.0f), 0);
+                    atmosphere.altitude_sun_color.Add(new Vector4(0.5f, 0.5f, 1.0f, 1.0f), 80);
+                    atmosphere.altitude_sun_color.Add(new Vector4(1.0f, 0.0f, 0.0f, 1.0f), 89);
+                    atmosphere.altitude_sun_color.Add(new Vector4(1.0f, 0.0f, 0.0f, 1.0f), 90);
+                    atmosphere.altitude_sun_color.Add(new Vector4(1.0f, 0.8f, 0.5f, 1.0f), 100);
+                    atmosphere.altitude_sun_color.Add(new Vector4(1.0f, 1.0f, 1.0f, 1.0f), 110);
+                    atmosphere.altitude_sun_color.Add(new Vector4(1.0f, 1.0f, 1.0f, 1.0f), 180);
+                    atmosphere.altitude_sun_strength.Add(0.8f, 0);
+                    atmosphere.altitude_sun_strength.Add(0.8f, 80);
+                    atmosphere.altitude_sun_strength.Add(0.0f, 89);
+                    atmosphere.altitude_sun_strength.Add(1.6f, 90);
+                    atmosphere.altitude_sun_strength.Add(2.0f, 110);
+                    atmosphere.altitude_sun_strength.Add(2.0f, 180);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.05f, 0.05f, 0.3f, 1.0f), 0);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.05f, 0.05f, 0.3f, 1.0f), 80);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(1.5f, 0.6f, 0.5f, 1.0f), 90);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(1.0f, 0.6f, 1.0f, 1.0f), 100);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.6f, 0.6f, 1.5f, 1.0f), 110);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.6f, 0.6f, 1.5f, 1.0f), 180);
+                    atmosphere.altitude_ambient_strength.Add(0.7f, 0);
+                    atmosphere.altitude_ambient_strength.Add(0.7f, 80);
+                    atmosphere.altitude_ambient_strength.Add(0.5f, 90);
+                    atmosphere.altitude_ambient_strength.Add(0.6f, 100);
+                    atmosphere.altitude_ambient_strength.Add(0.7f, 110);
+                    atmosphere.altitude_ambient_strength.Add(0.7f, 180);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.3f, 0.2f, 0.9f, 1.0f), 0);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.3f, 0.2f, 0.9f, 1.0f), 80);
+                    atmosphere.altitude_fog_color.Add(new Vector4(1.0f, 0.3f, 0.4f, 1.0f), 90);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.9f, 0.5f, 0.7f, 1.0f), 100);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.7f, 0.7f, 0.9f, 1.0f), 110);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.7f, 0.7f, 0.9f, 1.0f), 180);
+                    atmosphere.altitude_fog_strength.Add(0.6f, 0);
+                    atmosphere.altitude_fog_strength.Add(0.6f, 80);
+                    atmosphere.altitude_fog_strength.Add(1.6f, 90);
+                    atmosphere.altitude_fog_strength.Add(1.6f, 100);
+                    atmosphere.altitude_fog_strength.Add(2.0f, 110);
+                    atmosphere.altitude_fog_strength.Add(2.0f, 180);
+                }
+                else
+                {
+                    atmosphere.altitude_sun_color.Add(new Vector4(0.18f, 0.25f, 0.4f, 1), 0);
+                    atmosphere.altitude_sun_color.Add(new Vector4(0.18f, 0.25f, 0.4f, 1), 70);
+                    atmosphere.altitude_sun_color.Add(new Vector4(0.17f, 0.10f, 0.2f, 1), 80);
+                    atmosphere.altitude_sun_color.Add(new Vector4(0.15f, 0, 0.0f, 1), 89);
+                    atmosphere.altitude_sun_color.Add(new Vector4(0.8f, 0, 0, 1), 90);
+                    atmosphere.altitude_sun_color.Add(new Vector4(0.9f, 0.5f, 0.2f, 1), 100);
+                    atmosphere.altitude_sun_color.Add(new Vector4(1, 1, 1, 1), 110);
+                    atmosphere.altitude_sun_color.Add(new Vector4(1, 1, 1, 1), 180);
+                    atmosphere.altitude_sun_strength.Add(1.6f, 0);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 0);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 80);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.3f, 0.2f, 0.5f, 1.0f), 90);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.45f, 0.40f, 0.72f, 1.0f), 100);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 110);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 180);
+                    atmosphere.altitude_ambient_strength.Add(1.0f, 0);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 0);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 80);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.3f, 0.2f, 0.5f, 1.0f), 90);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.45f, 0.40f, 0.72f, 1.0f), 100);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 110);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 180); 
+                    atmosphere.altitude_fog_strength.Add(1.0f, 0);
+                }
             }
 
             delta_timer.Start();

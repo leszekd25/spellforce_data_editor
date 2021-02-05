@@ -269,8 +269,16 @@ namespace SpellforceDataEditor.SFMap
             }
             material.texture = tex;
             material.casts_shadow = false;
-            material.transparent_pass = true;
-            material.apply_shadow = false;
+            if (lake.type == 0)
+            {
+                material.transparent_pass = true;
+                material.apply_shadow = false;
+            }
+            else
+            {
+                material.transparent_pass = false;
+                material.apply_shading = true;
+            }
             
             submodel.CreateRaw(vertices, uvs, colors, normals, indices, material);
 

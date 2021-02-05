@@ -109,11 +109,11 @@ namespace SpellforceDataEditor.Properties {
         ///uniform sampler2D DiffuseTex;
         ///uniform sampler2D ShadowMap;
         ///uniform vec4 FogColor;
+        ///uniform float FogStrength;
         ///uniform float FogStart;
         ///uniform float FogEnd;
         ///uniform float FogExponent;
-        ///uniform float DepthBias;
-        ///uniform [rest of string was truncated]&quot;;.
+        ///unifo [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader {
             get {
@@ -173,12 +173,12 @@ namespace SpellforceDataEditor.Properties {
         ///uniform float AmbientStrength;
         ///uniform vec4 AmbientColor;
         ///uniform vec4 FogColor;
+        ///uniform float FogStrength;
         ///uniform float FogStart;
         ///uniform float FogEnd;
         ///uniform float FogExponent;
-        ///uniform float ShadowDepth;
-        ///
-        ///uniform sampler2DArray myTexture [rest of string was truncated]&quot;;.
+        ///uniform float ShadowFadeStart;
+        ///un [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_hmap {
             get {
@@ -270,17 +270,69 @@ namespace SpellforceDataEditor.Properties {
         ///uniform sampler2D DiffuseTex;
         ///uniform sampler2D ShadowMap;
         ///uniform vec4 FogColor;
+        ///uniform float FogStrength;
         ///uniform float FogStart;
         ///uniform float FogEnd;
         ///uniform float FogExponent;
         ///uniform float ShadowDepth;
         ///
-        ///vec2 poissonDisk[4] = vec2[](
-        ///  vec2( -0 [rest of string was truncated]&quot;;.
+        ///vec2 poissonD [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_skel {
             get {
                 return ResourceManager.GetString("fshader_skel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to out vec4 FragColor;
+        ///  
+        ///in vec2 TexCoords;
+        ///
+        ///uniform mat4 V;
+        ///uniform float AspectRatio;
+        ///uniform float AmbientStrength;
+        ///uniform vec4 AmbientColor;
+        ///uniform vec4 FogColor;
+        ///uniform float FogStrength;
+        ///
+        ///vec3 CalcLookat(mat4 view, vec2 uv)
+        ///{
+        ///  return vec3(-view[3]-view[2]-(view[0]*AspectRatio*(uv.x-0.5)) + (view[1]*(uv.y-0.5)));
+        ///}
+        ///
+        ///void main()
+        ///{             
+        ///    vec3 raydir = CalcLookat(V, TexCoords);
+        ///    float horizon_closeness = clamp(1.0 - dot(normalize(raydir), vec3(0.0, 1.0, 0.0)), 0.0, 1.0); [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string fshader_sky {
+            get {
+                return ResourceManager.GetString("fshader_sky", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to out vec4 FragColor;
+        ///  
+        ///in vec2 TexCoords;
+        ///
+        ///uniform sampler2D screenTexture;
+        ///uniform float exposure;
+        ///
+        ///void main()
+        ///{             
+        ///    vec3 hdrColor = texture(screenTexture, TexCoords).rgb;
+        ///  
+        ///    // exposure tone mapping
+        ///    vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
+        ///
+        ///    FragColor = vec4(mapped, 1.0);
+        ///}.
+        /// </summary>
+        internal static string fshader_tonemap {
+            get {
+                return ResourceManager.GetString("fshader_tonemap", resourceCulture);
             }
         }
         
@@ -573,6 +625,24 @@ namespace SpellforceDataEditor.Properties {
         internal static string vshader_skel {
             get {
                 return ResourceManager.GetString("vshader_skel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to layout (location = 0) in vec2 aPos;
+        ///layout (location = 1) in vec2 aTexCoords;
+        ///
+        ///out vec2 TexCoords;
+        ///
+        ///void main()
+        ///{
+        ///    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
+        ///    TexCoords = aTexCoords;
+        ///}.
+        /// </summary>
+        internal static string vshader_sky {
+            get {
+                return ResourceManager.GetString("vshader_sky", resourceCulture);
             }
         }
         

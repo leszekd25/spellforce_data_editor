@@ -659,6 +659,8 @@ namespace SpellforceDataEditor.special_forms
             CreateRenderWindow();
             // set light direction (move somewhere else in the future, before this function is called)
             SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
+            // set up object fadein fadeout
+            SFRenderEngine.SetObjectFadeRange(170, 220);
             InspectorHide();
 
             this.WindowState = FormWindowState.Maximized;
@@ -1174,7 +1176,7 @@ namespace SpellforceDataEditor.special_forms
                     Vector3 r_end = frustrum_vertices[4]
                         + wx * (frustrum_vertices[5] - frustrum_vertices[4])
                         + wy * (frustrum_vertices[6] - frustrum_vertices[4]);
-                    SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start) { Length = 200 };
+                    SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start) { Length = 400 };
 
                     Vector3 result = new Vector3(0, 0, 0);
                     bool ray_success = ray.Intersect(map.heightmap, out result);

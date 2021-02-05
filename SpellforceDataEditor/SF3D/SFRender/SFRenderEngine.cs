@@ -29,10 +29,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
         public static UIManager ui { get; } = new UIManager();
 
         public static float min_render_distance = 0.1f;
-        public static float max_render_distance = 400f;
+        public static float max_render_distance = 1000f;
         static float CurrentDepthBias = 0;
         static RenderMode CurrentRenderMode = RenderMode.SRCALPHA_INVSRCALPHA;
         static bool CurrentApplyShadow = true;
+        static bool CurrentDistanceFade = true;
+        static bool CurrentApplyShading = true;
+        static float CurrentFadeStart = 150.0f;
+        static float CurrentFadeEnd = 200.0f;
 
         public static SFTexture opaque_tex { get; private set; } = null;
 
@@ -42,17 +46,19 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static SFShader shader_shadowmap = new SFShader();
         static SFShader shader_shadowmap_animated = new SFShader();
         static SFShader shader_shadowmap_heightmap = new SFShader();
+        static SFShader shader_sky = new SFShader();
         static SFShader shader_ui = new SFShader();
         static SFShader active_shader = null;
         static RenderPass current_pass = RenderPass.NONE;
         
 
         static SFShader shader_framebuffer_simple = new SFShader();
+        static SFShader shader_framebuffer_tonemapped = new SFShader();
         static SFShader shader_shadowmap_blur = new SFShader();
         static FrameBuffer shadowmap_depth = null;
         static FrameBuffer shadowmap_depth_helper = null;
         static FrameBuffer screenspace_framebuffer = null;
-        //static FrameBuffer screenspace_intermediate = null;
+        static FrameBuffer screenspace_intermediate = null;
         public static bool render_shadowmap_depth = false;
 
         // instancing helper
@@ -297,7 +303,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.Enable(EnableCap.DebugOutput);
                 GL.Enable(EnableCap.DebugOutputSynchronous);
 
-
+                // get max possible anisotropy
                 GetPName MAX_TEXTURE_MAX_ANISOTROPY = (GetPName)0x84FF;
                 Settings.MaxAnisotropy = (int)GL.GetFloat(MAX_TEXTURE_MAX_ANISOTROPY);
             }
@@ -325,11 +331,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
             SFModelSkinChunk.Cache.Init(2 << 6, 2 << 6);
 
             scene.atmosphere.FogStart = 0f;
-            scene.atmosphere.FogEnd = max_render_distance;
+            scene.atmosphere.FogEnd = 400.0f;
 
             shader_shadowmap.CompileShader(Properties.Resources.vshader_shadowmap, Properties.Resources.fshader_shadowmap);
             shader_shadowmap.AddParameter("LSM");
-            // shader_shadowmap.AddParameter("M");
             shader_shadowmap.AddParameter("DiffuseTexture");
 
             shader_shadowmap_animated.CompileShader(Properties.Resources.vshader_shadowmap_animated, Properties.Resources.fshader_shadowmap);
@@ -347,6 +352,17 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_framebuffer_simple.AddParameter("renderShadowMap");
             shader_framebuffer_simple.AddParameter("ZNear");
             shader_framebuffer_simple.AddParameter("ZFar");
+
+            shader_framebuffer_tonemapped.CompileShader(Properties.Resources.vshader_framebuffer, Properties.Resources.fshader_tonemap);
+            shader_framebuffer_tonemapped.AddParameter("exposure");
+
+            shader_sky.CompileShader(Properties.Resources.vshader_sky, Properties.Resources.fshader_sky);
+            shader_sky.AddParameter("V");
+            shader_sky.AddParameter("AspectRatio");
+            shader_sky.AddParameter("AmbientStrength");
+            shader_sky.AddParameter("AmbientColor");
+            shader_sky.AddParameter("FogStrength");
+            shader_sky.AddParameter("FogColor");
 
             shader_shadowmap_blur.CompileShader(Properties.Resources.vshader_framebuffer, Properties.Resources.fshader_shadowmap_blur);
             shader_shadowmap_blur.AddParameter("image");
@@ -374,8 +390,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
             if (screenspace_framebuffer != null)
             {
                 shadowmap_depth.Dispose();
+                shadowmap_depth_helper.Dispose();
                 screenspace_framebuffer.Dispose();
-                //screenspace_intermediate.Dispose();
+                screenspace_intermediate.Dispose();
             }
 
             shadowmap_depth = new FrameBuffer(
@@ -383,8 +400,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 Settings.ShadowMapSize,
                 new FrameBufferColorAttachmentInfo[]
                 {
-                    new FrameBufferColorAttachmentInfo() { format = PixelFormat.Rgba, internal_format = PixelInternalFormat.Rg32f, pixeltype = PixelType.Float }
+                    new FrameBufferColorAttachmentInfo() 
+                    {
+                        format = PixelFormat.Rgba, 
+                        internal_format = PixelInternalFormat.Rg32f,
+                        pixeltype = PixelType.Float
+                    }
                 },
+                0,
                 true);
             GL.BindTexture(TextureTarget.Texture2D, shadowmap_depth.texture_colors[0]);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
@@ -399,8 +422,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 Settings.ShadowMapSize,
                 new FrameBufferColorAttachmentInfo[]
                 {
-                    new FrameBufferColorAttachmentInfo() { format = PixelFormat.Rgba, internal_format = PixelInternalFormat.Rg32f, pixeltype = PixelType.Float }
+                    new FrameBufferColorAttachmentInfo() 
+                    {
+                        format = PixelFormat.Rgba,
+                        internal_format = PixelInternalFormat.Rg32f,
+                        pixeltype = PixelType.Float 
+                    }
                 },
+                0,
                 true);
             GL.BindTexture(TextureTarget.Texture2D, shadowmap_depth_helper.texture_colors[0]);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
@@ -414,11 +443,32 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 (int)view_size.Y,
                 new FrameBufferColorAttachmentInfo[]
                 {
-                    new FrameBufferColorAttachmentInfo(){ format = PixelFormat.Rgb, internal_format = PixelInternalFormat.Rgb, pixeltype = PixelType.UnsignedByte }
+                    new FrameBufferColorAttachmentInfo()
+                    {
+                        format = PixelFormat.Rgb,
+                        internal_format = (Settings.ToneMapping ? PixelInternalFormat.Rgba16f : PixelInternalFormat.Rgb),
+                        pixeltype = (Settings.ToneMapping ? PixelType.Float : PixelType.UnsignedByte)
+                    }
                 },
+                Settings.AntiAliasingSamples,
                 true);
 
-            if(opaque_tex != null)
+            screenspace_intermediate = new FrameBuffer(
+                (int)view_size.X,
+                (int)view_size.Y,
+                new FrameBufferColorAttachmentInfo[]
+                {
+                    new FrameBufferColorAttachmentInfo()
+                    {
+                        format = PixelFormat.Rgb,
+                        internal_format = (Settings.ToneMapping ? PixelInternalFormat.Rgba16f : PixelInternalFormat.Rgb),
+                        pixeltype = (Settings.ToneMapping ? PixelType.Float : PixelType.UnsignedByte)
+                    }
+                },
+                0,
+                true);
+
+            if (opaque_tex != null)
                 opaque_tex.Dispose();
             
             opaque_tex = new SFTexture();
@@ -442,9 +492,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
         {
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.RecompileMainShaders() called");
             shader_simple.SetDefine("APPLY_SHADING", (Settings.EnableShadows));
+            shader_simple.SetDefine("TONEMAPPING", (Settings.ToneMapping));
             shader_animated.SetDefine("APPLY_SHADING", Settings.EnableShadows);
+            shader_animated.SetDefine("TONEMAPPING", (Settings.ToneMapping));
             shader_heightmap.SetDefine("DISPLAY_GRID", Settings.DisplayGrid);
             shader_heightmap.SetDefine("VISUALIZE_HEIGHT", Settings.VisualizeHeight);
+            shader_heightmap.SetDefine("TONEMAPPING", (Settings.ToneMapping));
 
             shader_simple.CompileShader(Properties.Resources.vshader, Properties.Resources.fshader);
             shader_simple.AddParameter("VP");
@@ -458,13 +511,17 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_simple.AddParameter("AmbientStrength");
             shader_simple.AddParameter("AmbientColor");
             shader_simple.AddParameter("FogColor");
+            shader_simple.AddParameter("FogStrength");
             shader_simple.AddParameter("FogStart");
             shader_simple.AddParameter("FogEnd");
             shader_simple.AddParameter("FogExponent");
             shader_simple.AddParameter("DepthBias");
+            shader_simple.AddParameter("ObjectFadeStart");
+            shader_simple.AddParameter("ObjectFadeEnd");
             shader_simple.AddParameter("ShadowDepth");
             shader_simple.AddParameter("ApplyShadow");
             shader_simple.AddParameter("ApplyShading");
+            shader_simple.AddParameter("DistanceFade");
 
             shader_animated.CompileShader(Properties.Resources.vshader_skel, Properties.Resources.fshader_skel);
             shader_animated.AddParameter("P");
@@ -480,6 +537,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_animated.AddParameter("AmbientStrength");
             shader_animated.AddParameter("AmbientColor");
             shader_animated.AddParameter("FogColor");
+            shader_animated.AddParameter("FogStrength");
             shader_animated.AddParameter("FogStart");
             shader_animated.AddParameter("FogEnd");
             shader_animated.AddParameter("FogExponent");
@@ -500,10 +558,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_heightmap.AddParameter("AmbientStrength");
             shader_heightmap.AddParameter("AmbientColor");
             shader_heightmap.AddParameter("FogColor");
+            shader_heightmap.AddParameter("FogStrength");
             shader_heightmap.AddParameter("FogStart");
             shader_heightmap.AddParameter("FogEnd");
             shader_heightmap.AddParameter("FogExponent");
-            shader_heightmap.AddParameter("ShadowDepth");
+            shader_heightmap.AddParameter("ShadowFadeStart");
+            shader_heightmap.AddParameter("ShadowFadeEnd");
             // tiledata ubo binding
             int uniform_tiledata = GL.GetUniformBlockIndex(shader_heightmap.ProgramID, "Tiles");
             GL.UniformBlockBinding(shader_heightmap.ProgramID, uniform_tiledata, 0);
@@ -512,6 +572,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             ApplyLight();
             ApplyTexturingUnits();
+            ApplyFade();
         }
 
         // resizes render view to given size
@@ -526,7 +587,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             if (screenspace_framebuffer != null)
             {
                 screenspace_framebuffer.Resize((int)view_size.X, (int)view_size.Y);
-                //screenspace_intermediate.Resize((int)view_size.X, (int)view_size.Y);
+                screenspace_intermediate.Resize((int)view_size.X, (int)view_size.Y);
             }
         }
 
@@ -540,6 +601,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Uniform1(shader_simple["AmbientStrength"], scene.atmosphere.ambient_light.Strength);
             GL.Uniform4(shader_simple["AmbientColor"], scene.atmosphere.ambient_light.Color);
             GL.Uniform4(shader_simple["FogColor"], scene.atmosphere.FogColor);
+            GL.Uniform1(shader_simple["FogStrength"], scene.atmosphere.FogStrength);
             GL.Uniform1(shader_simple["FogStart"], scene.atmosphere.FogStart);
             GL.Uniform1(shader_simple["FogEnd"], scene.atmosphere.FogEnd);
             GL.Uniform1(shader_simple["FogExponent"], scene.atmosphere.FogExponent);
@@ -550,7 +612,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Uniform4(shader_animated["SunColor"], scene.atmosphere.sun_light.Color);
             GL.Uniform1(shader_animated["AmbientStrength"], scene.atmosphere.ambient_light.Strength);
             GL.Uniform4(shader_animated["AmbientColor"], scene.atmosphere.ambient_light.Color);
-            GL.Uniform4(shader_animated["FogColor"], scene.atmosphere.FogColor);
+            GL.Uniform4(shader_animated["FogColor"], scene.atmosphere.FogColor); 
+            GL.Uniform1(shader_animated["FogStrength"], scene.atmosphere.FogStrength);
             GL.Uniform1(shader_animated["FogStart"], scene.atmosphere.FogStart);
             GL.Uniform1(shader_animated["FogEnd"], scene.atmosphere.FogEnd);
             GL.Uniform1(shader_animated["FogExponent"], scene.atmosphere.FogExponent);
@@ -562,9 +625,19 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Uniform1(shader_heightmap["AmbientStrength"], scene.atmosphere.ambient_light.Strength);
             GL.Uniform4(shader_heightmap["AmbientColor"], scene.atmosphere.ambient_light.Color);
             GL.Uniform4(shader_heightmap["FogColor"], scene.atmosphere.FogColor);
+            GL.Uniform1(shader_heightmap["FogStrength"], scene.atmosphere.FogStrength);
             GL.Uniform1(shader_heightmap["FogStart"], scene.atmosphere.FogStart);
             GL.Uniform1(shader_heightmap["FogEnd"], scene.atmosphere.FogEnd);
             GL.Uniform1(shader_heightmap["FogExponent"], scene.atmosphere.FogExponent);
+
+            if (Settings.ToneMapping)
+            {
+                GL.UseProgram(shader_sky.ProgramID);
+                GL.Uniform1(shader_sky["AmbientStrength"], scene.atmosphere.ambient_light.Strength);
+                GL.Uniform4(shader_sky["AmbientColor"], scene.atmosphere.ambient_light.Color);
+                GL.Uniform4(shader_sky["FogColor"], scene.atmosphere.FogColor);
+                GL.Uniform1(shader_sky["FogStrength"], scene.atmosphere.FogStrength);
+            }
 
             GL.UseProgram(0);
         }
@@ -601,6 +674,25 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Uniform1(shader_shadowmap_blur["image"], 0);
             
             GL.UseProgram(0);
+        }
+        public static void ApplyFade()
+        {
+            GL.UseProgram(shader_simple.ProgramID);
+            GL.Uniform1(shader_simple["ObjectFadeStart"], CurrentFadeStart);
+            GL.Uniform1(shader_simple["ObjectFadeEnd"], CurrentFadeEnd);
+            GL.UseProgram(0);
+
+            GL.UseProgram(shader_heightmap.ProgramID);
+            GL.Uniform1(shader_heightmap["ShadowFadeStart"], CurrentFadeStart);
+            GL.Uniform1(shader_heightmap["ShadowFadeEnd"], CurrentFadeEnd);
+            GL.UseProgram(0);
+        }
+
+        public static void SetObjectFadeRange(float start, float end)
+        {
+            CurrentFadeEnd = start;
+            CurrentFadeEnd = end;
+            ApplyFade();
         }
 
         private static void UseShader(SFShader shader)
@@ -639,10 +731,28 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         private static void SetApplyShadow(bool b)
         {
-            if(b != CurrentApplyShadow)
+            if (b != CurrentApplyShadow)
             {
                 CurrentApplyShadow = b;
                 GL.Uniform1(active_shader["ApplyShadow"], b ? 1 : 0);
+            }
+        }
+
+        private static void SetApplyShading(bool b)
+        {
+            if (b != CurrentApplyShading)
+            {
+                CurrentApplyShading = b;
+                GL.Uniform1(active_shader["ApplyShading"], b ? 1 : 0);
+            }
+        }
+
+        private static void SetDistanceFade(bool b)
+        {
+            if (b != CurrentDistanceFade)
+            {
+                CurrentDistanceFade = b;
+                GL.Uniform1(active_shader["DistanceFade"], b ? 1.0f : 0.0f);
             }
         }
 
@@ -688,15 +798,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
             CurrentRenderMode = rm;
         }
 
-        // this could be optimized to not check all chunks every time...
         // turns heightmap nodes visible/invisible depending on if theyre in camera frustum
         public static void UpdateVisibleChunks()
         {
             // 1. find collection of visible chunks
             List<SceneNodeMapChunk> vis_chunks = new List<SceneNodeMapChunk>();
             SFMapHeightMap heightmap = scene.map.heightmap;
-            int chunks_per_row = (heightmap.width / SFMapHeightMapGeometryPool.CHUNK_SIZE);
-            int chunks_per_column = (heightmap.height / SFMapHeightMapGeometryPool.CHUNK_SIZE);
+            int chunks_per_row = (heightmap.width / SFMapHeightMapMesh.CHUNK_SIZE);
+            int chunks_per_column = (heightmap.height / SFMapHeightMapMesh.CHUNK_SIZE);
 
             // approximation of the visible chunk area
             // this one is veeeery big overestimation
@@ -729,8 +838,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 for(int i = ix1; i <= ix2; i++)
                 {
                     SceneNodeMapChunk chunk_node = heightmap.chunk_nodes[j * chunks_per_row + i];
-                    xz.X = chunk_node.MapChunk.aabb.center.X - scene.camera.position.X;
-                    xz.Y = chunk_node.MapChunk.aabb.center.Z - scene.camera.position.Z;
+                    xz = chunk_node.MapChunk.aabb.center.Xz - scene.camera.position.Xz;
                     chunk_node.DistanceToCamera = xz.Length;
                     chunk_node.CameraHeightDifference = scene.camera.position.Y - chunk_node.MapChunk.aabb.b.Y;
                     if (chunk_node.DistanceToCamera > 224)  // magic number: zFar+aspect_ratio*sqrt2*chunk size
@@ -826,6 +934,15 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
+        static void RenderSky()
+        {
+            Matrix4 v_mat = scene.camera.ViewMatrix;
+            GL.UniformMatrix4(active_shader["V"], true, ref v_mat);
+            GL.Uniform1(active_shader["AspectRatio"], 1.0f);
+            GL.BindVertexArray(Atmosphere.sky_vao);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+        }
+
         static void RenderHeightmap()
         {
             SFMapHeightMap heightmap = scene.map.heightmap;
@@ -845,7 +962,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
                 GL.Uniform1(active_shader["GridSize"], heightmap.width);
                 GL.Uniform4(active_shader["GridColor"], Settings.GridColor);
-                GL.Uniform1(active_shader["ShadowDepth"], scene.atmosphere.sun_light.ShadowDepth);
             }
             else if (current_pass == RenderPass.SHADOWMAP)
                 GL.BindTexture(TextureTarget.Texture2D, opaque_tex.tex_id);
@@ -853,18 +969,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             Matrix4 model_mat = Matrix4.Identity;
             GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
             GL.DrawElements(PrimitiveType.TriangleStrip, 2 * (heightmap.width + 1) * heightmap.height, DrawElementsType.UnsignedInt, 0);
-
-            /*for (int i = 0; i <= heightmap.geometry_pool.last_used; i++)
-                if (heightmap.geometry_pool.active[i])
-                {
-                    GL.DrawElementsBaseVertex(PrimitiveType.TriangleStrip,
-                        SFMapHeightMapGeometryPool.INDICES_COUNT_PER_CHUNK, 
-                        DrawElementsType.UnsignedShort,
-                        new IntPtr(i * SFMapHeightMapGeometryPool.INDICES_COUNT_PER_CHUNK * 2),
-                        i * (SFMapHeightMapGeometryPool.CHUNK_SIZE + 1) * (SFMapHeightMapGeometryPool.CHUNK_SIZE + 1));
-                    //drawcalls_hmap += 1;
-                    //triangles += 2 * SFMapHeightMapGeometryPool.CHUNK_SIZE * SFMapHeightMapGeometryPool.CHUNK_SIZE;
-                }*/
 
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
         }
@@ -908,7 +1012,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                     if (current_pass == RenderPass.SCENE)
                     {
-                        GL.Uniform1(active_shader["ApplyShading"], mat.apply_shading?1:0);
+                        SetApplyShading(mat.apply_shading);
+                        SetDistanceFade(mat.distance_fade);
                         SetRenderMode(mat.texRenderMode);
                         if ((mat.matFlags & 4) == 0)
                             SetDepthBias(0);
@@ -954,7 +1059,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         continue;
 
                     //GL.Uniform1(active_shader["apply_shading"], sbm.material.matFlags);
-                    GL.Uniform1(active_shader["ApplyShading"], mat.apply_shading ? 1 : 0);
+                    SetApplyShading(mat.apply_shading);
+                    SetDistanceFade(mat.distance_fade);
                     SetRenderMode(mat.texRenderMode);
                     if ((mat.matFlags & 4) == 0)
                         SetDepthBias(0);
@@ -1134,8 +1240,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
 
 
-
-
             // render actual view
             //triangles = 0;
 
@@ -1143,10 +1247,22 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Enable(EnableCap.Blend);
             SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
             //draw everything to a texture
-            SetFramebuffer(screenspace_framebuffer);
-            GL.ClearColor(scene.atmosphere.FogColor.X, scene.atmosphere.FogColor.Y,
-                          scene.atmosphere.FogColor.Z, scene.atmosphere.FogColor.W);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+            SetFramebuffer(Settings.AntiAliasingSamples > 1 ? screenspace_framebuffer : screenspace_intermediate);
+            if (Settings.ToneMapping)
+            {
+                GL.Disable(EnableCap.DepthTest);
+                UseShader(shader_sky);
+                RenderSky();
+                GL.Clear(ClearBufferMask.DepthBufferBit);
+            }
+            else
+            {
+                GL.ClearColor(scene.atmosphere.ambient_light.Color.X,
+                    scene.atmosphere.ambient_light.Color.Y,
+                    scene.atmosphere.ambient_light.Color.Z,
+                    0.0f);
+                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            }
             GL.Enable(EnableCap.DepthTest);
 
             // only used here! setting shadow map texture to texture unit 1
@@ -1173,12 +1289,16 @@ namespace SpellforceDataEditor.SF3D.SFRender
             SetDepthBias(0);
             SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
 
-            // now draw UI
-            GL.Disable(EnableCap.DepthTest);
-            UseShader(shader_ui);
-            RenderUI();
-
             // what is below doesnt depend on whats above
+
+            // anitialiasing
+            if (Settings.AntiAliasingSamples > 1)
+            {
+                GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, screenspace_framebuffer.fbo);
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, screenspace_intermediate.fbo);
+                GL.BlitFramebuffer(0, 0, (int)render_size.X, (int)render_size.Y, 0, 0, (int)render_size.X, (int)render_size.Y, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
+            }
+
             // post-processing (currently not much happening here)
 
             current_pass = RenderPass.SCREENSPACE;
@@ -1188,14 +1308,28 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            UseShader(shader_framebuffer_simple);
-            GL.BindVertexArray(FrameBuffer.screen_vao);
+            // tonemapping
             GL.Disable(EnableCap.DepthTest);
-            GL.BindTexture(TextureTarget.Texture2D, render_shadowmap_depth ? shadowmap_depth.texture_colors[0] : screenspace_framebuffer.texture_colors[0]);
-            GL.Uniform1(active_shader["renderShadowMap"], render_shadowmap_depth ? 1 : 0);
-            GL.Uniform1(active_shader["ZNear"], scene.atmosphere.sun_light.ZNear);
-            GL.Uniform1(active_shader["ZFar"], scene.atmosphere.sun_light.ZFar);
+            GL.BindTexture(TextureTarget.Texture2D, render_shadowmap_depth ? shadowmap_depth.texture_colors[0] : screenspace_intermediate.texture_colors[0]);
+            if (Settings.ToneMapping)
+            {
+                UseShader(shader_framebuffer_tonemapped);
+                GL.Uniform1(active_shader["exposure"], 1.0f);
+            }
+            else
+            {
+                UseShader(shader_framebuffer_simple);
+                GL.Uniform1(active_shader["renderShadowMap"], render_shadowmap_depth ? 1 : 0);
+                GL.Uniform1(active_shader["ZNear"], scene.atmosphere.sun_light.ZNear);
+                GL.Uniform1(active_shader["ZFar"], scene.atmosphere.sun_light.ZFar);
+            }
+            GL.BindVertexArray(FrameBuffer.screen_vao);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+
+
+            // now draw UI
+            UseShader(shader_ui);
+            RenderUI();
 
             UseShader(null);
             GL.BindVertexArray(0);

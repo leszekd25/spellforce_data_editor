@@ -22,6 +22,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         public PixelFormat format;
         public PixelType pixeltype;
     }
+
     public class FrameBuffer
     {
         public enum RenderBufferType { NONE = 0, COLOR = 1, DEPTH = 2, STENCIL = 3, DEPTHSTENCIL = 4 }
@@ -44,8 +45,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
         public bool use_depth_component;
         public int texture_depth = Utility.NO_INDEX;
         public int rbo = Utility.NO_INDEX;
+        public int sample_count = 1;
 
-        public FrameBuffer(int w, int h, FrameBufferColorAttachmentInfo[] _attachments, bool use_depth)
+        public FrameBuffer(int w, int h, FrameBufferColorAttachmentInfo[] _attachments, int s_count, bool use_depth)
         {
             if (ref_count == 0)
             {
@@ -70,6 +72,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             use_depth_component = use_depth;
             attachments = _attachments;
+            sample_count = s_count;
 
             Resize(w, h);
         }
@@ -105,29 +108,38 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 for (int i = 0; i < attachments.Length; i++)
                 {
                     texture_colors[i] = GL.GenTexture();
-                    GL.BindTexture(TextureTarget.Texture2D, texture_colors[i]);
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, attachments[i].internal_format, width, height, 0, attachments[i].format, attachments[i].pixeltype, new IntPtr(0));
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, (FramebufferAttachment)((int)FramebufferAttachment.ColorAttachment0 + i), TextureTarget.Texture2D, texture_colors[i], 0);
+                    if (sample_count > 1)
+                    {
+                        GL.BindTexture(TextureTarget.Texture2DMultisample, texture_colors[i]);
+                        GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, attachments[i].internal_format, width, height, true);
+                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, (FramebufferAttachment)((int)FramebufferAttachment.ColorAttachment0 + i), TextureTarget.Texture2DMultisample, texture_colors[i], 0);
+                    }
+                    else
+                    {
+                        GL.BindTexture(TextureTarget.Texture2D, texture_colors[i]);
+                        GL.TexImage2D(TextureTarget.Texture2D, 0, attachments[i].internal_format, width, height, 0, attachments[i].format, attachments[i].pixeltype, new IntPtr(0));
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
+                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, (FramebufferAttachment)((int)FramebufferAttachment.ColorAttachment0 + i), TextureTarget.Texture2D, texture_colors[i], 0);
+                    }
                 }
 
             if (use_depth_component)
             {
                 texture_depth = GL.GenTexture();
-                GL.BindTexture(TextureTarget.Texture2D, texture_depth);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, new IntPtr(0));
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, texture_depth, 0);
+                if (sample_count > 1)
+                {
+                    GL.BindTexture(TextureTarget.Texture2DMultisample, texture_depth);
+                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, PixelInternalFormat.DepthComponent32, width, height, true);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2DMultisample, texture_depth, 0);
+                }
+                else
+                {
+                    GL.BindTexture(TextureTarget.Texture2D, texture_depth);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, new IntPtr(0));
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, texture_depth, 0);
+                }
             }
-
-            /*rbo = GL.GenRenderbuffer();
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rbo);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Depth24Stencil8, width, height);
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
-
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, rbo);*/
 
             SetUpDrawBuffers();
 

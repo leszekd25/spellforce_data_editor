@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace SpellforceDataEditor.SF3D
 {
@@ -103,15 +104,55 @@ namespace SpellforceDataEditor.SF3D
 
     public class Atmosphere
     {
+        // vao used to render sky
+        static float[] vertices = new float[] { -1, -1, -1, 1, 1, -1, -1, 1, 1, -1, 1, 1 };
+        static float[] uvs = new float[] { 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1 };
+
+        public static int sky_vao { get; private set; } = -1;
+
+        static int vertices_vbo = Utility.NO_INDEX;
+        static int uvs_vbo = Utility.NO_INDEX;
+
+        static int ref_count = 0;
+
+
         public Vector4 FogColor = new Vector4(100, 100, 100, 255) / 255f;
+        public float FogStrength = 1.0f;
         public float FogStart = 0.0f;
         public float FogEnd = 200.0f;
         public float FogExponent = 1.5f;
         public LightingAmbient ambient_light { get; } = new LightingAmbient();
         public LightingSun sun_light { get; } = new LightingSun();
+        public InterpolatedFloat altitude_sun_strength { get; set; }
         public InterpolatedColor altitude_sun_color { get; set; }
+        public InterpolatedFloat altitude_ambient_strength { get; set; }
         public InterpolatedColor altitude_ambient_color { get; set; }
+        public InterpolatedFloat altitude_fog_strength { get; set; }
         public InterpolatedColor altitude_fog_color { get; set; }
+
+        public Atmosphere()
+        {
+            if (ref_count == 0)
+            {
+                sky_vao = GL.GenVertexArray();
+                GL.BindVertexArray(sky_vao);
+
+                vertices_vbo = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ArrayBuffer, vertices_vbo);
+                GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * 4, vertices, BufferUsageHint.StaticDraw);
+                GL.EnableVertexAttribArray(0);
+                GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
+
+                uvs_vbo = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ArrayBuffer, uvs_vbo);
+                GL.BufferData(BufferTarget.ArrayBuffer, uvs.Length * 4, uvs, BufferUsageHint.StaticDraw);
+                GL.EnableVertexAttribArray(1);
+                GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
+
+                GL.BindVertexArray(0);
+            }
+            ref_count += 1;
+        }
 
         // azimuth from 0 to 359, altitude from -90 to 90
         public void SetSunLocation(float azimuth, float altitude)
@@ -119,8 +160,22 @@ namespace SpellforceDataEditor.SF3D
             sun_light.SetAzimuthAltitude(azimuth, altitude);
 
             sun_light.Color = altitude_sun_color.Get(altitude + 90f);
+            sun_light.Strength = altitude_sun_strength.Get(altitude + 90f);
             ambient_light.Color = altitude_ambient_color.Get(altitude + 90f);
+            ambient_light.Strength = altitude_ambient_strength.Get(altitude + 90f);
             FogColor = altitude_fog_color.Get(altitude + 90f);
+            FogStrength = altitude_fog_strength.Get(altitude + 90f);
+        }
+
+        public void Dispose()
+        {
+            ref_count -= 1;
+            if(ref_count == 0)
+            {
+                GL.DeleteBuffer(uvs_vbo);
+                GL.DeleteBuffer(vertices_vbo);
+                GL.DeleteVertexArray(sky_vao);
+            }
         }
     }
 }

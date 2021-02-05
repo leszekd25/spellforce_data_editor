@@ -228,10 +228,7 @@ namespace SpellforceDataEditor.SFMap
 
             UpdateUniformTileData(0, MAX_TILES - 1);
 
-            tile_ocean_color = Color.FromArgb(
-                    (int)(SF3D.SFRender.SFRenderEngine.scene.atmosphere.FogColor.X * 200),
-                    (int)(SF3D.SFRender.SFRenderEngine.scene.atmosphere.FogColor.Y * 200),
-                    (int)(SF3D.SFRender.SFRenderEngine.scene.atmosphere.FogColor.Z * 200));
+            tile_ocean_color = Color.FromArgb(100, 100, 255);
 
             GC.Collect();
         }
@@ -373,9 +370,9 @@ namespace SpellforceDataEditor.SFMap
             g /= 4096;
             b /= 4096;
 
-            r = Math.Min(255, (int)(r * SF3D.SFRender.SFRenderEngine.scene.atmosphere.sun_light.Strength));
-            g = Math.Min(255, (int)(g * SF3D.SFRender.SFRenderEngine.scene.atmosphere.sun_light.Strength));
-            b = Math.Min(255, (int)(b * SF3D.SFRender.SFRenderEngine.scene.atmosphere.sun_light.Strength));
+            r = Math.Min(255, (int)(r*1.6f));
+            g = Math.Min(255, (int)(g*1.6f));
+            b = Math.Min(255, (int)(b*1.6f));
 
             tile_average_color[tile_id] = Color.FromArgb(r, g, b);
         }

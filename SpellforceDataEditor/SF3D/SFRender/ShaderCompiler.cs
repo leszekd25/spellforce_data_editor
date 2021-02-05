@@ -20,7 +20,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static public int Compile(HashSet<string> defines, string vertex_shader, string fragment_shader)
         {
             // generate define preamble
-            string define_preamble = "#version 330\r\n";
+            string define_preamble = "#version 420\r\n";
             foreach (string s in defines)
                 define_preamble += "#define " + s + " 1\r\n";
 

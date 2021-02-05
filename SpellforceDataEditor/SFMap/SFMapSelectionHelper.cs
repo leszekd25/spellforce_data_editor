@@ -69,6 +69,11 @@ namespace SpellforceDataEditor.SFMap
 
             SF3D.SFSubModel3D sbm1 = new SF3D.SFSubModel3D();
             sbm1.CreateRaw(vertices, uvs, colors, normals, indices, null);
+            sbm1.material.apply_shading = false;
+            sbm1.material.apply_shadow = false;
+            sbm1.material.casts_shadow = false;
+            sbm1.material.distance_fade = false;
+            sbm1.material.transparent_pass = false;
 
             selection_mesh.CreateRaw(new SF3D.SFSubModel3D[] { sbm1 });
             SFResources.SFResourceManager.Models.AddManually(selection_mesh, "_SELECTION_");
@@ -101,6 +106,11 @@ namespace SpellforceDataEditor.SFMap
 
             SF3D.SFSubModel3D sbm2 = new SF3D.SFSubModel3D();
             sbm2.CreateRaw(vertices, uvs, colors, normals, indices, null);
+            sbm2.material.apply_shading = false;
+            sbm2.material.apply_shadow = false;
+            sbm2.material.casts_shadow = false;
+            sbm2.material.distance_fade = false;
+            sbm2.material.transparent_pass = false;
 
             cursor_mesh.CreateRaw(new SF3D.SFSubModel3D[] { sbm2 });
             SFResources.SFResourceManager.Models.AddManually(cursor_mesh, "_CURSOR_");

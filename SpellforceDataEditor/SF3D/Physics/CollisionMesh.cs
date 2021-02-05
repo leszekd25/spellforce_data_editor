@@ -66,39 +66,5 @@ namespace SpellforceDataEditor.SF3D.Physics
             }
             aabb = new BoundingBox(new Vector3(x1, y1, z1)+offset, new Vector3(x2, y2, z2)+offset);
         }
-
-        public void GenerateFromHeightmap(Vector3 off, SFMap.SFMapHeightMapGeometryPool pool, int pool_index)
-        {
-            int e_offset = pool_index * 6 * SFMap.SFMapHeightMapGeometryPool.CHUNK_SIZE * SFMap.SFMapHeightMapGeometryPool.CHUNK_SIZE;
-            int v_offset = pool_index * (SFMap.SFMapHeightMapGeometryPool.CHUNK_SIZE + 1) * (SFMap.SFMapHeightMapGeometryPool.CHUNK_SIZE + 1);
-
-            int triangle_count = 2 * SFMap.SFMapHeightMapGeometryPool.CHUNK_SIZE * SFMap.SFMapHeightMapGeometryPool.CHUNK_SIZE;
-
-            triangles = new Triangle[triangle_count];
-
-            for (int i = 0; i < triangle_count; i++)
-                triangles[i] = new Triangle(pool.vertices_pool[pool.indices_base[i * 3 + 0] + v_offset],
-                                            pool.vertices_pool[pool.indices_base[i * 3 + 1] + v_offset],
-                                            pool.vertices_pool[pool.indices_base[i * 3 + 2] + v_offset]);
-
-            float x1, x2, y1, y2, z1, z2;
-            x1 = 10000;
-            x2 = -10000;
-            y1 = 10000;
-            y2 = -10000;
-            z1 = 10000;
-            z2 = -10000;
-            for(int i = 0; i < (SFMap.SFMapHeightMapGeometryPool.CHUNK_SIZE + 1) * (SFMap.SFMapHeightMapGeometryPool.CHUNK_SIZE + 1); i++)
-            {
-                Vector3 v = pool.vertices_pool[i + v_offset];
-                x1 = Math.Min(x1, v.X);
-                x2 = Math.Max(x2, v.X);
-                y1 = Math.Min(y1, v.Y);
-                y2 = Math.Max(y2, v.Y);
-                z1 = Math.Min(z1, v.Z);
-                z2 = Math.Max(z2, v.Z);
-            }
-            aabb = new BoundingBox(new Vector3(x1, y1, z1)+offset, new Vector3(x2, y2, z2)+offset);
-        }
     }
 }

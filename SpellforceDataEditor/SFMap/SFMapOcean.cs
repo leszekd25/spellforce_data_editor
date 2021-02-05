@@ -27,10 +27,10 @@ namespace SpellforceDataEditor.SFMap
             vertices[1] = new Vector3(512, 0f, -512);
             vertices[2] = new Vector3(-512, 0f, 512);
             vertices[3] = new Vector3(512, 0f, 512);
-            uvs[0] = new Vector2(-SFMapHeightMapGeometryPool.CHUNK_SIZE, -SFMapHeightMapGeometryPool.CHUNK_SIZE);
-            uvs[1] = new Vector2(SFMapHeightMapGeometryPool.CHUNK_SIZE, -SFMapHeightMapGeometryPool.CHUNK_SIZE);
-            uvs[2] = new Vector2(-SFMapHeightMapGeometryPool.CHUNK_SIZE, SFMapHeightMapGeometryPool.CHUNK_SIZE);
-            uvs[3] = new Vector2(SFMapHeightMapGeometryPool.CHUNK_SIZE, SFMapHeightMapGeometryPool.CHUNK_SIZE);
+            uvs[0] = new Vector2(-SFMapHeightMapMesh.CHUNK_SIZE, -SFMapHeightMapMesh.CHUNK_SIZE);
+            uvs[1] = new Vector2(SFMapHeightMapMesh.CHUNK_SIZE, -SFMapHeightMapMesh.CHUNK_SIZE);
+            uvs[2] = new Vector2(-SFMapHeightMapMesh.CHUNK_SIZE, SFMapHeightMapMesh.CHUNK_SIZE);
+            uvs[3] = new Vector2(SFMapHeightMapMesh.CHUNK_SIZE, SFMapHeightMapMesh.CHUNK_SIZE);
             for (int i = 0; i < 4; i++)
             {
                 normals[i] = new Vector3(0.0f, 1.0f, 0.0f);
@@ -62,6 +62,7 @@ namespace SpellforceDataEditor.SFMap
             material.casts_shadow = false;
             material.transparent_pass = true;
             material.apply_shadow = false;
+            material.distance_fade = false;
 
             SF3D.SFSubModel3D sbm1 = new SF3D.SFSubModel3D();
             sbm1.CreateRaw(vertices, uvs, colors, normals, indices, material);
