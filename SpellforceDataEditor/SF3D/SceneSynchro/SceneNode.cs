@@ -730,7 +730,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // returns vector2 in screen coordinates in [0, 1] (if on screen)
         public Vector2 WorldToScreen(Vector3 pos)
         {
-            float dist = Vector3.Dot(pos - position, (Lookat - position).Normalized()) / SFRender.SFRenderEngine.max_render_distance;
+            float dist = Vector3.Dot(pos - position, (Lookat - position).Normalized()) / 250.0f;
 
             Vector3 top_left = position + (frustum.frustum_vertices[4] - position) * dist;
             Vector3 top_right = position + (frustum.frustum_vertices[5] - position) * dist;

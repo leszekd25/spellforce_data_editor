@@ -115,8 +115,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     atmosphere.altitude_fog_strength.Add(0.6f, 80);
                     atmosphere.altitude_fog_strength.Add(1.6f, 90);
                     atmosphere.altitude_fog_strength.Add(1.6f, 100);
-                    atmosphere.altitude_fog_strength.Add(2.0f, 110);
-                    atmosphere.altitude_fog_strength.Add(2.0f, 180);
+                    atmosphere.altitude_fog_strength.Add(3.0f, 110);
+                    atmosphere.altitude_fog_strength.Add(3.0f, 180);
                 }
                 else
                 {

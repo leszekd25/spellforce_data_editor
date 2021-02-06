@@ -163,8 +163,6 @@ namespace SpellforceDataEditor.Properties {
         ///
         ///out vec4 color;
         ///
-        ///uniform mat4 M;
-        ///
         ///uniform int GridSize;
         ///uniform vec4 GridColor;
         ///uniform float SunStrength;
@@ -178,7 +176,7 @@ namespace SpellforceDataEditor.Properties {
         ///uniform float FogEnd;
         ///uniform float FogExponent;
         ///uniform float ShadowFadeStart;
-        ///un [rest of string was truncated]&quot;;.
+        ///uniform float ShadowF [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_hmap {
             get {
@@ -229,23 +227,29 @@ namespace SpellforceDataEditor.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to out vec4 FragColor;
-        ///  
+        ///
         ///in vec2 TexCoords;
         ///
         ///uniform sampler2D image;
-        ///  
-        ///uniform bool horizontal;
+        ///
+        ///uniform int horizontal;
         ///uniform float weight[3] = float[] (0.250301, 0.221461, 0.153388);
         ///
-        ///void main()
-        ///{             
-        ///    vec2 tex_offset = 1.0 / textureSize(image, 0); // gets size of single texel
-        ///    vec2 result = texture(image, TexCoords).rg * weight[0]; // current fragment&apos;s contribution
-        ///    if(horizontal)
-        ///    {
-        ///        for(int i = 1; i &lt; 3; ++i)
-        ///        {
-        ///            result += texture(image, TexCoords + vec2(tex_of [rest of string was truncated]&quot;;.
+        ///vec2 GaussianBlur( sampler2D tex0, vec2 centreUV, vec2 pixelOffset )
+        ///{
+        ///    vec2 colOut = vec2( 0.0, 0.0 );
+        ///    const int stepCount = 2;
+        ///    //
+        ///    const float gWeights[stepCount] ={
+        ///       0.44908,
+        ///       0.05092
+        ///    };
+        ///    const float gOffsets[stepCount] ={
+        ///       0.53805,
+        ///       2.06278
+        ///    };
+        ///
+        ///    for( int i = 0; i &lt; stepCount [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_shadowmap_blur {
             get {
@@ -302,9 +306,10 @@ namespace SpellforceDataEditor.Properties {
         ///}
         ///
         ///void main()
-        ///{             
+        ///{
         ///    vec3 raydir = CalcLookat(V, TexCoords);
-        ///    float horizon_closeness = clamp(1.0 - dot(normalize(raydir), vec3(0.0, 1.0, 0.0)), 0.0, 1.0); [rest of string was truncated]&quot;;.
+        ///    // 0% - pole, 100% - horizon
+        ///    float horizon_closeness = clamp(1.0 - dot(normalize(raydir), vec3(0.0, 1 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_sky {
             get {
@@ -484,21 +489,22 @@ namespace SpellforceDataEditor.Properties {
         /// <summary>
         ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
-        ///layout(location = 1) in vec3 vertexNormal;
+        /////layout(location = 1) in vec3 vertexNormal;
         /////layout(location = 2) in vec3 texID;
         /////layout(location = 3) in vec3 texWeight;
         ///
         ///out vec3 fragmentPosition;
         ///out vec2 UV;
         ///out vec3 fragmentNormal;
-        /////flat out vec3 textureID;
         ///out vec4 fragmentPositionLightSpace;
         ///out vec3 vpos_orig;
         ///
         ///// Values that stay constant for the whole mesh.
+        ///
+        ///uniform int GridSize;
+        ///uniform sampler2D HeightMap;
         ///uniform mat4 VP;
-        ///uniform mat4 LSM;
-        ///uniform mat4 M; [rest of string was truncated]&quot;;.
+        ///unifo [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_hmap {
             get {
@@ -583,20 +589,19 @@ namespace SpellforceDataEditor.Properties {
         /// <summary>
         ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
-        ///layout(location = 1) in vec3 vertexNormal;
-        ///layout(location = 2) in vec2 vertexUV;
+        /////layout(location = 1) in vec3 vertexNormal;
+        ///// layout(location = 2) in vec2 vertexUV;
         ///
         ///out vec2 UV;
         ///
         ///// Values that stay constant for the whole mesh.
+        ///uniform int GridSize;
+        ///uniform sampler2D HeightMap;
         ///uniform mat4 LSM;
-        ///uniform mat4 M;
         ///  
-        ///void main(){
-        ///  // Output position of the vertex, in clip space : MVP * position
-        ///  gl_Position = LSM * M* vec4(vertexPosition_modelspace,1);
-        ///  UV = vertexUV;
-        ///}.
+        ///vec3 GetVertexPos(vec2 grid_pos)
+        ///{
+        ///    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_shadowmap_heightmap {
             get {

@@ -34,7 +34,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             ProgramID = ShaderCompiler.Compile(defines, vshader, fshader);
         }
 
-        // adds shader parameter
+        // adds shader parameter (one that exists as a uniform variable in shader code)
         public void AddParameter(string name)
         {
             parameters[name] = GL.GetUniformLocation(ProgramID, name);

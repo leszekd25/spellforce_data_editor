@@ -265,15 +265,15 @@ namespace SpellforceDataEditor.SF3D.Physics
 
                             int fixed_tile_y = hmap.height - cur_tile_y;
                             // check intersection with tile geometry (2 triangles)
-                            v1 = hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x];
-                            v2 = hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + 1];
-                            v3 = hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + - map_w1];
+                            v1 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 1)) / 100.0f, cur_tile_y);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x];
+                            v2 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + 1];
+                            v3 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + - map_w1];
                             if (Intersect(v1, v2, v3, out point))
                                 return true;
 
-                            v1 = hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + 1];
-                            v2 = hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + - map_w1 + 1];
-                            v3 = hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + - map_w1];
+                            v1 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + 1];
+                            v2 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + - map_w1 + 1];
+                            v3 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1); //hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + - map_w1];
                             if (Intersect(v1, v2, v3, out point))
                                 return true;
 

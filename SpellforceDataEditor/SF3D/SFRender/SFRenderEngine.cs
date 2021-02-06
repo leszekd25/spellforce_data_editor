@@ -345,7 +345,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             shader_shadowmap_heightmap.CompileShader(Properties.Resources.vshader_shadowmap_heightmap, Properties.Resources.fshader_shadowmap);
             shader_shadowmap_heightmap.AddParameter("LSM");
-            shader_shadowmap_heightmap.AddParameter("M");
+            shader_shadowmap_heightmap.AddParameter("GridSize");
+            shader_shadowmap_heightmap.AddParameter("HeightMap");
             shader_shadowmap_heightmap.AddParameter("DiffuseTexture");
 
             shader_framebuffer_simple.CompileShader(Properties.Resources.vshader_framebuffer, Properties.Resources.fshader_framebuffer_simple);
@@ -545,10 +546,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             shader_heightmap.CompileShader(Properties.Resources.vshader_hmap, Properties.Resources.fshader_hmap);
             shader_heightmap.AddParameter("VP");
-            shader_heightmap.AddParameter("M");
             shader_heightmap.AddParameter("GridSize");
             shader_heightmap.AddParameter("GridColor");
             shader_heightmap.AddParameter("LSM");
+            shader_heightmap.AddParameter("myTextureSampler");
+            shader_heightmap.AddParameter("HeightMap");
             shader_heightmap.AddParameter("ShadowMap");
             shader_heightmap.AddParameter("TileMap");
             shader_heightmap.AddParameter("OverlayMap");
@@ -654,9 +656,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Uniform1(shader_animated["ShadowMap"], 1);
 
             GL.UseProgram(shader_heightmap.ProgramID);
+            GL.Uniform1(shader_heightmap["myTextureSampler"], 0);
             GL.Uniform1(shader_heightmap["ShadowMap"], 1);
             GL.Uniform1(shader_heightmap["TileMap"], 2);
             GL.Uniform1(shader_heightmap["OverlayMap"], 3);
+            GL.Uniform1(shader_heightmap["HeightMap"], 4);
 
             GL.UseProgram(shader_shadowmap.ProgramID);
             GL.Uniform1(shader_shadowmap["DiffuseTexture"], 0);
@@ -666,6 +670,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             GL.UseProgram(shader_shadowmap_heightmap.ProgramID);
             GL.Uniform1(shader_shadowmap_heightmap["DiffuseTexture"], 0);
+            GL.Uniform1(shader_shadowmap_heightmap["HeightMap"], 4);
 
             GL.UseProgram(shader_ui.ProgramID);
             GL.Uniform1(shader_ui["Tex"], 0);
@@ -949,7 +954,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
             GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
+            GL.Uniform1(active_shader["GridSize"], heightmap.width);
             GL.BindVertexArray(heightmap.mesh.vertex_array);
+            GL.ActiveTexture(TextureUnit.Texture4);
+            GL.BindTexture(TextureTarget.Texture2D, heightmap.height_data_texture);
             if (current_pass == RenderPass.SCENE)
             {
                 GL.ActiveTexture(TextureUnit.Texture3);
@@ -960,14 +968,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.BindTexture(TextureTarget.Texture2DArray, heightmap.texture_manager.terrain_texture);
                 Matrix4 vp_mat = scene.camera.ViewProjMatrix;
                 GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
-                GL.Uniform1(active_shader["GridSize"], heightmap.width);
                 GL.Uniform4(active_shader["GridColor"], Settings.GridColor);
             }
             else if (current_pass == RenderPass.SHADOWMAP)
+            {
+                GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, opaque_tex.tex_id);
+            }
 
-            Matrix4 model_mat = Matrix4.Identity;
-            GL.UniformMatrix4(active_shader["M"], false, ref model_mat);
             GL.DrawElements(PrimitiveType.TriangleStrip, 2 * (heightmap.width + 1) * heightmap.height, DrawElementsType.UnsignedInt, 0);
 
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
@@ -1013,6 +1021,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     if (current_pass == RenderPass.SCENE)
                     {
                         SetApplyShading(mat.apply_shading);
+                        SetApplyShadow(mat.apply_shadow);
                         SetDistanceFade(mat.distance_fade);
                         SetRenderMode(mat.texRenderMode);
                         if ((mat.matFlags & 4) == 0)
@@ -1060,13 +1069,13 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                     //GL.Uniform1(active_shader["apply_shading"], sbm.material.matFlags);
                     SetApplyShading(mat.apply_shading);
+                    SetApplyShadow(mat.apply_shadow);
                     SetDistanceFade(mat.distance_fade);
                     SetRenderMode(mat.texRenderMode);
                     if ((mat.matFlags & 4) == 0)
                         SetDepthBias(0);
                     else
                         SetDepthBias(mat.matDepthBias);
-                    SetApplyShadow(mat.apply_shadow);
 
                     GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
                     //DumpAddTexDict(mat.texture, 0);
@@ -1246,7 +1255,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             current_pass = RenderPass.SCENE;
             GL.Enable(EnableCap.Blend);
             SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
-            //draw everything to a texture
+
+            // render sky
             SetFramebuffer(Settings.AntiAliasingSamples > 1 ? screenspace_framebuffer : screenspace_intermediate);
             if (Settings.ToneMapping)
             {
@@ -1299,11 +1309,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.BlitFramebuffer(0, 0, (int)render_size.X, (int)render_size.Y, 0, 0, (int)render_size.X, (int)render_size.Y, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
             }
 
-            // post-processing (currently not much happening here)
+            // post-processing
 
             current_pass = RenderPass.SCREENSPACE;
 
-            // final pass: draw a textured quad for post-processing effects - quad will be rendered on screen
+            // draw a textured quad for post-processing effects - quad will be rendered on screen
             SetFramebuffer(null);
             GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -1327,7 +1337,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
 
 
-            // now draw UI
+            // finally, draw UI
             UseShader(shader_ui);
             RenderUI();
 
