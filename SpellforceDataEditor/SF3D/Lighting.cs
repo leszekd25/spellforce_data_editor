@@ -171,6 +171,9 @@ namespace SpellforceDataEditor.SF3D
 
         public void Dispose()
         {
+            if (ref_count == 0)
+                return;
+
             ref_count -= 1;
             if(ref_count == 0)
             {

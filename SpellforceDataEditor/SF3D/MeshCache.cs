@@ -529,12 +529,18 @@ namespace SpellforceDataEditor.SF3D
             if (VertexArrayObjectID != 0)
             {
                 if (EnableInstancing)
+                {
                     GL.DeleteBuffer(MatrixBufferID);
+                    MatrixBufferData = null;
+                }
+
                 GL.DeleteBuffer(ElementBufferObjectID);
                 GL.DeleteBuffer(VertexBufferObjectID);
                 GL.DeleteVertexArray(VertexArrayObjectID);
 
                 VertexArrayObjectID = 0;
+                VertexBufferObjectData = null;
+                ElementBufferObjectData = null;
             }
         }
 

@@ -95,7 +95,7 @@ namespace SpellforceDataEditor
         {
             float s = (float)Math.Sin(angle);
             float c = (float)Math.Cos(angle);
-            return new Vector2(v.X * c - v.Y * s, v.X * s + v.Y * c);
+            return new Vector2(v.X * c - v.Y * s, - v.X * s - v.Y * c);
         }
 
         // counterclockwise, upvector = (0, 0, 1)

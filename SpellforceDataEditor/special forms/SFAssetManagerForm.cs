@@ -184,7 +184,7 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
             SFRenderEngine.SetObjectFadeRange(170, 220);
             SFRenderEngine.scene.camera.SetPosition(new Vector3(0, 2, 6));
-            SFRenderEngine.scene.camera.Lookat = new Vector3(0, 0, 0);
+            SFRenderEngine.scene.camera.SetLookat(new Vector3(0, 0, 0));
             SFRenderEngine.scene.camera.Update(0);
 
             TimerAnimation.Enabled = true;
@@ -735,7 +735,7 @@ namespace SpellforceDataEditor.special_forms
                 Vector2 scroll_mouse_end = new Vector2(Cursor.Position.X, Cursor.Position.Y);
                 Vector2 scroll_translation = (scroll_mouse_end - scroll_mouse_start) * SFRenderEngine.scene.DeltaTime / 250f;
 
-                SFRenderEngine.scene.camera.Direction += new Vector2(scroll_translation.X, -scroll_translation.Y);
+                SFRenderEngine.scene.camera.SetAzimuthAltitude(SFRenderEngine.scene.camera.Direction + new Vector2(-scroll_translation.X, -scroll_translation.Y));
 
                 update_render = true;
                 update_ui = true;
@@ -744,9 +744,9 @@ namespace SpellforceDataEditor.special_forms
             // moving view by arrow keys
             Vector2 movement_vector = new Vector2(0, 0);
             if (arrows_pressed[0])
-                movement_vector += new Vector2(-1, 0);
-            if (arrows_pressed[1])
                 movement_vector += new Vector2(1, 0);
+            if (arrows_pressed[1])
+                movement_vector += new Vector2(-1, 0);
             if (arrows_pressed[2])
                 movement_vector += new Vector2(0, -1);
             if (arrows_pressed[3])
@@ -1143,7 +1143,7 @@ namespace SpellforceDataEditor.special_forms
         private void ResetCamera()
         {
             SFRenderEngine.scene.camera.SetPosition(new Vector3(0, 1, 6));
-            SFRenderEngine.scene.camera.Lookat = new Vector3(0, 1, 0);
+            SFRenderEngine.scene.camera.SetLookat(new Vector3(0, 1, 0));
             zoom_level = 1.0f;
             update_render = true;
         }

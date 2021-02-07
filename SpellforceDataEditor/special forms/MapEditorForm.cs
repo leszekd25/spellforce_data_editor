@@ -813,7 +813,6 @@ namespace SpellforceDataEditor.special_forms
             map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
             map.selection_helper.SetCursorVisibility(true);
 
-            SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
             ResetCamera();
 
             ui = new MapEditorUI(map);
@@ -937,7 +936,6 @@ namespace SpellforceDataEditor.special_forms
                 map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
                 map.selection_helper.SetCursorVisibility(true);
 
-                SetCameraViewPoint(new SFCoord(map.width / 2, map.height / 2));
                 ResetCamera();
 
                 ui = new MapEditorUI(map);
@@ -1078,6 +1076,8 @@ namespace SpellforceDataEditor.special_forms
             op_queue.map = null;
             op_queue = null;
 
+            QuickSelect.QsRef = null;
+
             if (MainForm.viewer != null)
                 MainForm.viewer.ResetScene();
             map = null;
@@ -1095,6 +1095,9 @@ namespace SpellforceDataEditor.special_forms
 
         private void CreateRenderWindow()
         {
+            if (initialized_view)
+                return;
+
             RenderWindow = new GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(32), 24, 8), 4, 2, OpenTK.Graphics.GraphicsContextFlags.Default);
             this.Controls.Add(RenderWindow);
 
@@ -1137,6 +1140,9 @@ namespace SpellforceDataEditor.special_forms
         // after this is called, memory will be freed (?)
         private void DestroyRenderWindow()
         {
+            if (!initialized_view)
+                return;
+
             RenderWindow.MouseDown -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseDown);
             RenderWindow.MouseEnter -= new System.EventHandler(this.RenderWindow_MouseEnter);
             RenderWindow.MouseLeave -= new System.EventHandler(this.RenderWindow_MouseLeave);
@@ -1144,6 +1150,10 @@ namespace SpellforceDataEditor.special_forms
             RenderWindow.MouseUp -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
             RenderWindow.MouseWheel -= new MouseEventHandler(this.RenderWindow_MouseWheel);
             RenderWindow.Paint -= new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
+            this.Controls.Remove(RenderWindow);
+            RenderWindow.Dispose();
+            RenderWindow = null;
+            initialized_view = false;
 
             TimerUpdatesPerSecond.Stop();
             UpdatesText.Text = "";
@@ -1231,6 +1241,60 @@ namespace SpellforceDataEditor.special_forms
 
             bool update_ui = false;
 
+            // rotating view by mouse
+            if (mouse_scroll)
+            {
+                Vector2 scroll_mouse_end = new Vector2(Cursor.Position.X, Cursor.Position.Y);
+                Vector2 scroll_translation = (scroll_mouse_end - scroll_mouse_start) * SFRenderEngine.scene.DeltaTime / 250f;
+                
+                if(scroll_translation != Vector2.Zero)
+                    SetCameraAzimuthAltitude(SFRenderEngine.scene.camera.Direction.X - scroll_translation.X, SFRenderEngine.scene.camera.Direction.Y - scroll_translation.Y);
+
+                update_render = true;
+                update_ui = true;
+            }
+
+            // moving view by arrow keys
+            Vector2 movement_vector = new Vector2(0, 0);
+            if (arrows_pressed[0])
+                movement_vector += new Vector2(1, 0);
+            if (arrows_pressed[1])
+                movement_vector += new Vector2(-1, 0);
+            if (arrows_pressed[2])
+                movement_vector += new Vector2(0, -1);
+            if (arrows_pressed[3])
+                movement_vector += new Vector2(0, +1);
+
+            if (movement_vector != new Vector2(0, 0))
+            {
+                movement_vector = MathUtils.RotateVec2(movement_vector, SFRenderEngine.scene.camera.Direction.X+(float)(Math.PI/2));
+                movement_vector *= 60.0f * camera_speed_factor * SFRenderEngine.scene.DeltaTime;
+                MoveCameraWorldMapPos(SFRenderEngine.scene.camera.position.Xz + movement_vector);
+                update_render = true;
+                update_ui = true;
+            }
+
+            // rotating view by home/end/pageup/pagedown
+            movement_vector = new Vector2(0, 0);
+            if (rotation_pressed[0])
+                movement_vector += new Vector2(-1, 0);
+            if (rotation_pressed[1])
+                movement_vector += new Vector2(1, 0);
+            if (rotation_pressed[2])
+                movement_vector += new Vector2(0, -1);
+            if (rotation_pressed[3])
+                movement_vector += new Vector2(0, 1);
+
+            if (movement_vector != new Vector2(0, 0))
+            {
+                movement_vector *= 2.0f * SFRenderEngine.scene.DeltaTime;
+                SetCameraAzimuthAltitude(SFRenderEngine.scene.camera.Direction.X - movement_vector.X, SFRenderEngine.scene.camera.Direction.Y - movement_vector.Y);
+                update_render = true;
+                update_ui = true;
+            }
+
+            SFRenderEngine.scene.camera.Update(0);
+
             // mouse actions
             if (mouse_on_view)
             {
@@ -1294,63 +1358,11 @@ namespace SpellforceDataEditor.special_forms
                 }
             }
 
-            // rotating view by mouse
-            if (mouse_scroll)
-            {
-                Vector2 scroll_mouse_end = new Vector2(Cursor.Position.X, Cursor.Position.Y);
-                Vector2 scroll_translation = (scroll_mouse_end - scroll_mouse_start) * SFRenderEngine.scene.DeltaTime / 250f;
-
-                SFRenderEngine.scene.camera.Direction += new Vector2(scroll_translation.X, -scroll_translation.Y);
-
-                update_render = true;
-                update_ui = true;
-            }
-
-            // moving view by arrow keys
-            Vector2 movement_vector = new Vector2(0, 0);
-            if (arrows_pressed[0])
-                movement_vector += new Vector2(-1, 0);
-            if (arrows_pressed[1])
-                movement_vector += new Vector2(1, 0);
-            if (arrows_pressed[2])
-                movement_vector += new Vector2(0, -1);
-            if (arrows_pressed[3])
-                movement_vector += new Vector2(0, 1);
-
-            if (movement_vector != new Vector2(0, 0))
-            {
-                float angle = SFRenderEngine.scene.camera.Direction.X - (float)(Math.PI * 3 / 2);
-                movement_vector = MathUtils.RotateVec2(movement_vector, angle);
-                movement_vector *= 60.0f * camera_speed_factor * SFRenderEngine.scene.DeltaTime;
-                SFRenderEngine.scene.camera.translate(new Vector3(movement_vector.X, 0, movement_vector.Y));
-                update_render = true;
-                update_ui = true;
-            }
-
-            // rotating view by home/end/pageup/pagedown
-            movement_vector = new Vector2(0, 0);
-            if (rotation_pressed[0])
-                movement_vector += new Vector2(-1, 0);
-            if (rotation_pressed[1])
-                movement_vector += new Vector2(1, 0);
-            if (rotation_pressed[2])
-                movement_vector += new Vector2(0, -1);
-            if (rotation_pressed[3])
-                movement_vector += new Vector2(0, 1);
-
-            if (movement_vector != new Vector2(0, 0))
-            {
-                movement_vector *= 2.0f * SFRenderEngine.scene.DeltaTime;
-                SFRenderEngine.scene.camera.Direction += new Vector2(movement_vector.X, -movement_vector.Y);
-                update_render = true;
-                update_ui = true;
-            }
-
             // render time
+            // heavy tasks go here
             if (update_render)
             {
-                AdjustCameraZ();
-                SFRenderEngine.scene.camera.Update(0);
+                //SFRenderEngine.scene.camera.Update(0);
                 map.ocean.SetPosition(SFRenderEngine.scene.camera.position);
                 SFRenderEngine.UpdateVisibleChunks();
                 map.selection_helper.Update();
@@ -1403,6 +1415,7 @@ namespace SpellforceDataEditor.special_forms
                     if(zoom_level < 0.1f)
                         zoom_level = 0.1f;
                 }
+            AdjustCameraZ();
             update_render = true;
         }
 
@@ -1410,10 +1423,7 @@ namespace SpellforceDataEditor.special_forms
         {
             if (map != null)
             {
-                Vector2 p = new Vector2(SFRenderEngine.scene.camera.position.X, SFRenderEngine.scene.camera.position.Z);
-                float z = map.heightmap.GetRealZ(p);
-
-                SFRenderEngine.scene.camera.translate(new Vector3(0, (25 * zoom_level) + z - SFRenderEngine.scene.camera.position.Y, 0));
+                SetCameraElevation(25 * zoom_level);
             }
         }
 
@@ -1460,32 +1470,79 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.atmosphere.sun_light.ShadowDepth = max_dist;
         }
 
-        // attempts to center camera on the selected position with preservation of camera angle
+        public void SetCameraElevation(float h)
+        {
+            // preserve lookat
+            Vector3 cur_lookat = SFRenderEngine.scene.camera.Lookat - SFRenderEngine.scene.camera.position;
+
+            SFRenderEngine.scene.camera.SetPosition(
+                new Vector3(
+                    SFRenderEngine.scene.camera.position.X, 
+                    h + map.heightmap.GetRealZ(SFRenderEngine.scene.camera.position.Xz), 
+                    SFRenderEngine.scene.camera.position.Z)
+                );
+
+            SFRenderEngine.scene.camera.SetLookat(SFRenderEngine.scene.camera.position + cur_lookat);
+        }
+
+        // moves camera to given map coordinate, preserving camera elevation
+        public void SetCameraMapPos(SFCoord pos)
+        {
+            SFRenderEngine.scene.camera.SetPosition(new Vector3(pos.x, 0, map.height - 1 - pos.y));
+            AdjustCameraZ();
+        }
+
+        // moves camera to an arbitrary point in the world
+        public void SetCameraWorldPos(Vector3 pos)
+        {
+            SFRenderEngine.scene.camera.SetPosition(pos);
+        }
+
+        // moves camera to a given point on the map, preserving camera elevation
+        // not limited to grid points
+        public void SetCameraWorldMapPos(Vector2 pos)
+        {
+            SFRenderEngine.scene.camera.SetPosition(new Vector3(pos.X, 0, pos.Y));
+            AdjustCameraZ();
+        }
+
+        public void MoveCameraWorldMapPos(Vector2 pos)
+        {
+            Vector3 cur_lookat = SFRenderEngine.scene.camera.Lookat - SFRenderEngine.scene.camera.position;
+            SetCameraWorldMapPos(pos);
+            SFRenderEngine.scene.camera.SetLookat(SFRenderEngine.scene.camera.position + cur_lookat);
+        }
+
+        // sets camera angles (this also modifies direction)
+        // 0, 0 = UnitX
+        // 270, 0 = UnitZ
+        public void SetCameraAzimuthAltitude(float azimuth, float altitude)
+        {
+            SFRenderEngine.scene.camera.SetAzimuthAltitude(new Vector2(azimuth, altitude));
+        }
+
+        // sets camera direction (this also modifies angle)
+        public void SetCameraLookAt(Vector3 pos)
+        {
+            SFRenderEngine.scene.camera.SetLookat(pos);
+        }
+
+        // attempts to center camera on the selected map position, preserving camera angle
         public void SetCameraViewPoint(SFCoord pos)
         {
-            // camera angle in radians
-            Vector2 cam_dir = SFRenderEngine.scene.camera.Direction;
-            // angle shift necessary due to fact that the map is mirrored in Z axis
-            float angle_shift = (float)-Math.PI * 3 / 2;
-            // camera inclination means that we need to increase distance of camera to the position to preserve camera angle
-            float angle_factor = 1;
-            if (cam_dir.Y != 0)
-                angle_factor = (float)Math.Abs(1 / Math.Tan(cam_dir.Y));
-            // resulting shift of camera positon from desired coordinates to canter the view on them
-            Vector2 cam_shift = new Vector2((float)-Math.Sin(cam_dir.X + angle_shift),
-                                            (float)Math.Cos(cam_dir.X + angle_shift)) * (25 * angle_factor * zoom_level);
-            SFRenderEngine.scene.camera.SetPosition(new Vector3(cam_shift.X, 25, cam_shift.Y));
-
-            Vector3 new_camera_pos = new Vector3(pos.x + cam_shift.X, 0, map.heightmap.height - pos.y - 1 + cam_shift.Y);
-            SFRenderEngine.scene.camera.translate(new_camera_pos - SFRenderEngine.scene.camera.position);
+            SetCameraWorldMapPos(new Vector2(pos.x, map.height - 1 - pos.y + 10));
+            SetCameraAzimuthAltitude((float)((90 * Math.PI) / 180.0f), (float)((-70 * Math.PI) / 180.0f));
+            zoom_level = 1;
+            AdjustCameraZ();
             update_render = true;
         }
 
         public void ResetCamera()
         {
-            SFRenderEngine.scene.camera.Direction = new Vector2((float)(Math.PI * 3 / 2), -1.2f);
-            SFRenderEngine.scene.camera.Update(0);
+            SetCameraWorldMapPos(new Vector2(map.width / 2, map.height / 2));
+            SetCameraAzimuthAltitude((float)((90 * Math.PI)/180.0f), (float)((-70 * Math.PI) / 180.0f));
             zoom_level = 1;
+            AdjustCameraZ();
             update_render = true;
         }
 

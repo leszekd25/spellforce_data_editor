@@ -648,50 +648,15 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         private Physics.Frustum frustum;
 
-        public Vector3 Lookat
-        {
-            get
-            {
-                return lookat;
-            }
-            set
-            {
-                lookat = value;
-
-                direction.X = (float)(Math.Atan2(-(lookat.Z - position.Z), lookat.X - position.X) + Math.PI);
-                if (Math.Abs(lookat.X - position.Z) > EPSILON)
-                {
-                    direction.Y = (float)Math.Atan2(lookat.Y - position.Y, new Vector3(lookat.X - position.X, -(lookat.Z - position.Z), 0).Length);
-                    direction.Y = (direction.Y > MAX_DIR_Y ? MAX_DIR_Y : (direction.Y < -MAX_DIR_Y ? -MAX_DIR_Y : direction.Y));
-                }
-                //System.Diagnostics.Debug.WriteLine(direction.ToString());
-                TouchLocalTransform(); TouchParents();
-            }
-        }
-        public Vector2 Direction
-        {
-            get
-            {
-                return direction;
-            }
-            set
-            {
-                direction = value;
-                direction.Y = (direction.Y > MAX_DIR_Y ? MAX_DIR_Y : (direction.Y < -MAX_DIR_Y ? -MAX_DIR_Y : direction.Y));
-                //calculate rotation vector
-                lookat = position + new Vector3((float)Math.Cos(direction.X) * (float)Math.Cos(direction.Y),
-                                                (float)Math.Sin(direction.Y),
-                                                (float)Math.Sin(direction.X) * (float)Math.Cos(direction.Y));
-                TouchLocalTransform(); TouchParents();
-            }
-        }
+        public Vector3 Lookat { get { return lookat; } }
+        public Vector2 Direction { get { return direction; } }
 
         // view matrix: modelmatrix
         // proj matrix: projmatrix
         public Matrix4 ViewProjMatrix { get { return viewproj_matrix; } }
-        public Matrix4 ProjMatrix { get { return proj_matrix; } set { proj_matrix = value; viewproj_matrix = proj_matrix; } }
+        public Matrix4 ProjMatrix { get { return proj_matrix; } set { proj_matrix = value; viewproj_matrix = proj_matrix; needsanyupdate = true; NeedsUpdateLocalTransform = true; } }
         public Matrix4 ViewMatrix { get { return view_matrix; } }
-        public float AspectRatio { get { return aspect_ratio; } set { aspect_ratio = value; } }
+        public float AspectRatio { get { return aspect_ratio; } set { aspect_ratio = value; needsanyupdate = true; NeedsUpdateLocalTransform = true; } }
         public Physics.Frustum Frustum { get { return frustum; } }
 
         // 250.0f is a magic constant for now...
@@ -699,6 +664,47 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             frustum = new Physics.Frustum(position, (lookat-position), SFRender.SFRenderEngine.min_render_distance, 250.0f, aspect_ratio);
             UpdateTransform();
+        }
+
+        // in radians
+        public void SetAzimuthAltitude(Vector2 dir)
+        {
+            direction = dir;
+            if (direction.Y < -MAX_DIR_Y)
+                direction.Y = -MAX_DIR_Y;
+            if (direction.Y > MAX_DIR_Y)
+                direction.Y = MAX_DIR_Y;
+
+            // modify lookat to match
+            Vector3 lookat_dir = Vector3.UnitX * Matrix3.CreateFromQuaternion(Quaternion.FromAxisAngle(Vector3.UnitY, direction.X) * Quaternion.FromAxisAngle(Vector3.UnitZ, direction.Y));
+            lookat = position + lookat_dir;
+
+            TouchLocalTransform(); TouchParents();
+        }
+
+        public void SetLookat(Vector3 pos)
+        {
+            lookat = pos;
+
+            // modify direction to match
+            Vector3 DirVector = (lookat - position).Normalized();
+            Vector3 DirVector2 = DirVector;
+
+            DirVector2.Y = 0;
+            if (DirVector2.LengthSquared == 0)
+                direction.X = 0;
+            else
+            {
+                DirVector2.Normalize();
+                if(DirVector.Z < 0)
+                    direction.X = (float)(Vector3.CalculateAngle(Vector3.UnitX, DirVector2));
+                else
+                    direction.X = -(float)(Vector3.CalculateAngle(Vector3.UnitX, DirVector2));
+            }
+
+            direction.Y = (float)(Math.PI/2) - (float)(Vector3.CalculateAngle(DirVector, Vector3.UnitY));
+
+            TouchLocalTransform(); TouchParents();
         }
 
         // todo: can be optimized
