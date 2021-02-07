@@ -470,12 +470,17 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     continue;
                 SceneNodeSimple n = AddSceneNodeSimple(obj_node, m, i.ToString());
                 if (n.Mesh != null)
+                {
+                    bool decal = m.Contains("decal");
                     foreach (SFSubModel3D sbm in n.Mesh.submodels)
                     {
                         sbm.material.apply_shading = apply_shading;
                         sbm.material.transparent_pass &= apply_shading;
                         sbm.material.casts_shadow = apply_shading;
+                        if (decal)
+                            sbm.material.matDepthBias = -0.000003f;
                     }
+                }
             }
 
             return obj_node;
@@ -501,7 +506,19 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 string m = m_lst[i];
                 if (m.Contains("frame"))
                     continue;
-                AddSceneNodeSimple(bld_node, m, i.ToString());
+                SceneNodeSimple n = AddSceneNodeSimple(bld_node, m, i.ToString());
+
+                bool decal = m.Contains("decal");
+                if (decal)
+                {
+                    if (n.Mesh != null)
+                    {
+                        foreach (SFSubModel3D sbm in n.Mesh.submodels)
+                        {
+                            sbm.material.matDepthBias = -0.000003f;
+                        }
+                    }
+                }
             }
 
             return bld_node;

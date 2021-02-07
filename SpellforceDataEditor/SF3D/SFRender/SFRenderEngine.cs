@@ -55,6 +55,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static SFShader shader_framebuffer_simple = new SFShader();
         static SFShader shader_framebuffer_tonemapped = new SFShader();
         static SFShader shader_shadowmap_blur = new SFShader();
+
         static FrameBuffer shadowmap_depth = null;
         static FrameBuffer shadowmap_depth_helper = null;
         static FrameBuffer screenspace_framebuffer = null;
@@ -99,7 +100,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
                $" {Enum.GetName(typeof(DebugType), type) } | {messageString}");
 
             if (type == DebugType.DebugTypeError)
-                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "OPENGL DEBUG CALLBACK: " + messageString);
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "OpenGL API error: " + messageString);
+                throw new Exception("OpenGL API error! Commencing shutdown...");
+            }
         }
 
         private static DebugProc _debugProcCallback = DebugCallback;
@@ -355,11 +359,23 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 shader_shadowmap_animated.AddParameter("boneTransforms");
                 shader_shadowmap_animated.AddParameter("DiffuseTexture");
 
-                shader_shadowmap_heightmap.CompileShader(new ShaderInfo[]
+                if(Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
+                    shader_shadowmap_heightmap.CompileShader(new ShaderInfo[]
+                    {
+                    new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap_heightmap },
+                    new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
+                    });
+                else if(Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
                 {
-                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap_heightmap },
-                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
-                });
+                    shader_shadowmap_heightmap.CompileShader(new ShaderInfo[]
+                    {
+                    new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap_tesselated },
+                    new ShaderInfo() { type = ShaderType.TessControlShader, data = Properties.Resources.tcsshader_hmap_tesselated },
+                    new ShaderInfo() { type = ShaderType.TessEvaluationShader, data = Properties.Resources.tesshader_hmap_shadowmap_tesselated },
+                    new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
+                    });
+                    shader_shadowmap_heightmap.AddParameter("cameraPos");
+                }
                 shader_shadowmap_heightmap.AddParameter("LSM");
                 shader_shadowmap_heightmap.AddParameter("GridSize");
                 shader_shadowmap_heightmap.AddParameter("HeightMap");
@@ -616,11 +632,23 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_animated.AddParameter("FogExponent");
             shader_animated.AddParameter("ShadowDepth");
 
-            shader_heightmap.CompileShader(new ShaderInfo[]
+            if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
+                shader_heightmap.CompileShader(new ShaderInfo[]
+                {
+                    new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap },
+                    new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_hmap }
+                });
+            else if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
             {
-                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap },
-                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_hmap }
-            });
+                shader_heightmap.CompileShader(new ShaderInfo[]
+                {
+                    new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap_tesselated },
+                    new ShaderInfo() { type = ShaderType.TessControlShader, data = Properties.Resources.tcsshader_hmap_tesselated },
+                    new ShaderInfo() { type = ShaderType.TessEvaluationShader, data = Properties.Resources.tesshader_hmap_tesselated },
+                    new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_hmap }
+                });
+                shader_heightmap.AddParameter("cameraPos");
+            }
             shader_heightmap.AddParameter("VP");
             shader_heightmap.AddParameter("GridSize");
             shader_heightmap.AddParameter("GridColor");
@@ -1035,7 +1063,13 @@ namespace SpellforceDataEditor.SF3D.SFRender
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
             GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
             GL.Uniform1(active_shader["GridSize"], heightmap.width);
-            GL.BindVertexArray(heightmap.mesh.vertex_array);
+            if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
+                GL.BindVertexArray(heightmap.mesh.vertex_array);
+            else if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
+            {
+                GL.BindVertexArray(heightmap.mesh_tesselated.vertex_array);
+                GL.Uniform3(active_shader["cameraPos"], scene.camera.position);
+            }
             GL.ActiveTexture(TextureUnit.Texture4);
             GL.BindTexture(TextureTarget.Texture2D, heightmap.height_data_texture);
             if (current_pass == RenderPass.SCENE)
@@ -1059,7 +1093,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.BindTexture(TextureTarget.Texture2D, opaque_tex.tex_id);
             }
 
-            GL.DrawElements(PrimitiveType.TriangleStrip, 2 * (heightmap.width + 1) * heightmap.height, DrawElementsType.UnsignedInt, 0);
+            if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
+                GL.DrawElements(PrimitiveType.TriangleStrip, 2 * (heightmap.width + 1) * heightmap.height, DrawElementsType.UnsignedInt, 0);
+            else if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
+                GL.DrawArrays(PrimitiveType.Patches, 0, 4 * heightmap.mesh_tesselated.patch_count);
 
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
         }

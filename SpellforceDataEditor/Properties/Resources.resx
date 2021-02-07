@@ -677,8 +677,6 @@ uniform sampler2D HeightMap;
 uniform mat4 VP;
 uniform mat4 LSM;
 
-// each vertex of a quad has a different texW
-
 vec3 GetVertexNormal(vec2 grid_pos)
 {
     vec2 neighbor_pos;
@@ -876,8 +874,6 @@ void main(){
   <data name="vshader_shadowmap_heightmap" xml:space="preserve">
     <value>// Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
-//layout(location = 1) in vec3 vertexNormal;
-// layout(location = 2) in vec2 vertexUV;
 
 out vec2 UV;
 
@@ -1035,6 +1031,146 @@ void main()
 {
     gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
     TexCoords = aTexCoords;
+}</value>
+  </data>
+  <data name="tcsshader_hmap_tesselated" xml:space="preserve">
+    <value>layout(vertices = 4) out;
+
+uniform vec3 cameraPos;
+
+// for now, there's no correction for average  patch height (all patches are of height 0)
+// doing the correction will surely improve peformance
+
+float distance(vec2 p1, vec2 p2)
+{
+    return sqrt(dot(p1-p2, p1-p2));
+}
+
+float edgeCameraDistance(vec4 p1, vec4 p2)
+{
+    return distance(((p1 + p2) * 0.5).xz, cameraPos.xz);
+}
+
+float tesselationPerDistance(float d)
+{
+    // 0-50 -&gt; 1, 50-100 -&gt; 2, 100-200 -&gt; 4, 200-400 -&gt; 8, 400-inf -&gt;16
+    return 16.0 / pow(2.0, ceil(log2(clamp(d, 50.0, 401.0) / 50.0)));
+}
+
+void main()
+{
+    if(gl_InvocationID == 0)
+    {
+        gl_TessLevelOuter[0] = tesselationPerDistance(edgeCameraDistance(gl_in[0].gl_Position, gl_in[1].gl_Position));
+        gl_TessLevelOuter[1] = tesselationPerDistance(edgeCameraDistance(gl_in[0].gl_Position, gl_in[3].gl_Position));
+        gl_TessLevelOuter[2] = tesselationPerDistance(edgeCameraDistance(gl_in[2].gl_Position, gl_in[3].gl_Position));
+        gl_TessLevelOuter[3] = tesselationPerDistance(edgeCameraDistance(gl_in[1].gl_Position, gl_in[2].gl_Position));
+
+        gl_TessLevelInner[0] = 0.5 * (gl_TessLevelOuter[0] + gl_TessLevelOuter[2]);
+        gl_TessLevelInner[1] = 0.5 * (gl_TessLevelOuter[1] + gl_TessLevelOuter[3]);
+    }
+    
+    gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+}
+</value>
+  </data>
+  <data name="tesshader_hmap_shadowmap_tesselated" xml:space="preserve">
+    <value>layout(quads) in;
+
+out vec2 UV;
+
+// Values that stay constant for the whole mesh.
+
+uniform int GridSize;
+uniform sampler2D HeightMap;
+uniform mat4 LSM;
+
+vec4 GetTesselatedVertex(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
+{
+    vec4 a = mix(v0, v1, gl_TessCoord.x);
+    vec4 b = mix(v2, v3, gl_TessCoord.x);
+    return mix(a, b, gl_TessCoord.y);
+}
+
+vec3 GetVertexPos(vec2 grid_pos)
+{
+    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+}
+
+void main()
+{
+  // get tesselated vertex
+  vec3 vertexPosition_modelspace = GetTesselatedVertex(gl_in[0].gl_Position, gl_in[3].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position).xyz;
+
+  vec3 vpos = GetVertexPos(vertexPosition_modelspace.xz);
+
+  gl_Position = LSM * vec4(vpos, 1.0);
+  UV = vec2(0.0, 0.0);
+}</value>
+  </data>
+  <data name="tesshader_hmap_tesselated" xml:space="preserve">
+    <value>layout(quads) in;
+
+out vec3 fragmentPosition;
+out vec2 UV;
+out vec3 fragmentNormal;
+out vec4 fragmentPositionLightSpace;
+out vec3 vpos_orig;
+
+// Values that stay constant for the whole mesh.
+
+uniform int GridSize;
+uniform sampler2D HeightMap;
+uniform mat4 VP;
+uniform mat4 LSM;
+
+vec4 GetTesselatedVertex(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
+{
+    vec4 a = mix(v0, v1, gl_TessCoord.x);
+    vec4 b = mix(v2, v3, gl_TessCoord.x);
+    return mix(a, b, gl_TessCoord.y);
+}
+
+vec3 GetVertexNormal(vec2 grid_pos)
+{
+    vec2 neighbor_pos;
+    neighbor_pos = grid_pos+vec2(1.0, 0.0);
+    float ah = texture(HeightMap, vec2(neighbor_pos.x, GridSize - 1 - neighbor_pos.y)/GridSize).r * 655.35;
+    neighbor_pos = grid_pos+vec2(0.0, 1.0);
+    float bh = texture(HeightMap, vec2(neighbor_pos.x, GridSize - 1 - neighbor_pos.y)/GridSize).r * 655.35;
+    neighbor_pos = grid_pos+vec2(-1.0, 0.0);
+    float ch = texture(HeightMap, vec2(neighbor_pos.x, GridSize - 1 - neighbor_pos.y)/GridSize).r * 655.35;
+    neighbor_pos = grid_pos+vec2(0.0, -1.0);
+    float dh = texture(HeightMap, vec2(neighbor_pos.x, GridSize - 1 - neighbor_pos.y)/GridSize).r * 655.35;
+    return normalize(vec3(ch-ah, 2.0, dh-bh));
+}
+
+vec3 GetVertexPos(vec2 grid_pos)
+{
+    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+}
+
+void main()
+{
+  // get tesselated vertex
+  vec3 vertexPosition_modelspace = GetTesselatedVertex(gl_in[0].gl_Position, gl_in[3].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position).xyz;
+
+  // Output position of the vertex, in clip space : MVP * position
+  vec3 vpos = GetVertexPos(vertexPosition_modelspace.xz);
+  gl_Position = VP * vec4(vpos, 1.0);
+  fragmentPositionLightSpace = LSM * vec4(vpos, 1.0);
+  UV = vertexPosition_modelspace.xz/4;
+  fragmentPosition = vpos;
+  fragmentNormal = GetVertexNormal(vertexPosition_modelspace.xz);
+  vpos_orig = vpos.xzy;
+}</value>
+  </data>
+  <data name="vshader_hmap_tesselated" xml:space="preserve">
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+
+void main(){
+  gl_Position = vec4(vertexPosition_modelspace, 1.0);
 }</value>
   </data>
 </root>

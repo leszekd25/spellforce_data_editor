@@ -30,11 +30,9 @@ namespace SpellforceDataEditor.SFMap
         {
             vertex_array = GL.GenVertexArray();
             position_buffer = GL.GenBuffer();
-            //normal_buffer = GL.GenBuffer();
             element_buffer = GL.GenBuffer();
 
             vertices = new Vector3[(hmap.width + 1) * (hmap.height + 1)];
-            //normals = new Vector3[(hmap.width + 1) * (hmap.height + 1)];
             indices = new uint[2 * (hmap.width + 1) * hmap.height];
 
             // generate indices
@@ -58,17 +56,12 @@ namespace SpellforceDataEditor.SFMap
             GL.BindVertexArray(vertex_array);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.DynamicDraw);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
 
-           /* GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, normals.Length * 12, normals, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);*/
-
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
-            GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, indices.Length * 4, indices, BufferUsageHint.DynamicDraw);
+            GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, indices.Length * 4, indices, BufferUsageHint.StaticDraw);
 
             GL.BindVertexArray(0);
 
@@ -80,16 +73,13 @@ namespace SpellforceDataEditor.SFMap
             topleft = topleft.Clamp(new SFCoord(0, 0), new SFCoord(hmap.width, hmap.height));
             size = ((topleft + size).Clamp(new SFCoord(0, 0), new SFCoord(hmap.width, hmap.height))) - topleft;
 
-            float flatten_factor = 100.0f;
-
             int v_size = hmap.width+1;
 
             for (int i = topleft.y; i <= topleft.y + size.y; i++)
             {
                 for (int j = topleft.x; j <= topleft.x + size.x; j++)
                 {
-                    vertices[i * v_size + j] = new Vector3(j, 0, v_size - i - 1);//new Vector3(j, hmap.GetHeightAt(j, i - 1) / flatten_factor, v_size - i - 1);
-                    //normals[i * v_size + j] = hmap.GetVertexNormal(j, i);
+                    vertices[i * v_size + j] = new Vector3(j, 0, v_size - i - 1);
                 }
             }
 
@@ -99,9 +89,6 @@ namespace SpellforceDataEditor.SFMap
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
             GL.BufferSubData<Vector3>(BufferTarget.ArrayBuffer, new IntPtr(12 * index_min), 12 * v_count, ref vertices[index_min]);
-
-            /*GL.BindBuffer(BufferTarget.ArrayBuffer, normal_buffer);
-            GL.BufferSubData<Vector3>(BufferTarget.ArrayBuffer, new IntPtr(12 * index_min), 12 * v_count, ref normals[index_min]);*/
         }
 
         public void Unload()
@@ -109,7 +96,6 @@ namespace SpellforceDataEditor.SFMap
             if (vertex_array != 0)
             {
                 GL.DeleteBuffer(position_buffer);
-                //GL.DeleteBuffer(normal_buffer);
                 GL.DeleteBuffer(element_buffer);
                 GL.DeleteVertexArray(vertex_array);
                 vertex_array = 0;
@@ -322,41 +308,44 @@ namespace SpellforceDataEditor.SFMap
         // opengl VAO and VBOs
         public int vertex_array = 0;
         public int position_buffer;
+        public int patch_count;
 
         // patches
         public Vector3[] vertices = null;
-        SFMapHeightMap hmap;
 
         public void Init(SFMapHeightMap heightmap)
         {
-            hmap = heightmap;
-
             vertex_array = GL.GenVertexArray();
             position_buffer = GL.GenBuffer();
+            
 
-            int chunk_count = hmap.width / SFMapHeightMapMesh.CHUNK_SIZE;
-            vertices = new Vector3[4 * chunk_count * chunk_count];
+            patch_count = heightmap.width / SFMapHeightMapMesh.CHUNK_SIZE;
+            vertices = new Vector3[4 * patch_count * patch_count];
 
-            for (int y = 0; y < chunk_count; y++)
+            for (int y = 0; y < patch_count; y++)
             {
-                for(int x = 0; x < chunk_count; x++)
+                for (int x = 0; x < patch_count; x++)
                 {
-                    vertices[4 * (y * chunk_count + x) + 0] = new Vector3(x * SFMapHeightMapMesh.CHUNK_SIZE, 0, y * SFMapHeightMapMesh.CHUNK_SIZE);
-                    vertices[4 * (y * chunk_count + x) + 1] = new Vector3((x+1) * SFMapHeightMapMesh.CHUNK_SIZE, 0, y * SFMapHeightMapMesh.CHUNK_SIZE);
-                    vertices[4 * (y * chunk_count + x) + 2] = new Vector3(x * SFMapHeightMapMesh.CHUNK_SIZE, 0, (y+1) * SFMapHeightMapMesh.CHUNK_SIZE);
-                    vertices[4 * (y * chunk_count + x) + 3] = new Vector3((x+1) * SFMapHeightMapMesh.CHUNK_SIZE, 0, (y+1) * SFMapHeightMapMesh.CHUNK_SIZE);
+                    vertices[4 * (y * patch_count + x) + 0] = new Vector3(x * SFMapHeightMapMesh.CHUNK_SIZE, 0, (y + 1) * SFMapHeightMapMesh.CHUNK_SIZE);
+                    vertices[4 * (y * patch_count + x) + 1] = new Vector3(x * SFMapHeightMapMesh.CHUNK_SIZE, 0, y * SFMapHeightMapMesh.CHUNK_SIZE);
+                    vertices[4 * (y * patch_count + x) + 2] = new Vector3((x + 1) * SFMapHeightMapMesh.CHUNK_SIZE, 0, y * SFMapHeightMapMesh.CHUNK_SIZE);
+                    vertices[4 * (y * patch_count + x) + 3] = new Vector3((x + 1) * SFMapHeightMapMesh.CHUNK_SIZE, 0, (y + 1) * SFMapHeightMapMesh.CHUNK_SIZE);
                 }
             }
+
+            patch_count *= patch_count;
 
 
             GL.BindVertexArray(vertex_array);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.DynamicDraw);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindVertexArray(0);
+
+            GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
         }
 
         public void Unload()
@@ -639,7 +628,9 @@ namespace SpellforceDataEditor.SFMap
     {
         public SFMap map = null;
         public SFMapTerrainTextureManager texture_manager { get; private set; } = new SFMapTerrainTextureManager();
-        //public SFMapHeightMapGeometryPool geometry_pool { get; private set; } = new SFMapHeightMapGeometryPool();
+
+        // only one of those meshes is used at any time, depending on Settings.TerrainLOD
+        public SFMapHeightMapMeshTesselated mesh_tesselated { get; private set; } = new SFMapHeightMapMeshTesselated();
         public SFMapHeightMapMesh mesh { get; private set; } = new SFMapHeightMapMesh();
 
         public int width, height;
@@ -849,7 +840,11 @@ namespace SpellforceDataEditor.SFMap
 
             UpdateHeightMap();
             UpdateTileMap();
-            mesh.Init(this);
+            if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
+                mesh.Init(this);
+            else if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
+                mesh_tesselated.Init(this);
+
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate(): Chunks generated: " + chunk_nodes.Length.ToString());
         }
 
@@ -1226,13 +1221,15 @@ namespace SpellforceDataEditor.SFMap
                     SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(chunk);
             //geometry_pool.Unload();
             //geometry_pool = null;
-            mesh.Unload();
+            if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
+                mesh.Unload();
+            else if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
+                mesh_tesselated.Unload();
 
             chunk42_data.Clear();
             chunk56_data.Clear();
             chunk60_data.Clear();
             visible_chunks.Clear();
-            mesh = null;
             chunk_nodes = null;
             map = null;
         }
