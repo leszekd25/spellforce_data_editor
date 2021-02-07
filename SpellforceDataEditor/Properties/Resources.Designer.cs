@@ -127,26 +127,25 @@ namespace SpellforceDataEditor.Properties {
         ///in vec2 TexCoords;
         ///
         ///uniform sampler2D screenTexture;
-        ///uniform int renderShadowMap;
-        ///uniform float ZNear;
-        ///uniform float ZFar;
+        /////uniform int renderShadowMap;
+        /////uniform float ZNear;
+        /////uniform float ZFar;
         ///
-        ///float LinearizeDepth(float z)
-        ///{
-        ///  return (2.0 * ZNear) / (ZFar + ZNear - z * (ZFar- ZNear));	
-        ///}
+        /////float LinearizeDepth(float z)
+        /////{
+        /////  return (2.0 * ZNear) / (ZFar + ZNear - z * (ZFar- ZNear));	
+        /////}
         ///
         ///void main()
         ///{
         ///    // this is for shadowmap
-        ///    if(renderShadowMap == 1)
+        ///   /* if(renderShadowMap == 1)
         ///    {
         ///        float color = LinearizeDepth(texture(screenTexture, TexCoords).r);
         ///        FragColor = vec4(color, color, color, 1.0);
-        ///    }
-        ///    else
-        ///    {
-        ///        // this is [rest of string was truncated]&quot;;.
+        ///    }*/
+        ///   // else
+        /// //   [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_framebuffer_simple {
             get {

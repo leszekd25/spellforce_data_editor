@@ -53,7 +53,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public SceneNodeCamera camera;  // temporarily not connected to root
 
 
-        public Atmosphere atmosphere { get; } = new Atmosphere();
+        public Atmosphere atmosphere { get; private set; }
 
         //public Dictionary<SFModel3D, LinearPool<SceneNodeSimple>> model_list_simple { get; private set; } = new Dictionary<SFModel3D, LinearPool<SceneNodeSimple>>();
         public HashSet<SFModel3D> model_set_simple { get; private set; } = new HashSet<SFModel3D>();
@@ -68,6 +68,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             root = new SceneNode("Root");
             camera = new SceneNodeCamera("Camera");
 
+            atmosphere = new Atmosphere();
             // setup lighting
             if (atmosphere.altitude_ambient_color == null)
             {

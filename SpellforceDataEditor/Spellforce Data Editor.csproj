@@ -847,7 +847,6 @@
     <Compile Include="SF3D\SFSkeleton.cs" />
     <Compile Include="SFSound\SFSoundEngine.cs" />
     <Compile Include="SF3D\SFTexture.cs" />
-    <Compile Include="SF3D\SFRender\ShaderCompiler.cs" />
     <Compile Include="SFSound\StreamResource.cs" />
     <Compile Include="SFCFF\SFCategory.cs" />
     <Compile Include="SFCFF\SFCategoryElement.cs" />

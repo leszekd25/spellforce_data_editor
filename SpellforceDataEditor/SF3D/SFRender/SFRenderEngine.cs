@@ -289,14 +289,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
             dump_sb = null;
         }
 
-
-        //called only once!
         public static void Initialize(Vector2 view_size)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.Initialize() called");
 
+            // this happens only once per program run
             if (!initialized)
             {
+                // setup GL debug info
                 _debugProcCallbackHandle = GCHandle.Alloc(_debugProcCallback);
 
                 GL.DebugMessageCallback(_debugProcCallback, IntPtr.Zero);
@@ -316,9 +316,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
             SFSubModel3D.Cache.AddVertexAttribute(3, VertexAttribPointerType.Float, false);   // normals
             SFSubModel3D.Cache.AddVertexAttribute(4, VertexAttribPointerType.UnsignedByte, true);   // colors
             SFSubModel3D.Cache.AddVertexAttribute(2, VertexAttribPointerType.Float, false);   // UVs
-            SFSubModel3D.Cache.SetVertexSize(40);
+            SFSubModel3D.Cache.SetVertexSize(40);                                             // extra 4 bytes are unused, but still pushed to gpu
             SFSubModel3D.Cache.Init(2 << 14, 2 << 14);
 
+            // initialize animated (skin) model cache
             if (SFModelSkinChunk.Cache != null)
                 SFModelSkinChunk.Cache.Dispose();
             SFModelSkinChunk.Cache = new MeshCache(false);
@@ -326,134 +327,195 @@ namespace SpellforceDataEditor.SF3D.SFRender
             SFModelSkinChunk.Cache.AddVertexAttribute(3, VertexAttribPointerType.Float, false);   // normals
             SFModelSkinChunk.Cache.AddVertexAttribute(4, VertexAttribPointerType.UnsignedByte, true);   // bone weights
             SFModelSkinChunk.Cache.AddVertexAttribute(2, VertexAttribPointerType.Float, false);   // uvs
-            SFModelSkinChunk.Cache.AddVertexAttribute(4, VertexAttribPointerType.UnsignedByte, false);
+            SFModelSkinChunk.Cache.AddVertexAttribute(4, VertexAttribPointerType.UnsignedByte, false);  // bone indices
             SFModelSkinChunk.Cache.SetVertexSize(40);
             SFModelSkinChunk.Cache.Init(2 << 6, 2 << 6);
 
             scene.atmosphere.FogStart = 0f;
             scene.atmosphere.FogEnd = 400.0f;
 
-            shader_shadowmap.CompileShader(Properties.Resources.vshader_shadowmap, Properties.Resources.fshader_shadowmap);
-            shader_shadowmap.AddParameter("LSM");
-            shader_shadowmap.AddParameter("DiffuseTexture");
+            if (Settings.EnableShadows)
+            {
+                // shader compilation
+                shader_shadowmap.CompileShader(new ShaderInfo[]
+                {
+                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap },
+                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
+                });
+                shader_shadowmap.AddParameter("LSM");
+                shader_shadowmap.AddParameter("DiffuseTexture");
 
-            shader_shadowmap_animated.CompileShader(Properties.Resources.vshader_shadowmap_animated, Properties.Resources.fshader_shadowmap);
-            shader_shadowmap_animated.AddParameter("LSM");
-            shader_shadowmap_animated.AddParameter("M");
-            shader_shadowmap_animated.AddParameter("boneTransforms");
-            shader_shadowmap_animated.AddParameter("DiffuseTexture");
+                shader_shadowmap_animated.CompileShader(new ShaderInfo[]
+                {
+                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap_animated },
+                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
+                });
+                shader_shadowmap_animated.AddParameter("LSM");
+                shader_shadowmap_animated.AddParameter("M");
+                shader_shadowmap_animated.AddParameter("boneTransforms");
+                shader_shadowmap_animated.AddParameter("DiffuseTexture");
 
-            shader_shadowmap_heightmap.CompileShader(Properties.Resources.vshader_shadowmap_heightmap, Properties.Resources.fshader_shadowmap);
-            shader_shadowmap_heightmap.AddParameter("LSM");
-            shader_shadowmap_heightmap.AddParameter("GridSize");
-            shader_shadowmap_heightmap.AddParameter("HeightMap");
-            shader_shadowmap_heightmap.AddParameter("DiffuseTexture");
+                shader_shadowmap_heightmap.CompileShader(new ShaderInfo[]
+                {
+                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap_heightmap },
+                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
+                });
+                shader_shadowmap_heightmap.AddParameter("LSM");
+                shader_shadowmap_heightmap.AddParameter("GridSize");
+                shader_shadowmap_heightmap.AddParameter("HeightMap");
+                shader_shadowmap_heightmap.AddParameter("DiffuseTexture");
 
-            shader_framebuffer_simple.CompileShader(Properties.Resources.vshader_framebuffer, Properties.Resources.fshader_framebuffer_simple);
-            shader_framebuffer_simple.AddParameter("renderShadowMap");
+                shader_shadowmap_blur.CompileShader(new ShaderInfo[]
+                {
+                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_framebuffer },
+                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap_blur }
+                });
+                shader_shadowmap_blur.AddParameter("image");
+                shader_shadowmap_blur.AddParameter("horizontal");
+            }
+
+            shader_framebuffer_simple.CompileShader(new ShaderInfo[]
+            {
+                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_framebuffer },
+                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_framebuffer_simple }
+            });
+            shader_framebuffer_simple.AddParameter("screenTexture");
+            /*shader_framebuffer_simple.AddParameter("renderShadowMap");
             shader_framebuffer_simple.AddParameter("ZNear");
-            shader_framebuffer_simple.AddParameter("ZFar");
+            shader_framebuffer_simple.AddParameter("ZFar");*/
 
-            shader_framebuffer_tonemapped.CompileShader(Properties.Resources.vshader_framebuffer, Properties.Resources.fshader_tonemap);
-            shader_framebuffer_tonemapped.AddParameter("exposure");
+            if (Settings.ToneMapping)
+            {
+                shader_framebuffer_tonemapped.CompileShader(new ShaderInfo[]
+                {
+                    new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_framebuffer },
+                    new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_tonemap }
+                });
+                shader_framebuffer_tonemapped.AddParameter("exposure");
 
-            shader_sky.CompileShader(Properties.Resources.vshader_sky, Properties.Resources.fshader_sky);
-            shader_sky.AddParameter("V");
-            shader_sky.AddParameter("AspectRatio");
-            shader_sky.AddParameter("AmbientStrength");
-            shader_sky.AddParameter("AmbientColor");
-            shader_sky.AddParameter("FogStrength");
-            shader_sky.AddParameter("FogColor");
+                shader_sky.CompileShader(new ShaderInfo[]
+                {
+                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_sky },
+                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_sky }
+                });
+                shader_sky.AddParameter("V");
+                shader_sky.AddParameter("AspectRatio");
+                shader_sky.AddParameter("AmbientStrength");
+                shader_sky.AddParameter("AmbientColor");
+                shader_sky.AddParameter("FogStrength");
+                shader_sky.AddParameter("FogColor");
+            }
 
-            shader_shadowmap_blur.CompileShader(Properties.Resources.vshader_framebuffer, Properties.Resources.fshader_shadowmap_blur);
-            shader_shadowmap_blur.AddParameter("image");
-            shader_shadowmap_blur.AddParameter("horizontal");
 
-            shader_ui.CompileShader(Properties.Resources.vshader_ui, Properties.Resources.fshader_ui);
+            shader_ui.CompileShader(new ShaderInfo[]
+            {
+                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_ui },
+                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_ui }
+            });
             shader_ui.AddParameter("Tex");
             shader_ui.AddParameter("ScreenSize");
             shader_ui.AddParameter("offset");
 
             RecompileMainShaders();
 
-            GL.ClearColor(scene.atmosphere.FogColor.X, scene.atmosphere.FogColor.Y,
-                          scene.atmosphere.FogColor.Z, scene.atmosphere.FogColor.W);
-
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.StencilTest);
+            // set up main gl state
             GL.Enable(EnableCap.Blend);
             GL.DepthFunc(DepthFunction.Less);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
+            // prepare view and framebuffers
+
+            if (screenspace_intermediate != null)
+            {
+                if ((Settings.EnableShadows)&&(shadowmap_depth != null))
+                {
+                    shadowmap_depth.Dispose();
+                    shadowmap_depth_helper.Dispose();
+                }
+                if(Settings.AntiAliasingSamples > 1)
+                    screenspace_framebuffer.Dispose();
+                screenspace_intermediate.Dispose();
+                screenspace_framebuffer = null;
+                screenspace_intermediate = null;
+                shadowmap_depth = null;
+                shadowmap_depth_helper = null;
+            }
+
             render_size = view_size;
             ResizeView(view_size);
 
-            if (screenspace_framebuffer != null)
+            if (Settings.EnableShadows)
             {
-                shadowmap_depth.Dispose();
-                shadowmap_depth_helper.Dispose();
-                screenspace_framebuffer.Dispose();
-                screenspace_intermediate.Dispose();
-            }
-
-            shadowmap_depth = new FrameBuffer(
-                Settings.ShadowMapSize,
-                Settings.ShadowMapSize,
-                new FrameBufferColorAttachmentInfo[]
-                {
-                    new FrameBufferColorAttachmentInfo() 
+                // shadowmap framebuffer - shadows are drawn into this buffer
+                // after that, this is horizontally blurred and stored in shadowmap_depth_helper
+                shadowmap_depth = new FrameBuffer(
+                    Settings.ShadowMapSize,
+                    Settings.ShadowMapSize,
+                    new FrameBufferColorAttachmentInfo[]
                     {
-                        format = PixelFormat.Rgba, 
-                        internal_format = PixelInternalFormat.Rg32f,
-                        pixeltype = PixelType.Float
-                    }
-                },
-                0,
-                true);
-            GL.BindTexture(TextureTarget.Texture2D, shadowmap_depth.texture_colors[0]);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-            float[] col = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, col);
-
-            shadowmap_depth_helper = new FrameBuffer(
-                Settings.ShadowMapSize,
-                Settings.ShadowMapSize,
-                new FrameBufferColorAttachmentInfo[]
-                {
-                    new FrameBufferColorAttachmentInfo() 
+                    new FrameBufferColorAttachmentInfo()
                     {
                         format = PixelFormat.Rgba,
                         internal_format = PixelInternalFormat.Rg32f,
-                        pixeltype = PixelType.Float 
+                        pixeltype = PixelType.Float
                     }
-                },
-                0,
-                true);
-            GL.BindTexture(TextureTarget.Texture2D, shadowmap_depth_helper.texture_colors[0]);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, col);
+                    },
+                    0,
+                    true);
+                GL.BindTexture(TextureTarget.Texture2D, shadowmap_depth.texture_colors[0]);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+                float[] col = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, col);
 
-            screenspace_framebuffer = new FrameBuffer(
-                (int)view_size.X,
-                (int)view_size.Y,
-                new FrameBufferColorAttachmentInfo[]
-                {
+                // shadowmap helper framebuffer - horizontal blur result is stored here
+                // after that, vertical blur is performed and drawn back onto shadowmap_depth
+                shadowmap_depth_helper = new FrameBuffer(
+                    Settings.ShadowMapSize,
+                    Settings.ShadowMapSize,
+                    new FrameBufferColorAttachmentInfo[]
+                    {
+                    new FrameBufferColorAttachmentInfo()
+                    {
+                        format = PixelFormat.Rgba,
+                        internal_format = PixelInternalFormat.Rg32f,
+                        pixeltype = PixelType.Float
+                    }
+                    },
+                    0,
+                    true);
+                GL.BindTexture(TextureTarget.Texture2D, shadowmap_depth_helper.texture_colors[0]);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, col);
+            }
+
+            // anti-aliased framebuffer - everything is drawn here if anti-aliasing is enabled
+            // if anything got drawn into it, this is later copied into screenspace_intermediate
+            if (Settings.AntiAliasingSamples > 1)
+            {
+                screenspace_framebuffer = new FrameBuffer(
+                    (int)view_size.X,
+                    (int)view_size.Y,
+                    new FrameBufferColorAttachmentInfo[]
+                    {
                     new FrameBufferColorAttachmentInfo()
                     {
                         format = PixelFormat.Rgb,
                         internal_format = (Settings.ToneMapping ? PixelInternalFormat.Rgba16f : PixelInternalFormat.Rgb),
                         pixeltype = (Settings.ToneMapping ? PixelType.Float : PixelType.UnsignedByte)
                     }
-                },
-                Settings.AntiAliasingSamples,
-                true);
+                    },
+                    Settings.AntiAliasingSamples,
+                    true);
+            }
 
+            // this framebuffer stores result of anti-aliased framebuffer (if anti-aliasing is disabled, everything is drawn here)
+            // tonemapping is performed in this framebuffer
             screenspace_intermediate = new FrameBuffer(
                 (int)view_size.X,
                 (int)view_size.Y,
@@ -469,6 +531,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 0,
                 true);
 
+            // opaque texture is a 1x1 white pixel that's used for blending operations on models that would otherwise have no texture assigned
             if (opaque_tex != null)
                 opaque_tex.Dispose();
             
@@ -498,9 +561,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_animated.SetDefine("TONEMAPPING", (Settings.ToneMapping));
             shader_heightmap.SetDefine("DISPLAY_GRID", Settings.DisplayGrid);
             shader_heightmap.SetDefine("VISUALIZE_HEIGHT", Settings.VisualizeHeight);
+            shader_heightmap.SetDefine("APPLY_SHADING", Settings.EnableShadows);
             shader_heightmap.SetDefine("TONEMAPPING", (Settings.ToneMapping));
 
-            shader_simple.CompileShader(Properties.Resources.vshader, Properties.Resources.fshader);
+            shader_simple.CompileShader(new ShaderInfo[]
+            {
+                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader },
+                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader }
+            });
             shader_simple.AddParameter("VP");
             // shader_simple.AddParameter("M");
             shader_simple.AddParameter("LSM");
@@ -524,7 +592,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_simple.AddParameter("ApplyShading");
             shader_simple.AddParameter("DistanceFade");
 
-            shader_animated.CompileShader(Properties.Resources.vshader_skel, Properties.Resources.fshader_skel);
+            shader_animated.CompileShader(new ShaderInfo[]
+            {
+                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_skel },
+                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_skel }
+            });
             shader_animated.AddParameter("P");
             shader_animated.AddParameter("V");
             shader_animated.AddParameter("M");
@@ -544,7 +616,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_animated.AddParameter("FogExponent");
             shader_animated.AddParameter("ShadowDepth");
 
-            shader_heightmap.CompileShader(Properties.Resources.vshader_hmap, Properties.Resources.fshader_hmap);
+            shader_heightmap.CompileShader(new ShaderInfo[]
+            {
+                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap },
+                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_hmap }
+            });
             shader_heightmap.AddParameter("VP");
             shader_heightmap.AddParameter("GridSize");
             shader_heightmap.AddParameter("GridColor");
@@ -586,15 +662,16 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 (float)Math.PI / 4, view_size.X / view_size.Y, min_render_distance, max_render_distance);
             scene.camera.AspectRatio = (float)(view_size.X) / view_size.Y;
             GL.Viewport(0, 0, (int)view_size.X, (int)view_size.Y);
-            if (screenspace_framebuffer != null)
+            if (screenspace_intermediate != null)
             {
-                screenspace_framebuffer.Resize((int)view_size.X, (int)view_size.Y);
+                if(Settings.AntiAliasingSamples > 1)
+                    screenspace_framebuffer.Resize((int)view_size.X, (int)view_size.Y);
                 screenspace_intermediate.Resize((int)view_size.X, (int)view_size.Y);
             }
         }
 
         // updates shader lighting parameters
-        private static void ApplyLight()
+        public static void ApplyLight()
         {
             GL.UseProgram(shader_simple.ProgramID);
             GL.Uniform1(shader_simple["SunStrength"], scene.atmosphere.sun_light.Strength);
@@ -662,21 +739,24 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Uniform1(shader_heightmap["OverlayMap"], 3);
             GL.Uniform1(shader_heightmap["HeightMap"], 4);
 
-            GL.UseProgram(shader_shadowmap.ProgramID);
-            GL.Uniform1(shader_shadowmap["DiffuseTexture"], 0);
+            if (Settings.EnableShadows)
+            {
+                GL.UseProgram(shader_shadowmap.ProgramID);
+                GL.Uniform1(shader_shadowmap["DiffuseTexture"], 0);
 
-            GL.UseProgram(shader_shadowmap_animated.ProgramID);
-            GL.Uniform1(shader_shadowmap_animated["DiffuseTexture"], 0);
+                GL.UseProgram(shader_shadowmap_animated.ProgramID);
+                GL.Uniform1(shader_shadowmap_animated["DiffuseTexture"], 0);
 
-            GL.UseProgram(shader_shadowmap_heightmap.ProgramID);
-            GL.Uniform1(shader_shadowmap_heightmap["DiffuseTexture"], 0);
-            GL.Uniform1(shader_shadowmap_heightmap["HeightMap"], 4);
+                GL.UseProgram(shader_shadowmap_heightmap.ProgramID);
+                GL.Uniform1(shader_shadowmap_heightmap["DiffuseTexture"], 0);
+                GL.Uniform1(shader_shadowmap_heightmap["HeightMap"], 4);
+
+                GL.UseProgram(shader_shadowmap_blur.ProgramID);
+                GL.Uniform1(shader_shadowmap_blur["image"], 0);
+            }
 
             GL.UseProgram(shader_ui.ProgramID);
             GL.Uniform1(shader_ui["Tex"], 0);
-
-            GL.UseProgram(shader_shadowmap_blur.ProgramID);
-            GL.Uniform1(shader_shadowmap_blur["image"], 0);
             
             GL.UseProgram(0);
         }
@@ -960,8 +1040,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.BindTexture(TextureTarget.Texture2D, heightmap.height_data_texture);
             if (current_pass == RenderPass.SCENE)
             {
-                GL.ActiveTexture(TextureUnit.Texture3);
-                GL.BindTexture(TextureTarget.Texture2D, heightmap.overlay_active_texture);
+                if (heightmap.overlay_active_texture != -1)
+                {
+                    GL.ActiveTexture(TextureUnit.Texture3);
+                    GL.BindTexture(TextureTarget.Texture2D, heightmap.overlay_active_texture);
+                }
                 GL.ActiveTexture(TextureUnit.Texture2);
                 GL.BindTexture(TextureTarget.Texture2D, heightmap.tile_data_texture);
                 GL.ActiveTexture(TextureUnit.Texture0);
@@ -1191,19 +1274,16 @@ namespace SpellforceDataEditor.SF3D.SFRender
             if (scene.map == null)
                 scene.atmosphere.sun_light.SetupLightView(new Physics.BoundingBox(new Vector3(-5, 0, -5), new Vector3(5, 30, 5)));
 
-            ApplyLight();
-
-            //GatherInstances();
-
             // render shadowmap
             current_pass = RenderPass.SHADOWMAP;
             GL.Disable(EnableCap.Blend);
-            SetFramebuffer(shadowmap_depth);
-            GL.ClearColor(Color.White);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             if (Settings.EnableShadows)
             {
+                SetFramebuffer(shadowmap_depth);
+                GL.ClearColor(Color.White);
+                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
                 //SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
                 GL.Enable(EnableCap.DepthTest);
                 GL.CullFace(CullFaceMode.Front);
@@ -1277,9 +1357,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             // only used here! setting shadow map texture to texture unit 1
             // every other operation on textures happens on texture unit 0
-            GL.ActiveTexture(TextureUnit.Texture1);
-            GL.BindTexture(TextureTarget.Texture2D, shadowmap_depth.texture_colors[0]);
-            GL.ActiveTexture(TextureUnit.Texture0);
+            if (Settings.EnableShadows)
+            {
+                GL.ActiveTexture(TextureUnit.Texture1);
+                GL.BindTexture(TextureTarget.Texture2D, shadowmap_depth.texture_colors[0]);
+                GL.ActiveTexture(TextureUnit.Texture0);
+            }
 
             // heightmap and overlays
             if (scene.map != null)
@@ -1320,7 +1403,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             // tonemapping
             GL.Disable(EnableCap.DepthTest);
-            GL.BindTexture(TextureTarget.Texture2D, render_shadowmap_depth ? shadowmap_depth.texture_colors[0] : screenspace_intermediate.texture_colors[0]);
+            GL.BindTexture(TextureTarget.Texture2D, screenspace_intermediate.texture_colors[0]);
+            //GL.BindTexture(TextureTarget.Texture2D, render_shadowmap_depth ? shadowmap_depth.texture_colors[0] : screenspace_intermediate.texture_colors[0]);
             if (Settings.ToneMapping)
             {
                 UseShader(shader_framebuffer_tonemapped);
@@ -1329,9 +1413,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
             else
             {
                 UseShader(shader_framebuffer_simple);
-                GL.Uniform1(active_shader["renderShadowMap"], render_shadowmap_depth ? 1 : 0);
+                /*GL.Uniform1(active_shader["renderShadowMap"], render_shadowmap_depth ? 1 : 0);
                 GL.Uniform1(active_shader["ZNear"], scene.atmosphere.sun_light.ZNear);
-                GL.Uniform1(active_shader["ZFar"], scene.atmosphere.sun_light.ZFar);
+                GL.Uniform1(active_shader["ZFar"], scene.atmosphere.sun_light.ZFar);*/
             }
             GL.BindVertexArray(FrameBuffer.screen_vao);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);

@@ -165,6 +165,8 @@ namespace SpellforceDataEditor.SF3D
             ambient_light.Strength = altitude_ambient_strength.Get(altitude + 90f);
             FogColor = altitude_fog_color.Get(altitude + 90f);
             FogStrength = altitude_fog_strength.Get(altitude + 90f);
+
+            SFRender.SFRenderEngine.ApplyLight();
         }
 
         public void Dispose()

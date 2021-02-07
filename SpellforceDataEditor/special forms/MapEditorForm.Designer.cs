@@ -58,7 +58,6 @@
             this.label14 = new System.Windows.Forms.Label();
             this.PanelDecalGroups = new System.Windows.Forms.Panel();
             this.TabPageEntities = new System.Windows.Forms.TabPage();
-            this.QuickSelect = new SpellforceDataEditor.SFMap.map_controls.MapQuickSelectControl();
             this.EntityHidePreview = new System.Windows.Forms.CheckBox();
             this.PanelMonumentType = new System.Windows.Forms.Panel();
             this.MonumentHero = new System.Windows.Forms.RadioButton();
@@ -198,8 +197,8 @@
             this.TreeEntitytFilter = new System.Windows.Forms.TextBox();
             this.TreeEntities = new System.Windows.Forms.TreeView();
             this.TimerTreeEntityFilter = new System.Windows.Forms.Timer(this.components);
-            this.RenderWindow = new OpenTK.GLControl();
             this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
+            this.QuickSelect = new SpellforceDataEditor.SFMap.map_controls.MapQuickSelectControl();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
@@ -468,16 +467,6 @@
             this.TabPageEntities.TabIndex = 2;
             this.TabPageEntities.Text = "Entities";
             this.TabPageEntities.UseVisualStyleBackColor = true;
-            // 
-            // QuickSelect
-            // 
-            this.QuickSelect.Location = new System.Drawing.Point(731, 4);
-            this.QuickSelect.Margin = new System.Windows.Forms.Padding(2);
-            this.QuickSelect.Name = "QuickSelect";
-            this.QuickSelect.QsRef = null;
-            this.QuickSelect.Size = new System.Drawing.Size(480, 84);
-            this.QuickSelect.TabIndex = 15;
-            this.QuickSelect.Visible = false;
             // 
             // EntityHidePreview
             // 
@@ -1576,11 +1565,13 @@
             this.TabEditorModes.Controls.Add(this.TabPageDecorations);
             this.TabEditorModes.Controls.Add(this.TabPageMetadata);
             this.TabEditorModes.Enabled = false;
+            this.TabEditorModes.ItemSize = new System.Drawing.Size(190, 21);
             this.TabEditorModes.Location = new System.Drawing.Point(0, 27);
             this.TabEditorModes.Name = "TabEditorModes";
-            this.TabEditorModes.Padding = new System.Drawing.Point(72, 3);
+            this.TabEditorModes.Padding = new System.Drawing.Point(3, 3);
             this.TabEditorModes.SelectedIndex = 0;
             this.TabEditorModes.Size = new System.Drawing.Size(1100, 143);
+            this.TabEditorModes.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.TabEditorModes.TabIndex = 7;
             this.TabEditorModes.SelectedIndexChanged += new System.EventHandler(this.TabEditorModes_SelectedIndexChanged);
             // 
@@ -1932,20 +1923,19 @@
             this.TimerTreeEntityFilter.Interval = 500;
             this.TimerTreeEntityFilter.Tick += new System.EventHandler(this.TimerTreeEntityFilter_Tick);
             // 
-            // RenderWindow
-            // 
-            this.RenderWindow.BackColor = System.Drawing.Color.Black;
-            this.RenderWindow.Enabled = false;
-            this.RenderWindow.Location = new System.Drawing.Point(4, 176);
-            this.RenderWindow.Name = "RenderWindow";
-            this.RenderWindow.Size = new System.Drawing.Size(1092, 463);
-            this.RenderWindow.TabIndex = 11;
-            this.RenderWindow.VSync = false;
-            this.RenderWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
-            // 
             // TimerAnimation
             // 
             this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
+            // 
+            // QuickSelect
+            // 
+            this.QuickSelect.Location = new System.Drawing.Point(731, 4);
+            this.QuickSelect.Margin = new System.Windows.Forms.Padding(2);
+            this.QuickSelect.Name = "QuickSelect";
+            this.QuickSelect.QsRef = null;
+            this.QuickSelect.Size = new System.Drawing.Size(480, 84);
+            this.QuickSelect.TabIndex = 15;
+            this.QuickSelect.Visible = false;
             // 
             // MapEditorForm
             // 
@@ -1958,7 +1948,6 @@
             this.Controls.Add(this.TabEditorModes);
             this.Controls.Add(this.StatusStrip);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.RenderWindow);
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(1005, 706);
@@ -2185,7 +2174,6 @@
         private System.Windows.Forms.TextBox Angle;
         private System.Windows.Forms.TextBox TreeEntitytFilter;
         private System.Windows.Forms.Timer TimerTreeEntityFilter;
-        private OpenTK.GLControl RenderWindow;
         private System.Windows.Forms.CheckBox EntityHidePreview;
         private SFMap.map_controls.MapQuickSelectControl QuickSelect;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;

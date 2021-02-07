@@ -10,6 +10,7 @@ namespace SpellforceDataEditor
 {
     public static class Settings
     {
+        public static bool VSync { get; private set; } = false;
         public static int IgnoredMipMapsCount { get; private set; } = 0;
         public static int MaximumAllowedTextureSize { get; private set; } = 2048;
         public static bool EnableShadows { get; set; } = true;
@@ -67,6 +68,9 @@ namespace SpellforceDataEditor
                         case "!":
                             if (words[1] == "Ignore")
                                 ignore_rest = true;
+                            break;
+                        case "VSync":
+                            VSync = (words[1] == "YES");
                             break;
                         case "IgnoredMipMapsCount":
                             IgnoredMipMapsCount = Utility.TryParseUInt8(words[1], (byte)IgnoredMipMapsCount);
@@ -235,6 +239,9 @@ namespace SpellforceDataEditor
                     bool skipped_line = false;
                     switch (words[0])
                     {
+                        case "VSync":
+                            words = new string[] { words[0], VSync ? "YES" : "NO" };
+                            break;
                         case "IgnoredMipMapsCount":
                             words = new string[] { words[0], IgnoredMipMapsCount.ToString() };
                             break;

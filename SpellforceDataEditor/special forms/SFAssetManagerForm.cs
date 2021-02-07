@@ -177,11 +177,15 @@ namespace SpellforceDataEditor.special_forms
 
             SFRenderEngine.scene.Init();
             SFRenderEngine.Initialize(new Vector2(glControl1.ClientSize.Width, glControl1.ClientSize.Height));
-            SFRenderEngine.scene.camera.SetPosition(new Vector3(0, 2, 6));
-            SFRenderEngine.scene.camera.Lookat = new Vector3(0, 0, 0);
 
             glControl1.MouseWheel += new MouseEventHandler(glControl1_MouseWheel);
             glControl1.MakeCurrent();
+
+            SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
+            SFRenderEngine.SetObjectFadeRange(170, 220);
+            SFRenderEngine.scene.camera.SetPosition(new Vector3(0, 2, 6));
+            SFRenderEngine.scene.camera.Lookat = new Vector3(0, 0, 0);
+            SFRenderEngine.scene.camera.Update(0);
 
             TimerAnimation.Enabled = true;
             TimerAnimation.Interval = 1000 / SFRenderEngine.scene.frames_per_second;
@@ -221,6 +225,8 @@ namespace SpellforceDataEditor.special_forms
 
             // set up ui
             ui = new SFAssetManagerUI();
+
+            update_render = true;
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
@@ -235,14 +241,12 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
             SFRenderEngine.scene.root = null;
             SFRenderEngine.scene.camera = null;
+            SFRenderEngine.scene.atmosphere.Dispose();
 
-            /*foreach (var tex in SFRenderEngine.scene.tex_list_simple.Keys)
-                SFRenderEngine.scene.tex_list_simple[tex].Clear();
-            SFRenderEngine.scene.tex_list_simple.Clear();*/
             SFRenderEngine.scene.model_set_simple.Clear();
 
-            SFSubModel3D.Cache.Clear();
-            SFModelSkinChunk.Cache.Clear();
+            SF3D.SFSubModel3D.Cache.Dispose();
+            SF3D.SFModelSkinChunk.Cache.Dispose();
 
             SFRenderEngine.ui.Dispose();
             ui.Dispose();

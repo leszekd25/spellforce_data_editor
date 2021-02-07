@@ -590,6 +590,8 @@ namespace SpellforceDataEditor.special_forms
         SFMap.SFMap map = null;
         SFCFF.SFGameData gamedata = null;
 
+        GLControl RenderWindow = null;
+        bool initialized_view = false;   // is true when the map render control is visible and loaded
         bool dynamic_render = false;     // if true, window will redraw every frame at 25 fps
         bool mouse_pressed = false;      // if true, mouse is pressed and in render window
         MouseButtons mouse_last_pressed = MouseButtons.Left;  // last mouse button pressed
@@ -605,7 +607,6 @@ namespace SpellforceDataEditor.special_forms
         SpecialKeysPressed special_pressed = new SpecialKeysPressed();
 
         public bool update_render = false;  // whenever this is true, window will be repainted, and this switched to false
-        int gc_timer = 0;                   // when this reaches 8x fps, garbage collector runs
         int updates_this_second = 0;
 
         public MapEditor selected_editor { get; private set; } = new MapHeightMapEditor();
@@ -641,31 +642,13 @@ namespace SpellforceDataEditor.special_forms
 
         private void MapEditorForm_Load(object sender, EventArgs e)
         {
-            SFLua.SFLuaEnvironment.LoadSQL(false);
-            if (!SFLua.SFLuaEnvironment.data_loaded)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "MapEditorForm_Load(): Failed to load SQL data!");
-                Close();
-                throw new Exception("MapEditorForm_Load(): Failed to load SQL data");
-            }
-
             TimerAnimation.Enabled = true;
             TimerAnimation.Interval = 1000 / SFRenderEngine.scene.frames_per_second;
             TimerAnimation.Start();
 
             gamedata = SFCFF.SFCategoryManager.gamedata;
 
-            SFRenderEngine.scene.Init();
-            CreateRenderWindow();
-            // set light direction (move somewhere else in the future, before this function is called)
-            SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
-            // set up object fadein fadeout
-            SFRenderEngine.SetObjectFadeRange(170, 220);
             InspectorHide();
-
-            this.WindowState = FormWindowState.Maximized;
-
-            LogUtils.Log.TotalMemoryUsage();
         }
 
         private void MapEditorForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -679,15 +662,23 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.scene.root = null;
                 SFRenderEngine.scene.camera = null;
                 SFRenderEngine.scene.map = null;
-                SF3D.SFSubModel3D.Cache.Dispose();
-                DestroyRenderWindow();
+
+                if (initialized_view)
+                {
+                    SFRenderEngine.scene.atmosphere.Dispose();
+
+                    SF3D.SFSubModel3D.Cache.Dispose();
+                    SF3D.SFModelSkinChunk.Cache.Dispose();
+
+                    DestroyRenderWindow();
+                }
             }
         }
 
         private void MapEditorForm_Resize(object sender, EventArgs e)
         {
             TabEditorModes.Width = this.Width - 22;
-            TabEditorModes.Padding = new Point(Math.Max(10, ((this.Width - 350)) / TabEditorModes.TabPages.Count / 2), TabEditorModes.Padding.Y);
+            TabEditorModes.ItemSize = new Size((TabEditorModes.Size.Width - 60) / TabEditorModes.TabPages.Count, TabEditorModes.ItemSize.Height);
             ResizeWindow();
 
             PanelUtility.Location = new Point(this.Width - PanelUtility.Width, StatusStrip.Location.Y);
@@ -768,6 +759,34 @@ namespace SpellforceDataEditor.special_forms
             else if (SFCFF.SFCategoryManager.ready)
                 SFCFF.SFCategoryManager.UnloadAll();
 
+            // first, load view
+            if (!initialized_view)
+            {
+                StatusText.Text = "Initializing view...";
+                StatusText.GetCurrentParent().Refresh();
+                CreateRenderWindow();
+                if(!initialized_view)
+                {
+                    StatusText.Text = "Could not initialize view. Aborting";
+                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap(): Failed to initialize view!");
+                    return -1;
+                }
+            }
+
+            // load SQL Lua files
+            if (!SFLua.SFLuaEnvironment.data_loaded)
+            {
+                StatusText.Text = "Loading SQL Lua files...";
+                StatusText.GetCurrentParent().Refresh();
+                SFLua.SFLuaEnvironment.LoadSQL(false);
+                if (!SFLua.SFLuaEnvironment.data_loaded)
+                {
+                    StatusText.Text = "Could not load SQL Lua files. Can't create new map";
+                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap(): Failed to load SQL data!");
+                    return -1;
+                }
+            }
+
             // load in gamedata from game directory
             StatusText.Text = "Loading GameData.cff...";
             StatusText.GetCurrentParent().Refresh();
@@ -847,6 +866,34 @@ namespace SpellforceDataEditor.special_forms
                 }
                 else if (SFCFF.SFCategoryManager.ready)
                     SFCFF.SFCategoryManager.UnloadAll();
+
+                // first, load view
+                if (!initialized_view)
+                {
+                    StatusText.Text = "Initializing view...";
+                    StatusText.GetCurrentParent().Refresh();
+                    CreateRenderWindow();
+                    if (!initialized_view)
+                    {
+                        StatusText.Text = "Could not initialize view. Aborting";
+                        LogUtils.Log.Error(LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap(): Failed to initialize view!");
+                        return -1;
+                    }
+                }
+
+                // load SQL Lua files
+                if (!SFLua.SFLuaEnvironment.data_loaded)
+                {
+                    StatusText.Text = "Loading SQL Lua files...";
+                    StatusText.GetCurrentParent().Refresh();
+                    SFLua.SFLuaEnvironment.LoadSQL(false);
+                    if (!SFLua.SFLuaEnvironment.data_loaded)
+                    {
+                        StatusText.Text = "Could not load SQL Lua files. Can't load map.";
+                        LogUtils.Log.Error(LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap(): Failed to load SQL data!");
+                        return -1;
+                    }
+                }
 
                 StatusText.Text = "Loading GameData.cff...";
                 StatusText.GetCurrentParent().Refresh();
@@ -1048,6 +1095,21 @@ namespace SpellforceDataEditor.special_forms
 
         private void CreateRenderWindow()
         {
+            RenderWindow = new GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(32), 24, 8), 4, 2, OpenTK.Graphics.GraphicsContextFlags.Default);
+            this.Controls.Add(RenderWindow);
+
+            int ystart = PanelObjectSelector.Location.Y;
+            int yend = StatusStrip.Location.Y;
+            int w_height = Math.Max(100, yend - ystart - 3);
+            int w_width = Math.Max(100, this.Width - 22 - (PanelInspector.Visible ? PanelInspector.Width : 0)
+                - (PanelObjectSelector.Visible ? PanelObjectSelector.Width : 0));
+            int xstart = (PanelObjectSelector.Visible ? PanelObjectSelector.Location.X + PanelObjectSelector.Width + 3 : 0);
+            RenderWindow.Location = new Point(xstart, ystart);
+            RenderWindow.Size = new Size(w_width, w_height);
+            RenderWindow.Enabled = false;
+            RenderWindow.VSync = Settings.VSync;
+
+            RenderWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
             RenderWindow.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseDown);
             RenderWindow.MouseEnter += new System.EventHandler(this.RenderWindow_MouseEnter);
             RenderWindow.MouseLeave += new System.EventHandler(this.RenderWindow_MouseLeave);
@@ -1055,11 +1117,21 @@ namespace SpellforceDataEditor.special_forms
             RenderWindow.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
             RenderWindow.MouseWheel += new MouseEventHandler(this.RenderWindow_MouseWheel);
 
-            // it seems shaders must always be compiled upon creating new window
+            RenderWindow.MakeCurrent();
+
+            // after render window is created, scene and engine are initialized
+            SFRenderEngine.scene.Init();
             SFRenderEngine.Initialize(new Vector2(RenderWindow.ClientSize.Width, RenderWindow.ClientSize.Height));
             TimerUpdatesPerSecond.Start();
 
-            RenderWindow.MakeCurrent();
+            // set light direction (move somewhere else in the future, before this function is called)
+            SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
+            // set up object fadein fadeout
+            SFRenderEngine.SetObjectFadeRange(170, 220);
+
+            initialized_view = true;
+
+            LogUtils.Log.TotalMemoryUsage();
         }
 
         // after this is called, memory will be freed (?)
@@ -1071,6 +1143,7 @@ namespace SpellforceDataEditor.special_forms
             RenderWindow.MouseMove -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseMove);
             RenderWindow.MouseUp -= new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseUp);
             RenderWindow.MouseWheel -= new MouseEventHandler(this.RenderWindow_MouseWheel);
+            RenderWindow.Paint -= new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
 
             TimerUpdatesPerSecond.Stop();
             UpdatesText.Text = "";
@@ -1423,7 +1496,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void ResizeWindow()
         {
-            int ystart = RenderWindow.Location.Y;
+            int ystart = PanelObjectSelector.Location.Y;
             int yend = StatusStrip.Location.Y;
             int w_height = Math.Max(100, yend - ystart - 3);
             int w_width = Math.Max(100, this.Width - 22 - (PanelInspector.Visible ? PanelInspector.Width : 0)
@@ -1432,6 +1505,10 @@ namespace SpellforceDataEditor.special_forms
             PanelObjectSelector.Height = w_height;
             TreeEntities.Height = w_height - 32;
             TreeEntitytFilter.Location = new Point(TreeEntitytFilter.Location.X, w_height - 23);
+
+            if (!initialized_view)
+                return;
+
             RenderWindow.Location = new Point(xstart, ystart);
             RenderWindow.Size = new Size(w_width, w_height);
             PanelInspector.Location = new Point(6 + RenderWindow.Width + (PanelObjectSelector.Visible ? PanelObjectSelector.Width : 0), ystart);

@@ -575,6 +575,8 @@ void main(){
   
   #ifndef VISUALIZE_HEIGHT
   float dist = gl_FragCoord.z / gl_FragCoord.w;
+
+  #ifdef APPLY_SHADING
   // calculate brightness resulting from light coming from sun
   vec3 normal = fragmentNormal;
   vec3 fragVec = fragmentPosition;
@@ -586,6 +588,11 @@ void main(){
   brightness = min(brightness, calc_shadow);
   brightness = clamp(brightness, 0, 1);  
   brightness = pow(brightness, 0.6);
+  #endif // APPLY_SHADING
+  
+  #ifndef APPLY_SHADING
+  float brightness = 1.0;
+  #endif // APPLY_SHADING
 
   // calculate diffuse color based on heightmap textures
   vec2 map_uv = floor(UV*4);
@@ -742,28 +749,28 @@ void main(){
 in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
-uniform int renderShadowMap;
-uniform float ZNear;
-uniform float ZFar;
+//uniform int renderShadowMap;
+//uniform float ZNear;
+//uniform float ZFar;
 
-float LinearizeDepth(float z)
-{
-  return (2.0 * ZNear) / (ZFar + ZNear - z * (ZFar- ZNear));	
-}
+//float LinearizeDepth(float z)
+//{
+//  return (2.0 * ZNear) / (ZFar + ZNear - z * (ZFar- ZNear));	
+//}
 
 void main()
 {
     // this is for shadowmap
-    if(renderShadowMap == 1)
+   /* if(renderShadowMap == 1)
     {
         float color = LinearizeDepth(texture(screenTexture, TexCoords).r);
         FragColor = vec4(color, color, color, 1.0);
-    }
-    else
-    {
+    }*/
+   // else
+ //   {
         // this is for final render
         FragColor = texture(screenTexture, TexCoords);
-    }
+  //  }
 }</value>
   </data>
   <data name="vshader_framebuffer" xml:space="preserve">
