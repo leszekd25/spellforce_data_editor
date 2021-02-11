@@ -649,7 +649,12 @@ void main(){
   color = mix(color, ov_col_final, 0.7*ov_col_final.a);
 
   // grid
-  color = mix(color, GridColor, gridintensity);
+  #ifdef TONEMAPPING
+    color = mix(color, vec4((GridColor*2.0).xyz, GridColor.a), gridintensity);
+  #endif //TONEMAPPING
+  #ifndef TONEMAPPING
+    color = mix(color, GridColor, gridintensity);
+  #endif //TONEMAPPING
 
   // fog calculation
   float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);

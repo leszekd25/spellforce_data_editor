@@ -51,7 +51,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             else if (b == MouseButtons.Right)
             {
                 byte new_dec_group = map.decoration_manager.GetDecAssignment(new SFCoord(pos.x, pos.y));
-                // selection
+                MainForm.mapedittool.SelectDecorationGroup(new_dec_group);
             }
         }
 

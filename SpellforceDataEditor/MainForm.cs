@@ -51,9 +51,16 @@ namespace SpellforceDataEditor
         }
 
         void CheckNewVersionAvailable()
-        {
+        {           
             System.Net.WebClient wc = new System.Net.WebClient();
             wc.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(getVersion_completed);
+
+            // explicitly setup security protocol, github changes some things on their end
+            System.Net.ServicePointManager.Expect100Continue = true;
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls
+                   | System.Net.SecurityProtocolType.Tls11
+                   | System.Net.SecurityProtocolType.Tls12
+                   | System.Net.SecurityProtocolType.Ssl3;
 
             Uri dw_string = new Uri("https://raw.githubusercontent.com/leszekd25/spellforce_data_editor/with_viewer/bin/README.md");
             wc.DownloadStringAsync(dw_string);

@@ -1087,6 +1087,24 @@ namespace SpellforceDataEditor.SFMap
             UpdateTileMap();
         }
 
+        public void UpdateDecorationMap(int dec_group)
+        {
+            for (int i = 0; i < width; i++)
+                for (int j = 0; j < height; j++)
+                    map.heightmap.overlay_data_decals[j * map.width + i] = 0;
+            if (dec_group != 0)
+            {
+                for (int i = 0; i < 1048576; i++)
+                {
+                    if (map.decoration_manager.dec_assignment[i] == dec_group)
+                    {
+                        SFCoord p = map.decoration_manager.GetDecPosition(i);
+                        map.heightmap.overlay_data_decals[p.y * map.width + p.x] = 6;
+                    }
+                }
+            }
+        }
+
         private void SetOverlayColors()
         {
             uniformOverlays[0] = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);    // empty

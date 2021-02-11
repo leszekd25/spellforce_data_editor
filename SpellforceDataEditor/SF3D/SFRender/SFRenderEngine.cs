@@ -1079,6 +1079,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     GL.ActiveTexture(TextureUnit.Texture3);
                     GL.BindTexture(TextureTarget.Texture2D, heightmap.overlay_active_texture);
                 }
+                else
+                {
+                    GL.ActiveTexture(TextureUnit.Texture3);
+                    GL.BindTexture(TextureTarget.Texture2D, 0);
+                }
                 GL.ActiveTexture(TextureUnit.Texture2);
                 GL.BindTexture(TextureTarget.Texture2D, heightmap.tile_data_texture);
                 GL.ActiveTexture(TextureUnit.Texture0);

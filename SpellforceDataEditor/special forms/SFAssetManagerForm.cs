@@ -162,9 +162,6 @@ namespace SpellforceDataEditor.special_forms
         // assumes game directory is specified
         private void SF3DManagerForm_Load(object sender, EventArgs e)
         {
-            tmp_shadows = Settings.EnableShadows;
-            Settings.EnableShadows = false;
-
             SFResourceManager.FindAllMeshes();
 
             SFLua.SFLuaEnvironment.LoadSQL(false);
@@ -253,8 +250,6 @@ namespace SpellforceDataEditor.special_forms
             SFResourceManager.DisposeAll();
             sound_engine.UnloadSound();
             glControl1.MouseWheel -= new MouseEventHandler(glControl1_MouseWheel);
-
-            Settings.EnableShadows = tmp_shadows;
         }
 
         private void SFAssetManagerForm_Resize(object sender, EventArgs e)

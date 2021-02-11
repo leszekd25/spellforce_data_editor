@@ -21,10 +21,10 @@ namespace SpellforceDataEditor.special_forms
             InitializeComponent();
 
             link_wiki = new LinkLabel();
-            link_wiki.Text = "SpellForce Editor wiki";
+            link_wiki.Text = "SpellForce Editor manual";
             link_wiki.LinkClicked += new LinkLabelLinkClickedEventHandler(this.link_wiki_Clicked);
             LinkLabel.Link data = new LinkLabel.Link();
-            data.LinkData = "https://github.com/leszekd25/spellforce_data_editor/wiki";
+            data.LinkData = "https://drive.google.com/file/d/1GO6NQdl-1x7wgddGORdIAhZj86SWGmum/view?usp=sharing";
             link_wiki.Links.Add(data);
             link_wiki.AutoSize = true;
             link_wiki.Padding = new Padding(0);
@@ -63,7 +63,7 @@ namespace SpellforceDataEditor.special_forms
             link_wiki.Location =
                 TextBoxContactInfo.GetPositionFromCharIndex(TextBoxContactInfo.TextLength);
             TextBoxContactInfo.Controls.Add(link_wiki);
-            TextBoxContactInfo.AppendText(link_wiki.Text + "  , which is slowly being updated...\r\n");
+            TextBoxContactInfo.AppendText(link_wiki.Text + "  , an up-to-date manual for most of this program's caapabilities\r\n");
             TextBoxContactInfo.SelectionStart = TextBoxContactInfo.TextLength;
 
             link_discord.Location =

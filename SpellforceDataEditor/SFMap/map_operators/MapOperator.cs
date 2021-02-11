@@ -1232,7 +1232,15 @@ namespace SpellforceDataEditor.SFMap.map_operators
         {
             map.decoration_manager.SetDecorations(decals);
 
-            map.heightmap.RefreshOverlay();
+            if (MainForm.mapedittool.selected_inspector is map_controls.MapDecorationInspector)
+            {
+                int dec_g = ((map_controls.MapDecorationInspector)(MainForm.mapedittool.selected_inspector)).selected_dec_group;
+
+                map.heightmap.UpdateDecorationMap(dec_g);
+                map.heightmap.RefreshOverlay();
+            }
+
+
             MainForm.mapedittool.update_render = true;
         }
 

@@ -2811,6 +2811,7 @@ namespace SpellforceDataEditor.special_forms
             PanelMonumentType.Visible = false;
             PanelObjectAngle.Visible = false;
 
+            QuickSelect.Visible = true;
             QuickSelect.QsRef = qs_unit;
 
             EntityID.Text = "0";
@@ -3000,6 +3001,7 @@ namespace SpellforceDataEditor.special_forms
             PanelMonumentType.Visible = false;
             PanelObjectAngle.Visible = false;
 
+            QuickSelect.Visible = true;
             QuickSelect.QsRef = qs_building;
 
             EntityID.Text = "0";
@@ -3181,8 +3183,9 @@ namespace SpellforceDataEditor.special_forms
             PanelEntityPlacementSelect.Visible = true;
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
-            PanelObjectAngle.Visible = true; 
-            
+            PanelObjectAngle.Visible = true;
+
+            QuickSelect.Visible = true;
             QuickSelect.QsRef = qs_object;
 
             EntityID.Text = "0";
@@ -3201,6 +3204,8 @@ namespace SpellforceDataEditor.special_forms
             {
                 map = this.map
             };
+
+            QuickSelect.Visible = false;
 
             PanelEntityPlacementSelect.Visible = false;
             EditCoopCampTypes.Visible = true;
@@ -3229,6 +3234,8 @@ namespace SpellforceDataEditor.special_forms
                 map = this.map
             };
 
+            QuickSelect.Visible = false;
+
             PanelEntityPlacementSelect.Visible = false;
             EditCoopCampTypes.Visible = false;
             PanelMonumentType.Visible = false;
@@ -3249,6 +3256,9 @@ namespace SpellforceDataEditor.special_forms
             {
                 map = this.map
             };
+
+
+            QuickSelect.Visible = false;
 
             PanelEntityPlacementSelect.Visible = false;
             EditCoopCampTypes.Visible = false;
@@ -3290,6 +3300,8 @@ namespace SpellforceDataEditor.special_forms
             {
                 map = this.map
             };
+
+            QuickSelect.Visible = false;
 
             PanelEntityPlacementSelect.Visible = false;
             EditCoopCampTypes.Visible = false;
@@ -3407,6 +3419,14 @@ namespace SpellforceDataEditor.special_forms
                 return;
 
             PanelDecalGroups.Controls[i].BackColor = GetDecGroupButtonColor(i);
+        }
+
+        public void SelectDecorationGroup(int i)
+        {
+            if (TabEditorModes.SelectedIndex != 3)
+                return;
+
+            OnDecButtonPress(PanelDecalGroups.Controls[i], null);
         }
 
         private void ReselectDecorationMode()

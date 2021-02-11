@@ -58,6 +58,7 @@
             this.label14 = new System.Windows.Forms.Label();
             this.PanelDecalGroups = new System.Windows.Forms.Panel();
             this.TabPageEntities = new System.Windows.Forms.TabPage();
+            this.QuickSelect = new SpellforceDataEditor.SFMap.map_controls.MapQuickSelectControl();
             this.EntityHidePreview = new System.Windows.Forms.CheckBox();
             this.PanelMonumentType = new System.Windows.Forms.Panel();
             this.MonumentHero = new System.Windows.Forms.RadioButton();
@@ -198,7 +199,6 @@
             this.TreeEntities = new System.Windows.Forms.TreeView();
             this.TimerTreeEntityFilter = new System.Windows.Forms.Timer(this.components);
             this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
-            this.QuickSelect = new SpellforceDataEditor.SFMap.map_controls.MapQuickSelectControl();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
@@ -467,6 +467,16 @@
             this.TabPageEntities.TabIndex = 2;
             this.TabPageEntities.Text = "Entities";
             this.TabPageEntities.UseVisualStyleBackColor = true;
+            // 
+            // QuickSelect
+            // 
+            this.QuickSelect.Location = new System.Drawing.Point(731, 4);
+            this.QuickSelect.Margin = new System.Windows.Forms.Padding(2);
+            this.QuickSelect.Name = "QuickSelect";
+            this.QuickSelect.QsRef = null;
+            this.QuickSelect.Size = new System.Drawing.Size(480, 84);
+            this.QuickSelect.TabIndex = 15;
+            this.QuickSelect.Visible = false;
             // 
             // EntityHidePreview
             // 
@@ -1926,16 +1936,6 @@
             // TimerAnimation
             // 
             this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
-            // 
-            // QuickSelect
-            // 
-            this.QuickSelect.Location = new System.Drawing.Point(731, 4);
-            this.QuickSelect.Margin = new System.Windows.Forms.Padding(2);
-            this.QuickSelect.Name = "QuickSelect";
-            this.QuickSelect.QsRef = null;
-            this.QuickSelect.Size = new System.Drawing.Size(480, 84);
-            this.QuickSelect.TabIndex = 15;
-            this.QuickSelect.Visible = false;
             // 
             // MapEditorForm
             // 
