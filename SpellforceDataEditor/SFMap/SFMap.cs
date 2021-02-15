@@ -521,6 +521,39 @@ namespace SpellforceDataEditor.SFMap
             {
                 using (BinaryReader br = c53.Open())
                 {
+                    // fix for maps that don't have as many spawns as bindstones
+                    // coop 04,09 etc. bugfix: player count is not equivalent to bindstone count!
+                    if (metadata.spawns.Count < int_object_manager.bindstones_index.Count)
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Not enough player spawns in map file! Filling in...");
+                        // fill missing player spawns with unused bindstones
+                        for (int i = metadata.spawns.Count; i < int_object_manager.bindstones_index.Count; i++)
+                        {
+                            for (int j = 0; j < int_object_manager.bindstones_index.Count; j++)
+                            {
+                                bool found = false;
+                                for (int k = 0; k < i; k++)
+                                {
+                                    if (int_object_manager.int_objects[int_object_manager.bindstones_index[j]].grid_position == metadata.spawns[k].pos)
+                                    {
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (!found)
+                                {
+                                    metadata.spawns.Add(new SFMapSpawn());
+                                    metadata.spawns[i].pos = int_object_manager.int_objects[int_object_manager.bindstones_index[j]].grid_position;
+                                    metadata.spawns[i].text_id = 0;
+                                    metadata.spawns[i].unknown = 0;
+                                    metadata.spawns[i].bindstone_index = j;
+                                    break;
+                                }
+                            }
+                        }
+                        metadata.player_count = int_object_manager.bindstones_index.Count;
+                    }
+
                     if (c53.header.ChunkDataType == 2)
                     {
                         LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Found team composition data");
