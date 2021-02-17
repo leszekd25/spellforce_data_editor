@@ -40,7 +40,7 @@ namespace SpellforceDataEditor.SFMap
 
             string ptl_name = ptl.GetName();
 
-            ptl.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(778, ptl_name, true);
+            ptl.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(778, ptl_name, true, true, true);
             ptl.node.SetParent(map.heightmap.GetChunkNode(position));
             return ptl;
         }

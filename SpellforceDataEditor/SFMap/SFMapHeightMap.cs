@@ -103,205 +103,6 @@ namespace SpellforceDataEditor.SFMap
         }
     }
 
-    /*
-    // paper by Stefan Röttger: Real-Time Generation of Continuous Levels of Detail for Height Fields 
-    public class SFMapHeightMapQuadtreeMesh
-    {
-        private static SFCoord[] NodeNeighbors =
-        {
-            new SFCoord(1, -1),
-            new SFCoord(-1, -1),
-            new SFCoord(-1, 1),
-            new SFCoord(1, 1),
-            // to avoid modulo whenever possible
-            new SFCoord(1, -1),
-            new SFCoord(-1, -1),
-            new SFCoord(-1, 1)
-        };
-        private static SFCoord[] NodeEdges =
-        {
-            new SFCoord(0, -1),
-            new SFCoord(-1, 0),
-            new SFCoord(0, 1),
-            new SFCoord(1, 0),
-            // to avoid modulo whenever possible
-            new SFCoord(0, -1),
-            new SFCoord(-1, 0),
-            new SFCoord(0, 1)
-        };
-
-        public SFMapHeightMap hmap;
-
-        public bool[] SubdivisionMatrix;
-        public float[] RoughnessMatrix;
-        public float MinimumGlobalResolution;
-        public float DesiredGlobalResolution;
-        public float RoughnessPropagationConstant;
-        public SFCoord Root;
-        public int RootSize;
-
-        public Vector3[] vertices;
-        public int CurrentVertex = 0;
-
-        public Vector3 ViewPos;
-
-        public void Init(SFMapHeightMap heightmap)
-        {
-            hmap = heightmap;
-            SubdivisionMatrix = new bool[(hmap.width + 1) * (hmap.height + 1)];
-            RoughnessMatrix = new float[(hmap.width + 1) * (hmap.height + 1)];
-            vertices = new Vector3[(hmap.width / 2 + 1) * (hmap.height / 2 + 1)];     // less vertices than normal
-            Root = new SFCoord(hmap.width / 2 + 1, hmap.height / 2 + 1);
-            RootSize = hmap.width / 2;
-
-            PrecalculateRoughness();
-        }
-
-        private Vector3 GetVertexPos(SFCoord pos)
-        {
-            return new Vector3(pos.x, hmap.GetRealZ(new Vector2(pos.x, pos.y)), pos.y);
-        }
-
-        private void PrecalculateRoughness()
-        {
-            RoughnessPropagationConstant = MinimumGlobalResolution / (2 * (MinimumGlobalResolution - 1));
-            CalculateRoughnessError(new SFCoord(hmap.width / 2, hmap.height / 2), hmap.width / 2);
-        }
-
-        private void CalculateRoughnessError(SFCoord pos, int size)
-        {
-            if(size < 1)
-            {
-                RoughnessMatrix[pos.y * (hmap.width + 1) + pos.x] = 0;
-                return;
-            }
-
-            float interpolated_height;
-            float real_height;
-            float roughness_error = 0;
-            for(int i = 0; i < 4; i++)
-            {
-                SFCoord edge_pos = pos + NodeEdges[i] * size;
-                SFCoord corner1 = pos + NodeNeighbors[i] * size;
-                SFCoord corner2 = pos + NodeNeighbors[i + 1] * size;
-                // calculate error between interpolated height at the mid-edge and de-facto height at mid-edge
-                interpolated_height = (hmap.GetRealZ(new Vector2(corner1.x, corner1.y)) + hmap.GetRealZ(new Vector2(corner2.x, corner2.y))) / 2;
-                real_height = hmap.GetRealZ(new Vector2(edge_pos.x, edge_pos.y));
-                roughness_error = Math.Max(roughness_error, Math.Abs(real_height - interpolated_height));
-            }
-            // calculate error between interpolated height at center and de-facto height at center (twice, once per each diagonal)
-            SFCoord diag1 = pos + NodeNeighbors[0] * size;
-            SFCoord diag2 = pos + NodeNeighbors[2] * size;
-            interpolated_height = (hmap.GetRealZ(new Vector2(diag1.x, diag1.y)) + hmap.GetRealZ(new Vector2(diag2.x, diag2.y))) / 2;
-            real_height = hmap.GetRealZ(new Vector2(pos.x, pos.y));
-            roughness_error = Math.Max(roughness_error, Math.Abs(real_height - interpolated_height));
-
-            diag1 = pos + NodeNeighbors[1] * size;
-            diag2 = pos + NodeNeighbors[3] * size;
-            interpolated_height = (hmap.GetRealZ(new Vector2(diag1.x, diag1.y)) + hmap.GetRealZ(new Vector2(diag2.x, diag2.y))) / 2;
-            real_height = hmap.GetRealZ(new Vector2(pos.x, pos.y));
-            roughness_error = Math.Max(roughness_error, Math.Abs(real_height - interpolated_height));
-
-            for (int i = 0; i < 4; i++)
-            {
-                CalculateRoughnessError(GetChildPos(pos, size, i), size / 2);
-                roughness_error = Math.Max(roughness_error, GetRoughness(GetChildPos(pos, size, i)) * RoughnessPropagationConstant);
-            }
-
-            // roughness propagation error
-
-            // assign roughness
-            RoughnessMatrix[pos.y * (hmap.width + 1) + pos.x] = roughness_error;
-        }
-
-        private SFCoord GetChildPos(SFCoord parent, int size, int index)
-        {
-            return parent + NodeNeighbors[index] * (size/2);
-        }
-
-        private float GetRoughness(SFCoord pos)
-        {
-            return RoughnessMatrix[pos.y * (hmap.width + 1) + pos.x];
-        }
-
-        private SFCoord GetParentPos(SFCoord child, int size, int index)
-        {
-            return child + NodeNeighbors[index + 2] * size;
-        }
-
-        private bool IsCameraCloseEnough(SFCoord pos, int size)
-        {
-            float dist = MathUtils.DistanceManhattan(new Vector3(pos.x, hmap.GetRealZ(new Vector2(pos.x, pos.y)), pos.y), ViewPos);
-            return (size / (dist * MinimumGlobalResolution * Math.Max(1, DesiredGlobalResolution * RoughnessMatrix[pos.y * (hmap.width + 1) + pos.x]))) < 1;
-        }
-
-        private void CalculateSubdivision(SFCoord pos, int size)
-        {
-            if(size < 1)
-            {
-                SubdivisionMatrix[pos.y * (hmap.width + 1) + pos.x] = false;
-                return;
-            }
-
-            for(int i = 0; i < 4; i++)
-            {
-                // if should subdivide
-                if (IsCameraCloseEnough(pos, size))
-                {
-                    SubdivisionMatrix[pos.y * (hmap.width + 1) + pos.x] = true;
-                    CalculateSubdivision(GetChildPos(pos, size, i), size / 2);
-                }
-                else
-                    SubdivisionMatrix[pos.y * (hmap.width + 1) + pos.x] = false;
-            }
-        }
-
-        // at start, pos = mapcenter, size = mapsize/2, index = 1 :)
-        private void AddGeometry(SFCoord pos, int size, int index)
-        {
-            if (size < 1)
-                return;
-
-            bool[] node_subdivided = new bool[7];
-            for(int i = 0; i < 4; i++)
-            {
-                SFCoord child = GetChildPos(pos, size, i);
-                if (SubdivisionMatrix[child.y * (hmap.width + 1) + child.x])
-                {
-                    AddGeometry(child, size / 2, i);
-                    node_subdivided[i] = true;
-                }
-            }
-            node_subdivided[4] = node_subdivided[0];
-            node_subdivided[5] = node_subdivided[1];
-            node_subdivided[6] = node_subdivided[2];
-
-            vertices[CurrentVertex] = GetVertexPos(pos);
-            CurrentVertex += 1;
-            for(int i = 0; i < 4; i++)
-            {
-                if (node_subdivided[i])
-                    continue;
-
-                if(node_subdivided[i+3])
-                {
-                    vertices[CurrentVertex] = GetVertexPos(pos + NodeEdges[i + 3] * size);
-                    CurrentVertex += 1;
-                }
-
-                vertices[CurrentVertex] = GetVertexPos(pos + NodeNeighbors[i] * size);
-                CurrentVertex += 1;
-
-                if(node_subdivided[i+1])
-                {
-                    vertices[CurrentVertex] = GetVertexPos(pos + NodeEdges[i + 1] * size);
-                    CurrentVertex += 1;
-                }
-            }
-        }
-    }
-    */
-
     // tesselated terrain mesh: quad patches of dimensions CHUNK_SIZE x CHUNK_SIZE will be tesselated in the shader
     public class SFMapHeightMapMeshTesselated
     {
@@ -473,7 +274,7 @@ namespace SpellforceDataEditor.SFMap
         {
             if (decoration_visible)
             {
-                if ((camera_dist > 71) || (camera_hdiff > 81))  // magic number...
+                if ((camera_dist > Settings.DecorationFade) || (camera_hdiff > (Settings.DecorationFade * 1.14f)))  // magic number...
                 {
                     decoration_visible = false;
                     foreach (SFMapDecoration d in decorations)
@@ -482,7 +283,7 @@ namespace SpellforceDataEditor.SFMap
             }
             else
             {
-                if ((camera_dist <= 71) && (camera_hdiff <= 81))
+                if ((camera_dist <= Settings.DecorationFade) && (camera_hdiff <= (Settings.DecorationFade * 1.14f)))
                 {
                     decoration_visible = true;
                     if (Settings.DecorationsVisible)
@@ -496,7 +297,7 @@ namespace SpellforceDataEditor.SFMap
         {
             if (unit_visible)
             {
-                if ((camera_dist > 91) || (camera_hdiff > 104))  // magic number...
+                if ((camera_dist > Settings.UnitFade) || (camera_hdiff > (Settings.UnitFade * 1.14f)))  // magic number...
                 {
                     unit_visible = false;
                     foreach (SFMapUnit u in units)
@@ -505,7 +306,7 @@ namespace SpellforceDataEditor.SFMap
             }
             else
             {
-                if ((camera_dist <= 91) && (camera_hdiff <= 104))
+                if ((camera_dist <= Settings.UnitFade) && (camera_hdiff <= (Settings.UnitFade * 1.14f)))
                 {
                     unit_visible = true;
                     if (Settings.UnitsVisible)

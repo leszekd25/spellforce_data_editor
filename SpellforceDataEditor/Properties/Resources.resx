@@ -389,8 +389,9 @@ float CalculateShadow(vec4 FPLS, float b){
 
 void main(){
   vec4 temp_c = fragmentColor * texture(DiffuseTex, UV);
-  if(temp_c.a == 0.0)
+  if(temp_c.a &lt; 0.9)
     discard;
+  temp_c.a = 1.0;
 
   float brightness = 1.0;
   #ifdef APPLY_SHADING
@@ -990,12 +991,66 @@ in vec2 TexCoords;
 uniform sampler2D screenTexture;
 uniform float exposure;
 
+float luminance(vec3 v)
+{
+    return dot(v, vec3(0.2126f, 0.7152f, 0.0722f));
+}
+
+vec3 change_luminance(vec3 c_in, float l_out)
+{
+    float l_in = luminance(c_in);
+    return c_in * (l_out / l_in);
+}
+
+vec3 reinhard(vec3 v)
+{
+    return v / (1.0f + v);
+}
+
+vec3 reinhard_extended(vec3 v, float max_white)
+{
+    vec3 numerator = v * (1.0f + (v / vec3(max_white * max_white)));
+    return numerator / (1.0f + v);
+}
+
+vec3 reinhard_extended_luminance(vec3 v, float max_white_l)
+{
+    float l_old = luminance(v);
+    float numerator = l_old * (1.0f + (l_old / (max_white_l * max_white_l)));
+    float l_new = numerator / (1.0f + l_old);
+    return change_luminance(v, l_new);
+}
+
+vec3 reinhard_jodie(vec3 v)
+{
+    float l = luminance(v);
+    vec3 tc=v/(v+1.0f);
+    return mix(v/(l+1.0f),tc,tc);
+}
+
+vec3 aces_approx(vec3 v)
+{
+    v *= 0.6f;
+    float a = 2.51f;
+    float b = 0.03f;
+    float c = 2.43f;
+    float d = 0.59f;
+    float e = 0.14f;
+    return clamp((v*(a*v+b))/(v*(c*v+d)+e), 0.0f, 1.0f);
+}
+
 void main()
 {             
     vec3 hdrColor = texture(screenTexture, TexCoords).rgb;
   
+    //vec3 mapped = hdrColor;
     // exposure tone mapping
-    vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
+    //vec3 mapped = aces_approx(hdrColor);
+    //vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
+    //vec3 mapped = reinhard(hdrColor);
+    //vec3 mapped = reinhard_extended(hdrColor, 2.0);
+    vec3 mapped = reinhard_extended_luminance(hdrColor, 2.0);
+    //vec3 mapped = reinhard_jodie(hdrColor);
 
     FragColor = vec4(mapped, 1.0);
 }</value>
@@ -1022,7 +1077,7 @@ void main()
     vec3 raydir = CalcLookat(V, TexCoords);
     // 0% - pole, 100% - horizon
     float horizon_closeness = clamp(1.0 - dot(normalize(raydir), vec3(0.0, 1.0, 0.0)), 0.0, 1.0);
-    vec3 skycol = vec3(mix(AmbientColor, FogColor*FogStrength, pow(horizon_closeness, 6.0)));
+    vec3 skycol = vec3(mix(AmbientColor, FogColor*FogStrength, pow(horizon_closeness, 4.0)));
     FragColor = vec4(skycol, 1.0);
 }</value>
   </data>
@@ -1176,6 +1231,124 @@ layout(location = 0) in vec3 vertexPosition_modelspace;
 
 void main(){
   gl_Position = vec4(vertexPosition_modelspace, 1.0);
+}</value>
+  </data>
+  <data name="fshader_transparent" xml:space="preserve">
+    <value>in vec3 fragmentPosition;
+in vec3 fragmentNormal;
+in vec2 UV;
+in vec4 fragmentColor;
+in vec4 fragmentPositionLightSpace;
+in mat4 M;
+
+out vec4 color;
+
+//uniform mat4 M;
+uniform float SunStrength;
+uniform vec3 SunDirection;
+uniform vec4 SunColor;
+uniform float AmbientStrength;
+uniform vec4 AmbientColor;
+uniform sampler2D DiffuseTex;
+uniform sampler2D ShadowMap;
+uniform vec4 FogColor;
+uniform float FogStrength;
+uniform float FogStart;
+uniform float FogEnd;
+uniform float FogExponent;
+uniform float ObjectFadeStart;
+uniform float ObjectFadeEnd;
+uniform float DepthBias;
+uniform float ShadowDepth;
+uniform bool ApplyShadow;
+uniform bool ApplyShading;
+uniform float DistanceFade;
+
+vec2 poissonDisk[4] = vec2[](
+  vec2( -0.94201624, -0.39906216 ),
+  vec2( 0.94558609, -0.76890725 ),
+  vec2( -0.094184101, -0.92938870 ),
+  vec2( 0.34495938, 0.29387760 )
+);
+
+float linstep(float low, float high, float v)
+{
+    return clamp((v-low)/(high-low), 0.0, 1.0);
+}
+
+// From http://fabiensanglard.net/shadowmappingVSM/index.php
+float chebyshevUpperBound(vec3 proj)
+{
+	vec2 moments = texture2D(ShadowMap, proj.xy).rg;
+
+	float variance = max(moments.y - (moments.x*moments.x), 0.000002);
+
+	float d = proj.z - moments.x;
+                   float p = float(proj.z &lt;= moments.x);
+	float p_max = variance / (variance + d*d);
+
+	return max(p, linstep(0.5, 1.0, p_max));// clamp((p_max * 1.3)-0.3, 0.0, 1.0);
+}
+
+float CalculateShadow(vec4 FPLS, float b){
+    vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
+    if(ProjectionCoordinates.z &gt; 1.0)
+        return 1.0;
+    if(!ApplyShadow)
+        return 1.0;
+
+    ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
+    return chebyshevUpperBound(ProjectionCoordinates);
+}
+
+
+void main(){
+  vec4 temp_c = fragmentColor * texture(DiffuseTex, UV);
+
+  float brightness = 1.0;
+  #ifdef APPLY_SHADING
+    if(ApplyShading)
+    {
+      // calculate brightness resulting from light coming from sun
+      mat3 normalMatrix = transpose(inverse(mat3(M)));
+      vec3 normal = normalize(normalMatrix * fragmentNormal);
+      vec3 fragVec = fragmentPosition;
+      brightness = dot(normal, SunDirection); // both vectors are normalized
+    }
+    // calculate shadow
+    brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
+    brightness = clamp(brightness, 0, 1);
+    
+  #endif // APPLY_SHADING
+
+
+  // calculate output color
+  vec4 ambient_color = AmbientColor * AmbientStrength;
+  vec4 sun_color = SunColor * SunStrength;
+  #ifndef TONEMAPPING
+  color = (ambient_color*(1-brightness))+(sun_color*brightness);
+  color.a = 1.0;
+  color = color*temp_c;
+  color = clamp(color, 0.0, 1.0);
+  #endif // TONEMAPPING
+  #ifdef TONEMAPPING
+  color = ambient_color + sun_color * brightness;
+  color.a = 1.0;
+  color = color * temp_c;
+  #endif
+
+  // fog calculation
+  float dist = gl_FragCoord.z / gl_FragCoord.w;
+  float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
+  color = mix(color, vec4(FogColor.rgb * FogStrength, 1.0), fog_factor);
+  // object fade in alpha calculation
+  float alpha_factor = 1.0 - clamp((dist - ObjectFadeStart) / (ObjectFadeEnd - ObjectFadeStart), 0.0, 1.0);
+  alpha_factor += 1.0 - DistanceFade;
+  alpha_factor = clamp(alpha_factor, 0.0, 1.0);
+  color.a *=  alpha_factor;
+
+  // depth bias
+  gl_FragDepth = gl_FragCoord.z + DepthBias;
 }</value>
   </data>
 </root>

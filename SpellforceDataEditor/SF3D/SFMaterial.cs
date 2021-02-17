@@ -42,6 +42,7 @@ namespace SpellforceDataEditor.SF3D
         public bool apply_shading = true;
         public bool casts_shadow = true;
         public bool transparent_pass = false;
+        public bool water_pass = false;
         public bool apply_shadow = true;
         public bool distance_fade = true;
 

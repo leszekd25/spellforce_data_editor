@@ -179,7 +179,8 @@ namespace SpellforceDataEditor.special_forms
             glControl1.MakeCurrent();
 
             SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
-            SFRenderEngine.SetObjectFadeRange(170, 220);
+            SFRenderEngine.SetObjectFadeRange(Settings.ObjectFadeMin, Settings.ObjectFadeMax);
+
             SFRenderEngine.scene.camera.SetPosition(new Vector3(0, 2, 6));
             SFRenderEngine.scene.camera.SetLookat(new Vector3(0, 0, 0));
             SFRenderEngine.scene.camera.Update(0);
@@ -341,8 +342,10 @@ namespace SpellforceDataEditor.special_forms
 
             if (ComboBrowseMode.SelectedIndex == 2)
             {
+                button1Extract.Show();
                 PanelSound.Show();
                 ListAnimations.Show();
+                button2Extract.Show();
                 synchronized = true;
             }
 
@@ -972,63 +975,104 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
-        private void button1Extract_Click(object sender, EventArgs e)
+        struct ExtractSceneData
         {
-            if (ListEntries.SelectedItem == null)
-                return;
-            string item = ListEntries.SelectedItem.ToString();
-            if (item == "")
-                return;
-            item = item.Substring(0, item.Length - 4);
+            public HashSet<string> meshes;
+            public HashSet<string> skeletons;
+            public HashSet<string> textures;
 
-            if(ComboBrowseMode.SelectedIndex == 0)
+            public ExtractSceneData(bool _filler = false)
             {
-                SFModel3D mod = SFResourceManager.Models.Get(item);
-                if (mod == null)
-                    return;
+                meshes = new HashSet<string>();
+                skeletons = new HashSet<string>();
+                textures = new HashSet<string>();
+            }
+        }
 
-                if (SFResourceManager.Models.Extract(item) != 0)
-                    LogUtils.Log.Error(LogUtils.LogSource.SFResources, 
-                        "SFAssetManagerForm.button1Extract_Click(): Could not extract model "+item);
-                List<string> tx = SFResourceManager.Textures.GetNames();
-                foreach (string t in tx)
-                    foreach (SFSubModel3D sbm in mod.submodels)
-                        if (sbm.material.texture == SFResourceManager.Textures.Get(t))
-                            if(SFResourceManager.Textures.Extract(t) != 0)
-                                LogUtils.Log.Error(LogUtils.LogSource.SFResources,
-                                    "SFAssetManagerForm.button1Extract_Click(): Could not extract texture " + t);
+        private void GatherSceneResources(SceneNode node, ref ExtractSceneData esd)
+        {
+            if(node is SceneNodeSimple)
+            {
+                if (node.Name != "_GRID_")
+                {
+                    esd.meshes.Add(((SceneNodeSimple)node).Mesh.GetName());
+                    foreach (var sbm in ((SceneNodeSimple)node).Mesh.submodels)
+                        esd.textures.Add(sbm.material.texture.GetName());
+                }
+            }
+            else if(node is SceneNodeAnimated)
+            {
+                esd.meshes.Add(((SceneNodeAnimated)node).Mesh.GetName());
 
-                StatusText.Text = "Extraction finished";
+                esd.skeletons.Add(((SceneNodeAnimated)node).Skeleton.GetName());
+                foreach (var sbm in ((SceneNodeAnimated)node).Mesh.submodels)
+                    esd.textures.Add(sbm.material.texture.GetName());
             }
 
-            if(ComboBrowseMode.SelectedIndex == 1)
+            foreach (var n in node.Children)
+                GatherSceneResources(n, ref esd);
+        }
+
+        private void ExtractScene()
+        {
+            ExtractSceneData esd = new ExtractSceneData(false);
+            GatherSceneResources(SFRenderEngine.scene.root, ref esd);
+
+            int total = esd.meshes.Count + esd.skeletons.Count + esd.textures.Count;
+            if(total == 0)
+                return;
+
+            int failed = 0;
+            // extract models
+            foreach (var m in esd.meshes)
             {
-                SFModel3D mod = SFResourceManager.Models.Get(item);
-                if (mod == null)
-                    return;
-                SceneNodeAnimated obj = SFRenderEngine.scene.root.FindNode<SceneNodeAnimated>("dynamic_mesh");
-
-                if (SFResourceManager.Models.Extract(item) != 0)
+                if (SFResourceManager.Models.Extract(m) != 0)
+                {
                     LogUtils.Log.Error(LogUtils.LogSource.SFResources,
-                        "SFAssetManagerForm.button1Extract_Click(): Could not extract model " + item);
-                List<string> tx = SFResourceManager.Textures.GetNames();
-                foreach (string t in tx)
-                    foreach (SFSubModel3D sbm in mod.submodels)
-                        if (sbm.material.texture == SFResourceManager.Textures.Get(t))
-                            if (SFResourceManager.Textures.Extract(t) != 0)
-                                LogUtils.Log.Error(LogUtils.LogSource.SFResources,
-                                    "SFAssetManagerForm.button1Extract_Click(): Could not extract texture " + t);
+                        "SFAssetManagerForm.ExtractScene(): Could not extract model " + m);
+                    failed += 1;
+                }
+            }
+            foreach (var t in esd.textures)
+            {
+                if (SFResourceManager.Textures.Extract(t) != 0)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                        "SFAssetManagerForm.ExtractScene(): Could not extract texture " + t);
+                    failed += 1;
+                }
+            }
 
-                List<string> skels = SFResourceManager.Skeletons.GetNames();
-                foreach (string skel in skels)
-                    if(obj.Skeleton == SFResourceManager.Skeletons.Get(skel))
-                    {
-                        if (SFResourceManager.Skeletons.Extract(skel) != 0)
-                            LogUtils.Log.Error(LogUtils.LogSource.SFResources,
-                                "SFAssetManagerForm.button1Extract_Click(): Could not extract skeleton " + skel);
-                        break;
-                    }
-                StatusText.Text = "Extraction finished";
+            foreach (var s in esd.skeletons)
+            {
+                if (SFResourceManager.Skeletons.Extract(s) != 0)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                        "SFAssetManagerForm.ExtractScene(): Could not extract skeleton " + s);
+                    failed += 1;
+                }
+            }
+            StatusText.Text = "Extraction finished (" + (total - failed).ToString() + "/" + total.ToString() + " items successfully extracted)";
+        }
+
+        private void button1Extract_Click(object sender, EventArgs e)
+        {
+            string item = "";
+            if (ComboBrowseMode.SelectedIndex > 2)
+            {
+                if (ListEntries.SelectedItem == null)
+                    return;
+
+                item = ListEntries.SelectedItem.ToString();
+                if (item == "")
+                    return;
+
+                item = item.Substring(0, item.Length - 4);
+            }
+
+            if((ComboBrowseMode.SelectedIndex == 0)|| (ComboBrowseMode.SelectedIndex == 1)|| (ComboBrowseMode.SelectedIndex == 2))
+            {
+                ExtractScene();
             }
 
             if (ComboBrowseMode.SelectedIndex == 3)

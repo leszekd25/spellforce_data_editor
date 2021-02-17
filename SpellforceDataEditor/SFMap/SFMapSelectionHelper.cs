@@ -439,7 +439,7 @@ namespace SpellforceDataEditor.SFMap
             preview_type = SelectionType.OBJECT;
 
             // get building
-            preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(object_id, "_OBJECT_" + object_id.ToString(), true));
+            preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(object_id, "_OBJECT_" + object_id.ToString(), true, true, true));
             preview_entity.Scale = new OpenTK.Vector3(100 / 128f);
             SetPreviewEntityGridPosition(cursor_position);
 

@@ -60,7 +60,8 @@ namespace SpellforceDataEditor.SFMap
             }
             material.texture = tex;
             material.casts_shadow = false;
-            material.transparent_pass = true;
+            material.transparent_pass = false;
+            material.water_pass = true;
             material.apply_shadow = false;
             material.distance_fade = false;
 

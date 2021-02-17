@@ -527,6 +527,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             skeleton.CalculateTransformation(BoneTransforms, ref BoneTransforms);
             for (int i = 0; i < BoneTransforms.Length; i++)
                 BoneTransforms[i] = skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
+
+            TouchResultTransform();
         }
 
 
@@ -662,7 +664,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // 250.0f is a magic constant for now...
         public SceneNodeCamera(string s): base(s)
         {
-            frustum = new Physics.Frustum(position, (lookat-position), SFRender.SFRenderEngine.min_render_distance, 250.0f, aspect_ratio);
+            frustum = new Physics.Frustum(position, (lookat-position), SFRender.SFRenderEngine.min_render_distance, 1.136f * Settings.ObjectFadeMax, aspect_ratio);
             UpdateTransform();
         }
 
@@ -736,7 +738,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // returns vector2 in screen coordinates in [0, 1] (if on screen)
         public Vector2 WorldToScreen(Vector3 pos)
         {
-            float dist = Vector3.Dot(pos - position, (Lookat - position).Normalized()) / 250.0f;
+            float dist = Vector3.Dot(pos - position, (Lookat - position).Normalized()) / (1.136f * Settings.ObjectFadeMax);
 
             Vector3 top_left = position + (frustum.frustum_vertices[4] - position) * dist;
             Vector3 top_right = position + (frustum.frustum_vertices[5] - position) * dist;

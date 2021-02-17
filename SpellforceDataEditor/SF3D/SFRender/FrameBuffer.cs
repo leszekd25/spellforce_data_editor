@@ -23,6 +23,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
         public PixelType pixeltype;
     }
 
+    public struct FrameBufferDepthInfo
+    {
+        public bool use_depth;
+        public FrameBuffer parent_depth;
+    }
+
     public class FrameBuffer
     {
         public enum RenderBufferType { NONE = 0, COLOR = 1, DEPTH = 2, STENCIL = 3, DEPTHSTENCIL = 4 }
@@ -42,12 +48,16 @@ namespace SpellforceDataEditor.SF3D.SFRender
         public int fbo = Utility.NO_INDEX;
         public FrameBufferColorAttachmentInfo[] attachments;
         public int[] texture_colors = null;
+
+        // stored for resize
         public bool use_depth_component;
+        public FrameBuffer parent_depth;
+
         public int texture_depth = Utility.NO_INDEX;
         public int rbo = Utility.NO_INDEX;
         public int sample_count = 1;
 
-        public FrameBuffer(int w, int h, FrameBufferColorAttachmentInfo[] _attachments, int s_count, bool use_depth)
+        public FrameBuffer(int w, int h, FrameBufferColorAttachmentInfo[] _attachments, int s_count, FrameBufferDepthInfo depth_info)
         {
             if (ref_count == 0)
             {
@@ -70,7 +80,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
             ref_count += 1;
 
-            use_depth_component = use_depth;
+            use_depth_component = depth_info.use_depth;
+            parent_depth = depth_info.parent_depth;
+
             attachments = _attachments;
             sample_count = s_count;
 
@@ -126,18 +138,29 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             if (use_depth_component)
             {
-                texture_depth = GL.GenTexture();
-                if (sample_count > 1)
+                // if parent depth exists, use parent depth texture
+                int used_texture;
+                if (parent_depth != null)
                 {
-                    GL.BindTexture(TextureTarget.Texture2DMultisample, texture_depth);
-                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, PixelInternalFormat.DepthComponent32, width, height, true);
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2DMultisample, texture_depth, 0);
+                    used_texture = parent_depth.texture_depth;
                 }
                 else
                 {
-                    GL.BindTexture(TextureTarget.Texture2D, texture_depth);
+                    texture_depth = GL.GenTexture();
+                    used_texture = texture_depth;
+                }
+
+                if (sample_count > 1)
+                {
+                    GL.BindTexture(TextureTarget.Texture2DMultisample, used_texture);
+                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, PixelInternalFormat.DepthComponent32, width, height, true);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2DMultisample, used_texture, 0);
+                }
+                else
+                {
+                    GL.BindTexture(TextureTarget.Texture2D, used_texture);
                     GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, new IntPtr(0));
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, texture_depth, 0);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, used_texture, 0);
                 }
             }
 

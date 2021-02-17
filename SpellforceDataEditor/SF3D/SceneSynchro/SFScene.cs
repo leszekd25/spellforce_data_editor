@@ -96,10 +96,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     atmosphere.altitude_sun_strength.Add(2.0f, 180);
                     atmosphere.altitude_ambient_color.Add(new Vector4(0.05f, 0.05f, 0.3f, 1.0f), 0);
                     atmosphere.altitude_ambient_color.Add(new Vector4(0.05f, 0.05f, 0.3f, 1.0f), 80);
-                    atmosphere.altitude_ambient_color.Add(new Vector4(1.5f, 0.6f, 0.5f, 1.0f), 90);
-                    atmosphere.altitude_ambient_color.Add(new Vector4(1.0f, 0.6f, 1.0f, 1.0f), 100);
-                    atmosphere.altitude_ambient_color.Add(new Vector4(0.6f, 0.6f, 1.5f, 1.0f), 110);
-                    atmosphere.altitude_ambient_color.Add(new Vector4(0.6f, 0.6f, 1.5f, 1.0f), 180);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(1.3f, 0.54f, 0.5f, 1.0f), 90);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.9f, 0.62f, 1.0f, 1.0f), 100);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.5f, 0.7f, 1.5f, 1.0f), 110);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.5f, 0.7f, 1.5f, 1.0f), 180);
                     atmosphere.altitude_ambient_strength.Add(0.7f, 0);
                     atmosphere.altitude_ambient_strength.Add(0.7f, 80);
                     atmosphere.altitude_ambient_strength.Add(0.5f, 90);
@@ -112,12 +112,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     atmosphere.altitude_fog_color.Add(new Vector4(0.9f, 0.5f, 0.7f, 1.0f), 100);
                     atmosphere.altitude_fog_color.Add(new Vector4(0.7f, 0.7f, 0.9f, 1.0f), 110);
                     atmosphere.altitude_fog_color.Add(new Vector4(0.7f, 0.7f, 0.9f, 1.0f), 180);
-                    atmosphere.altitude_fog_strength.Add(0.6f, 0);
-                    atmosphere.altitude_fog_strength.Add(0.6f, 80);
-                    atmosphere.altitude_fog_strength.Add(1.6f, 90);
-                    atmosphere.altitude_fog_strength.Add(1.6f, 100);
-                    atmosphere.altitude_fog_strength.Add(3.0f, 110);
-                    atmosphere.altitude_fog_strength.Add(3.0f, 180);
+                    atmosphere.altitude_fog_strength.Add(0.5f, 0);
+                    atmosphere.altitude_fog_strength.Add(0.5f, 80);
+                    atmosphere.altitude_fog_strength.Add(1.4f, 90);
+                    atmosphere.altitude_fog_strength.Add(1.4f, 100);
+                    atmosphere.altitude_fog_strength.Add(2.5f, 110);
+                    atmosphere.altitude_fog_strength.Add(2.5f, 180);
                 }
                 else
                 {
@@ -217,7 +217,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 35:
                     //get object id
                     int object_id = (ushort)SFCategoryManager.gamedata[category][element][0];
-                    SceneNode object_node = AddSceneObject(object_id, "object", true);
+                    SceneNode object_node = AddSceneObject(object_id, "object", true, true, true);
                     object_node.SetParent(root);
                     object_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
                     scene_meta.name = SFCategoryManager.GetObjectName((ushort)object_id);
@@ -448,7 +448,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return unit_node;
         }
 
-        public SceneNode AddSceneObject(int object_id, string object_name, bool apply_shading)
+        public SceneNode AddSceneObject(int object_id, string object_name, bool apply_shading, bool transparent_pass, bool casts_shadow)
         {
             // create root
             SceneNode obj_node = AddSceneNodeEmpty(null, object_name);
@@ -475,8 +475,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     foreach (SFSubModel3D sbm in n.Mesh.submodels)
                     {
                         sbm.material.apply_shading = apply_shading;
-                        sbm.material.transparent_pass &= apply_shading;
-                        sbm.material.casts_shadow = apply_shading;
+                        sbm.material.transparent_pass &= transparent_pass;
+                        sbm.material.casts_shadow = casts_shadow;
                         if (decal)
                             sbm.material.matDepthBias = -0.000003f;
                     }

@@ -83,7 +83,7 @@ namespace SpellforceDataEditor.SFMap
             decorations.Add(dec);
 
             string dec_name = dec.GetObjectName();
-            dec.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, dec_name, false);
+            dec.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, dec_name, false, true, false);
             dec.node.SetParent(map.heightmap.GetChunkNode(position));
 
             
@@ -112,7 +112,7 @@ namespace SpellforceDataEditor.SFMap
             if (d.node != null)
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(d.node);
 
-            d.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(new_id, d.GetObjectName(), false);
+            d.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(new_id, d.GetObjectName(), false, true, false);
             d.node.SetParent(map.heightmap.GetChunkNode(d.grid_position));
             d.node.SetPosition(map.heightmap.GetFixedPosition(d.grid_position));
             d.node.Rotation = OpenTK.Quaternion.FromAxisAngle(new OpenTK.Vector3(1f, 0f, 0f), (float)-Math.PI / 2);

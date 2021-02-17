@@ -1130,7 +1130,7 @@ namespace SpellforceDataEditor.special_forms
             // set light direction (move somewhere else in the future, before this function is called)
             SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
             // set up object fadein fadeout
-            SFRenderEngine.SetObjectFadeRange(170, 220);
+            SFRenderEngine.SetObjectFadeRange(Settings.ObjectFadeMin, Settings.ObjectFadeMax);
 
             initialized_view = true;
 

@@ -269,14 +269,15 @@ namespace SpellforceDataEditor.SFMap
             }
             material.texture = tex;
             material.casts_shadow = false;
+            material.transparent_pass = false;
             if (lake.type == 0)
             {
-                material.transparent_pass = true;
+                material.water_pass = true;
                 material.apply_shadow = false;
             }
             else
             {
-                material.transparent_pass = false;
+                material.water_pass = false;
                 material.apply_shading = true;
             }
             

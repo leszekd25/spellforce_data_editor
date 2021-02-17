@@ -20,7 +20,10 @@ namespace SpellforceDataEditor
         public static bool AnisotropicFiltering { get; private set; } = true;
         public static bool ToneMapping { get; private set; } = true;
         public static int MaxAnisotropy { get; set; } = 1;
+        public static int RenderDistance { get; set; } = 1000;
         public static SFMap.SFMapHeightMapLOD TerrainLOD { get; private set; } = SFMap.SFMapHeightMapLOD.NONE;
+        public static int FogStart { get; set; } = 0;
+        public static int FogEnd { get; set; } = 400;
 
         public static bool UnitsVisible { get; set; } = true;
         public static bool BuildingsVisible { get; set; } = true;
@@ -31,6 +34,10 @@ namespace SpellforceDataEditor
         public static bool VisualizeHeight { get; set; } = false;
         public static bool DisplayGrid { get; set; } = false;
         public static OpenTK.Vector4 GridColor { get; set; } = new OpenTK.Vector4(1, 1, 1, 1);
+        public static int ObjectFadeMin { get; set; } = 170;
+        public static int ObjectFadeMax { get; set; } = 220;
+        public static int DecorationFade { get; set; } = 71;
+        public static int UnitFade { get; set; } = 91;
 
         public static string ExtractDirectory { get; set; } = "";
         public static bool ExtractAllInOne { get; set; } = false;
@@ -151,6 +158,18 @@ namespace SpellforceDataEditor
                                 b = Utility.TryParseUInt8(words[3], 255);
                             }
                             GridColor = new OpenTK.Vector4(r, g, b, 255) / 255f;
+                            break;
+                        case "ObjectFadeDistance":
+                            ObjectFadeMin = Utility.TryParseUInt16(words[1], (ushort)ObjectFadeMin);
+                            ObjectFadeMax = Utility.TryParseUInt16(words[2], (ushort)ObjectFadeMax);
+                            if (ObjectFadeMax < ObjectFadeMin)
+                                ObjectFadeMax = ObjectFadeMin;
+                            break;
+                        case "UnitFadeDistance":
+                            UnitFade = Utility.TryParseUInt16(words[1], (ushort)UnitFade);
+                            break;
+                        case "DecorationFadeDistance":
+                            DecorationFade = Utility.TryParseUInt16(words[1], (ushort)DecorationFade);
                             break;
 
                         case "ExtractDirectory":
@@ -298,6 +317,15 @@ namespace SpellforceDataEditor
                             words = new string[] { words[0], ((byte)(GridColor.X * 255)).ToString() ,
                                                              ((byte)(GridColor.Y * 255)).ToString() ,
                                                              ((byte)(GridColor.Z * 255)).ToString() };
+                            break;
+                        case "ObjectFadeDistance":
+                            words = new string[] { words[0], ObjectFadeMin.ToString(), ObjectFadeMax.ToString() };
+                            break;
+                        case "UnitFadeDistance":
+                            words = new string[] { words[0], UnitFade.ToString() };
+                            break;
+                        case "DecorationFadeDistance":
+                            words = new string[] { words[0], DecorationFade.ToString() };
                             break;
 
                         case "ExtractDirectory":

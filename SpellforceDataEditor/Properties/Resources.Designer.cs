@@ -324,19 +324,61 @@ namespace SpellforceDataEditor.Properties {
         ///uniform sampler2D screenTexture;
         ///uniform float exposure;
         ///
-        ///void main()
-        ///{             
-        ///    vec3 hdrColor = texture(screenTexture, TexCoords).rgb;
-        ///  
-        ///    // exposure tone mapping
-        ///    vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
+        ///float luminance(vec3 v)
+        ///{
+        ///    return dot(v, vec3(0.2126f, 0.7152f, 0.0722f));
+        ///}
         ///
-        ///    FragColor = vec4(mapped, 1.0);
-        ///}.
+        ///vec3 change_luminance(vec3 c_in, float l_out)
+        ///{
+        ///    float l_in = luminance(c_in);
+        ///    return c_in * (l_out / l_in);
+        ///}
+        ///
+        ///vec3 reinhard(vec3 v)
+        ///{
+        ///    return v / (1.0f + v);
+        ///}
+        ///
+        ///vec3 reinhard_extended(vec3 v, float max_white)
+        ///{
+        ///    vec3 numerator = v * (1.0f + (v / vec3(max_white * max_white)));
+        ///    return n [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_tonemap {
             get {
                 return ResourceManager.GetString("fshader_tonemap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to in vec3 fragmentPosition;
+        ///in vec3 fragmentNormal;
+        ///in vec2 UV;
+        ///in vec4 fragmentColor;
+        ///in vec4 fragmentPositionLightSpace;
+        ///in mat4 M;
+        ///
+        ///out vec4 color;
+        ///
+        /////uniform mat4 M;
+        ///uniform float SunStrength;
+        ///uniform vec3 SunDirection;
+        ///uniform vec4 SunColor;
+        ///uniform float AmbientStrength;
+        ///uniform vec4 AmbientColor;
+        ///uniform sampler2D DiffuseTex;
+        ///uniform sampler2D ShadowMap;
+        ///uniform vec4 FogColor;
+        ///uniform float FogStrength;
+        ///uniform float FogStart;
+        ///uniform float FogEnd;
+        ///uniform float FogExponent;
+        ///unifo [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string fshader_transparent {
+            get {
+                return ResourceManager.GetString("fshader_transparent", resourceCulture);
             }
         }
         

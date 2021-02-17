@@ -43,7 +43,7 @@ namespace SpellforceDataEditor.SFMap
 
             string obj_name = obj.GetName();
 
-            obj.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, obj_name, true);
+            obj.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, obj_name, true, true, true);
             // custom resource mesh setting :^)
             if (obj.node.Children.Count == 0)
                 ObjectSetResourceIfAvailable(id, obj.node);

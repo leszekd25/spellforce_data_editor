@@ -1498,7 +1498,7 @@ namespace SpellforceDataEditor.SFMap
 
             if (obj.node != null)
                 SFRenderEngine.scene.RemoveSceneNode(obj.node);
-            obj.node = SFRenderEngine.scene.AddSceneObject(new_object_id, obj.GetName(), true);
+            obj.node = SFRenderEngine.scene.AddSceneObject(new_object_id, obj.GetName(), true, true, true);
             obj.node.SetParent(heightmap.GetChunkNode(obj.grid_position));
 
             obj.game_id = new_object_id;
@@ -1650,7 +1650,7 @@ namespace SpellforceDataEditor.SFMap
 
             if (io.node != null)
                 SFRenderEngine.scene.RemoveSceneNode(io.node);
-            io.node = SFRenderEngine.scene.AddSceneObject(new_monument_type+771, io.GetName(), true);
+            io.node = SFRenderEngine.scene.AddSceneObject(new_monument_type+771, io.GetName(), true, true, true);
             io.node.SetParent(heightmap.GetChunkNode(io.grid_position));
 
             io.game_id = new_monument_type + 771;
