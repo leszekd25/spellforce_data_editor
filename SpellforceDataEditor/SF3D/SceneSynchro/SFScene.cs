@@ -96,8 +96,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     atmosphere.altitude_sun_strength.Add(2.0f, 180);
                     atmosphere.altitude_ambient_color.Add(new Vector4(0.05f, 0.05f, 0.3f, 1.0f), 0);
                     atmosphere.altitude_ambient_color.Add(new Vector4(0.05f, 0.05f, 0.3f, 1.0f), 80);
-                    atmosphere.altitude_ambient_color.Add(new Vector4(1.3f, 0.54f, 0.5f, 1.0f), 90);
-                    atmosphere.altitude_ambient_color.Add(new Vector4(0.9f, 0.62f, 1.0f, 1.0f), 100);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.9f, 0.54f, 0.5f, 1.0f), 90);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.7f, 0.62f, 1.0f, 1.0f), 100);
                     atmosphere.altitude_ambient_color.Add(new Vector4(0.5f, 0.7f, 1.5f, 1.0f), 110);
                     atmosphere.altitude_ambient_color.Add(new Vector4(0.5f, 0.7f, 1.5f, 1.0f), 180);
                     atmosphere.altitude_ambient_strength.Add(0.7f, 0);

@@ -36,7 +36,6 @@
             this.resetCameraPosiitonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadCurrentSceneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.runParticleEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.GameDirDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusText = new System.Windows.Forms.ToolStripStatusLabel();
@@ -99,8 +98,7 @@
             this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.resetCameraPosiitonToolStripMenuItem,
             this.reloadCurrentSceneToolStripMenuItem,
-            this.exportSettingsToolStripMenuItem,
-            this.runParticleEditorToolStripMenuItem});
+            this.exportSettingsToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
@@ -125,13 +123,6 @@
             this.exportSettingsToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.exportSettingsToolStripMenuItem.Text = "Extraction settings...";
             this.exportSettingsToolStripMenuItem.Click += new System.EventHandler(this.exportSettingsToolStripMenuItem_Click);
-            // 
-            // runParticleEditorToolStripMenuItem
-            // 
-            this.runParticleEditorToolStripMenuItem.Name = "runParticleEditorToolStripMenuItem";
-            this.runParticleEditorToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
-            this.runParticleEditorToolStripMenuItem.Text = "Run Effect Editor...";
-            this.runParticleEditorToolStripMenuItem.Click += new System.EventHandler(this.runEffectEditorToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -343,6 +334,5 @@
         private System.Windows.Forms.ToolStripMenuItem reloadCurrentSceneToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportSettingsToolStripMenuItem;
         private System.Windows.Forms.Button ButtonToggleFloor;
-        private System.Windows.Forms.ToolStripMenuItem runParticleEditorToolStripMenuItem;
     }
 }

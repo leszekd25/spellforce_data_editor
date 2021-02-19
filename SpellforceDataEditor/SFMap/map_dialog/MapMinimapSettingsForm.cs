@@ -105,7 +105,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                 bmp = new Bitmap(ImportMinimapDialog.FileName);
                 bmp = new Bitmap(bmp, new Size(128, 128));
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 return;
             }

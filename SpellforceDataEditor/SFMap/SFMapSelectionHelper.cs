@@ -24,7 +24,6 @@ namespace SpellforceDataEditor.SFMap
 
         SF3D.SceneSynchro.SceneNode preview_entity = null;
         ushort preview_entity_angle = 0;
-        SelectionType preview_type = SelectionType.NONE;
         ushort preview_unit_id = 0;
         ushort preview_building_id = 0;
         ushort preview_object_id = 0;
@@ -341,7 +340,6 @@ namespace SpellforceDataEditor.SFMap
 
         public void ClearPreview()
         {
-            preview_type = SelectionType.NONE;
             if (preview_entity != null)
             {
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(SF3D.SFRender.SFRenderEngine.scene.root.FindNode<SF3D.SceneSynchro.SceneNode>("_PREVIEW_"));
@@ -369,7 +367,6 @@ namespace SpellforceDataEditor.SFMap
             }
 
             ResetPreview();
-            preview_type = SelectionType.UNIT;
 
             // get unit
             preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(unit_id, "_UNIT_" + unit_id.ToString()));
@@ -405,7 +402,6 @@ namespace SpellforceDataEditor.SFMap
             }
 
             ResetPreview();
-            preview_type = SelectionType.BUILDING;
 
             // get building
             preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneBuilding(building_id, "_BUILDING_" + building_id.ToString()));
@@ -436,7 +432,6 @@ namespace SpellforceDataEditor.SFMap
             }
 
             ResetPreview();
-            preview_type = SelectionType.OBJECT;
 
             // get building
             preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(object_id, "_OBJECT_" + object_id.ToString(), true, true, true));

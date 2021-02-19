@@ -303,7 +303,7 @@ namespace SpellforceDataEditor.SFLua.LuaDecompiler
                 LuaBinaryHeader.Validate(br);
                 func = new LuaBinaryFunction(br);
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaBinaryScript(): Error reading script from memory");
                 func = null;

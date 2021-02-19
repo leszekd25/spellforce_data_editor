@@ -12,7 +12,6 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 {
     public partial class SFLuaSQLObjectForm : Form
     {
-        bool can_load = true;
         List<int> index_to_key = null;
         int selected_id = Utility.NO_INDEX;
 
@@ -26,7 +25,6 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             if (SFLuaEnvironment.objects.Load() != 0)
             {
                 MessageBox.Show("Could not load script/sql_object.lua");
-                can_load = false;
                 this.Close();
                 return;
             }
@@ -65,7 +63,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 SelectedMesh.Text = "";
                 CastsShadow.Text = "";
                 IsBillboarded.Text = "";
-                Scale.Text = "";
+                ObjScale.Text = "";
                 SelectionSize.Text = "";
                 return;
             }
@@ -86,7 +84,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             SelectedMesh.Text = "";
             CastsShadow.SelectedIndex = (objects[object_id].Shadow ? 1 : 0);
             IsBillboarded.SelectedIndex = (objects[object_id].Billboarded ? 1 : 0);
-            Scale.Text = objects[object_id].Scale.ToString();
+            ObjScale.Text = objects[object_id].Scale.ToString();
             SelectionSize.Text = objects[object_id].SelectionScaling.ToString();
         }
 
@@ -177,7 +175,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
 
             SFLuaEnvironment.objects.objects[selected_id].Scale =
-                (double)Utility.TryParseUInt32(Scale.Text,
+                (double)Utility.TryParseUInt32(ObjScale.Text,
                                                (uint)SFLuaEnvironment.objects.objects[selected_id].Scale);
         }
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.IO.Compression;
 
-namespace SpellforceDataEditor.SFChunkFile
+namespace SpellforceDataEditor.SFChunk
 {
     public struct SFChunkFileChunkHeader
     {
@@ -49,7 +49,7 @@ namespace SpellforceDataEditor.SFChunkFile
                 return databr;
             }
             datastream = new MemoryStream(data);
-            databr = new BinaryReader(datastream);
+            databr = new BinaryReader(datastream, Encoding.GetEncoding(1252));
             return databr;
         }
 

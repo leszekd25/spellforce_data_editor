@@ -469,6 +469,7 @@ namespace SpellforceDataEditor.Properties {
         ///   Looks up a localized string similar to layout(vertices = 4) out;
         ///
         ///uniform vec3 cameraPos;
+        ///uniform vec3 cameraDir;
         ///
         ///// for now, there&apos;s no correction for average  patch height (all patches are of height 0)
         ///// doing the correction will surely improve peformance
@@ -480,13 +481,10 @@ namespace SpellforceDataEditor.Properties {
         ///
         ///float edgeCameraDistance(vec4 p1, vec4 p2)
         ///{
-        ///    return distance(((p1 + p2) * 0.5).xz, cameraPos.xz);
-        ///}
-        ///
-        ///float tesselationPerDistance(float d)
-        ///{
-        ///    // 0-50 -&gt; 1, 50-100 -&gt; 2, 100-200 -&gt; 4, 200-400 -&gt; 8, 400-inf -&gt;16
-        ///    [rest of string was truncated]&quot;;.
+        ///    vec3 res_pos = (p1 + p2).xyz * 0.5;
+        ///    if(dot(cameraDir, normalize(res_pos - cameraPos)) &lt;= 0.0)
+        ///        return 401.0;
+        ///    return distance(res_pos.x [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string tcsshader_hmap_tesselated {
             get {

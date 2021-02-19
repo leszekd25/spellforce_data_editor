@@ -42,6 +42,7 @@
             this.LabelIsSpecifiedGameDir = new System.Windows.Forms.Label();
             this.bSQLEdit = new System.Windows.Forms.Button();
             this.GameDirDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.bSaveData = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -102,7 +103,7 @@
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(70, 13);
             this.labelVersion.TabIndex = 6;
-            this.labelVersion.Text = "15.02.2021.1";
+            this.labelVersion.Text = "17.02.2021.1";
             // 
             // linkEditor
             // 
@@ -179,11 +180,23 @@
             this.bSQLEdit.UseVisualStyleBackColor = false;
             this.bSQLEdit.Click += new System.EventHandler(this.bSQLEdit_Click);
             // 
+            // bSaveData
+            // 
+            this.bSaveData.Location = new System.Drawing.Point(252, 96);
+            this.bSaveData.Name = "bSaveData";
+            this.bSaveData.Size = new System.Drawing.Size(115, 23);
+            this.bSaveData.TabIndex = 14;
+            this.bSaveData.Text = "Save Data Editor";
+            this.bSaveData.UseVisualStyleBackColor = true;
+            this.bSaveData.Visible = false;
+            this.bSaveData.Click += new System.EventHandler(this.bSaveData_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(377, 158);
+            this.Controls.Add(this.bSaveData);
             this.Controls.Add(this.bSQLEdit);
             this.Controls.Add(this.LabelIsSpecifiedGameDir);
             this.Controls.Add(this.ButtonAbout);
@@ -200,6 +213,7 @@
             this.Name = "MainForm";
             this.Text = "SpellForce Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -221,5 +235,6 @@
         private System.Windows.Forms.Label LabelIsSpecifiedGameDir;
         private System.Windows.Forms.Button bSQLEdit;
         private System.Windows.Forms.FolderBrowserDialog GameDirDialog;
+        private System.Windows.Forms.Button bSaveData;
     }
 }

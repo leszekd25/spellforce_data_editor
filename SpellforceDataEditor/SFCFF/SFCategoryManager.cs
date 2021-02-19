@@ -724,14 +724,6 @@ namespace SpellforceDataEditor.SFCFF
         public static void Save(string filename)
         {
             gamedata.Save(filename);
-
-            //md5 calculation for data diff tool
-            //FileStream fs2 = new FileStream(filename, FileMode.Open, FileAccess.Read);
-
-            //MD5 md5_gen = MD5.Create();
-            //gamedata_md5 = BitConverter.ToString(md5_gen.ComputeHash(fs2)).Replace("-", "").ToLower();
-
-            //fs2.Close();
         }
 
         //using the fact that all text data is saved in category 15 (ind 14)

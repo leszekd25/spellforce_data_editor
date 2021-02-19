@@ -32,7 +32,7 @@
             this.ButtonRemove = new System.Windows.Forms.Button();
             this.ButtonAdd = new System.Windows.Forms.Button();
             this.SelectionSize = new System.Windows.Forms.TextBox();
-            this.Scale = new System.Windows.Forms.TextBox();
+            this.ObjScale = new System.Windows.Forms.TextBox();
             this.ObjName = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -88,13 +88,13 @@
             this.SelectionSize.TabIndex = 51;
             this.SelectionSize.Validated += new System.EventHandler(this.SelectionSize_Validated);
             // 
-            // Scale
+            // ObjScale
             // 
-            this.Scale.Location = new System.Drawing.Point(361, 281);
-            this.Scale.Name = "Scale";
-            this.Scale.Size = new System.Drawing.Size(100, 20);
-            this.Scale.TabIndex = 49;
-            this.Scale.Validated += new System.EventHandler(this.Scale_Validated);
+            this.ObjScale.Location = new System.Drawing.Point(361, 281);
+            this.ObjScale.Name = "ObjScale";
+            this.ObjScale.Size = new System.Drawing.Size(100, 20);
+            this.ObjScale.TabIndex = 49;
+            this.ObjScale.Validated += new System.EventHandler(this.Scale_Validated);
             // 
             // ObjName
             // 
@@ -272,7 +272,7 @@
             this.Controls.Add(this.ButtonRemove);
             this.Controls.Add(this.ButtonAdd);
             this.Controls.Add(this.SelectionSize);
-            this.Controls.Add(this.Scale);
+            this.Controls.Add(this.ObjScale);
             this.Controls.Add(this.ObjName);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.label10);
@@ -298,7 +298,7 @@
         private System.Windows.Forms.Button ButtonRemove;
         private System.Windows.Forms.Button ButtonAdd;
         private System.Windows.Forms.TextBox SelectionSize;
-        private System.Windows.Forms.TextBox Scale;
+        private System.Windows.Forms.TextBox ObjScale;
         private System.Windows.Forms.TextBox ObjName;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;

@@ -203,7 +203,7 @@ namespace SpellforceDataEditor.SFUnPak
             {
                 pak_header.get(pak_stream);
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Init(): Error loading pak header)");
             }
@@ -228,7 +228,7 @@ namespace SpellforceDataEditor.SFUnPak
                     file_headers[ii].get(pak_stream);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Init(): Error loading filenames (file index " + ii.ToString() + ")");
             }

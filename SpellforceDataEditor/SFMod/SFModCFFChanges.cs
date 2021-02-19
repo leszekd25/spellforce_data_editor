@@ -123,31 +123,31 @@ namespace SpellforceDataEditor.SFMod
         {
             changes.Clear();
 
-            FileStream fs_orig = File.Open(orig_fname, FileMode.Open, FileAccess.Read);
-            FileStream fs_new  = File.Open(new_fname,  FileMode.Open, FileAccess.Read);
-            BinaryReader br_orig = new BinaryReader(fs_orig);
-            BinaryReader br_new  = new BinaryReader(fs_new) ;
+            SFChunk.SFChunkFile sfcf_orig = new SFChunk.SFChunkFile();
+            SFChunk.SFChunkFile sfcf_new = new SFChunk.SFChunkFile();
+            sfcf_orig.OpenFile(orig_fname);
+            sfcf_new.OpenFile(new_fname);
+
             SFCategory orig_data = null;
-            SFCategory new_data  = null;
-            byte[] mainHeader_orig = br_orig.ReadBytes(20);
-            byte[] mainHeader_new  = br_new.ReadBytes(20) ;
-            for(int i = 1; i <= SFGameData.categoryNumber; i++)
+            SFCategory new_data = null;
+
+            for (int i = 1; i <= SFGameData.categoryNumber; i++)
             {
                 orig_data = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCFF.SFCategory" + i.ToString()) as SFCategory;
                 new_data  = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCFF.SFCategory" + i.ToString()) as SFCategory;
-                if(orig_data.Read(br_orig) != 0)
+                if(orig_data.Read(sfcf_orig) != 0)
                 {
                     changes.Clear();
-                    br_new.Close();
-                    br_orig.Close();
+                    sfcf_orig.Close();
+                    sfcf_new.Close();
                     return -1;
                     // error
                 }
-                if(new_data.Read(br_new)   != 0)
+                if(new_data.Read(sfcf_new)   != 0)
                 {
                     changes.Clear();
-                    br_new.Close();
-                    br_orig.Close();
+                    sfcf_orig.Close();
+                    sfcf_new.Close();
                     return -1;
                     // error
                 }
@@ -240,8 +240,8 @@ namespace SpellforceDataEditor.SFMod
                 new_data.Unload();
                 GC.Collect();
             }
-            br_orig.Close();
-            br_new.Close();
+            sfcf_orig.Close();
+            sfcf_new.Close();
             return 0;
         }
 

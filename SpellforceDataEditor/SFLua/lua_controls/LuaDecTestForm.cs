@@ -58,7 +58,7 @@ namespace SpellforceDataEditor.SFLua.lua_controls
 
                     decompiled_scripts += 1;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     failed_scripts += 1;
                     LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaDecompilerForm.DecompileFiles(): Failed to decompile script "

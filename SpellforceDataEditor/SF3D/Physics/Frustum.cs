@@ -30,6 +30,28 @@ namespace SpellforceDataEditor.SF3D.Physics
             Calculate();
         }
 
+        public bool ContainsPoint(Vector3 p)
+        {
+            foreach (Plane pl in frustum_planes)
+            {
+                if (pl.SideOf(p))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public bool ContainsPointIgnoreZFar(Vector3 p)
+        {
+            for(int i = 0; i < 5; i++)
+            {
+                if (frustum_planes[i].SideOf(p))
+                    return false;
+            }
+
+            return true;
+        }
+
         public void Calculate()
         {
             // get forward, up, right direction

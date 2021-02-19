@@ -20,11 +20,13 @@ namespace SpellforceDataEditor.SF3D.Physics
     {
         public Vector3 point;
         public Vector3 normal;
+        public float d;
 
         public Plane(Vector3 p, Vector3 n)
         {
             point = p;
-            normal = n;
+            normal = n.Normalized();
+            d = -normal.X * point.X - normal.Y * point.Y - normal.Z * point.Z;
             if (normal == Vector3.Zero)
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "Plane(): Normal is zero length (point: "+p.ToString()+")");
         }
@@ -34,6 +36,7 @@ namespace SpellforceDataEditor.SF3D.Physics
         {
             point = t.v1;
             normal = t.normal;
+            d = -normal.X * point.X - normal.Y * point.Y - normal.Z * point.Z;
         }
 
         // creates a plane  to which given  3  points  belong
@@ -41,6 +44,7 @@ namespace SpellforceDataEditor.SF3D.Physics
         {
             point = p1;
             normal = Vector3.Cross(p3 - p1, p2 - p1).Normalized();
+            d = -normal.X * point.X - normal.Y * point.Y - normal.Z * point.Z;
 
             if (normal == Vector3.Zero)
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "Plane(): Malformed plane, normal is zero length!");
@@ -50,16 +54,12 @@ namespace SpellforceDataEditor.SF3D.Physics
         // depending on the side of the plane the point is on, result will be positive or negative
         public float DistanceTo(Vector3 v)
         {
-            float d = -normal.X * point.X - normal.Y * point.Y - normal.Z * point.Z;
-            return (normal.X * v.X + normal.Y * v.Y + normal.Z * v.Z + d)
-                 / (float)Math.Sqrt(normal.X * normal.X + normal.Y * normal.Y + normal.Z * normal.Z);
+            return (normal.X * v.X + normal.Y * v.Y + normal.Z * v.Z + d);
         }
 
         // returns true if a point lies on positive side of the plane, false otherwise
-        // faster than above
         public bool SideOf(Vector3 v)
         {
-            float d = -normal.X * point.X - normal.Y * point.Y - normal.Z * point.Z;
             return (normal.X * v.X + normal.Y * v.Y  + normal.Z * v.Z + d) > 0;
         }
     }

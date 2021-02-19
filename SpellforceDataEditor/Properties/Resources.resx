@@ -596,6 +596,19 @@ void main(){
   #endif // APPLY_SHADING
 
   // calculate diffuse color based on heightmap textures
+  vec4 tex1_1 = vec4(0.0);
+  vec4 tex1_2 = vec4(0.0);
+  vec4 tex1_3 = vec4(0.0);
+  vec4 tex2_1 = vec4(0.0);
+  vec4 tex2_2 = vec4(0.0);
+  vec4 tex2_3 = vec4(0.0);
+  vec4 tex3_1 = vec4(0.0);
+  vec4 tex3_2 = vec4(0.0);
+  vec4 tex3_3 = vec4(0.0);
+  vec4 tex4_1 = vec4(0.0);
+  vec4 tex4_2 = vec4(0.0);
+  vec4 tex4_3 = vec4(0.0);
+
   vec2 map_uv = floor(UV*4);
   vec2 fixed_uv = vec2(UV.x, -UV.y - 0.25);
   map_uv.y = GridSize-map_uv.y-1;
@@ -603,18 +616,18 @@ void main(){
   int t2 = int(texture(TileMap, (map_uv+vec2(1, -1))/GridSize).r*255);
   int t3 = int(texture(TileMap, (map_uv+vec2(0, 0))/GridSize).r*255);
   int t4 = int(texture(TileMap, (map_uv+vec2(1, 0))/GridSize).r*255);
-  vec4 tex1_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].x))*(tex_w[t1].x/255.0f);
-  vec4 tex1_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].y))*(tex_w[t1].y/255.0f);
-  vec4 tex1_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].z))*(tex_w[t1].z/255.0f);
-  vec4 tex2_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].x))*(tex_w[t2].x/255.0f);
-  vec4 tex2_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].y))*(tex_w[t2].y/255.0f);
-  vec4 tex2_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].z))*(tex_w[t2].z/255.0f);
-  vec4 tex3_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].x))*(tex_w[t3].x/255.0f);
-  vec4 tex3_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].y))*(tex_w[t3].y/255.0f);
-  vec4 tex3_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].z))*(tex_w[t3].z/255.0f);
-  vec4 tex4_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].x))*(tex_w[t4].x/255.0f);
-  vec4 tex4_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].y))*(tex_w[t4].y/255.0f);
-  vec4 tex4_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].z))*(tex_w[t4].z/255.0f);
+  if(tex_w[t1].x &gt; 0) tex1_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].x))*(tex_w[t1].x/255.0f);
+  if(tex_w[t1].y &gt; 0) tex1_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].y))*(tex_w[t1].y/255.0f);
+  if(tex_w[t1].z &gt; 0) tex1_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].z))*(tex_w[t1].z/255.0f);
+  if(tex_w[t2].x &gt; 0) tex2_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].x))*(tex_w[t2].x/255.0f);
+  if(tex_w[t2].y &gt; 0) tex2_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].y))*(tex_w[t2].y/255.0f);
+  if(tex_w[t2].z &gt; 0) tex2_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].z))*(tex_w[t2].z/255.0f);
+  if(tex_w[t3].x &gt; 0) tex3_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].x))*(tex_w[t3].x/255.0f);
+  if(tex_w[t3].y &gt; 0) tex3_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].y))*(tex_w[t3].y/255.0f);
+  if(tex_w[t3].z &gt; 0) tex3_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].z))*(tex_w[t3].z/255.0f);
+  if(tex_w[t4].x &gt; 0) tex4_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].x))*(tex_w[t4].x/255.0f);
+  if(tex_w[t4].y &gt; 0) tex4_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].y))*(tex_w[t4].y/255.0f);
+  if(tex_w[t4].z &gt; 0) tex4_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].z))*(tex_w[t4].z/255.0f);
   tex1_1 += tex1_2+tex1_3;
   tex2_1 += tex2_2+tex2_3;
   tex3_1 += tex3_2+tex3_3;
@@ -1097,6 +1110,7 @@ void main()
     <value>layout(vertices = 4) out;
 
 uniform vec3 cameraPos;
+uniform vec3 cameraDir;
 
 // for now, there's no correction for average  patch height (all patches are of height 0)
 // doing the correction will surely improve peformance
@@ -1108,7 +1122,10 @@ float distance(vec2 p1, vec2 p2)
 
 float edgeCameraDistance(vec4 p1, vec4 p2)
 {
-    return distance(((p1 + p2) * 0.5).xz, cameraPos.xz);
+    vec3 res_pos = (p1 + p2).xyz * 0.5;
+    if(dot(cameraDir, normalize(res_pos - cameraPos)) &lt;= 0.0)
+        return 401.0;
+    return distance(res_pos.xz, cameraPos.xz);
 }
 
 float tesselationPerDistance(float d)
@@ -1304,6 +1321,8 @@ float CalculateShadow(vec4 FPLS, float b){
 
 void main(){
   vec4 temp_c = fragmentColor * texture(DiffuseTex, UV);
+  if(temp_c.a == floor(temp_c.a))    // discard if a == 1.0 or a == 0.0
+    discard;
 
   float brightness = 1.0;
   #ifdef APPLY_SHADING

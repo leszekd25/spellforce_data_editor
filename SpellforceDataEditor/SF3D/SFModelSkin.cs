@@ -187,7 +187,7 @@ namespace SpellforceDataEditor.SF3D
             {
                 Merge(bsi);
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkin.Load(): Invalid skin data!");
                 SFResourceManager.BSIs.Dispose(SFResourceManager.current_resource);

@@ -20,6 +20,7 @@ namespace SpellforceDataEditor
         public static special_forms.ModManagerForm modmanager = null;
         public static special_forms.MapEditorForm mapedittool = null;
         public static special_forms.AboutForm applicationinfo = null;
+        public static special_forms.SaveDataEditorForm svdata = null;
 
         public MainForm()
         {
@@ -48,6 +49,13 @@ namespace SpellforceDataEditor
                 LabelIsSpecifiedGameDir.Text = "Game directory:\r\nNOT specified";
 
             LogUtils.Log.TotalMemoryUsage();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+#if DEBUG
+            bSaveData.Visible = true;
+#endif
         }
 
         void CheckNewVersionAvailable()
@@ -248,6 +256,23 @@ namespace SpellforceDataEditor
         private void applicationinfo_FormClosed(object sender, FormClosedEventArgs e)
         {
             applicationinfo.FormClosed -= new FormClosedEventHandler(this.applicationinfo_FormClosed);
+            applicationinfo = null;
+            GC.Collect();
+        }
+
+        private void bSaveData_Click(object sender, EventArgs e)
+        {
+            if (svdata != null)
+                return;
+
+            svdata = new special_forms.SaveDataEditorForm();
+            svdata.FormClosed += new FormClosedEventHandler(this.svdata_FormClosed);
+            svdata.Show();
+        }
+
+        private void svdata_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            applicationinfo.FormClosed -= new FormClosedEventHandler(this.svdata_FormClosed);
             applicationinfo = null;
             GC.Collect();
         }

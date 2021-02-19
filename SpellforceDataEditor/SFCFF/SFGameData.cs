@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 using System.Reflection;
 using System.IO;
+using SpellforceDataEditor.SFChunk;
 
 namespace SpellforceDataEditor.SFCFF
 {
@@ -41,80 +42,52 @@ namespace SpellforceDataEditor.SFCFF
             }
         }
 
-        // load gamedata from given file
-        // returns whether it succeeded
-        public int Load(string filename)
+        public int Load(string fname)
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFGameData.Read() called");
-            FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFGameData.Load() called");
 
-            //md5 calculation for data diff tool
-            //MD5 md5_gen = MD5.Create();
-            //gamedata_md5 = BitConverter.ToString(md5_gen.ComputeHash(fs)).Replace("-", "").ToLower();
-
-            fs.Seek(0, SeekOrigin.Begin);
-
-            BinaryReader br = new BinaryReader(fs, Encoding.GetEncoding(1252));
-
-            int result = 0;
-
-            mainHeader = br.ReadBytes(mainHeader.Length);
-            for (int i = 0; i < categoryNumber; i++)
+            SFChunkFile sfcf = new SFChunkFile();
+            int result = sfcf.OpenFile(fname);
+            if(result != 0)
             {
-                int cat_status = categories[i].Read(br);
-                if (cat_status == -1)
-                {
-                    //MessageBox.Show("Category '" + get_category(i).get_name() + "' has corrupted header, but it will fix itself upon the next data save.");
-                }
-                else if (cat_status == -2)
-                {
-                    result = -1;
-                    break;
-                }
-                else if (cat_status == -3)
-                {
-                    result = -2;
-                    break;
-                }
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFGameData.Load() failed!");
+                return result;
             }
 
-            //br.Close();
-            fs.Close();
+            for (int i = 0; i < categoryNumber; i++)
+            {
+                int cat_status = categories[i].Read(sfcf);
+                if (cat_status != 0)
+                    return cat_status;
+            }
+            sfcf.Close();
 
-            if(result != 0)
-                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFGameData.Read() failed!");
             return result;
         }
 
-        // saves ganedata to a given file
-        // returns if succeeded
         public int Save(string filename)
         {
-            FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write);
-            fs.SetLength(0);
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFGameData.Save() called");
 
-            BinaryWriter bw = new BinaryWriter(fs, Encoding.GetEncoding(1252));
-
-            bw.Write(mainHeader);
+            SFChunkFile sfcf = new SFChunkFile();
+            int result = sfcf.CreateFile(filename, SFChunkFileType.GAMEDATA);
+            if (result != 0)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFGameData.Save() failed!");
+                return result;
+            }
 
             for (int i = 0; i < categoryNumber; i++)
             {
-                categories[i].Write(bw);
+                int cat_status = categories[i].Write(sfcf);
+                if (cat_status != 0)
+                    return cat_status;
             }
-
-            //bw.Close();
-            fs.Close();
+            sfcf.Close();
 
             return 0;
-
-            //md5 calculation for data diff tool
-            //FileStream fs2 = new FileStream(filename, FileMode.Open, FileAccess.Read);
-
-            //MD5 md5_gen = MD5.Create();
-            //gamedata_md5 = BitConverter.ToString(md5_gen.ComputeHash(fs2)).Replace("-", "").ToLower();
-
-            //fs2.Close();
         }
+
 
         // unloads all stored data
         // returns if succeeded

@@ -20,12 +20,6 @@ namespace SpellforceDataEditor
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-#if DEBUG
-            Application.Run(new MainForm());
-#endif
-
-#if !DEBUG
-
             try
             {
                 Application.Run(new MainForm());
@@ -42,7 +36,6 @@ namespace SpellforceDataEditor
                 LogUtils.Log.Info(LogUtils.LogSource.Main, "Program.Main(): session finish time: " + DateTime.Now.ToLongTimeString());
                 LogUtils.Log.SaveLog("UserLog.txt");
             }
-#endif
         }
     }
 }

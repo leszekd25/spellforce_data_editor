@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SpellforceDataEditor.SFChunk;
 
 namespace SpellforceDataEditor.SFCFF
 {
@@ -17,13 +18,14 @@ namespace SpellforceDataEditor.SFCFF
         protected string category_name;   
         protected int[] string_size;                    //if category element holds a string (one or more), a list of string lengths is required
         protected int current_string;                   //helper variable to enable searching and manipulating string variants
-        protected Byte[] categoryHeader;                //each category starts with a header
-        protected uint category_id;                      //each category has a unique id the game looks for when reading data
+        //protected Byte[] categoryHeader;                //each category starts with a header
+        public short category_id;                      //each category has a unique id the game looks for when reading data
+        public short category_type;
 
         //constructor 
         public SFCategory()
         {
-            categoryHeader = new Byte[12];
+            //categoryHeader = new Byte[12];
             string_size = new int[1] { 0 };
             elements = new List<SFCategoryElement>();
         }
@@ -292,73 +294,63 @@ namespace SpellforceDataEditor.SFCFF
             return s;
         }
 
-        //reads a buffer and retrieves all expected elements
-        public int Read(BinaryReader sr)
+        public int Read(SFChunkFile sfcf)
         {
-            // 00-01 - chunk id
-            // 02-03 - chunk occurence index
-            // 06-09 - chunk data length
-            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.read() called, category name: "+category_name);
-            categoryHeader = sr.ReadBytes(categoryHeader.Length);
-
-            bool bad_header = false;
-            uint read_id = BitConverter.ToUInt16(categoryHeader, 0);
-            if (read_id != category_id)
-                bad_header = true;
-
-            block_length = BitConverter.ToUInt32(categoryHeader, 6);
-            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.read(): Data size: " + block_length.ToString()+" bytes");
-            elements.Clear();
-            Byte[] block_buffer = new Byte[block_length];
-            sr.Read(block_buffer, 0, (int)(block_length));
-            
-            MemoryStream ms = new MemoryStream(block_buffer);
-            BinaryReader mr = new BinaryReader(ms, Encoding.GetEncoding(1252));
-            while (mr.BaseStream.Position < mr.BaseStream.Length)
+            SFChunkFileChunk sfcfc = sfcf.GetChunkByID(category_id);
+            if (sfcfc == null)
             {
-                SFCategoryElement elem = new SFCategoryElement();
-                try
-                {
-                    elem.AddVariants(GetElementFromBuffer(mr));
-                }
-                catch (EndOfStreamException)
-                {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory.read(): Can't read past buffer! Category: "+category_name);
-                    return -2;
-                }
-                catch (Exception)
-                {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory.read(): Unknown error while reading! Category: " + category_name);
-                    return -3;
-                }
-                elements.Add(elem);
-            }
-            mr.Close();
-            block_buffer = null;
-            if (bad_header)
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.read(): Retrieved chunk ID did not match supposed chunk ID! Category: " + category_name);
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory.Read() failed! Chunk not found (category name = " + category_name.ToString() + ", chunk ID = " + category_id.ToString() + ")");
                 return -1;
             }
+
+            category_type = sfcfc.header.ChunkDataType;
+
+            using (BinaryReader br = sfcfc.Open())
+            {
+                while (br.BaseStream.Position < br.BaseStream.Length)
+                {
+                    SFCategoryElement elem = new SFCategoryElement();
+                    try
+                    {
+                        elem.AddVariants(GetElementFromBuffer(br));
+                    }
+                    catch (EndOfStreamException)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory.read(): Can't read past buffer! Category: " + category_name);
+                        return -2;
+                    }
+                    catch (Exception)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory.read(): Unknown error while reading! Category: " + category_name);
+                        return -3;
+                    }
+                    elements.Add(elem);
+                }
+            }
+
             LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.read(): Items read: " + elements.Count.ToString());
             return 0;
         }
 
-        //inserts all elements into the buffer
-        public void Write(BinaryWriter sw)
+        public int Write(SFChunkFile sfcf)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.write() called, category name: " + category_name);
+
             UInt32 new_block_size = (UInt32)GetSize();
-            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.write(): Presumed data size: "+new_block_size.ToString()+" bytes");
-            Utility.CopyUInt32ToByteArray(category_id, ref categoryHeader, 0);
-            categoryHeader[4] = 0;
-            categoryHeader[5] = 0;
-            Utility.CopyUInt32ToByteArray(new_block_size, ref categoryHeader, 6);
-            sw.Write(categoryHeader);
-            for(int i = 0; i < GetElementCount(); i++)
+            byte[] data = new byte[new_block_size];
+            using (MemoryStream ms = new MemoryStream(data))
             {
-                WriteElementToBuffer(sw, elements[i].variants);
+                using (BinaryWriter bw = new BinaryWriter(ms))
+                {
+                    for (int i = 0; i < GetElementCount(); i++)
+                    {
+                        WriteElementToBuffer(bw, elements[i].variants);
+                    }
+                }
             }
+
+            sfcf.AddChunk(category_id, 0, false, category_type, data);
+            return 0;
         }
 
         //returns element's name that will be displayed on the list
@@ -452,9 +444,9 @@ namespace SpellforceDataEditor.SFCFF
             LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.unload() called, category name: " + category_name);
             elements.Clear();
 
-            categoryHeader = new byte[12];
+            /*categoryHeader = new byte[12];
             for (int i = 0; i < 12; i++)
-                categoryHeader[i] = 0;
+                categoryHeader[i] = 0;*/
         }
     }
 

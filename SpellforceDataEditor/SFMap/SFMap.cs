@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using System.IO;
-using SpellforceDataEditor.SFChunkFile;
+using SpellforceDataEditor.SFChunk;
 using SpellforceDataEditor.SF3D.SFRender;
 
 namespace SpellforceDataEditor.SFMap
@@ -35,8 +35,8 @@ namespace SpellforceDataEditor.SFMap
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load() called, filename: " + filename);
             tx.Text = "Loading...";
             tx.GetCurrentParent().Refresh();
-            SFChunkFile.SFChunkFile f = new SFChunkFile.SFChunkFile();
-            int res = f.Open(filename);
+            SFChunk.SFChunkFile f = new SFChunk.SFChunkFile();
+            int res = f.OpenFile(filename);
             if (res != 0)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not open map file!");
@@ -762,8 +762,8 @@ namespace SpellforceDataEditor.SFMap
                 return -1;
             }
 
-            SFChunkFile.SFChunkFile f = new SFChunkFile.SFChunkFile();
-            int res = f.Create(filename, SFChunkFileType.MAP);
+            SFChunk.SFChunkFile f = new SFChunk.SFChunkFile();
+            int res = f.CreateFile(filename, SFChunkFileType.MAP);
             if (res != 0)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.Save(): Failed to create map file (filename: " + filename + ")");

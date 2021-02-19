@@ -128,7 +128,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql
                     items.Add(_i, data);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Unload();
                 LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLItem.Load(): Error reading item file! Item ID = " + log_current_item.ToString());

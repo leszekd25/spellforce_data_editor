@@ -15,8 +15,6 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 {
     public partial class SFLuaSQLRtsCoopSpawnForm : Form
     {
-        bool can_load = true;
-
         public SFLuaSQLRtsCoopSpawnForm()
         {
             InitializeComponent();
@@ -31,7 +29,6 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             if (SFLuaEnvironment.coop_spawns.Load() != 0)
             {
                 MessageBox.Show("Could not load script/GdsRtsCoopSpawnGroups.lua");
-                can_load = false;
                 this.Close();
                 return;
             }

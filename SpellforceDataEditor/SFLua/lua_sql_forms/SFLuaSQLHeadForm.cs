@@ -12,8 +12,6 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 {
     public partial class SFLuaSQLHeadForm : Form
     {
-        bool can_load = true;
-
         public SFLuaSQLHeadForm()
         {
             InitializeComponent();
@@ -24,7 +22,6 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             if (SFLuaEnvironment.heads.Load() != 0)
             {
                 MessageBox.Show("Could not load script/sql_head.lua");
-                can_load = false;
                 this.Close();
                 return;
             }

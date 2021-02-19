@@ -12,7 +12,6 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 {
     public partial class SFLuaSQLBuildingForm : Form
     {
-        bool can_load = true;
         List<int> index_to_key = null;
         int selected_id = Utility.NO_INDEX;
 
@@ -26,7 +25,6 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             if (SFLuaEnvironment.buildings.Load() != 0)
             {
                 MessageBox.Show("Could not load script/sql_building.lua");
-                can_load = false;
                 this.Close();
                 return;
             }

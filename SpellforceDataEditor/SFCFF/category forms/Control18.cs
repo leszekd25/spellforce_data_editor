@@ -12,8 +12,6 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control18 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
-        int spelltrace_id;
-
         public Control18()
         {
             InitializeComponent();
@@ -29,7 +27,6 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             column_dict.Add("Armor", new int[1] { 9 });
             column_dict.Add("Unit handle", new int[1] { 10 });
             column_dict.Add("Placeable in map editor", new int[1] { 11 });
-            spelltrace_id = -1;
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

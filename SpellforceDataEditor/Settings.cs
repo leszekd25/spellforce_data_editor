@@ -359,7 +359,7 @@ namespace SpellforceDataEditor
                     }
                     if (skipped_line)
                         continue;
-                    string s2 = words[0] + " " + words[1];
+                    string s2 = string.Join(" ", words);
                     new_settings.Add(s2);
                 }
                 File.WriteAllLines("config.txt", new_settings.ToArray());

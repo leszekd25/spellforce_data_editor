@@ -149,6 +149,63 @@ namespace SpellforceDataEditor.SFMap
             GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
         }
 
+        public void Regenerate(SFMapHeightMap heightmap, SF3D.Physics.Frustum vis_frustum)
+        {
+            patch_count = 0;
+
+            Vector3 dir = vis_frustum.direction;
+            Vector3 start = vis_frustum.start;    
+
+            foreach (var chunk in heightmap.chunk_nodes)
+            {
+                // 1.
+                Vector3 p = chunk.MapChunk.aabb.center; // A
+                
+                // 2.
+                if (!vis_frustum.ContainsPointIgnoreZFar(p))
+                {
+                    // 3. 
+                    float bbox_radius = (chunk.MapChunk.aabb.center - chunk.MapChunk.aabb.a).Length;
+
+                    // 4.
+                    Vector3 v = p - start;
+                    Vector3 p_proj = start + (Vector3.Dot(v, dir) * dir); // P
+
+                    // 5.
+                    Vector3 n = (p_proj - p).Normalized();
+                    v = p + n * bbox_radius; // X
+
+                    // 6.
+                    if(!vis_frustum.ContainsPointIgnoreZFar(v))
+                    {
+                        // 7.
+                        if(Vector3.Dot(n, p_proj-v) > 0)
+                        {
+                            // 8.
+                            continue;
+                        }
+                    }
+                }
+
+                // build next patch
+                int ix = chunk.MapChunk.ix;
+                int iy = chunk.MapChunk.iy;
+                vertices[4 * patch_count + 0] = new Vector3(ix * SFMapHeightMapMesh.CHUNK_SIZE, 0, (iy + 1) * SFMapHeightMapMesh.CHUNK_SIZE);
+                vertices[4 * patch_count + 1] = new Vector3(ix * SFMapHeightMapMesh.CHUNK_SIZE, 0, iy * SFMapHeightMapMesh.CHUNK_SIZE);
+                vertices[4 * patch_count + 2] = new Vector3((ix + 1) * SFMapHeightMapMesh.CHUNK_SIZE, 0, iy * SFMapHeightMapMesh.CHUNK_SIZE);
+                vertices[4 * patch_count + 3] = new Vector3((ix + 1) * SFMapHeightMapMesh.CHUNK_SIZE, 0, (iy + 1) * SFMapHeightMapMesh.CHUNK_SIZE);
+
+                patch_count += 1;
+            }
+
+            if (patch_count > 0)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
+                GL.BufferSubData<Vector3>(BufferTarget.ArrayBuffer, IntPtr.Zero, patch_count * 48, vertices);
+                //GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
+            }
+        }
+
         public void Unload()
         {
             if (vertex_array != 0)

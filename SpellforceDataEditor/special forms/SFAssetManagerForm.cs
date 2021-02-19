@@ -15,7 +15,6 @@ using SpellforceDataEditor.SF3D.SceneSynchro;
 using SpellforceDataEditor.SF3D.SFRender;
 using SpellforceDataEditor.SFSound;
 using SpellforceDataEditor.SFResources;
-using SpellforceDataEditor.SFEffect;
 
 namespace SpellforceDataEditor.special_forms
 {
@@ -149,8 +148,6 @@ namespace SpellforceDataEditor.special_forms
         SFAssetManagerSceneInfo current_scene_info = new SFAssetManagerSceneInfo();
 
         SFAssetManagerUI ui = null;
-
-        public EffectEditorForm effect_editor { get; private set; } = null;
 
 
         public SFAssetManagerForm()
@@ -765,6 +762,7 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.scene.camera.Update(0);
                 SFRenderEngine.scene.Update();
                 SFRenderEngine.ui.Update();
+                SFRenderEngine.scene.atmosphere.sun_light.SetupLightView(new SF3D.Physics.BoundingBox(new Vector3(-5, 0, -5), new Vector3(5, 30, 5)));
                 glControl1.Invalidate();
                 update_render = false;
             }
@@ -1251,33 +1249,6 @@ namespace SpellforceDataEditor.special_forms
             if (grid_node != null)
                 grid_node.Visible = !grid_node.Visible;
             update_render = true;
-        }
-
-        private void runEffectEditorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ClearState();
-            ComboBrowseMode.SelectedIndex = -1;
-            ComboBrowseMode.Visible = false;
-
-            effect_editor = new EffectEditorForm();
-            effect_editor.FormClosed += new FormClosedEventHandler(this.effectEditor_FormClosed);
-            effect_editor.Show();
-
-            SceneNodeSimple eff_node = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "", "effect_root");
-        }
-
-        private void effectEditor_FormClosed(object sender, EventArgs e)
-        {
-            effect_editor.FormClosed -= new FormClosedEventHandler(this.effectEditor_FormClosed);
-            effect_editor = null;
-
-            ClearState();
-            ComboBrowseMode.Visible = true;
-        }
-
-        public void ExternalRunEffect(EffectObject effect)
-        {
-
         }
     }
 }
