@@ -184,6 +184,23 @@ namespace SpellforceDataEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 
+        ///out vec4 color;
+        ///
+        ///void main(){
+        ///  color = vec4(1.0, 0.2, 0.2, 1.0);
+        ///
+        ///  // depth bias, ugly hack to circumvent tesselation issues on nvidia with pre-pass
+        ///  gl_FragDepth = gl_FragCoord.z + 0.0002;
+        ///}.
+        /// </summary>
+        internal static string fshader_hmap_depth_prepass {
+            get {
+                return ResourceManager.GetString("fshader_hmap_depth_prepass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to in vec4 fragmentColor;
         ///
         ///out vec4 color;
@@ -469,7 +486,6 @@ namespace SpellforceDataEditor.Properties {
         ///   Looks up a localized string similar to layout(vertices = 4) out;
         ///
         ///uniform vec3 cameraPos;
-        ///uniform vec3 cameraDir;
         ///
         ///// for now, there&apos;s no correction for average  patch height (all patches are of height 0)
         ///// doing the correction will surely improve peformance
@@ -481,10 +497,13 @@ namespace SpellforceDataEditor.Properties {
         ///
         ///float edgeCameraDistance(vec4 p1, vec4 p2)
         ///{
-        ///    vec3 res_pos = (p1 + p2).xyz * 0.5;
-        ///    if(dot(cameraDir, normalize(res_pos - cameraPos)) &lt;= 0.0)
-        ///        return 401.0;
-        ///    return distance(res_pos.x [rest of string was truncated]&quot;;.
+        ///    vec2 res_pos = (p1 + p2).xz * 0.5;
+        ///    return distance(res_pos, cameraPos.xz);
+        ///}
+        ///
+        ///float tesselationPerDistance(float d)
+        ///{
+        ///    // 0-50 -&gt; 1, 50-100 -&gt; 2, 100-200 -&gt; 4, 200- [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string tcsshader_hmap_tesselated {
             get {
@@ -548,6 +567,34 @@ namespace SpellforceDataEditor.Properties {
         internal static string tesshader_hmap_tesselated {
             get {
                 return ResourceManager.GetString("tesshader_hmap_tesselated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to layout(quads) in;
+        ///
+        ///out vec3 fragmentPosition;
+        ///
+        ///// Values that stay constant for the whole mesh.
+        ///
+        ///uniform int GridSize;
+        ///uniform sampler2D HeightMap;
+        ///uniform mat4 VP;
+        ///
+        ///vec4 GetTesselatedVertex(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
+        ///{
+        ///    vec4 a = mix(v0, v1, gl_TessCoord.x);
+        ///    vec4 b = mix(v2, v3, gl_TessCoord.x);
+        ///    return mix(a, b, gl_TessCoord.y);
+        ///}
+        ///
+        ///vec3 GetVertexPos(vec2 grid_pos)
+        ///{
+        ///    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/G [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string tesshader_hmap_tesselated_depth_prepass {
+            get {
+                return ResourceManager.GetString("tesshader_hmap_tesselated_depth_prepass", resourceCulture);
             }
         }
         
@@ -636,6 +683,32 @@ namespace SpellforceDataEditor.Properties {
         internal static string vshader_hmap {
             get {
                 return ResourceManager.GetString("vshader_hmap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
+        ///layout(location = 0) in vec3 vertexPosition_modelspace;
+        ///
+        ///out vec3 fragmentPosition;
+        ///
+        ///// Values that stay constant for the whole mesh.
+        ///
+        ///uniform int GridSize;
+        ///uniform sampler2D HeightMap;
+        ///uniform mat4 VP;
+        ///
+        ///vec3 GetVertexPos(vec2 grid_pos)
+        ///{
+        ///    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+        ///}
+        ///  
+        ///void main(){
+        ///  // Output position of the vertex, in clip s [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string vshader_hmap_depth_prepass {
+            get {
+                return ResourceManager.GetString("vshader_hmap_depth_prepass", resourceCulture);
             }
         }
         
@@ -785,7 +858,7 @@ namespace SpellforceDataEditor.Properties {
         ///
         ///void main()
         ///{
-        ///    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
+        ///    gl_Position = vec4(aPos.x, aPos.y, 1.0, 1.0); 
         ///    TexCoords = aTexCoords;
         ///}.
         /// </summary>

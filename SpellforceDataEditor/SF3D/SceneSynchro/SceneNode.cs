@@ -340,7 +340,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 }
             }
         }
-        //public int ModelIndex { get; private set; } = Utility.NO_INDEX;
 
         public bool Billboarded { get; set; } = false;
 
@@ -371,31 +370,62 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // assumes mesh exists
         private void ClearTexGeometry()
         {
-            //if (ModelIndex == Utility.NO_INDEX)
-            //    return;
-
             mesh.MatrixCount -= 1;
             if (mesh.MatrixCount == 0)
+            {
                 SFRender.SFRenderEngine.scene.model_set_simple.Remove(mesh);
 
-            /*SFRender.SFRenderEngine.scene.model_list_simple[mesh].RemoveAt(ModelIndex);
-            if (SFRender.SFRenderEngine.scene.model_list_simple[mesh].used_count == 0)
-                SFRender.SFRenderEngine.scene.model_list_simple.Remove(mesh);
-
-            ModelIndex = Utility.NO_INDEX;*/
+                foreach (var submodel in mesh.submodels)
+                {
+                    if (submodel.material.transparent_pass)
+                    {
+                        SFRender.SFRenderEngine.scene.transparent_pass_models.Remove(submodel);
+                    }
+                    if (submodel.material.water_pass)
+                    {
+                        SFRender.SFRenderEngine.scene.water_pass_models.Remove(submodel);
+                    }
+                    else if (submodel.material.additive_pass)
+                    {
+                        SFRender.SFRenderEngine.scene.additive_pass_models.Remove(submodel);
+                    }
+                    else
+                    {
+                        SFRender.SFRenderEngine.scene.opaque_pass_models.Remove(submodel);
+                    }
+                }
+            }
         }
 
         // adds this node to scene cache
         // todo: work out transparency :)
         private void AddTexGeometry()
         {
-            //if (ModelIndex != Utility.NO_INDEX)
-            //    ClearTexGeometry();
-
             mesh.MatrixCount += 1;
             if (mesh.MatrixCount == 1)
+            {
                 SFRender.SFRenderEngine.scene.model_set_simple.Add(mesh);
-            //ModelIndex = SFRender.SFRenderEngine.scene.AddModelEntrySimple(mesh, this);
+
+                foreach(var submodel in mesh.submodels)
+                {
+                    if (submodel.material.transparent_pass)
+                    {
+                        SFRender.SFRenderEngine.scene.transparent_pass_models.Add(submodel);
+                    }
+                    if (submodel.material.water_pass)
+                    {
+                        SFRender.SFRenderEngine.scene.water_pass_models.Add(submodel);
+                    }
+                    else if (submodel.material.additive_pass)
+                    {
+                        SFRender.SFRenderEngine.scene.additive_pass_models.Add(submodel);
+                    }
+                    else
+                    {
+                        SFRender.SFRenderEngine.scene.opaque_pass_models.Add(submodel);
+                    }
+                }
+            }
         }
 
         // disposes mesh used by this node (reference counted, dw)

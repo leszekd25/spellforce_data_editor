@@ -105,8 +105,20 @@ namespace SpellforceDataEditor.SF3D
     public class Atmosphere
     {
         // vao used to render sky
-        static float[] vertices = new float[] { -1, -1, -1, 1, 1, -1, -1, 1, 1, -1, 1, 1 };
-        static float[] uvs = new float[] { 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1 };
+        static float[] vertices = new float[] {
+            -1, -1, 
+            -1, 1,
+            1, -1, 
+            -1, 1,
+            1, -1, 
+            1, 1 };
+        static float[] uvs = new float[] {
+            0, 0, 
+            0, 1, 
+            1, 0, 
+            0, 1, 
+            1, 0, 
+            1, 1 };
 
         public static int sky_vao { get; private set; } = -1;
 

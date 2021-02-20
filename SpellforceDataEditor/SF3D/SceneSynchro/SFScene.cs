@@ -57,6 +57,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         //public Dictionary<SFModel3D, LinearPool<SceneNodeSimple>> model_list_simple { get; private set; } = new Dictionary<SFModel3D, LinearPool<SceneNodeSimple>>();
         public HashSet<SFModel3D> model_set_simple { get; private set; } = new HashSet<SFModel3D>();
+
+        public HashSet<SFSubModel3D> opaque_pass_models = new HashSet<SFSubModel3D>();
+        public HashSet<SFSubModel3D> transparent_pass_models = new HashSet<SFSubModel3D>();
+        public HashSet<SFSubModel3D> water_pass_models = new HashSet<SFSubModel3D>();
+        public HashSet<SFSubModel3D> additive_pass_models = new HashSet<SFSubModel3D>();
         //public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>> tex_list_simple { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>>();
 
         public HashSet<SceneNodeAnimated> an_nodes = new HashSet<SceneNodeAnimated>();
@@ -142,7 +147,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     atmosphere.altitude_fog_color.Add(new Vector4(0.3f, 0.2f, 0.5f, 1.0f), 90);
                     atmosphere.altitude_fog_color.Add(new Vector4(0.45f, 0.40f, 0.72f, 1.0f), 100);
                     atmosphere.altitude_fog_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 110);
-                    atmosphere.altitude_fog_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 180); 
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 180);
                     atmosphere.altitude_fog_strength.Add(1.0f, 0);
                 }
             }
@@ -161,7 +166,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
             return 0;
         }
-            
+
 
         // generates a scene given gamedata element
         public void CatElemToScene(int category, int element)
@@ -235,7 +240,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     unit_node.SetParent(root);
                     unit_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
                     scene_meta.name = SFCategoryManager.GetUnitName((ushort)unit_id);
-                    
+
                     scene_meta.is_animated = true;
                     break;
                 default:
@@ -308,7 +313,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public SceneNode AddSceneUnit(int unit_id, string object_name)
         {
             SceneNode unit_node = AddSceneNodeEmpty(null, object_name);    // parent to be assigned later, likely some of the cached mapchunk nodes
-            
+
             //find unit data element (cat 18)
             SFCategoryElement unit_data = SFCategoryManager.gamedata[17].FindElementBinary<UInt16>(0, (UInt16)unit_id);
             if (unit_data == null)
@@ -342,7 +347,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
             //find chest skin/animations
             SFLuaSQLItemData chest_data = SFLuaEnvironment.items[chest_id];
-            if(chest_data == null)
+            if (chest_data == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): Undefined chestpiece mesh (unit id = "
                     + unit_id + ")");
@@ -359,7 +364,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             {
                 chest_name += "_cold";
             }
-            
+
             //add anim model to scene
             SceneNodeAnimated uo = AddSceneNodeAnimated(unit_node, chest_name, "Chest");
 
@@ -454,7 +459,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             SceneNode obj_node = AddSceneNodeEmpty(null, object_name);
 
             SFLuaSQLObjectData obj_data = SFLuaEnvironment.objects[object_id];
-            if(obj_data==null)
+            if (obj_data == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneObject(): Can't find object data (object id = "
                     + object_id + ")");
@@ -523,21 +528,21 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
             return bld_node;
         }
-        
+
         // this removes the node, and if needed, disposes it
         // use this to remove nodes from the scene!
         public void RemoveSceneNode(SceneNode node, bool dispose = true)
         {
-            if(node == null)
+            if (node == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFScene.RemoveSceneNode(): node is null!");
                 return;
             }
             node.SetParent(null);
-            if(dispose)
+            if (dispose)
                 node.Dispose();
         }
-        
+
         // sets scene time
         public void SetSceneTime(float t)
         {
@@ -555,11 +560,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         public void ResumeTimeFlow()
         {
-            if(!time_flowing)
-                deltatime = 1.0f/frames_per_second;
+            if (!time_flowing)
+                deltatime = 1.0f / frames_per_second;
             time_flowing = true;
             delta_timer.Restart();
-            
+
         }
 
         // updates root of the scene (and consequently, all children that need to be updated)
@@ -591,6 +596,16 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
             SFSubModel3D.Cache.CurrentMatrix = cur_offset;
             SFSubModel3D.Cache.MatrixUpload();
+        }
+
+        public void Clear()
+        {
+            model_set_simple.Clear();
+            opaque_pass_models.Clear();
+            transparent_pass_models.Clear();
+            water_pass_models.Clear();
+            additive_pass_models.Clear();
+            an_nodes.Clear();
         }
     }
 }

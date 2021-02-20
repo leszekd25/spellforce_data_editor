@@ -1102,7 +1102,7 @@ out vec2 TexCoords;
 
 void main()
 {
-    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
+    gl_Position = vec4(aPos.x, aPos.y, 1.0, 1.0); 
     TexCoords = aTexCoords;
 }</value>
   </data>
@@ -1110,7 +1110,6 @@ void main()
     <value>layout(vertices = 4) out;
 
 uniform vec3 cameraPos;
-uniform vec3 cameraDir;
 
 // for now, there's no correction for average  patch height (all patches are of height 0)
 // doing the correction will surely improve peformance
@@ -1122,10 +1121,8 @@ float distance(vec2 p1, vec2 p2)
 
 float edgeCameraDistance(vec4 p1, vec4 p2)
 {
-    vec3 res_pos = (p1 + p2).xyz * 0.5;
-    if(dot(cameraDir, normalize(res_pos - cameraPos)) &lt;= 0.0)
-        return 401.0;
-    return distance(res_pos.xz, cameraPos.xz);
+    vec2 res_pos = (p1 + p2).xz * 0.5;
+    return distance(res_pos, cameraPos.xz);
 }
 
 float tesselationPerDistance(float d)
@@ -1368,6 +1365,73 @@ void main(){
 
   // depth bias
   gl_FragDepth = gl_FragCoord.z + DepthBias;
+}</value>
+  </data>
+  <data name="fshader_hmap_depth_prepass" xml:space="preserve">
+    <value>
+out vec4 color;
+
+void main(){
+  color = vec4(1.0, 0.2, 0.2, 1.0);
+
+  // depth bias, ugly hack to circumvent tesselation issues on nvidia with pre-pass
+  gl_FragDepth = gl_FragCoord.z + 0.0002;
+}</value>
+  </data>
+  <data name="tesshader_hmap_tesselated_depth_prepass" xml:space="preserve">
+    <value>layout(quads) in;
+
+out vec3 fragmentPosition;
+
+// Values that stay constant for the whole mesh.
+
+uniform int GridSize;
+uniform sampler2D HeightMap;
+uniform mat4 VP;
+
+vec4 GetTesselatedVertex(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
+{
+    vec4 a = mix(v0, v1, gl_TessCoord.x);
+    vec4 b = mix(v2, v3, gl_TessCoord.x);
+    return mix(a, b, gl_TessCoord.y);
+}
+
+vec3 GetVertexPos(vec2 grid_pos)
+{
+    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+}
+
+void main()
+{
+  // get tesselated vertex
+  vec3 vertexPosition_modelspace = GetTesselatedVertex(gl_in[0].gl_Position, gl_in[3].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position).xyz;
+
+  // Output position of the vertex, in clip space : MVP * position
+  vec3 vpos = GetVertexPos(vertexPosition_modelspace.xz);
+  gl_Position = VP * vec4(vpos, 1.0);
+}</value>
+  </data>
+  <data name="vshader_hmap_depth_prepass" xml:space="preserve">
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+
+out vec3 fragmentPosition;
+
+// Values that stay constant for the whole mesh.
+
+uniform int GridSize;
+uniform sampler2D HeightMap;
+uniform mat4 VP;
+
+vec3 GetVertexPos(vec2 grid_pos)
+{
+    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+}
+  
+void main(){
+  // Output position of the vertex, in clip space : MVP * position
+  vec3 vpos = GetVertexPos(vertexPosition_modelspace.xz);
+  gl_Position = VP * vec4(vpos, 1.0);
 }</value>
   </data>
 </root>

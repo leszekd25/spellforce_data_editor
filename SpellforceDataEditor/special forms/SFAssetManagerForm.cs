@@ -238,7 +238,7 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.camera = null;
             SFRenderEngine.scene.atmosphere.Dispose();
 
-            SFRenderEngine.scene.model_set_simple.Clear();
+            SFRenderEngine.scene.Clear();
 
             SF3D.SFSubModel3D.Cache.Dispose();
             SF3D.SFModelSkinChunk.Cache.Dispose();

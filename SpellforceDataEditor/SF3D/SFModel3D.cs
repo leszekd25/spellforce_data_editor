@@ -92,6 +92,7 @@ namespace SpellforceDataEditor.SF3D
             material.matDepthBias = br.ReadByte();
             material.texTiling = br.ReadSingle();
             material.transparent_pass = ((material.matFlags & 4) == 0);
+            material.additive_pass = (material.texRenderMode == RenderMode.ONE_ONE);
             char[] chars = br.ReadChars(64);
             matname = new string(chars).ToLower();
             matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
