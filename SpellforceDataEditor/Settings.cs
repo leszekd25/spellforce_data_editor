@@ -151,7 +151,7 @@ namespace SpellforceDataEditor
                             byte r = 255;
                             byte g = 255;
                             byte b = 255;
-                            if (words.Length == 4)
+                            if (words.Length >= 4)
                             {
                                 r = Utility.TryParseUInt8(words[1], 255);
                                 g = Utility.TryParseUInt8(words[2], 255);
@@ -160,10 +160,13 @@ namespace SpellforceDataEditor
                             GridColor = new OpenTK.Vector4(r, g, b, 255) / 255f;
                             break;
                         case "ObjectFadeDistance":
-                            ObjectFadeMin = Utility.TryParseUInt16(words[1], (ushort)ObjectFadeMin);
-                            ObjectFadeMax = Utility.TryParseUInt16(words[2], (ushort)ObjectFadeMax);
-                            if (ObjectFadeMax < ObjectFadeMin)
-                                ObjectFadeMax = ObjectFadeMin;
+                            if (words.Length >= 3)
+                            {
+                                ObjectFadeMin = Utility.TryParseUInt16(words[1], (ushort)ObjectFadeMin);
+                                ObjectFadeMax = Utility.TryParseUInt16(words[2], (ushort)ObjectFadeMax);
+                                if (ObjectFadeMax < ObjectFadeMin)
+                                    ObjectFadeMax = ObjectFadeMin;
+                            }
                             break;
                         case "UnitFadeDistance":
                             UnitFade = Utility.TryParseUInt16(words[1], (ushort)UnitFade);

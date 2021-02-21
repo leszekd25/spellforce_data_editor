@@ -32,7 +32,6 @@ namespace SpellforceDataEditor
             {
                 SFLua.SFLuaEnvironment.UnloadSQL();
                 SFUnPak.SFUnPak.CloseAllPaks();
-                Settings.Save();
                 LogUtils.Log.Info(LogUtils.LogSource.Main, "Program.Main(): session finish time: " + DateTime.Now.ToLongTimeString());
                 LogUtils.Log.SaveLog("UserLog.txt");
             }

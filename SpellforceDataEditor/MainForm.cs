@@ -114,6 +114,7 @@ namespace SpellforceDataEditor
                 {
                     Settings.GameDirectory = GameDirDialog.SelectedPath;
                     LabelIsSpecifiedGameDir.Text = "Game directory:\r\nSpecified";
+                    Settings.Save();
                 }
                 else
                     LabelIsSpecifiedGameDir.Text = "Game directory:\r\nFailed to specify!";

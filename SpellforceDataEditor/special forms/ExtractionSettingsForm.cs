@@ -32,6 +32,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 Settings.ExtractAllInOne = true;
                 DescriptionExtractionMode.Text = "Using \"Extract\" option will extract all relevant assets to the directory specified above.";
+                Settings.Save();
             }
         }
 
@@ -41,6 +42,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 Settings.ExtractAllInOne = false;
                 DescriptionExtractionMode.Text = "Using \"Extract\" option will extract all relevant assets to respective subdirectories in the directory specified above.";
+                Settings.Save();
             }
         }
 
@@ -50,6 +52,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 Settings.ExtractDirectory = SelectExtractionDirectory.SelectedPath;
                 TextBoxExtractionDirectory.Text = Settings.ExtractDirectory;
+                Settings.Save();
             }
         }
 
