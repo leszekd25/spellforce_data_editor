@@ -149,9 +149,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 }
                 cat.elements.Insert(new_ind, new_elem);
 
-                if (!MainForm.data.synchronized_with_mapeditor)
-                    MainForm.data.diff.push_change(cat_i, 
-                        new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, new_ind-1, null, new_elem));
+                MainForm.data.diff.push_change(cat_i, 
+                    new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, new_ind-1, null, new_elem));
 
                 bt.Tag = false;
             }

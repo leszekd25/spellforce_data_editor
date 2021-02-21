@@ -588,7 +588,7 @@ namespace SpellforceDataEditor.special_forms
 
 
         SFMap.SFMap map = null;
-        SFCFF.SFGameData gamedata = null;
+        public bool ready = false;
 
         GLControl RenderWindow = null;
         bool initialized_view = false;   // is true when the map render control is visible and loaded
@@ -646,8 +646,6 @@ namespace SpellforceDataEditor.special_forms
             TimerAnimation.Interval = 1000 / SFRenderEngine.scene.frames_per_second;
             TimerAnimation.Start();
 
-            gamedata = SFCFF.SFCategoryManager.gamedata;
-
             InspectorHide();
         }
 
@@ -671,6 +669,11 @@ namespace SpellforceDataEditor.special_forms
                     SF3D.SFModelSkinChunk.Cache.Dispose();
 
                     DestroyRenderWindow();
+                }
+
+                if((SFCFF.SFCategoryManager.ready)&&(MainForm.data == null))
+                {
+                    SFCFF.SFCategoryManager.UnloadAll();
                 }
             }
         }
@@ -742,11 +745,13 @@ namespace SpellforceDataEditor.special_forms
                 return -1;
 
             // close current gamedata
-            if (MainForm.data != null)
+            bool is_gd_correct = ((SFCFF.SFCategoryManager.gamedata != null) && (SFCFF.SFCategoryManager.gamedata.fname == SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff"));
+
+            if (!is_gd_correct)
             {
-                if (MainForm.data.data_loaded)
+                if (MainForm.data != null)
                 {
-                    if (!MainForm.data.synchronized_with_mapeditor)
+                    if (MainForm.data.data_loaded)
                     {
                         if (MainForm.data.close_data() == DialogResult.Cancel)
                         {
@@ -755,9 +760,9 @@ namespace SpellforceDataEditor.special_forms
                         }
                     }
                 }
+                else if (SFCFF.SFCategoryManager.ready)
+                    SFCFF.SFCategoryManager.UnloadAll();
             }
-            else if (SFCFF.SFCategoryManager.ready)
-                SFCFF.SFCategoryManager.UnloadAll();
 
             // first, load view
             if (!initialized_view)
@@ -788,24 +793,27 @@ namespace SpellforceDataEditor.special_forms
             }
 
             // load in gamedata from game directory
-            StatusText.Text = "Loading GameData.cff...";
-            StatusText.GetCurrentParent().Refresh();
-            if (gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
+            if (!is_gd_correct)
             {
-                StatusText.Text = "Failed to load gamedata";
-                return -2;
-            }
+                StatusText.Text = "Loading GameData.cff...";
+                StatusText.GetCurrentParent().Refresh();
+                if (SFCFF.SFCategoryManager.gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
+                {
+                    StatusText.Text = "Failed to load gamedata";
+                    return -2;
+                }
 
-            if (MainForm.data != null)
-                MainForm.data.mapeditor_set_gamedata(gamedata);
-            else
-                SFCFF.SFCategoryManager.manual_SetGamedata(gamedata);
+                if (MainForm.data != null)
+                    MainForm.data.mapeditor_set_gamedata();
+                else
+                    SFCFF.SFCategoryManager.manual_SetGamedata();
+            }
 
             SFRenderEngine.scene.root.Visible = true;
 
             // create and generate map
             map = new SFMap.SFMap();
-            map.CreateDefault(map_size, generator, gamedata, StatusText);
+            map.CreateDefault(map_size, generator, StatusText);
 
             SFRenderEngine.scene.map = map;
             InitEditorMode();
@@ -831,8 +839,11 @@ namespace SpellforceDataEditor.special_forms
             if (MainForm.data != null)
             {
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap(): Synchronized with gamedata editor");
-                MessageBox.Show("Note: Editor now operates on gamedata file in your Spellforce directory. Modifying in-editor gamedata and saving results will result in permanent change to your gamedata in your Spellforce directory.");
+                if (!is_gd_correct) 
+                    MessageBox.Show("Note: Editor now operates on gamedata file in your Spellforce directory. Modifying in-editor gamedata and saving results will result in permanent change to your gamedata in your Spellforce directory.");
             }
+
+            ready = true;
 
             GC.Collect();
             this.Text = "Map Editor - new map";
@@ -848,12 +859,13 @@ namespace SpellforceDataEditor.special_forms
 
             if (OpenMap.ShowDialog() == DialogResult.OK)
             {
+                bool is_gd_correct = ((SFCFF.SFCategoryManager.gamedata != null) && (SFCFF.SFCategoryManager.gamedata.fname == SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff"));
                 // check if gamedata is open in the editor and prompt to close it
-                if (MainForm.data != null)
+                if (!is_gd_correct)
                 {
-                    if (MainForm.data.data_loaded)
+                    if (MainForm.data != null)
                     {
-                        if (!MainForm.data.synchronized_with_mapeditor)
+                        if (MainForm.data.data_loaded)
                         {
                             if (MainForm.data.close_data() == DialogResult.Cancel)
                             {
@@ -862,9 +874,9 @@ namespace SpellforceDataEditor.special_forms
                             }
                         }
                     }
+                    else if (SFCFF.SFCategoryManager.ready)
+                        SFCFF.SFCategoryManager.UnloadAll();
                 }
-                else if (SFCFF.SFCategoryManager.ready)
-                    SFCFF.SFCategoryManager.UnloadAll();
 
                 // first, load view
                 if (!initialized_view)
@@ -894,19 +906,20 @@ namespace SpellforceDataEditor.special_forms
                     }
                 }
 
-                StatusText.Text = "Loading GameData.cff...";
-                StatusText.GetCurrentParent().Refresh();
-                if (gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
+                if (!is_gd_correct)
                 {
-                    StatusText.Text = "Failed to load gamedata";
-                    return -2;
-                }
+                    StatusText.Text = "Loading GameData.cff...";
+                    StatusText.GetCurrentParent().Refresh();
+                    if (SFCFF.SFCategoryManager.gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
+                    {
+                        StatusText.Text = "Failed to load gamedata";
+                        return -2;
+                    }
 
-                if (MainForm.data != null)
-                    MainForm.data.mapeditor_set_gamedata(gamedata);
-                else
-                {
-                    SFCFF.SFCategoryManager.manual_SetGamedata(gamedata);
+                    if (MainForm.data != null)
+                        MainForm.data.mapeditor_set_gamedata();
+                    else
+                        SFCFF.SFCategoryManager.manual_SetGamedata();
                 }
 
                 SFRenderEngine.scene.root.Visible = true;
@@ -914,7 +927,7 @@ namespace SpellforceDataEditor.special_forms
                 map = new SFMap.SFMap();
                 try
                 {
-                    if (map.Load(OpenMap.FileName, gamedata, StatusText) != 0)
+                    if (map.Load(OpenMap.FileName, StatusText) != 0)
                     {
                         StatusText.Text = "Failed to load map";
                         map = null;
@@ -953,12 +966,15 @@ namespace SpellforceDataEditor.special_forms
                 if (MainForm.data != null)
                 {
                     LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap(): Synchronized with gamedata editor");
-                    MessageBox.Show("Note: Editor now operates on gamedata file in your Spellforce directory. Modifying in-editor gamedata and saving results will result in permanent change to your gamedata in your Spellforce directory.");
+                    if (!is_gd_correct) 
+                        MessageBox.Show("Note: Editor now operates on gamedata file in your Spellforce directory. Modifying in-editor gamedata and saving results will result in permanent change to your gamedata in your Spellforce directory.");
                 }
 
                 GC.Collect();
 
                 this.Text = "Map Editor - " + OpenMap.FileName;
+
+                ready = true;
 
                 LogUtils.Log.TotalMemoryUsage();
                 SFResources.SFResourceManager.LogMemoryUsage();
@@ -1023,6 +1039,8 @@ namespace SpellforceDataEditor.special_forms
                     return -2;
             }
 
+            ready = false;
+
             if (autotexture_form != null)
                 autotexture_form.Close();
             if (teamcomp_form != null)
@@ -1046,13 +1064,6 @@ namespace SpellforceDataEditor.special_forms
             obj_tree = null;
 
             map.Unload();
-            if (MainForm.data != null)
-            {
-                MainForm.data.close_data();
-                MainForm.data.mapeditor_desynchronize();
-            }
-            else
-                SFCFF.SFCategoryManager.UnloadAll();
 
             SFRenderEngine.scene.map = null;
             SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);

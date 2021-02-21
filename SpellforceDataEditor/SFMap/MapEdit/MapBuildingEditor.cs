@@ -56,7 +56,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     else if (!first_click)
                     {
                         ushort new_building_id = (ushort)placement_building;
-                        if (map.gamedata[23].GetElementIndex(new_building_id) == -1)
+                        if (SFCFF.SFCategoryManager.gamedata[23].GetElementIndex(new_building_id) == -1)
                             return;
                         // create new building and drag it until mouse released
                         map.AddBuilding(new_building_id, pos, 0, 0, 1, -1); 

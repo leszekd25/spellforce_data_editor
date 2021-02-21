@@ -13,7 +13,6 @@ namespace SpellforceDataEditor.special_forms
     {
         public bool data_loaded { get; private set; } = false;
         public bool data_changed { get; private set; } = false;
-        public bool synchronized_with_mapeditor { get; private set; } = false;   // this blocks undo/redo if true
 
         private int selected_category_index = -1;
         private int real_category_index = -1;                   //tracer helper
@@ -45,9 +44,9 @@ namespace SpellforceDataEditor.special_forms
             InitializeComponent();
             diff.init();
 
-            if(MainForm.mapedittool != null)
+            if ((MainForm.mapedittool != null) && (MainForm.mapedittool.ready))    // gamedata is already loaded by this point
             {
-                mapeditor_set_gamedata(SFCFF.SFCategoryManager.gamedata);
+                mapeditor_set_gamedata();
                 MessageBox.Show("Gamedata editor is now synchronized with map editor! Any changes saved will permanently alter gamedata in your Spellforce directory.");
             }
         }
@@ -55,8 +54,12 @@ namespace SpellforceDataEditor.special_forms
         //load game data
         private void loadGameDatacffToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (synchronized_with_mapeditor)
+            if ((MainForm.mapedittool != null)&&(MainForm.mapedittool.ready))
+            {
+                MessageBox.Show("Can not open gamedata while Map Editor is open.");
                 return;
+            }
+
             if (OpenGameData.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 load_data();
@@ -98,7 +101,6 @@ namespace SpellforceDataEditor.special_forms
 
             data_loaded = true;
             data_changed = false;
-            synchronized_with_mapeditor = false;
             SetUndoRedoEnabled(true);
 
             CategorySelect.SelectedIndex = 0;
@@ -108,9 +110,10 @@ namespace SpellforceDataEditor.special_forms
             return true;
         }
 
-        public void mapeditor_set_gamedata(SFGameData gd)
+        // gamedata is already loaded, just connect with the gamedata editor
+        public void mapeditor_set_gamedata()
         {
-            SFCategoryManager.manual_SetGamedata(gd);
+            SFCategoryManager.manual_SetGamedata();
 
             this.Text = "GameData Editor - synchronized with MapEditor";
             labelStatus.Text = "Ready";
@@ -123,7 +126,6 @@ namespace SpellforceDataEditor.special_forms
 
             data_loaded = true;
             data_changed = false;
-            synchronized_with_mapeditor = true;
             SetUndoRedoEnabled(false);
 
             CategorySelect.SelectedIndex = 0;
@@ -141,7 +143,7 @@ namespace SpellforceDataEditor.special_forms
                 return false;
 
             CategorySelect.Focus();
-            if (synchronized_with_mapeditor)    // dont ask when synchronized
+            if ((MainForm.mapedittool != null) && (MainForm.mapedittool.ready))    // dont ask when synchronized
             {
                 diff_resolve_current_element();
 
@@ -190,8 +192,7 @@ namespace SpellforceDataEditor.special_forms
             if (!diff_current_element.SameAs(cat[selected_element_index]))
             {
                 data_changed = true;
-                if(!synchronized_with_mapeditor)
-                    diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REPLACE, selected_element_index, diff_current_element, cat[selected_element_index]));
+                diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REPLACE, selected_element_index, diff_current_element, cat[selected_element_index]));
                 diff_current_element = cat[selected_element_index].GetCopy();
             }
         }
@@ -544,13 +545,11 @@ namespace SpellforceDataEditor.special_forms
                 current_indices[i] = current_indices[i] + 1;
             current_indices.Insert(current_elem + 1, current_elem + 1);
 
-            if (!synchronized_with_mapeditor)
-            {
-                diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, current_elem, null, elem));
 
-                undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
-                redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
-            }
+            diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, current_elem, null, elem));
+
+            undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
+            redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
 
             Tracer_Clear();
 
@@ -582,13 +581,10 @@ namespace SpellforceDataEditor.special_forms
                 current_indices[i] = current_indices[i] + 1;
             current_indices.Insert(current_elem+1, current_elem+1);
 
-            if (!synchronized_with_mapeditor)
-            {
-                diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, current_elem, null, elem));
+            diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, current_elem, null, elem));
 
-                undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
-                redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
-            }
+            undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
+            redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
 
             Tracer_Clear();
 
@@ -618,13 +614,10 @@ namespace SpellforceDataEditor.special_forms
             ElementDisplay.Visible = false;
 
             diff_current_element = null;
-            if (!synchronized_with_mapeditor)
-            {
-                diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REMOVE, current_elem, elem, null));
+            diff.push_change(real_category_index, new SFDiffElement(SFDiffElement.DIFF_TYPE.REMOVE, current_elem, elem, null));
 
-                undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
-                redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
-            }
+            undoCtrlZToolStripMenuItem.Enabled = diff.can_undo_changes(selected_category_index);
+            redoCtrlYToolStripMenuItem.Enabled = diff.can_redo_changes(selected_category_index);
 
             Tracer_Clear();
         }
@@ -693,8 +686,11 @@ namespace SpellforceDataEditor.special_forms
         //close gamedata.cff
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (synchronized_with_mapeditor)
+            if ((MainForm.mapedittool != null) && (MainForm.mapedittool.ready))
+            {
+                MessageBox.Show("Can not close gamedata while Map Editor is open.");
                 return;
+            }
             if (data_loaded)
                 close_data();
         }
@@ -704,16 +700,16 @@ namespace SpellforceDataEditor.special_forms
         {
             //ask first to close currend gamedata.cff, if user clicks Cancel, function return immediately
             DialogResult result;
-            if (!CategorySelect.Enabled)
+            if (!data_loaded)
                 return DialogResult.No;
             else if (!data_changed)
                 result = DialogResult.No;
-            else if (synchronized_with_mapeditor)
+            else if ((MainForm.mapedittool != null) && (MainForm.mapedittool.ready))
                 result = DialogResult.Yes;
             else
                 result = MessageBox.Show("Do you want to save gamedata before quitting? (Recommended when synchronized with Map Editor)", "Save before quit?", MessageBoxButtons.YesNoCancel);
 
-            if ((result == DialogResult.Yes)&&(!synchronized_with_mapeditor))
+            if ((result == DialogResult.Yes)&&(!((MainForm.mapedittool != null) && (MainForm.mapedittool.ready))))
             {
                 if (!save_data())
                     return DialogResult.Cancel;
@@ -762,8 +758,7 @@ namespace SpellforceDataEditor.special_forms
 
             diff_current_element = null;
 
-            if(!synchronized_with_mapeditor)
-                SFCategoryManager.UnloadAll();
+            SFCategoryManager.UnloadAll();
             diff.clear_data();
             Tracer_Clear();
 
@@ -788,6 +783,9 @@ namespace SpellforceDataEditor.special_forms
         {
             if (data_loaded)
             {
+                if ((MainForm.mapedittool != null) && (MainForm.mapedittool.ready))
+                    return;
+
                 DialogResult result = close_data();
                 if (result == DialogResult.Cancel)
                     e.Cancel = true;
@@ -814,7 +812,7 @@ namespace SpellforceDataEditor.special_forms
         {
             if (!diff.can_undo_changes(selected_category_index))
                 return;
-            if (synchronized_with_mapeditor)
+            if ((MainForm.mapedittool != null) && (MainForm.mapedittool.ready))
                 return;
 
             //if element is being edited and belongs to the category, make sure to push the change before doing anything else
@@ -888,7 +886,7 @@ namespace SpellforceDataEditor.special_forms
         {
             if (!diff.can_redo_changes(selected_category_index))
                 return;
-            if (synchronized_with_mapeditor)
+            if ((MainForm.mapedittool != null) && (MainForm.mapedittool.ready))
                 return;
 
             validate_focused_control();
@@ -1079,11 +1077,11 @@ namespace SpellforceDataEditor.special_forms
             data_changed = true;
         }
 
-        public void mapeditor_desynchronize()
+        /*public void mapeditor_desynchronize()
         {
             synchronized_with_mapeditor = false;
             SetUndoRedoEnabled(true);
-        }
+        }*/
 
         private void SetUndoRedoEnabled(bool enabled)
         {

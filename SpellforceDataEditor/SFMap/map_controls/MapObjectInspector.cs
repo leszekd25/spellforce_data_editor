@@ -147,7 +147,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             }
 
             // check if new object exists
-            if (map.gamedata[33].GetElementIndex(new_object_id) == Utility.NO_INDEX)
+            if (SFCFF.SFCategoryManager.gamedata[33].GetElementIndex(new_object_id) == Utility.NO_INDEX)
                 return;
 
             // undo/redo

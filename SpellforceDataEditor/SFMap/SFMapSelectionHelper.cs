@@ -371,16 +371,16 @@ namespace SpellforceDataEditor.SFMap
             // get unit
             preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(unit_id, "_UNIT_" + unit_id.ToString()));
 
-            int unit_index = map.gamedata[17].GetElementIndex(unit_id);
+            int unit_index = SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(unit_id);
             if (unit_index == -1)
                 return;
 
-            SFCFF.SFCategoryElement unit_data = map.gamedata[17][unit_index];
-            unit_index = map.gamedata[3].GetElementIndex((ushort)unit_data[2]);
+            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[17][unit_index];
+            unit_index = SFCFF.SFCategoryManager.gamedata[3].GetElementIndex((ushort)unit_data[2]);
             float unit_size = 1f;
             if (unit_index != -1)
             {
-                unit_data = map.gamedata[3][unit_index];
+                unit_data = SFCFF.SFCategoryManager.gamedata[3][unit_index];
                 unit_size = Math.Max((ushort)unit_data[19], (ushort)40) / 100.0f;
             }
 

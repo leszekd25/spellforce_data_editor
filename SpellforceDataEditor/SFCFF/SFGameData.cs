@@ -22,6 +22,8 @@ namespace SpellforceDataEditor.SFCFF
         public Byte[] mainHeader;            //gamedata.cff has a main header which is held here
         public string gamedata_md5 = "";     //currently loaded cff's MD5 hash (as string)
 
+        public string fname = "";            // points nowhere if gamedata is not loaded, points to last know gamedata file which at some point of time had same content as this gamedata
+
         public SFGameData()
         {
             categories = new SFCategory[categoryNumber];
@@ -42,12 +44,13 @@ namespace SpellforceDataEditor.SFCFF
             }
         }
 
-        public int Load(string fname)
+        public int Load(string filename)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFGameData.Load() called");
 
+            fname = "";
             SFChunkFile sfcf = new SFChunkFile();
-            int result = sfcf.OpenFile(fname);
+            int result = sfcf.OpenFile(filename);
             if(result != 0)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFGameData.Load() failed!");
@@ -61,6 +64,7 @@ namespace SpellforceDataEditor.SFCFF
                     return cat_status;
             }
             sfcf.Close();
+            fname = filename;
 
             return result;
         }
@@ -84,6 +88,7 @@ namespace SpellforceDataEditor.SFCFF
                     return cat_status;
             }
             sfcf.Close();
+            fname = filename;
 
             return 0;
         }
@@ -101,6 +106,7 @@ namespace SpellforceDataEditor.SFCFF
             for (int i = 0; i < 20; i++)
                 mainHeader[i] = 0;
 
+            fname = "";
             return 0;
         }
     }

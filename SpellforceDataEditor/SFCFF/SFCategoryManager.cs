@@ -690,19 +690,14 @@ namespace SpellforceDataEditor.SFCFF
             //categorySpecial_RuneHeroes.set_manager(this);
         }
 
-        public static void manual_SetGamedata(SFGameData gd)
+        public static void manual_SetGamedata()
         {
-            if (gamedata == gd)
-            {
-                categorySpecial_RuneHeroes.generate();
-                ready = true;
+            if (ready)
                 return;
-            }
-            if (ready == true)
-                throw new InvalidOperationException("SFCategoryManager.manual_set_gamedata(): Gamedata is not closed!!!!!");
-            gamedata = gd;
+
             categorySpecial_RuneHeroes.generate();
             ready = true;
+            return;
         }
 
         //loads gamedata.cff file

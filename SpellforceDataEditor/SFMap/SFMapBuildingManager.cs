@@ -109,18 +109,18 @@ namespace SpellforceDataEditor.SFMap
             SFMapCollisionBoundary cb = new SFMapCollisionBoundary();
             // load building origin vector
             Vector2 org = new Vector2(0, 0);
-            int org_index = map.gamedata[23].GetElementIndex(id);
+            int org_index = SFCFF.SFCategoryManager.gamedata[23].GetElementIndex(id);
             if (org_index != -1)
             {
-                SFCFF.SFCategoryElement org_data = map.gamedata[23][org_index]; // 6, 7
+                SFCFF.SFCategoryElement org_data = SFCFF.SFCategoryManager.gamedata[23][org_index]; // 6, 7
                 org.X = ((short)org_data[6]) / 100.0f;
                 org.Y = ((short)org_data[7]) / 100.0f;
             }
             // load building collision data from gamedata
-            int col_index = map.gamedata[24].GetElementIndex(id);
+            int col_index = SFCFF.SFCategoryManager.gamedata[24].GetElementIndex(id);
             if (col_index != -1)
             {
-                SFCFF.SFCategoryElement col_data = map.gamedata[24][col_index];
+                SFCFF.SFCategoryElement col_data = SFCFF.SFCategoryManager.gamedata[24][col_index];
 
                 int current_col_offset = 0;
                 while (current_col_offset < col_data.variants.Count)

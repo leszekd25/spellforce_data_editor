@@ -144,7 +144,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             // check if new building exists
-            if (map.gamedata[23].GetElementIndex(new_building_id) == Utility.NO_INDEX)
+            if (SFCFF.SFCategoryManager.gamedata[23].GetElementIndex(new_building_id) == Utility.NO_INDEX)
                 return;
 
             // undo/redo

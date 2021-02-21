@@ -27,10 +27,9 @@ namespace SpellforceDataEditor.SFMap
         public SFMapMetaData metadata { get; private set; } = null;
         public SFMapSelectionHelper selection_helper { get; private set; } = new SFMapSelectionHelper();
         public SFMapOcean ocean { get; private set; } = new SFMapOcean();
-        public SFCFF.SFGameData gamedata { get; private set; } = null;
         public uint PlatformID { get; private set; } = 6666;
 
-        public int Load(string filename, SFCFF.SFGameData gd, ToolStripLabel tx)
+        public int Load(string filename, ToolStripLabel tx)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load() called, filename: " + filename);
             tx.Text = "Loading...";
@@ -44,7 +43,6 @@ namespace SpellforceDataEditor.SFMap
             }
 
             // load map size and tile indices
-            gamedata = gd;
 
             short size;
 
@@ -756,11 +754,6 @@ namespace SpellforceDataEditor.SFMap
         public int Save(string filename)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save() called, filename: " + filename);
-            if (gamedata == null)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.Save(): No gamedata assigned to map!");
-                return -1;
-            }
 
             SFChunk.SFChunkFile f = new SFChunk.SFChunkFile();
             int res = f.CreateFile(filename, SFChunkFileType.MAP);
@@ -1223,15 +1216,13 @@ namespace SpellforceDataEditor.SFMap
             return 0;
         }
 
-        public int CreateDefault(ushort size, MapGen.MapGenerator generator, SFCFF.SFGameData gd, ToolStripLabel tx)
+        public int CreateDefault(ushort size, MapGen.MapGenerator generator, ToolStripLabel tx)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.CreateDefault() called, map size: " + size.ToString());
             tx.Text = "Creating...";
             tx.GetCurrentParent().Refresh();
 
             // load map size and tile indices
-            gamedata = gd;
-            
             tx.Text = "Creating map data...";
             tx.GetCurrentParent().Refresh();
 
@@ -1879,19 +1870,19 @@ namespace SpellforceDataEditor.SFMap
             unit.node.SetPosition(heightmap.GetFixedPosition(pos));
             unit.node.SetAnglePlane(0);
             // find unit scale
-            int unit_index = gamedata[17].GetElementIndex(game_id);
+            int unit_index = SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(game_id);
             if (unit_index == -1)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit with given id does not exist! Unit id = "+game_id.ToString());
                 throw new InvalidDataException("SFMap.AddUnit(): Invalid unit ID!");
             }
-            SFCFF.SFCategoryElement unit_data = gamedata[17][unit_index];
+            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[17][unit_index];
 
-            unit_index = gamedata[3].GetElementIndex((ushort)unit_data[2]);
+            unit_index = SFCFF.SFCategoryManager.gamedata[3].GetElementIndex((ushort)unit_data[2]);
             float unit_size = 1f;
             if (unit_index != -1)
             {
-                unit_data = gamedata[3][unit_index];
+                unit_data = SFCFF.SFCategoryManager.gamedata[3][unit_index];
                 unit_size = Math.Max((ushort)unit_data[19], (ushort)40) / 100.0f;
             }
             else
@@ -1978,20 +1969,20 @@ namespace SpellforceDataEditor.SFMap
             unit.node.SetPosition(heightmap.GetFixedPosition(unit.grid_position));
             unit.node.SetAnglePlane(0);
             // unit scale
-            int unit_index = gamedata[17].GetElementIndex(unit.game_id);
+            int unit_index = SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(unit.game_id);
             if (unit_index == -1)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Unit with given id does not exist! Unit id = " + unit.game_id.ToString());
                 throw new InvalidDataException("SFMap.ReplaceUnit(): Invalid unit ID!");
             }
-            SFCFF.SFCategoryElement unit_data = gamedata[17][unit_index];
+            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[17][unit_index];
             
-            unit_index = gamedata[3].GetElementIndex((ushort)unit_data[2]);
+            unit_index = SFCFF.SFCategoryManager.gamedata[3].GetElementIndex((ushort)unit_data[2]);
             float unit_size = 1f;
             if (unit_index != -1)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + unit.game_id.ToString() + "), setting unit scale to 100%");
-                unit_data = gamedata[3][unit_index];
+                unit_data = SFCFF.SFCategoryManager.gamedata[3][unit_index];
                 unit_size = Math.Max(((ushort)unit_data[19]), (ushort)40) / 100.0f;
             }
             unit.node.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
