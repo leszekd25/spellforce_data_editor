@@ -77,15 +77,14 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             // setup lighting
             if (atmosphere.altitude_ambient_color == null)
             {
-                atmosphere.altitude_ambient_color = new InterpolatedColor();   // ambient color is sky color
-                atmosphere.altitude_ambient_strength = new InterpolatedFloat();
-                atmosphere.altitude_sun_color = new InterpolatedColor();
-                atmosphere.altitude_sun_strength = new InterpolatedFloat();
-                atmosphere.altitude_fog_color = new InterpolatedColor();
-                atmosphere.altitude_fog_strength = new InterpolatedFloat();
-
                 if (Settings.ToneMapping)
                 {
+                    atmosphere.altitude_ambient_color = new InterpolatedColor(6);   // ambient color is sky color
+                    atmosphere.altitude_ambient_strength = new InterpolatedFloat(6);
+                    atmosphere.altitude_sun_color = new InterpolatedColor(7);
+                    atmosphere.altitude_sun_strength = new InterpolatedFloat(6);
+                    atmosphere.altitude_fog_color = new InterpolatedColor(6);
+                    atmosphere.altitude_fog_strength = new InterpolatedFloat(6);
                     atmosphere.altitude_sun_color.Add(new Vector4(0.5f, 0.5f, 1.0f, 1.0f), 0);
                     atmosphere.altitude_sun_color.Add(new Vector4(0.5f, 0.5f, 1.0f, 1.0f), 80);
                     atmosphere.altitude_sun_color.Add(new Vector4(1.0f, 0.0f, 0.0f, 1.0f), 89);
@@ -126,6 +125,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 }
                 else
                 {
+                    atmosphere.altitude_ambient_color = new InterpolatedColor(6);   // ambient color is sky color
+                    atmosphere.altitude_ambient_strength = new InterpolatedFloat(1);
+                    atmosphere.altitude_sun_color = new InterpolatedColor(8);
+                    atmosphere.altitude_sun_strength = new InterpolatedFloat(1);
+                    atmosphere.altitude_fog_color = new InterpolatedColor(6);
+                    atmosphere.altitude_fog_strength = new InterpolatedFloat(1);
                     atmosphere.altitude_sun_color.Add(new Vector4(0.18f, 0.25f, 0.4f, 1), 0);
                     atmosphere.altitude_sun_color.Add(new Vector4(0.18f, 0.25f, 0.4f, 1), 70);
                     atmosphere.altitude_sun_color.Add(new Vector4(0.17f, 0.10f, 0.2f, 1), 80);
@@ -153,18 +158,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
 
             delta_timer.Start();
-        }
-
-        // helper function, returns item id given a gamedata element from category 19 and item slot
-        private UInt16 GetItemID(SFCategoryElement el, Byte slot)
-        {
-            int el_size = el.variants.Count / 3;
-            for (int i = 0; i < el_size; i++)
-            {
-                if ((Byte)el[i * 3 + 1] == slot)
-                    return (UInt16)el[i * 3 + 2];
-            }
-            return 0;
         }
 
 
@@ -298,16 +291,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             return new_node;
         }
 
-        public SceneNodeMapChunk AddSceneMapChunk(SceneNode parent, SFMap.SFMapHeightMapChunk chunk, string new_node_name)
-        {
-            SceneNodeMapChunk new_node = new SceneNodeMapChunk(new_node_name);
-            new_node.SetParent(parent);
-
-            new_node.MapChunk = chunk;
-
-            return new_node;
-        }
-
         // these functions create and return nodes which are used to display game elements (units, buildings,...)
         // note that those don't assign parent to the nodes - it's done somewhere else
         public SceneNode AddSceneUnit(int unit_id, string object_name)
@@ -322,14 +305,6 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     + unit_id + ")");
                 return unit_node;
             }
-            //find unit eq element (cat 19)
-            SFCategoryElement unit_eq = SFCategoryManager.gamedata[18].FindElementBinary<UInt16>(0, (UInt16)unit_id);
-            if (unit_eq == null)
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): Unit has no inventory assigned to it (unit id = "
-                    + unit_id + ")");
-                return unit_node;
-            }
 
             //get unit gender
             SFCategoryElement unit_stats = SFCategoryManager.gamedata[3].FindElementBinary<UInt16>(0, (UInt16)unit_data[2]);
@@ -338,7 +313,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 is_female = ((Byte)unit_stats[23] % 2) == 1;
 
             //get chest item (2) (animated)
-            UInt16 chest_id = GetItemID(unit_eq, 2);
+            UInt16 chest_id = SFCategoryManager.GetUnitItem((UInt16)unit_id, 2);
             if (chest_id == 0)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): Unit does not have chestpiece assigned (unit id = "
@@ -369,7 +344,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             SceneNodeAnimated uo = AddSceneNodeAnimated(unit_node, chest_name, "Chest");
 
             //get legs item (5) (animated)
-            UInt16 legs_id = GetItemID(unit_eq, 5);
+            UInt16 legs_id = SFCategoryManager.GetUnitItem((UInt16)unit_id, 5);
             if (legs_id != 0)
             {
                 //find chest skin/animations
@@ -401,7 +376,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
 
             //get helmet item (0) (boneanchor(Head), simple)
-            UInt16 helmet_id = GetItemID(unit_eq, 0);
+            UInt16 helmet_id = SFCategoryManager.GetUnitItem((UInt16)unit_id, 0);
             if (helmet_id != 0)
             {
                 //find item mesh
@@ -415,7 +390,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
 
             //get right hand (1) (boneanchor(R Hand weapon), simple)
-            UInt16 rhand_id = GetItemID(unit_eq, 1);
+            UInt16 rhand_id = SFCategoryManager.GetUnitItem((UInt16)unit_id, 1);
             if (rhand_id != 0)
             {
                 //find item mesh
@@ -429,7 +404,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
 
             //get left hand (3) (boneanchor(L Hand weapon OR Forearm shield), simple)
-            UInt16 lhand_id = GetItemID(unit_eq, 3);
+            UInt16 lhand_id = SFCategoryManager.GetUnitItem((UInt16)unit_id, 3);
             if (lhand_id != 0)
             {
                 //find item mesh
@@ -585,7 +560,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             deltatime = delta_timer.ElapsedMilliseconds / (float)1000;
             delta_timer.Restart();
 
-            root.Update(current_time);
+            root.Update(deltatime);
 
             current_time += deltatime;
             if (scene_meta != null)

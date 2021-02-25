@@ -30,8 +30,30 @@ namespace SpellforceDataEditor.SFMap
 
     public class SFMapUnitManager
     {
+        // anim lib, idle anim name
+        public Dictionary<string, string> idle_anim_dict = new Dictionary<string, string>();
         public List<SFMapUnit> units { get; private set; } = new List<SFMapUnit>();
         public SFMap map = null;
+
+        public SFMapUnitManager()
+        {
+            // generate unknown idle values (see object/object_figure_init.lua
+            idle_anim_dict.Add("figure_npc_gargoyle_normal", "figure_npc_gargoyle_idle");
+            idle_anim_dict.Add("figure_animal_buffalo_normal", "figure_animal_buffalo_idle");
+            idle_anim_dict.Add("figure_animal_wolf_", "figure_animal_wolf_idle");
+            idle_anim_dict.Add("figure_boss_demon", "figure_boss_demon_fear");
+            idle_anim_dict.Add("figure_npc_beastman", "figure_npc_beastman_idle");
+            idle_anim_dict.Add("figure_npc_demon_lesser", "figure_npc_demon_lesser_idle");
+            idle_anim_dict.Add("figure_npc_gargoyle_stone", "figure_npc_gargoyle_idle");
+            idle_anim_dict.Add("figure_npc_giant_", "figure_npc_giant_idle");
+            idle_anim_dict.Add("figure_npc_minotaur_greater", "figure_npc_minotaur_greater_idle");
+            idle_anim_dict.Add("figure_npc_minotaur_lesser", "figure_npc_minotaur_lesser_idle");
+            idle_anim_dict.Add("figure_npc_ogre_greater", "figure_npc_ogre_idle");
+            idle_anim_dict.Add("figure_npc_ogre_normal", "figure_npc_ogre_idle");
+            idle_anim_dict.Add("figure_npc_spectre_normal", "figure_npc_spectre_idle");
+            idle_anim_dict.Add("figure_npc_wraith_normal", "figure_npc_wraith_idle");
+            idle_anim_dict.Add("figure_npc_zombie_normal_", "figure_npc_zombie_idle");
+        }
 
         public SFMapUnit AddUnit(int id, SFCoord position, int flags, int index)
         {
@@ -70,6 +92,52 @@ namespace SpellforceDataEditor.SFMap
             for (int i = 0; i < units.Count; i++)
                 m_group = Math.Max(m_group, units[i].group);
             return m_group;
+        }
+
+        // fallback
+        private string FindIdleAnim(string anim_lib)
+        {
+            while (anim_lib != "")
+            {
+                foreach (string anim_name in SFResources.SFResourceManager.animation_names)
+                {
+                    if ((anim_name.StartsWith(anim_lib)) && (anim_name.Contains("idle")))
+                        return anim_name;
+                }
+                int last_index = anim_lib.LastIndexOf('_');
+                if (last_index < 0)
+                    break;
+                anim_lib = anim_lib.Substring(0, last_index);
+            }
+
+            return "";
+        }
+
+        public string GetIdleAnim(string anim_lib)
+        {
+            if(idle_anim_dict.ContainsKey(anim_lib))
+                return idle_anim_dict[anim_lib];
+
+            string res = FindIdleAnim(anim_lib);
+            if(res != "")
+                idle_anim_dict[anim_lib] = res;
+
+            return res;
+        }
+
+        public string GetAnimLib(SFMapUnit unit)
+        {
+            ushort chest_id = SFCFF.SFCategoryManager.GetUnitItem((ushort)(unit.game_id), 2);
+            if (chest_id != 0)
+            {
+                string anim_lib = SFLua.SFLuaEnvironment.items[chest_id].AnimSet;
+                if (anim_lib.Contains("figure_hero"))
+                    return "";
+
+                return anim_lib;
+            }
+
+            return "";
         }
     }
 }

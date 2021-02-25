@@ -519,6 +519,8 @@ namespace SpellforceDataEditor.SFMap
         public int overlay_texture_decals = -1;
         public int overlay_active_texture = -1;
 
+        public SFTexture terrain_texture_lod_bump = null;
+
         public SFMapHeightMap(int w, int h)
         {
             width = w;
@@ -702,6 +704,19 @@ namespace SpellforceDataEditor.SFMap
                 mesh.Init(this);
             else if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
                 mesh_tesselated.Init(this);
+
+            // load bump map
+            int tex_code = SFResources.SFResourceManager.Textures.Load("landscape_island_worldd");
+            if ((tex_code != 0) && (tex_code != -1))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapHeightMap.Generate(): Could not load texture (texture name = landscape_island_worldd)");
+                terrain_texture_lod_bump = SF3D.SFRender.SFRenderEngine.opaque_tex;
+            }
+            else
+            {
+                terrain_texture_lod_bump = SFResources.SFResourceManager.Textures.Get("landscape_island_worldd");
+                terrain_texture_lod_bump.FreeMemory();
+            }
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate(): Chunks generated: " + chunk_nodes.Length.ToString());
         }
@@ -1089,6 +1104,12 @@ namespace SpellforceDataEditor.SFMap
                 overlay_texture_decals = -1;
             }
             overlay_active_texture = -1;
+            if(terrain_texture_lod_bump != null)
+            {
+                if (terrain_texture_lod_bump != SF3D.SFRender.SFRenderEngine.opaque_tex)
+                    terrain_texture_lod_bump.Dispose();
+            }
+            terrain_texture_lod_bump = null;
 
             if (texture_manager != null)
                 texture_manager.Unload();

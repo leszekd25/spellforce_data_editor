@@ -292,16 +292,18 @@ namespace SpellforceDataEditor.SFMap
                 }
                 SetSelectionPosition(selected_entity.grid_position);
 
-                text_pos = camera.WorldToScreen(new Vector3(
+                Vector3 sPos = new Vector3(
                     selected_entity.grid_position.x,
                     hmap.GetRealZ(new Vector2(selected_entity.grid_position.x, hmap.height - selected_entity.grid_position.y - 1)),
-                    hmap.height - selected_entity.grid_position.y - 1));
+                    hmap.height - selected_entity.grid_position.y - 1);
+                if (Vector3.Dot(sPos - camera.position, camera.Lookat - camera.position) > 0)
+                    text_pos = camera.WorldToScreen(sPos);
+                else
+                    text_pos = new Vector2(1, 1);
             }
 
             // todo: add more selection types
 
-            text_pos.X = (text_pos.X - 0.1f) * 1.2f;
-            text_pos.Y = (text_pos.Y - 0.1f) * 1.2f;
             text_pos.X *= SF3D.SFRender.SFRenderEngine.render_size.X;
             text_pos.Y *= SF3D.SFRender.SFRenderEngine.render_size.Y;
             text_pos.X = (float)Math.Floor(text_pos.X);

@@ -16,12 +16,37 @@ namespace SpellforceDataEditor.SF3D
 {
     public class SFBoneAnimation
     {
-        public InterpolatedVector3 position { get; private set; } = new InterpolatedVector3();
-        public InterpolatedQuaternion rotation { get; private set; } = new InterpolatedQuaternion();
+        public InterpolatedVector3 position;
+        public InterpolatedQuaternion rotation;
+        public bool is_static = false;
+        public Matrix4 static_transform;
 
-        public CompressedMatrix GetCompressedMatrixAt(float t)
+        public void ResolveStatic()
         {
-            return new CompressedMatrix(position.Get(t), rotation.Get(t));
+            position.ResolveStatic();
+            rotation.ResolveStatic();
+            is_static = (position.is_static) && (rotation.is_static);
+            if(is_static)
+                GetInterpolatedMatrix4(0, ref static_transform);
+        }
+
+        private void GetInterpolatedMatrix4(float t, ref Matrix4 mat)
+        {
+            mat = Matrix4.CreateFromQuaternion(rotation.Get(t));
+            mat.Row3 = new Vector4(position.Get(t), 1);
+        }
+
+        public void GetMatrix4(float t, ref Matrix4 mat)
+        {
+            if (is_static)
+                mat = static_transform;
+            else
+                GetInterpolatedMatrix4(t, ref mat);
+        }
+
+        public void Readjust()
+        {
+
         }
 
         public int GetSizeBytes()
@@ -32,8 +57,8 @@ namespace SpellforceDataEditor.SF3D
 
     public class SFAnimation: SFResource
     {
-        public int bone_count { get; private set; } = 0;
-        public List<SFBoneAnimation> bone_animations { get; private set; } = new List<SFBoneAnimation>();
+        public SFBoneAnimation[] bone_animations;
+
         public float max_time { get; private set; } = 0f;
         string name = "";
 
@@ -49,18 +74,20 @@ namespace SpellforceDataEditor.SF3D
             max_time = 0;
 
             br.ReadInt16();
-            bone_count = br.ReadInt32();
+            int bone_count = br.ReadInt32();
+            bone_animations = new SFBoneAnimation[bone_count];
 
             for(int i = 0; i < bone_count; i++)
             {
                 SFBoneAnimation ba = new SFBoneAnimation();
-                bone_animations.Add(ba);
+                bone_animations[i] = ba;
 
                 int data1, data4, anim_count;
                 float data2, data3;
 
                 data1 = br.ReadInt32(); data2 = br.ReadSingle(); data3 = br.ReadSingle();
                 data4 = br.ReadInt32(); anim_count = br.ReadInt32();
+                ba.rotation = new InterpolatedQuaternion(anim_count);
                 for (int j = 0; j < anim_count; j++)
                 {
                     float[] data = new float[5];
@@ -72,6 +99,7 @@ namespace SpellforceDataEditor.SF3D
 
                 data1 = br.ReadInt32(); data2 = br.ReadSingle(); data3 = br.ReadSingle();
                 data4 = br.ReadInt32(); anim_count = br.ReadInt32();
+                ba.position = new InterpolatedVector3(anim_count);
                 for (int j = 0; j < anim_count; j++)
                 {
                     float[] data = new float[4];
@@ -80,6 +108,7 @@ namespace SpellforceDataEditor.SF3D
                     Vector3 v = new Vector3(data[0], data[1], data[2]);
                     ba.position.Add(v, data[3]);
                 }
+                ba.ResolveStatic();
 
                 max_time = Math.Max(ba.position.GetMaxTime(), max_time);
             }
@@ -87,9 +116,10 @@ namespace SpellforceDataEditor.SF3D
             return 0;
         }
 
-        public CompressedMatrix CalculateBoneMatrix(int bone_index, float t)
+        public void Readjust()
         {
-            return bone_animations[bone_index].GetCompressedMatrixAt(t);
+            foreach (var anim in bone_animations)
+                anim.Readjust();
         }
 
         public void SetName(string s)
@@ -105,7 +135,7 @@ namespace SpellforceDataEditor.SF3D
         public int GetSizeBytes()
         {
             int ret = 0;
-            for (int i = 0; i < bone_animations.Count; i++)
+            for (int i = 0; i < bone_animations.Length; i++)
                 ret += bone_animations[i].GetSizeBytes();
             return ret;
         }

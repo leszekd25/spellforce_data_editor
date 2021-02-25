@@ -635,7 +635,7 @@ namespace SpellforceDataEditor.special_forms
                         dynamic_render = false;
                         return;
                     }
-                    if(SFResourceManager.Animations.Get(anim_name).bone_count != obj_d1.Skeleton.bone_count)
+                    if(SFResourceManager.Animations.Get(anim_name).bone_animations.Length != obj_d1.Skeleton.bone_count)
                     {
                         StatusText.Text = "Invalid animation "+anim_name;
                         dynamic_render = false;
@@ -674,7 +674,7 @@ namespace SpellforceDataEditor.special_forms
                     {
                         foreach(SceneNodeAnimated node in obj.Children)
                         {
-                            if(node.Skeleton.bone_count != SFResourceManager.Animations.Get(anim_name).bone_count)
+                            if(node.Skeleton.bone_count != SFResourceManager.Animations.Get(anim_name).bone_animations.Length)
                             {
                                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFAssetManagerForm.ListAnimations_SelectedIndexChanged(): invalid bone count!");
                                 StatusText.Text = "Invalid animation " + anim_name;

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.bGDEditor = new System.Windows.Forms.Button();
             this.bAssets = new System.Windows.Forms.Button();
@@ -43,6 +44,7 @@
             this.bSQLEdit = new System.Windows.Forms.Button();
             this.GameDirDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.bSaveData = new System.Windows.Forms.Button();
+            this.TimerCheckUpdateStatus = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // label1
@@ -103,7 +105,7 @@
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(70, 13);
             this.labelVersion.TabIndex = 6;
-            this.labelVersion.Text = "21.02.2021.1";
+            this.labelVersion.Text = "23.02.2021.1";
             // 
             // linkEditor
             // 
@@ -191,6 +193,11 @@
             this.bSaveData.Visible = false;
             this.bSaveData.Click += new System.EventHandler(this.bSaveData_Click);
             // 
+            // TimerCheckUpdateStatus
+            // 
+            this.TimerCheckUpdateStatus.Interval = 1000;
+            this.TimerCheckUpdateStatus.Tick += new System.EventHandler(this.TimerCheckUpdateStatus_Tick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -236,5 +243,6 @@
         private System.Windows.Forms.Button bSQLEdit;
         private System.Windows.Forms.FolderBrowserDialog GameDirDialog;
         private System.Windows.Forms.Button bSaveData;
+        private System.Windows.Forms.Timer TimerCheckUpdateStatus;
     }
 }

@@ -7,12 +7,18 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor
 {
     public partial class MainForm : Form
     {
+        // app updater
+        Thread checknewversion_thread = null;
+        bool update_finished = false;
+        bool update_available = false;
+
         // form control
         public static special_forms.SpelllforceCFFEditor data = null;
         public static special_forms.SFAssetManagerForm viewer = null;
@@ -40,7 +46,10 @@ namespace SpellforceDataEditor
             linkEditor.Links.Add(0, linkEditor.Text.Length, "https://github.com/leszekd25/spellforce_data_editor/tree/with_viewer/bin");
             linkEditor.Visible = false;
             SFCFF.SFCategoryManager.Init();
-            CheckNewVersionAvailable();
+            //CheckNewVersionAvailable();
+            checknewversion_thread = new Thread(CheckNewVersionAvailable);
+            checknewversion_thread.Start();
+            TimerCheckUpdateStatus.Start();
 
             // check if data loaded from settings
             if (SFUnPak.SFUnPak.game_directory_specified)
@@ -76,6 +85,7 @@ namespace SpellforceDataEditor
 
         void getVersion_completed(object sender, System.Net.DownloadStringCompletedEventArgs e)
         {
+            update_finished = true;
             if (e.Cancelled)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Could not retrieve update info");
@@ -97,7 +107,7 @@ namespace SpellforceDataEditor
             if (labelVersion.Text.IndexOf(newest_version) == Utility.NO_INDEX)
             {
                 LogUtils.Log.Info(LogUtils.LogSource.Main, "MainForm.getVersion_completed(): New editor version available");
-                linkEditor.Visible = true;
+                update_available = true;
             }
             else
             {
@@ -190,6 +200,17 @@ namespace SpellforceDataEditor
             System.Diagnostics.Process.Start(e.Link.LinkData.ToString());
         }
 
+        private void TimerCheckUpdateStatus_Tick(object sender, EventArgs e)
+        {
+            if (!update_finished)
+                TimerCheckUpdateStatus.Start();
+            else
+            {
+                if (update_available)
+                    linkEditor.Visible = true;
+            }
+        }
+
         private void bMap_Click(object sender, EventArgs e)
         {
             if (mapedittool != null)
@@ -212,7 +233,7 @@ namespace SpellforceDataEditor
             }
             catch(Exception)
             {
-                MessageBox.Show("Could not load Lua scripts");
+                MessageBox.Show("Error while starting Map Editor!");
             }
         }
 

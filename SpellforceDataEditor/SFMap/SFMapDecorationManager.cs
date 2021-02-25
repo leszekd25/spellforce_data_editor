@@ -123,17 +123,17 @@ namespace SpellforceDataEditor.SFMap
         
         public byte GetDecAssignment(SFCoord pos)
         {
-            return dec_assignment[pos.x * 1024 + pos.y - 1];
+            return dec_assignment[pos.x * 1024 + pos.y];
         }
 
         public void SetDecAssignment(SFCoord pos, byte dec)
         {
-            dec_assignment[pos.x * 1024 + pos.y - 1] = dec;
+            dec_assignment[pos.x * 1024 + pos.y] = dec;
         }
 
         public SFCoord GetDecPosition(int offset)
         {
-            return new SFCoord(offset / 1024, (offset % 1024) + 1);
+            return new SFCoord(offset / 1024, (offset % 1024));
         }
 
         public void GenerateDecorations()

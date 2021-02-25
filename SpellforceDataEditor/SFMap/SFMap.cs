@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 using System.IO;
 using SpellforceDataEditor.SFChunk;
@@ -11,6 +10,8 @@ using SpellforceDataEditor.SF3D.SFRender;
 
 namespace SpellforceDataEditor.SFMap
 {
+    public delegate void dOnMapLoadStageChange(string text, System.Drawing.Color col);
+
     public class SFMap
     {
         public int width { get; private set; } = 0;
@@ -29,11 +30,17 @@ namespace SpellforceDataEditor.SFMap
         public SFMapOcean ocean { get; private set; } = new SFMapOcean();
         public uint PlatformID { get; private set; } = 6666;
 
-        public int Load(string filename, ToolStripLabel tx)
+        public dOnMapLoadStageChange OnMapLoadStateChange = OnMapLoadStateChange_dummy;
+
+        private static void OnMapLoadStateChange_dummy(string text, System.Drawing.Color col)
+        {
+
+        }
+
+        public int Load(string filename)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load() called, filename: " + filename);
-            tx.Text = "Loading...";
-            tx.GetCurrentParent().Refresh();
+            OnMapLoadStateChange.Invoke("Loading...", System.Drawing.Color.Black);
             SFChunk.SFChunkFile f = new SFChunk.SFChunkFile();
             int res = f.OpenFile(filename);
             if (res != 0)
@@ -47,8 +54,7 @@ namespace SpellforceDataEditor.SFMap
             short size;
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading tile data");
-            tx.Text = "Loading map data...";
-            tx.GetCurrentParent().Refresh();
+            OnMapLoadStateChange.Invoke("Loading map data...", System.Drawing.Color.Black);
 
             SFChunkFileChunk c2 = f.GetChunkByID(2);
             if (c2 == null)
@@ -142,8 +148,7 @@ namespace SpellforceDataEditor.SFMap
 
             // load buildings
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading buildings");
-            tx.Text = "Loading buildings...";
-            tx.GetCurrentParent().Refresh();
+            OnMapLoadStateChange.Invoke("Loading buildings...", System.Drawing.Color.Black);
 
             building_manager = new SFMapBuildingManager() { map = this };
             SFChunkFileChunk c11 = f.GetChunkByID(11);
@@ -176,8 +181,7 @@ namespace SpellforceDataEditor.SFMap
 
             // load units
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading units");
-            tx.Text = "Loading units...";
-            tx.GetCurrentParent().Refresh();
+            OnMapLoadStateChange.Invoke("Loading units...", System.Drawing.Color.Black);
 
             unit_manager = new SFMapUnitManager() { map = this };
             SFChunkFileChunk c12 = f.GetChunkByID(12);
@@ -209,8 +213,7 @@ namespace SpellforceDataEditor.SFMap
 
             // load objects
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading objects");
-            tx.Text = "Loading objects...";
-            tx.GetCurrentParent().Refresh();
+            OnMapLoadStateChange.Invoke("Loading objects...", System.Drawing.Color.Black);
 
             object_manager = new SFMapObjectManager() { map = this };
             SFChunkFileChunk c29 = f.GetChunkByID(29);
@@ -252,8 +255,7 @@ namespace SpellforceDataEditor.SFMap
 
             // load interactive objects
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading interactive objects");
-            tx.Text = "Loading interactive objects...";
-            tx.GetCurrentParent().Refresh();
+            OnMapLoadStateChange.Invoke("Loading interactive objects...", System.Drawing.Color.Black);
 
             int_object_manager = new SFMapInteractiveObjectManager() { map = this };
             SFChunkFileChunk c30 = f.GetChunkByID(30);
@@ -280,8 +282,7 @@ namespace SpellforceDataEditor.SFMap
 
             // load decorations
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading decal data");
-            tx.Text = "Loading decorations...";
-            tx.GetCurrentParent().Refresh();
+            OnMapLoadStateChange.Invoke("Loading decorations...", System.Drawing.Color.Black);
 
             decoration_manager = new SFMapDecorationManager() { map = this };
             SFChunkFileChunk c31 = f.GetChunkByID(31);
@@ -328,8 +329,7 @@ namespace SpellforceDataEditor.SFMap
 
             // load portals
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading portals");
-            tx.Text = "Loading portals...";
-            tx.GetCurrentParent().Refresh();
+            OnMapLoadStateChange.Invoke("Loading portals...", System.Drawing.Color.Black);
 
             portal_manager = new SFMapPortalManager() { map = this };
             SFChunkFileChunk c35 = f.GetChunkByID(35);
@@ -355,8 +355,8 @@ namespace SpellforceDataEditor.SFMap
 
             // load lakes
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading lakes");
-            tx.Text = "Loading lakes...";
-            tx.GetCurrentParent().Refresh();
+            OnMapLoadStateChange.Invoke("Loading lakes...", System.Drawing.Color.Black);
+
             lake_manager = new SFMapLakeManager() { map = this };
             SFChunkFileChunk c40 = f.GetChunkByID(40);
             if (c40 != null)
@@ -381,8 +381,7 @@ namespace SpellforceDataEditor.SFMap
 
             // load map flags
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading map flags");
-            tx.Text = "Loading map flags...";
-            tx.GetCurrentParent().Refresh();
+            OnMapLoadStateChange.Invoke("Loading map flags...", System.Drawing.Color.Black);
 
             SFChunkFileChunk c42 = f.GetChunkByID(42);
             if (c42 != null)
@@ -448,8 +447,8 @@ namespace SpellforceDataEditor.SFMap
 
             // load weather
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading weather data");
-            tx.Text = "Loading weather...";
-            tx.GetCurrentParent().Refresh();
+            OnMapLoadStateChange.Invoke("Loading weather...", System.Drawing.Color.Black);
+
             weather_manager = new SFMapWeatherManager();
             SFChunkFileChunk c44 = f.GetChunkByID(44);
             if(c44 != null)
@@ -464,10 +463,9 @@ namespace SpellforceDataEditor.SFMap
 
             // load metadata
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading player spawn data");
-            tx.Text = "Loading metadata...";
-            tx.GetCurrentParent().Refresh();
-            metadata = new SFMapMetaData();
+            OnMapLoadStateChange.Invoke("Loading metadata...", System.Drawing.Color.Black);
 
+            metadata = new SFMapMetaData();
             SFChunkFileChunk c55 = f.GetChunkByID(55);
             if (c55 != null)
             {
@@ -746,7 +744,7 @@ namespace SpellforceDataEditor.SFMap
             f.Close();
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Load successful!");
-            tx.Text = "Map loaded";
+            OnMapLoadStateChange.Invoke("Map loaded", System.Drawing.Color.Black);
 
             return 0;
         }
@@ -1216,15 +1214,12 @@ namespace SpellforceDataEditor.SFMap
             return 0;
         }
 
-        public int CreateDefault(ushort size, MapGen.MapGenerator generator, ToolStripLabel tx)
+        public int CreateDefault(ushort size, MapGen.MapGenerator generator)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.CreateDefault() called, map size: " + size.ToString());
-            tx.Text = "Creating...";
-            tx.GetCurrentParent().Refresh();
 
             // load map size and tile indices
-            tx.Text = "Creating map data...";
-            tx.GetCurrentParent().Refresh();
+            OnMapLoadStateChange.Invoke("Creating map data...", System.Drawing.Color.Black);
 
             byte[] tilearray = new byte[size * size];
             for (int i = 0; i < size * size; i++)
@@ -1402,7 +1397,7 @@ namespace SpellforceDataEditor.SFMap
             // done
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Create() finished successfully");
-            tx.Text = "Map created";
+            OnMapLoadStateChange.Invoke("Map created", System.Drawing.Color.Black);
 
             return 0;
         }
@@ -1888,6 +1883,28 @@ namespace SpellforceDataEditor.SFMap
             else
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + game_id.ToString() + "), setting unit scale to 100%");
             unit.node.Scale = new OpenTK.Vector3(unit_size*100/128);
+
+            if(Settings.DynamicMap)
+            {
+                string anim_name = unit_manager.GetIdleAnim(unit_manager.GetAnimLib(unit));
+                if(anim_name != "")
+                {
+                    SF3D.SFAnimation anim = null;
+                    int tex_code = SFResources.SFResourceManager.Animations.Load(anim_name);
+                    if ((tex_code != 0) && (tex_code != -1))
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMap.AddUnit(): Could not load animation (animation name = " + anim_name + ")");
+                    }
+                    else
+                    {
+                        anim = SFResources.SFResourceManager.Animations.Get(anim_name);
+                        var node = ((SF3D.SceneSynchro.SceneNodeAnimated)unit.node.Children[0]);
+                        node.SetAnimation(anim);
+                        if(node.Animation != null)
+                            node.SetAnimationCurrentTime(MathUtils.Randf(0, node.Animation.max_time));
+                    }
+                }
+            }
         }
 
         public int MoveUnit(int unit_map_index, SFCoord new_pos)
@@ -1981,11 +1998,33 @@ namespace SpellforceDataEditor.SFMap
             float unit_size = 1f;
             if (unit_index != -1)
             {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + unit.game_id.ToString() + "), setting unit scale to 100%");
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Could not find unit stats data (unit id = " + unit.game_id.ToString() + "), setting unit scale to 100%");
                 unit_data = SFCFF.SFCategoryManager.gamedata[3][unit_index];
                 unit_size = Math.Max(((ushort)unit_data[19]), (ushort)40) / 100.0f;
             }
             unit.node.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
+
+            if (Settings.DynamicMap)
+            {
+                string anim_name = unit_manager.GetIdleAnim(unit_manager.GetAnimLib(unit));
+                if (anim_name != "")
+                {
+                    SF3D.SFAnimation anim = null;
+                    int tex_code = SFResources.SFResourceManager.Animations.Load(anim_name);
+                    if ((tex_code != 0) && (tex_code != -1))
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMap.AddUnit(): Could not load animation (animation name = " + anim_name + ")");
+                    }
+                    else
+                    {
+                        anim = SFResources.SFResourceManager.Animations.Get(anim_name);
+                        var node = ((SF3D.SceneSynchro.SceneNodeAnimated)unit.node.Children[0]);
+                        node.SetAnimation(anim);
+                        if (node.Animation != null)
+                            node.SetAnimationCurrentTime(MathUtils.Randf(0, node.Animation.max_time));
+                    }
+                }
+            }
 
             return 0;
         }

@@ -47,6 +47,7 @@ namespace SpellforceDataEditor.SFMap
         List<string> texture_filenames;
 
         // all 32 used textures - only the last 31 of those are modifiable in the editor
+        // 1st texture is used as bump map for far terrain :)
         public SFTexture[] base_texture_bank { get; private set; } = new SFTexture[MAX_USED_TEXTURES];
 
         public Image[] texture_base_image = new Image[TEXTURES_AVAILABLE + 1]; // all base textures in the game
@@ -74,6 +75,9 @@ namespace SpellforceDataEditor.SFMap
         // tilemap texture buffer
         int uniformTileData_buffer;
         int[] uniformTileData;
+        // tile color buffer
+        int uniformTileColor_buffer;
+        Vector4[] uniformTileColor;
 
 
         public void LoadTextureNames()
@@ -84,10 +88,11 @@ namespace SpellforceDataEditor.SFMap
                 return;
             }
 
-            texture_filenames = SFUnPak.SFUnPak.ListAllWithFilename("texture", "landscape_island_", new string[] { "sf1.pak"});
+            texture_filenames = SFUnPak.SFUnPak.ListAllWithFilename("texture\\terrain", "l8", new string[] { "sf0.pak" });
+            // texture_filenames = SFUnPak.SFUnPak.ListAllWithFilename("texture", "landscape_island_", new string[] { "sf1.pak" });
             // bugfix for sf1.pak texture list
-            texture_filenames.Remove("landscape_island_100_mud.dds");
-            texture_filenames.Remove("landscape_island_100_mudd.dds");
+            /*texture_filenames.Remove("landscape_island_100_mud.dds");
+            texture_filenames.Remove("landscape_island_100_mudd.dds");*/
 
         }
 
@@ -100,7 +105,7 @@ namespace SpellforceDataEditor.SFMap
         public string GetTextureNameByID(int id)
         {
             if (id == 0)
-                return "landscape_island_worldd.dds";
+                return "landscape_island_worldd_l8.tga";//.dds";
             int d_offset = 0;
             if(id > TEXTURES_AVAILABLE)
             {
@@ -117,9 +122,9 @@ namespace SpellforceDataEditor.SFMap
             string filename = GetTextureNameByID(tex_id);
             SFTexture tex = new SFTexture();
 
-            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf32.pak", "texture\\" + filename);
-            if (ms == null) ms = SFUnPak.SFUnPak.LoadFileFrom("sf22.pak", "texture\\" + filename);
-            if (ms == null) ms = SFUnPak.SFUnPak.LoadFileFrom("sf1.pak", "texture\\" + filename);
+            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf0.pak", "texture\\terrain\\" + filename);//SFUnPak.SFUnPak.LoadFileFrom("sf32.pak", "texture\\" + filename);
+            //if (ms == null) ms = SFUnPak.SFUnPak.LoadFileFrom("sf22.pak", "texture\\" + filename);
+            //if (ms == null) ms = SFUnPak.SFUnPak.LoadFileFrom("sf1.pak", "texture\\" + filename);
             if (ms == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.LoadTerrainTexture(): Could not find texture " + filename);
@@ -133,7 +138,7 @@ namespace SpellforceDataEditor.SFMap
             }
             ms.Close();
 
-            tex.Uncompress();     // needed for this to work in texture atlas (?)
+            //tex.Uncompress();     // needed for this to work in texture atlas (?)
             tex.Init();
             return tex;
         }
@@ -169,7 +174,7 @@ namespace SpellforceDataEditor.SFMap
                     tile_defined[i] = false;
             }
 
-            int mipmap_divisor = 1;
+            /*int mipmap_divisor = 1;
             int min_allowed_level = 0;
             int _size = 256;
             while(_size > Settings.MaximumAllowedTextureSize) { min_allowed_level += 1; _size /= 2; }
@@ -177,25 +182,23 @@ namespace SpellforceDataEditor.SFMap
             min_allowed_level = (min_allowed_level > Settings.IgnoredMipMapsCount ? min_allowed_level : Settings.IgnoredMipMapsCount);
 
             for (int i = 0; i < min_allowed_level; i++)
-                mipmap_divisor *= 2;
+                mipmap_divisor *= 2;*/
 
             terrain_texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
-            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int)All.LinearMipmapLinear);
-            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMagFilter, (int)All.Linear);
-            if (Settings.AnisotropicFiltering)
-                GL.TexParameter(TextureTarget.Texture2DArray, (TextureParameterName)All.TextureMaxAnisotropy, (float)Settings.MaxAnisotropy);
 
-            GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8 - min_allowed_level, SizedInternalFormat.Rgba8, 256/mipmap_divisor, 256/mipmap_divisor, 32);
+            //GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8 - min_allowed_level, SizedInternalFormat.Rgba8, 256/mipmap_divisor, 256/mipmap_divisor, 32);
+            GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8, SizedInternalFormat.Rgba8, 256, 256, 32);
             for (int i = 0; i < 32; i++)
             {
-                int offset = 0;
+                //int offset = 0;
 
-                int w = 256;
-                int h = 256;
-                min_allowed_level = 1000;
+                //int w = 256;
+                //int h = 256;
+                //min_allowed_level = 1000;
 
-                for (int level = 0; level < 8 && (w != 0 || h != 0); ++level)
+                GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, i, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, base_texture_bank[i].data);
+                /*for (int level = 0; level < 8 && (w != 0 || h != 0); ++level)
                 {
                     int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
 
@@ -209,10 +212,17 @@ namespace SpellforceDataEditor.SFMap
                     }
                     w /= 2;
                     h /= 2;
-                }
+                }*/
             }
+
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int)All.Repeat);
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int)All.Repeat);
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int)All.LinearMipmapLinear);
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMagFilter, (int)All.Linear);
+            if (Settings.AnisotropicFiltering)
+                GL.TexParameter(TextureTarget.Texture2DArray, (TextureParameterName)All.TextureMaxAnisotropy, (float)Settings.MaxAnisotropy);
+
             GL.BindTexture(TextureTarget.Texture2DArray, 0);
 
             GenerateTileImages();
@@ -228,9 +238,18 @@ namespace SpellforceDataEditor.SFMap
 
             UpdateUniformTileData(0, MAX_TILES - 1);
 
-            tile_ocean_color = Color.FromArgb(100, 100, 255);
+            // create uniform buffer object for tile color
+            uniformTileColor_buffer = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.UniformBuffer, uniformTileColor_buffer);
+            GL.BufferData(BufferTarget.UniformBuffer, 4 * 4 * MAX_TILES, new IntPtr(0), BufferUsageHint.StaticDraw);
+            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-            GC.Collect();
+            uniformTileColor = new Vector4[MAX_TILES];
+            GL.BindBufferRange(BufferRangeTarget.UniformBuffer, 2, uniformTileColor_buffer, new IntPtr(0), 4 * 4 * MAX_TILES);  // 2, not 1, 1 is reserved for overlays (see heightmap)
+
+            UpdateUniformTileColor(0, MAX_TILES - 1);
+
+            tile_ocean_color = Color.FromArgb(100, 100, 255);
         }
 
         public void UpdateUniformTileData(int start, int end)
@@ -240,7 +259,7 @@ namespace SpellforceDataEditor.SFMap
                 if (i < 224)
                     uniformTileData[i * 4 + 0] = texture_tiledata[i].ind1;
                 else
-                    uniformTileData[i * 4 + 0] = texture_tiledata[i].ind1-31;
+                    uniformTileData[i * 4 + 0] = texture_tiledata[i].ind1 - 31;
 
                 uniformTileData[i * 4 + 1] = texture_tiledata[i].ind2;
                 uniformTileData[i * 4 + 2] = texture_tiledata[i].ind3;
@@ -259,6 +278,26 @@ namespace SpellforceDataEditor.SFMap
             GL.BindBuffer(BufferTarget.UniformBuffer, uniformTileData_buffer);
             GL.BufferSubData(BufferTarget.UniformBuffer, new IntPtr(4 * 4 * start), 4 * 4 * (end - start) + 4 * 4, ref uniformTileData[4 * start]);
             GL.BufferSubData(BufferTarget.UniformBuffer, new IntPtr(4 * 4 * (start + MAX_TILES)), 4 * 4 * (end - start) + 4 * 4, ref uniformTileData[4 * (start + MAX_TILES)]);
+            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+        }
+
+        public Vector4 VecFromCol(Color c)
+        {
+            return new Vector4(c.R/255.0f, c.G / 255.0f, c.B / 255.0f, c.A / 255.0f);
+        }
+
+        public void UpdateUniformTileColor(int start, int end)
+        {
+            for (int i = start; i <= end; i++)
+            {
+                if(i < 224)
+                    uniformTileColor[i] = VecFromCol(tile_average_color[i]);
+                else
+                    uniformTileColor[i] = VecFromCol(tile_average_color[i- 223]);
+            }
+
+            GL.BindBuffer(BufferTarget.UniformBuffer, uniformTileColor_buffer);
+            GL.BufferSubData(BufferTarget.UniformBuffer, new IntPtr(4 * 4 * start), 4 * 4 * (end - start) + 4 * 4, ref uniformTileColor[start]);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
         }
 
@@ -288,7 +327,12 @@ namespace SpellforceDataEditor.SFMap
             // insert texture data to the atlas
             GL.BindTexture(TextureTarget.Texture2DArray, terrain_texture);
 
-            int offset = 0;
+            GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, base_index, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, base_texture_bank[base_index].data);
+
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray); 
+            
+            GL.BindTexture(TextureTarget.Texture2DArray, 0);
+            /*int offset = 0;
 
             int w = 256;
             int h = 256;
@@ -308,10 +352,12 @@ namespace SpellforceDataEditor.SFMap
                 }
                 w /= 2;
                 h /= 2;
-            }
+            }*/
             RefreshTilePreview(base_index);
+            UpdateUniformTileColor(base_index, base_index);
+            UpdateUniformTileColor(base_index+223, base_index+223);
 
-            GL.BindTexture(TextureTarget.Texture2DArray, 0);
+            //GL.BindTexture(TextureTarget.Texture2DArray, 0);
             return true;
         }
 
@@ -346,12 +392,12 @@ namespace SpellforceDataEditor.SFMap
         // operates on 64x64 mipmap, hardcoded for now...
         public void GenerateAverageTileColor(int tile_id, SFTexture tex)
         {
-            int ignored_level = 0;
-            while (!tex.IsValidMipMapLevel(ignored_level))
+            int ignored_level = 2;//0;
+            /*while (!tex.IsValidMipMapLevel(ignored_level))
                 ignored_level += 1;
 
             if (ignored_level > 2)
-                return;
+                return;*/
 
             int offset = (tex.width * tex.height * 4) * (ignored_level > 0 ? 0 : 1)
                        + (tex.width * tex.height) * (ignored_level > 1 ? 0 : 1);

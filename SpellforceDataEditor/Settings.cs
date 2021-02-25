@@ -22,6 +22,8 @@ namespace SpellforceDataEditor
         public static int MaxAnisotropy { get; set; } = 1;
         public static int RenderDistance { get; set; } = 1000;
         public static SFMap.SFMapHeightMapLOD TerrainLOD { get; private set; } = SFMap.SFMapHeightMapLOD.NONE;
+        public static bool TerrainTextureLOD { get; private set; } = false;
+        public static bool DynamicMap { get; private set; } = true;
         public static int FogStart { get; set; } = 0;
         public static int FogEnd { get; set; } = 400;
 
@@ -121,6 +123,9 @@ namespace SpellforceDataEditor
                             if (!Enum.TryParse(words[1], out tlod))
                                 tlod = SFMap.SFMapHeightMapLOD.NONE;
                             TerrainLOD = tlod;
+                            break;
+                        case "TerrainTextureLOD":
+                            TerrainTextureLOD = (words[1] == "YES");
                             break;
 
                         case "UnitsVisible":
@@ -290,6 +295,9 @@ namespace SpellforceDataEditor
                             break;
                         case "TerrainLOD":
                             words = new string[] { words[0], TerrainLOD.ToString() };
+                            break;
+                        case "TerrainTextureLOD":
+                            words = new string[] { words[0], TerrainTextureLOD ? "YES" : "NO" };
                             break;
 
                         case "UnitsVisible":

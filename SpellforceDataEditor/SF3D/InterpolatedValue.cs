@@ -14,26 +14,26 @@ using OpenTK;
 
 namespace SpellforceDataEditor.SF3D
 {
-    public interface IInterpolatedValue<T>
+    public class InterpolatedDouble
     {
-        void Add(T item, float t);
-        T Get(float t);
-        float GetMaxTime();
-        int GetSizeBytes();
-    }
-
-    public class InterpolatedDouble : IInterpolatedValue<Double>
-    {
-        List<Double> value = new List<Double>();
-        List<float> time = new List<float>();
+        Double[] value;
+        float[] time;
+        int cur_index = 0;
         float max_time = -1;
+
+        public InterpolatedDouble(int capacity)
+        {
+            value = new double[capacity];
+            time = new float[capacity];
+        }
 
         public void Add(Double v, float t)
         {
             if (t >= max_time)
             {
-                value.Add(v);
-                time.Add(t);
+                value[cur_index] = v;
+                time[cur_index] = t;
+                cur_index += 1;
                 max_time = t;
             }
             else
@@ -45,7 +45,7 @@ namespace SpellforceDataEditor.SF3D
 
         public Double Get(float t)
         {
-            int size = value.Count;
+            int size = value.Length;
             if (size == 0)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedDouble.Get(): Data is empty!");
@@ -59,7 +59,7 @@ namespace SpellforceDataEditor.SF3D
             if (t > max_time)
                 t = max_time;
 
-            for (int i = 0; i < time.Count; i++)
+            for (int i = 0; i < size; i++)
             {
                 if (time[i] >= t)
                 {
@@ -82,22 +82,30 @@ namespace SpellforceDataEditor.SF3D
 
         public int GetSizeBytes()
         {
-            return 4 * time.Count + 8 * value.Count;
+            return 4 * time.Length + 8 * value.Length;
         }
     }
 
-    public class InterpolatedFloat : IInterpolatedValue<Single>
+    public class InterpolatedFloat
     {
-        List<Single> value = new List<Single>();
-        List<float> time = new List<float>();
+        Single[] value;
+        float[] time;
+        int cur_index = 0;
         float max_time = -1;
+
+        public InterpolatedFloat(int capacity)
+        {
+            value = new float[capacity];
+            time = new float[capacity];
+        }
 
         public void Add(Single v, float t)
         {
             if (t >= max_time)
             {
-                value.Add(v);
-                time.Add(t);
+                value[cur_index] = v;
+                time[cur_index] = t;
+                cur_index += 1;
                 max_time = t;
             }
             else
@@ -109,7 +117,7 @@ namespace SpellforceDataEditor.SF3D
 
         public Single Get(float t)
         {
-            int size = value.Count;
+            int size = value.Length;
             if (size == 0)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedFloat.Get(): Data is empty!");
@@ -123,7 +131,7 @@ namespace SpellforceDataEditor.SF3D
             if (t > max_time)
                 t = max_time;
 
-            for (int i = 0; i < time.Count; i++)
+            for (int i = 0; i < size; i++)
             {
                 if (time[i] >= t)
                 {
@@ -146,22 +154,36 @@ namespace SpellforceDataEditor.SF3D
 
         public int GetSizeBytes()
         {
-            return 4 * time.Count + 4 * value.Count;
+            return 4 * time.Length + 4 * value.Length;
         }
     }
 
-    public class InterpolatedVector3: IInterpolatedValue<Vector3>
+    public class InterpolatedVector3
     {
-        List<Vector3> value = new List<Vector3>();
-        List<float> time = new List<float>();
+        Vector3[] value;
+        float[] time;
+        public bool is_static = false;
+        int cur_index = 0;
         float max_time = -1;
+
+        public InterpolatedVector3(int capacity)
+        {
+            value = new Vector3[capacity];
+            time = new float[capacity];
+        }
+
+        public void ResolveStatic()
+        {
+            is_static = (value.Length == 1) || ((value.Length == 2) && (value[0] == value[1]));
+        }
 
         public void Add(Vector3 v, float t)
         {
             if (t >= max_time)
             {
-                value.Add(v);
-                time.Add(t);
+                value[cur_index] = v;
+                time[cur_index] = t;
+                cur_index += 1;
                 max_time = t;
             }
             else
@@ -173,23 +195,20 @@ namespace SpellforceDataEditor.SF3D
 
         public Vector3 Get(float t)
         {
-            int size = value.Count;
-            if (size == 0)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedVector3.Get(): Data is empty!");
-                throw new IndexOutOfRangeException("Array is empty");
-            }
-            if (size == 1)
+            if (is_static)
                 return value[0];
+
+            int size = value.Length;
 
             if (t < 0)
                 t = 0;
             if (t > max_time)
                 t = max_time;
 
-            for(int i = 0; i < time.Count; i++)
+            // optimization: instead of reading data from start every time, read from last point it was read
+            for (int i = 0; i < size; i++)
             {
-                if(time[i] >= t)
+                if (time[i] >= t)
                 {
                     if (i == 0)
                         return value[0];
@@ -210,22 +229,37 @@ namespace SpellforceDataEditor.SF3D
 
         public int GetSizeBytes()
         {
-            return 4 * time.Count + 12 * value.Count;
+            return 4 * time.Length + 12 * value.Length;
         }
     }
 
-    public class InterpolatedQuaternion: IInterpolatedValue<Quaternion>
+    public class InterpolatedQuaternion
     {
-        List<Quaternion> value = new List<Quaternion>();
-        List<float> time = new List<float>();
+        Quaternion[] value;
+        float[] time;
+        public bool is_static = false;
+        int cur_index = 0;
         float max_time = -1;
+
+        public InterpolatedQuaternion(int capacity)
+        {
+            value = new Quaternion[capacity];
+            time = new float[capacity];
+        }
+
+        public void ResolveStatic()
+        {
+            is_static = (value.Length == 1) || ((value.Length == 2) && (value[0] == value[1]));
+        }
+
 
         public void Add(Quaternion v, float t)
         {
             if (t >= max_time)
             {
-                value.Add(v);
-                time.Add(t);
+                value[cur_index] = v;
+                time[cur_index] = t;
+                cur_index += 1;
                 max_time = t;
             }
             else
@@ -237,21 +271,18 @@ namespace SpellforceDataEditor.SF3D
 
         public Quaternion Get(float t)
         {
-            int size = value.Count;
-            if (size == 0)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedQuaternion.Get(): Data is empty!");
-                throw new IndexOutOfRangeException("Array is empty");
-            }
-            if (size == 1)
+            if (is_static)
                 return value[0];
+
+            int size = value.Length;
 
             if (t < 0)
                 t = 0;
             if (t > max_time)
                 t = max_time;
 
-            for (int i = 0; i < time.Count; i++)
+            // optimization: instead of reading data from start every time, read from last point it was read
+            for (int i = 0; i < size; i++)
             {
                 if (time[i] >= t)
                 {
@@ -274,22 +305,30 @@ namespace SpellforceDataEditor.SF3D
 
         public int GetSizeBytes()
         {
-            return 4 * time.Count + 16 * value.Count;
+            return 4 * time.Length + 16 * value.Length;
         }
     }
 
-    public class InterpolatedColor: IInterpolatedValue<Vector4>
+    public class InterpolatedColor
     {
-        List<Vector4> value = new List<Vector4>();
-        List<float> time = new List<float>();
+        Vector4[] value;
+        float[] time;
+        int cur_index = 0;
         float max_time = -1;
+
+        public InterpolatedColor(int capacity)
+        {
+            value = new Vector4[capacity];
+            time = new float[capacity];
+        }
 
         public void Add(Vector4 v, float t)
         {
             if (t >= max_time)
             {
-                value.Add(v);
-                time.Add(t);
+                value[cur_index] = v;
+                time[cur_index] = t;
+                cur_index += 1;
                 max_time = t;
             }
             else
@@ -301,7 +340,7 @@ namespace SpellforceDataEditor.SF3D
 
         public Vector4 Get(float t)
         {
-            int size = value.Count;
+            int size = value.Length;
             if (size == 0)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "InterpolatedColor.Get(): Data is empty!");
@@ -315,7 +354,7 @@ namespace SpellforceDataEditor.SF3D
             if (t > max_time)
                 t = max_time;
 
-            for (int i = 0; i < time.Count; i++)
+            for (int i = 0; i < time.Length; i++)
             {
                 if (time[i] >= t)
                 {
@@ -338,7 +377,7 @@ namespace SpellforceDataEditor.SF3D
 
         public int GetSizeBytes()
         {
-            return 4 * time.Count + 12 * value.Count;
+            return 4 * time.Length + 16 * value.Length;
         }
     }
 }

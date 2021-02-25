@@ -12,6 +12,66 @@ namespace SpellforceDataEditor
     {
         static Random r = new Random();
 
+        public static Quaternion Slerp(Quaternion q1, Quaternion q2, float t)
+        {
+            // if either input is zero, return the other.
+            if (q1.LengthSquared == 0.0f)
+            {
+                if (q2.LengthSquared == 0.0f)
+                {
+                    return Quaternion.Identity;
+                }
+                return q2;
+            }
+            else if (q2.LengthSquared == 0.0f)
+            {
+                return q1;
+            }
+
+
+            float cosHalfAngle = q1.W * q2.W + Vector3.Dot(q1.Xyz, q2.Xyz);
+
+            if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
+            {
+                // angle = 0.0f, so just return one input.
+                return q1;
+            }
+            else if (cosHalfAngle < 0.0f)
+            {
+                q2.Xyz = -q2.Xyz;
+                q2.W = -q2.W;
+                cosHalfAngle = -cosHalfAngle;
+            }
+
+            float blendA;
+            float blendB;
+            if (cosHalfAngle < 0.99f)
+            {
+                // do proper slerp for big angles
+                float halfAngle = (float)System.Math.Acos(cosHalfAngle);
+                float sinHalfAngle = (float)System.Math.Sin(halfAngle);
+                float oneOverSinHalfAngle = 1.0f / sinHalfAngle;
+                blendA = (float)System.Math.Sin(halfAngle * (1.0f - t)) * oneOverSinHalfAngle;
+                blendB = (float)System.Math.Sin(halfAngle * t) * oneOverSinHalfAngle;
+            }
+            else
+            {
+                // do lerp if angle is really small.
+                blendA = 1.0f - t;
+                blendB = t;
+            }
+
+            Quaternion result = new Quaternion(blendA * q1.Xyz + blendB * q2.Xyz, blendA * q1.W + blendB * q2.W);
+            if (result.LengthSquared > 0.0f)
+            {
+                return Quaternion.Normalize(result);
+            }
+            else
+            {
+                return Quaternion.Identity;
+            }
+        }
+
         public static float Lerp(Vector2 v, float t)
         {
             return v[0] + t * (v[0] - v[1]);

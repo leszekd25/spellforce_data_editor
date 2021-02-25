@@ -418,7 +418,6 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SF3D\CompressedMatrix.cs" />
     <Compile Include="SF3D\InterpolatedValue.cs" />
     <Compile Include="SF3D\SceneSynchro\SFScene.cs" />
     <Compile Include="SF3D\SFAnimation.cs" />

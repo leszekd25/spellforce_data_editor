@@ -78,8 +78,6 @@ namespace SpellforceDataEditor.SF3D
                     {
                         if (min_allowed_level > level) min_allowed_level = level;
 
-                       // byte[] mipMapData = new byte[size];
-                       // Array.Copy(data, offset, mipMapData, 0, size);//  data.Skip(offset).Take(size).ToArray();
                         GL.CompressedTexImage2D(TextureTarget.Texture2D, level - min_allowed_level, format, w, h,
                             0, size, ref data[offset]);
                         offset += size;
@@ -98,8 +96,6 @@ namespace SpellforceDataEditor.SF3D
                     {
                         if (min_allowed_level > level) min_allowed_level = level;
 
-                        //byte[] mipMapData = new byte[size];
-                        //Array.Copy(data, offset, mipMapData, 0, size);//  data.Skip(offset).Take(size).ToArray();
                         GL.TexImage2D(TextureTarget.Texture2D, level - min_allowed_level, PixelInternalFormat.Rgba, w, h,
                             0, PixelFormat.Rgba, PixelType.UnsignedByte, ref data[offset]);
                         offset += size;
@@ -264,16 +260,18 @@ namespace SpellforceDataEditor.SF3D
             int bytes_per_pixel = isp_bpp / 8;
             byte[] pixels = new byte[isp_w * isp_h * 4];
             byte[] pixel;
-            while(readpixels < isp_w*isp_h)
+            if (image_type == 2)
             {
-                if(image_type == 2)
+                while (readpixels < isp_w * isp_h)
                 {
-                    pixel = br.ReadBytes(bytes_per_pixel);
-                    System.Buffer.BlockCopy(pixel, 0, pixels, readpixels * 4, bytes_per_pixel);
+                    br.Read(pixels, readpixels * 4, bytes_per_pixel);
                     TGAFixPixel(pixels, readpixels, bytes_per_pixel);
                     readpixels += 1;
                 }
-                else if(image_type == 10)  // run-length encoding
+            }
+            else if (image_type == 10)
+            {
+                while (readpixels < isp_w * isp_h)
                 {
                     byte c_data = br.ReadByte();
                     pixel = br.ReadBytes(bytes_per_pixel);
@@ -284,7 +282,7 @@ namespace SpellforceDataEditor.SF3D
                     {
                         int source_pixel = readpixels - 1;
                         c_data -= 128;
-                        for(int i = 0; i < c_data; i++)
+                        for (int i = 0; i < c_data; i++)
                         {
                             System.Buffer.BlockCopy(pixel, source_pixel * 4, pixels, readpixels * 4, 4);
                             readpixels += 1;

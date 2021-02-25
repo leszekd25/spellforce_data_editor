@@ -30,6 +30,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         public static float min_render_distance = 0.1f;
         public static float max_render_distance = 1000f;
+
         static float CurrentDepthBias = 0;
         static RenderMode CurrentRenderMode = RenderMode.SRCALPHA_INVSRCALPHA;
         static bool CurrentApplyShadow = true;
@@ -288,8 +289,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 // shadowmap helper framebuffer - horizontal blur result is stored here
                 // after that, vertical blur is performed and drawn back onto shadowmap_depth
                 shadowmap_depth_helper = new FrameBuffer(
-                    Settings.ShadowMapSize,
-                    Settings.ShadowMapSize,
+                    Settings.ShadowMapSize/2,
+                    Settings.ShadowMapSize/2,
                     new FrameBufferColorAttachmentInfo[]
                     {
                     new FrameBufferColorAttachmentInfo()
@@ -380,6 +381,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_heightmap.SetDefine("VISUALIZE_HEIGHT", Settings.VisualizeHeight);
             shader_heightmap.SetDefine("APPLY_SHADING", Settings.EnableShadows);
             shader_heightmap.SetDefine("TONEMAPPING", (Settings.ToneMapping));
+            shader_heightmap.SetDefine("TEXTURE_LOD", (Settings.TerrainTextureLOD));
 
             shader_simple.CompileShader(new ShaderInfo[]
             {
@@ -487,6 +489,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_heightmap.AddParameter("ShadowMap");
             shader_heightmap.AddParameter("TileMap");
             shader_heightmap.AddParameter("OverlayMap");
+            shader_heightmap.AddParameter("BumpMap");
             shader_heightmap.AddParameter("SunDirection");
             shader_heightmap.AddParameter("SunStrength");
             shader_heightmap.AddParameter("SunColor");
@@ -504,6 +507,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.UniformBlockBinding(shader_heightmap.ProgramID, uniform_tiledata, 0);
             int uniform_overlaycol = GL.GetUniformBlockIndex(shader_heightmap.ProgramID, "Overlays");
             GL.UniformBlockBinding(shader_heightmap.ProgramID, uniform_overlaycol, 1);
+            int uniform_tilecol = GL.GetUniformBlockIndex(shader_heightmap.ProgramID, "TileColors");
+            GL.UniformBlockBinding(shader_heightmap.ProgramID, uniform_tilecol, 2);
 
 
             if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
@@ -634,6 +639,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Uniform1(shader_heightmap["TileMap"], 2);
             GL.Uniform1(shader_heightmap["OverlayMap"], 3);
             GL.Uniform1(shader_heightmap["HeightMap"], 4);
+            GL.Uniform1(shader_heightmap["BumpMap"], 5);
 
             GL.UseProgram(shader_heightmap_depth_prepass.ProgramID);
             GL.Uniform1(shader_heightmap_depth_prepass["HeightMap"], 4);
@@ -1003,6 +1009,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     GL.ActiveTexture(TextureUnit.Texture3);
                     GL.BindTexture(TextureTarget.Texture2D, 0);
                 }
+                GL.ActiveTexture(TextureUnit.Texture5);
+                GL.BindTexture(TextureTarget.Texture2D, heightmap.terrain_texture_lod_bump.tex_id);
                 GL.ActiveTexture(TextureUnit.Texture2);
                 GL.BindTexture(TextureTarget.Texture2D, heightmap.tile_data_texture);
                 GL.ActiveTexture(TextureUnit.Texture0);
@@ -1222,12 +1230,9 @@ namespace SpellforceDataEditor.SF3D.SFRender
         {
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
             GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
-
-            SetDepthBias(0);
-            SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
-
             Matrix4 vp_mat = scene.camera.ViewProjMatrix;
             GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+
             GL.Uniform1(active_shader["ShadowDepth"], scene.atmosphere.sun_light.ShadowDepth);
 
             // transparent pass
@@ -1434,7 +1439,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                 if (enable_flags.HasFlag(RenderEnable.SHADOWMAP_BLUR))
                 {
-                    // blur shadowmap
                     GL.BindVertexArray(FrameBuffer.screen_vao);
                     UseShader(shader_shadowmap_blur);
 

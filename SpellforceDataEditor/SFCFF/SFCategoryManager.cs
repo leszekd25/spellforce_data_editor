@@ -1,7 +1,6 @@
 ﻿//todo: modernize loading/saving data (chunk-based instead of sequential)
 
 using System;
-using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
@@ -816,6 +815,25 @@ namespace SpellforceDataEditor.SFCFF
             }
 
             return txt;
+        }
+
+        public static UInt16 GetUnitItem(UInt16 unit_id, byte slot_id)
+        {
+            SFCategoryElement unit_elem = gamedata[17].FindElementBinary<UInt16>(0, unit_id);
+            if (unit_elem == null)
+                return 0;
+
+            SFCategoryElement unit_eq = SFCategoryManager.gamedata[18].FindElementBinary<UInt16>(0, (UInt16)unit_id);
+            if (unit_eq == null)
+                return 0;
+
+            int el_size = unit_eq.variants.Count / 3;
+            for (int i = 0; i < el_size; i++)
+            {
+                if ((Byte)unit_eq[i * 3 + 1] == slot_id)
+                    return (UInt16)unit_eq[i * 3 + 2];
+            }
+            return 0;
         }
 
         //used for determining skill name

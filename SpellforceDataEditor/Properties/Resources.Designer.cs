@@ -159,6 +159,7 @@ namespace SpellforceDataEditor.Properties {
         ///in vec3 fragmentNormal;
         ///in vec4 fragmentPositionLightSpace;
         ///in vec3 vpos_orig;
+        ///in float vBrightness;
         ///
         ///out vec4 color;
         ///
@@ -174,8 +175,7 @@ namespace SpellforceDataEditor.Properties {
         ///uniform float FogStart;
         ///uniform float FogEnd;
         ///uniform float FogExponent;
-        ///uniform float ShadowFadeStart;
-        ///uniform float ShadowF [rest of string was truncated]&quot;;.
+        ///uniform float ShadowFadeStart; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_hmap {
             get {
@@ -547,6 +547,7 @@ namespace SpellforceDataEditor.Properties {
         ///out vec3 fragmentNormal;
         ///out vec4 fragmentPositionLightSpace;
         ///out vec3 vpos_orig;
+        ///out float vBrightness;
         ///
         ///// Values that stay constant for the whole mesh.
         ///
@@ -554,15 +555,13 @@ namespace SpellforceDataEditor.Properties {
         ///uniform sampler2D HeightMap;
         ///uniform mat4 VP;
         ///uniform mat4 LSM;
+        ///uniform vec3 SunDirection;
         ///
         ///vec4 GetTesselatedVertex(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
         ///{
         ///    vec4 a = mix(v0, v1, gl_TessCoord.x);
         ///    vec4 b = mix(v2, v3, gl_TessCoord.x);
-        ///    return mix(a, b, gl_TessCoord.y);
-        ///}
-        ///
-        ///vec3 GetVer [rest of string was truncated]&quot;;.
+        ///    [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string tesshader_hmap_tesselated {
             get {
@@ -672,13 +671,12 @@ namespace SpellforceDataEditor.Properties {
         ///out vec3 fragmentNormal;
         ///out vec4 fragmentPositionLightSpace;
         ///out vec3 vpos_orig;
+        ///out float vBrightness;
         ///
         ///// Values that stay constant for the whole mesh.
         ///
         ///uniform int GridSize;
-        ///uniform sampler2D HeightMap;
-        ///uniform mat4 VP;
-        ///unifo [rest of string was truncated]&quot;;.
+        ///uniform sampler2D HeightMap;        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_hmap {
             get {

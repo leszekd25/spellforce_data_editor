@@ -37,6 +37,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             {
                 map.heightmap.texture_manager.UpdateUniformTileData(tile_index, tile_index);
                 map.heightmap.texture_manager.RefreshTilePreview(tile_index);
+                map.heightmap.texture_manager.UpdateUniformTileColor(tile_index, tile_index);
                 SelectedCustomTileTex.SetImage(map.heightmap.texture_manager.texture_tile_image[tile_index], 0);
 
                 foreach (MapTerrainTextureControl c in PanelTiles.Controls)

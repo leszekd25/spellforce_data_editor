@@ -153,11 +153,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
 
         // updates the node and all children nodes
-        public void Update(float t)
+        public void Update(float dt)
         {
             if (Visible)
             {
-                UpdateTime(t);
+                UpdateTime(dt);
 
                 if (needsanyupdate)
                     UpdateTransform();
@@ -165,7 +165,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 GatherSceneInstances();
 
                 foreach (SceneNode node in Children)
-                    node.Update(t);
+                    node.Update(dt);
 
                 needsanyupdate = false;
             }
@@ -195,7 +195,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
 
         // updates node according to the given time parameter
-        protected virtual void UpdateTime(float t)
+        protected virtual void UpdateTime(float dt)
         {
 
         }
@@ -529,6 +529,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         public void SetAnimation(SFAnimation _animation, bool play = true)
         {
+            if(skeleton == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SceneNodeAnimated.SetAnimation(): Skeleton is missing!");
+                return;
+            }
             Animation = _animation;
             AnimCurrentTime = 0f;
             AnimPlaying = play;
@@ -536,35 +541,49 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 UpdateBoneTransforms();
         }
 
-        public void SetAnimationTime(float t)
-        {
-            if (Animation == null)
-                return;
-            if (t < Animation.max_time)
-                AnimCurrentTime = t;
-            else  // looping
-                AnimCurrentTime = t - (int)(t / Animation.max_time);
-
-            if((BoneTransforms != null)&&(AnimPlaying))
-                UpdateBoneTransforms();
-        }
-
         // calculates bone transforms for this node
         private void UpdateBoneTransforms()
         {
             for (int i = 0; i < BoneTransforms.Length; i++)
-                BoneTransforms[i] = Animation.CalculateBoneMatrix(i, AnimCurrentTime).to_mat4();
-            skeleton.CalculateTransformation(BoneTransforms, ref BoneTransforms);
+            {
+                Animation.bone_animations[i].GetMatrix4(AnimCurrentTime, ref BoneTransforms[i]);
+
+                if (Skeleton.bone_parents[i] != Utility.NO_INDEX)
+                    BoneTransforms[i] = BoneTransforms[i] * BoneTransforms[Skeleton.bone_parents[i]];
+            }
+
             for (int i = 0; i < BoneTransforms.Length; i++)
                 BoneTransforms[i] = skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
 
             TouchResultTransform();
         }
 
-
-        protected override void UpdateTime(float t)
+        public void SetAnimationCurrentTime(float t)
         {
-            SetAnimationTime(t);
+            if (Animation == null)
+                return;
+
+            if (t < AnimCurrentTime)
+                Animation.Readjust();
+
+            AnimCurrentTime = t;
+            if (AnimCurrentTime > Animation.max_time)
+            {
+                AnimCurrentTime -= (int)(AnimCurrentTime / Animation.max_time) * Animation.max_time;
+                Animation.Readjust();
+            }
+
+            if ((BoneTransforms != null) && (AnimPlaying))
+                UpdateBoneTransforms();
+        }
+
+        protected override void UpdateTime(float dt)
+        {
+            if (Animation == null)
+                return;
+
+            if(dt != 0)
+                SetAnimationCurrentTime(AnimCurrentTime + dt);
         }
 
         // clears scene cache of all elements drawn by this node
@@ -593,6 +612,15 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             {
                 SFResources.SFResourceManager.Skeletons.Dispose(Skeleton.GetName());
                 Skeleton = null;
+
+                if (Animation != null)
+                {
+                    Animation = null;
+                    AnimCurrentTime = 0f;
+                    AnimPlaying = false;
+                }
+
+                BoneTransforms = null;
             }
             if (Skin != null)
             {
@@ -765,24 +793,35 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             TouchLocalTransform(); TouchParents();
         }
 
-        // returns vector2 in screen coordinates in [0, 1] (if on screen)
+        public Vector3 ScreenToWorld(Vector2 uv)
+        {
+            Matrix4 inv = viewproj_matrix.Inverted();
+            float depth = 1.0f;
+
+            Vector4 vIn = new Vector4((2.0f * uv.X) - 1.0f, 1.0f - (2.0f * uv.Y), 2.0f * depth - 1.0f, 1.0f);
+            Vector4 pos = vIn * inv;
+
+            pos.W = 1.0f / pos.W;
+
+            pos.X *= pos.W;
+            pos.Y *= pos.W;
+            pos.Z *= pos.W;
+
+            return pos.Xyz;
+        }
+
+        // pos: coordinate in 3d world space
+        // result: coordinate in the window (top-left: (0, 0), bottom-right: (1, 1))
         public Vector2 WorldToScreen(Vector3 pos)
         {
-            float dist = Vector3.Dot(pos - position, (Lookat - position).Normalized()) / (1.136f * Settings.ObjectFadeMax);
+            Vector4 clip_space_vec = new Vector4(pos, 1.0f) * viewproj_matrix;
 
-            Vector3 top_left = position + (frustum.frustum_vertices[4] - position) * dist;
-            Vector3 top_right = position + (frustum.frustum_vertices[5] - position) * dist;
-            Vector3 bottom_left = position + (frustum.frustum_vertices[6] - position) * dist;
+            if (clip_space_vec.W == 0)
+                return Vector2.Zero;
 
-            Vector3 top_point_norm = (top_right - top_left).Normalized();
-            Vector3 top_point = top_left + top_point_norm * Vector3.Dot(pos - top_left, top_point_norm);
-            
-            Vector3 left_point_norm = (bottom_left-top_left).Normalized();
-            Vector3 left_point = top_left + top_point_norm * Vector3.Dot(pos - top_left, left_point_norm);
+            Vector3 NDC_space_vec = clip_space_vec.Xyz / clip_space_vec.W;
 
-            return new Vector2(
-                Math.Sign(Vector3.Dot(pos - top_left, top_right - top_left)) * (top_point - top_left).Length / (top_right - top_left).Length,
-                Math.Sign(Vector3.Dot(pos - top_left, bottom_left - top_left)) * (left_point - top_left).Length / (bottom_left - top_left).Length);
+            return new Vector2(((NDC_space_vec.X + 1.0f) / 2.0f), ((1.0f - NDC_space_vec.Y) / 2.0f));
         }
     }
 }

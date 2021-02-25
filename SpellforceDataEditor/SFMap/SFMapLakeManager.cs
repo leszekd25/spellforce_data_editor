@@ -65,10 +65,17 @@ namespace SpellforceDataEditor.SFMap
 
             ushort lake_level = (ushort)(map.heightmap.GetZ(start) + z_diff);
 
+
             // shift lakes forward by one, to preserve lake ordering
-            for (int i = 0; i < map.width * map.height; i++)
+            for (int i = lake_index; i < lakes.Count; i++)
+            {
+                SFMapLake l = lakes[i];
+                foreach (SFCoord p in l.cells)
+                    map.heightmap.lake_data[p.y * map.width + p.x] += 1;
+            }
+            /*for (int i = 0; i < map.width * map.height; i++)
                 if (map.heightmap.lake_data[i] >= lake_index + 1)
-                    map.heightmap.lake_data[i] += 1;
+                    map.heightmap.lake_data[i] += 1;*/
 
             SFMapLake lake = new SFMapLake();
             lakes.Insert(lake_index, lake);
@@ -117,9 +124,15 @@ namespace SpellforceDataEditor.SFMap
                 map.heightmap.lake_data[p.y * map.width + p.x] = 0;
 
             // shift lakes back by one, to preserve lake ordering
-            for (int i = 0; i < map.width * map.height; i++)
+            for(int i = lake_index + 1; i < lakes.Count; i++)
+            {
+                SFMapLake l = lakes[i];
+                foreach (SFCoord p in l.cells)
+                    map.heightmap.lake_data[p.y * map.width + p.x] -= 1;
+            }
+            /*for (int i = 0; i < map.width * map.height; i++)
                 if (map.heightmap.lake_data[i] > lake_index + 1)
-                    map.heightmap.lake_data[i] -= 1;
+                    map.heightmap.lake_data[i] -= 1;*/
 
             if ((lake.cells.Count > 0) && (MainForm.mapedittool != null) && (MainForm.mapedittool.op_queue != null) && (MainForm.mapedittool.op_queue.IsClusterOpen()))
             {
@@ -170,14 +183,20 @@ namespace SpellforceDataEditor.SFMap
                 return;
             }
 
+            // clear current lake data
+
+            foreach (SFCoord p in lake.cells)
+                map.heightmap.lake_data[p.y * map.width + p.x] = 0;
+            /*for (int i = 0; i < map.width * map.height; i++)
+                if (map.heightmap.lake_data[i] == lake_index + 1)
+                    map.heightmap.lake_data[i] = 0;*/
+
             ushort lake_level = (ushort)(map.heightmap.GetZ(lake.start) + lake.z_diff);
 
             lake.cells = map.heightmap.GetIslandByHeight(lake.start, lake.z_diff);
             lake.CalculateDepth(map.heightmap, lake_level);
 
-            for (int i = 0; i < map.width * map.height; i++)
-                if (map.heightmap.lake_data[i] == lake_index + 1)
-                    map.heightmap.lake_data[i] = 0;
+
 
             // check if lake collides with other lakes
             List<SFMapLake> lakes_to_remove = new List<SFMapLake>();

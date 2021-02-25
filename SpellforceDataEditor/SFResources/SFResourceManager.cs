@@ -34,10 +34,17 @@ namespace SpellforceDataEditor.SFResources
         public static List<string> sound_names { get; private set; } = new List<string>();
         public static Dictionary<string, List<string>> message_names { get; private set; } = new Dictionary<string, List<string>>();
 
+        public static bool ready { get; set; } = false;
+
         //generate mesh names, for use in SF3DManager
         public static void FindAllMeshes()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes() called");
+            if(ready)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): Already loaded");
+                return;
+            }    
 
             string[] filter_mesh = { "sf8.pak", "sf22.pak", "sf32.pak" };
             string[] filter_skel = { "sf4.pak", "sf22.pak", "sf32.pak" };
@@ -70,6 +77,8 @@ namespace SpellforceDataEditor.SFResources
             LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): Male message sound files found: " + message_names["Male"].Count.ToString());
             LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): Female message sound files found: " + message_names["Female"].Count.ToString());
             LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): RTS Workers message sound files found: " + message_names["RTS Workers"].Count.ToString());
+
+            ready = true;
         }
 
         public static void DisposeAll()

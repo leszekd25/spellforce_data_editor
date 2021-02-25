@@ -592,7 +592,7 @@ namespace SpellforceDataEditor.special_forms
 
         GLControl RenderWindow = null;
         bool initialized_view = false;   // is true when the map render control is visible and loaded
-        bool dynamic_render = false;     // if true, window will redraw every frame at 25 fps
+        bool dynamic_render = false;     // if true, window will redraw every frame
         bool mouse_pressed = false;      // if true, mouse is pressed and in render window
         MouseButtons mouse_last_pressed = MouseButtons.Left;  // last mouse button pressed
 
@@ -767,8 +767,7 @@ namespace SpellforceDataEditor.special_forms
             // first, load view
             if (!initialized_view)
             {
-                StatusText.Text = "Initializing view...";
-                StatusText.GetCurrentParent().Refresh();
+                ForceSetStatusText("Initializing view...", Color.Green);
                 CreateRenderWindow();
                 if(!initialized_view)
                 {
@@ -781,8 +780,7 @@ namespace SpellforceDataEditor.special_forms
             // load SQL Lua files
             if (!SFLua.SFLuaEnvironment.data_loaded)
             {
-                StatusText.Text = "Loading SQL Lua files...";
-                StatusText.GetCurrentParent().Refresh();
+                ForceSetStatusText("Loading SQL Lua files...", Color.Blue);
                 SFLua.SFLuaEnvironment.LoadSQL(false);
                 if (!SFLua.SFLuaEnvironment.data_loaded)
                 {
@@ -795,8 +793,7 @@ namespace SpellforceDataEditor.special_forms
             // load in gamedata from game directory
             if (!is_gd_correct)
             {
-                StatusText.Text = "Loading GameData.cff...";
-                StatusText.GetCurrentParent().Refresh();
+                ForceSetStatusText("Loading GameData.cff...", Color.DarkOrange);
                 if (SFCFF.SFCategoryManager.gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
                 {
                     StatusText.Text = "Failed to load gamedata";
@@ -809,11 +806,19 @@ namespace SpellforceDataEditor.special_forms
                     SFCFF.SFCategoryManager.manual_SetGamedata();
             }
 
+            // load resource names
+            if (!SFResources.SFResourceManager.ready)
+            {
+                ForceSetStatusText("Loading resource names...", Color.Purple);
+                SFResources.SFResourceManager.FindAllMeshes();
+            }
+
             SFRenderEngine.scene.root.Visible = true;
 
             // create and generate map
             map = new SFMap.SFMap();
-            map.CreateDefault(map_size, generator, StatusText);
+            map.OnMapLoadStateChange = ForceSetStatusText;
+            map.CreateDefault(map_size, generator);
 
             SFRenderEngine.scene.map = map;
             InitEditorMode();
@@ -836,6 +841,9 @@ namespace SpellforceDataEditor.special_forms
             RenderWindow.Enabled = true;
             RenderWindow.Invalidate();
 
+            if (Settings.DynamicMap)
+                EnableAnimation();
+
             if (MainForm.data != null)
             {
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap(): Synchronized with gamedata editor");
@@ -851,6 +859,13 @@ namespace SpellforceDataEditor.special_forms
             LogUtils.Log.TotalMemoryUsage();
             SFResources.SFResourceManager.LogMemoryUsage();
             return 0;
+        }
+
+        private void ForceSetStatusText(string text, Color col)
+        {
+            StatusText.Text = text;
+            StatusText.ForeColor = col;
+            StatusText.GetCurrentParent().Refresh();
         }
 
         private int LoadMap()
@@ -881,8 +896,7 @@ namespace SpellforceDataEditor.special_forms
                 // first, load view
                 if (!initialized_view)
                 {
-                    StatusText.Text = "Initializing view...";
-                    StatusText.GetCurrentParent().Refresh();
+                    ForceSetStatusText("Initializing view...", Color.Green);
                     CreateRenderWindow();
                     if (!initialized_view)
                     {
@@ -895,8 +909,7 @@ namespace SpellforceDataEditor.special_forms
                 // load SQL Lua files
                 if (!SFLua.SFLuaEnvironment.data_loaded)
                 {
-                    StatusText.Text = "Loading SQL Lua files...";
-                    StatusText.GetCurrentParent().Refresh();
+                    ForceSetStatusText("Loading SQL Lua files...", Color.Blue);
                     SFLua.SFLuaEnvironment.LoadSQL(false);
                     if (!SFLua.SFLuaEnvironment.data_loaded)
                     {
@@ -906,10 +919,10 @@ namespace SpellforceDataEditor.special_forms
                     }
                 }
 
+                // load gamedata
                 if (!is_gd_correct)
                 {
-                    StatusText.Text = "Loading GameData.cff...";
-                    StatusText.GetCurrentParent().Refresh();
+                    ForceSetStatusText("Loading GameData.cff...", Color.DarkOrange);
                     if (SFCFF.SFCategoryManager.gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
                     {
                         StatusText.Text = "Failed to load gamedata";
@@ -922,14 +935,22 @@ namespace SpellforceDataEditor.special_forms
                         SFCFF.SFCategoryManager.manual_SetGamedata();
                 }
 
+                // load resource names
+                if(!SFResources.SFResourceManager.ready)
+                {
+                    ForceSetStatusText("Loading resource names...", Color.Purple);
+                    SFResources.SFResourceManager.FindAllMeshes();
+                }
+
                 SFRenderEngine.scene.root.Visible = true;
 
                 map = new SFMap.SFMap();
+                map.OnMapLoadStateChange = ForceSetStatusText;
                 try
                 {
-                    if (map.Load(OpenMap.FileName, StatusText) != 0)
+                    if (map.Load(OpenMap.FileName) != 0)
                     {
-                        StatusText.Text = "Failed to load map";
+                        ForceSetStatusText("Failed to load map", Color.Red);
                         map = null;
                         DestroyRenderWindow();
                         return -3;
@@ -937,7 +958,7 @@ namespace SpellforceDataEditor.special_forms
                 }
                 catch (InvalidDataException)
                 {
-                    StatusText.Text = "Map contains invalid data!";
+                    ForceSetStatusText("Map contains invalid data!", Color.Red);
                     map = null;
                     DestroyRenderWindow();
                     return -4;
@@ -962,6 +983,9 @@ namespace SpellforceDataEditor.special_forms
 
                 RenderWindow.Enabled = true;
                 RenderWindow.Invalidate();
+
+                if (Settings.DynamicMap)
+                    EnableAnimation();
 
                 if (MainForm.data != null)
                 {
@@ -1064,6 +1088,8 @@ namespace SpellforceDataEditor.special_forms
             obj_tree = null;
 
             map.Unload();
+
+            DisableAnimation();
 
             SFRenderEngine.scene.map = null;
             SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
@@ -1317,13 +1343,10 @@ namespace SpellforceDataEditor.special_forms
                 {
                     //find point which mouse hovers at
                     float wx, wy;
-                    wx = ((px / RenderWindow.Size.Width) + 0.1f) / 1.2f;
-                    wy = ((py / RenderWindow.Size.Height) + 0.1f) / 1.2f;
-                    Vector3[] frustrum_vertices = SFRenderEngine.scene.camera.Frustum.frustum_vertices;
+                    wx = px / RenderWindow.Size.Width;
+                    wy = py / RenderWindow.Size.Height;
                     Vector3 r_start = SFRenderEngine.scene.camera.position;
-                    Vector3 r_end = frustrum_vertices[4]
-                        + wx * (frustrum_vertices[5] - frustrum_vertices[4])
-                        + wy * (frustrum_vertices[6] - frustrum_vertices[4]);
+                    Vector3 r_end = SFRenderEngine.scene.camera.ScreenToWorld(new Vector2(wx, wy));
                     SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start) { Length = 400 };
 
                     Vector3 result = new Vector3(0, 0, 0);
