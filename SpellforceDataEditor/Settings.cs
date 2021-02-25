@@ -23,7 +23,7 @@ namespace SpellforceDataEditor
         public static int RenderDistance { get; set; } = 1000;
         public static SFMap.SFMapHeightMapLOD TerrainLOD { get; private set; } = SFMap.SFMapHeightMapLOD.NONE;
         public static bool TerrainTextureLOD { get; private set; } = false;
-        public static bool DynamicMap { get; private set; } = true;
+        public static bool DynamicMap { get; set; } = true;
         public static int FogStart { get; set; } = 0;
         public static int FogEnd { get; set; } = 400;
 

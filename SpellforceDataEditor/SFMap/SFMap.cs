@@ -1886,24 +1886,7 @@ namespace SpellforceDataEditor.SFMap
 
             if(Settings.DynamicMap)
             {
-                string anim_name = unit_manager.GetIdleAnim(unit_manager.GetAnimLib(unit));
-                if(anim_name != "")
-                {
-                    SF3D.SFAnimation anim = null;
-                    int tex_code = SFResources.SFResourceManager.Animations.Load(anim_name);
-                    if ((tex_code != 0) && (tex_code != -1))
-                    {
-                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMap.AddUnit(): Could not load animation (animation name = " + anim_name + ")");
-                    }
-                    else
-                    {
-                        anim = SFResources.SFResourceManager.Animations.Get(anim_name);
-                        var node = ((SF3D.SceneSynchro.SceneNodeAnimated)unit.node.Children[0]);
-                        node.SetAnimation(anim);
-                        if(node.Animation != null)
-                            node.SetAnimationCurrentTime(MathUtils.Randf(0, node.Animation.max_time));
-                    }
-                }
+                unit_manager.RestartAnimation(unit);
             }
         }
 
@@ -2006,24 +1989,7 @@ namespace SpellforceDataEditor.SFMap
 
             if (Settings.DynamicMap)
             {
-                string anim_name = unit_manager.GetIdleAnim(unit_manager.GetAnimLib(unit));
-                if (anim_name != "")
-                {
-                    SF3D.SFAnimation anim = null;
-                    int tex_code = SFResources.SFResourceManager.Animations.Load(anim_name);
-                    if ((tex_code != 0) && (tex_code != -1))
-                    {
-                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMap.AddUnit(): Could not load animation (animation name = " + anim_name + ")");
-                    }
-                    else
-                    {
-                        anim = SFResources.SFResourceManager.Animations.Get(anim_name);
-                        var node = ((SF3D.SceneSynchro.SceneNodeAnimated)unit.node.Children[0]);
-                        node.SetAnimation(anim);
-                        if (node.Animation != null)
-                            node.SetAnimationCurrentTime(MathUtils.Randf(0, node.Animation.max_time));
-                    }
-                }
+                unit_manager.RestartAnimation(unit);
             }
 
             return 0;

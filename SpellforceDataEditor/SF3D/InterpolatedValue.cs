@@ -205,16 +205,41 @@ namespace SpellforceDataEditor.SF3D
             if (t > max_time)
                 t = max_time;
 
-            // optimization: instead of reading data from start every time, read from last point it was read
-            for (int i = 0; i < size; i++)
+            if (size < 10)
             {
-                if (time[i] >= t)
+                for (int i = 0; i < size; i++)
                 {
-                    if (i == 0)
-                        return value[0];
+                    if (time[i] >= t)
+                    {
+                        if (i == 0)
+                            return value[0];
 
-                    float t1 = time[i - 1];
-                    return Vector3.Lerp(value[i - 1], value[i], (t - t1) / (time[i] - t1));
+                        float t1 = time[i - 1];
+                        return Vector3.Lerp(value[i - 1], value[i], (t - t1) / (time[i] - t1));
+                    }
+                }
+            }
+            else
+            {
+                if (t == time[size-1])
+                    return value[size-1];
+
+                int min = 0; int max = size;
+                while (true)
+                {
+                    int mid_index = (min + max) / 2;
+                    if (time[mid_index] <= t)
+                    {
+                        min = mid_index;
+                    }
+                    else
+                    {
+                        max = mid_index;
+                    }
+                    if (max-min == 1)
+                    {
+                        return Vector3.Lerp(value[min], value[max], (t - time[min]) / (time[max] - time[min]));
+                    }
                 }
             }
 
@@ -282,15 +307,41 @@ namespace SpellforceDataEditor.SF3D
                 t = max_time;
 
             // optimization: instead of reading data from start every time, read from last point it was read
-            for (int i = 0; i < size; i++)
+            if (size < 10)
             {
-                if (time[i] >= t)
+                for (int i = 0; i < size; i++)
                 {
-                    if (i == 0)
-                        return value[0];
+                    if (time[i] >= t)
+                    {
+                        if (i == 0)
+                            return value[0];
 
-                    float t1 = time[i - 1];
-                    return Quaternion.Slerp(value[i - 1], value[i], (t - t1) / (time[i] - t1));
+                        float t1 = time[i - 1];
+                        return Quaternion.Slerp(value[i - 1], value[i], (t - t1) / (time[i] - t1));
+                    }
+                }
+            }
+            else
+            {
+                if (t == time[size-1])
+                    return value[size-1];
+
+                int min = 0; int max = size;
+                while(true)
+                {
+                    int mid_index = (min + max) / 2;
+                    if (time[mid_index] <= t)
+                    {
+                        min = mid_index;
+                    }
+                    else
+                    {
+                        max = mid_index;
+                    }
+                    if (max - min == 1)
+                    {
+                        return Quaternion.Slerp(value[min], value[max], (t - time[min]) / (time[max] - time[min]));
+                    }
                 }
             }
 

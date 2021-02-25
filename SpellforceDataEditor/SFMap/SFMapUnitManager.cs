@@ -41,7 +41,6 @@ namespace SpellforceDataEditor.SFMap
             idle_anim_dict.Add("figure_npc_gargoyle_normal", "figure_npc_gargoyle_idle");
             idle_anim_dict.Add("figure_animal_buffalo_normal", "figure_animal_buffalo_idle");
             idle_anim_dict.Add("figure_animal_wolf_", "figure_animal_wolf_idle");
-            idle_anim_dict.Add("figure_boss_demon", "figure_boss_demon_fear");
             idle_anim_dict.Add("figure_npc_beastman", "figure_npc_beastman_idle");
             idle_anim_dict.Add("figure_npc_demon_lesser", "figure_npc_demon_lesser_idle");
             idle_anim_dict.Add("figure_npc_gargoyle_stone", "figure_npc_gargoyle_idle");
@@ -131,13 +130,51 @@ namespace SpellforceDataEditor.SFMap
             if (chest_id != 0)
             {
                 string anim_lib = SFLua.SFLuaEnvironment.items[chest_id].AnimSet;
-                if (anim_lib.Contains("figure_hero"))
-                    return "";
+                if (anim_lib == "")
+                {
+                    SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[17].FindElementBinary<UInt16>(0, (UInt16)(unit.game_id));
+                    if (unit_data == null)
+                        return "";
+
+                    SFCFF.SFCategoryElement unit_stats = SFCFF.SFCategoryManager.gamedata[3].FindElementBinary<UInt16>(0, (UInt16)unit_data[2]);
+                    bool is_female = false;
+                    if (unit_stats != null)
+                        is_female = ((Byte)unit_stats[23] % 2) == 1;
+
+                    if (is_female)
+                        return "figure_hero_female";
+                    else
+                        return "figure_hero_male";
+                }
 
                 return anim_lib;
             }
 
             return "";
+        }
+
+        public void RestartAnimation(SFMapUnit unit)
+        {
+            string anim_name = GetIdleAnim(GetAnimLib(unit));
+            if (anim_name != "")
+            {
+                SFAnimation anim = null;
+                int tex_code = SFResources.SFResourceManager.Animations.Load(anim_name);
+                if ((tex_code != 0) && (tex_code != -1))
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapUnitManager.RestartAnimation(): Could not load animation (animation name = " + anim_name + ")");
+                }
+                else
+                {
+                    anim = SFResources.SFResourceManager.Animations.Get(anim_name);
+                    foreach (SF3D.SceneSynchro.SceneNodeAnimated anim_node in unit.node.Children)
+                    {
+                        anim_node.SetAnimation(anim);
+                        if (anim_node.Animation != null)
+                            anim_node.SetAnimationCurrentTime(MathUtils.Randf(0, anim_node.Animation.max_time));
+                    }
+                }
+            }
         }
     }
 }

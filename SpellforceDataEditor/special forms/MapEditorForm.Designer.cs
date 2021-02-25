@@ -1953,6 +1953,8 @@
             this.MinimumSize = new System.Drawing.Size(1005, 706);
             this.Name = "MapEditorForm";
             this.Text = "Map Editor";
+            this.Activated += new System.EventHandler(this.MapEditorForm_Activated);
+            this.Deactivate += new System.EventHandler(this.MapEditorForm_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MapEditorForm_FormClosing);
             this.Shown += new System.EventHandler(this.MapEditorForm_Load);
             this.Resize += new System.EventHandler(this.MapEditorForm_Resize);

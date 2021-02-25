@@ -687,6 +687,16 @@ namespace SpellforceDataEditor.special_forms
             PanelUtility.Location = new Point(this.Width - PanelUtility.Width, StatusStrip.Location.Y);
         }
 
+        private void MapEditorForm_Deactivate(object sender, EventArgs e)
+        {
+            DisableAnimation(false);
+        }
+
+        private void MapEditorForm_Activated(object sender, EventArgs e)
+        {
+            EnableAnimation(false);
+        }
+
         private void createNewMapToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (CloseMap() == 0)
@@ -842,7 +852,7 @@ namespace SpellforceDataEditor.special_forms
             RenderWindow.Invalidate();
 
             if (Settings.DynamicMap)
-                EnableAnimation();
+                EnableAnimation(true);
 
             if (MainForm.data != null)
             {
@@ -985,7 +995,7 @@ namespace SpellforceDataEditor.special_forms
                 RenderWindow.Invalidate();
 
                 if (Settings.DynamicMap)
-                    EnableAnimation();
+                    EnableAnimation(true);
 
                 if (MainForm.data != null)
                 {
@@ -1089,7 +1099,7 @@ namespace SpellforceDataEditor.special_forms
 
             map.Unload();
 
-            DisableAnimation();
+            DisableAnimation(false);
 
             SFRenderEngine.scene.map = null;
             SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
@@ -1257,16 +1267,42 @@ namespace SpellforceDataEditor.special_forms
             AddCameraZoom(e.Delta);
         }
 
-        private void EnableAnimation()
+        // enables unit animation, if DynamicMap is enabled
+        public void EnableAnimation(bool force_load = false)
         {
-            dynamic_render = true;
+            dynamic_render = Settings.DynamicMap;
+            if (!Settings.DynamicMap)
+                return;
             SFRenderEngine.scene.delta_timer.Restart();
+            if (!force_load)
+                return;
+            if(map != null)
+            {
+                foreach(var unit in map.unit_manager.units)
+                {
+                    map.unit_manager.RestartAnimation(unit);
+                }
+            }
         }
 
-        private void DisableAnimation()
+        // disables unit animation
+        public void DisableAnimation(bool force_unload = false)
         {
             dynamic_render = false;
-            SFRenderEngine.scene.delta_timer.Stop();
+            SFRenderEngine.scene.delta_timer.Stop(); 
+            if(!force_unload)
+                return;
+            if (map != null)
+            {
+                foreach (var unit in map.unit_manager.units)
+                {
+                    foreach (SF3D.SceneSynchro.SceneNodeAnimated anim_node in unit.node.Children)
+                    {
+                        anim_node.SetAnimation(null, false);
+                        anim_node.SetSkeletonSkin(anim_node.Skeleton, anim_node.Skin);
+                    }
+                }
+            }
         }
 
         private void TimerAnimation_Tick(object sender, EventArgs e)

@@ -28,6 +28,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             checkBox8.Checked = Settings.DisplayGrid;
             checkBox9.Checked = MainForm.mapedittool.ui.GetMinimapVisible();
             checkBox10.Checked = MainForm.mapedittool.ui.GetMinimapIconsVisible();
+            checkBox11.Checked = Settings.DynamicMap;
 
             button1.BackColor = Color.FromArgb(((byte)Settings.GridColor.X*255), 
                                                ((byte)Settings.GridColor.Y*255), 
@@ -121,6 +122,16 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                 button1.BackColor = GridColorPicker.Color;
                 MainForm.mapedittool.update_render = true;
             }
+        }
+
+        private void checkBox11_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.DynamicMap = checkBox11.Checked;
+            if (Settings.DynamicMap)
+                MainForm.mapedittool.EnableAnimation(true);
+            else
+                MainForm.mapedittool.DisableAnimation(true);
+            MainForm.mapedittool.update_render = true;
         }
     }
 }

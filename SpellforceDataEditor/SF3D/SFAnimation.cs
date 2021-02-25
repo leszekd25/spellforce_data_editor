@@ -44,11 +44,6 @@ namespace SpellforceDataEditor.SF3D
                 GetInterpolatedMatrix4(t, ref mat);
         }
 
-        public void Readjust()
-        {
-
-        }
-
         public int GetSizeBytes()
         {
             return position.GetSizeBytes() + rotation.GetSizeBytes();
@@ -114,12 +109,6 @@ namespace SpellforceDataEditor.SF3D
             }
 
             return 0;
-        }
-
-        public void Readjust()
-        {
-            foreach (var anim in bone_animations)
-                anim.Readjust();
         }
 
         public void SetName(string s)

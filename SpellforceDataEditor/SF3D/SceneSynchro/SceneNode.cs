@@ -171,6 +171,19 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
         }
 
+        public void SetTime(float t)
+        {
+            SetTimeInternal(t);
+
+            foreach (SceneNode node in Children)
+                node.SetTime(t);
+        }
+
+        protected virtual void SetTimeInternal(float t)
+        {
+
+        }
+
         // updates local transform if needed, and result transform if needed
         protected virtual void UpdateTransform()
         {
@@ -489,6 +502,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         public float AnimCurrentTime { get; private set; } = 0;
         public bool AnimPlaying { get; set; } = false;
 
+        // if this node has a primary, it inherits all skin calculations
+        // primary node must be the first node in children hierarchy
+        // primare must have the same skeleton as this node
+        // if this node has a primary, it better not have children...
+        public SceneNodeAnimated Primary { get; set; } = null;
+
         public override bool Visible
         {
             get => base.Visible;
@@ -519,6 +538,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 BoneTransforms = new Matrix4[_skeleton.bone_count];
                 for (int i = 0; i < _skeleton.bone_count; i++)
                     BoneTransforms[i] = Matrix4.Identity;
+
+                TouchResultTransform();
             }
             else
                 BoneTransforms = null;
@@ -544,18 +565,26 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // calculates bone transforms for this node
         private void UpdateBoneTransforms()
         {
-            for (int i = 0; i < BoneTransforms.Length; i++)
+            if (Primary == null)
             {
-                Animation.bone_animations[i].GetMatrix4(AnimCurrentTime, ref BoneTransforms[i]);
+                for (int i = 0; i < BoneTransforms.Length; i++)
+                {
+                    Animation.bone_animations[i].GetMatrix4(AnimCurrentTime, ref BoneTransforms[i]);
 
-                if (Skeleton.bone_parents[i] != Utility.NO_INDEX)
-                    BoneTransforms[i] = BoneTransforms[i] * BoneTransforms[Skeleton.bone_parents[i]];
+                    if (Skeleton.bone_parents[i] != Utility.NO_INDEX)
+                        BoneTransforms[i] = BoneTransforms[i] * BoneTransforms[Skeleton.bone_parents[i]];
+                }
+
+                for (int i = 0; i < BoneTransforms.Length; i++)
+                    BoneTransforms[i] = skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
+
+                TouchResultTransform();
             }
-
-            for (int i = 0; i < BoneTransforms.Length; i++)
-                BoneTransforms[i] = skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
-
-            TouchResultTransform();
+            else
+            {
+                for (int i = 0; i < BoneTransforms.Length; i++)
+                    BoneTransforms[i] = Primary.BoneTransforms[i];
+            }
         }
 
         public void SetAnimationCurrentTime(float t)
@@ -563,29 +592,45 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (Animation == null)
                 return;
 
-            if (t < AnimCurrentTime)
-                Animation.Readjust();
 
             AnimCurrentTime = t;
             if (AnimCurrentTime > Animation.max_time)
-            {
                 AnimCurrentTime -= (int)(AnimCurrentTime / Animation.max_time) * Animation.max_time;
-                Animation.Readjust();
-            }
 
             if ((BoneTransforms != null) && (AnimPlaying))
-                UpdateBoneTransforms();
+            {
+                // determine if should update, based on scene camera distance and on bounding box
+                float dist = (SFRender.SFRenderEngine.scene.camera.position - ResultTransform.Row3.Xyz).Length;
+                float size;
+
+                if(Primary == null)
+                    size = (aabb.a - aabb.center).Length;
+                else
+                    size = (Primary.aabb.a - Primary.aabb.center).Length;
+                if (size == 0)
+                    return;
+
+                int skip_count = 1 + (int)((dist/size) * 0.1f);
+                if (skip_count == 1)
+                    UpdateBoneTransforms();
+                else if ((SFRender.SFRenderEngine.scene.frame_counter % skip_count) == 0)
+                    UpdateBoneTransforms();
+            }
         }
 
         protected override void UpdateTime(float dt)
         {
-            if (Animation == null)
-                return;
-
             if(dt != 0)
                 SetAnimationCurrentTime(AnimCurrentTime + dt);
         }
 
+        protected override void SetTimeInternal(float t)
+        {
+            if (Animation == null)
+                return;
+
+            SetAnimationCurrentTime(t);
+        }
         // clears scene cache of all elements drawn by this node
         // also do this if transparent = true, let transparent object list deal with those
         private void ClearTexGeometry()
@@ -603,6 +648,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // disposes skeleton and skin used by this node (reference counted)
         protected override void InternalDispose()
         {
+            Primary = null;
             if (Mesh != null)
             {
                 SFResources.SFResourceManager.Models.Dispose(Mesh.GetName());

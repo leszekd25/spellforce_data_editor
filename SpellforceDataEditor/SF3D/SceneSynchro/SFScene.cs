@@ -32,7 +32,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         // TODO: multiple scenes (at least one for map editor and one for asset viewer
         public SFSceneMeta scene_meta { get; private set; } = new SFSceneMeta();    // scene metadata
 
-        public int frame_counter { get; private set; } = 0;      // total frames rendered
+        public int frame_counter = 0;      // total frames rendered
         public int frames_per_second { get; private set; } = Settings.FramesPerSecond;   // framerate
         public System.Diagnostics.Stopwatch delta_timer { get; private set; } = new System.Diagnostics.Stopwatch();     // timer which manages delta time
         private float deltatime = 0f;       // current delta time value in seconds
@@ -342,6 +342,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
             //add anim model to scene
             SceneNodeAnimated uo = AddSceneNodeAnimated(unit_node, chest_name, "Chest");
+            SceneNodeAnimated uo2;
 
             //get legs item (5) (animated)
             UInt16 legs_id = SFCategoryManager.GetUnitItem((UInt16)unit_id, 5);
@@ -351,7 +352,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 string legs_name = SFLuaEnvironment.GetItemMesh(legs_id, is_female);
                 if (legs_name != "")
                 {
-                    uo = AddSceneNodeAnimated(unit_node, legs_name, "Legs");
+                    uo2 = AddSceneNodeAnimated(unit_node, legs_name, "Legs");
+                    uo2.Primary = uo;
+                    if (uo.Skin == null)
+                        uo2.Primary = null;
                 }
             }
             //special case: anim_name is of "figure_hero": need to also add human head (animated)
@@ -371,7 +375,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                         head_name = head_data.MeshFemale;
                     else
                         head_name = head_data.MeshMale;
-                    uo = AddSceneNodeAnimated(unit_node, head_name, "Head");
+                    uo2 = AddSceneNodeAnimated(unit_node, head_name, "Head");
+                    uo2.Primary = uo;
+                    if (uo.Skin == null)
+                        uo2.Primary = null;
                 }
             }
 
@@ -526,6 +533,8 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             if (t > scene_meta.duration)
                 t = scene_meta.duration;
             current_time = t;
+
+            root.SetTime(t);
         }
 
         public void StopTimeFlow()
