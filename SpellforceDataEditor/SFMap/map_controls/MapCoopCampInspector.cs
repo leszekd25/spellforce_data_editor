@@ -123,10 +123,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 index = ListCoopCamps.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.ID,
                 PreChangeProperty = map.metadata.coop_spawns[ListCoopCamps.SelectedIndex].spawn_id,
-                PostChangeProperty = Utility.TryParseUInt8(CampID.Text)
+                PostChangeProperty = (int)(Utility.TryParseUInt16(CampID.Text))
             });
 
-            map.metadata.coop_spawns[ListCoopCamps.SelectedIndex].spawn_id = Utility.TryParseUInt8(CampID.Text);
+            map.metadata.coop_spawns[ListCoopCamps.SelectedIndex].spawn_id = Utility.TryParseUInt16(CampID.Text);
         }
 
         private void Unknown1_Validated(object sender, EventArgs e)
@@ -141,7 +141,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 index = ListCoopCamps.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.COOPCAMPUNKNOWN,
                 PreChangeProperty = map.metadata.coop_spawns[ListCoopCamps.SelectedIndex].spawn_certain,
-                PostChangeProperty = Utility.TryParseUInt16(Unknown1.Text)
+                PostChangeProperty = (int)(Utility.TryParseUInt8(Unknown1.Text))
             });
 
             map.metadata.coop_spawns[ListCoopCamps.SelectedIndex].spawn_certain = Utility.TryParseUInt8(Unknown1.Text);

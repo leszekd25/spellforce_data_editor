@@ -154,9 +154,6 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             MainForm.mapedittool.InspectorSelect(null);
                         }
 
-                        map.DeleteInteractiveObject(intobj_index);
-                        ((map_controls.MapBindstoneInspector)MainForm.mapedittool.selected_inspector).RemoveBindstone(bindstone_index);
-
                         MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorBindstoneAddOrRemove()
                         {
                             bindstone_index = bindstone_index,
@@ -165,12 +162,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             intobj_index = intobj_index,
                             bindstone_unknown = map.metadata.spawns[player].unknown,
                             player_index = player,
-                            is_adding = false
+                            is_adding = false,
+                            ApplyOnPush = true
                         });
-
-                        map.metadata.spawns.RemoveAt(player);
-
-                        MainForm.mapedittool.ui.RedrawMinimapIcons();
                     }
                 }
             }

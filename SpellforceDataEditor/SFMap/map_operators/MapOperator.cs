@@ -764,6 +764,12 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void Add(SFMap map)
         {
+            // reassign bindstone indices to players
+            for (int i = 0; i < map.metadata.spawns.Count; i++)
+            {
+                map.metadata.spawns[i].bindstone_index += (bindstone_index <= map.metadata.spawns[i].bindstone_index ? 1 : 0);
+            }
+
             map.AddInteractiveObject(769, bindstone_pos, 0, 1, intobj_index);
             map.metadata.spawns.Insert(player_index, new SFMapSpawn() { bindstone_index = bindstone_index, pos = bindstone_pos, text_id = bindstone_textid, unknown = bindstone_unknown });
 
@@ -788,6 +794,12 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
                 ((map_controls.MapBindstoneInspector)MainForm.mapedittool.selected_inspector).RemoveBindstone(bindstone_index);
                 map.metadata.spawns.RemoveAt(player_index);
+
+                // reassign bindstone indices to players
+                for(int i = 0; i < map.metadata.spawns.Count; i++)
+                {
+                    map.metadata.spawns[i].bindstone_index -= (bindstone_index <= map.metadata.spawns[i].bindstone_index ? 1 : 0);
+                }
             }
             else
             {

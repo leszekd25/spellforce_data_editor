@@ -31,7 +31,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             ListBindstones.Items.Clear();
             for (int i = 0; i < map.int_object_manager.bindstones_index.Count; i++)
+            {
                 LoadNextBindstone(i);
+            }
         }
 
         private int GetBindstoneIndex(SFMapInteractiveObject o)

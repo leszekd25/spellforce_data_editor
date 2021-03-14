@@ -24,6 +24,7 @@ namespace SpellforceDataEditor
         public static SFMap.SFMapHeightMapLOD TerrainLOD { get; private set; } = SFMap.SFMapHeightMapLOD.NONE;
         public static bool TerrainTextureLOD { get; private set; } = false;
         public static bool DynamicMap { get; set; } = false;
+        public static bool AmbientOcclusion { get; private set; } = false;
         public static int FogStart { get; set; } = 0;
         public static int FogEnd { get; set; } = 400;
 

@@ -310,6 +310,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, col);
             }
 
+            List<FrameBufferColorAttachmentInfo> col_attachments = new List<FrameBufferColorAttachmentInfo>();
+            col_attachments.Add(new FrameBufferColorAttachmentInfo()
+            {
+                format = PixelFormat.Rgb,
+                internal_format = (Settings.ToneMapping ? PixelInternalFormat.Rgba16f : PixelInternalFormat.Rgb),
+                pixeltype = (Settings.ToneMapping ? PixelType.Float : PixelType.UnsignedByte)
+            });
+
             // anti-aliased framebuffer - everything is drawn here if anti-aliasing is enabled
             // if anything got drawn into it, this is later copied into screenspace_intermediate
             if (Settings.AntiAliasingSamples > 1)
@@ -317,15 +325,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 screenspace_framebuffer = new FrameBuffer(
                     (int)view_size.X,
                     (int)view_size.Y,
-                    new FrameBufferColorAttachmentInfo[]
-                    {
-                    new FrameBufferColorAttachmentInfo()
-                    {
-                        format = PixelFormat.Rgb,
-                        internal_format = (Settings.ToneMapping ? PixelInternalFormat.Rgba16f : PixelInternalFormat.Rgb),
-                        pixeltype = (Settings.ToneMapping ? PixelType.Float : PixelType.UnsignedByte)
-                    }
-                    },
+                    col_attachments.ToArray(),
                     Settings.AntiAliasingSamples,
                     new FrameBufferDepthInfo() { use_depth = true, parent_depth = null });
             }
@@ -335,15 +335,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             screenspace_intermediate = new FrameBuffer(
                 (int)view_size.X,
                 (int)view_size.Y,
-                new FrameBufferColorAttachmentInfo[]
-                {
-                    new FrameBufferColorAttachmentInfo()
-                    {
-                        format = PixelFormat.Rgb,
-                        internal_format = (Settings.ToneMapping ? PixelInternalFormat.Rgba16f : PixelInternalFormat.Rgb),
-                        pixeltype = (Settings.ToneMapping ? PixelType.Float : PixelType.UnsignedByte)
-                    }
-                },
+                col_attachments.ToArray(),
                 0,
                 new FrameBufferDepthInfo() { use_depth = true, parent_depth = null });
 
