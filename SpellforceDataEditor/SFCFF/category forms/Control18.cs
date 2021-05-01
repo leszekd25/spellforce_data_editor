@@ -104,58 +104,84 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox13.Text = string_repr(10);
             textBox10.Text = variant_repr(11);
 
-            button_repr(ButtonGoto19, 18, "Equipment", "Unit");
-            button_repr(ButtonGoto20, 19, "Spells", "Unit");
-            button_repr(ButtonGoto21, 20, "Resource requirements", "Unit");
-            button_repr(ButtonGoto22, 21, "Loot", "Unit");
-            button_repr(ButtonGoto23, 22, "Upgrade data", "Unit");
+            button_repr(ButtonGoto19, 2025, "Equipment", "Unit");
+            button_repr(ButtonGoto20, 2026, "Spells", "Unit");
+            button_repr(ButtonGoto21, 2028, "Resource requirements", "Unit");
+            button_repr(ButtonGoto22, 2040, "Loot", "Unit");
+            button_repr(ButtonGoto23, 2001, "Upgrade data", "Unit");
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox3, 3);
+                step_into(textBox3, 2005);
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox2, 14);
+                step_into(textBox2, 2016);
         }
 
         private void button_Trace_Click(object sender, EventArgs e)
         {
-            step_into(textBox1, 19);
+            step_into(textBox1, 2026);
         }
 
         private void ButtonGoto19_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto19, 18);
-            button_repr(ButtonGoto19, 18, "Equipment", "Unit");
+            button_step_into(ButtonGoto19, 2025);
+            button_repr(ButtonGoto19, 2025, "Equipment", "Unit");
         }
 
         private void ButtonGoto20_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto20, 19);
-            button_repr(ButtonGoto20, 19, "Spells", "Unit");
+            button_step_into(ButtonGoto20, 2026);
+            button_repr(ButtonGoto20, 2026, "Spells", "Unit");
         }
 
         private void ButtonGoto21_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto21, 20);
-            button_repr(ButtonGoto21, 20, "Resource requirements", "Unit");
+            button_step_into(ButtonGoto21, 2028);
+            button_repr(ButtonGoto21, 2028, "Resource requirements", "Unit");
         }
 
         private void ButtonGoto22_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto22, 21);
-            button_repr(ButtonGoto22, 21, "Loot", "Unit");
+            button_step_into(ButtonGoto22, 2040);
+            button_repr(ButtonGoto22, 2040, "Loot", "Unit");
         }
 
         private void ButtonGoto23_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto23, 22);
-            button_repr(ButtonGoto23, 22, "Upgrade data", "Unit");
+            button_step_into(ButtonGoto23, 2001);
+            button_repr(ButtonGoto23, 2001, "Upgrade data", "Unit");
+        }
+
+        private int calculate_total_xp(UInt32 xp_gain, UInt16 xp_falloff)
+        {
+            if ((xp_gain == 0) || (xp_falloff == 0))
+                return 0;
+            int max_units = 500;
+            int s = 0;
+            for (int i = 0; i < max_units; i++)
+            {
+                s += (int)Math.Floor((Single)xp_gain * ((Single)(xp_falloff) / (Single)(xp_falloff + i)));
+            }
+            return s;
+        }
+
+        public override string get_element_string(int index)
+        {
+            string txt = SFCategoryManager.GetTextFromElement(category[index], 1);
+            return category[index][0].ToString() + " " + txt;
+        }
+
+        public override string get_description_string(int index)
+        {
+            UInt32 xp_gain = (UInt32)category[index][3];
+            UInt16 xp_falloff = (UInt16)category[index][4];
+            return "Max XP gained from this unit: " + calculate_total_xp(xp_gain, xp_falloff).ToString();
         }
     }
 }

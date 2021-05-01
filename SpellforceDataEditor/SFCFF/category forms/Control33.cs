@@ -76,5 +76,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox6.Text = variant_repr(6);
             textBox8.Text = variant_repr(7);
         }
+
+
+        public override string get_element_string(int index)
+        {
+            Byte level = (Byte)category[index][0];
+            return "Level " + level.ToString();
+        }
     }
 }

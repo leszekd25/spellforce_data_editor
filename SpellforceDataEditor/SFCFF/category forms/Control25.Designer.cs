@@ -117,11 +117,11 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(54, 188);
+            this.label5.Location = new System.Drawing.Point(20, 188);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(53, 13);
+            this.label5.Size = new System.Drawing.Size(79, 13);
             this.label5.TabIndex = 9;
-            this.label5.Text = "Unknown";
+            this.label5.Text = "Casts shadow?";
             // 
             // buttonInsert
             // 

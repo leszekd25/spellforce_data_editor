@@ -22,7 +22,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void set_list_text(int i)
         {
-            UInt16 effect_id = (UInt16)(category[current_element][i * 3 + 2]);
+            UInt16 effect_id = (UInt16)(category[current_element, i][2]);
 
             string txt = SFCategoryManager.GetEffectName(effect_id, true);
             ListEffects.Items[i] = txt;
@@ -30,11 +30,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category[current_element];
-            int elem_count = elem.variants.Count / 3;
-
-            for (int i = 0; i < elem_count; i++)
-                set_element_variant(current_element, i * 3 + 0, Utility.TryParseUInt16(textBox1.Text));
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+                set_element_variant(current_element, i, 0, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -42,7 +39,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListEffects.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected * 3 + 2, Utility.TryParseUInt16(textBox3.Text));
+            set_element_variant(current_element, cur_selected, 2, Utility.TryParseUInt16(textBox3.Text));
             set_list_text(cur_selected);
         }
 
@@ -50,12 +47,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             current_element = index;
 
-            SFCategoryElement elem = category[current_element];
-            int elem_count = elem.variants.Count / 3;
-
             ListEffects.Items.Clear();
 
-            for (int i = 0; i < elem_count; i++)
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
             {
                 ListEffects.Items.Add("");
                 set_list_text(i);
@@ -66,7 +60,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0);
+            textBox1.Text = variant_repr(0, 0);
         }
 
         private void ListEffects_SelectedIndexChanged(object sender, EventArgs e)
@@ -74,7 +68,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListEffects.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            textBox3.Text = variant_repr(cur_selected * 3 + 2);
+            textBox3.Text = variant_repr(cur_selected, 2);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -85,22 +79,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             else
                 new_index = ListEffects.SelectedIndex;
 
-            SFCategoryElement elem = category[current_element];
-            int cur_elem_count = elem.variants.Count / 3;
+            SFCategoryElement elem = category[current_element, 0];
 
             Byte max_index = 0;
-            for (int i = 0; i < cur_elem_count; i++)
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
             {
-                max_index = Math.Max(max_index, (Byte)elem[i * 3 + 1]);
+                max_index = Math.Max(max_index, (Byte)(category[current_element, i][1]));
             }
             max_index += 1;
 
-            object[] paste_data = new object[3];
-            paste_data[0] = (UInt16)elem[0];
-            paste_data[1] = (Byte)max_index;
-            paste_data[2] = (UInt16)0;
-
-            elem.PasteRaw(paste_data, new_index * 3);
+            category.element_lists[current_element].Elements.Insert(new_index, category.GetEmptyElement());
+            category[current_element, new_index][0] = (UInt16)elem[0];
+            category[current_element, new_index][1] = (Byte)max_index;
 
             set_element(current_element);
         }
@@ -113,15 +103,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             int new_index = ListEffects.SelectedIndex;
 
-            SFCategoryElement elem = category[current_element];
-            Byte cur_spell_index = (Byte)elem[new_index * 3 + 1];
+            Byte cur_spell_index = (Byte)(category[current_element, new_index][1]);
 
-            elem.RemoveRaw(new_index * 3, 3);
-
-            int cur_elem_count = elem.variants.Count / 3;
-            for (int i = 0; i < cur_elem_count; i++)
-                if ((Byte)(elem[i * 3 + 1]) > cur_spell_index)
-                    elem[i * 3 + 1] = (Byte)((Byte)(elem[i * 3 + 1]) - 1);
+            category.element_lists[current_element].Elements.RemoveAt(new_index);
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+                if ((Byte)(category[current_element, i][1]) > cur_spell_index)
+                    category[current_element, i][1] = (Byte)((Byte)(category[current_element, i][1]) - 1);
 
             set_element(current_element);
         }
@@ -129,13 +116,25 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox3, 0);
+                step_into(textBox3, 2002);
         }
 
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 6);
+                step_into(textBox1, 2003);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 item_id = (UInt16)category[index, 0][0];
+            string txt_item = SFCategoryManager.GetItemName(item_id);
+
+            UInt16 effect_id = (UInt16)category[index, 0][2];
+            string txt_effect = SFCategoryManager.GetEffectName(effect_id, true);
+
+            return item_id.ToString() + " " + txt_item + " | " + txt_effect;
         }
     }
 }

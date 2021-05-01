@@ -150,7 +150,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 6);
+                step_into(textBox1, 2003);
+        }
+
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 item_id = (UInt16)category[index][0];
+            string txt = SFCategoryManager.GetItemName(item_id);
+            return category[index][0].ToString() + " " + txt;
         }
     }
 }

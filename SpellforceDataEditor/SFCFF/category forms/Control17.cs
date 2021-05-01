@@ -12,6 +12,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control17 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        static string[] clan_names = new string[] {
+            "Neutral", "Friendly neutral [Humans]", "Friendly neutral [Elves]", "Neutral [animals for meat production]",
+            "Friendly neutral [Dwarves]", "Hostile [Grargs]", "Hostile [Imperial]", "Hostile [Uroks]",
+            "Hostile [Undead]", "Hostile [monsters/demons]", "Player", "Player Elves",
+            "Player Humans", "Player Dwarves", "Player Orcs", "Player Trolls",
+            "Player Darkelves", "Hostile [animals]", "KillAll", "Hostile [Beastmen]",
+            "Hostile [Gorge]", Utility.S_UNKNOWN, Utility.S_NONE, "Hostile [Blades]",
+            Utility.S_NONE, "Hostile [Multiplayer enemies]", "Hostile [Ogres]", "Neutral [NPCs]",
+            "Hostile [Soulforger]", "Hostile [Bloodash]", Utility.S_UNKNOWN, "Hostile [Dervish]"};
+
         static private Dictionary<Byte, string> relations = new Dictionary<Byte, string>();
         static private Dictionary<string, Byte> inv_relations = new Dictionary<string, Byte>();
 
@@ -41,18 +51,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             RelationGrid.Refresh();
 
             current_element = index;
-            SFCategoryElement elem = category[current_element];
-            int elem_count = elem.variants.Count / 3;
 
-
-            for (int i = 0; i < elem_count; i++)
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
             {
-                Byte clan_id = (Byte)(elem[i * 3 + 1]);
-                Byte relation = (Byte)(elem[i * 3 + 2]);
+                Byte clan_id = (Byte)(category[current_element, i][1]);
+                Byte relation = (Byte)(category[current_element, i][2]);
 
                 string txt = "<MISSING!>";
-                if ((clan_id >= 1) && (clan_id <= (Byte)SFCategory17.clan_names.Length))
-                    txt = SFCategory17.clan_names[clan_id-1];
+                if ((clan_id >= 1) && (clan_id <= (Byte)clan_names.Length))
+                    txt = clan_names[clan_id-1];
                 
                 RelationGrid.Rows.Add();
                 RelationGrid.Rows[i].Cells[0].Value = txt;
@@ -64,7 +71,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0);
+            textBox1.Text = variant_repr(0, 0);
         }
 
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -81,22 +88,20 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             int i = cell.RowIndex;
             Byte relation = inv_relations[(string)cell.Value];
-            /*if ((int)cell.Value == 0)
-                relation = 0;
-            else if ((int)cell.Value == 1)
-                relation = 100;
-            else if ((int)cell.Value == 2)
-                relation = 156;*/
-            set_element_variant(current_element, i * 3 + 2, relation);
+
+            set_element_variant(current_element, i, 2, relation);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category[current_element];
-            int elem_count = elem.variants.Count / 3;
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+                set_element_variant(current_element, i, 0, Utility.TryParseUInt8(textBox1.Text));
+        }
 
-            for (int i = 0; i < elem_count; i++)
-                set_element_variant(current_element, 0 + 3 * i, Utility.TryParseUInt8(textBox1.Text));
+        public override string get_element_string(int index)
+        {
+            string txt = clan_names[(int)(Byte)(category[index, 0][0]) - 1];
+            return category[index, 0][0].ToString() + " " + txt;
         }
     }
 }

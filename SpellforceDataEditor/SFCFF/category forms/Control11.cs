@@ -24,9 +24,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void set_list_text(int i)
         {
-            Byte skill_major = (Byte)(category[current_element][i * 5 + 2]);
-            Byte skill_minor = (Byte)(category[current_element][i * 5 + 3]);
-            Byte skill_level = (Byte)(category[current_element][i * 5 + 4]);
+            Byte skill_major = (Byte)(category[current_element, i][2]);
+            Byte skill_minor = (Byte)(category[current_element, i][3]);
+            Byte skill_level = (Byte)(category[current_element, i][4]);
 
             string txt = SFCategoryManager.GetSkillName(skill_major, skill_minor, skill_level);
             ListRequirements.Items[i] = txt;
@@ -34,11 +34,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category[current_element];
-            int elem_count = elem.variants.Count / 5;
-
-            for (int i = 0; i < elem_count; i++)
-                set_element_variant(current_element, i * 5 + 0, Utility.TryParseUInt16(textBox1.Text));
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+                set_element_variant(current_element, i, 0, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -46,7 +43,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListRequirements.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected * 5 + 2, Utility.TryParseUInt8(textBox3.Text));
+            set_element_variant(current_element, cur_selected, 2, Utility.TryParseUInt8(textBox3.Text));
             set_list_text(cur_selected);
         }
 
@@ -55,7 +52,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListRequirements.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected * 5 + 3, Utility.TryParseUInt8(textBox5.Text));
+            set_element_variant(current_element, cur_selected, 3, Utility.TryParseUInt8(textBox5.Text));
             set_list_text(cur_selected);
         }
 
@@ -64,7 +61,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListRequirements.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected * 5 + 4, Utility.TryParseUInt8(textBox4.Text));
+            set_element_variant(current_element, cur_selected, 4, Utility.TryParseUInt8(textBox4.Text));
             set_list_text(cur_selected);
         }
 
@@ -72,12 +69,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             current_element = index;
 
-            SFCategoryElement elem = category[current_element];
-            int elem_count = elem.variants.Count / 5;
-
             ListRequirements.Items.Clear();
 
-            for (int i = 0; i < elem_count; i++)
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
             {
                 ListRequirements.Items.Add("");
                 set_list_text(i);
@@ -88,13 +82,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0);
+            textBox1.Text = variant_repr(0, 0);
         }
 
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 6);
+                step_into(textBox1, 2003);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -109,20 +103,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_elem_count = elem.variants.Count / 5;
 
             Byte max_index = 0;
-            for (int i = 0; i < cur_elem_count; i++)
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
             {
-                max_index = Math.Max(max_index, (Byte)(elem[i * 5 + 1]));
+                max_index = Math.Max(max_index, (Byte)(category[current_element, i][1]));
             }
             max_index += 1;
 
-            object[] paste_data = new object[5];
-            paste_data[0] = (UInt16)elem[0];
-            paste_data[1] = (Byte)max_index;
-            paste_data[2] = (Byte)0;
-            paste_data[3] = (Byte)0;
-            paste_data[4] = (Byte)0;
-
-            elem.PasteRaw(paste_data, new_index * 5);
+            category.element_lists[current_element].Elements.Insert(new_index, category.GetEmptyElement());
+            category[current_element, new_index][0] = (UInt16)elem[0];
+            category[current_element, new_index][1] = (Byte)max_index;
 
             set_element(current_element);
         }
@@ -135,15 +124,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             int new_index = ListRequirements.SelectedIndex;
 
-            SFCategoryElement elem = category[current_element];
-            Byte cur_spell_index = (Byte)(elem[new_index * 5 + 1]);
+            SFCategoryElement elem = category[current_element, 0];
+            Byte cur_spell_index = (Byte)(category[current_element, new_index][1]);
 
-            elem.RemoveRaw(new_index * 5, 5);
-
-            int cur_elem_count = elem.variants.Count / 5;
-            for (int i = 0; i < cur_elem_count; i++)
-                if ((Byte)(elem[i * 5 + 1]) > cur_spell_index)
-                    elem[i * 5 + 1] = (Byte)((Byte)(elem[i * 5 + 1]) - 1);
+            category.element_lists[current_element].Elements.RemoveAt(new_index);
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+                if ((Byte)(category[current_element, i][1]) > cur_spell_index)
+                    category[current_element, i][1] = (Byte)((Byte)(category[current_element, i][1]) - 1);
 
             set_element(current_element);
         }
@@ -153,9 +140,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListRequirements.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            textBox3.Text = variant_repr(cur_selected * 5 + 2);
-            textBox5.Text = variant_repr(cur_selected * 5 + 3);
-            textBox4.Text = variant_repr(cur_selected * 5 + 4);
+            textBox3.Text = variant_repr(cur_selected, 2);
+            textBox5.Text = variant_repr(cur_selected, 3);
+            textBox4.Text = variant_repr(cur_selected, 4);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 item_id = (UInt16)category[index, 0][0];
+            string txt = SFCategoryManager.GetItemName(item_id);
+            return item_id.ToString() + " " + txt;
         }
     }
 }

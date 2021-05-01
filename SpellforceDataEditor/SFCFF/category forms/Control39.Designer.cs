@@ -67,8 +67,8 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 5;
-            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
+            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label1
             // 
@@ -114,8 +114,8 @@
             this.tb_req4_1.Name = "tb_req4_1";
             this.tb_req4_1.Size = new System.Drawing.Size(126, 20);
             this.tb_req4_1.TabIndex = 31;
-            this.tb_req4_1.Validated += new System.EventHandler(this.tb_req4_1_TextChanged);
             this.tb_req4_1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_req4_1_MouseDown);
+            this.tb_req4_1.Validated += new System.EventHandler(this.tb_req4_1_TextChanged);
             // 
             // lb_req4
             // 
@@ -129,7 +129,7 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(105, 97);
+            this.checkBox1.Location = new System.Drawing.Point(105, 98);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(15, 14);
             this.checkBox1.TabIndex = 32;
@@ -139,11 +139,11 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(46, 97);
+            this.label2.Location = new System.Drawing.Point(43, 98);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(53, 13);
+            this.label2.Size = new System.Drawing.Size(56, 13);
             this.label2.TabIndex = 33;
-            this.label2.Text = "Unknown";
+            this.label2.Text = "Is default?";
             // 
             // Control39
             // 

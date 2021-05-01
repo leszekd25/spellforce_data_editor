@@ -133,13 +133,21 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox3, 23);
+                step_into(textBox3, 2029);
         }
 
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 17);
+                step_into(textBox1, 2024);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 unit_id = (UInt16)category[index][0];
+            string txt_unit = SFCategoryManager.GetUnitName(unit_id);
+            return unit_id.ToString() + " " + txt_unit;
         }
     }
 }

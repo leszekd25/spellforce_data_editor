@@ -59,7 +59,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     else if (!first_click)
                     {
                         ushort new_object_id = 2541;
-                        if (SFCFF.SFCategoryManager.gamedata[33].GetElementIndex(new_object_id) == Utility.NO_INDEX)
+                        if (SFCFF.SFCategoryManager.gamedata[2050].GetElementIndex(new_object_id) == Utility.NO_INDEX)
                             return;
                         // create new spawn and drag it until mouse released
                         map.AddObject(new_object_id, pos, 0, 0, 0);

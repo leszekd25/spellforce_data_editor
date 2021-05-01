@@ -294,7 +294,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = Utility.TryParseUInt16(TextID.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[14].GetElementIndex(elem_id);
+                int real_elem_id = SFCFF.SFCategoryManager.gamedata[2016].GetElementIndex(elem_id);
                 if (real_elem_id != Utility.NO_INDEX)
                     MainForm.data.Tracer_StepForward(14, real_elem_id);
             }

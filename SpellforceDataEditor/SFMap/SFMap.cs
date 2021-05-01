@@ -1023,8 +1023,8 @@ namespace SpellforceDataEditor.SFMap
             // chunk 11
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving buildings");
             short bld_chunk_type = 3;
-            if (metadata.map_type == SFMapType.COOP)
-                bld_chunk_type = 2;
+            //if (metadata.map_type == SFMapType.COOP)    // testing fix
+            //    bld_chunk_type = 2;
 
             byte[] c11_data = new byte[building_manager.buildings.Count * (bld_chunk_type == 2?10:11)];
             using (MemoryStream ms = new MemoryStream(c11_data))
@@ -1865,20 +1865,20 @@ namespace SpellforceDataEditor.SFMap
             unit.node.SetPosition(heightmap.GetFixedPosition(pos));
             unit.node.SetAnglePlane(0);
             // find unit scale
-            int unit_index = SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(game_id);
+            int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(game_id);
             if (unit_index == -1)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit with given id does not exist! Unit id = "+game_id.ToString());
                 throw new InvalidDataException("SFMap.AddUnit(): Invalid unit ID!");
             }
-            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[17][unit_index];
+            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
 
-            unit_index = SFCFF.SFCategoryManager.gamedata[3].GetElementIndex((ushort)unit_data[2]);
+            unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
             float unit_size = 1f;
             if (unit_index != -1)
             {
-                unit_data = SFCFF.SFCategoryManager.gamedata[3][unit_index];
-                unit_size = Math.Max((ushort)unit_data[19], (ushort)40) / 100.0f;
+                unit_data = SFCFF.SFCategoryManager.gamedata[2005][unit_index];
+                unit_size = Math.Max((ushort)unit_data[18], (ushort)40) / 100.0f;
             }
             else
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + game_id.ToString() + "), setting unit scale to 100%");
@@ -1969,21 +1969,21 @@ namespace SpellforceDataEditor.SFMap
             unit.node.SetPosition(heightmap.GetFixedPosition(unit.grid_position));
             unit.node.SetAnglePlane(0);
             // unit scale
-            int unit_index = SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(unit.game_id);
+            int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(unit.game_id);
             if (unit_index == -1)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Unit with given id does not exist! Unit id = " + unit.game_id.ToString());
                 throw new InvalidDataException("SFMap.ReplaceUnit(): Invalid unit ID!");
             }
-            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[17][unit_index];
+            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
             
-            unit_index = SFCFF.SFCategoryManager.gamedata[3].GetElementIndex((ushort)unit_data[2]);
+            unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
             float unit_size = 1f;
             if (unit_index != -1)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Could not find unit stats data (unit id = " + unit.game_id.ToString() + "), setting unit scale to 100%");
-                unit_data = SFCFF.SFCategoryManager.gamedata[3][unit_index];
-                unit_size = Math.Max(((ushort)unit_data[19]), (ushort)40) / 100.0f;
+                unit_data = SFCFF.SFCategoryManager.gamedata[2005][unit_index];
+                unit_size = Math.Max(((ushort)unit_data[18]), (ushort)40) / 100.0f;
             }
             unit.node.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
 
@@ -2009,7 +2009,7 @@ namespace SpellforceDataEditor.SFMap
             fname = fname.Substring(li + 4, fname.Length - li - 8);
             fname = fname.ToUpper();
 
-            foreach(SFCFF.SFCategoryElement e in SFCFF.SFCategoryManager.gamedata[37].elements)
+            foreach(SFCFF.SFCategoryElement e in SFCFF.SFCategoryManager.gamedata[2052].elements)
             {
                 if(Utility.CleanString(e[2]).ToUpper() == fname)
                 {

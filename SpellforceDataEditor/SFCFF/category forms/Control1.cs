@@ -42,7 +42,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             column_dict.Add("Spell data 8", new int[1] { 28 });
             column_dict.Add("Spell data 9", new int[1] { 29 });
             column_dict.Add("Spell data 10", new int[1] { 30 });
-            column_dict.Add("Unknown", new int[4] { 31, 32, 33, 34 });
+            column_dict.Add("Effect power", new int[1] { 31 });
+            column_dict.Add("Effect range", new int[1] { 32 });
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
@@ -200,13 +201,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             set_element_variant(current_element, 30, Utility.TryParseUInt32(tb_sd10.Text));
         }
 
-        private void tb_unk_TextChanged(object sender, EventArgs e)
+        private void tb_effpow_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(tb_unk.Text, 4);
-            set_element_variant(current_element, 31, data_array[0]);
-            set_element_variant(current_element, 32, data_array[1]);
-            set_element_variant(current_element, 33, data_array[2]);
-            set_element_variant(current_element, 34, data_array[3]);
+            set_element_variant(current_element, 31, Utility.TryParseUInt16(tb_effpow.Text));
+        }
+
+        private void tb_effrng_Validated(object sender, EventArgs e)
+        {
+            set_element_variant(current_element, 32, Utility.TryParseUInt16(tb_effpow.Text));
         }
 
         private void set_data_labels(string[] p)
@@ -234,9 +236,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 {
                     t.BackColor = Color.DarkOrange;
                     if (c == '1')
-                        tracetable[i] = 0;
+                        tracetable[i] = 2002;
                     else
-                        tracetable[i] = 17;
+                        tracetable[i] = 2024;
                 }
             }
         }
@@ -274,14 +276,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             tb_sd8.Text = variant_repr(28);
             tb_sd9.Text = variant_repr(29);
             tb_sd10.Text = variant_repr(30);
-            tb_unk.Text = bytearray_repr(31, 4);
+            tb_effpow.Text = variant_repr(31);
+            tb_effrng.Text = variant_repr(32);
             set_data_labels(SFSpellDescriptor.get(Utility.TryParseUInt16(tb_typeID.Text)));
         }
 
         private void tb_typeID_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(tb_typeID, 1);
+                step_into(tb_typeID, 2054);
         }
 
         private void tb_sd1_MouseDown(object sender, MouseEventArgs e)
@@ -341,6 +344,74 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             if ((e.Button == MouseButtons.Right) && (tracetable[9] != Utility.NO_INDEX))
                 step_into(tb_sd10, tracetable[9]);
+        }
+
+
+        private string get_target_mode(Byte tm)
+        {
+            switch (tm)
+            {
+                case 1:
+                    return "Figure";
+                case 2:
+                    return "Building";
+                case 3:
+                    return "Object";
+                case 4:
+                    return "in World";
+                case 5:
+                    return "in Area";
+                default:
+                    return Utility.S_NONAME;
+            }
+        }
+
+        private string get_target_type(Byte tm)
+        {
+            switch (tm)
+            {
+                case 1:
+                    return "Enemy";
+                case 2:
+                    return "Ally";
+                case 3:
+                    return "Other";
+                default:
+                    return Utility.S_NONAME;
+            }
+        }
+
+        public override string get_element_string(int index)
+        {
+            UInt16 type_id = (UInt16)category[index][1];
+            SFCategoryElement stype_elem = SFCategoryManager.gamedata[2054].FindElementBinary<UInt16>(0, type_id);
+            string stype_txt = SFCategoryManager.GetTextFromElement(stype_elem, 1);
+            Byte spell_level = (Byte)category[index][4];
+            return category[index][0].ToString() + " " + stype_txt + " level " + spell_level.ToString();
+        }
+
+        public override string get_description_string(int index)
+        {
+            List<string> reqs = new List<string>();
+            for (int i = 0; i < 4; i++)
+            {
+                Byte skill_major = (Byte)category[index][2 + i * 3];
+                Byte skill_minor = (Byte)category[index][3 + i * 3];
+                Byte skill_level = (Byte)category[index][4 + i * 3];
+                if (skill_major == 0)
+                    break;
+                reqs.Add(SFCategoryManager.GetSkillName(skill_major, skill_minor, skill_level));
+            }
+            string req_str = "";
+            for (int i = 0; i < reqs.Count; i++)
+            {
+                req_str += reqs[i];
+                req_str += "\r\n";
+            }
+            string target = "";
+            target += get_target_type((Byte)category[index][19]);
+            target += " " + get_target_mode((Byte)category[index][20]);
+            return "Requirements:\r\n" + req_str + "Target: " + target;
         }
     }
 }

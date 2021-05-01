@@ -43,36 +43,36 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
                 return;
 
             // unit stuff
-            int index = SFCategoryManager.gamedata[17].GetElementIndex(unit_id);
+            int index = SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
             if (index == Utility.NO_INDEX)
                 return;
-            ushort stats_id = (ushort)SFCategoryManager.gamedata[17][index][2];
+            ushort stats_id = (ushort)SFCategoryManager.gamedata[2024][index][2];
 
             // unit stats
-            int index2 = SFCategoryManager.gamedata[3].GetElementIndex((int)stats_id);
+            int index2 = SFCategoryManager.gamedata[2005].GetElementIndex((int)stats_id);
             if (index2 == Utility.NO_INDEX)
                 return;
-            SFCategoryElement stats = SFCategoryManager.gamedata[3][index2];
+            SFCategoryElement stats = SFCategoryManager.gamedata[2005][index2];
             
             int lvl = (int)(ushort)stats[1];
             int dex = (int)(ushort)stats[4];
             int agi = (int)(ushort)stats[3];
 
             // get unit eq
-            int index3 = SFCategoryManager.gamedata[18].GetElementIndex(unit_id);
+            int index3 = SFCategoryManager.gamedata[2025].GetElementIndex(unit_id);
             if (index3 != Utility.NO_INDEX)
             {
-                SFCategoryElement items = SFCategoryManager.gamedata[18][index];
+                SFCategoryElement items = SFCategoryManager.gamedata[2025][index];
                 int item_count = items.variants.Count / 3;
                 for(int i = 0; i < item_count; i++)
                 {
                     //item stats
                     ushort item_id = (ushort)items[3 * i + 2];
-                    int index4 = SFCategoryManager.gamedata[7].GetElementIndex((int)item_id);
+                    int index4 = SFCategoryManager.gamedata[2004].GetElementIndex((int)item_id);
                     if (index4 == Utility.NO_INDEX)
                         continue;
 
-                    SFCategoryElement item = SFCategoryManager.gamedata[7][index4];
+                    SFCategoryElement item = SFCategoryManager.gamedata[2004][index4];
                     dex += (short)item[4];
                     agi += (short)item[3];
                 }
@@ -121,13 +121,13 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if(e.Button == MouseButtons.Right)
-                StepInto(textBox1, 17);
+                StepInto(textBox1, 2024);
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                StepInto(textBox2, 17);
+                StepInto(textBox2, 2024);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

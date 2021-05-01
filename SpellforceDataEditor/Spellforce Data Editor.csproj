@@ -428,6 +428,12 @@
     <Compile Include="SF3D\SFRender\SFRenderEngine.cs" />
     <Compile Include="SF3D\SFRender\SFShader.cs" />
     <Compile Include="SFCFF\CustomScript.cs" />
+    <Compile Include="SFCFF\helper_forms\DiffSelectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFCFF\helper_forms\DiffSelectForm.Designer.cs">
+      <DependentUpon>DiffSelectForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFChunk\SFChunkFile.cs" />
     <Compile Include="SFChunk\SFChunkFileChunk.cs" />
     <Compile Include="SFLua\ILuaParsable.cs" />
@@ -965,6 +971,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SFCFF\helper_forms\DiffSelectForm.resx">
+      <DependentUpon>DiffSelectForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SFLua\lua_controls\LuaDecTestForm.resx">
       <DependentUpon>LuaDecTestForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -1155,7 +1164,6 @@
     <Content Include="unit_icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="SFCFF\data_controls\" />
     <Folder Include="SFLua\lua_dialog_controls\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

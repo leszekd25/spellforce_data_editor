@@ -60,12 +60,12 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(46, 48);
+            this.label1.Location = new System.Drawing.Point(30, 48);
             this.label1.Name = "label1";
             this.label1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label1.Size = new System.Drawing.Size(53, 13);
+            this.label1.Size = new System.Drawing.Size(69, 13);
             this.label1.TabIndex = 4;
-            this.label1.Text = "Unknown";
+            this.label1.Text = "Is persistent?";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // textBox2
@@ -75,8 +75,8 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(126, 20);
             this.textBox2.TabIndex = 6;
-            this.textBox2.Validated += new System.EventHandler(this.textBox2_TextChanged);
             this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
+            this.textBox2.Validated += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // textBox3
             // 

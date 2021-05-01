@@ -167,14 +167,14 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             scene_meta.is_animated = false;
             switch (category)
             {
-                case 6:
-                case 7:
-                case 8:
-                case 9:
-                case 10:
-                case 11:
-                case 12:
-                case 13:
+                case 2003:
+                case 2004:
+                case 2013:
+                case 2015:
+                case 2017:
+                case 2014:
+                case 2012:
+                case 2018:
                     //get item id
                     SFCategoryElement item = SFCategoryManager.gamedata[category][element];
                     if (item == null)
@@ -199,9 +199,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     scene_meta.name = SFCategoryManager.GetItemName((ushort)item_id);
 
                     break;
-                case 23:
-                case 24:
-                case 25:
+                case 2029:
+                case 2030:
+                case 2031:
                     //get building id
                     int building_id = (ushort)SFCategoryManager.gamedata[category][element][0];
                     SceneNode building_node = AddSceneBuilding(building_id, "building");
@@ -210,9 +210,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     scene_meta.name = SFCategoryManager.GetBuildingName((ushort)building_id);
 
                     break;
-                case 33:
-                case 34:
-                case 35:
+                case 2050:
+                case 2057:
+                case 2065:
                     //get object id
                     int object_id = (ushort)SFCategoryManager.gamedata[category][element][0];
                     SceneNode object_node = AddSceneObject(object_id, "object", true, true, true);
@@ -221,12 +221,12 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                     scene_meta.name = SFCategoryManager.GetObjectName((ushort)object_id);
 
                     break;
-                case 17:
-                case 18:
-                case 19:
-                case 20:
-                case 21:
-                case 22:
+                case 2024:
+                case 2025:
+                case 2026:
+                case 2028:
+                case 2040:
+                case 2001:
                     //get unit id
                     int unit_id = (ushort)SFCategoryManager.gamedata[category][element][0];
                     SceneNode unit_node = AddSceneUnit(unit_id, "unit");
@@ -298,7 +298,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             SceneNode unit_node = AddSceneNodeEmpty(null, object_name);    // parent to be assigned later, likely some of the cached mapchunk nodes
 
             //find unit data element (cat 18)
-            SFCategoryElement unit_data = SFCategoryManager.gamedata[17].FindElementBinary<UInt16>(0, (UInt16)unit_id);
+            SFCategoryElement unit_data = SFCategoryManager.gamedata[2024].FindElementBinary<UInt16>(0, (UInt16)unit_id);
             if (unit_data == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): Unit does not exist (unit id = "
@@ -307,10 +307,10 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             }
 
             //get unit gender
-            SFCategoryElement unit_stats = SFCategoryManager.gamedata[3].FindElementBinary<UInt16>(0, (UInt16)unit_data[2]);
+            SFCategoryElement unit_stats = SFCategoryManager.gamedata[2005].FindElementBinary<UInt16>(0, (UInt16)unit_data[2]);
             bool is_female = false;
             if (unit_stats != null)
-                is_female = ((Byte)unit_stats[23] % 2) == 1;
+                is_female = ((Byte)unit_stats[21] % 2) == 1;
 
             //get chest item (2) (animated)
             UInt16 chest_id = SFCategoryManager.GetUnitItem((UInt16)unit_id, 2);
@@ -420,7 +420,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 {
                     bool is_shield = false;
                     //check if it's a shield (type 9)
-                    SFCategoryElement item_data = SFCategoryManager.gamedata[6].FindElementBinary<UInt16>(0, lhand_id);
+                    SFCategoryElement item_data = SFCategoryManager.gamedata[2003].FindElementBinary<UInt16>(0, lhand_id);
                     if (item_data != null)
                     {
                         int item_type = (Byte)item_data[2];

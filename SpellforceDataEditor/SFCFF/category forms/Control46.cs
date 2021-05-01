@@ -16,8 +16,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             InitializeComponent();
             column_dict.Add("Terrain ID", new int[1] { 0 });
-            column_dict.Add("Unknown", new int[1] { 1 });
-            column_dict.Add("Rendering flags", new int[1] { 2 });
+            column_dict.Add("Block value", new int[1] { 1 });
+            column_dict.Add("Cultivation flags", new int[1] { 2 });
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
@@ -30,43 +30,31 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox1.Text));
         }
 
-        private void SetRenderFlag(int f, bool s)
+        private void textBox2_Validated(object sender, EventArgs e)
         {
-            int flags = (Byte)category[current_element][2];
-            if (s)
-                flags |= (1 << f);
-            else
-            {
-                if ((flags & (1 << f)) != 0)
-                    flags -= (1 << f);
-            }
-            set_element_variant(current_element, 2, (Byte)flags);
-        }
-
-        private void flagDepthWrite_CheckedChanged(object sender, EventArgs e)
-        {
-            SetRenderFlag(0, flagDepthWrite.Checked);
-        }
-
-        private void flagDepthReadOn_CheckedChanged(object sender, EventArgs e)
-        {
-            SetRenderFlag(1, flagDepthReadOn.Checked);
-        }
-
-        private void flagCulling_CheckedChanged(object sender, EventArgs e)
-        {
-            SetRenderFlag(2, flagCulling.Checked);
+            set_element_variant(current_element, 2, Utility.TryParseUInt8(textBox2.Text));
         }
 
         public override void show_element()
         {
             tb_effID.Text = variant_repr(0);
             textBox1.Text = variant_repr(1);
-            int flags = (Byte)category[current_element][2];
-            flagDepthWrite.Checked = ((flags & 1) != 0);
-            flagDepthReadOn.Checked = ((flags & 2) != 0);
-            flagCulling.Checked = ((flags & 4) != 0);
+            textBox2.Text = variant_repr(2);
         }
 
+        public override string get_description_string(int elem_key)
+        {
+            Byte flags = (Byte)category[elem_key][2];
+            string txt = "";
+
+            if ((flags & 0x1) == 0x1)
+                txt += "Allows cultivation of grain\r\n";
+            if ((flags & 0x2) == 0x2)
+                txt += "Allows cultivation of mushroom\r\n";
+            if ((flags & 0x4) == 0x4)
+                txt += "Allows cultivation of trees\r\n";
+
+            return txt;
+        }
     }
 }

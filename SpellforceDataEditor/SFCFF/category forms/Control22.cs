@@ -133,25 +133,25 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 17);
+                step_into(textBox1, 2024);
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox2, 6);
+                step_into(textBox2, 2003);
         }
 
         private void textBox5_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox5, 6);
+                step_into(textBox5, 2003);
         }
 
         private void textBox7_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox7, 6);
+                step_into(textBox7, 2003);
         }
 
         private void UpdateEffectiveChance()
@@ -311,6 +311,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             ListSlots.SelectedIndex = Utility.NO_INDEX;
             ListSlots.SelectedIndex = e.Index;
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 unit_id = (UInt16)category[index][0];
+            int slot_count = category[index].variants.Count / 7;
+            string txt_unit = SFCategoryManager.GetUnitName(unit_id);
+            return unit_id.ToString() + " " + txt_unit + " - " + slot_count.ToString() + ((slot_count == 1) ? " slot" : " slots");
         }
     }
 }

@@ -132,14 +132,14 @@ namespace SpellforceDataEditor.SFMap
                 string anim_lib = SFLua.SFLuaEnvironment.items[chest_id].AnimSet;
                 if (anim_lib == "")
                 {
-                    SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[17].FindElementBinary<UInt16>(0, (UInt16)(unit.game_id));
+                    SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024].FindElementBinary<UInt16>(0, (UInt16)(unit.game_id));
                     if (unit_data == null)
                         return "";
 
-                    SFCFF.SFCategoryElement unit_stats = SFCFF.SFCategoryManager.gamedata[3].FindElementBinary<UInt16>(0, (UInt16)unit_data[2]);
+                    SFCFF.SFCategoryElement unit_stats = SFCFF.SFCategoryManager.gamedata[2005].FindElementBinary<UInt16>(0, (UInt16)unit_data[2]);
                     bool is_female = false;
                     if (unit_stats != null)
-                        is_female = ((Byte)unit_stats[23] % 2) == 1;
+                        is_female = ((Byte)unit_stats[21] % 2) == 1;
 
                     if (is_female)
                         return "figure_hero_female";

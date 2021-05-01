@@ -403,7 +403,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = Utility.TryParseUInt16(SelectedPlayerTextID.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[14].GetElementIndex(elem_id);
+                int real_elem_id = SFCFF.SFCategoryManager.gamedata[2016].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(14, real_elem_id);
             }

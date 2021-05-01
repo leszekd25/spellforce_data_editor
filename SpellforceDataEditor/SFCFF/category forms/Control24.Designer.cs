@@ -178,11 +178,11 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(46, 100);
+            this.label7.Location = new System.Drawing.Point(11, 100);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(53, 13);
+            this.label7.Size = new System.Drawing.Size(88, 13);
             this.label7.TabIndex = 12;
-            this.label7.Text = "Unknown";
+            this.label7.Text = "Center of rotation";
             // 
             // textBox7
             // 
@@ -292,11 +292,11 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(303, 152);
+            this.label13.Location = new System.Drawing.Point(324, 152);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(53, 13);
+            this.label13.Size = new System.Drawing.Size(32, 13);
             this.label13.TabIndex = 26;
-            this.label13.Text = "Unknown";
+            this.label13.Text = "Flags";
             // 
             // ButtonGoto25
             // 

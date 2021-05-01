@@ -12,6 +12,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control16 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        static public string[] race_flags = new string[] { "Undead", "Breathing", "Huntable", "Animal", "Has soul", "Attacks buildings", "Bleeds", "(not used)" };
+        static public string[] race_ai_flags = new string[] { "Default", "Idle", "Stroll along", "Nomadic", "Aggressive", "Defensive", "Script", "(not used)" };
+
+
+
         public Control16()
         {
             InitializeComponent();
@@ -171,13 +176,55 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox9_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox9, 14);
+                step_into(textBox9, 2016);
         }
 
         private void textBox10_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox10, 16);
+                step_into(textBox10, 2023);
+        }
+
+
+
+        public override string get_element_string(int index)
+        {
+            string txt = SFCategoryManager.GetTextFromElement(category[index], 7);
+            return category[index][0].ToString() + " " + txt;
+        }
+
+        public override string get_description_string(int index)
+        {
+            Byte flags = (Byte)category[index][8];
+            UInt16 ai_flags = (UInt16)category[index][12];
+
+            string flag_text = "Race flags: ";
+            bool first_flag_set = false;
+            for (int i = 0; i < 8; i++)
+            {
+                if (((flags >> i) & 0x1) == 0x1)
+                {
+                    if (first_flag_set)
+                        flag_text += " | ";
+                    flag_text += race_flags[i];
+                    first_flag_set = true;
+                }
+            }
+
+            string ai_flag_text = "\r\nAI flags: ";
+            first_flag_set = false;
+            for (int i = 0; i < 8; i++)
+            {
+                if (((ai_flags >> i) & 0x1) == 0x1)
+                {
+                    if (first_flag_set)
+                        ai_flag_text += " | ";
+                    ai_flag_text += race_ai_flags[i];
+                    first_flag_set = true;
+                }
+            }
+
+            return flag_text + ai_flag_text;
         }
     }
 }

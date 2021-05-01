@@ -54,7 +54,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 MerchantGrid.Rows[i].Cells[0].Value = item_id;
                 MerchantGrid.Rows[i].Cells[1].Value = item_count;
 
-                SFCategoryElement item_elem = SFCategoryManager.gamedata[6].FindElementBinary<UInt16>(0, item_id);
+                SFCategoryElement item_elem = SFCategoryManager.gamedata[2003].FindElementBinary<UInt16>(0, item_id);
                 if (item_elem == null)
                 {
                     MerchantGrid.Rows[i].Cells[2].Value = "<no name>";
@@ -92,7 +92,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if(cell.ColumnIndex == 0)
             {
                 UInt16 item_id = Utility.TryParseUInt16(cell.Value.ToString());
-                SFCategoryElement item_elem = SFCategoryManager.gamedata[6].FindElementBinary(0, item_id);
+                SFCategoryElement item_elem = SFCategoryManager.gamedata[2003].FindElementBinary(0, item_id);
                 if (item_elem == null)
                 {
                     cell.Value = variant_repr(i * 3 + 1);
@@ -182,13 +182,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 28);
+                step_into(textBox1, 2041);
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox2, 17);
+                step_into(textBox2, 2024);
         }
 
         private void MerchantGrid_MouseDown(object sender, MouseEventArgs e)
@@ -204,8 +204,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 DataGridViewCell cell = MerchantGrid[CurrentColumnMouseOver, CurrentRowMouseOver];
                 int item_id = Utility.TryParseInt32(cell.Value.ToString());
 
-                step_into(6, item_id);
+                step_into(2003, item_id);
             }
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 merchant_id = (UInt16)category[index][0];
+            string txt_merchant = SFCategoryManager.GetMerchantName(merchant_id);
+            return merchant_id.ToString() + " " + txt_merchant;
         }
     }
 }

@@ -39,62 +39,62 @@ namespace SpellforceDataEditor.special_forms
         
         CatElem referenced;
         private List<CatElem> elements = new List<CatElem>();
-        private static CatColumn[][] ReferenceCategoryTable;
+        private static Dictionary<int, CatColumn[]> ReferenceCategoryTable;
 
         public ReferencesForm()
         {
             InitializeComponent();
             //reference category table
-            ReferenceCategoryTable = new CatColumn[49][];
-            ReferenceCategoryTable[0] = new CatColumn[] { new CatColumn(0, -1), new CatColumn(5, 2), new CatColumn(11, 2), new CatColumn(13, 1), new CatColumn(19, 2) };  //-1 means custom columns
-            ReferenceCategoryTable[1] = new CatColumn[] { new CatColumn(0, 1) };
-            ReferenceCategoryTable[2] = new CatColumn[] { };
-            ReferenceCategoryTable[3] = new CatColumn[] { new CatColumn(4, 0), new CatColumn(5, 0), new CatColumn(6, 4), new CatColumn(17, 2) };
-            ReferenceCategoryTable[4] = new CatColumn[] { new CatColumn(3, 0), new CatColumn(5, 0), new CatColumn(6, 4), new CatColumn(17, 2) };
-            ReferenceCategoryTable[5] = new CatColumn[] { new CatColumn(3, 0), new CatColumn(4, 0), new CatColumn(6, 4), new CatColumn(17, 2) };
-            ReferenceCategoryTable[6] = new CatColumn[] { new CatColumn(7, 0), new CatColumn(8, 0), new CatColumn(8, 1), new CatColumn(9, 0), new CatColumn(10, 0), new CatColumn(11, 0), new CatColumn(12, 0), new CatColumn(13, 0), new CatColumn(18, 2), new CatColumn(21, 2), new CatColumn(21, 4), new CatColumn(21, 6), new CatColumn(29, 1), new CatColumn(35, 2), new CatColumn(35, 4), new CatColumn(35, 6), };
-            ReferenceCategoryTable[7] = new CatColumn[] { new CatColumn(6, 0), new CatColumn(8, 0), new CatColumn(8, 1), new CatColumn(9, 0), new CatColumn(10, 0), new CatColumn(11, 0), new CatColumn(12, 0), new CatColumn(13, 0), new CatColumn(18, 2), new CatColumn(21, 2), new CatColumn(21, 4), new CatColumn(21, 6), new CatColumn(29, 1),  new CatColumn(35, 2), new CatColumn(35, 4), new CatColumn(35, 6), };
-            ReferenceCategoryTable[8] = new CatColumn[] { new CatColumn(7, 0), new CatColumn(6, 0), new CatColumn(9, 0), new CatColumn(10, 0), new CatColumn(11, 0), new CatColumn(12, 0), new CatColumn(13, 0), new CatColumn(18, 2), new CatColumn(21, 2), new CatColumn(21, 4), new CatColumn(21, 6), new CatColumn(29, 1), new CatColumn(35, 2), new CatColumn(35, 4), new CatColumn(35, 6), };
-            ReferenceCategoryTable[9] = new CatColumn[] { new CatColumn(7, 0), new CatColumn(8, 0), new CatColumn(8, 1), new CatColumn(6, 0), new CatColumn(10, 0), new CatColumn(11, 0), new CatColumn(12, 0), new CatColumn(13, 0), new CatColumn(18, 2), new CatColumn(21, 2), new CatColumn(21, 4), new CatColumn(21, 6), new CatColumn(29, 1), new CatColumn(35, 2), new CatColumn(35, 4), new CatColumn(35, 6), };
-            ReferenceCategoryTable[10] = new CatColumn[] { new CatColumn(7, 0), new CatColumn(8, 0), new CatColumn(8, 1), new CatColumn(9, 0), new CatColumn(6, 0), new CatColumn(11, 0), new CatColumn(12, 0), new CatColumn(13, 0), new CatColumn(18, 2), new CatColumn(21, 2), new CatColumn(21, 4), new CatColumn(21, 6), new CatColumn(29, 1), new CatColumn(35, 2), new CatColumn(35, 4), new CatColumn(35, 6), };
-            ReferenceCategoryTable[11] = new CatColumn[] { new CatColumn(7, 0), new CatColumn(8, 0), new CatColumn(8, 1), new CatColumn(9, 0), new CatColumn(10, 0), new CatColumn(6, 0), new CatColumn(12, 0), new CatColumn(13, 0), new CatColumn(18, 2), new CatColumn(21, 2), new CatColumn(21, 4), new CatColumn(21, 6), new CatColumn(29, 1), new CatColumn(35, 2), new CatColumn(35, 4), new CatColumn(35, 6), };
-            ReferenceCategoryTable[12] = new CatColumn[] { new CatColumn(7, 0), new CatColumn(8, 0), new CatColumn(8, 1), new CatColumn(9, 0), new CatColumn(10, 0), new CatColumn(11, 0), new CatColumn(6, 0), new CatColumn(13, 0), new CatColumn(18, 2), new CatColumn(21, 2), new CatColumn(21, 4), new CatColumn(21, 6), new CatColumn(29, 1), new CatColumn(35, 2), new CatColumn(35, 4), new CatColumn(35, 6), };
-            ReferenceCategoryTable[13] = new CatColumn[] { new CatColumn(7, 0), new CatColumn(8, 0), new CatColumn(8, 1), new CatColumn(9, 0), new CatColumn(10, 0), new CatColumn(11, 0), new CatColumn(12, 0), new CatColumn(6, 0), new CatColumn(18, 2), new CatColumn(21, 2), new CatColumn(21, 4), new CatColumn(21, 6), new CatColumn(29, 1), new CatColumn(35, 2), new CatColumn(35, 4), new CatColumn(35, 6), };
-            ReferenceCategoryTable[14] = new CatColumn[] { new CatColumn(1, 1), new CatColumn(6, 3), new CatColumn(15, 7), new CatColumn (17, 1), new CatColumn(23, 5), new CatColumn(26, 2), new CatColumn(31, 1), new CatColumn(33, 1), new CatColumn(36, 1), new CatColumn(37, 3), new CatColumn(38, 5), new CatColumn(40, 1), new CatColumn(41, 1), new CatColumn(41, 2), new CatColumn(42, 3), new CatColumn(43, 1), new CatColumn(44, 1), new CatColumn(47, 2), new CatColumn(48, 1)  };
-            ReferenceCategoryTable[15] = new CatColumn[] { new CatColumn(3, 2) };
-            ReferenceCategoryTable[16] = new CatColumn[] { new CatColumn(15, 9) };
-            ReferenceCategoryTable[17] = new CatColumn[] { new CatColumn(0, -2), new CatColumn(6, 5), new CatColumn(18, 0), new CatColumn(19, 0), new CatColumn(20, 0), new CatColumn(21, 0), new CatColumn(22, 0), new CatColumn(28, 1) };
-            ReferenceCategoryTable[18] = new CatColumn[] { new CatColumn(0, -2), new CatColumn(6, 5), new CatColumn(17, 0), new CatColumn(19, 0), new CatColumn(20, 0), new CatColumn(21, 0), new CatColumn(22, 0), new CatColumn(28, 1) };
-            ReferenceCategoryTable[19] = new CatColumn[] { new CatColumn(0, -2), new CatColumn(6, 5), new CatColumn(18, 0), new CatColumn(17, 0), new CatColumn(20, 0), new CatColumn(21, 0), new CatColumn(22, 0), new CatColumn(28, 1) };
-            ReferenceCategoryTable[20] = new CatColumn[] { new CatColumn(0, -2), new CatColumn(6, 5), new CatColumn(18, 0), new CatColumn(19, 0), new CatColumn(17, 0), new CatColumn(21, 0), new CatColumn(22, 0), new CatColumn(28, 1) };
-            ReferenceCategoryTable[21] = new CatColumn[] { new CatColumn(0, -2), new CatColumn(6, 5), new CatColumn(18, 0), new CatColumn(19, 0), new CatColumn(20, 0), new CatColumn(17, 0), new CatColumn(22, 0), new CatColumn(28, 1) };
-            ReferenceCategoryTable[22] = new CatColumn[] { new CatColumn(0, -2), new CatColumn(6, 5), new CatColumn(18, 0), new CatColumn(19, 0), new CatColumn(20, 0), new CatColumn(21, 0), new CatColumn(17, 0), new CatColumn(28, 1) };
-            ReferenceCategoryTable[23] = new CatColumn[] { new CatColumn(6, 6), new CatColumn(22, 2), new CatColumn(23, 10), new CatColumn(24, 0), new CatColumn(25, 0), new CatColumn(47, 1) };
-            ReferenceCategoryTable[24] = new CatColumn[] { new CatColumn(6, 6), new CatColumn(22, 2), new CatColumn(23, 10), new CatColumn(23, 0), new CatColumn(25, 0), new CatColumn(47, 1) };
-            ReferenceCategoryTable[25] = new CatColumn[] { new CatColumn(6, 6), new CatColumn(22, 2), new CatColumn(23, 10), new CatColumn(24, 0), new CatColumn(23, 0), new CatColumn(47, 1) };
-            ReferenceCategoryTable[26] = new CatColumn[] { };
-            ReferenceCategoryTable[27] = new CatColumn[] { };
-            ReferenceCategoryTable[28] = new CatColumn[] { new CatColumn(29, 0), new CatColumn(30, 0) };
-            ReferenceCategoryTable[29] = new CatColumn[] { new CatColumn(28, 0), new CatColumn(30, 0) };
-            ReferenceCategoryTable[30] = new CatColumn[] { new CatColumn(29, 0), new CatColumn(28, 0) };
-            ReferenceCategoryTable[31] = new CatColumn[] { new CatColumn(20, 1), new CatColumn(25, 1) };
-            ReferenceCategoryTable[32] = new CatColumn[] { };
-            ReferenceCategoryTable[33] = new CatColumn[] { new CatColumn(34, 0), new CatColumn(35, 0) };
-            ReferenceCategoryTable[34] = new CatColumn[] { new CatColumn(33, 0), new CatColumn(35, 0) };
-            ReferenceCategoryTable[35] = new CatColumn[] { new CatColumn(33, 0), new CatColumn(34, 0) };
-            ReferenceCategoryTable[36] = new CatColumn[] { };
-            ReferenceCategoryTable[37] = new CatColumn[] { new CatColumn(38, 1) };
-            ReferenceCategoryTable[38] = new CatColumn[] { };
-            ReferenceCategoryTable[39] = new CatColumn[] { };
-            ReferenceCategoryTable[40] = new CatColumn[] { new CatColumn(1, 8), new CatColumn(47, 3) };
-            ReferenceCategoryTable[41] = new CatColumn[] { };
-            ReferenceCategoryTable[42] = new CatColumn[] { new CatColumn(42, 1) };
-            ReferenceCategoryTable[43] = new CatColumn[] { new CatColumn(9, 6) };
-            ReferenceCategoryTable[44] = new CatColumn[] { new CatColumn(9, 7) };
-            ReferenceCategoryTable[45] = new CatColumn[] { };
-            ReferenceCategoryTable[46] = new CatColumn[] { };
-            ReferenceCategoryTable[47] = new CatColumn[] { };
-            ReferenceCategoryTable[48] = new CatColumn[] { new CatColumn(6, 10) };
+            ReferenceCategoryTable = new Dictionary<int, CatColumn[]>();
+            ReferenceCategoryTable.Add(2002, new CatColumn[] { new CatColumn(2002, -1), new CatColumn(2067, 2), new CatColumn(2014, 2), new CatColumn(2018, 1), new CatColumn(2026, 2) });  //-1 means custom columns
+            ReferenceCategoryTable.Add(2054, new CatColumn[] { new CatColumn(2002, 1) });
+            ReferenceCategoryTable.Add(2056, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2005, new CatColumn[] { new CatColumn(2006, 0), new CatColumn(2067, 0), new CatColumn(2003, 4), new CatColumn(2024, 2) });
+            ReferenceCategoryTable.Add(2006, new CatColumn[] { new CatColumn(2005, 0), new CatColumn(2067, 0), new CatColumn(2003, 4), new CatColumn(2024, 2) });
+            ReferenceCategoryTable.Add(2067, new CatColumn[] { new CatColumn(2005, 0), new CatColumn(2006, 0), new CatColumn(2003, 4), new CatColumn(2024, 2) });
+            ReferenceCategoryTable.Add(2003, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2015, 0), new CatColumn(2017, 0), new CatColumn(2014, 0), new CatColumn(2012, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2004, new CatColumn[] { new CatColumn(2003, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2015, 0), new CatColumn(2017, 0), new CatColumn(2014, 0), new CatColumn(2012, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1),  new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2013, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2003, 0), new CatColumn(2015, 0), new CatColumn(2017, 0), new CatColumn(2014, 0), new CatColumn(2012, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2015, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2003, 0), new CatColumn(2017, 0), new CatColumn(2014, 0), new CatColumn(2012, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2017, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2015, 0), new CatColumn(2003, 0), new CatColumn(2014, 0), new CatColumn(2012, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2014, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2015, 0), new CatColumn(2017, 0), new CatColumn(2003, 0), new CatColumn(2012, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2012, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2015, 0), new CatColumn(2017, 0), new CatColumn(2014, 0), new CatColumn(2003, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2018, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2015, 0), new CatColumn(2017, 0), new CatColumn(2014, 0), new CatColumn(2012, 0), new CatColumn(2003, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2016, new CatColumn[] { new CatColumn(2054, 1), new CatColumn(2003, 3), new CatColumn(2022, 7), new CatColumn (17, 1), new CatColumn(2029, 5), new CatColumn(2039, 2), new CatColumn(2044, 1), new CatColumn(2050, 1), new CatColumn(2051, 1), new CatColumn(2052, 3), new CatColumn(2053, 5), new CatColumn(2058, 1), new CatColumn(2059, 1), new CatColumn(2059, 2), new CatColumn(2061, 3), new CatColumn(2063, 1), new CatColumn(2064, 1), new CatColumn(2036, 2), new CatColumn(2072, 1)  });
+            ReferenceCategoryTable.Add(2022, new CatColumn[] { new CatColumn(2005, 2) });
+            ReferenceCategoryTable.Add(2023, new CatColumn[] { new CatColumn(2022, 9) });
+            ReferenceCategoryTable.Add(2024, new CatColumn[] { new CatColumn(2002, -2), new CatColumn(2003, 5), new CatColumn(2025, 0), new CatColumn(2026, 0), new CatColumn(2028, 0), new CatColumn(2040, 0), new CatColumn(2001, 0), new CatColumn(2041, 1) });
+            ReferenceCategoryTable.Add(2025, new CatColumn[] { new CatColumn(2002, -2), new CatColumn(2003, 5), new CatColumn(2024, 0), new CatColumn(2026, 0), new CatColumn(2028, 0), new CatColumn(2040, 0), new CatColumn(2001, 0), new CatColumn(2041, 1) });
+            ReferenceCategoryTable.Add(2026, new CatColumn[] { new CatColumn(2002, -2), new CatColumn(2003, 5), new CatColumn(2025, 0), new CatColumn(2024, 0), new CatColumn(2028, 0), new CatColumn(2040, 0), new CatColumn(2001, 0), new CatColumn(2041, 1) });
+            ReferenceCategoryTable.Add(2028, new CatColumn[] { new CatColumn(2002, -2), new CatColumn(2003, 5), new CatColumn(2025, 0), new CatColumn(2026, 0), new CatColumn(2024, 0), new CatColumn(2040, 0), new CatColumn(2001, 0), new CatColumn(2041, 1) });
+            ReferenceCategoryTable.Add(2040, new CatColumn[] { new CatColumn(2002, -2), new CatColumn(2003, 5), new CatColumn(2025, 0), new CatColumn(2026, 0), new CatColumn(2028, 0), new CatColumn(2024, 0), new CatColumn(2001, 0), new CatColumn(2041, 1) });
+            ReferenceCategoryTable.Add(2001, new CatColumn[] { new CatColumn(2002, -2), new CatColumn(2003, 5), new CatColumn(2025, 0), new CatColumn(2026, 0), new CatColumn(2028, 0), new CatColumn(2040, 0), new CatColumn(2024, 0), new CatColumn(2041, 1) });
+            ReferenceCategoryTable.Add(2029, new CatColumn[] { new CatColumn(2003, 6), new CatColumn(2001, 2), new CatColumn(2029, 10), new CatColumn(2030, 0), new CatColumn(2031, 0), new CatColumn(2036, 1) });
+            ReferenceCategoryTable.Add(2030, new CatColumn[] { new CatColumn(2003, 6), new CatColumn(2001, 2), new CatColumn(2029, 10), new CatColumn(2029, 0), new CatColumn(2031, 0), new CatColumn(2036, 1) });
+            ReferenceCategoryTable.Add(2031, new CatColumn[] { new CatColumn(2003, 6), new CatColumn(2001, 2), new CatColumn(2029, 10), new CatColumn(2030, 0), new CatColumn(2029, 0), new CatColumn(2036, 1) });
+            ReferenceCategoryTable.Add(2039, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2062, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2041, new CatColumn[] { new CatColumn(2042, 0), new CatColumn(2047, 0) });
+            ReferenceCategoryTable.Add(2042, new CatColumn[] { new CatColumn(2041, 0), new CatColumn(2047, 0) });
+            ReferenceCategoryTable.Add(2047, new CatColumn[] { new CatColumn(2042, 0), new CatColumn(2041, 0) });
+            ReferenceCategoryTable.Add(2044, new CatColumn[] { new CatColumn(2028, 1), new CatColumn(2031, 1) });
+            ReferenceCategoryTable.Add(2048, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2050, new CatColumn[] { new CatColumn(2057, 0), new CatColumn(2065, 0) });
+            ReferenceCategoryTable.Add(2057, new CatColumn[] { new CatColumn(2050, 0), new CatColumn(2065, 0) });
+            ReferenceCategoryTable.Add(2065, new CatColumn[] { new CatColumn(2050, 0), new CatColumn(2057, 0) });
+            ReferenceCategoryTable.Add(2051, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2052, new CatColumn[] { new CatColumn(2053, 1) });
+            ReferenceCategoryTable.Add(2053, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2055, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2058, new CatColumn[] { new CatColumn(2054, 8), new CatColumn(2036, 3) });
+            ReferenceCategoryTable.Add(2059, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2061, new CatColumn[] { new CatColumn(2061, 1) });
+            ReferenceCategoryTable.Add(2063, new CatColumn[] { new CatColumn(2015, 6) });
+            ReferenceCategoryTable.Add(2064, new CatColumn[] { new CatColumn(2015, 7) });
+            ReferenceCategoryTable.Add(2032, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2049, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2036, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2072, new CatColumn[] { new CatColumn(2003, 10) });
         }
 
         public void set_referenced_element(int c, int e)
@@ -108,7 +108,7 @@ namespace SpellforceDataEditor.special_forms
 
         private string get_catelement_string(CatElem ce)
         {
-            return "Category " + (ce.category + 1).ToString() + " | " + SFCategoryManager.gamedata[ce.category].GetElementString(ce.element);
+            return "Category " + ce.category.ToString() + " | " + MainForm.data.CachedElementDisplays[ce.category].get_element_string(ce.element);
         }
 
         private void find_all_references()
@@ -133,7 +133,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 case -1:    //spell id in category 1 (0)
                     //search for all spell references in category 0
-                    SFCategory ctg = SFCategoryManager.gamedata[0];
+                    SFCategory ctg = SFCategoryManager.gamedata[2002];
                     int id_looked_for = (int)((UInt16)SFCategoryManager.gamedata[element_looked_for.category][element_looked_for.element][0]);
                     for(int i = 0; i < ctg.GetElementCount(); i++)
                     {
@@ -211,7 +211,7 @@ namespace SpellforceDataEditor.special_forms
 
                 case -2:    //unit id in category 1 (0)
                     //search for all spell references in category 0
-                    SFCategory ctg2 = SFCategoryManager.gamedata[0];
+                    SFCategory ctg2 = SFCategoryManager.gamedata[2002];
                     int id_looked_for2 = (int)((UInt16)SFCategoryManager.gamedata[element_looked_for.category][element_looked_for.element][0]);
                     for (int i = 0; i < ctg2.GetElementCount(); i++)
                     {

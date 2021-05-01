@@ -115,19 +115,36 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void tb_sd6_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(tb_sd6, 23);
+                step_into(tb_sd6, 2029);
         }
 
         private void tb_sd2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(tb_sd2, 14);
+                step_into(tb_sd2, 2016);
         }
 
         private void tb_sd7_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(tb_sd7, 40);
+                step_into(tb_sd7, 2058);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 elem_id = (UInt16)category[index][0];
+            string txt = SFCategoryManager.GetTextFromElement(category[index], 2);
+            return elem_id.ToString() + " " + txt;
+        }
+
+        public override string get_description_string(int index)
+        {
+            UInt16 elem_id = (UInt16)category[index][1];
+            string building_name = SFCategoryManager.GetBuildingName(elem_id);
+            UInt16 desc_id = (UInt16)category[index][3];
+            string desc_name = SFCategoryManager.GetDescriptionName(desc_id);
+            return desc_name + "\r\n\r\nUpgraded in building: " + building_name;
         }
     }
 }

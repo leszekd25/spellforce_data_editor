@@ -24,44 +24,21 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             vertex_index = -1;
         }
 
-        public List<int> GetOffsets()
-        {
-            List<int> offsets = new List<int>();
-            int cur_variant = 0;
-            SFCategoryElement elem = category[current_element];
-            while (cur_variant < elem.variants.Count)
-            {
-                offsets.Add(cur_variant);
-                cur_variant += 4;
-                Byte vcount = (Byte)elem[cur_variant - 1];
-                cur_variant += (vcount * 2);
-            }
-            return offsets;
-        }
-
-        public int GetVertexCount(int p_index)
-        {
-            if (p_index == Utility.NO_INDEX)
-                return 0;
-            List<int> offsets = GetOffsets();
-
-            if (p_index == ListPolygons.Items.Count - 1)
-                return ((category[current_element].variants.Count - offsets[ListPolygons.Items.Count - 1]) - 4) / 2;
-            else
-                return ((offsets[p_index + 1] - offsets[p_index] - 4) / 2);
-        }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            foreach (int off in GetOffsets())
-                set_element_variant(current_element, off, Utility.TryParseUInt16(textBox1.Text));
+            SFCategoryElement elem = category[current_element];
+
+            for (int i = 0; i < elem.variants.Count; i += 4)
+                set_element_variant(current_element, i, Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            if (ListPolygons.SelectedIndex == Utility.NO_INDEX)
+            if (ListPolygons.SelectedIndex == -1)
                 return;
-            set_element_variant(current_element, GetOffsets()[ListPolygons.SelectedIndex] + 2, Utility.TryParseUInt8(textBox5.Text));
+
+            set_element_variant(current_element, ListPolygons.SelectedIndex * 4 + 2, Utility.TryParseUInt8(textBox5.Text));
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -69,23 +46,36 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             vertex_index = listBox1.SelectedIndex;
             if (vertex_index == Utility.NO_INDEX)
                 return;
-            List<int> offsets = GetOffsets();
-            textBox3.Text = variant_repr(offsets[ListPolygons.SelectedIndex] + 4 + vertex_index * 2);
-            textBox4.Text = variant_repr(offsets[ListPolygons.SelectedIndex] + 4 + vertex_index * 2 + 1);
+
+            SFCategoryElement elem = category[current_element];
+
+            textBox3.Text = ((SFOutlineData)elem[ListPolygons.SelectedIndex * 4 + 3]).Data[vertex_index * 2 + 0].ToString();
+            textBox4.Text = ((SFOutlineData)elem[ListPolygons.SelectedIndex * 4 + 3]).Data[vertex_index * 2 + 1].ToString();
+        }
+
+        private void listbox1_update_vertex(int v_ind)
+        {
+            if ((v_ind < 0) || (v_ind >= listBox1.Items.Count))
+                return;
+            Int16 x = ((SFOutlineData)category[current_element][ListPolygons.SelectedIndex * 4 + 3]).Data[v_ind * 2 + 0];
+            Int16 y = ((SFOutlineData)category[current_element][ListPolygons.SelectedIndex * 4 + 3]).Data[v_ind * 2 + 1];
+            listBox1.Items[v_ind] = (x.ToString() + " | " + y.ToString());
         }
 
         private void listBox1_update()
         {
-            listBox1.Items.Clear();
-            List<int> offsets = GetOffsets();
+            if (ListPolygons.SelectedIndex == -1)
+                return;
 
-            int vertex_count = GetVertexCount(ListPolygons.SelectedIndex);
+            listBox1.Items.Clear();
+            SFCategoryElement elem = category[current_element];
+
+            int vertex_count = ((SFOutlineData)elem[ListPolygons.SelectedIndex * 4 + 3]).Data.Count / 2;
 
             for (int i = 0; i < vertex_count; i++)
             {
-                Int16 x = (Int16)category[current_element][offsets[ListPolygons.SelectedIndex] + 4 + i * 2];
-                Int16 y = (Int16)category[current_element][offsets[ListPolygons.SelectedIndex] + 4 + i * 2 + 1];
-                listBox1.Items.Add(x.ToString() + " | " + y.ToString());
+                listBox1.Items.Add("");
+                listbox1_update_vertex(i);
             }
         }
 
@@ -93,14 +83,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             if (vertex_index == Utility.NO_INDEX)
                 return;
-            set_element_variant(current_element, GetOffsets()[ListPolygons.SelectedIndex] + 4 + vertex_index * 2, Utility.TryParseInt16(textBox3.Text));
+
+            ((SFOutlineData)(category[current_element][ListPolygons.SelectedIndex * 4 + 3])).Data[vertex_index * 2 + 0] = Utility.TryParseInt16(textBox3.Text);
+            listbox1_update_vertex(vertex_index);
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
             if (vertex_index == Utility.NO_INDEX)
                 return;
-            set_element_variant(current_element, GetOffsets()[ListPolygons.SelectedIndex] + 4 + vertex_index * 2 + 1, Utility.TryParseInt16(textBox4.Text));
+
+            ((SFOutlineData)(category[current_element][ListPolygons.SelectedIndex * 4 + 3])).Data[vertex_index * 2 + 1] = Utility.TryParseInt16(textBox3.Text);
+            listbox1_update_vertex(vertex_index);
         }
 
         public override void set_element(int index)
@@ -130,19 +124,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             SFCategoryElement elem = category[current_element];
 
-            object[] paste_data = new object[2];
-            paste_data[0] = (Int16)0;
-            paste_data[1] = (Int16)0;
-
-            int vc_offset = GetOffsets()[p_index] + 3;
-            Byte vcount = (Byte)elem[vc_offset];
-
-            elem.PasteRaw(paste_data, GetOffsets()[p_index] + 4 + v_index * 2);
-
-            elem[vc_offset] = (Byte)(vcount + 1);
+            ((SFOutlineData)elem[p_index * 4 + 3]).Data.Insert(v_index * 2, 0);
+            ((SFOutlineData)elem[p_index * 4 + 3]).Data.Insert(v_index * 2, 0);
 
             listBox1_update();
-
         }
 
         private void buttonRemove_Click(object sender, EventArgs e)
@@ -153,17 +138,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int v_index = vertex_index;
             if (v_index == Utility.NO_INDEX)
                 return;
-            if (GetVertexCount(p_index) <= 1)
-                return;
 
             SFCategoryElement elem = category[current_element];
 
-            int vc_offset = GetOffsets()[p_index] + 3;
-            Byte vcount = (Byte)elem[vc_offset];
+            if (((SFOutlineData)elem[p_index * 4 + 3]).Data.Count <= 1)
+                return;
 
-            elem.RemoveRaw(GetOffsets()[p_index] + 4 + v_index * 2, 2);
-
-            elem[vc_offset] = (Byte)(vcount - 1);
+            ((SFOutlineData)elem[p_index * 4 + 3]).Data.RemoveAt(v_index * 2);
+            ((SFOutlineData)elem[p_index * 4 + 3]).Data.RemoveAt(v_index * 2);
 
             listBox1_update();
 
@@ -172,20 +154,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 23);
+                step_into(textBox1, 2057);
         }
 
         private void ListPolygons_update()
         {
             SFCategoryElement elem = category[current_element];
+            int elem_count = elem.variants.Count / 4;
 
             ListPolygons.Items.Clear();
 
-            foreach (int o in GetOffsets())
-            {
-                Byte p_index = (Byte)elem[o + 1];
-                ListPolygons.Items.Add(p_index.ToString());
-            }
+            for (int i = 0; i < elem_count; i++)
+                ListPolygons.Items.Add(i.ToString());
         }
 
         private void ListPolygons_SelectedIndexChanged(object sender, EventArgs e)
@@ -194,7 +174,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
 
             listBox1_update();
-            textBox5.Text = variant_repr(GetOffsets()[ListPolygons.SelectedIndex] + 2);
+            textBox5.Text = variant_repr(ListPolygons.SelectedIndex * 4 + 2);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -206,21 +186,19 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             SFCategoryElement elem = category[current_element];
 
             Byte max_index = 0;
-            foreach (int o in GetOffsets())
-            {
-                max_index = Math.Max(max_index, (Byte)(elem[o + 1]));
-            }
+            for (int i = 1; i < elem.variants.Count; i += 4)
+                max_index = Math.Max(max_index, (Byte)(elem[i + 1]));
             max_index = (Byte)(max_index + 1);
 
-            object[] paste_data = new object[6];
+            object[] paste_data = new object[4];
             paste_data[0] = (UInt16)elem[0];
             paste_data[1] = (Byte)max_index;
             paste_data[2] = (Byte)1;
-            paste_data[3] = (Byte)1;
-            paste_data[4] = (Int16)0;
-            paste_data[5] = (Int16)0;
+            paste_data[3] = new SFOutlineData() { Data = new List<short>() };
+            ((SFOutlineData)paste_data[3]).Data.Add(0);
+            ((SFOutlineData)paste_data[3]).Data.Add(0);
 
-            elem.PasteRaw(paste_data, GetOffsets()[p_index]);
+            elem.PasteRaw(paste_data, p_index * 4);
 
             set_element(current_element);
         }
@@ -234,12 +212,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
 
             SFCategoryElement elem = category[current_element];
-
-            int count = 4 + (GetVertexCount(p_index) * 2);
-
-            elem.RemoveRaw(GetOffsets()[p_index], count);
+            elem.RemoveRaw(p_index * 4, 4);
 
             set_element(current_element);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 object_id = (UInt16)category[index][0];
+            Byte b_index = (Byte)category[index][1];
+            string txt_building = SFCategoryManager.GetObjectName(object_id);
+            return object_id.ToString() + " " + txt_building + " [" + b_index.ToString() + "]";
         }
     }
 }

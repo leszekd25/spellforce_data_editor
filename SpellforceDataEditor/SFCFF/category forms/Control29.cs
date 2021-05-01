@@ -34,26 +34,35 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox1.Text = variant_repr(0);
             textBox3.Text = variant_repr(1);
 
-            button_repr(ButtonGoto30, 29, "Inventory", "Merchant");
-            button_repr(ButtonGoto31, 30, "Sell/Buy rate", "Merchant");
+            button_repr(ButtonGoto30, 2042, "Inventory", "Merchant");
+            button_repr(ButtonGoto31, 2047, "Sell/Buy rate", "Merchant");
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox3, 17);
+                step_into(textBox3, 2024);
         }
 
         private void ButtonGoto30_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto30, 29);
-            button_repr(ButtonGoto30, 29, "Inventory", "Merchant");
+            button_step_into(ButtonGoto30, 2042);
+            button_repr(ButtonGoto30, 2042, "Inventory", "Merchant");
         }
 
         private void ButtonGoto31_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto31, 30);
-            button_repr(ButtonGoto31, 30, "Sell/Buy rate", "Merchant");
+            button_step_into(ButtonGoto31, 2047);
+            button_repr(ButtonGoto31, 2047, "Sell/Buy rate", "Merchant");
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 merchant_id = (UInt16)category[index][0];
+            UInt16 unit_id = (UInt16)category[index][1];
+            string txt_unit = SFCategoryManager.GetUnitName(unit_id);
+            return merchant_id.ToString() + " " + txt_unit;
         }
     }
 }

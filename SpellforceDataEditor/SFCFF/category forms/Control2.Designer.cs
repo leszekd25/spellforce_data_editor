@@ -62,8 +62,8 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(126, 20);
             this.textBox2.TabIndex = 1;
-            this.textBox2.Validated += new System.EventHandler(this.textBox2_TextChanged);
             this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
+            this.textBox2.Validated += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // textBox3
             // 
@@ -121,8 +121,8 @@
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new System.Drawing.Size(126, 20);
             this.textBox9.TabIndex = 8;
-            this.textBox9.Validated += new System.EventHandler(this.textBox9_TextChanged);
             this.textBox9.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox9_MouseDown);
+            this.textBox9.Validated += new System.EventHandler(this.textBox9_TextChanged);
             // 
             // label1
             // 
@@ -145,11 +145,11 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(303, 74);
+            this.label3.Location = new System.Drawing.Point(264, 74);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(53, 13);
+            this.label3.Size = new System.Drawing.Size(92, 13);
             this.label3.TabIndex = 11;
-            this.label3.Text = "Unknown";
+            this.label3.Text = "Availability degree";
             // 
             // label4
             // 
@@ -181,20 +181,20 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(256, 48);
+            this.label7.Location = new System.Drawing.Point(271, 52);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(100, 13);
+            this.label7.Size = new System.Drawing.Size(85, 13);
             this.label7.TabIndex = 15;
-            this.label7.Text = "Spell level range (?)";
+            this.label7.Text = "Spell level range";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(19, 74);
+            this.label8.Location = new System.Drawing.Point(15, 74);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(80, 13);
+            this.label8.Size = new System.Drawing.Size(84, 13);
             this.label8.TabIndex = 16;
-            this.label8.Text = "Spell resist type";
+            this.label8.Text = "Spell magic type";
             // 
             // Control2
             // 

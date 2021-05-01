@@ -28,7 +28,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             combo_values.Clear();
             combo_values.Add(0);    //default null value
 
-            SFCategory cat_res = SFCategoryManager.gamedata[31];
+            SFCategory cat_res = SFCategoryManager.gamedata[2044];
             int elem_count = cat_res.GetElementCount();
             for(int i = 0; i < elem_count; i++)
             {
@@ -88,7 +88,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 23);
+                step_into(textBox1, 2029);
         }
 
         private void ListResources_SelectedIndexChanged(object sender, EventArgs e)
@@ -184,6 +184,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             RefreshListResources();
             ListResources.SelectedIndex = Math.Max(index, ListResources.Items.Count - 1);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 building_id = (UInt16)category[index][0];
+            Byte b_index = (Byte)category[index][1];
+            string txt_building = SFCategoryManager.GetBuildingName(building_id);
+            return building_id.ToString() + " " + txt_building + " [" + b_index.ToString() + "]";
         }
     }
 }

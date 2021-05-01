@@ -64,7 +64,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         //updates data element and displayed description
         public void set_element_variant(int elem_index, int var_index, object obj)
         {
+            System.Diagnostics.Debug.Assert(!category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
+
             category[elem_index][var_index] = obj;
+            ((special_forms.SpelllforceCFFEditor)ParentForm).external_set_element_select_string(category, elem_index);
+        }
+
+        //updates data element and displayed description
+        public void set_element_variant(int elem_index, int subelem_index, int var_index, object obj)
+        {
+            System.Diagnostics.Debug.Assert(category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
+
+            category[elem_index, subelem_index][var_index] = obj;
             ((special_forms.SpelllforceCFFEditor)ParentForm).external_set_element_select_string(category, elem_index);
         }
 
@@ -79,20 +90,40 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         //variant is numeric in this case
         public string variant_repr(int index)
         {
+            System.Diagnostics.Debug.Assert(!category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
             return category[current_element][index].ToString();
+        }
+
+        //turns a given variant from current element into a text to display on text box
+        //variant is numeric in this case
+        public string variant_repr(int subelem_index, int index)
+        {
+            System.Diagnostics.Debug.Assert(category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
+            return category[current_element, subelem_index][index].ToString();
         }
 
         //turns a given variant from current element into a text to display on text box
         //variant is a text in this case
         public string string_repr(int index)
         {
+            System.Diagnostics.Debug.Assert(!category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
             return Encoding.UTF8.GetString((byte[])category[current_element][index]);
+        }
+
+        //turns a given variant from current element into a text to display on text box
+        //variant is a text in this case
+        public string string_repr(int subelem_index, int index)
+        {
+            System.Diagnostics.Debug.Assert(category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
+            return Encoding.UTF8.GetString((byte[])category[current_element, subelem_index][index]);
         }
 
         //turns a given variant from current element into a text to display on text box
         //this actually operates on a sequence of byte variants (see Utility.TryParseByteArray)
         public string bytearray_repr(int index, int count)
         {
+            System.Diagnostics.Debug.Assert(!category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
+
             Byte[] bytes = new Byte[count];
             for(int i = 0; i < count; i++)
                 bytes[i] = (Byte)category[current_element][index+i];
@@ -102,6 +133,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         // sets button text (a helper function)
         public void button_repr(Button bt, int cat_i, string label1, string label2)
         {
+            System.Diagnostics.Debug.Assert(!category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
+
             if (bt == null)
                 return;
             if ((bt.IsDisposed)||(bt.Disposing))
@@ -147,10 +180,24 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     default:
                         throw new Exception("SFControl.button_step_into(): Invalid element format!");
                 }
-                cat.elements.Insert(new_ind, new_elem);
 
-                MainForm.data.diff.push_change(cat_i, 
-                    new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, new_ind-1, null, new_elem));
+                if (cat.category_allow_multiple)
+                {
+                    SFCategoryElementList new_elem_list = new SFCategoryElementList();
+                    new_elem_list.Elements.Add(new_elem);
+
+                    cat.element_lists.Insert(new_ind, new_elem_list);
+
+                    MainForm.data.diff.push_change(cat_i,
+                        new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, new_ind - 1, Utility.NO_INDEX, null, new_elem_list));
+                }
+                else
+                {
+                    cat.elements.Insert(new_ind, new_elem);
+
+                    MainForm.data.diff.push_change(cat_i,
+                        new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, new_ind - 1, Utility.NO_INDEX, null, new_elem));
+                }
 
                 bt.Tag = false;
             }
@@ -174,6 +221,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (real_elem_id == Utility.NO_INDEX)
                 return;
             MainForm.data.Tracer_StepForward(cat_i, real_elem_id);
+        }
+
+        public virtual string get_element_string(int elem_key)
+        {
+            return elem_key.ToString();
+        }
+
+        public virtual string get_description_string(int elem_key)
+        {
+            return "";
         }
     }
 }

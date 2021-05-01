@@ -50,9 +50,7 @@
             this.textBox24 = new System.Windows.Forms.TextBox();
             this.textBox26 = new System.Windows.Forms.TextBox();
             this.textBox27 = new System.Windows.Forms.TextBox();
-            this.textBox19 = new System.Windows.Forms.TextBox();
             this.textBox22 = new System.Windows.Forms.TextBox();
-            this.textBox23 = new System.Windows.Forms.TextBox();
             this.textBox25 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -260,35 +258,19 @@
             this.textBox27.TabIndex = 18;
             this.textBox27.Validated += new System.EventHandler(this.textBox27_TextChanged);
             // 
-            // textBox19
-            // 
-            this.textBox19.Location = new System.Drawing.Point(181, 354);
-            this.textBox19.Name = "textBox19";
-            this.textBox19.Size = new System.Drawing.Size(50, 20);
-            this.textBox19.TabIndex = 27;
-            this.textBox19.Validated += new System.EventHandler(this.textBox19_TextChanged);
-            // 
             // textBox22
             // 
-            this.textBox22.Location = new System.Drawing.Point(105, 354);
+            this.textBox22.Location = new System.Drawing.Point(362, 354);
             this.textBox22.Name = "textBox22";
-            this.textBox22.Size = new System.Drawing.Size(50, 20);
+            this.textBox22.Size = new System.Drawing.Size(126, 20);
             this.textBox22.TabIndex = 26;
             this.textBox22.Validated += new System.EventHandler(this.textBox22_TextChanged);
             // 
-            // textBox23
-            // 
-            this.textBox23.Location = new System.Drawing.Point(438, 354);
-            this.textBox23.Name = "textBox23";
-            this.textBox23.Size = new System.Drawing.Size(50, 20);
-            this.textBox23.TabIndex = 29;
-            this.textBox23.Validated += new System.EventHandler(this.textBox23_TextChanged);
-            // 
             // textBox25
             // 
-            this.textBox25.Location = new System.Drawing.Point(362, 354);
+            this.textBox25.Location = new System.Drawing.Point(105, 354);
             this.textBox25.Name = "textBox25";
-            this.textBox25.Size = new System.Drawing.Size(50, 20);
+            this.textBox25.Size = new System.Drawing.Size(126, 20);
             this.textBox25.TabIndex = 28;
             this.textBox25.Validated += new System.EventHandler(this.textBox25_TextChanged);
             // 
@@ -493,20 +475,20 @@
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(37, 357);
+            this.label23.Location = new System.Drawing.Point(294, 357);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(62, 13);
+            this.label23.Size = new System.Drawing.Size(63, 13);
             this.label23.TabIndex = 52;
-            this.label23.Text = "Unknown 1";
+            this.label23.Text = "Random init";
             // 
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(297, 357);
+            this.label24.Location = new System.Drawing.Point(33, 357);
             this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(59, 13);
+            this.label24.Size = new System.Drawing.Size(66, 13);
             this.label24.TabIndex = 53;
-            this.label24.Text = "Unknown2";
+            this.label24.Text = "Mana usage";
             // 
             // ButtonGoto5
             // 
@@ -560,9 +542,7 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox23);
             this.Controls.Add(this.textBox25);
-            this.Controls.Add(this.textBox19);
             this.Controls.Add(this.textBox22);
             this.Controls.Add(this.textBox21);
             this.Controls.Add(this.textBox24);
@@ -616,9 +596,7 @@
         private System.Windows.Forms.TextBox textBox24;
         private System.Windows.Forms.TextBox textBox26;
         private System.Windows.Forms.TextBox textBox27;
-        private System.Windows.Forms.TextBox textBox19;
         private System.Windows.Forms.TextBox textBox22;
-        private System.Windows.Forms.TextBox textBox23;
         private System.Windows.Forms.TextBox textBox25;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;

@@ -7,9 +7,44 @@ using System.Runtime.InteropServices;
 
 namespace SpellforceDataEditor.SFCFF
 {
+    public struct SFOutlineData
+    {
+        public List<short> Data;
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is SFOutlineData))
+                return false;
+
+            if (((SFOutlineData)obj).Data.Count != Data.Count)
+                return false;
+
+            for(int i = 0; i < Data.Count; i++)
+            {
+                if (((SFOutlineData)obj).Data[i] != Data[i])
+                    return false;
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return Data.GetHashCode();
+        }
+
+        public SFOutlineData GetCopy()
+        {
+            SFOutlineData ret = new SFOutlineData() { Data = new List<short>() };
+            ret.Data.AddRange(Data);
+
+            return ret;
+        }
+    }
+
     //category element is a single entry from a category
     //this entry can hold different types of data depending on which category it belongs to
-    // supported  types:  byte, sbyte,  ushort, short,  uint,  int, string(byte[])
+    // supported  types:  byte, sbyte,  ushort, short,  uint,  int, string(byte[]), SFOutlineData
     public class SFCategoryElement
     {
         public List<object> variants = new List<object>();
@@ -60,6 +95,8 @@ namespace SpellforceDataEditor.SFCFF
                     s += 4;
                 else if (t == typeof(byte[]))
                     s += ((byte[])v).Length;
+                else if (t == typeof(SFOutlineData))
+                    s += 1+((SFOutlineData)v).Data.Count * 2;
             }
             return s;
         }
@@ -80,6 +117,28 @@ namespace SpellforceDataEditor.SFCFF
                         return false;
                 }
                 else if (!variants[i].Equals(elem.variants[i]))
+                    return false;
+            }
+
+            return true;
+        }
+
+        // returns whether a given sequence of elements between two elements is identical
+        public static bool Compare(SFCategoryElement e1, SFCategoryElement e2, int start1, int start2, int len)
+        {
+            if ((e1.variants.Count < start1) || (e1.variants.Count < start1+len-1) || (e2.variants.Count < start2) || (e2.variants.Count < start2+len-1))
+                return false;
+
+            for(int i=0; i<len; i++)
+            {
+                if (e1.variants[i+start1].GetType() != e2.variants[i+start2].GetType())
+                    return false;
+                if (e1.variants[i+start1].GetType() == typeof(byte[]))
+                {
+                    if (!((byte[])e1.variants[i+start1]).SequenceEqual((byte[])e2.variants[i+start2]))
+                        return false;
+                }
+                else if (!e1.variants[i+start1].Equals(e2.variants[i+start2]))
                     return false;
             }
 
@@ -133,6 +192,8 @@ namespace SpellforceDataEditor.SFCFF
                     res[i] = (Int32)v;
                 else if (t == typeof(UInt32))
                     res[i] = (UInt32)v;
+                else if (t == typeof(SFOutlineData))
+                    res[i] = ((SFOutlineData)v).GetCopy();
             }
             return res;
         }
@@ -158,6 +219,37 @@ namespace SpellforceDataEditor.SFCFF
             elem.PasteRaw(CopyRaw(0, variants.Count), 0);
 
             return elem;
+        }
+    }
+
+    // this is used for categories of which elements are made from multiple subelements
+    public class SFCategoryElementList
+    {
+        public List<SFCategoryElement> Elements = new List<SFCategoryElement>();
+
+        public SFCategoryElement this[int i] { get { return Elements[i]; } set { Elements[i] = value; } }
+
+        public SFCategoryElement GetByID(int id)
+        {
+            for (int i = 0; i < Elements.Count; i++)
+                if (Elements[i].ToInt(1) == id)
+                    return Elements[i];
+
+            return null;
+        }
+
+        public SFCategoryElementList GetCopy()
+        {
+            SFCategoryElementList e = new SFCategoryElementList();
+            foreach (var elem in Elements)
+                e.Elements.Add(elem.GetCopy());
+
+            return e;
+        }
+
+        public int GetID()
+        {
+            return Elements[0].ToInt(0);
         }
     }
 }

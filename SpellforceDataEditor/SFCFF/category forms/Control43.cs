@@ -66,19 +66,36 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 42);
+                step_into(textBox1, 2061);
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox2, 14);
+                step_into(textBox2, 2016);
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox3, 14);
+                step_into(textBox3, 2016);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt32 elem_id = (UInt32)category[index][0];
+            string txt = SFCategoryManager.GetTextFromElement(category[index], 3);
+            return elem_id.ToString() + " " + txt;
+        }
+
+        public override string get_description_string(int index)
+        {
+            UInt32 quest_id = (UInt32)category[index][1];
+            SFCategoryElement quest_elem = category.FindElementBinary<UInt32>(0, quest_id);
+            string quest_name = SFCategoryManager.GetTextFromElement(quest_elem, 3);
+            string desc_text = SFCategoryManager.GetTextFromElement(category[index], 4);
+            return desc_text + "\r\n\r\nPart of quest " + quest_name;
         }
     }
 }

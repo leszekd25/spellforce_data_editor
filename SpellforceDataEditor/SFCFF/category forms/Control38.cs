@@ -52,7 +52,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox2, 14);
+                step_into(textBox2, 2016);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt32 map_id = (UInt32)category[index][0];
+            string txt = SFCategoryManager.GetTextFromElement(category[index], 3);
+            return map_id.ToString() + " " + txt;
         }
     }
 }

@@ -67,7 +67,7 @@ namespace SpellforceDataEditor.SFChunk
             return (BitConverter.ToInt32(header, 0) == -579674862);
         }
 
-        public int OpenRaw(byte[] data)
+        public int OpenRaw(byte[] data, int length = -1)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.OpenRaw() called");
             if (s != null)
@@ -82,7 +82,11 @@ namespace SpellforceDataEditor.SFChunk
                 LogUtils.Log.Warning(LogUtils.LogSource.SFChunkFile, "SFChunkFile.OpenRaw(): No data provided or it is too short");
                 return -1;
             }
-            s = new MemoryStream(data);
+
+            if (length == -1)
+                s = new MemoryStream(data);
+            else
+                s = new MemoryStream(data, 0, length);
 
             header = new byte[20];
             s.Read(header, 0, 20);

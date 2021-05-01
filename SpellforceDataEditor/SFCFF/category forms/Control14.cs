@@ -38,13 +38,24 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 6);
+                step_into(textBox1, 2003);
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox2, 0);
+                step_into(textBox2, 2002);
+        }
+
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 item_id = (UInt16)category[index][0];
+            string txt_item = SFCategoryManager.GetItemName(item_id);
+            UInt16 effect_id = (UInt16)category[index][1];
+            string txt_effect = SFCategoryManager.GetEffectName(effect_id, true);
+            return category[index][0].ToString() + " " + txt_item + " | " + txt_effect;
         }
     }
 }

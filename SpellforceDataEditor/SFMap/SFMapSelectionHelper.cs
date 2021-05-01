@@ -258,10 +258,10 @@ namespace SpellforceDataEditor.SFMap
 
             string portal_name = Utility.S_MISSING;
             int portal_id = selected_entity.game_id;
-            int portal_index = SFCFF.SFCategoryManager.gamedata[38].GetElementIndex(portal_id);
+            int portal_index = SFCFF.SFCategoryManager.gamedata[2053].GetElementIndex(portal_id);
             if (portal_index != -1)
             {
-                SFCFF.SFCategoryElement portal_data = SFCFF.SFCategoryManager.gamedata[38][portal_index];
+                SFCFF.SFCategoryElement portal_data = SFCFF.SFCategoryManager.gamedata[2053][portal_index];
                 portal_name = SFCFF.SFCategoryManager.GetTextFromElement(portal_data, 5);
             }
 
@@ -373,17 +373,17 @@ namespace SpellforceDataEditor.SFMap
             // get unit
             preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(unit_id, "_UNIT_" + unit_id.ToString()));
 
-            int unit_index = SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(unit_id);
+            int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
             if (unit_index == -1)
                 return;
 
-            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[17][unit_index];
-            unit_index = SFCFF.SFCategoryManager.gamedata[3].GetElementIndex((ushort)unit_data[2]);
+            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
+            unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
             float unit_size = 1f;
             if (unit_index != -1)
             {
-                unit_data = SFCFF.SFCategoryManager.gamedata[3][unit_index];
-                unit_size = Math.Max((ushort)unit_data[19], (ushort)40) / 100.0f;
+                unit_data = SFCFF.SFCategoryManager.gamedata[2005][unit_index];
+                unit_size = Math.Max((ushort)unit_data[18], (ushort)40) / 100.0f;
             }
 
             preview_entity.Scale = new OpenTK.Vector3(unit_size * 100 / 128); 

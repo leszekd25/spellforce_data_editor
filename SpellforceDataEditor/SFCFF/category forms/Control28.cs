@@ -142,5 +142,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             ListLevels.Items.RemoveAt(index);
             ListLevels.SelectedIndex = Math.Min(index, ListLevels.Items.Count - 1);
         }
+
+
+        public override string get_element_string(int index)
+        {
+            Byte skill_major = (Byte)category[index][0];
+            Byte skill_level = (Byte)category[index][1];
+            string txt_skill = SFCategoryManager.GetSkillName(skill_major, 101, skill_level);
+            return txt_skill;
+        }
     }
 }

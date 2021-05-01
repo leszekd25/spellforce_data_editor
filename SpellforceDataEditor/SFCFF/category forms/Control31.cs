@@ -12,6 +12,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control31 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        static string[] item_types = { Utility.S_UNKNOWN, "Equipment", "Inventory rune", "Installed rune",
+            "Spell scroll", "Equipped scroll", "Unit plan", "Building plan", "Equipped unit plan",
+            "Equipped building plan", "Miscellaneous" };
+
         public Control31()
         {
             InitializeComponent();
@@ -24,10 +28,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             comboItemType.Items.Clear();
             
-            int elem_count = SFCategory7.item_types.Length;
+            int elem_count = item_types.Length;
             for (int i = 1; i < elem_count; i++)
             {
-                comboItemType.Items.Add(SFCategory7.item_types[i]);
+                comboItemType.Items.Add(item_types[i]);
             }
         }
 
@@ -79,7 +83,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox5, 23);
+                step_into(textBox5, 2029);
         }
 
         private void ListItemTypes_SelectedIndexChanged(object sender, EventArgs e)
@@ -175,6 +179,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             RefreshListItemTypes();
             ListItemTypes.SelectedIndex = Math.Min(index, ListItemTypes.Items.Count - 1);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 merchant_id = (UInt16)category[index][0];
+            string txt_merchant = SFCategoryManager.GetMerchantName(merchant_id);
+            return merchant_id.ToString() + " " + txt_merchant;
         }
     }
 }

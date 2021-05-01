@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.IO;
-using System.Reflection;
 using SpellforceDataEditor.SFCFF;
 
 
@@ -18,13 +17,13 @@ namespace SpellforceDataEditor.SFMod
 {
     public enum SFModCFFChangeType
     {
-        REMOVE = 0, INSERT, REPLACE
+        REMOVE = 0, INSERT, REPLACE, NEW_CATEGORY, NEWER_CATEGORY, MISSING_CATEGORY, OLDER_CATEGORY
     }
 
     public struct SFModCFFChangeElement
     {
         public SFModCFFChangeType type;
-        public byte category_index;
+        public ushort category_index;
         public ushort element_index;
         public SFCategoryElement element;
 
@@ -35,7 +34,7 @@ namespace SpellforceDataEditor.SFMod
             if (br.ReadUInt32() != 0)
                 throw new Exception("SFModCFFChanges.Load(): Invalid data in stream!");
             celem.type = (SFModCFFChangeType)br.ReadInt16();
-            celem.category_index = br.ReadByte();
+            celem.category_index = br.ReadUInt16();
             celem.element_index = br.ReadUInt16();
             celem.element = null;
             if (celem.type == SFModCFFChangeType.REMOVE)
@@ -131,26 +130,37 @@ namespace SpellforceDataEditor.SFMod
             SFCategory orig_data = null;
             SFCategory new_data = null;
 
-            for (int i = 1; i <= SFGameData.categoryNumber; i++)
+            SFGameData gd_orig = new SFGameData();
+            SFGameData gd_new = new SFGameData();
+            gd_orig.Load(orig_fname);
+            gd_new.Load(new_fname);
+
+            foreach(var cat in gd_orig.categories)
             {
-                orig_data = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCFF.SFCategory" + i.ToString()) as SFCategory;
-                new_data  = Assembly.GetExecutingAssembly().CreateInstance("SpellforceDataEditor.SFCFF.SFCategory" + i.ToString()) as SFCategory;
-                if(orig_data.Read(sfcf_orig) != 0)
+                orig_data = cat.Value;
+                new_data = gd_new[cat.Key];
+                // if original gamedata contains category that the new gamedata does not contain, add MISSING change
+                if(new_data == null)
                 {
-                    changes.Clear();
-                    sfcf_orig.Close();
-                    sfcf_new.Close();
-                    return -1;
-                    // error
+                    changes.Add(new SFModCFFChangeElement() { type = SFModCFFChangeType.MISSING_CATEGORY, category_index = (ushort)cat.Key });
+                    continue;
                 }
-                if(new_data.Read(sfcf_new)   != 0)
+
+                // if original category is newer than new category, add OLDER change
+                if(new_data.category_type < orig_data.category_type)
                 {
-                    changes.Clear();
-                    sfcf_orig.Close();
-                    sfcf_new.Close();
-                    return -1;
-                    // error
+                    changes.Add(new SFModCFFChangeElement() { type = SFModCFFChangeType.OLDER_CATEGORY, category_index = (ushort)cat.Key });
+                    continue;
                 }
+                // if original category is older than new category, add NEWER change
+                if(new_data.category_type > orig_data.category_type)
+                {
+                    changes.Add(new SFModCFFChangeElement() { type = SFModCFFChangeType.NEWER_CATEGORY, category_index = (ushort)cat.Key });
+                    continue;
+                }
+
+                // now finally find changed elements
+
                 int orig_i = 0;
                 int new_i = 0;
                 int orig_id, new_id;
@@ -216,11 +226,11 @@ namespace SpellforceDataEditor.SFMod
                         }
                     }
 
-                    if(is_change)
+                    if (is_change)
                     {
                         SFModCFFChangeElement change_elem = new SFModCFFChangeElement();
                         change_elem.type = change_type;
-                        change_elem.category_index = (Byte)(i - 1);
+                        change_elem.category_index = (ushort)cat.Key;
                         if (change_type != SFModCFFChangeType.REMOVE)
                         {
                             change_elem.element = new_data[new_i].GetCopy();
@@ -236,12 +246,23 @@ namespace SpellforceDataEditor.SFMod
                     if (new_i < new_data.GetElementCount())
                         new_i += 1;
                 }
-                orig_data.Unload();
-                new_data.Unload();
-                GC.Collect();
             }
-            sfcf_orig.Close();
-            sfcf_new.Close();
+
+            // have to find categories that do not exist in old gamedata now
+            foreach (var cat in gd_new.categories)
+            {
+                new_data = cat.Value;
+                orig_data = gd_orig[cat.Key];
+                // if new gamedata contains category that the old gamedata does not contain, add NEW change
+                if (orig_data == null)
+                {
+                    changes.Add(new SFModCFFChangeElement() { type = SFModCFFChangeType.NEW_CATEGORY, category_index = (ushort)cat.Key });
+                    continue;
+                }
+            }
+
+            gd_new.Unload();
+            gd_orig.Unload();
             return 0;
         }
 
@@ -292,10 +313,12 @@ namespace SpellforceDataEditor.SFMod
         public override string ToString()
         {
             string ret = "";
-            int[] stat = new int[3];
+            int[] stat = new int[7];
             foreach(SFModCFFChangeElement e in changes)
                 stat[(int)e.type]++;
-            ret += /*"Deletions: " + stat[0].ToString() + ", a*/"Additions: " + stat[1].ToString() + ", modifications: " + stat[2].ToString();
+            ret += "Deletions: " + stat[0].ToString() + ", additions: " + stat[1].ToString() + ", modifications: " + stat[2].ToString() 
+                + ", new categories: " + stat[3].ToString() + ", newer categories: " + stat[4].ToString()
+                + ", missing categories: " + stat[5].ToString() + ", older categories: " + stat[6].ToString();
             return ret;
         }
     }

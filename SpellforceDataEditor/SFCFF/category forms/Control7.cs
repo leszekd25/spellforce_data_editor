@@ -12,6 +12,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control7 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        static string[] item_types = { Utility.S_UNKNOWN, "Equipment", "Inventory rune", "Installed rune",
+            "Spell scroll", "Equipped scroll", "Unit plan", "Building plan", "Equipped unit plan",
+            "Equipped building plan", "Miscellaneous" };
+
+        static string[] equipment_types = { Utility.S_UNKNOWN, "Headpiece", "Chestpiece", "Legpiece", "Unknown", "Unknown", "Ring",
+            "1H Weapon", "2H Weapon", "Shield", "Robe", "ItemChestFake (monsters)", "Ranged Weapon", "ItemChestFake (playable)" };
+
         public Control7()
         {
             InitializeComponent();
@@ -97,85 +104,167 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox7.Text = variant_repr(9);
             textBox9.Text = variant_repr(10);
 
-            button_repr(ButtonGoto8, 7, "Armor stats", "Item");
-            button_repr(ButtonGoto9, 8, "Scroll link", "Item");
-            button_repr(ButtonGoto10, 9, "Weapon data", "Item");
-            button_repr(ButtonGoto11, 10, "Requirements", "Item");
-            button_repr(ButtonGoto12, 11, "Spell effects", "Item");
-            button_repr(ButtonGoto13, 12, "UI data", "Item");
-            button_repr(ButtonGoto14, 13, "Spell link", "Item");
+            button_repr(ButtonGoto8, 2004, "Armor stats", "Item");
+            button_repr(ButtonGoto9, 2013, "Scroll link", "Item");
+            button_repr(ButtonGoto10, 2015, "Weapon data", "Item");
+            button_repr(ButtonGoto11, 2017, "Requirements", "Item");
+            button_repr(ButtonGoto12, 2014, "Spell effects", "Item");
+            button_repr(ButtonGoto13, 2012, "UI data", "Item");
+            button_repr(ButtonGoto14, 2018, "Spell link", "Item");
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox2, 14);
+                step_into(textBox2, 2016);
         }
 
         private void textBox9_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox9, 48);
+                step_into(textBox9, 2072);
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox3, 3);
+                step_into(textBox3, 2005);
         }
 
         private void textBox4_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox4, 17);
+                step_into(textBox4, 2024);
         }
 
         private void textBox5_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox5, 23);
+                step_into(textBox5, 2029);
         }
 
         private void ButtonGoto8_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto8, 7);
-            button_repr(ButtonGoto8, 7, "Armor stats", "Item");
+            button_step_into(ButtonGoto8, 2004);
+            button_repr(ButtonGoto8, 2004, "Armor stats", "Item");
         }
 
         private void ButtonGoto9_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto9, 8);
-            button_repr(ButtonGoto9, 8, "Scroll link", "Item");
+            button_step_into(ButtonGoto9, 2013);
+            button_repr(ButtonGoto9, 2013, "Scroll link", "Item");
         }
 
         private void ButtonGoto10_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto10, 9);
-            button_repr(ButtonGoto10, 9, "Weapon data", "Item");
+            button_step_into(ButtonGoto10, 2015);
+            button_repr(ButtonGoto10, 2015, "Weapon data", "Item");
         }
 
         private void ButtonGoto11_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto11, 10);
-            button_repr(ButtonGoto11, 10, "Requirements", "Item");
+            button_step_into(ButtonGoto11, 2017);
+            button_repr(ButtonGoto11, 2017, "Requirements", "Item");
         }
 
         private void ButtonGoto12_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto12, 11);
-            button_repr(ButtonGoto12, 11, "Spell effects", "Item");
+            button_step_into(ButtonGoto12, 2014);
+            button_repr(ButtonGoto12, 2014, "Spell effects", "Item");
         }
 
         private void ButtonGoto13_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto13, 12);
-            button_repr(ButtonGoto13, 12, "UI data", "Item");
+            button_step_into(ButtonGoto13, 2012);
+            button_repr(ButtonGoto13, 2012, "UI data", "Item");
         }
 
         private void ButtonGoto14_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto14, 13);
-            button_repr(ButtonGoto14, 13, "Spell link", "Item");
+            button_step_into(ButtonGoto14, 2018);
+            button_repr(ButtonGoto14, 2018, "Spell link", "Item");
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            string txt = SFCategoryManager.GetTextFromElement(category[index], 3);
+            return category[index][0].ToString() + " " + txt;
+        }
+
+        public override string get_description_string(int index)
+        {
+            string contains_text;
+            string item_type_text = "";
+            Byte item_type = (Byte)category[index][1];
+            Byte bonus_type = (Byte)category[index][2];
+            Byte special = (Byte)category[index][7];
+            Byte set_type = (Byte)category[index][10];
+
+            if ((item_type > 0) && (item_type < item_types.Length))
+                item_type_text += item_types[item_type];
+            /*switch (item_type)
+            { }*/
+            switch (item_type)
+            {
+                case 2:
+                case 3:
+                    UInt16 rune_id = (UInt16)category[index][4];
+                    contains_text = SFCategoryManager.GetRuneheroName(rune_id);
+                    break;
+                case 6:
+                case 8:
+                    UInt16 army_id = (UInt16)category[index][5];
+                    contains_text = SFCategoryManager.GetUnitName(army_id);
+                    break;
+                case 7:
+                case 9:
+                    UInt16 building_id = (UInt16)category[index][6];
+                    contains_text = SFCategoryManager.GetBuildingName(building_id);
+                    break;
+                default:
+                    contains_text = "";
+                    break;
+            }
+
+            if (item_type == 1)
+            {
+                string bonus_type_text = String.Copy(Utility.S_UNKNOWN);
+                if ((bonus_type > 0) && (bonus_type < (Byte)equipment_types.Length))
+                    bonus_type_text = equipment_types[(int)bonus_type];
+                item_type_text += " (" + bonus_type_text + ")";
+            }
+
+            string total_text = item_type_text;
+            if (contains_text != "")
+            {
+                contains_text += " (" + SFCategoryManager.GetRaceName(bonus_type) + ")";
+                //SFCategoryElement race_elem = SFCategoryManager.get_category
+                total_text += "\r\nContains " + contains_text;
+            }
+
+            if (set_type != 0)
+            {
+                Byte elem_id = set_type;
+                string txt;
+                SFCategoryElement set_elem = SFCategoryManager.gamedata[48].FindElementBinary<Byte>(0, elem_id);
+                txt = SFCategoryManager.GetTextFromElement(set_elem, 1);
+                total_text += "\r\nPart of set: " + txt;
+            }
+
+            if ((special & 1) == 1)
+                total_text += "\r\nStackable item";
+            if ((special & 2) == 2)
+                total_text += "\r\nLore item";
+            if ((special & 4) == 4)
+                total_text += "\r\nQuest item (can not be sold)";
+            if ((special & 8) == 8)
+                total_text += "\r\nQuest item (can be sold)";
+            if ((special & 16) == 16)
+                total_text += "\r\nYou need to meet all item requirements to use this item";
+            if ((special & (0b11100000)) != 0)
+                total_text += "\r\nUnknown optional data";
+            return total_text;
         }
     }
 }

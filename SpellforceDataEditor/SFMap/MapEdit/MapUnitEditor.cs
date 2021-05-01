@@ -55,7 +55,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     else if (!first_click)
                     {
                         ushort new_unit_id = (ushort)placement_unit;
-                        if (SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(new_unit_id) == Utility.NO_INDEX)
+                        if (SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(new_unit_id) == Utility.NO_INDEX)
                             return;
                         // create new unit and drag it until mouse released
                         map.AddUnit(new_unit_id, pos, 0, 0, 0, 0, 0);

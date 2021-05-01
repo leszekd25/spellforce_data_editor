@@ -26,7 +26,7 @@ namespace SpellforceDataEditor.special_forms
             InitializeComponent();
             LabelDescription.Text = "Choose a line on the right which is\r\nin language you want in Spellforce\r\nPress OK to change data language\r\n(DEPRECATED! USE LanguageID\r\nSETTING IN config.txt!)";
 
-            SFCategoryElement text7055 = SFCategoryManager.gamedata[14].FindElementBinary<UInt16>(0, 7055).GetCopy();
+            SFCategoryElement text7055 = SFCategoryManager.gamedata[2016].FindElementBinary<UInt16>(0, 7055).GetCopy();
             int elem_num = text7055.GetSize() / 566;    //566 = sub-element's size
             for (int i = 0; i < elem_num; i++)
             {
@@ -49,7 +49,7 @@ namespace SpellforceDataEditor.special_forms
             int change_to = -1;
             if (ListSample.SelectedIndex != -1)
             {
-                SFCategoryElement text7055 = SFCategoryManager.gamedata[14].FindElementBinary<UInt16>(0, 7055).GetCopy();
+                SFCategoryElement text7055 = SFCategoryManager.gamedata[2016].FindElementBinary<UInt16>(0, 7055).GetCopy();
                 change_to = (Byte)(text7055[ListSample.SelectedIndex * 5 + 1]);
             }
             change_data(1,change_to);
@@ -66,13 +66,13 @@ namespace SpellforceDataEditor.special_forms
             Byte Bfrom = (Byte)from;
             Byte Bto = (Byte)to;
 
-            int elem_count = SFCategoryManager.gamedata[14].GetElementCount();
+            int elem_count = SFCategoryManager.gamedata[2016].GetElementCount();
             for(int i = 0; i < elem_count; i++)
             {
                 bool fromExists = false;
                 bool toExists = false;
 
-                SFCategoryElement elem = SFCategoryManager.gamedata[14][i];
+                SFCategoryElement elem = SFCategoryManager.gamedata[2016][i];
                 int text_count = elem.GetSize() / 566;
 
                 for (int j = 0; j < text_count; j++)

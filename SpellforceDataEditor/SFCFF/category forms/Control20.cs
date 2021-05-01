@@ -35,6 +35,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
+            if (ListSpells.SelectedIndex == -1)
+                return;
+
             set_element_variant(current_element, ListSpells.SelectedIndex * 3 + 2, Utility.TryParseUInt16(textBox3.Text));
         }
 
@@ -125,13 +128,21 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 17);
+                step_into(textBox1, 2024);
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox3, 0);
+                step_into(textBox3, 2002);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 unit_id = (UInt16)category[index][0];
+            string txt_unit = SFCategoryManager.GetUnitName(unit_id);
+            return unit_id.ToString() + " " + txt_unit;
         }
     }
 }

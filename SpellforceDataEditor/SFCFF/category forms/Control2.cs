@@ -17,11 +17,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             InitializeComponent();
             column_dict.Add("Spell type ID", new int[1] { 0 });
             column_dict.Add("Spell text ID", new int[1] { 1 });
-            column_dict.Add("Unknown1 1", new int[1] { 2 });
-            column_dict.Add("Unknown1 2", new int[1] { 3 });
-            column_dict.Add("Sorting 1", new int[1] { 4 });
-            column_dict.Add("Sorting 2", new int[1] { 5 });
-            column_dict.Add("Sorting 3", new int[1] { 6 });
+            column_dict.Add("Spell flags", new int[1] { 2 });
+            column_dict.Add("Spell magic type", new int[1] { 3 });
+            column_dict.Add("Minimum level", new int[1] { 4 });
+            column_dict.Add("Maximum level", new int[1] { 5 });
+            column_dict.Add("Availability", new int[1] { 6 });
             column_dict.Add("Spell UI handle", new int[1] { 7 });
             column_dict.Add("Description ID", new int[1] { 8 });
         }
@@ -87,13 +87,27 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox2, 14);
+                step_into(textBox2, 2016);
         }
 
         private void textBox9_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox9, 40);
+                step_into(textBox9, 2059);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            string stype_txt = SFCategoryManager.GetTextFromElement(category[index], 1);
+            return category[index][0].ToString() + " " + stype_txt;
+        }
+
+        public override string get_description_string(int index)
+        {
+            string spell_name = SFCategoryManager.GetTextFromElement(category[index], 1);
+            string spell_desc = SFCategoryManager.GetDescriptionName((UInt16)category[index][8]);
+            return spell_name + "\r\n" + spell_desc;
         }
     }
 }

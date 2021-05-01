@@ -45,13 +45,27 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void tb_sd4_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(tb_sd4, 14);
+                step_into(tb_sd4, 2016);
         }
 
         private void sb_sd5_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(sb_sd5, 14);
+                step_into(sb_sd5, 2016);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 elem_id = (UInt16)category[index][0];
+            string txt = SFCategoryManager.GetTextFromElement(category[index], 2);
+            return elem_id.ToString() + " " + txt;
+        }
+
+        public override string get_description_string(int index)
+        {
+            string txt = SFCategoryManager.GetTextFromElement(category[index], 1);
+            return "Text ID: " + txt;
         }
     }
 }

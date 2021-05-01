@@ -15,7 +15,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public Control4()
         {
             InitializeComponent();
-            column_dict.Add("Unit stats ID", new int[1] { 0});
+            column_dict.Add("Unit stats ID", new int[1] { 0 });
             column_dict.Add("Unit level", new int[1] { 1 });
             column_dict.Add("Unit race ID", new int[1] { 2 });
             column_dict.Add("Agility", new int[1] { 3 });
@@ -25,22 +25,20 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             column_dict.Add("Stamina", new int[1] { 7 });
             column_dict.Add("Strength", new int[1] { 8 });
             column_dict.Add("Wisdom", new int[1] { 9 });
-            column_dict.Add("Unknown1 1", new int[1] { 10 });
-            column_dict.Add("Unknown1 2", new int[1] { 11 });
-            column_dict.Add("Fire resistance", new int[1] { 12 });
-            column_dict.Add("Ice resistance", new int[1] { 13 });
-            column_dict.Add("Black resistance", new int[1] { 14 });
-            column_dict.Add("Mind resistance", new int[1] { 15 });
-            column_dict.Add("Walk speed", new int[1] { 16 });
-            column_dict.Add("Fight speed", new int[1] { 17 });
-            column_dict.Add("Cast speed", new int[1] { 18 });
-            column_dict.Add("Unit size", new int[1] { 19 });
-            column_dict.Add("Unknown2 1", new int[1] { 20 });
-            column_dict.Add("Unknown2 2", new int[1] { 21 });
-            column_dict.Add("Spawn base time", new int[1] { 22 });
-            column_dict.Add("Unit flags", new int[1] { 23 });
-            column_dict.Add("Head ID", new int[1] { 24 });
-            column_dict.Add("Equipment slots ID", new int[1] { 25 });
+            column_dict.Add("Random init", new int[1] { 10 });
+            column_dict.Add("Fire resistance", new int[1] { 11 });
+            column_dict.Add("Ice resistance", new int[1] { 12 });
+            column_dict.Add("Black resistance", new int[1] { 13 });
+            column_dict.Add("Mind resistance", new int[1] { 14 });
+            column_dict.Add("Walk speed", new int[1] { 15 });
+            column_dict.Add("Fight speed", new int[1] { 16 });
+            column_dict.Add("Cast speed", new int[1] { 17 });
+            column_dict.Add("Unit size", new int[1] { 18 });
+            column_dict.Add("Mana usage", new int[1] { 19 });
+            column_dict.Add("Spawn base time", new int[1] { 20 });
+            column_dict.Add("Unit flags", new int[1] { 21 });
+            column_dict.Add("Head ID", new int[1] { 22 });
+            column_dict.Add("Equipment mode", new int[1] { 23 });
 
         }
 
@@ -96,82 +94,72 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox22_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 10, Utility.TryParseUInt8(textBox22.Text));
-        }
-
-        private void textBox19_TextChanged(object sender, EventArgs e)
-        {
-            set_element_variant(current_element, 11, Utility.TryParseUInt8(textBox19.Text));
+            set_element_variant(current_element, 10, Utility.TryParseUInt16(textBox22.Text));
         }
 
         private void textBox16_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 12, Utility.TryParseUInt16(textBox16.Text));
+            set_element_variant(current_element, 11, Utility.TryParseUInt16(textBox16.Text));
         }
 
         private void textBox10_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 13, Utility.TryParseUInt16(textBox10.Text));
+            set_element_variant(current_element, 12, Utility.TryParseUInt16(textBox10.Text));
         }
 
         private void textBox11_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 14, Utility.TryParseUInt16(textBox11.Text));
+            set_element_variant(current_element, 13, Utility.TryParseUInt16(textBox11.Text));
         }
 
         private void textBox12_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 15, Utility.TryParseUInt16(textBox12.Text));
+            set_element_variant(current_element, 14, Utility.TryParseUInt16(textBox12.Text));
         }
 
         private void textBox13_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 16, Utility.TryParseUInt16(textBox13.Text));
+            set_element_variant(current_element, 15, Utility.TryParseUInt16(textBox13.Text));
         }
 
         private void textBox14_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 17, Utility.TryParseUInt16(textBox14.Text));
+            set_element_variant(current_element, 16, Utility.TryParseUInt16(textBox14.Text));
         }
 
         private void textBox15_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 18, Utility.TryParseUInt16(textBox15.Text));
+            set_element_variant(current_element, 17, Utility.TryParseUInt16(textBox15.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 19, Utility.TryParseUInt16(textBox5.Text));
+            set_element_variant(current_element, 18, Utility.TryParseUInt16(textBox5.Text));
         }
 
         private void textBox25_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 20, Utility.TryParseUInt8(textBox25.Text));
-        }
-
-        private void textBox23_TextChanged(object sender, EventArgs e)
-        {
-            set_element_variant(current_element, 21, Utility.TryParseUInt8(textBox23.Text));
+            set_element_variant(current_element, 19, Utility.TryParseUInt16(textBox25.Text));
         }
 
         private void textBox27_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 22, Utility.TryParseUInt32(textBox27.Text));
+            set_element_variant(current_element, 20, Utility.TryParseUInt32(textBox27.Text));
         }
 
         private void textBox26_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 23, Utility.TryParseUInt8(textBox26.Text));
+            set_element_variant(current_element, 21, Utility.TryParseUInt8(textBox26.Text));
         }
 
         private void textBox21_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 24, Utility.TryParseUInt16(textBox21.Text));
+            set_element_variant(current_element, 22, Utility.TryParseUInt16(textBox21.Text));
         }
 
         private void textBox24_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 25, Utility.TryParseUInt8(textBox24.Text));
+            set_element_variant(current_element, 23, Utility.TryParseUInt8(textBox24.Text));
         }
 
         public override void show_element()
@@ -187,43 +175,87 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox3.Text = variant_repr(8);
             textBox18.Text = variant_repr(9);
             textBox22.Text = variant_repr(10);
-            textBox19.Text = variant_repr(11);
-            textBox16.Text = variant_repr(12);
-            textBox10.Text = variant_repr(13);
-            textBox11.Text = variant_repr(14);
-            textBox12.Text = variant_repr(15);
-            textBox13.Text = variant_repr(16);
-            textBox14.Text = variant_repr(17);
-            textBox15.Text = variant_repr(18);
-            textBox5.Text = variant_repr(19);
-            textBox25.Text = variant_repr(20);
-            textBox23.Text = variant_repr(21);
-            textBox27.Text = variant_repr(22);
-            textBox26.Text = variant_repr(23);
-            textBox21.Text = variant_repr(24);
-            textBox24.Text = variant_repr(25);
+            textBox16.Text = variant_repr(11);
+            textBox10.Text = variant_repr(12);
+            textBox11.Text = variant_repr(13);
+            textBox12.Text = variant_repr(14);
+            textBox13.Text = variant_repr(15);
+            textBox14.Text = variant_repr(16);
+            textBox15.Text = variant_repr(17);
+            textBox5.Text = variant_repr(18);
+            textBox25.Text = variant_repr(19);
+            textBox27.Text = variant_repr(20);
+            textBox26.Text = variant_repr(21);
+            textBox21.Text = variant_repr(22);
+            textBox24.Text = variant_repr(23);
 
             // button repr
-            button_repr(ButtonGoto5, 4, "Hero/Worker skills", "Unit/Hero data");
-            button_repr(ButtonGoto6, 5, "Hero spells", "Unit/Hero data");
+            button_repr(ButtonGoto5, 2006, "Hero/Worker skills", "Unit/Hero data");
+            button_repr(ButtonGoto6, 2067, "Hero spells", "Unit/Hero data");
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox2, 15);
+                step_into(textBox2, 2022);
         }
 
         private void ButtonGoto5_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto5, 4);
-            button_repr(ButtonGoto5, 4, "Hero/Worker skills", "Unit/Hero data");
+            button_step_into(ButtonGoto5, 2006);
+            button_repr(ButtonGoto5, 2006, "Hero/Worker skills", "Unit/Hero data");
         }
 
         private void ButtonGoto6_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto6, 5);
-            button_repr(ButtonGoto6, 5, "Hero spells", "Unit/Hero data");
+            button_step_into(ButtonGoto6, 2067);
+            button_repr(ButtonGoto6, 2067, "Hero spells", "Unit/Hero data");
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 stats_id = (UInt16)category[index][0];
+            UInt16 stats_level = (UInt16)category[index][1];
+            SFCategoryElement elem = SFCategoryManager.gamedata[2024].FindElement<UInt16>(2, stats_id);
+            string unit_txt = SFCategoryManager.GetTextFromElement(elem, 1);
+            if (unit_txt == Utility.S_NONAME)
+                unit_txt = SFCategoryManager.GetRuneheroName(stats_id);
+            return stats_id.ToString() + " " + unit_txt + " (lvl " + stats_level.ToString() + ")";
+        }
+
+        public override string get_description_string(int index)
+        {
+            string race_name = "";
+            int hp = (int)(UInt16)category[index][7];
+            int mana = (int)(UInt16)category[index][9];
+            int lvl = ((int)(UInt16)category[index][1]) - 1;
+            string stat_txt = "";
+            if ((lvl >= 0) && (lvl < SFCategoryManager.gamedata[2048].GetElementCount()))
+            {
+                SFCategoryElement lvl_elem = SFCategoryManager.gamedata[2048][lvl];
+                if (lvl_elem != null)
+                {
+                    hp *= (int)(UInt16)lvl_elem[1];
+                    mana *= (int)(UInt16)lvl_elem[2];
+                    hp /= 100;
+                    mana /= 100;
+                    stat_txt = "\r\nHealth: " + hp.ToString() + "\r\nMana: " + mana.ToString();
+                }
+            }
+            Byte race_id = (Byte)category[index][2];
+            race_name = SFCategoryManager.GetRaceName(race_id);
+            Byte flags = (Byte)category[index][23];
+            bool isMale = (flags & 1) == 0;
+            bool isUnkillable = (flags & 2) == 2;
+            string textFlags = "\r\nUnit gender: ";
+            if (isMale)
+                textFlags += "male";
+            else
+                textFlags += "female";
+            if (isUnkillable)
+                textFlags += "\r\nThis unit is unkillable";
+            return "This unit race: " + race_name + stat_txt + textFlags;
         }
     }
 }

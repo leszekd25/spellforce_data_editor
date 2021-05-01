@@ -30,11 +30,10 @@
         {
             this.tb_effID = new System.Windows.Forms.TextBox();
             this.lb_effID = new System.Windows.Forms.Label();
-            this.flagDepthWrite = new System.Windows.Forms.CheckBox();
-            this.flagDepthReadOn = new System.Windows.Forms.CheckBox();
-            this.flagCulling = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // tb_effID
@@ -56,48 +55,15 @@
             this.lb_effID.Text = "Terrain ID";
             this.lb_effID.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // flagDepthWrite
-            // 
-            this.flagDepthWrite.AutoSize = true;
-            this.flagDepthWrite.Location = new System.Drawing.Point(25, 71);
-            this.flagDepthWrite.Name = "flagDepthWrite";
-            this.flagDepthWrite.Size = new System.Drawing.Size(123, 17);
-            this.flagDepthWrite.TabIndex = 18;
-            this.flagDepthWrite.Text = "Write to depth buffer";
-            this.flagDepthWrite.UseVisualStyleBackColor = true;
-            this.flagDepthWrite.CheckedChanged += new System.EventHandler(this.flagDepthWrite_CheckedChanged);
-            // 
-            // flagDepthReadOn
-            // 
-            this.flagDepthReadOn.AutoSize = true;
-            this.flagDepthReadOn.Location = new System.Drawing.Point(25, 94);
-            this.flagDepthReadOn.Name = "flagDepthReadOn";
-            this.flagDepthReadOn.Size = new System.Drawing.Size(183, 17);
-            this.flagDepthReadOn.TabIndex = 19;
-            this.flagDepthReadOn.Text = "Read from depth buffer on render";
-            this.flagDepthReadOn.UseVisualStyleBackColor = true;
-            this.flagDepthReadOn.CheckedChanged += new System.EventHandler(this.flagDepthReadOn_CheckedChanged);
-            // 
-            // flagCulling
-            // 
-            this.flagCulling.AutoSize = true;
-            this.flagCulling.Location = new System.Drawing.Point(25, 117);
-            this.flagCulling.Name = "flagCulling";
-            this.flagCulling.Size = new System.Drawing.Size(96, 17);
-            this.flagCulling.TabIndex = 20;
-            this.flagCulling.Text = "Surface culling";
-            this.flagCulling.UseVisualStyleBackColor = true;
-            this.flagCulling.CheckedChanged += new System.EventHandler(this.flagCulling_CheckedChanged);
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(31, 48);
+            this.label1.Location = new System.Drawing.Point(36, 48);
             this.label1.Name = "label1";
             this.label1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label1.Size = new System.Drawing.Size(68, 13);
+            this.label1.Size = new System.Drawing.Size(63, 13);
             this.label1.TabIndex = 16;
-            this.label1.Text = "Unknown (?)";
+            this.label1.Text = "Block value";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // textBox1
@@ -107,14 +73,32 @@
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 21;
             // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(105, 71);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(126, 20);
+            this.textBox2.TabIndex = 23;
+            this.textBox2.Validated += new System.EventHandler(this.textBox2_Validated);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(18, 74);
+            this.label2.Name = "label2";
+            this.label2.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label2.Size = new System.Drawing.Size(81, 13);
+            this.label2.TabIndex = 22;
+            this.label2.Text = "Cultivation flags";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
             // Control46
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.flagCulling);
-            this.Controls.Add(this.flagDepthReadOn);
-            this.Controls.Add(this.flagDepthWrite);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tb_effID);
             this.Controls.Add(this.lb_effID);
@@ -127,10 +111,9 @@
         #endregion
         private System.Windows.Forms.TextBox tb_effID;
         private System.Windows.Forms.Label lb_effID;
-        private System.Windows.Forms.CheckBox flagDepthWrite;
-        private System.Windows.Forms.CheckBox flagDepthReadOn;
-        private System.Windows.Forms.CheckBox flagCulling;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label2;
     }
 }

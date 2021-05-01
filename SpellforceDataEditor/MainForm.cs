@@ -45,7 +45,6 @@ namespace SpellforceDataEditor
             InitializeComponent();
             linkEditor.Links.Add(0, linkEditor.Text.Length, "https://github.com/leszekd25/spellforce_data_editor/tree/with_viewer/bin");
             linkEditor.Visible = false;
-            SFCFF.SFCategoryManager.Init();
             //CheckNewVersionAvailable();
             checknewversion_thread = new Thread(CheckNewVersionAvailable);
             checknewversion_thread.Start();

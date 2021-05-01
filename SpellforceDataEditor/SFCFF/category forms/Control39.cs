@@ -66,13 +66,33 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 37);
+                step_into(textBox1, 2052);
         }
 
         private void tb_req4_1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(tb_req4_1, 14);
+                step_into(tb_req4_1, 2016);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            UInt16 object_id = (UInt16)category[index][0];
+            string txt = SFCategoryManager.GetTextFromElement(category[index], 5);
+            return object_id.ToString() + " " + txt;
+        }
+
+        public override string get_description_string(int index)
+        {
+            string map_handle = "";
+            UInt32 map_id = (UInt32)category[index][1];
+            SFCategoryElement map_elem = SFCategoryManager.gamedata[2052].FindElementBinary<UInt32>(0, map_id);
+            if (map_elem == null)
+                map_handle = Utility.S_NONAME;
+            else
+                map_handle = Utility.CleanString(map_elem[2]);
+            return "Map handle: " + map_handle;
         }
     }
 }

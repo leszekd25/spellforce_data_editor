@@ -80,19 +80,53 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 6);
+                step_into(textBox1, 2003);
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox2, 43);
+                step_into(textBox2, 2063);
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox3, 44);
+                step_into(textBox3, 2064);
+        }
+
+
+        private float get_dmg(int min_dmg, int max_dmg, int sp)
+        {
+            Single mean = ((Single)min_dmg + (Single)max_dmg) / 2;
+            Single ratio = ((Single)sp) / 100;
+            return mean * ratio;
+        }
+
+        public override string get_element_string(int index)
+        {
+            UInt16 item_id = (UInt16)category[index][0];
+            string txt = SFCategoryManager.GetItemName(item_id);
+            return category[index][0].ToString() + " " + txt;
+        }
+
+        public override string get_description_string(int index)
+        {
+            UInt16 type_id = (UInt16)category[index][6];
+            UInt16 material_id = (UInt16)category[index][7];
+
+            SFCategoryElement type_elem = SFCategoryManager.gamedata[2063].FindElementBinary<UInt16>(0, type_id);
+            string type_name = SFCategoryManager.GetTextFromElement(type_elem, 1);
+            SFCategoryElement material_elem = SFCategoryManager.gamedata[2064].FindElementBinary<UInt16>(0, material_id);
+            string material_name = SFCategoryManager.GetTextFromElement(material_elem, 1);
+
+            UInt16 min_dmg = (UInt16)category[index][1];
+            UInt16 max_dmg = (UInt16)category[index][2];
+            UInt16 spd = (UInt16)category[index][5];
+
+            return "Weapon type: " + type_name
+                + "\r\nWeapon material: " + material_name
+                + "\r\nDamage per second: " + get_dmg((int)min_dmg, (int)max_dmg, (int)spd).ToString();
         }
     }
 }

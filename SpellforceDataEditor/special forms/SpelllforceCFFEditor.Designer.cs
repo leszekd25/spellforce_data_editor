@@ -61,6 +61,7 @@
             this.groupSearch = new System.Windows.Forms.GroupBox();
             this.radioSearchFlag = new System.Windows.Forms.RadioButton();
             this.panelElemManipulate = new System.Windows.Forms.Panel();
+            this.ButtonElemAdd = new System.Windows.Forms.Button();
             this.ButtonElemRemove = new System.Windows.Forms.Button();
             this.ButtonElemInsert = new System.Windows.Forms.Button();
             this.ElementSelect_RefreshTimer = new System.Windows.Forms.Timer(this.components);
@@ -73,7 +74,8 @@
             this.panelElemCopy = new System.Windows.Forms.Panel();
             this.ButtonElemClear = new System.Windows.Forms.Button();
             this.ButtonElemCopy = new System.Windows.Forms.Button();
-            this.ButtonElemAdd = new System.Windows.Forms.Button();
+            this.mergeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.diffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -98,6 +100,8 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadGameDatacffToolStripMenuItem,
+            this.mergeToolStripMenuItem,
+            this.diffToolStripMenuItem,
             this.saveAsToolStripMenuItem,
             this.closeToolStripMenuItem,
             this.exitToolStripMenuItem});
@@ -370,6 +374,16 @@
             this.panelElemManipulate.TabIndex = 11;
             this.panelElemManipulate.Visible = false;
             // 
+            // ButtonElemAdd
+            // 
+            this.ButtonElemAdd.Location = new System.Drawing.Point(4, 4);
+            this.ButtonElemAdd.Name = "ButtonElemAdd";
+            this.ButtonElemAdd.Size = new System.Drawing.Size(69, 23);
+            this.ButtonElemAdd.TabIndex = 2;
+            this.ButtonElemAdd.Text = "Add";
+            this.ButtonElemAdd.UseVisualStyleBackColor = true;
+            this.ButtonElemAdd.Click += new System.EventHandler(this.ButtonElemAdd_Click);
+            // 
             // ButtonElemRemove
             // 
             this.ButtonElemRemove.Location = new System.Drawing.Point(3, 62);
@@ -481,15 +495,18 @@
             this.ButtonElemCopy.UseVisualStyleBackColor = true;
             this.ButtonElemCopy.Click += new System.EventHandler(this.ButtonElemCopy_Click);
             // 
-            // ButtonElemAdd
+            // mergeToolStripMenuItem
             // 
-            this.ButtonElemAdd.Location = new System.Drawing.Point(4, 4);
-            this.ButtonElemAdd.Name = "ButtonElemAdd";
-            this.ButtonElemAdd.Size = new System.Drawing.Size(69, 23);
-            this.ButtonElemAdd.TabIndex = 2;
-            this.ButtonElemAdd.Text = "Add";
-            this.ButtonElemAdd.UseVisualStyleBackColor = true;
-            this.ButtonElemAdd.Click += new System.EventHandler(this.ButtonElemAdd_Click);
+            this.mergeToolStripMenuItem.Name = "mergeToolStripMenuItem";
+            this.mergeToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.mergeToolStripMenuItem.Text = "Merge...";
+            // 
+            // diffToolStripMenuItem
+            // 
+            this.diffToolStripMenuItem.Name = "diffToolStripMenuItem";
+            this.diffToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.diffToolStripMenuItem.Text = "Diff...";
+            this.diffToolStripMenuItem.Click += new System.EventHandler(this.diffToolStripMenuItem_Click);
             // 
             // SpelllforceCFFEditor
             // 
@@ -574,5 +591,7 @@
         private System.Windows.Forms.ToolStripMenuItem findAllReferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem calculatorsToolStripMenuItem;
         private System.Windows.Forms.Button ButtonElemAdd;
+        private System.Windows.Forms.ToolStripMenuItem mergeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem diffToolStripMenuItem;
     }
 }

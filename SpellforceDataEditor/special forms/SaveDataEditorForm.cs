@@ -16,7 +16,6 @@ namespace SpellforceDataEditor.special_forms
 
     public partial class SaveDataEditorForm : Form
     {
-        SFChunkFile sfcf;
         public SaveDataEditorForm()
         {
             InitializeComponent();

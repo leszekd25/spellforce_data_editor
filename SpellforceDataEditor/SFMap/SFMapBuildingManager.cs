@@ -109,34 +109,31 @@ namespace SpellforceDataEditor.SFMap
             SFMapCollisionBoundary cb = new SFMapCollisionBoundary();
             // load building origin vector
             Vector2 org = new Vector2(0, 0);
-            int org_index = SFCFF.SFCategoryManager.gamedata[23].GetElementIndex(id);
+            int org_index = SFCFF.SFCategoryManager.gamedata[2029].GetElementIndex(id);
             if (org_index != -1)
             {
-                SFCFF.SFCategoryElement org_data = SFCFF.SFCategoryManager.gamedata[23][org_index]; // 6, 7
+                SFCFF.SFCategoryElement org_data = SFCFF.SFCategoryManager.gamedata[2029][org_index]; // 6, 7
                 org.X = ((short)org_data[6]) / 100.0f;
                 org.Y = ((short)org_data[7]) / 100.0f;
             }
             // load building collision data from gamedata
-            int col_index = SFCFF.SFCategoryManager.gamedata[24].GetElementIndex(id);
+            int col_index = SFCFF.SFCategoryManager.gamedata[2030].GetElementIndex(id);
             if (col_index != -1)
             {
-                SFCFF.SFCategoryElement col_data = SFCFF.SFCategoryManager.gamedata[24][col_index];
+                SFCFF.SFCategoryElement col_data = SFCFF.SFCategoryManager.gamedata[2030][col_index];
 
-                int current_col_offset = 0;
-                while (current_col_offset < col_data.variants.Count)
+                for(int i = 0; i < col_data.variants.Count; i+=4)
                 {
-                    int vertex_count = (byte)col_data.variants[current_col_offset + 3];
-
+                    SFCFF.SFOutlineData outline = (SFCFF.SFOutlineData)(col_data[i + 3]);
+                    int vertex_count = outline.Data.Count / 2;
                     Vector2[] vertex_list = new Vector2[vertex_count];
-                    for (int i = 0; i < vertex_count; i++)
+                    for (int j = 0; j < vertex_count; j++)
                     {
-                        vertex_list[i] = new Vector2();
-                        vertex_list[i].X = (float)((short)(col_data.variants[current_col_offset + 4 + i * 2 + 0])) / 128;
-                        vertex_list[i].Y = -(float)((short)(col_data.variants[current_col_offset + 4 + i * 2 + 1])) / 128;
+                        vertex_list[j] = new Vector2();
+                        vertex_list[j].X = outline.Data[j * 2 + 0] / 128.0f;
+                        vertex_list[j].Y = -outline.Data[j * 2 + 1] / 128.0f;
                     }
                     cb.AddPolygon(new SFMapCollisionPolygon2D(vertex_list, org));
-
-                    current_col_offset += 4 + 2 * vertex_count;
                 }
 
                 building_collision.Add((byte)id, new SFMapBuildingCollisionBoundary(cb, org));
@@ -195,8 +192,8 @@ namespace SpellforceDataEditor.SFMap
             if(race_id == -1)
             {
                 // find race ID in gamedata
-                int bld_id = SFCFF.SFCategoryManager.gamedata[23].GetElementIndex(id);
-                bld.race_id = (byte)SFCFF.SFCategoryManager.gamedata[23][bld_id][1];
+                int bld_id = SFCFF.SFCategoryManager.gamedata[2029].GetElementIndex(id);
+                bld.race_id = (byte)SFCFF.SFCategoryManager.gamedata[2029][bld_id][1];
             }
 
             if (index == -1)

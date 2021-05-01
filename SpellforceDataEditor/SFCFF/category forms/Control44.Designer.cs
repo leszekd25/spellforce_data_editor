@@ -43,8 +43,8 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 9;
-            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
+            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label1
             // 
@@ -87,12 +87,12 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(46, 74);
+            this.label2.Location = new System.Drawing.Point(25, 74);
             this.label2.Name = "label2";
             this.label2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label2.Size = new System.Drawing.Size(53, 13);
+            this.label2.Size = new System.Drawing.Size(74, 13);
             this.label2.TabIndex = 10;
-            this.label2.Text = "Unknown";
+            this.label2.Text = "Sharpness (%)";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // Control44

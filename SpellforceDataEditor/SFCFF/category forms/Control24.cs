@@ -118,44 +118,60 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox12.Text = variant_repr(12);
             textBox13.Text = variant_repr(13);
 
-            button_repr(ButtonGoto25, 24, "Collision data", "Building");
-            button_repr(ButtonGoto26, 25, "Requirements", "Building");
+            button_repr(ButtonGoto25, 2030, "Collision data", "Building");
+            button_repr(ButtonGoto26, 2031, "Requirements", "Building");
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox2, 15);
+                step_into(textBox2, 2022);
         }
 
         private void textBox5_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox5, 14);
+                step_into(textBox5, 2016);
         }
 
         private void textBox11_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox11, 23);
+                step_into(textBox11, 2029);
         }
 
         private void textBox12_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox12, 41);
+                step_into(textBox12, 2059);
         }
 
         private void ButtonGoto25_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto25, 24);
-            button_repr(ButtonGoto25, 24, "Collision data", "Building");
+            button_step_into(ButtonGoto25, 2030);
+            button_repr(ButtonGoto25, 2030, "Collision data", "Building");
         }
 
         private void ButtonGoto26_Click(object sender, EventArgs e)
         {
-            button_step_into(ButtonGoto26, 25);
-            button_repr(ButtonGoto26, 25, "Requirements", "Building");
+            button_step_into(ButtonGoto26, 2031);
+            button_repr(ButtonGoto26, 2031, "Requirements", "Building");
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            string txt = SFCategoryManager.GetTextFromElement(category[index], 5);
+            return category[index][0].ToString() + " " + txt;
+        }
+
+        public override string get_description_string(int index)
+        {
+            Byte race_id = (Byte)category[index][1];
+            string race_name = SFCategoryManager.GetRaceName(race_id);
+            UInt16 other_building_id = (UInt16)category[index][0];
+            string building_name = SFCategoryManager.GetBuildingName(other_building_id);
+            return "Race: " + race_name + "\r\nRequires " + building_name;
         }
     }
 }

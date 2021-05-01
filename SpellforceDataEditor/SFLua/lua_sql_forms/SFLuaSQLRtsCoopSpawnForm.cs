@@ -387,7 +387,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                     return;
 
                 ushort unit_id = Utility.TryParseUInt16(SelectedUnitID.Text);
-                int unit_index = SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(unit_id);
+                int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
                 if(unit_index != -1)
                     MainForm.data.Tracer_StepForward(17, unit_index, false);
             }
@@ -403,7 +403,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                     return;
 
                 ushort unit_id = Utility.TryParseUInt16(SelectedSpawnDataUnitID.Text);
-                int unit_index = SFCFF.SFCategoryManager.gamedata[17].GetElementIndex(unit_id);
+                int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
                 if (unit_index != -1)
                     MainForm.data.Tracer_StepForward(17, unit_index, false);
             }

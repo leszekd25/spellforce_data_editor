@@ -257,16 +257,16 @@ namespace SpellforceDataEditor.special_forms
             private int GetUnitRelationToMainChar(int unit_id)
             {
                 // clan player = 11
-                var unit_data = SFCFF.SFCategoryManager.gamedata[17].FindElementBinary(0, (ushort)unit_id);
+                var unit_data = SFCFF.SFCategoryManager.gamedata[2024].FindElementBinary(0, (ushort)unit_id);
                 if (unit_data == null)
                     return 6;
-                var unit_stats_data = SFCFF.SFCategoryManager.gamedata[3].FindElementBinary(0, (ushort)unit_data[2]);
+                var unit_stats_data = SFCFF.SFCategoryManager.gamedata[2005].FindElementBinary(0, (ushort)unit_data[2]);
                 if (unit_stats_data == null)
                     return 6;
-                var race_data = SFCFF.SFCategoryManager.gamedata[15].FindElementBinary(0, (byte)unit_stats_data[2]);
+                var race_data = SFCFF.SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)unit_stats_data[2]);
                 if (race_data == null)
                     return 6;
-                var clan_data = SFCFF.SFCategoryManager.gamedata[16].FindElementBinary(0, (byte)((ushort)race_data[9]));
+                var clan_data = SFCFF.SFCategoryManager.gamedata[2023].FindElementBinary(0, (byte)((ushort)race_data[9]));
                 if (clan_data == null)
                     return 6;
                 var player_relation = (byte)clan_data[32];
@@ -285,16 +285,16 @@ namespace SpellforceDataEditor.special_forms
                 SFCFF.SFCategoryElement race_data;
                 if (bld.race_id == 0)
                 {
-                    var building_data = SFCFF.SFCategoryManager.gamedata[23].FindElementBinary(0, (ushort)bld.game_id);
+                    var building_data = SFCFF.SFCategoryManager.gamedata[2029].FindElementBinary(0, (ushort)bld.game_id);
                     if (building_data == null)
                         return 6;
-                    race_data = SFCFF.SFCategoryManager.gamedata[15].FindElementBinary(0, (byte)building_data[1]);
+                    race_data = SFCFF.SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)building_data[1]);
                 }
                 else
-                    race_data = SFCFF.SFCategoryManager.gamedata[15].FindElementBinary(0, (byte)bld.race_id);
+                    race_data = SFCFF.SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)bld.race_id);
                 if (race_data == null)
                     return 6;
-                var clan_data = SFCFF.SFCategoryManager.gamedata[16].FindElementBinary(0, (byte)((ushort)race_data[9]));
+                var clan_data = SFCFF.SFCategoryManager.gamedata[2023].FindElementBinary(0, (byte)((ushort)race_data[9]));
                 if (clan_data == null)
                     return 6;
                 var player_relation = (byte)clan_data[32];
@@ -2626,11 +2626,11 @@ namespace SpellforceDataEditor.special_forms
         {
             int cat_id = -1;
             if (RadioEntityModeUnit.Checked)
-                cat_id = 17;
+                cat_id = 2024;
             else if (RadioEntityModeObject.Checked)
-                cat_id = 33;
+                cat_id = 2050;
             else if (RadioEntityModeBuilding.Checked)
-                cat_id = 23;
+                cat_id = 2029;
             return cat_id;
         }
 
@@ -2650,7 +2650,7 @@ namespace SpellforceDataEditor.special_forms
 
             unit_tree = new Dictionary<string, TreeNode>();
             // generate race nodes
-            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[15];
+            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[2022];
             for (int i = 0; i < cat.GetElementCount(); i++)
             {
                 byte race_id = (byte)cat[i][0];
@@ -2669,14 +2669,14 @@ namespace SpellforceDataEditor.special_forms
 
             }
             // generate unit nodes
-            SFCFF.SFCategory units_cat = SFCFF.SFCategoryManager.gamedata[17];
+            SFCFF.SFCategory units_cat = SFCFF.SFCategoryManager.gamedata[2024];
             for (int i = 0; i < units_cat.GetElementCount(); i++)
             {
                 ushort unit_id = (ushort)units_cat[i][0];
                 string unit_name = unit_id.ToString() + ". " + SFCFF.SFCategoryManager.GetUnitName(unit_id, true);
 
                 ushort stats_id = (ushort)(units_cat[i][2]);
-                SFCFF.SFCategoryElement stats_elem = SFCFF.SFCategoryManager.gamedata[3].FindElementBinary(0, stats_id);
+                SFCFF.SFCategoryElement stats_elem = SFCFF.SFCategoryManager.gamedata[2005].FindElementBinary(0, stats_id);
                 if (stats_elem == null)
                 {
                     unit_tree.Add(unit_name, new TreeNode(unit_name) { Tag = unit_id });
@@ -2723,7 +2723,7 @@ namespace SpellforceDataEditor.special_forms
 
             TreeEntities.Nodes.Clear();
             // generate race nodes
-            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[15];
+            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[2022];
             for (int i = 0; i < cat.GetElementCount(); i++)
             {
                 byte race_id = (byte)cat[i][0];
@@ -2742,14 +2742,14 @@ namespace SpellforceDataEditor.special_forms
 
             }
             // generate unit nodes
-            SFCFF.SFCategory units_cat = SFCFF.SFCategoryManager.gamedata[17];
+            SFCFF.SFCategory units_cat = SFCFF.SFCategoryManager.gamedata[2024];
             for (int i = 0; i < units_cat.GetElementCount(); i++)
             {
                 ushort unit_id = (ushort)units_cat[i][0];
                 string unit_name = unit_id.ToString() + ". " + SFCFF.SFCategoryManager.GetUnitName(unit_id, true);
 
                 ushort stats_id = (ushort)(units_cat[i][2]);
-                SFCFF.SFCategoryElement stats_elem = SFCFF.SFCategoryManager.gamedata[3].FindElementBinary(0, stats_id);
+                SFCFF.SFCategoryElement stats_elem = SFCFF.SFCategoryManager.gamedata[2005].FindElementBinary(0, stats_id);
                 if (stats_elem == null)
                 {
                     if (unit_name.ToLower().Contains(txt))
@@ -2900,11 +2900,11 @@ namespace SpellforceDataEditor.special_forms
 
             int cat_id = -1;
             if (RadioEntityModeUnit.Checked)
-                cat_id = 17;
+                cat_id = 2024;
             else if (RadioEntityModeObject.Checked)
-                cat_id = 33;
+                cat_id = 2050;
             else if (RadioEntityModeBuilding.Checked)
-                cat_id = 23;
+                cat_id = 2029;
             if (cat_id == -1)
                 return;
 
@@ -2929,7 +2929,7 @@ namespace SpellforceDataEditor.special_forms
 
             building_tree = new Dictionary<string, TreeNode>();
             // generate race nodes
-            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[15];
+            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[2022];
             for (int i = 0; i < cat.GetElementCount(); i++)
             {
                 byte race_id = (byte)cat[i][0];
@@ -2948,7 +2948,7 @@ namespace SpellforceDataEditor.special_forms
 
             }
             // generate building nodes
-            SFCFF.SFCategory buildings_cat = SFCFF.SFCategoryManager.gamedata[23];
+            SFCFF.SFCategory buildings_cat = SFCFF.SFCategoryManager.gamedata[2029];
             for (int i = 0; i < buildings_cat.GetElementCount(); i++)
             {
                 ushort building_id = (ushort)buildings_cat[i][0];
@@ -2995,7 +2995,7 @@ namespace SpellforceDataEditor.special_forms
             TreeEntities.Nodes.Clear();
 
             // generate race nodes
-            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[15];
+            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[2022];
             for (int i = 0; i < cat.GetElementCount(); i++)
             {
                 byte race_id = (byte)cat[i][0];
@@ -3014,7 +3014,7 @@ namespace SpellforceDataEditor.special_forms
 
             }
             // generate building nodes
-            SFCFF.SFCategory buildings_cat = SFCFF.SFCategoryManager.gamedata[23];
+            SFCFF.SFCategory buildings_cat = SFCFF.SFCategoryManager.gamedata[2029];
             for (int i = 0; i < buildings_cat.GetElementCount(); i++)
             {
                 ushort building_id = (ushort)buildings_cat[i][0];
@@ -3090,7 +3090,7 @@ namespace SpellforceDataEditor.special_forms
 
             obj_tree = new Dictionary<string, TreeNode>();
 
-            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[33];
+            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[2050];
             foreach(SFCFF.SFCategoryElement e in cat.elements)
             {
                 UInt16 id = (UInt16)e[0];
@@ -3146,7 +3146,7 @@ namespace SpellforceDataEditor.special_forms
 
             TreeEntities.Nodes.Clear();
 
-            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[33];
+            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[2050];
             foreach (SFCFF.SFCategoryElement e in cat.elements)
             {
                 UInt16 id = (UInt16)e[0];

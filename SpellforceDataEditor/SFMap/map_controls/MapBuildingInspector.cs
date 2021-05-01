@@ -144,7 +144,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             // check if new building exists
-            if (SFCFF.SFCategoryManager.gamedata[23].GetElementIndex(new_building_id) == Utility.NO_INDEX)
+            if (SFCFF.SFCategoryManager.gamedata[2029].GetElementIndex(new_building_id) == Utility.NO_INDEX)
                 return;
 
             // undo/redo
@@ -382,7 +382,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = Utility.TryParseUInt8(BuildingID.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[23].GetElementIndex(elem_id);
+                int real_elem_id = SFCFF.SFCategoryManager.gamedata[2029].GetElementIndex(elem_id);
                 if (real_elem_id != Utility.NO_INDEX)
                     MainForm.data.Tracer_StepForward(23, real_elem_id);
             }

@@ -85,7 +85,7 @@ namespace SpellforceDataEditor.SFCFF
 
                 else if (type == SearchType.TYPE_STRING)
                 {
-                    if(category.GetElementString(i).ToLower().Contains(query))
+                    if(MainForm.data.CachedElementDisplays[category.category_id].get_element_string(i).ToLower().Contains(query))
                     {
                         target.Add(i);
                         continue;

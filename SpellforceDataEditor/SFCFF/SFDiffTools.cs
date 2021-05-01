@@ -15,23 +15,32 @@ namespace SpellforceDataEditor.SFCFF
     public struct SFDiffElement
     {
         //unknown type: nobody knows
-        //replace: element was changed
-        //insert: a new element was added
-        //remove: an element was removed
-        //category: denotes start of category changes
-        //eof: denotes end of file
-        //md5: denotes cff file nd5 hash (needed for file comparison)
+        //replace: element was changed, replace_sub: subelement was changed
+        //insert: a new element was added, insert_sub: a new subelement was added
+        //remove: an element was removed, remove_sub: a subelement was removed
         //lastindex: denotes the last change index that is in effect in data
-        public enum DIFF_TYPE { UNKNOWN = 0, REPLACE, INSERT, REMOVE, CATEGORY, EOF, MD5, LASTINDEX };
+        public enum DIFF_TYPE { UNKNOWN = 0, REPLACE, REPLACE_SUB, INSERT, INSERT_SUB, REMOVE, REMOVE_SUB };
 
         public DIFF_TYPE difference_type;         //action that is taken
         public int difference_index;              //index in a category that the action refers to (or other data when applicable)
-        public SFCategoryElement elem_old;        //element before change
-        public SFCategoryElement elem_new;        //element after change
-        public SFDiffElement(DIFF_TYPE d, int i = Utility.NO_INDEX, SFCategoryElement e1 = null, SFCategoryElement e2 = null)
+        public int subdifference_index;           //index in element list, only applicable to _SUB types
+        public object elem_old;        //element before change, can be either SFCategoryElement or SFCategoryElementList
+        public object elem_new;        //element after change,  can be either SFCategoryElement or SFCategoryElementList
+
+        public SFDiffElement(DIFF_TYPE d, int i = Utility.NO_INDEX, int j = Utility.NO_INDEX, SFCategoryElement e1 = null, SFCategoryElement e2 = null)
         {
             difference_type = d;
             difference_index = i;
+            subdifference_index = j;
+            elem_old = e1;
+            elem_new = e2;
+        }
+
+        public SFDiffElement(DIFF_TYPE d, int i = Utility.NO_INDEX, int j = Utility.NO_INDEX, SFCategoryElementList e1 = null, SFCategoryElementList e2 = null)
+        {
+            difference_type = d;
+            difference_index = i;
+            subdifference_index = j;
             elem_old = e1;
             elem_new = e2;
         }
@@ -41,231 +50,124 @@ namespace SpellforceDataEditor.SFCFF
     //it contains functions to deal with saving data manipulation order: replacement, insertion and removal of elements
     public class SFDiffTools
     {
-        protected List<SFDiffElement>[] diff_data;    //list of differences between original and modified in each category
-        protected int[] diff_current_index;           //list of the highest index in diff list that is in effect in data; -1 is minimum value, diff_data[].Count-1 is max value
-        string presumed_md5 = "";
+        protected Dictionary<int, List<SFDiffElement>> diff_data;   //list of differences between original and modified in each category
+        protected Dictionary<int, int> diff_current_index;          //list of the highest index in diff list that is in effect in data; -1 is minimum value, diff_data[].Count-1 is max value 
 
         //connects diff tool to a SFCategoryManager it operates on
         public void init()
         {
-            diff_data = new List<SFDiffElement>[SFGameData.categoryNumber];
-            diff_current_index = new int[SFGameData.categoryNumber];
-            for (int i = 0; i < SFGameData.categoryNumber; i++)
+            diff_data = new Dictionary<int, List<SFDiffElement>>();
+            diff_current_index = new Dictionary<int, int>();
+            foreach(var cat in SFCategoryManager.gamedata.categories)
             {
-                diff_current_index[i] = Utility.NO_INDEX;
-                diff_data[i] = new List<SFDiffElement>();
+                diff_data.Add(cat.Key, new List<SFDiffElement>());
+                diff_current_index.Add(cat.Key, Utility.NO_INDEX);
             }
         }
 
-        //clear all diff datal usually called in tandem with SFCategoryManager.unload_all()
+        //clear all diff data (usually called in tandem with SFCategoryManager.unload_all()
         public void clear_data()
         {
-            for (int i = 0; i < SFGameData.categoryNumber; i++)
-            {
-                diff_data[i].Clear();
-                diff_current_index[i] = Utility.NO_INDEX;
-            }
+            diff_data.Clear();
+            diff_current_index.Clear();
         }
 
-        //puts a single diff piece into the buffer
-        public void write_diff_element(BinaryWriter bw, SFCategory cat, SFDiffElement elem)
-        {
-            bw.Write((Byte)elem.difference_type);
-            switch (elem.difference_type)
-            {
-                case SFDiffElement.DIFF_TYPE.MD5:
-                    bw.Write(SFCategoryManager.gamedata.gamedata_md5.ToCharArray());
-                    break;
-                case SFDiffElement.DIFF_TYPE.REPLACE:
-                    bw.Write(elem.difference_index);
-                    cat.WriteElementToBuffer(bw, elem.elem_old.variants);
-                    cat.WriteElementToBuffer(bw, elem.elem_new.variants);
-                    break;
-                case SFDiffElement.DIFF_TYPE.INSERT:
-                    bw.Write(elem.difference_index);
-                    cat.WriteElementToBuffer(bw, elem.elem_new.variants);
-                    break;
-                case SFDiffElement.DIFF_TYPE.REMOVE:
-                    bw.Write(elem.difference_index);
-                    cat.WriteElementToBuffer(bw, elem.elem_old.variants);
-                    break;
-                case SFDiffElement.DIFF_TYPE.CATEGORY:
-                case SFDiffElement.DIFF_TYPE.LASTINDEX:
-                    bw.Write(elem.difference_index);
-                    break;
-                default:
-                    LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFDiffTols.write_diff_element(): Unknown diff type (type: "+elem.difference_index.ToString()+")");
-                    break;
-            }
-            return;
-        }
-
-        //reads a single diff piece from the buffer
-        public SFDiffElement read_diff_element(BinaryReader br, SFCategory cat)
-        {
-            SFDiffElement elem = new SFDiffElement(SFDiffElement.DIFF_TYPE.EOF);
-            elem.difference_type = (SFDiffElement.DIFF_TYPE)br.ReadByte();
-            switch(elem.difference_type)
-            {
-                case SFDiffElement.DIFF_TYPE.MD5:
-                    presumed_md5 = new string(br.ReadChars(32));
-                    break;
-                case SFDiffElement.DIFF_TYPE.REPLACE:
-                    elem.difference_index = br.ReadInt32();
-                    elem.elem_old = new SFCategoryElement();
-                    elem.elem_new = new SFCategoryElement();
-                    elem.elem_old.AddVariants(cat.GetElementFromBuffer(br));
-                    elem.elem_new.AddVariants(cat.GetElementFromBuffer(br));
-                    break;
-                case SFDiffElement.DIFF_TYPE.INSERT:
-                    elem.difference_index = br.ReadInt32();
-                    elem.elem_new = new SFCategoryElement();
-                    elem.elem_new.AddVariants(cat.GetElementFromBuffer(br));
-                    break;
-                case SFDiffElement.DIFF_TYPE.REMOVE:
-                    elem.difference_index = br.ReadInt32();
-                    elem.elem_old = new SFCategoryElement();
-                    elem.elem_old.AddVariants(cat.GetElementFromBuffer(br));
-                    break;
-                case SFDiffElement.DIFF_TYPE.CATEGORY:
-                case SFDiffElement.DIFF_TYPE.LASTINDEX:
-                    elem.difference_index = br.ReadInt32();
-                    break;
-                default:
-                    LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFDiffTols.read_diff_element(): Unknown diff type (type: " + elem.difference_index.ToString() + ")");
-                    break;
-            }
-            return elem;
-        }
-
-        //saves diff data in chronological order, and category order
-        public void save_diff_data(string fname)
-        {
-            FileStream fs = new FileStream(fname, FileMode.OpenOrCreate, FileAccess.Write);
-            fs.SetLength(0);
-            BinaryWriter bw = new BinaryWriter(fs, Encoding.GetEncoding(1252));
-
-            bw.Write((Byte)SFDiffElement.DIFF_TYPE.MD5);
-            bw.Write(SFCategoryManager.gamedata.gamedata_md5.ToCharArray());
-
-            for (int i = 0; i < SFGameData.categoryNumber; i++)
-            {
-                SFCategory cat = SFCategoryManager.gamedata[i];
-                write_diff_element(bw, null, new SFDiffElement(SFDiffElement.DIFF_TYPE.CATEGORY, i));
-                for (int j = 0; j < diff_data[i].Count; j++)
-                {
-                    write_diff_element(bw, cat, diff_data[i][j]);
-                }
-                write_diff_element(bw, null, new SFDiffElement(SFDiffElement.DIFF_TYPE.LASTINDEX, diff_current_index[i]));
-            }
-
-            write_diff_element(bw, null, new SFDiffElement(SFDiffElement.DIFF_TYPE.EOF));
-
-            //bw.Close();
-            fs.Close();
-        }
-
-        //loads data from a diff file
-        //returns false if MD5 hashes of originally edited CFF and currently loaded CFF mismatch
-        public bool load_diff_data(string fname)
-        {
-            FileStream fs;
-            try
-            {
-                fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
-            }
-            catch(FileNotFoundException)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFDiffTols.load_diff_data(): Can't open file "+fname);
-                return false;
-            }
-            catch(Exception)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFDiffTols.load_diff_data(): Unknown error");
-                return false;
-            }
-
-            BinaryReader br = new BinaryReader(fs, Encoding.GetEncoding(1252));
-
-            int current_category = Utility.NO_INDEX;
-            SFDiffElement elem;
-            bool success = true;
-
-            while (br.PeekChar() != Utility.NO_INDEX)
-            {
-                elem = read_diff_element(br, SFCategoryManager.gamedata[current_category]);
-                if (elem.difference_type == SFDiffElement.DIFF_TYPE.CATEGORY)
-                    current_category = elem.difference_index;
-                else if (elem.difference_type == SFDiffElement.DIFF_TYPE.LASTINDEX)
-                    diff_current_index[current_category] = elem.difference_index;
-                else if (elem.difference_type == SFDiffElement.DIFF_TYPE.EOF)
-                    break;
-                else if (elem.difference_type == SFDiffElement.DIFF_TYPE.MD5)   //should be right at the beginning of the file
-                {
-                    if (presumed_md5 != SFCategoryManager.gamedata.gamedata_md5)
-                    {
-                        clear_data();
-                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFDiffTols.load_diff_data(): MD5 hashes don't match!");
-                        success = false;
-                        break;
-                    }
-                }
-                else
-                    push_change(current_category, elem);
-            }
-
-            //br.Close();
-            fs.Close();
-            return success;
-        }
 
         //this function modifies the category data depending on what needs to be done
         public void commit_change(SFCategory cat, SFDiffElement elem)
         {
-            List<SFCategoryElement> elem_list = cat.elements;
-            switch (elem.difference_type)
+            if (cat.category_allow_multiple)
             {
-                case SFDiffElement.DIFF_TYPE.REPLACE:
-                    elem_list[elem.difference_index] = elem.elem_new;
-                    break;
-                case SFDiffElement.DIFF_TYPE.INSERT:
-                    elem_list.Insert(elem.difference_index+1, elem.elem_new);
-                    break;
-                case SFDiffElement.DIFF_TYPE.REMOVE:
-                    elem_list.RemoveAt(elem.difference_index);
-                    break;
+                switch (elem.difference_type)
+                {
+                    case SFDiffElement.DIFF_TYPE.REPLACE:
+                        cat.element_lists[elem.difference_index] = (SFCategoryElementList)(elem.elem_new);
+                        break;
+                    case SFDiffElement.DIFF_TYPE.INSERT:
+                        cat.element_lists.Insert(elem.difference_index + 1, (SFCategoryElementList)(elem.elem_new));
+                        break;
+                    case SFDiffElement.DIFF_TYPE.REMOVE:
+                        cat.element_lists.RemoveAt(elem.difference_index);
+                        break;
+                    case SFDiffElement.DIFF_TYPE.REPLACE_SUB:
+                        cat[elem.difference_index, elem.subdifference_index] = (SFCategoryElement)(elem.elem_new);
+                        break;
+                    case SFDiffElement.DIFF_TYPE.INSERT_SUB:
+                        cat.element_lists[elem.difference_index].Elements.Insert(elem.subdifference_index + 1, (SFCategoryElement)(elem.elem_new));
+                        break;
+                    case SFDiffElement.DIFF_TYPE.REMOVE_SUB:
+                        cat.element_lists[elem.difference_index].Elements.RemoveAt(elem.subdifference_index);
+                        break;
+                }
+            }
+            else
+            {
+                switch (elem.difference_type)
+                {
+                    case SFDiffElement.DIFF_TYPE.REPLACE:
+                        cat[elem.difference_index] = (SFCategoryElement)(elem.elem_new);
+                        break;
+                    case SFDiffElement.DIFF_TYPE.INSERT:
+                        cat.elements.Insert(elem.difference_index + 1, (SFCategoryElement)(elem.elem_new));
+                        break;
+                    case SFDiffElement.DIFF_TYPE.REMOVE:
+                        cat.elements.RemoveAt(elem.difference_index);
+                        break;
+                    case SFDiffElement.DIFF_TYPE.UNKNOWN:
+                        break;
+                    default:
+                        System.Diagnostics.Debug.Assert(false, "SFDiffTools.commit_change(): Invalid category type!");
+                        break;
+                }
             }
         }
 
         //reverted commit_change
         public void revert_change(SFCategory cat, SFDiffElement elem)
         {
-            List<SFCategoryElement> elem_list = cat.elements;
-            switch (elem.difference_type)
+            if (cat.category_allow_multiple)
             {
-                case SFDiffElement.DIFF_TYPE.REPLACE:
-                    elem_list[elem.difference_index] = elem.elem_old;
-                    break;
-                case SFDiffElement.DIFF_TYPE.REMOVE:
-                    elem_list.Insert(elem.difference_index, elem.elem_old);
-                    break;
-                case SFDiffElement.DIFF_TYPE.INSERT:
-                    elem_list.RemoveAt(elem.difference_index+1);
-                    break;
-            }
-        }
-
-        //modifies data from all categories at once according to diff data
-        //BROKEN! do not use for the time being
-        public void merge_changes()
-        {
-            for(int i = 0; i < SFGameData.categoryNumber; i++)
-            {
-                SFCategory cat = SFCategoryManager.gamedata[i];
-                for(int j = 0; j <= diff_current_index[i]; j++)
+                switch (elem.difference_type)
                 {
-                    SFDiffElement elem = diff_data[i][j];
-                    commit_change(cat, elem);
+                    case SFDiffElement.DIFF_TYPE.REPLACE:
+                        cat.element_lists[elem.difference_index] = (SFCategoryElementList)(elem.elem_old);
+                        break;
+                    case SFDiffElement.DIFF_TYPE.REMOVE:
+                        cat.element_lists.Insert(elem.difference_index, (SFCategoryElementList)(elem.elem_old));
+                        break;
+                    case SFDiffElement.DIFF_TYPE.INSERT:
+                        cat.element_lists.RemoveAt(elem.difference_index + 1);
+                        break;
+                    case SFDiffElement.DIFF_TYPE.REPLACE_SUB:
+                        cat[elem.difference_index, elem.subdifference_index] = (SFCategoryElement)(elem.elem_old);
+                        break;
+                    case SFDiffElement.DIFF_TYPE.REMOVE_SUB:
+                        cat.element_lists[elem.difference_index].Elements.Insert(elem.subdifference_index, (SFCategoryElement)(elem.elem_old));
+                        break;
+                    case SFDiffElement.DIFF_TYPE.INSERT_SUB:
+                        cat.element_lists[elem.difference_index].Elements.RemoveAt(elem.subdifference_index + 1);
+                        break;
+                }
+            }
+            else
+            {
+                switch (elem.difference_type)
+                {
+                    case SFDiffElement.DIFF_TYPE.REPLACE:
+                        cat[elem.difference_index] = (SFCategoryElement)(elem.elem_old);
+                        break;
+                    case SFDiffElement.DIFF_TYPE.REMOVE:
+                        cat.elements.Insert(elem.difference_index, (SFCategoryElement)(elem.elem_old));
+                        break;
+                    case SFDiffElement.DIFF_TYPE.INSERT:
+                        cat.elements.RemoveAt(elem.difference_index + 1);
+                        break;
+                    case SFDiffElement.DIFF_TYPE.UNKNOWN:
+                        break;
+                    default:
+                        System.Diagnostics.Debug.Assert(false, "SFDiffTools.revert_change(): Invalid category type!");
+                        break;
+
                 }
             }
         }

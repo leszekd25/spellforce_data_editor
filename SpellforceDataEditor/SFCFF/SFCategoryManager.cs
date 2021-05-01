@@ -672,31 +672,40 @@ namespace SpellforceDataEditor.SFCFF
         }
     }
 
+    public enum SFCategoryManagerMode { NORMAL = 0, DIFF = 1, }
+
     //this class is responsible for category management
     //it provides with general functions to perform on categories as a database
     public static class SFCategoryManager
     {
         public static SFGameData gamedata { get; private set; } = new SFGameData();
-        private static SFCategoryRuneHeroes categorySpecial_RuneHeroes;
+        public static SFCategoryManagerMode Mode = SFCategoryManagerMode.NORMAL;
+        public static SFGameData diff_gamedata { get; private set; } = null;
 
         public static bool ready { get; private set; } = false;
-
-        //constructor, it creates categories
-        public static void Init()
-        {
-            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategoryManager.init() called");
-            categorySpecial_RuneHeroes = new SFCategoryRuneHeroes();
-            //categorySpecial_RuneHeroes.set_manager(this);
-        }
 
         public static void manual_SetGamedata()
         {
             if (ready)
                 return;
 
-            categorySpecial_RuneHeroes.generate();
             ready = true;
             return;
+        }
+
+        public static void Set(SFGameData gd)
+        {
+            gamedata = gd;
+            ready = true;
+            Mode = SFCategoryManagerMode.NORMAL;
+        }
+
+        public static void SetDiff(SFGameData gd, SFGameData diff_gd)
+        {
+            gamedata = gd;
+            diff_gamedata = diff_gd;
+            ready = true;
+            Mode = SFCategoryManagerMode.DIFF;
         }
 
         //loads gamedata.cff file
@@ -705,11 +714,7 @@ namespace SpellforceDataEditor.SFCFF
             int result = gamedata.Load(filename);
 
             if (result == 0)
-            {
-                categorySpecial_RuneHeroes.generate();
                 ready = true;
-                //CustomScript.WeaponsToFile(true);
-            }
 
             return result;
         }
@@ -726,7 +731,7 @@ namespace SpellforceDataEditor.SFCFF
         //this is quite fast (O(log n))
         public static SFCategoryElement FindElementText(int t_index, int t_lang)
         {
-            int index = gamedata[14].FindElementIndexBinary<UInt16>(0, (UInt16)t_index);
+            int index = gamedata[2016].FindElementIndexBinary<UInt16>(0, (UInt16)t_index);
             if (index == Utility.NO_INDEX)
                 return null;
 
@@ -734,7 +739,7 @@ namespace SpellforceDataEditor.SFCFF
             int safe_index = Utility.NO_INDEX;   //will fail if there's no language id 0
 
             SFCategoryElement e = new SFCategoryElement();
-            SFCategoryElement e_found = gamedata[14][index];
+            SFCategoryElement e_found = gamedata[2016][index];
             int elem_num = e_found.variants.Count / 5;
 
             for(int i = 0; i < elem_num; i++)
@@ -780,12 +785,12 @@ namespace SpellforceDataEditor.SFCFF
         //optionally with effect level
         public static string GetEffectName(UInt16 effect_id, bool effect_level = false)
         {
-            SFCategoryElement effect_elem = gamedata[0].FindElementBinary<UInt16>(0, effect_id);
+            SFCategoryElement effect_elem = gamedata[2002].FindElementBinary<UInt16>(0, effect_id);
             if (effect_elem == null)
                 return Utility.S_NONAME;
 
             UInt16 spell_type = (UInt16)effect_elem[1];
-            SFCategoryElement spell_elem = gamedata[1].FindElementBinary<UInt16>(0, spell_type);
+            SFCategoryElement spell_elem = gamedata[2054].FindElementBinary<UInt16>(0, spell_type);
             string txt = SFCategoryManager.GetTextFromElement(spell_elem, 1);
             if (effect_level)
                 txt += " level " + effect_elem[4].ToString();
@@ -796,7 +801,7 @@ namespace SpellforceDataEditor.SFCFF
         //returns a name of a given unit
         public static string GetUnitName(UInt16 unit_id, bool include_level = false)
         {
-            SFCategoryElement unit_elem = gamedata[17].FindElementBinary<UInt16>(0, unit_id);
+            SFCategoryElement unit_elem = gamedata[2024].FindElementBinary<UInt16>(0, unit_id);
             if (unit_elem==null)
                 return Utility.S_NONAME;
             string txt = SFCategoryManager.GetTextFromElement(unit_elem, 1);
@@ -804,7 +809,7 @@ namespace SpellforceDataEditor.SFCFF
             if(include_level)
             {
                 ushort stats_id = (ushort)unit_elem[2];
-                SFCategoryElement unit_stats_elem = gamedata[3].FindElementBinary<UInt16>(0, stats_id);
+                SFCategoryElement unit_stats_elem = gamedata[2005].FindElementBinary<UInt16>(0, stats_id);
                 if (unit_stats_elem == null)
                 {
                     txt += " (<MISSING_LVL>)";
@@ -819,11 +824,11 @@ namespace SpellforceDataEditor.SFCFF
 
         public static UInt16 GetUnitItem(UInt16 unit_id, byte slot_id)
         {
-            SFCategoryElement unit_elem = gamedata[17].FindElementBinary<UInt16>(0, unit_id);
+            SFCategoryElement unit_elem = gamedata[2024].FindElementBinary<UInt16>(0, unit_id);
             if (unit_elem == null)
                 return 0;
 
-            SFCategoryElement unit_eq = SFCategoryManager.gamedata[18].FindElementBinary<UInt16>(0, (UInt16)unit_id);
+            SFCategoryElement unit_eq = SFCategoryManager.gamedata[2025].FindElementBinary<UInt16>(0, (UInt16)unit_id);
             if (unit_eq == null)
                 return 0;
 
@@ -872,7 +877,7 @@ namespace SpellforceDataEditor.SFCFF
             SFCategoryElement skill_elem;
             try     // yuck!
             {
-                skill_elem = gamedata[26][skill_major];
+                skill_elem = gamedata[2039][skill_major];
             }
             catch(Exception)
             {
@@ -897,28 +902,28 @@ namespace SpellforceDataEditor.SFCFF
         //returns a name of a given race
         public static string GetRaceName(Byte race_id)
         {
-            SFCategoryElement race_elem = gamedata[15].FindElementBinary<Byte>(0, race_id);
+            SFCategoryElement race_elem = gamedata[2022].FindElementBinary<Byte>(0, race_id);
             return SFCategoryManager.GetTextFromElement(race_elem, 7);
         }
 
         //returns a name of a given item
         public static string GetItemName(UInt16 item_id)
         {
-            SFCategoryElement item_elem = gamedata[6].FindElementBinary<UInt16>(0, item_id);
+            SFCategoryElement item_elem = gamedata[2003].FindElementBinary<UInt16>(0, item_id);
             return SFCategoryManager.GetTextFromElement(item_elem, 3);
         }
 
         //returns a name of a given building
         public static string GetBuildingName(UInt16 building_id)
         {
-            SFCategoryElement building_elem = gamedata[23].FindElementBinary<UInt16>(0, building_id);
+            SFCategoryElement building_elem = gamedata[2029].FindElementBinary<UInt16>(0, building_id);
             return SFCategoryManager.GetTextFromElement(building_elem, 5);
         }
 
         //returns a name of a given merchant
         public static string GetMerchantName(UInt16 merchant_id)
         {
-            SFCategoryElement merchant_elem = gamedata[28].FindElementBinary<UInt16>(0, merchant_id);
+            SFCategoryElement merchant_elem = gamedata[2041].FindElementBinary<UInt16>(0, merchant_id);
             if (merchant_elem == null)
                 return Utility.S_NONAME;
 
@@ -928,14 +933,14 @@ namespace SpellforceDataEditor.SFCFF
         //returns a name of a given object
         public static string GetObjectName(UInt16 object_id)
         {
-            SFCategoryElement object_elem = gamedata[33].FindElementBinary<UInt16>(0, object_id);
+            SFCategoryElement object_elem = gamedata[2050].FindElementBinary<UInt16>(0, object_id);
             return SFCategoryManager.GetTextFromElement(object_elem, 1);
         }
 
         //returns a description given its id
         public static string GetDescriptionName(UInt16 desc_id)
         {
-            SFCategoryElement desc_elem = gamedata[40].FindElementBinary<UInt16>(0, desc_id);
+            SFCategoryElement desc_elem = gamedata[2058].FindElementBinary<UInt16>(0, desc_id);
             return SFCategoryManager.GetTextFromElement(desc_elem, 1);
         }
 
@@ -943,14 +948,13 @@ namespace SpellforceDataEditor.SFCFF
         //this connection is not found in gamedata.cff and instead has to be pre-processed
         public static string GetRuneheroName(UInt16 stats_id)
         {
-            SFCategoryElement rune_elem = categorySpecial_RuneHeroes.FindElementBinary<UInt16>(0, stats_id);
-            return SFCategoryManager.GetTextFromElement(rune_elem, 1);
+            return Utility.S_MISSING;
         }
 
         // gets min unit level, given skill level
         public static int GetMinUnitLevel(int level)
         {
-            SFCategoryElement lvl_elem = gamedata[32].FindElement<byte>(5, (byte)level);
+            SFCategoryElement lvl_elem = gamedata[2048].FindElement<byte>(5, (byte)level);
             if (lvl_elem == null)
                 return 0;
             return (byte)lvl_elem[0];
@@ -959,7 +963,7 @@ namespace SpellforceDataEditor.SFCFF
         // gets max skill level, given unit level
         public static int GetMaxSkillLevel(int level)
         {
-            SFCategoryElement lvl_elem = gamedata[32].FindElementBinary<byte>(0, (byte)level);
+            SFCategoryElement lvl_elem = gamedata[2048].FindElementBinary<byte>(0, (byte)level);
             if (lvl_elem == null)
                 return 0;
             return (byte)lvl_elem[5];
@@ -969,7 +973,11 @@ namespace SpellforceDataEditor.SFCFF
         public static void UnloadAll()
         {
             gamedata.Unload();
-            categorySpecial_RuneHeroes.Unload();
+            if(diff_gamedata != null)
+            {
+                diff_gamedata.Unload();
+                diff_gamedata = null;
+            }
 
             ready = false;
         }

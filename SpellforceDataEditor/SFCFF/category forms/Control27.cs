@@ -51,7 +51,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox1, 14);
+                step_into(textBox1, 2016);
         }
 
         private void ListSkills_SelectedIndexChanged(object sender, EventArgs e)
@@ -95,6 +95,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             elem.RemoveRaw(index * 3, 3);
             ListSkills.Items.RemoveAt(index);
             ListSkills.SelectedIndex = Math.Min(index, ListSkills.Items.Count-1);
+        }
+
+
+        public override string get_element_string(int index)
+        {
+            string txt = SFCategoryManager.GetTextFromElement(category[index], 2);
+            return category[index][0].ToString() + " " + txt;
         }
     }
 }
