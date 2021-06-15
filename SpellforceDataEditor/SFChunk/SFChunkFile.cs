@@ -45,6 +45,35 @@ namespace SpellforceDataEditor.SFChunk
         }
     }
 
+    public class SFChunkFileHeader
+    {
+        public int Magic;
+        public int Format;
+        public int Type;
+        public int Version;
+        public int Checksum;
+
+        public bool IsValid() { return Magic == -579674862; }
+
+        public void Read(BinaryReader br)
+        {
+            Magic = br.ReadInt32();
+            Format = br.ReadInt32();
+            Type = br.ReadInt32();
+            Version = br.ReadInt32();
+            Checksum = br.ReadInt32();
+        }
+
+        public void Write(BinaryWriter bw)
+        {
+            bw.Write(Magic);
+            bw.Write(Format);
+            bw.Write(Type);
+            bw.Write(Version);
+            bw.Write(Checksum);
+        }
+    }
+
     public enum SFChunkFileSource { NONE, FILESYSTEM, MEMORY }
 
     public class SFChunkFile
@@ -53,19 +82,10 @@ namespace SpellforceDataEditor.SFChunk
         Stream s = null;
         BinaryReader br = null;
         BinaryWriter bw = null;
-        byte[] header;   // for map: -579674862, 3, 1, 0, 0; for gamedata: -579674862, 2, 2, 1, 0
+        SFChunkFileHeader header;
+        //byte[] header;   // for map: -579674862, 3, 1, 0, 0; for gamedata: -579674862, 2, 2, 1, 0
         Dictionary<SFChunkLookupKey, long> lookup_dict = null;
         int total_size = 0;
-
-        public int get_data_type()
-        {
-            return BitConverter.ToInt32(header, 4);
-        }
-
-        public bool is_valid_header()
-        {
-            return (BitConverter.ToInt32(header, 0) == -579674862);
-        }
 
         public int OpenRaw(byte[] data, int length = -1)
         {
@@ -88,16 +108,16 @@ namespace SpellforceDataEditor.SFChunk
             else
                 s = new MemoryStream(data, 0, length);
 
-            header = new byte[20];
-            s.Read(header, 0, 20);
-            if (!is_valid_header())
+            br = new BinaryReader(s, Encoding.GetEncoding(1252));
+            header = new SFChunkFileHeader();
+            header.Read(br);
+            if (!header.IsValid())
             {
-                s.Close();
+                br.Close();
                 LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.OpenRaw(): Header is not valid!");
                 return -3;
             }
             source = SFChunkFileSource.MEMORY;
-            br = new BinaryReader(s, Encoding.GetEncoding(1252));
 
             GenerateLookupDict();
 
@@ -113,28 +133,27 @@ namespace SpellforceDataEditor.SFChunk
                 LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.CreateRaw(): Error creating a stream");
                 return -2;
             }
-            s = new MemoryStream(data);
 
-            header = new byte[20];
-            bw = new BinaryWriter(new MemoryStream(header), Encoding.GetEncoding(1252));
-            bw.Write(-579674862);
+            header = new SFChunkFileHeader();
+            header.Magic = -579674862;
             if (type == SFChunkFileType.MAP)
             {
-                bw.Write(3);
-                bw.Write(1);
-                bw.Write(0);
+                header.Format = 3;
+                header.Type = 1;
+                header.Version = 0;
             }
             else
             {
-                bw.Write(2);
-                bw.Write(2);
-                bw.Write(1);
+                header.Format = 2;
+                header.Type = 2;
+                header.Version = 1;
             }
-            bw.Write(0);
-            bw.Close();
+            header.Checksum = 0;
 
+            s = new MemoryStream(data);
             bw = new BinaryWriter(s);
-            bw.Write(header);
+
+            header.Write(bw);
             source = SFChunkFileSource.MEMORY;
             total_size = 20;
 
@@ -167,16 +186,16 @@ namespace SpellforceDataEditor.SFChunk
                 return -2;
             }
 
-            header = new byte[20];
-            s.Read(header, 0, 20);
-            if(!is_valid_header())
+            header = new SFChunkFileHeader();
+            br = new BinaryReader(s, Encoding.GetEncoding(1252));
+            header.Read(br);
+            if(!header.IsValid())
             {
                 s.Close();
                 LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.OpenFile(): Header is not valid! (filename: "+filename+")");
                 return -3;
             }
             source = SFChunkFileSource.FILESYSTEM;
-            br = new BinaryReader(s, Encoding.GetEncoding(1252));
 
             GenerateLookupDict();
 
@@ -195,26 +214,25 @@ namespace SpellforceDataEditor.SFChunk
                 LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.CreateFile(): Error opening or creating a file (filename: "+filename+")");
                 return -2;
             }
-            header = new byte[20];
-            bw = new BinaryWriter(new MemoryStream(header), Encoding.GetEncoding(1252));
-            bw.Write(-579674862);
+
+            header = new SFChunkFileHeader();
+            header.Magic = -579674862;
             if (type == SFChunkFileType.MAP)
             {
-                bw.Write(3);
-                bw.Write(1);
-                bw.Write(0);
+                header.Format = 3;
+                header.Type = 1;
+                header.Version = 0;
             }
             else
             {
-                bw.Write(2);
-                bw.Write(2);
-                bw.Write(1);
+                header.Format = 2;
+                header.Type = 2;
+                header.Version = 1;
             }
-            bw.Write(0);
-            bw.Close();
+            header.Checksum = 0;
 
             bw = new BinaryWriter(s);
-            bw.Write(header);
+            header.Write(bw);
             source = SFChunkFileSource.FILESYSTEM;
             total_size = 20;
 
@@ -257,7 +275,7 @@ namespace SpellforceDataEditor.SFChunk
 
             lookup_dict = new Dictionary<SFChunkLookupKey, long>();
             br.BaseStream.Position = 20;
-            int cm = get_data_type();
+            int cm = header.Format;
 
             while (br.BaseStream.Position < br.BaseStream.Length)
             {

@@ -44,7 +44,7 @@
             this.calculatorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CategorySelect = new System.Windows.Forms.ComboBox();
-            this.ElementSelect = new System.Windows.Forms.ListBox();
+            this.ElementSelect = new SpellforceDataEditor.SFCFF.helper_forms.ListBoxNoFlicker();
             this.OpenGameData = new System.Windows.Forms.OpenFileDialog();
             this.SearchPanel = new System.Windows.Forms.Panel();
             this.SaveGameData = new System.Windows.Forms.SaveFileDialog();
@@ -74,8 +74,6 @@
             this.panelElemCopy = new System.Windows.Forms.Panel();
             this.ButtonElemClear = new System.Windows.Forms.Button();
             this.ButtonElemCopy = new System.Windows.Forms.Button();
-            this.mergeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.diffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -100,8 +98,6 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadGameDatacffToolStripMenuItem,
-            this.mergeToolStripMenuItem,
-            this.diffToolStripMenuItem,
             this.saveAsToolStripMenuItem,
             this.closeToolStripMenuItem,
             this.exitToolStripMenuItem});
@@ -113,22 +109,22 @@
             // 
             this.loadGameDatacffToolStripMenuItem.Name = "loadGameDatacffToolStripMenuItem";
             this.loadGameDatacffToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.loadGameDatacffToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
-            this.loadGameDatacffToolStripMenuItem.Text = "Open GameData.cff";
+            this.loadGameDatacffToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.loadGameDatacffToolStripMenuItem.Text = "Open...";
             this.loadGameDatacffToolStripMenuItem.Click += new System.EventHandler(this.loadGameDatacffToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -136,7 +132,7 @@
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -156,7 +152,6 @@
             this.undoCtrlZToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.undoCtrlZToolStripMenuItem.Text = "Undo";
-            this.undoCtrlZToolStripMenuItem.Click += new System.EventHandler(this.undoCtrlZToolStripMenuItem_Click);
             // 
             // redoCtrlYToolStripMenuItem
             // 
@@ -165,7 +160,6 @@
             this.redoCtrlYToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
             this.redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.redoCtrlYToolStripMenuItem.Text = "Redo";
-            this.redoCtrlYToolStripMenuItem.Click += new System.EventHandler(this.redoCtrlYToolStripMenuItem_Click);
             // 
             // specialToolStripMenuItem
             // 
@@ -209,6 +203,7 @@
             // 
             // ElementSelect
             // 
+            this.ElementSelect.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.ElementSelect.Enabled = false;
             this.ElementSelect.HorizontalScrollbar = true;
             this.ElementSelect.Location = new System.Drawing.Point(12, 54);
@@ -216,6 +211,7 @@
             this.ElementSelect.Name = "ElementSelect";
             this.ElementSelect.Size = new System.Drawing.Size(295, 420);
             this.ElementSelect.TabIndex = 2;
+            this.ElementSelect.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ElementSelect_DrawItem);
             this.ElementSelect.SelectedIndexChanged += new System.EventHandler(this.ElementSelect_SelectedIndexChanged);
             // 
             // OpenGameData
@@ -495,19 +491,6 @@
             this.ButtonElemCopy.UseVisualStyleBackColor = true;
             this.ButtonElemCopy.Click += new System.EventHandler(this.ButtonElemCopy_Click);
             // 
-            // mergeToolStripMenuItem
-            // 
-            this.mergeToolStripMenuItem.Name = "mergeToolStripMenuItem";
-            this.mergeToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
-            this.mergeToolStripMenuItem.Text = "Merge...";
-            // 
-            // diffToolStripMenuItem
-            // 
-            this.diffToolStripMenuItem.Name = "diffToolStripMenuItem";
-            this.diffToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
-            this.diffToolStripMenuItem.Text = "Diff...";
-            this.diffToolStripMenuItem.Click += new System.EventHandler(this.diffToolStripMenuItem_Click);
-            // 
             // SpelllforceCFFEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -591,7 +574,5 @@
         private System.Windows.Forms.ToolStripMenuItem findAllReferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem calculatorsToolStripMenuItem;
         private System.Windows.Forms.Button ButtonElemAdd;
-        private System.Windows.Forms.ToolStripMenuItem mergeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem diffToolStripMenuItem;
     }
 }

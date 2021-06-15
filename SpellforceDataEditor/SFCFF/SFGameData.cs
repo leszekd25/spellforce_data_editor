@@ -83,7 +83,7 @@ namespace SpellforceDataEditor.SFCFF
                 return result;
             }
 
-            foreach(var cat in categories)
+            foreach (var cat in categories)
             {
                 int cat_status = categories[cat.Key].Write(sfcf);
                 if (cat_status != 0)
@@ -100,6 +100,38 @@ namespace SpellforceDataEditor.SFCFF
 
             return 0;
         }
+
+        // saves gamedata diff to file
+        public int SaveDiff(string filename)
+        {
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFGameData.SaveDiff() called");
+
+            SFChunkFile sfcf = new SFChunkFile();
+            int result = sfcf.CreateFile(filename, SFChunkFileType.GAMEDATA);
+            if (result != 0)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFGameData.SaveDiff() failed!");
+                return result;
+            }
+
+            foreach (var cat in categories)
+            {
+                int cat_status = categories[cat.Key].WriteDiff(sfcf);
+                if (cat_status != 0)
+                {
+                    sfcf.Close();
+
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFGameData.SaveDiff() failed!");
+                    return cat_status;
+                }
+            }
+
+            sfcf.Close();
+            fname = filename;
+
+            return 0;
+        }
+
 
         // loads gamedata from in-memory chunkfile
         public int Import(SFChunkFile sfcf)
@@ -155,13 +187,34 @@ namespace SpellforceDataEditor.SFCFF
             }
         }
 
-        // returns a new gamedata, which contains all categories and entries in GD2 that are not in GD1
-        // if gamedatas contain chunks with same id, but different version, the function fails
-        public static bool Diff(SFGameData GD1, SFGameData GD2, out SFGameData ret)
+        public static bool Merge(SFGameData GD1, SFGameData GD2, out SFGameData ret)
         {
             ret = new SFGameData();
             int result;
 
+            foreach(var cat in GD1.categories)
+            {
+                SFCategory cat1 = cat.Value;
+                SFCategory cat2 = GD2[cat.Key];
+
+                if(cat2 == null)
+                {
+                    ret.categories.Add(cat.Key, cat1);
+                }
+                else if(cat1.category_type != cat2.category_type)
+                {
+                    return false;
+                }    
+                else
+                {
+                    SFCategory merge_cat;
+                    result = SFCategory.Merge(cat1, cat2, out merge_cat);
+                    if (result != 0)
+                        return false;
+
+                    ret.categories.Add(cat.Key, merge_cat);
+                }
+            }
             foreach(var cat in GD2.categories)
             {
                 SFCategory cat1 = GD1[cat.Key];
@@ -171,24 +224,52 @@ namespace SpellforceDataEditor.SFCFF
                 {
                     ret.categories.Add(cat.Key, cat2);
                 }
-                else if(cat1.category_type != cat2.category_type)
+            }
+
+            return true;
+        }
+
+        public static bool CalculateStatus(SFGameData GD1, SFGameData GD2, ref SFGameData GDref)
+        {
+            foreach (var cat in GDref.categories)
+                cat.Value.element_status.Clear();
+
+            if ((GD1 == null)&&(GD2 == null))
+            {
+                foreach (var cat in GDref.categories)
+                    for (int i = 0; i < cat.Value.GetElementCount(); i++)
+                        cat.Value.element_status.Add(SFCategoryElementStatus.UNCHANGED);
+
+                return true;
+            }
+            foreach(var cat in GDref.categories)
+            {
+                SFCategory cat1 = GD1[cat.Key];
+                SFCategory cat2 = GD2[cat.Key];
+
+                if (cat1 == null)
                 {
-                    return false;
+                    if (cat2 == null)
+                        return false;
+
+                    for (int i = 0; i < cat2.GetElementCount(); i++)
+                        cat.Value.element_status.Add(SFCategoryElementStatus.ADDED);
+                }
+                else if (cat2 == null)
+                {
+                    for (int i = 0; i < cat1.GetElementCount(); i++)
+                        cat.Value.element_status.Add(SFCategoryElementStatus.REMOVED);
                 }
                 else
                 {
-                    SFCategory diff_cat;
-                    result = SFCategory.Diff(cat1, cat2, out diff_cat);
-                    if (result != 0)
-                        return false;
-
-                    if(diff_cat.elements.Count > 0)
-                        ret.categories.Add(cat.Key, diff_cat);
+                    SFCategory cat_status = cat.Value;
+                    SFCategory.CalculateStatus(cat1, cat2, ref cat_status);
                 }
             }
-            
+
             return true;
         }
+
 
 
         // unloads all stored data

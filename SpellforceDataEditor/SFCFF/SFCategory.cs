@@ -13,13 +13,15 @@ namespace SpellforceDataEditor.SFCFF
         public string ElementFormat;
         public string Name;
         public bool AllowMultiple;
+        public bool AllowSubelementID;
         public int[] StringSizes;
 
-        public ChunkFormatInfo(string elem_format, string name, bool allow_multiple, int[] string_sizes = null) 
+        public ChunkFormatInfo(string elem_format, string name, bool allow_multiple, bool allow_subelem_id, int[] string_sizes = null) 
         { 
             ElementFormat = elem_format;
             Name = name;
-            AllowMultiple = allow_multiple; 
+            AllowMultiple = allow_multiple;
+            AllowSubelementID = allow_subelem_id;
             StringSizes = string_sizes;
         }
     }
@@ -32,60 +34,62 @@ namespace SpellforceDataEditor.SFCFF
 
         static SFCategory()
         {
-            ChunkFormats.Add(Tuple.Create((ushort)2002, (ushort)3), new ChunkFormatInfo("HHBBBBBBBBBBBBHIIHHBBIIIIIIIIIIHH", "Spell data", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2054, (ushort)5), new ChunkFormatInfo("HHBBBBBsH", "Spell type data", false, new int[] { 64 }));
-            ChunkFormats.Add(Tuple.Create((ushort)2056, (ushort)1), new ChunkFormatInfo("BBBBBB", "Unknown (1)", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2005, (ushort)9), new ChunkFormatInfo("HHBHHHHHHHHHHHHHHHHHIBHB", "4. Unit/hero stats", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2006, (ushort)1), new ChunkFormatInfo("HBBB", "Hero/worker skills", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2067, (ushort)1), new ChunkFormatInfo("HBH", "Hero spells", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2003, (ushort)4), new ChunkFormatInfo("HBBHHHHBIIB", "Item general info", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2004, (ushort)1), new ChunkFormatInfo("Hhhhhhhhhhhhhhhhhh", "Item armor data", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2013, (ushort)1), new ChunkFormatInfo("HH", "Inventory spell scroll link with installed spell scroll", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2015, (ushort)2), new ChunkFormatInfo("HHHHHHHH", "Item weapon data", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2017, (ushort)1), new ChunkFormatInfo("HBBBB", "Item skill requirements", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2014, (ushort)1), new ChunkFormatInfo("HBH", "Item weapon effects/inventory scroll link with spell", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2012, (ushort)1), new ChunkFormatInfo("HBsH", "Item UI data", true, new int[] { 64 }));
-            ChunkFormats.Add(Tuple.Create((ushort)2018, (ushort)1), new ChunkFormatInfo("HH", "Item installed spell scroll link with spell", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2016, (ushort)3), new ChunkFormatInfo("HBBss", "Text data", true, new int[] { 50, 512 }));
-            ChunkFormats.Add(Tuple.Create((ushort)2022, (ushort)7), new ChunkFormatInfo("BBBBBBBHBHBBHBBBBHHHB", "Race stats", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2023, (ushort)2), new ChunkFormatInfo("BBB", "Faction relations", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2024, (ushort)8), new ChunkFormatInfo("HHHIHIHBHHsB", "Unit general data/link with unit stats", false, new int[] { 40 }));
-            ChunkFormats.Add(Tuple.Create((ushort)2025, (ushort)1), new ChunkFormatInfo("HBH", "Unit equipment", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2026, (ushort)1), new ChunkFormatInfo("HBH", "Unit spells", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2028, (ushort)1), new ChunkFormatInfo("HBB", "Army unit resource requirements", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2040, (ushort)1), new ChunkFormatInfo("HBHBHBH", "Corpse loot", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2001, (ushort)1), new ChunkFormatInfo("HBH", "Army unit building requirements", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2029, (ushort)9), new ChunkFormatInfo("HBBBHHhhBHHHHB", "Building data", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2030, (ushort)2), new ChunkFormatInfo("HBBC", "Building collision data", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2031, (ushort)2), new ChunkFormatInfo("HBH", "Building resource requirements", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2039, (ushort)1), new ChunkFormatInfo("BBH", "Skills link with text data", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2062, (ushort)1), new ChunkFormatInfo("BBBBBBBBB", "Skill point requirements", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2041, (ushort)1), new ChunkFormatInfo("HH", "Merchants link with unit general data", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2042, (ushort)1), new ChunkFormatInfo("HHH", "Merchant inventory", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2047, (ushort)1), new ChunkFormatInfo("HBH", "Merchant sell/buy rate", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2044, (ushort)1), new ChunkFormatInfo("BH", "Resources link with data", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2048, (ushort)3), new ChunkFormatInfo("BHHIBBHH", "Player level scaling", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2050, (ushort)6), new ChunkFormatInfo("HHBBBsHHH", "Environment objects data", false, new int[] { 41 }));
-            ChunkFormats.Add(Tuple.Create((ushort)2057, (ushort)2), new ChunkFormatInfo("HBBC", "Interactive objects collision data", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2065, (ushort)1), new ChunkFormatInfo("HBHBHBH", "Environment object loot", true));
-            ChunkFormats.Add(Tuple.Create((ushort)2051, (ushort)1), new ChunkFormatInfo("IH", "NPC link with text data", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2052, (ushort)2), new ChunkFormatInfo("IBsH", "Map data", false, new int[] { 64 }));
-            ChunkFormats.Add(Tuple.Create((ushort)2053, (ushort)3), new ChunkFormatInfo("HIHHBH", "Portal locations", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2055, (ushort)1), new ChunkFormatInfo("BBB", "Unknown (from sql_lua?)", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2058, (ushort)1), new ChunkFormatInfo("HH", "Description link with txt data", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2059, (ushort)1), new ChunkFormatInfo("HHH", "Extended description data", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2061, (ushort)1), new ChunkFormatInfo("IIBHHI", "Quest hierarchy/description data", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2063, (ushort)1), new ChunkFormatInfo("HHB", "Weapon types", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2064, (ushort)1), new ChunkFormatInfo("HH", "Weapon materials", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2032, (ushort)2), new ChunkFormatInfo("HBB", "Terrain data", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2049, (ushort)1), new ChunkFormatInfo("BB", "Heads", false));
-            ChunkFormats.Add(Tuple.Create((ushort)2036, (ushort)1), new ChunkFormatInfo("HHHHHHHHHHHsI", "Unit upgrade data", false, new int[] { 64 }));
-            ChunkFormats.Add(Tuple.Create((ushort)2072, (ushort)1), new ChunkFormatInfo("BHB", "Item sets", false));
+            ChunkFormats.Add(Tuple.Create((ushort)2002, (ushort)3), new ChunkFormatInfo("HHBBBBBBBBBBBBHIIHHBBIIIIIIIIIIHH", "Spell data", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2054, (ushort)5), new ChunkFormatInfo("HHBBBBBsH", "Spell type data", false, false, new int[] { 64 }));
+            ChunkFormats.Add(Tuple.Create((ushort)2056, (ushort)1), new ChunkFormatInfo("BBBBBB", "Unknown (1)", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2005, (ushort)9), new ChunkFormatInfo("HHBHHHHHHHHHHHHHHHHHIBHB", "4. Unit/hero stats", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2006, (ushort)1), new ChunkFormatInfo("HBBB", "Hero/worker skills", true, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2067, (ushort)1), new ChunkFormatInfo("HBH", "Hero spells", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2003, (ushort)4), new ChunkFormatInfo("HBBHHHHBIIB", "Item general info", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2004, (ushort)1), new ChunkFormatInfo("Hhhhhhhhhhhhhhhhhh", "Item armor data", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2013, (ushort)1), new ChunkFormatInfo("HH", "Inventory spell scroll link with installed spell scroll", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2015, (ushort)2), new ChunkFormatInfo("HHHHHHHH", "Item weapon data", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2017, (ushort)1), new ChunkFormatInfo("HBBBB", "Item skill requirements", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2014, (ushort)1), new ChunkFormatInfo("HBH", "Item weapon effects/inventory scroll link with spell", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2012, (ushort)1), new ChunkFormatInfo("HBsH", "Item UI data", true, true, new int[] { 64 }));
+            ChunkFormats.Add(Tuple.Create((ushort)2018, (ushort)1), new ChunkFormatInfo("HH", "Item installed spell scroll link with spell", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2016, (ushort)3), new ChunkFormatInfo("HBBss", "Text data", true, true, new int[] { 50, 512 }));
+            ChunkFormats.Add(Tuple.Create((ushort)2022, (ushort)7), new ChunkFormatInfo("BBBBBBBHBHBBHBBBBHHHB", "Race stats", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2023, (ushort)2), new ChunkFormatInfo("BBB", "Faction relations", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2024, (ushort)8), new ChunkFormatInfo("HHHIHIHBHHsB", "Unit general data/link with unit stats", false, false, new int[] { 40 }));
+            ChunkFormats.Add(Tuple.Create((ushort)2025, (ushort)1), new ChunkFormatInfo("HBH", "Unit equipment", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2026, (ushort)1), new ChunkFormatInfo("HBH", "Unit spells", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2028, (ushort)1), new ChunkFormatInfo("HBB", "Army unit resource requirements", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2040, (ushort)1), new ChunkFormatInfo("HBHBHBH", "Corpse loot", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2001, (ushort)1), new ChunkFormatInfo("HBH", "Army unit building requirements", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2029, (ushort)9), new ChunkFormatInfo("HBBBHHhhBHHHHB", "Building data", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2030, (ushort)2), new ChunkFormatInfo("HBBC", "Building collision data", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2031, (ushort)2), new ChunkFormatInfo("HBH", "Building resource requirements", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2039, (ushort)1), new ChunkFormatInfo("BBH", "Skills link with text data", true, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2062, (ushort)1), new ChunkFormatInfo("BBBBBBBBB", "Skill point requirements", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2041, (ushort)1), new ChunkFormatInfo("HH", "Merchants link with unit general data", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2042, (ushort)1), new ChunkFormatInfo("HHH", "Merchant inventory", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2047, (ushort)1), new ChunkFormatInfo("HBH", "Merchant sell/buy rate", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2044, (ushort)1), new ChunkFormatInfo("BH", "Resources link with data", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2048, (ushort)3), new ChunkFormatInfo("BHHIBBHH", "Player level scaling", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2050, (ushort)6), new ChunkFormatInfo("HHBBBsHHH", "Environment objects data", false, false, new int[] { 41 }));
+            ChunkFormats.Add(Tuple.Create((ushort)2057, (ushort)2), new ChunkFormatInfo("HBBC", "Interactive objects collision data", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2065, (ushort)1), new ChunkFormatInfo("HBHBHBH", "Environment object loot", true, true));
+            ChunkFormats.Add(Tuple.Create((ushort)2051, (ushort)1), new ChunkFormatInfo("IH", "NPC link with text data", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2052, (ushort)2), new ChunkFormatInfo("IBsH", "Map data", false, false, new int[] { 64 }));
+            ChunkFormats.Add(Tuple.Create((ushort)2053, (ushort)3), new ChunkFormatInfo("HIHHBH", "Portal locations", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2055, (ushort)1), new ChunkFormatInfo("BBB", "Unknown (from sql_lua?)", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2058, (ushort)1), new ChunkFormatInfo("HH", "Description link with txt data", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2059, (ushort)1), new ChunkFormatInfo("HHH", "Extended description data", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2061, (ushort)1), new ChunkFormatInfo("IIBHHI", "Quest hierarchy/description data", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2063, (ushort)1), new ChunkFormatInfo("HHB", "Weapon types", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2064, (ushort)1), new ChunkFormatInfo("HH", "Weapon materials", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2032, (ushort)2), new ChunkFormatInfo("HBB", "Terrain data", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2049, (ushort)1), new ChunkFormatInfo("BB", "Heads", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2036, (ushort)1), new ChunkFormatInfo("HHHHHHHHHHHsI", "Unit upgrade data", false, false, new int[] { 64 }));
+            ChunkFormats.Add(Tuple.Create((ushort)2072, (ushort)1), new ChunkFormatInfo("BHB", "Item sets", false, false));
         }
 
         public List<SFCategoryElement> elements { get; protected set; } = new List<SFCategoryElement>();     //list of all elements
         public List<SFCategoryElementList> element_lists = new List<SFCategoryElementList>();                //list of all subelements; for any element in here, it will always have at least 1 subelement
+        public List<SFCategoryElementStatus> element_status = new List<SFCategoryElementStatus>();           //list in which status of every element is kept
         public bool category_allow_multiple;                                                                 //if true, element_lists is used, if false, elements is used
+        public bool category_allow_subelement_id;                                                            //if true, subelements have their own ID at position 1 on the list
         // of above, only one can be used at any time
 
 
@@ -254,9 +258,10 @@ namespace SpellforceDataEditor.SFCFF
         }
 
         //an overload for the standard get_element, which allows loading elements until the first variant matches that of a previous element's
-        public Object[] GetMultipleElementsFromBuffer(BinaryReader sr, char char_load)
+        public SFCategoryElementList GetMultipleElementsFromBuffer(BinaryReader sr)
         {
-            List<Object> elements_loaded = new List<Object>();
+            SFCategoryElementList elements_loaded = new SFCategoryElementList();
+            char char_load = elem_format[0];
             int cur_id = Utility.NO_INDEX;
             while (true)
             {
@@ -278,15 +283,17 @@ namespace SpellforceDataEditor.SFCFF
                 current_string = 0;
                 if ((next_id == cur_id) || (cur_id == Utility.NO_INDEX))
                 {
+                    SFCategoryElement elem = new SFCategoryElement();
                     cur_id = next_id;
                     for (int i = 0; i < elem_format.Length; i++)
-                        elements_loaded.Add(ReadVariantFromBuffer(sr, elem_format[i], string_size[current_string]));
+                        elem.AddVariant(ReadVariantFromBuffer(sr, elem_format[i], string_size[current_string]));
+                    elements_loaded.Elements.Add(elem);
                 }
                 else
                     break;
             }
 
-            return elements_loaded.ToArray();
+            return elements_loaded;
         }
 
         //searches for an element given column index and searched value and returns it if it exists
@@ -364,26 +371,63 @@ namespace SpellforceDataEditor.SFCFF
                 else
                     current_end = current_center - 1;
             }
-    
+
+            return Utility.NO_INDEX;
+        }
+
+        //searches for an element given column index and searched value and returns its index if it exists
+        //else returns -1
+        //this is binary search variant, and it requires that elements are sorted by given column
+        //multiple only, and only looks for values in first element
+        public int FindMultipleElementIndexBinary<T>(int v_index, T value) where T : IComparable
+        {
+            int current_start = 0;
+            int current_end = element_lists.Count - 1;
+            int current_center;
+            T val;
+            while (current_start <= current_end)
+            {
+
+                current_center = (current_start + current_end) / 2;    //care about overflow
+                val = (T)element_lists[current_center].Elements[0].variants[v_index];
+                if (val.CompareTo(value) == 0)
+                    return current_center;
+                if (val.CompareTo(value) < 0)
+                    current_start = current_center + 1;
+                else
+                    current_end = current_center - 1;
+            }
+
             return Utility.NO_INDEX;
         }
 
         //puts a new element (as a list of variants) to a buffer
-        public void WriteElementToBuffer(BinaryWriter sw, List<object> vars)
+        public void WriteElementToBuffer(BinaryWriter sw, SFCategoryElement elem)
         {
-            for (int i = 0; i < vars.Count; i++)
-            {
-                WriteVariantToBuffer(sw, vars[i]);
-            }
+            foreach(var v in elem.variants)
+                WriteVariantToBuffer(sw, v);
         }
 
         //returns size of all category elements (in bytes)
         public int GetSize()
         {
             int s = 0;
-            foreach(SFCategoryElement elem in elements)
+            if (category_allow_multiple)
             {
-                s += elem.GetSize();
+                foreach(SFCategoryElementList elem_list in element_lists)
+                {
+                    foreach(SFCategoryElement elem in elem_list.Elements)
+                    {
+                        s += elem.GetSize();
+                    }
+                }
+            }
+            else
+            {
+                foreach (SFCategoryElement elem in elements)
+                {
+                    s += elem.GetSize();
+                }
             }
             return s;
         }
@@ -403,6 +447,7 @@ namespace SpellforceDataEditor.SFCFF
                     category_name = ChunkFormats[key].Name;
                     string_size = ChunkFormats[key].StringSizes;
                     category_allow_multiple = ChunkFormats[key].AllowMultiple;
+                    category_allow_subelement_id = ChunkFormats[key].AllowSubelementID;
                     elem_format = ChunkFormats[key].ElementFormat;
 
                     if (string_size == null)
@@ -412,10 +457,18 @@ namespace SpellforceDataEditor.SFCFF
                     int ind = 0;
                     while (br.BaseStream.Position < br.BaseStream.Length)
                     {
-                        SFCategoryElement elem = new SFCategoryElement();
                         try
                         {
-                            elem.AddVariants(category_allow_multiple ? GetMultipleElementsFromBuffer(br, elem_format[0]): GetElementFromBuffer(br));
+                            if (category_allow_multiple)
+                            {
+                                element_lists.Add(GetMultipleElementsFromBuffer(br));
+                            }
+                            else
+                            {
+                                SFCategoryElement elem = new SFCategoryElement();
+                                elem.AddVariants(GetElementFromBuffer(br));
+                                elements.Add(elem);
+                            }
                         }
                         catch (EndOfStreamException)
                         {
@@ -427,7 +480,6 @@ namespace SpellforceDataEditor.SFCFF
                             LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory.read(): Unknown error while reading! Category: " + category_name);
                             return -3;
                         }
-                        elements.Add(elem);
 
                         if (GetElementID(ind) < i)
                             i = 0;                           // breakpoint for when data is not sorted in ascending order
@@ -458,9 +510,22 @@ namespace SpellforceDataEditor.SFCFF
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
-                    for (int i = 0; i < GetElementCount(); i++)
+                    if (category_allow_multiple)
                     {
-                        WriteElementToBuffer(bw, elements[i].variants);
+                        for (int i = 0; i < GetElementCount(); i++)
+                        {
+                            for (int j = 0; j < element_lists[i].Elements.Count; j++)
+                            {
+                                WriteElementToBuffer(bw, element_lists[i].Elements[j]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < GetElementCount(); i++)
+                        {
+                            WriteElementToBuffer(bw, elements[i]);
+                        }
                     }
                 }
             }
@@ -468,9 +533,60 @@ namespace SpellforceDataEditor.SFCFF
             return data;
         }
 
+        public byte[] ToRawDataDiff()
+        {
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.ToRawDataDiff() called, category name: " + category_name);
+            UInt32 new_block_size_tmp = (UInt32)GetSize();
+            byte[] data = new byte[new_block_size_tmp];
+            using (MemoryStream ms = new MemoryStream(data))
+            {
+                using (BinaryWriter bw = new BinaryWriter(ms))
+                {
+                    if (category_allow_multiple)
+                    {
+                        for (int i = 0; i < GetElementCount(); i++)
+                        {
+                            for (int j = 0; j < element_lists[i].Elements.Count; j++)
+                            {
+                                if ((element_lists[i].ElementStatus[j] == SFCategoryElementStatus.ADDED) || (element_lists[i].ElementStatus[j] == SFCategoryElementStatus.MODIFIED))
+                                {
+                                    WriteElementToBuffer(bw, element_lists[i].Elements[j]);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < GetElementCount(); i++)
+                        {
+                            if ((element_status[i] == SFCategoryElementStatus.ADDED) || (element_status[i] == SFCategoryElementStatus.MODIFIED))
+                            {
+                                WriteElementToBuffer(bw, elements[i]);
+                            }
+                        }
+                    }
+
+                    new_block_size_tmp = (UInt32)bw.BaseStream.Position;
+                }
+            }
+
+            if (new_block_size_tmp == 0)
+                return null;
+
+            return data.Take((int)new_block_size_tmp).ToArray();
+        }
+
         public int Write(SFChunkFile sfcf)
         {
             sfcf.AddChunk(category_id, 0, false, category_type, ToRawData());
+            return 0;
+        }
+
+        public int WriteDiff(SFChunkFile sfcf)
+        {
+            byte[] data = ToRawDataDiff();
+            if (data != null)
+                sfcf.AddChunk(category_id, 0, false, category_type, data);
             return 0;
         }
 
@@ -492,54 +608,54 @@ namespace SpellforceDataEditor.SFCFF
         // returns id of an element at specified index, or -1 if it doesnt exist
         public virtual int GetElementID(int index)
         {
-            if (index >= elements.Count)
-                return Utility.NO_INDEX;
             if (index < 0)
                 return Utility.NO_INDEX;
 
             if (category_allow_multiple)
+            {
+                if (index >= element_lists.Count)
+                    return Utility.NO_INDEX;
                 return element_lists[index].GetID();
+            }
             else
+            {
+                if (index >= elements.Count)
+                    return Utility.NO_INDEX;
                 return elements[index].ToInt(0);
+            }
         }
 
         // returns index of an element with specified id (or -1, if it doesnt exist)
         public virtual int GetElementIndex(int id)
         {
-            switch (elem_format[0])
+            if (category_allow_multiple)
             {
-                case 'B':
-                    return FindElementIndexBinary(0, (Byte)id);
-                case 'H':
-                    return FindElementIndexBinary(0, (UInt16)id);
-                case 'I':
-                    return FindElementIndexBinary(0, (UInt32)id);
-                default:
-                    return Utility.NO_INDEX;
+                switch (elem_format[0])
+                {
+                    case 'B':
+                        return FindMultipleElementIndexBinary(0, (Byte)id);
+                    case 'H':
+                        return FindMultipleElementIndexBinary(0, (UInt16)id);
+                    case 'I':
+                        return FindMultipleElementIndexBinary(0, (UInt32)id);
+                    default:
+                        return Utility.NO_INDEX;
+                }
             }
-        }
-
-        public int GetSubElementID(int index1, int index2)
-        {
-            if (index1 >= element_lists.Count)
-                return Utility.NO_INDEX;
-            if (index1 < 0)
-                return Utility.NO_INDEX;
-
-            return element_lists[index1].Elements[index2].ToInt(1);
-        }
-
-        public int GetSubElementIndex(int index, int id2)
-        {
-            for(int i = 0; i < element_lists[index].Elements.Count; i++)
+            else
             {
-                int id = element_lists[index].Elements[i].ToInt(1);
-                if (id == id2)
-                    return i;
-
+                switch (elem_format[0])
+                {
+                    case 'B':
+                        return FindElementIndexBinary(0, (Byte)id);
+                    case 'H':
+                        return FindElementIndexBinary(0, (UInt16)id);
+                    case 'I':
+                        return FindElementIndexBinary(0, (UInt32)id);
+                    default:
+                        return Utility.NO_INDEX;
+                }
             }
-
-            return Utility.NO_INDEX;
         }
 
         // if an element of id X was to be inserted into a list, where should it be placed to preserve ascending order?
@@ -567,7 +683,8 @@ namespace SpellforceDataEditor.SFCFF
         }
 
         // this function merges element lists of the same type, as long as the element allows multiple subelements
-        public static int Merge(string format, SFCategoryElementList e1, SFCategoryElementList e2, out SFCategoryElementList ret)
+        // used on categories which allow subelement IDs
+        public static int MergeWithSubID(SFCategoryElementList e1, SFCategoryElementList e2, out SFCategoryElementList ret)
         {
             ret = new SFCategoryElementList();
 
@@ -579,14 +696,20 @@ namespace SpellforceDataEditor.SFCFF
             for (int i = 0; i < e1.Elements.Count; i++)
             {
                 int id = e1.Elements[i].ToInt(1);
-                subelem1.Add(id, i);
+                if (!subelem1.ContainsKey(id))
+                    subelem1.Add(id, i);
+                else
+                    subelem1[id] = i;
                 max_id = Math.Max(max_id, id);
             }
 
             for (int i = 0; i < e2.Elements.Count; i++)
             {
                 int id = e2.Elements[i].ToInt(1);
-                subelem2.Add(id, i);
+                if (!subelem2.ContainsKey(id))
+                    subelem2.Add(id, i);
+                else
+                    subelem2[id] = i;
                 max_id = Math.Max(max_id, id);
             }
 
@@ -601,54 +724,45 @@ namespace SpellforceDataEditor.SFCFF
             return 0;
         }
 
-        // this function makes a diff of elements of the same type, as long as the elements allows multiple subelements
-        public static int Diff(string format, SFCategoryElementList e1, SFCategoryElementList e2, out SFCategoryElementList ret)
+        // used on categories which do not have subelement IDs
+        public static int MergeWithoutSubID(SFCategoryElementList e1, SFCategoryElementList e2, out SFCategoryElementList ret)
         {
             ret = new SFCategoryElementList();
 
-            int elem_len = format.Length;
-
             // make dictionary for both elements: key: subelement id, value: subelement position
-            int max_id = -1;
             Dictionary<int, int> subelem1 = new Dictionary<int, int>();
             Dictionary<int, int> subelem2 = new Dictionary<int, int>();
 
             for (int i = 0; i < e1.Elements.Count; i++)
             {
-                int id = e1.Elements[i].ToInt(1);
-                subelem1.Add(id, i);
-                max_id = Math.Max(max_id, id);
+                int id = e1.Elements[i].GetHashCode();
+                if (!subelem1.ContainsKey(id))
+                    subelem1.Add(id, i);
+                else
+                    subelem1[id] = i;
             }
 
             for (int i = 0; i < e2.Elements.Count; i++)
             {
-                int id = e2.Elements[i].ToInt(1);
-                subelem2.Add(id, i);
-                max_id = Math.Max(max_id, id);
+                int id = e2.Elements[i].GetHashCode();
+                if (!subelem2.ContainsKey(id))
+                    subelem2.Add(id, i);
+                else
+                    subelem2[id] = i;
             }
 
-            for (int i = 0; i <= max_id; i++)
+            foreach(var kv in subelem1)
             {
-                if (subelem2.ContainsKey(i))
-                {
-                    SFCategoryElement el1, el2;
-                    el2 = e2.Elements[subelem2[i]];
-
-                    if (!subelem1.ContainsKey(i))
-                        ret.Elements.Add(el2.GetCopy());
-                    else
-                    {
-                        el1 = e1.Elements[subelem1[i]];
-
-                        if (!SFCategoryElement.Compare(el1, el2, subelem1[i] * elem_len, subelem2[i] * elem_len, elem_len))
-                            ret.Elements.Add(el2.GetCopy());
-                    }
-                }
+                ret.Elements.Add(e1.Elements[kv.Value].GetCopy());
+            }
+            foreach(var kv in subelem2)
+            {
+                if (!subelem1.ContainsKey(kv.Key))
+                    ret.Elements.Add(e2.Elements[kv.Value].GetCopy());
             }
 
             return 0;
         }
-
 
         // this function merges chunks of same type
         // if elements have the same id, they are replaced by elements from cat2
@@ -717,7 +831,10 @@ namespace SpellforceDataEditor.SFCFF
                         if(cat1.category_allow_multiple)
                         {
                             SFCategoryElementList new_elem;
-                            Merge(cat1.elem_format, cat1.element_lists[orig_i], cat2.element_lists[orig_i], out new_elem);
+                            if (cat1.category_allow_subelement_id)
+                                MergeWithSubID(cat1.element_lists[orig_i], cat2.element_lists[new_i], out new_elem);
+                            else
+                                MergeWithoutSubID(cat1.element_lists[orig_i], cat2.element_lists[new_i], out new_elem);
                             ret.element_lists.Add(new_elem);
                         }
                         else
@@ -753,32 +870,99 @@ namespace SpellforceDataEditor.SFCFF
             return 0;
         }
 
-        // this function creates a diff of categories of same type and version
-        // diff contains all elements from cat2 that are not in cat1
-        public static int Diff(SFCategory cat1, SFCategory cat2, out SFCategory ret)
+        // calculates status of each element on the list in relation to original element list, and stores the result in an external list
+        // used for categories that allow subelement IDs
+        public static void CalculateStatusWithSubID(SFCategoryElementList elem_base, SFCategoryElementList elem_new, ref SFCategoryElementList elem_status)
         {
-            ret = null;
+            elem_status.ElementStatus.Clear();
 
-            if (!cat1.category_is_known)
-                return -1;
-            if (!cat2.category_is_known)
-                return -1;
+            // make dictionary for both elements: key: subelement id, value: subelement position
+            int max_id = -1;
+            Dictionary<int, int> subelem1 = new Dictionary<int, int>();
+            Dictionary<int, int> subelem2 = new Dictionary<int, int>();
 
-            ret = new SFCategory()
+            for (int i = 0; i < elem_base.Elements.Count; i++)
             {
-                block_length = 0,
-                category_allow_multiple = cat1.category_allow_multiple,
-                category_id = cat1.category_id,
-                category_is_known = cat1.category_is_known,
-                category_name = cat1.category_name,
-                category_type = cat1.category_type,
-                category_unknown_data = null,
-                current_string = 0,
-                elem_format = cat1.elem_format
-            };
-            ret.string_size = new int[cat1.string_size.Length];
-            Array.Copy(cat1.string_size, ret.string_size, cat1.string_size.Length);
+                int id = elem_base.Elements[i].ToInt(1);
+                subelem1.Add(id, i);
+                max_id = Math.Max(max_id, id);
+            }
 
+            for (int i = 0; i < elem_new.Elements.Count; i++)
+            {
+                int id = elem_new.Elements[i].ToInt(1);
+                subelem2.Add(id, i);
+                max_id = Math.Max(max_id, id);
+            }
+
+            for (int i = 0; i <= max_id; i++)
+            {
+                if(subelem2.ContainsKey(i))
+                {
+                    if(subelem1.ContainsKey(i))
+                    {
+                        if (elem_base[subelem1[i]].SameAs(elem_new[subelem2[i]]))
+                            elem_status.ElementStatus.Add(SFCategoryElementStatus.UNCHANGED);
+                        else
+                            elem_status.ElementStatus.Add(SFCategoryElementStatus.MODIFIED);
+                    }
+                    else
+                    {
+                        elem_status.ElementStatus.Add(SFCategoryElementStatus.ADDED);
+                    }
+                }
+                else if(subelem1.ContainsKey(i))
+                {
+                    elem_status.ElementStatus.Add(SFCategoryElementStatus.REMOVED);
+                }
+            }
+
+            if (elem_status.Elements.Count != elem_status.ElementStatus.Count)
+                throw new Exception("meme");
+        }
+
+        public static void CalculateStatusWithoutSubID(SFCategoryElementList elem_base, SFCategoryElementList elem_new, ref SFCategoryElementList elem_status)
+        {
+            elem_status.ElementStatus.Clear();
+
+            // make dictionary for both elements: key: subelement id, value: subelement position
+            Dictionary<int, int> subelem1 = new Dictionary<int, int>();
+            Dictionary<int, int> subelem2 = new Dictionary<int, int>();
+
+            for (int i = 0; i < elem_base.Elements.Count; i++)
+            {
+                int id = elem_base.Elements[i].GetHashCode();
+                subelem1.Add(id, i);
+            }
+
+            for (int i = 0; i < elem_new.Elements.Count; i++)
+            {
+                int id = elem_new.Elements[i].GetHashCode();
+                subelem2.Add(id, i);
+            }
+
+            foreach (var kv in subelem1)
+            {
+                if (subelem2.ContainsKey(kv.Key))
+                    elem_status.ElementStatus.Add(SFCategoryElementStatus.UNCHANGED);
+                else
+                    elem_status.ElementStatus.Add(SFCategoryElementStatus.REMOVED);
+            }
+            foreach (var kv in subelem2)
+            {
+                if (!subelem1.ContainsKey(kv.Key))
+                    elem_status.ElementStatus.Add(SFCategoryElementStatus.ADDED);
+            }
+
+
+            if (elem_status.Elements.Count != elem_status.ElementStatus.Count)
+                throw new Exception("meme");
+        }
+
+        // only used if both categories are of the same ID and type, and are known
+        // detects if new elements were added to the gamedata compared to some other gamedata
+        public static void CalculateStatus(SFCategory cat_base, SFCategory cat_new, ref SFCategory cat_status)
+        {
             // double list ladder
             int orig_i = 0;
             int new_i = 0;
@@ -788,61 +972,82 @@ namespace SpellforceDataEditor.SFCFF
 
             while (true)
             {
-                if (new_i == cat2.GetElementCount())
+                if (new_i == cat_new.GetElementCount())
                     new_end = true;
-                if (orig_i == cat1.GetElementCount())
+                if (orig_i == cat_base.GetElementCount())
                     orig_end = true;
 
                 if (orig_end && new_end)
                     break;
 
-                orig_id = cat1.GetElementID(orig_i);
-                new_id = cat2.GetElementID(new_i);
+                orig_id = cat_base.GetElementID(orig_i);
+                new_id = cat_new.GetElementID(new_i);
 
                 if (orig_end)
                 {
-                    ret.elements.Add(cat2[new_i].GetCopy());
+                    cat_status.element_status.Add(SFCategoryElementStatus.ADDED);
+                    if (cat_base.category_allow_multiple)
+                        cat_status.element_lists[new_i].SetStatusAll(SFCategoryElementStatus.ADDED);
+
                 }
-                else if (!new_end)
+                else if (new_end)
+                {
+                    cat_status.element_status.Add(SFCategoryElementStatus.REMOVED);
+                    if (cat_base.category_allow_multiple)
+                        cat_status.element_lists[orig_i].SetStatusAll(SFCategoryElementStatus.REMOVED);
+                }
+                else   // orig_i == new_i
                 {
                     if (orig_id == new_id)
                     {
-                        if(cat1.category_allow_multiple)
+                        if (cat_base.category_allow_multiple)
                         {
-                            SFCategoryElementList new_elem;
-                            Diff(cat1.elem_format, cat1.element_lists[orig_i], cat2.element_lists[orig_i], out new_elem);
-                            if(new_elem.Elements.Count > 0)
-                                ret.element_lists.Add(new_elem);
+                            if (cat_base.element_lists[orig_i].SameAs(cat_new.element_lists[new_i]))
+                            {
+                                cat_status.element_status.Add(SFCategoryElementStatus.UNCHANGED);
+                                cat_status.element_lists[cat_status.element_status.Count-1].SetStatusAll(SFCategoryElementStatus.UNCHANGED);
+                            }
+                            else
+                            {
+                                cat_status.element_status.Add(SFCategoryElementStatus.MODIFIED);
+                                SFCategoryElementList list_status = cat_status.element_lists[cat_status.element_status.Count - 1];
+                                if (cat_status.category_allow_subelement_id)
+                                    CalculateStatusWithSubID(cat_base.element_lists[orig_i], cat_new.element_lists[orig_i], ref list_status);
+                                else
+                                    CalculateStatusWithoutSubID(cat_base.element_lists[orig_i], cat_new.element_lists[orig_i], ref list_status);
+                            }
                         }
                         else
                         {
-                            if (!cat1[orig_i].SameAs(cat2[new_i]))
-                                ret.elements.Add(cat2[new_i].GetCopy());
+                            if (cat_base[orig_i].SameAs(cat_new[new_i]))
+                                cat_status.element_status.Add(SFCategoryElementStatus.UNCHANGED);
+                            else
+                                cat_status.element_status.Add(SFCategoryElementStatus.MODIFIED);
                         }
                     }
                     else if (orig_id > new_id)
                     {
-                        if(cat2.category_allow_multiple)
-                            ret.element_lists.Add(cat2.element_lists[new_i].GetCopy());
-                        else
-                            ret.elements.Add(cat2[new_i].GetCopy());
-                        // addition!
+                        cat_status.element_status.Add(SFCategoryElementStatus.ADDED);
+                        if (cat_base.category_allow_multiple)
+                            cat_status.element_lists[cat_status.element_status.Count - 1].SetStatusAll(SFCategoryElementStatus.ADDED);
 
                         orig_i -= 1;
                     }
                     else if (orig_id < new_id)
                     {
+                        cat_status.element_status.Add(SFCategoryElementStatus.REMOVED);
+                        if (cat_base.category_allow_multiple)
+                            cat_status.element_lists[cat_status.element_status.Count - 1].SetStatusAll(SFCategoryElementStatus.REMOVED);
+
                         new_i -= 1;
                     }
                 }
 
-                if (orig_i < cat1.GetElementCount())
+                if (orig_i < cat_base.GetElementCount())
                     orig_i += 1;
-                if (new_i < cat2.GetElementCount())
+                if (new_i < cat_new.GetElementCount())
                     new_i += 1;
             }
-
-            return 0;
         }
 
 

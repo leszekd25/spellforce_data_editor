@@ -266,10 +266,13 @@ namespace SpellforceDataEditor.special_forms
                 var race_data = SFCFF.SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)unit_stats_data[2]);
                 if (race_data == null)
                     return 6;
-                var clan_data = SFCFF.SFCategoryManager.gamedata[2023].FindElementBinary(0, (byte)((ushort)race_data[9]));
-                if (clan_data == null)
+
+                var clan_data_index = SFCFF.SFCategoryManager.gamedata[2023].FindMultipleElementIndexBinary(0, (byte)((ushort)race_data[9]));
+                if (clan_data_index == Utility.NO_INDEX)
                     return 6;
-                var player_relation = (byte)clan_data[32];
+
+                var clan_data = SFCFF.SFCategoryManager.gamedata[2023].element_lists[clan_data_index];
+                var player_relation = (byte)clan_data[10][2];
                 if (player_relation == 0)
                     return 1;
                 if (player_relation == 100)
@@ -294,10 +297,13 @@ namespace SpellforceDataEditor.special_forms
                     race_data = SFCFF.SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)bld.race_id);
                 if (race_data == null)
                     return 6;
-                var clan_data = SFCFF.SFCategoryManager.gamedata[2023].FindElementBinary(0, (byte)((ushort)race_data[9]));
-                if (clan_data == null)
+
+                var clan_data_index = SFCFF.SFCategoryManager.gamedata[2023].FindMultipleElementIndexBinary(0, (byte)((ushort)race_data[9]));
+                if (clan_data_index == Utility.NO_INDEX)
                     return 6;
-                var player_relation = (byte)clan_data[32];
+
+                var clan_data = SFCFF.SFCategoryManager.gamedata[2023].element_lists[clan_data_index];
+                var player_relation = (byte)clan_data[10][2];
                 if (player_relation == 0)
                     return 1;
                 if (player_relation == 100)
@@ -1213,7 +1219,7 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.RenderScene();
             RenderWindow.SwapBuffers();
             timer.Stop();
-            System.Diagnostics.Debug.WriteLine("TIME: " + (timer.Elapsed.Ticks / 10000f).ToString("0.##") + " ms");
+            //System.Diagnostics.Debug.WriteLine("TIME: " + (timer.Elapsed.Ticks / 10000f).ToString("0.##") + " ms");
         }
 
         private void RenderWindow_MouseDown(object sender, MouseEventArgs e)

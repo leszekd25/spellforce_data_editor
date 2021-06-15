@@ -672,15 +672,12 @@ namespace SpellforceDataEditor.SFCFF
         }
     }
 
-    public enum SFCategoryManagerMode { NORMAL = 0, DIFF = 1, }
-
     //this class is responsible for category management
     //it provides with general functions to perform on categories as a database
     public static class SFCategoryManager
     {
-        public static SFGameData gamedata { get; private set; } = new SFGameData();
-        public static SFCategoryManagerMode Mode = SFCategoryManagerMode.NORMAL;
-        public static SFGameData diff_gamedata { get; private set; } = null;
+        public static List<string> gd_dependencies = new List<string>();
+        public static SFGameData gamedata = new SFGameData();
 
         public static bool ready { get; private set; } = false;
 
@@ -688,6 +685,8 @@ namespace SpellforceDataEditor.SFCFF
         {
             if (ready)
                 return;
+
+            SFGameData.CalculateStatus(null, null, ref gamedata);
 
             ready = true;
             return;
@@ -697,15 +696,6 @@ namespace SpellforceDataEditor.SFCFF
         {
             gamedata = gd;
             ready = true;
-            Mode = SFCategoryManagerMode.NORMAL;
-        }
-
-        public static void SetDiff(SFGameData gd, SFGameData diff_gd)
-        {
-            gamedata = gd;
-            diff_gamedata = diff_gd;
-            ready = true;
-            Mode = SFCategoryManagerMode.DIFF;
         }
 
         //loads gamedata.cff file
@@ -725,31 +715,35 @@ namespace SpellforceDataEditor.SFCFF
             gamedata.Save(filename);
         }
 
+        public static void SaveDiff(string filename)
+        {
+            gamedata.SaveDiff(filename);
+        }
+
         //using the fact that all text data is saved in category 15 (ind 14)
         //searches for a text with a given ID and in a given language
         //returns a sub-element in a given language which contains text data looked for (or null if it doesnt exist)
         //this is quite fast (O(log n))
+        //returns reference to an element from db! remember to drop it later
         public static SFCategoryElement FindElementText(int t_index, int t_lang)
         {
-            int index = gamedata[2016].FindElementIndexBinary<UInt16>(0, (UInt16)t_index);
+            int index = gamedata[2016].FindMultipleElementIndexBinary<UInt16>(0, (UInt16)t_index);
             if (index == Utility.NO_INDEX)
                 return null;
 
             int lang_index = Utility.NO_INDEX;
             int safe_index = Utility.NO_INDEX;   //will fail if there's no language id 0
 
-            SFCategoryElement e = new SFCategoryElement();
-            SFCategoryElement e_found = gamedata[2016][index];
-            int elem_num = e_found.variants.Count / 5;
+            SFCategoryElementList e_found = gamedata[2016].element_lists[index];
 
-            for(int i = 0; i < elem_num; i++)
+            for(int i = 0; i < e_found.Elements.Count; i++)
             {
-                if((Byte)e_found[i*5+1] == (Byte)t_lang)
+                if((Byte)e_found[i][1] == (Byte)t_lang)
                 {
                     lang_index = i;
                     break;
                 }
-                else if((Byte)e_found[i*5+1] == 0)
+                else if((Byte)e_found[i][1] == 0)
                 {
                     safe_index = i;
                 }
@@ -760,9 +754,7 @@ namespace SpellforceDataEditor.SFCFF
             if (lang_index == Utility.NO_INDEX)
                 return null;
 
-            e.variants = e_found.CopyRaw(lang_index * 5, 5).ToList();
-
-            return e;
+            return e_found[lang_index];
         }
 
         //finds text string given element and column index where the element holds text IDs
@@ -828,15 +820,15 @@ namespace SpellforceDataEditor.SFCFF
             if (unit_elem == null)
                 return 0;
 
-            SFCategoryElement unit_eq = SFCategoryManager.gamedata[2025].FindElementBinary<UInt16>(0, (UInt16)unit_id);
-            if (unit_eq == null)
+            int unit_eq_index = gamedata[2025].FindMultipleElementIndexBinary(0, (UInt16)unit_id);
+            if (unit_eq_index == -1)
                 return 0;
 
-            int el_size = unit_eq.variants.Count / 3;
-            for (int i = 0; i < el_size; i++)
+            SFCategoryElementList unit_eq = gamedata[2025].element_lists[unit_eq_index];
+            for(int i = 0; i < unit_eq.Elements.Count; i++)
             {
-                if ((Byte)unit_eq[i * 3 + 1] == slot_id)
-                    return (UInt16)unit_eq[i * 3 + 2];
+                if ((Byte)unit_eq[i][1] == slot_id)
+                    return (UInt16)unit_eq[i][2];
             }
             return 0;
         }
@@ -874,17 +866,8 @@ namespace SpellforceDataEditor.SFCFF
         {
             string txt_major = "";
             string txt_minor = "";
-            SFCategoryElement skill_elem;
-            try     // yuck!
-            {
-                skill_elem = gamedata[2039][skill_major];
-            }
-            catch(Exception)
-            {
-                return Utility.S_UNKNOWN;
-            }
 
-            txt_major = SFCategoryManager.GetTextFromElement(skill_elem, 2);
+            txt_major = SFCategoryManager.GetTextFromElement(gamedata[2039][skill_major, 0], 2);
 
             if ((skill_major == 0) && (skill_minor != 0))
             {
@@ -893,7 +876,14 @@ namespace SpellforceDataEditor.SFCFF
             }
             else if (skill_minor != 101)
             {
-                txt_minor = SFCategoryManager.GetTextFromElement(skill_elem, skill_minor * 3 + 2);
+                try
+                {
+                    txt_minor = SFCategoryManager.GetTextFromElement(gamedata[2039][skill_major, skill_minor], 2);
+                }
+                catch(Exception)
+                {
+                    return Utility.S_UNKNOWN;
+                }
             }
 
             return txt_major + " " + txt_minor + " " + skill_lvl.ToString();
@@ -973,11 +963,7 @@ namespace SpellforceDataEditor.SFCFF
         public static void UnloadAll()
         {
             gamedata.Unload();
-            if(diff_gamedata != null)
-            {
-                diff_gamedata.Unload();
-                diff_gamedata = null;
-            }
+            gd_dependencies.Clear();
 
             ready = false;
         }

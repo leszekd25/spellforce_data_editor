@@ -25,11 +25,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category[current_element];
-            int elem_count = elem.variants.Count / 3;
-
-            for (int i = 0; i < elem_count; i++)
-                set_element_variant(current_element, 0 + 3 * i, Utility.TryParseUInt16(textBox1.Text));
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+                set_element_variant(current_element, i, 0, Utility.TryParseUInt16(textBox1.Text));
         }
 
         public override void set_element(int index)
@@ -42,13 +39,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             current_element = index;
 
-            SFCategoryElement elem = category[current_element];
-            int elem_count = elem.variants.Count / 3;
-
-            for (int i = 0; i < elem_count; i++)
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
             {
-                UInt16 item_id = (UInt16)(elem[i * 3 + 1]);
-                UInt16 item_count = (UInt16)(elem[i * 3 + 2]);
+                UInt16 item_id = (UInt16)(category[current_element, i][1]);
+                UInt16 item_count = (UInt16)(category[current_element, i][2]);
 
                 MerchantGrid.Rows.Add();
                 MerchantGrid.Rows[i].Cells[0].Value = item_id;
@@ -70,7 +64,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0);
+            textBox1.Text = variant_repr(0, 0);
         }
 
         private void OnCellValueChange(object sender, DataGridViewCellEventArgs e)
@@ -95,18 +89,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 SFCategoryElement item_elem = SFCategoryManager.gamedata[2003].FindElementBinary(0, item_id);
                 if (item_elem == null)
                 {
-                    cell.Value = variant_repr(i * 3 + 1);
+                    cell.Value = variant_repr(i, 1);
                 }
                 else
                 {
-                    set_element_variant(current_element, i * 3 + 1, item_id);
+                    set_element_variant(current_element, i, 1, item_id);
                     MerchantGrid.Rows[i].Cells[2].Value = SFCategoryManager.GetItemName(item_id);
                 }
             }
             else if(cell.ColumnIndex == 1)
             {
                 UInt16 item_count = Utility.TryParseUInt16(cell.Value.ToString());
-                set_element_variant(current_element, i * 3 + 2, item_count);
+                set_element_variant(current_element, i, 2, item_count);
             }
 
         }
@@ -114,38 +108,29 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void button1_Click(object sender, EventArgs e)
         {
             MerchantGrid.ClearSelection();
-            SFCategoryElement elem = category[current_element];
+            SFCategoryElement elem = category[current_element, 0];
 
             int new_index = MerchantGrid.Rows.Count;
             UInt16 item_id = Utility.TryParseUInt16(textBox2.Text);
 
+            // if item already exists, add count to that item instead
             for(int i = 0; i < new_index; i++)
             {
-                UInt16 current_item_id = (UInt16)(elem[i * 3 + 1]);
+                UInt16 current_item_id = (UInt16)(category[current_element, i][1]);
                 if(item_id == current_item_id)
                 {
-                    elem[i * 3 + 2] = (UInt16)((UInt16)(elem[i * 3 + 2]) + 1);
-                    MerchantGrid.Rows[i].Cells[1].Value = (UInt16)(elem[i * 3 + 2]);
+                    category[current_element, i][2] = (UInt16)((UInt16)(category[current_element, i][2]) + 1);
+                    MerchantGrid.Rows[i].Cells[1].Value = (UInt16)(category[current_element, i][2]);
                     return;
                 }
             }
 
-            //add new element
-            SFCategoryElement new_elem = new SFCategoryElement();
-            Object[] obj_array = new Object[(new_index + 1) * 3];
-            for (int i = 0; i < new_index; i++)
-            {
-                for (int j = 0; j < 3; j++)
-                {
-                    obj_array[i *3 + j] = elem[i * 3 + j];
-                }
-            }
-            obj_array[new_index * 3 + 0] = (UInt16)elem[0];
-            obj_array[new_index * 3 + 1] = Utility.TryParseUInt16(textBox2.Text);
-            obj_array[new_index * 3 + 2] = (UInt16)1;
+            // add new element
+            category.element_lists[current_element].Elements.Add(category.GetEmptyElement());
+            category[current_element, new_index][0] = (UInt16)elem[0];
+            category[current_element, new_index][1] = item_id;
+            category[current_element, new_index][2] = (UInt16)1;
 
-            new_elem.AddVariants(obj_array);
-            category[current_element] = new_elem;
             set_element(current_element);
         }
 
@@ -157,25 +142,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             int selected = MerchantGrid.SelectedCells[0].RowIndex;
 
-            SFCategoryElement elem = category[current_element];
-            int cur_elem_count = elem.variants.Count / 3;
-            int offset = 0;
-            SFCategoryElement new_elem = new SFCategoryElement();
-            Object[] obj_array = new Object[(cur_elem_count - 1) * 3];
-            for (int i = 0; i < cur_elem_count; i++)
-            {
-                if (i == selected)
-                {
-                    offset = 1;
-                    continue;
-                }
-                for (int j = 0; j < 3; j++)
-                {
-                    obj_array[(i - offset) * 3 + j] = elem[i * 3 + j];
-                }
-            }
-            new_elem.AddVariants(obj_array);
-            category[current_element] = new_elem;
+            category.element_lists[current_element].Elements.RemoveAt(selected);
+
             set_element(current_element);
         }
 
@@ -211,7 +179,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            UInt16 merchant_id = (UInt16)category[index][0];
+            UInt16 merchant_id = (UInt16)category[index, 0][0];
             string txt_merchant = SFCategoryManager.GetMerchantName(merchant_id);
             return merchant_id.ToString() + " " + txt_merchant;
         }

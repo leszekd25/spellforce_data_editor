@@ -62,7 +62,7 @@ namespace SpellforceDataEditor.SFMod
                 return 0;
             if (element == null)
                 return -1;
-            SFCategoryManager.gamedata[category_index].WriteElementToBuffer(bw, element.variants);
+            SFCategoryManager.gamedata[category_index].WriteElementToBuffer(bw, element);
             return 0;
         }
 

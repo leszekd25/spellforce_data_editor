@@ -187,16 +187,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     new_elem_list.Elements.Add(new_elem);
 
                     cat.element_lists.Insert(new_ind, new_elem_list);
-
-                    MainForm.data.diff.push_change(cat_i,
-                        new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, new_ind - 1, Utility.NO_INDEX, null, new_elem_list));
                 }
                 else
                 {
                     cat.elements.Insert(new_ind, new_elem);
-
-                    MainForm.data.diff.push_change(cat_i,
-                        new SFDiffElement(SFDiffElement.DIFF_TYPE.INSERT, new_ind - 1, Utility.NO_INDEX, null, new_elem));
                 }
 
                 bt.Tag = false;

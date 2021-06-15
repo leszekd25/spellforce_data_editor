@@ -28,46 +28,43 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category[current_element];
-            int elem_count = elem.variants.Count / 9;
-
-            for (int i = 0; i < elem_count; i++)
-                set_element_variant(current_element, i * 9 + 0, Utility.TryParseUInt8(textBox1.Text));
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+                set_element_variant(current_element, i, 0, Utility.TryParseUInt8(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 2, Utility.TryParseUInt8(textBox3.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 2, Utility.TryParseUInt8(textBox3.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 3, Utility.TryParseUInt8(textBox5.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 3, Utility.TryParseUInt8(textBox5.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 4, Utility.TryParseUInt8(textBox4.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 4, Utility.TryParseUInt8(textBox4.Text));
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 5, Utility.TryParseUInt8(textBox7.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 5, Utility.TryParseUInt8(textBox7.Text));
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 6, Utility.TryParseUInt8(textBox6.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 6, Utility.TryParseUInt8(textBox6.Text));
         }
 
         private void textBox9_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 7, Utility.TryParseUInt8(textBox9.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 7, Utility.TryParseUInt8(textBox9.Text));
         }
 
         private void textBox8_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex * 9 + 8, Utility.TryParseUInt8(textBox8.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 8, Utility.TryParseUInt8(textBox8.Text));
         }
 
         public override void set_element(int index)
@@ -76,10 +73,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             ListLevels.Items.Clear();
 
-            SFCategoryElement elem = category[current_element];
-            int elem_count = elem.variants.Count / 9;
-
-            for(int i = 0; i < elem_count; i++)
+            for(int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
             {
                 ListLevels.Items.Add("Level " + (i + 1).ToString());
             }
@@ -89,7 +83,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0);
+            textBox1.Text = variant_repr(0, 0);
         }
 
         private void ListLevels_SelectedIndexChanged(object sender, EventArgs e)
@@ -98,56 +92,46 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
 
             int index = ListLevels.SelectedIndex;
-            textBox3.Text = variant_repr(index * 9 + 2);
-            textBox5.Text = variant_repr(index * 9 + 3);
-            textBox4.Text = variant_repr(index * 9 + 4);
-            textBox7.Text = variant_repr(index * 9 + 5);
-            textBox6.Text = variant_repr(index * 9 + 6);
-            textBox9.Text = variant_repr(index * 9 + 7);
-            textBox8.Text = variant_repr(index * 9 + 8);
+            textBox3.Text = variant_repr(index, 2);
+            textBox5.Text = variant_repr(index, 3);
+            textBox4.Text = variant_repr(index, 4);
+            textBox7.Text = variant_repr(index, 5);
+            textBox6.Text = variant_repr(index, 6);
+            textBox9.Text = variant_repr(index, 7);
+            textBox8.Text = variant_repr(index, 8);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category[current_element];
-            int elem_count = elem.variants.Count / 9;
+            SFCategoryElement elem = category[current_element, 0];
             int index = ListLevels.Items.Count;
 
-            object[] paste_data = new object[9];
-            paste_data[0] = (Byte)elem[0];
-            paste_data[1] = (Byte)(index+1);
-            paste_data[2] = (Byte)0;
-            paste_data[3] = (Byte)0;
-            paste_data[4] = (Byte)0;
-            paste_data[5] = (Byte)0;
-            paste_data[6] = (Byte)0;
-            paste_data[7] = (Byte)0;
-            paste_data[8] = (Byte)0;
+            category.element_lists[current_element].Elements.Insert(index, category.GetEmptyElement());
+            category[current_element, index][0] = (Byte)elem[0];
+            category[current_element, index][1] = (Byte)(index + 1);
 
-            elem.PasteRaw(paste_data, index * 9);
             ListLevels.Items.Add("Level " + (index + 1).ToString());
             ListLevels.SelectedIndex = index;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category[current_element];
-            int elem_count = elem.variants.Count / 9;
-            if (elem_count == 1)
+            if (category.element_lists[current_element].Elements.Count == 1)
                 return;
 
             int index = ListLevels.Items.Count - 1;
 
-            elem.RemoveRaw(index * 9, 9);
+            category.element_lists[current_element].Elements.RemoveAt(index);
             ListLevels.Items.RemoveAt(index);
+
             ListLevels.SelectedIndex = Math.Min(index, ListLevels.Items.Count - 1);
         }
 
 
         public override string get_element_string(int index)
         {
-            Byte skill_major = (Byte)category[index][0];
-            Byte skill_level = (Byte)category[index][1];
+            Byte skill_major = (Byte)category[index, 0][0];
+            Byte skill_level = (Byte)category[index, 0][1];
             string txt_skill = SFCategoryManager.GetSkillName(skill_major, 101, skill_level);
             return txt_skill;
         }

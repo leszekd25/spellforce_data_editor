@@ -120,11 +120,10 @@ namespace SpellforceDataEditor.SFMap
             int col_index = SFCFF.SFCategoryManager.gamedata[2030].GetElementIndex(id);
             if (col_index != -1)
             {
-                SFCFF.SFCategoryElement col_data = SFCFF.SFCategoryManager.gamedata[2030][col_index];
-
-                for(int i = 0; i < col_data.variants.Count; i+=4)
+                SFCFF.SFCategoryElementList col_data = SFCFF.SFCategoryManager.gamedata[2030].element_lists[col_index];
+                for(int i = 0; i < col_data.Elements.Count; i++)
                 {
-                    SFCFF.SFOutlineData outline = (SFCFF.SFOutlineData)(col_data[i + 3]);
+                    SFCFF.SFOutlineData outline = (SFCFF.SFOutlineData)(col_data[i][3]);
                     int vertex_count = outline.Data.Count / 2;
                     Vector2[] vertex_list = new Vector2[vertex_count];
                     for (int j = 0; j < vertex_count; j++)

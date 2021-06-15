@@ -176,14 +176,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 2012:
                 case 2018:
                     //get item id
-                    SFCategoryElement item = SFCategoryManager.gamedata[category][element];
-                    if (item == null)
+                    int item_id = SFCategoryManager.gamedata[category].GetElementID(element);
+                    if (item_id == Utility.NO_INDEX)
                     {
                         LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Item not found (category is " + category.ToString()
                             + ", element is " + element.ToString() + ")");
                         break;
                     }
-                    int item_id = (UInt16)item[0];
 
                     //find item mesh
                     string m_name = SFLuaEnvironment.GetItemMesh(item_id, false);
@@ -203,7 +202,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 2030:
                 case 2031:
                     //get building id
-                    int building_id = (ushort)SFCategoryManager.gamedata[category][element][0];
+                    int building_id = SFCategoryManager.gamedata[category].GetElementID(element);
+                    if (building_id == Utility.NO_INDEX)
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Building not found (category is " + category.ToString()
+                            + ", element is " + element.ToString() + ")");
+                        break;
+                    }
                     SceneNode building_node = AddSceneBuilding(building_id, "building");
                     building_node.SetParent(root);
                     building_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
@@ -214,7 +219,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 2057:
                 case 2065:
                     //get object id
-                    int object_id = (ushort)SFCategoryManager.gamedata[category][element][0];
+                    int object_id = SFCategoryManager.gamedata[category].GetElementID(element);
+                    if (object_id == Utility.NO_INDEX)
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Object not found (category is " + category.ToString()
+                            + ", element is " + element.ToString() + ")");
+                        break;
+                    }
                     SceneNode object_node = AddSceneObject(object_id, "object", true, true, true);
                     object_node.SetParent(root);
                     object_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
@@ -228,7 +239,13 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 case 2040:
                 case 2001:
                     //get unit id
-                    int unit_id = (ushort)SFCategoryManager.gamedata[category][element][0];
+                    int unit_id = SFCategoryManager.gamedata[category].GetElementID(element);
+                    if (unit_id == Utility.NO_INDEX)
+                    {
+                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Unit not found (category is " + category.ToString()
+                            + ", element is " + element.ToString() + ")");
+                        break;
+                    }
                     SceneNode unit_node = AddSceneUnit(unit_id, "unit");
                     unit_node.SetParent(root);
                     unit_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
@@ -361,7 +378,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             //special case: anim_name is of "figure_hero": need to also add human head (animated)
             if ((anim_name == "figure_hero") && (unit_stats != null))
             {
-                int head_id = (UInt16)unit_stats[24];
+                int head_id = (UInt16)unit_stats[22];
                 SFLuaSQLHeadData head_data = SFLuaEnvironment.heads[head_id];
                 if (head_data == null)
                 {

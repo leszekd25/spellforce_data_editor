@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 
 namespace SpellforceDataEditor.SFCFF
 {
@@ -30,7 +27,10 @@ namespace SpellforceDataEditor.SFCFF
 
         public override int GetHashCode()
         {
-            return Data.GetHashCode();
+            int h = 1300813;
+            for (int i = 0; i < Data.Count; i += 2)
+                h = h * 1300367 + ((Data[i] << 16) * (Data[i + 1])).GetHashCode();
+            return h;
         }
 
         public SFOutlineData GetCopy()
@@ -41,6 +41,8 @@ namespace SpellforceDataEditor.SFCFF
             return ret;
         }
     }
+
+    public enum SFCategoryElementStatus { UNCHANGED, MODIFIED, ADDED, REMOVED }
 
     //category element is a single entry from a category
     //this entry can hold different types of data depending on which category it belongs to
@@ -220,12 +222,21 @@ namespace SpellforceDataEditor.SFCFF
 
             return elem;
         }
+
+        public override int GetHashCode()
+        {
+            int h = 1300813;
+            foreach (var e in variants)
+                h = h * 1300367 + e.GetHashCode();
+            return h;
+        }
     }
 
     // this is used for categories of which elements are made from multiple subelements
     public class SFCategoryElementList
     {
         public List<SFCategoryElement> Elements = new List<SFCategoryElement>();
+        public List<SFCategoryElementStatus> ElementStatus = new List<SFCategoryElementStatus>();
 
         public SFCategoryElement this[int i] { get { return Elements[i]; } set { Elements[i] = value; } }
 
@@ -238,6 +249,15 @@ namespace SpellforceDataEditor.SFCFF
             return null;
         }
 
+        public int GetSubIndexBySubID(int id)
+        {
+            for (int i = 0; i < Elements.Count; i++)
+                if (Elements[i].ToInt(1) == id)
+                    return i;
+
+            return Utility.NO_INDEX;
+        }
+
         public SFCategoryElementList GetCopy()
         {
             SFCategoryElementList e = new SFCategoryElementList();
@@ -247,9 +267,41 @@ namespace SpellforceDataEditor.SFCFF
             return e;
         }
 
+        public bool SameAs(SFCategoryElementList e)
+        {
+            if (e == null)
+                return false;
+
+            if (e.Elements.Count != Elements.Count)
+                return false;
+
+            for(int i = 0; i < Elements.Count; i++)
+            {
+                if (!Elements[i].SameAs(e.Elements[i]))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public void SetStatusAll(SFCategoryElementStatus status)
+        {
+            ElementStatus.Clear();
+            for (int i = 0; i < Elements.Count; i++)
+                ElementStatus.Add(status);
+        }
+
         public int GetID()
         {
             return Elements[0].ToInt(0);
+        }
+
+        public override int GetHashCode()
+        {
+            int h = 1300813;
+            foreach (var e in Elements)
+                h = h * 1300367 + e.GetHashCode();
+            return h;
         }
     }
 }
