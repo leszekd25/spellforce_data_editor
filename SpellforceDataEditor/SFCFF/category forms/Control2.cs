@@ -63,7 +63,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox8_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 7, Utility.FixedLengthString(textBox8.Text, 64));
+            set_element_variant(current_element, 7, SFString.FromString(textBox8.Text, 0, 64));// Utility.FixedLengthString(textBox8.Text, 64));
         }
 
         private void textBox9_TextChanged(object sender, EventArgs e)
@@ -82,6 +82,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox6.Text = variant_repr(6);
             textBox8.Text = string_repr(7);
             textBox9.Text = variant_repr(8);
+
+            textbox_repr(textBox9, 2058);
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
@@ -93,7 +95,32 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox9_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(textBox9, 2059);
+            {
+                int cur_id = Utility.TryParseInt32(textBox9.Text);
+                int ind = SFCategoryManager.gamedata[2058].GetElementIndex(cur_id);
+
+                if((ind == Utility.NO_INDEX)||(ind == 0))
+                {
+                    if(ind == 0)
+                        cur_id = 2000;
+                    // create new description
+                    int new_id;
+                    int new_ind;
+                    new_ind = SFCategoryManager.gamedata[2058].GetNextNewElementIndex(cur_id, out new_id);
+                    if (new_id > 4000)
+                        return;
+
+                    SFCategoryElement new_elem = new SFCategoryElement();
+                    new_elem.AddVariant((ushort)new_id);
+                    new_elem.AddVariant((ushort)0);
+                    SFCategoryManager.gamedata[2058].elements.Insert(new_ind, new_elem);
+                    SFCategoryManager.gamedata[2058].element_status.Insert(new_ind, SFCategoryElementStatus.ADDED);
+                    textBox9.Text = new_id.ToString();
+                    textBox9.BackColor = Color.DarkOrange;
+                }
+                else
+                    step_into(textBox9, 2058);
+            }
         }
 
 

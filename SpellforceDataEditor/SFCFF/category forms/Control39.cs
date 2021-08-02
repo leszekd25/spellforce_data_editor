@@ -91,7 +91,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (map_elem == null)
                 map_handle = Utility.S_NONAME;
             else
-                map_handle = Utility.CleanString(map_elem[2]);
+                map_handle = map_elem[2].ToString();
             return "Map handle: " + map_handle;
         }
     }

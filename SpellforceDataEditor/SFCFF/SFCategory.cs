@@ -37,7 +37,7 @@ namespace SpellforceDataEditor.SFCFF
             ChunkFormats.Add(Tuple.Create((ushort)2002, (ushort)3), new ChunkFormatInfo("HHBBBBBBBBBBBBHIIHHBBIIIIIIIIIIHH", "Spell data", false, false));
             ChunkFormats.Add(Tuple.Create((ushort)2054, (ushort)5), new ChunkFormatInfo("HHBBBBBsH", "Spell type data", false, false, new int[] { 64 }));
             ChunkFormats.Add(Tuple.Create((ushort)2056, (ushort)1), new ChunkFormatInfo("BBBBBB", "Unknown (1)", false, false));
-            ChunkFormats.Add(Tuple.Create((ushort)2005, (ushort)9), new ChunkFormatInfo("HHBHHHHHHHHHHHHHHHHHIBHB", "4. Unit/hero stats", false, false));
+            ChunkFormats.Add(Tuple.Create((ushort)2005, (ushort)9), new ChunkFormatInfo("HHBHHHHHHHHHHHHHHHHHIBHB", "Unit/hero stats", false, false));
             ChunkFormats.Add(Tuple.Create((ushort)2006, (ushort)1), new ChunkFormatInfo("HBBB", "Hero/worker skills", true, false));
             ChunkFormats.Add(Tuple.Create((ushort)2067, (ushort)1), new ChunkFormatInfo("HBH", "Hero spells", true, true));
             ChunkFormats.Add(Tuple.Create((ushort)2003, (ushort)4), new ChunkFormatInfo("HBBHHHHBIIB", "Item general info", false, false));
@@ -157,11 +157,11 @@ namespace SpellforceDataEditor.SFCFF
                         elem.AddVariant((UInt32)0);
                         break;
                     case 's':
-                        elem.AddVariant(new byte[string_size[current_string]]);
+                        elem.AddVariant(new SFString() { RawData = new byte[string_size[current_string]], LanguageID = 0 });
                         current_string = Math.Min(string_size.Length - 1, current_string + 1);
                         break;
                     case 'C':
-                        elem.AddVariant((Byte)0);
+                        elem.AddVariant(new SFOutlineData() { Data = new List<short>() });
                         break;
                     default:
                         LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory.generate_empty_element(): Unrecognized variant type (category: " + category_name + ")");
@@ -169,6 +169,17 @@ namespace SpellforceDataEditor.SFCFF
                 }
             }
             return elem;
+        }
+
+        // adds empty element list (because element lists must have at least 1 element, this will add an empty element to the list
+        public SFCategoryElementList GetEmptyElementList()
+        {
+            SFCategoryElementList elem_list = new SFCategoryElementList();
+
+            elem_list.Elements.Add(GetEmptyElement());
+            elem_list.ElementStatus.Add(SFCategoryElementStatus.ADDED);
+
+            return elem_list;
         }
 
         //retrieves next variant from a buffer, given a type (indicated by a character contained in a format)
@@ -193,7 +204,8 @@ namespace SpellforceDataEditor.SFCFF
                     return sr.ReadUInt32();
                 case 's':
                     current_string = Math.Min(string_size.Length - 1, current_string + 1);
-                    return sr.ReadBytes(s_size);
+                    SFString str = new SFString() { RawData = sr.ReadBytes(s_size), LanguageID = 0 };
+                    return str;
                 case 'C':
                     byte vcount = sr.ReadByte();
                     SFOutlineData ret = new SFOutlineData() { Data = new List<short>() };
@@ -226,10 +238,15 @@ namespace SpellforceDataEditor.SFCFF
                 sw.Write((Int32)var);
             else if (t == typeof(UInt32))
                 sw.Write((UInt32)var);
-            else if (t == typeof(byte[]))
-                sw.Write((byte[])var);
+            else if (t == typeof(SFString))
+                sw.Write(((SFString)var).RawData);
             else if (t == typeof(SFOutlineData))
             {
+                if (((SFOutlineData)var).Data.Count < 3)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory.WriteVariantToBuffer(): Insufficient outline points!");
+                    throw new Exception("SFCategory.WriteVariantToBuffer(): Invalid outline data!");
+                }
                 sw.Write((byte)(((SFOutlineData)var).Data.Count/2));
                 for (int i = 0; i < ((SFOutlineData)var).Data.Count; i++)
                     sw.Write(((SFOutlineData)var).Data[i]);
@@ -287,7 +304,14 @@ namespace SpellforceDataEditor.SFCFF
                     cur_id = next_id;
                     for (int i = 0; i < elem_format.Length; i++)
                         elem.AddVariant(ReadVariantFromBuffer(sr, elem_format[i], string_size[current_string]));
-                    elements_loaded.Elements.Add(elem);
+
+                    // sometimes gamedata is malformed; this attempts to fix issue here multiple sub-elements with the same sub-ID exist within one element
+                    int cur_subelem_id = elem.ToInt(1);
+                    int prev_subelem_index = elements_loaded.GetIndexByID(cur_subelem_id);
+                    if (prev_subelem_index == Utility.NO_INDEX)
+                        elements_loaded.Elements.Add(elem);
+                    else
+                        elements_loaded.Elements[prev_subelem_index] = elem;
                 }
                 else
                     break;
@@ -453,7 +477,7 @@ namespace SpellforceDataEditor.SFCFF
                     if (string_size == null)
                         string_size = new int[] { 0 };
 
-                    int i = 0;
+                    //int i = 0;
                     int ind = 0;
                     while (br.BaseStream.Position < br.BaseStream.Length)
                     {
@@ -481,14 +505,14 @@ namespace SpellforceDataEditor.SFCFF
                             return -3;
                         }
 
-                        if (GetElementID(ind) < i)
+                       /* if (GetElementID(ind) < i)
                             i = 0;                           // breakpoint for when data is not sorted in ascending order
 
-                        i = GetElementID(ind);
+                        i = GetElementID(ind);*/
                         ind += 1;
                     }
 
-                    LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.read(): Items read: " + elements.Count.ToString());
+                    LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.read(): Items read: " + ind.ToString());
                 }
                 else
                 {
@@ -664,7 +688,7 @@ namespace SpellforceDataEditor.SFCFF
         public int GetNewElementIndex(int id)
         {
             int current_start = 0;
-            int current_end = elements.Count - 1;
+            int current_end = GetElementCount() - 1;
             int current_center;
             int val;
             while (current_start <= current_end)
@@ -680,6 +704,56 @@ namespace SpellforceDataEditor.SFCFF
                     current_end = current_center - 1;
             }
             return current_start;
+        }
+
+        // if an element of id greater or equal X was to be inserted into a list, where should it be placed to preserve order, and which ID should it have?
+        // only for categories without multiple elements
+        // O(n)
+        public int GetNextNewElementIndex(int id, out int new_id)
+        {
+            new_id = id;
+
+            int start_index = Utility.NO_INDEX;
+
+            int c = GetElementCount();
+            for(int i = 0; i < c; i++)
+            {
+                if(GetElementID(i) >= id)
+                {
+                    if(GetElementID(i) == id)
+                    {
+                        // there already exists element with given ID
+                        start_index = i;
+                        break;
+                    }
+                    else
+                    {
+                        // there is no element with given ID, return now
+                        return i;
+                    }
+                }
+            }
+
+            // all IDs are smaller than new ID -> there is no element with given ID
+            if (start_index == Utility.NO_INDEX)
+                return c;
+
+            for(int i = start_index+1; i < c; i++)
+            {
+                // next ID is successor of this ID
+                if (GetElementID(i) == id + 1)
+                    id += 1;
+                else
+                {
+                    // there is a gap between this ID and next ID, so set return ID to fit the gap
+                    new_id = id + 1;
+                    return i;
+                }
+            }
+
+            // all IDs are sequential -> set return ID to next after last
+            new_id = id + 1;
+            return c - 1;
         }
 
         // this function merges element lists of the same type, as long as the element allows multiple subelements
@@ -779,6 +853,7 @@ namespace SpellforceDataEditor.SFCFF
             {
                 block_length = 0,
                 category_allow_multiple = cat1.category_allow_multiple,
+                category_allow_subelement_id = cat1.category_allow_subelement_id,
                 category_id = cat1.category_id,
                 category_is_known = cat1.category_is_known,
                 category_name = cat1.category_name,
@@ -1050,6 +1125,18 @@ namespace SpellforceDataEditor.SFCFF
             }
         }
 
+        public void special_cat2016_DetermineLanguageIDs()
+        {
+            foreach(var list in element_lists)
+            {
+                for(int i = 0; i < list.Elements.Count; i++)
+                {
+                    byte l_id = (byte)(list[i][1]);
+                    list[i][4] = new SFString() { LanguageID = l_id, RawData = ((SFString)(list[i][4])).RawData };
+                }
+            }
+        }
+
 
 
         //removes all elements and resets category
@@ -1057,6 +1144,35 @@ namespace SpellforceDataEditor.SFCFF
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.unload() called, category name: " + category_name);
             elements.Clear();
+        }
+
+        // creates a new category, and sets it up, depending on ID and version
+        // if there is no category template for given ID and version, the function returns null
+        static public SFCategory Create(ushort cat_id, ushort cat_version)
+        {
+            var key = Tuple.Create(cat_id, cat_version);
+            if (!ChunkFormats.ContainsKey(key))
+            {
+                return null;
+            }
+
+            SFCategory cat = new SFCategory();
+
+            cat.category_id = (short)cat_id;
+            cat.category_type = (short)cat_version;
+
+            cat.category_is_known = true;
+
+            cat.category_name = ChunkFormats[key].Name;
+            cat.string_size = ChunkFormats[key].StringSizes;
+            cat.category_allow_multiple = ChunkFormats[key].AllowMultiple;
+            cat.category_allow_subelement_id = ChunkFormats[key].AllowSubelementID;
+            cat.elem_format = ChunkFormats[key].ElementFormat;
+
+            if (cat.string_size == null)
+                cat.string_size = new int[] { 0 };
+
+            return cat;
         }
     }
 }

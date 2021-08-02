@@ -42,6 +42,8 @@
             this.specialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findAllReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.calculatorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractLangDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clipboardTooldebugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CategorySelect = new System.Windows.Forms.ComboBox();
             this.ElementSelect = new SpellforceDataEditor.SFCFF.helper_forms.ListBoxNoFlicker();
@@ -165,7 +167,9 @@
             // 
             this.specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.findAllReferencesToolStripMenuItem,
-            this.calculatorsToolStripMenuItem});
+            this.calculatorsToolStripMenuItem,
+            this.extractLangDataToolStripMenuItem,
+            this.clipboardTooldebugToolStripMenuItem});
             this.specialToolStripMenuItem.Name = "specialToolStripMenuItem";
             this.specialToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.specialToolStripMenuItem.Text = "Special";
@@ -185,6 +189,22 @@
             this.calculatorsToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.calculatorsToolStripMenuItem.Text = "Calculators...";
             this.calculatorsToolStripMenuItem.Click += new System.EventHandler(this.calculatorsToolStripMenuItem_Click);
+            // 
+            // extractLangDataToolStripMenuItem
+            // 
+            this.extractLangDataToolStripMenuItem.Name = "extractLangDataToolStripMenuItem";
+            this.extractLangDataToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.extractLangDataToolStripMenuItem.Text = "Extract lang data...";
+            this.extractLangDataToolStripMenuItem.Visible = false;
+            this.extractLangDataToolStripMenuItem.Click += new System.EventHandler(this.extractLangDataToolStripMenuItem_Click);
+            // 
+            // clipboardTooldebugToolStripMenuItem
+            // 
+            this.clipboardTooldebugToolStripMenuItem.Name = "clipboardTooldebugToolStripMenuItem";
+            this.clipboardTooldebugToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.clipboardTooldebugToolStripMenuItem.Text = "ClipboardTool (debug)";
+            this.clipboardTooldebugToolStripMenuItem.Visible = false;
+            this.clipboardTooldebugToolStripMenuItem.Click += new System.EventHandler(this.clipboardTooldebugToolStripMenuItem_Click);
             // 
             // eXPERIMENTALLoadDiffFileToolStripMenuItem
             // 
@@ -535,7 +555,6 @@
         private System.Windows.Forms.ToolStripMenuItem loadGameDatacffToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ComboBox CategorySelect;
-        private System.Windows.Forms.ListBox ElementSelect;
         private System.Windows.Forms.OpenFileDialog OpenGameData;
         private System.Windows.Forms.Panel SearchPanel;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
@@ -574,5 +593,8 @@
         private System.Windows.Forms.ToolStripMenuItem findAllReferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem calculatorsToolStripMenuItem;
         private System.Windows.Forms.Button ButtonElemAdd;
+        private System.Windows.Forms.ToolStripMenuItem extractLangDataToolStripMenuItem;
+        private SFCFF.helper_forms.ListBoxNoFlicker ElementSelect;
+        private System.Windows.Forms.ToolStripMenuItem clipboardTooldebugToolStripMenuItem;
     }
 }

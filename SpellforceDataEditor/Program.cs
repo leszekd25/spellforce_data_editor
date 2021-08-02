@@ -19,9 +19,9 @@ namespace SpellforceDataEditor
             Settings.Load();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-            //try
-            //{
+            /*
+            try
+            {*/
                 Application.Run(new MainForm());
             /*}
             catch (Exception e)

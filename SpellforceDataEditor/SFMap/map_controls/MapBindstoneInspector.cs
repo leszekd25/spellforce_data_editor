@@ -64,7 +64,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if(elem == null)
                 return "Bindstone at " + io.grid_position.ToString();
 
-            string ret = Utility.CleanString(elem.variants[4]);
+            string ret = elem.variants[4].ToString();
             return ret + " " + io.grid_position.ToString();
 
         }

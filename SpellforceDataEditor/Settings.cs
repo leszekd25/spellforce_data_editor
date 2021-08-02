@@ -15,6 +15,7 @@ namespace SpellforceDataEditor
         public static int MaximumAllowedTextureSize { get; private set; } = 2048;
         public static bool EnableShadows { get; set; } = true;
         public static int ShadowMapSize { get; private set; } = 2048;
+        public static int ShadingQuality { get; set; } = 2;
         public static int FramesPerSecond { get; private set; } = 60;
         public static int AntiAliasingSamples { get; private set; } = 4;
         public static bool AnisotropicFiltering { get; private set; } = true;
@@ -106,6 +107,9 @@ namespace SpellforceDataEditor
                             break;
                         case "EnableShadows":
                             EnableShadows = (words[1] == "YES");
+                            break;
+                        case "ShadingQuality":
+                            ShadingQuality = (words[1] == "NONE"? 0: (words[1] == "LOW"? 1: (words[1] == "HIGH"? 2: 0)));
                             break;
                         case "AntiAliasingSamples":
                             AntiAliasingSamples = Utility.TryParseUInt16(words[1], (ushort)AntiAliasingSamples);
@@ -284,6 +288,9 @@ namespace SpellforceDataEditor
                             break;
                         case "EnableShadows":
                             words = new string[] { words[0], EnableShadows ? "YES" : "NO" };
+                            break;
+                        case "ShadingQuality":
+                            words = new string[] { words[0], (ShadingQuality == 0 ? "NONE" : (ShadingQuality == 1 ? "LOW" : (ShadingQuality == 2 ? "HIGH" : "NONE"))) };
                             break;
                         case "AntiAliasingSamples":
                             words = new string[] { words[0], AntiAliasingSamples.ToString() };

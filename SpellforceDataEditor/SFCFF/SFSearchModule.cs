@@ -49,7 +49,7 @@ namespace SpellforceDataEditor.SFCFF
                     {
                         if ((_column_index != Utility.NO_INDEX) && (_column_index != k))
                             continue;
-                        string val = Utility.CleanString(elem[k]);
+                        string val = elem[k].ToString();
                         if (val.ToLower().Contains(_query))
                         {
                             success = true;

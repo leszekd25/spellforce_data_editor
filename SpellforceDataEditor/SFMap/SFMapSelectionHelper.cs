@@ -236,7 +236,7 @@ namespace SpellforceDataEditor.SFMap
                         if (elem == null)
                             SetName(Utility.S_MISSING);
                         else
-                            SetName(Utility.CleanString(elem.variants[4]));
+                            SetName(elem.variants[4].ToString());
                     }
                 }
             }

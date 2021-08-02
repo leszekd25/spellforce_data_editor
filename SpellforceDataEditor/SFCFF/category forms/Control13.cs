@@ -39,7 +39,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListUI.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected, 2, Utility.FixedLengthString(textBox4.Text, 64));
+            set_element_variant(current_element, cur_selected, 2, SFString.FromString(textBox4.Text, 0, 64));// Utility.FixedLengthString(textBox4.Text, 64));
             set_list_text(cur_selected);
         }
 
@@ -101,7 +101,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             category.element_lists[current_element].Elements.Insert(new_index, category.GetEmptyElement());
             category[current_element, new_index][0] = (UInt16)elem[0];
             category[current_element, new_index][1] = (Byte)max_index;
-            category[current_element, new_index][2]  = Utility.FixedLengthString("", 64);
+            category[current_element, new_index][2] = SFString.FromString("", 0, 64);// Utility.FixedLengthString("", 64);
 
             set_element(current_element);
         }

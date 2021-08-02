@@ -678,6 +678,7 @@ namespace SpellforceDataEditor.SFCFF
     {
         public static List<string> gd_dependencies = new List<string>();
         public static SFGameData gamedata = new SFGameData();
+        public static SFCategory hero_cache = new SFCategory();
 
         public static bool ready { get; private set; } = false;
 
@@ -695,6 +696,7 @@ namespace SpellforceDataEditor.SFCFF
         public static void Set(SFGameData gd)
         {
             gamedata = gd;
+            ReloadHeroCache();
             ready = true;
         }
 
@@ -704,7 +706,10 @@ namespace SpellforceDataEditor.SFCFF
             int result = gamedata.Load(filename);
 
             if (result == 0)
+            {
                 ready = true;
+                ReloadHeroCache();
+            }
 
             return result;
         }
@@ -732,11 +737,13 @@ namespace SpellforceDataEditor.SFCFF
                 return null;
 
             int lang_index = Utility.NO_INDEX;
-            int safe_index = Utility.NO_INDEX;   //will fail if there's no language id 0
+            int safe_index = Utility.NO_INDEX;
 
             SFCategoryElementList e_found = gamedata[2016].element_lists[index];
+            if (e_found.Elements.Count != 0)
+                safe_index = 0;
 
-            for(int i = 0; i < e_found.Elements.Count; i++)
+            for (int i = 0; i < e_found.Elements.Count; i++)
             {
                 if((Byte)e_found[i][1] == (Byte)t_lang)
                 {
@@ -767,7 +774,7 @@ namespace SpellforceDataEditor.SFCFF
                 int text_id = (int)(UInt16)elem.variants[cat_index];
                 SFCategoryElement txt_elem = FindElementText(text_id, Settings.LanguageID);
                 if (txt_elem != null)
-                    return Utility.CleanString(txt_elem.variants[4]);
+                    return txt_elem.variants[4].ToString();
                 else
                     return Utility.S_MISSING;
             }
@@ -938,7 +945,10 @@ namespace SpellforceDataEditor.SFCFF
         //this connection is not found in gamedata.cff and instead has to be pre-processed
         public static string GetRuneheroName(UInt16 stats_id)
         {
-            return Utility.S_MISSING;
+            SFCategoryElement hero_elem = hero_cache.FindElementBinary<UInt16>(0, stats_id);
+            if (hero_elem == null)
+                return Utility.S_MISSING;
+            return GetItemName((ushort)(hero_elem[1]));
         }
 
         // gets min unit level, given skill level
@@ -962,10 +972,57 @@ namespace SpellforceDataEditor.SFCFF
         //frees all data, only empty categories remain
         public static void UnloadAll()
         {
+            hero_cache.Unload();
             gamedata.Unload();
             gd_dependencies.Clear();
 
             ready = false;
+        }
+
+
+
+        private static void ReloadHeroCache()
+        {
+            hero_cache.Unload();
+
+            hero_cache.category_allow_multiple = false;
+            hero_cache.category_allow_subelement_id = false;
+            hero_cache.category_id = -1;
+            hero_cache.category_is_known = true;
+            hero_cache.category_name = "Hero cache (private)";
+            hero_cache.category_type = 0;
+            hero_cache.category_unknown_data = null;
+            hero_cache.elem_format = "HH";   // id1 - unit stats, id2 - rune item id
+
+            SFCategory item_category = gamedata[2003];
+            if (item_category == null)
+                return;
+
+            Dictionary<ushort, ushort> item_id_set = new Dictionary<ushort, ushort>();
+            List<ushort> item_id_list = new List<ushort>();
+
+            for (int i = 0; i < item_category.elements.Count; i++)
+            {
+                SFCategoryElement elem = item_category[i];
+                if ((byte)(elem[1]) == 3)
+                {
+                    if (!item_id_set.ContainsKey((ushort)(elem[4])))
+                    {
+                        item_id_set.Add((ushort)(elem[4]), (ushort)(elem[0]));
+                        item_id_list.Add((ushort)(elem[4]));
+                    }
+                }
+            }
+
+            item_id_list.Sort();
+
+            for (int i = 0; i < item_id_list.Count; i++)
+            {
+                SFCategoryElement new_elem = hero_cache.GetEmptyElement();
+                new_elem[0] = item_id_list[i];
+                new_elem[1] = item_id_set[item_id_list[i]];
+                hero_cache.elements.Add(new_elem);
+            }
         }
     }
 }

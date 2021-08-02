@@ -271,7 +271,7 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
                         break;
 
                     DiffGDFileName = OpenGD.FileNames[0];
-                    LabelGDMain.Text = DiffGDFileName;
+                    LabelGDDiff.Text = DiffGDFileName;
 
                     break;
                 default:

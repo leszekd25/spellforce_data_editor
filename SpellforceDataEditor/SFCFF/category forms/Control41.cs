@@ -33,12 +33,41 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             tb_sd1.Text = variant_repr(0);
             tb_sd2.Text = variant_repr(1);
+
+            textbox_repr(tb_sd2, 2016);
         }
 
         private void tb_sd2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(tb_sd2, 2016);
+            {
+                int cur_id = Utility.TryParseInt32(tb_sd2.Text);
+                int ind = SFCategoryManager.gamedata[2016].GetElementIndex(cur_id);
+
+                if ((ind == Utility.NO_INDEX)||(ind == 0))
+                {
+                    int new_id;
+                    int new_ind;
+                    if (cur_id == 0)
+                    {
+                        new_ind = SFCategoryManager.gamedata[2016].GetElementCount();
+                        new_id = SFCategoryManager.gamedata[2016].GetElementID(new_ind - 1) + 1;
+                    }
+                    else
+                    {
+                        new_ind = SFCategoryManager.gamedata[2058].GetNextNewElementIndex(cur_id, out new_id);
+                    }
+
+                    SFCategoryElementList new_elem_list = SFCategoryManager.gamedata[2016].GetEmptyElementList();
+                    new_elem_list[0][0] = (ushort)new_id;
+                    SFCategoryManager.gamedata[2016].element_lists.Insert(new_ind, new_elem_list);
+                    SFCategoryManager.gamedata[2016].element_status.Insert(new_ind, SFCategoryElementStatus.ADDED);
+                    tb_sd2.Text = new_id.ToString();
+                    tb_sd2.BackColor = Color.DarkOrange;
+                }
+                else
+                    step_into(tb_sd2, 2016);
+            }
         }
 
 

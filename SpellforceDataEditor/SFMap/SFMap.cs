@@ -2011,7 +2011,7 @@ namespace SpellforceDataEditor.SFMap
 
             foreach(SFCFF.SFCategoryElement e in SFCFF.SFCategoryManager.gamedata[2052].elements)
             {
-                if(Utility.CleanString(e[2]).ToUpper() == fname)
+                if(e[2].ToString().ToUpper() == fname)
                 {
                     PlatformID = (uint)e[0];
                     break;

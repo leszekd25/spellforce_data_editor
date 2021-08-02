@@ -65,6 +65,8 @@ namespace SpellforceDataEditor.SFCFF
                 return result;
             }
 
+            CompatibilitySortCategories();
+
             fname = filename;
 
             return result;
@@ -145,6 +147,11 @@ namespace SpellforceDataEditor.SFCFF
                     return cat_status;
                 }
             }
+
+            // fix up cat 2016
+            SFCategory cat_text = categories[2016];
+            if (cat_text != null)
+                cat_text.special_cat2016_DetermineLanguageIDs();
 
             return 0;
         }
@@ -271,6 +278,28 @@ namespace SpellforceDataEditor.SFCFF
         }
 
 
+
+        private void CompatibilitySortCategories()
+        {
+            int[] categories_proper_order = new int[]
+            {
+                2002, 2054, 2056, 2005, 2006, 2067, 2003, 2004, 2013, 2015, 2017, 2014, 2012,
+                2018, 2016, 2022, 2023, 2024, 2025, 2026, 2028, 2040, 2001, 2029, 2030, 2031,
+                2039, 2062, 2041, 2042, 2047, 2044, 2048, 2050, 2057, 2065, 2051, 2052, 2053,
+                2055, 2058, 2059, 2061, 2063, 2064, 2032, 2049, 2036, 2072
+            };
+
+            Dictionary<int, SFCategory> new_categories = new Dictionary<int, SFCategory>();
+            foreach(int i in categories_proper_order)
+            {
+                if(categories.ContainsKey(i))
+                {
+                    new_categories.Add(i, categories[i]);
+                }
+            }
+
+            categories = new_categories;
+        }
 
         // unloads all stored data
         // returns if succeeded

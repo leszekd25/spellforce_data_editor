@@ -240,7 +240,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 int old_item_slot = e.Index + 1;
 
-                int tmp_index = category.element_lists[current_element].GetSubIndexBySubID(old_item_slot);
+                int tmp_index = category.element_lists[current_element].GetIndexByID(old_item_slot);
                 if (tmp_index == Utility.NO_INDEX)
                 {
                     LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "ListSlots_ItemCheck(): Could not find item at given ID (ID: " + old_item_slot.ToString() + ")");

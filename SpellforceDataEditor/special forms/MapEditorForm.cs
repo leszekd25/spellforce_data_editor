@@ -2665,7 +2665,7 @@ namespace SpellforceDataEditor.special_forms
 
                 string race_name;
                 if (name_elem != null)
-                    race_name = Utility.CleanString(name_elem[4]);
+                    race_name = name_elem[4].ToString();
                 else
                     race_name = Utility.S_MISSING;
 
@@ -2696,7 +2696,7 @@ namespace SpellforceDataEditor.special_forms
                 SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
-                    race_name = Utility.CleanString(name_elem[4]);
+                    race_name = name_elem[4].ToString();
                 else
                     race_name = Utility.S_MISSING;
 
@@ -2738,7 +2738,7 @@ namespace SpellforceDataEditor.special_forms
 
                 string race_name;
                 if (name_elem != null)
-                    race_name = Utility.CleanString(name_elem[4]);
+                    race_name = name_elem[4].ToString();
                 else
                     race_name = Utility.S_MISSING;
 
@@ -2770,7 +2770,7 @@ namespace SpellforceDataEditor.special_forms
                 SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
-                    race_name = Utility.CleanString(name_elem[4]);
+                    race_name = name_elem[4].ToString();
                 else
                     race_name = Utility.S_MISSING;
 
@@ -2944,7 +2944,7 @@ namespace SpellforceDataEditor.special_forms
 
                 string race_name;
                 if (name_elem != null)
-                    race_name = Utility.CleanString(name_elem[4]);
+                    race_name = name_elem[4].ToString();
                 else
                     race_name = Utility.S_MISSING;
 
@@ -2966,7 +2966,7 @@ namespace SpellforceDataEditor.special_forms
                 SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
-                    race_name = Utility.CleanString(name_elem[4]);
+                    race_name = name_elem[4].ToString();
                 else
                     race_name = Utility.S_MISSING;
 
@@ -3010,7 +3010,7 @@ namespace SpellforceDataEditor.special_forms
 
                 string race_name;
                 if (name_elem != null)
-                    race_name = Utility.CleanString(name_elem[4]);
+                    race_name = name_elem[4].ToString();
                 else
                     race_name = Utility.S_MISSING;
 
@@ -3032,7 +3032,7 @@ namespace SpellforceDataEditor.special_forms
                 SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
-                    race_name = Utility.CleanString(name_elem[4]);
+                    race_name = name_elem[4].ToString();
                 else
                     race_name = Utility.S_MISSING;
 
@@ -3111,7 +3111,7 @@ namespace SpellforceDataEditor.special_forms
 
 
                 string name = id.ToString()+". "+SFCFF.SFCategoryManager.GetObjectName(id);
-                string path = Utility.CleanString(e[5]);
+                string path = e[5].ToString();
                 string[] path_items = path.Split('/');
                 if ((path_items.Length == 1) && (path_items[0] == ""))
                     path_items = new string[] { };
@@ -3167,7 +3167,7 @@ namespace SpellforceDataEditor.special_forms
 
 
                 string name = id.ToString() + ". " + SFCFF.SFCategoryManager.GetObjectName(id);
-                string path = Utility.CleanString(e[5]);
+                string path = e[5].ToString();
                 string[] path_items = path.Split('/');
                 if ((path_items.Length == 1) && (path_items[0] == ""))
                     path_items = new string[] { };

@@ -726,6 +726,12 @@
     <Compile Include="special forms\ExtractionSettingsForm.Designer.cs">
       <DependentUpon>ExtractionSettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="special forms\ExtractLangDataForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\ExtractLangDataForm.Designer.cs">
+      <DependentUpon>ExtractLangDataForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="special forms\MapEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1086,6 +1092,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\ExtractionSettingsForm.resx">
       <DependentUpon>ExtractionSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="special forms\ExtractLangDataForm.resx">
+      <DependentUpon>ExtractLangDataForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\MapEditorForm.resx">
       <DependentUpon>MapEditorForm.cs</DependentUpon>

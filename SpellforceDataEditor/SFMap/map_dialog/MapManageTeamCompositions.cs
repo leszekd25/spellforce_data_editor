@@ -215,7 +215,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             {
                 SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.FindElementText(tp.text_id, Settings.LanguageID);
                 if (text_elem != null)
-                    LabelSelectedPlayerText.Text = Utility.CleanString(text_elem[4]);
+                    LabelSelectedPlayerText.Text = text_elem[4].ToString();
                 else
                     LabelSelectedPlayerText.Text = Utility.S_MISSING;
             }
@@ -235,7 +235,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             {
                 SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.FindElementText(tp.text_id, Settings.LanguageID);
                 if (text_elem != null)
-                    LabelSelectedPlayerText.Text = Utility.CleanString(text_elem[4]);
+                    LabelSelectedPlayerText.Text = text_elem[4].ToString();
                 else
                     LabelSelectedPlayerText.Text = Utility.S_MISSING;
             }

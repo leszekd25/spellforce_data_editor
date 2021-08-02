@@ -95,25 +95,26 @@ namespace SpellforceDataEditor.Properties {
         ///in vec3 fragmentNormal;
         ///in vec2 UV;
         ///in vec4 fragmentColor;
+        ///#ifdef SHADING
+        ///#ifdef SHADOWS
         ///in vec4 fragmentPositionLightSpace;
+        ///#endif //SHADOWS
+        ///#ifdef QUALITY_SHADING
         ///in mat4 M;
+        ///#endif //QUALITY_SHADING
+        ///#ifndef QUALITY_SHADING
+        ///in float vBrightness;
+        ///#endif //QUALITY_SHADING
+        ///#endif //SHADING
         ///
         ///out vec4 color;
         ///
-        /////uniform mat4 M;
         ///uniform float SunStrength;
         ///uniform vec3 SunDirection;
         ///uniform vec4 SunColor;
         ///uniform float AmbientStrength;
         ///uniform vec4 AmbientColor;
-        ///uniform sampler2D DiffuseTex;
-        ///uniform sampler2D ShadowMap;
-        ///uniform vec4 FogColor;
-        ///uniform float FogStrength;
-        ///uniform float FogStart;
-        ///uniform float FogEnd;
-        ///uniform float FogExponent;
-        ///unifo [rest of string was truncated]&quot;;.
+        ///uniform sampler2D Dif [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader {
             get {
@@ -277,7 +278,14 @@ namespace SpellforceDataEditor.Properties {
         ///   Looks up a localized string similar to in vec3 fragmentPosition;
         ///in vec2 UV;
         ///in vec3 fragmentNormal;
+        ///#ifdef SHADING
+        ///#ifdef SHADOWS
         ///in vec4 fragmentPositionLightSpace;
+        ///#endif //SHADOWS
+        ///#ifndef QUALITY_SHADING
+        ///in float vBrightness;
+        ///#endif //QUALITY_SHADING
+        ///#endif //SHADING
         ///
         ///out vec4 color;
         ///
@@ -290,13 +298,7 @@ namespace SpellforceDataEditor.Properties {
         ///uniform sampler2D DiffuseTex;
         ///uniform sampler2D ShadowMap;
         ///uniform vec4 FogColor;
-        ///uniform float FogStrength;
-        ///uniform float FogStart;
-        ///uniform float FogEnd;
-        ///uniform float FogExponent;
-        ///uniform float ShadowDepth;
-        ///
-        ///vec2 poissonD [rest of string was truncated]&quot;;.
+        ///unifo [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_skel {
             get {
@@ -373,8 +375,17 @@ namespace SpellforceDataEditor.Properties {
         ///in vec3 fragmentNormal;
         ///in vec2 UV;
         ///in vec4 fragmentColor;
+        ///#ifdef SHADING
+        ///#ifdef SHADOWS
         ///in vec4 fragmentPositionLightSpace;
+        ///#endif //SHADOWS
+        ///#ifdef QUALITY_SHADING
         ///in mat4 M;
+        ///#endif //QUALITY_SHADING
+        ///#ifndef QUALITY_SHADING
+        ///in float vBrightness;
+        ///#endif //QUALITY_SHADING
+        ///#endif //SHADING
         ///
         ///out vec4 color;
         ///
@@ -384,14 +395,7 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 SunColor;
         ///uniform float AmbientStrength;
         ///uniform vec4 AmbientColor;
-        ///uniform sampler2D DiffuseTex;
-        ///uniform sampler2D ShadowMap;
-        ///uniform vec4 FogColor;
-        ///uniform float FogStrength;
-        ///uniform float FogStart;
-        ///uniform float FogEnd;
-        ///uniform float FogExponent;
-        ///unifo [rest of string was truncated]&quot;;.
+        ///un [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_transparent {
             get {
@@ -629,11 +633,13 @@ namespace SpellforceDataEditor.Properties {
         ///out vec3 fragmentNormal;
         ///out vec4 fragmentColor;
         ///out vec2 UV;
+        ///#ifdef SHADING
+        ///#ifdef SHADOWS
         ///out vec4 fragmentPositionLightSpace;
+        ///#endif
+        ///#ifdef QUALITY_SHADING
         ///out mat4 M;
-        ///
-        ///// Values that stay constant for the whole mesh.
-        /////uniform mat4 M [rest of string was truncated]&quot;;.
+        ///#end [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader {
             get {
@@ -835,12 +841,13 @@ namespace SpellforceDataEditor.Properties {
         ///out vec3 fragmentPosition;
         ///out vec2 UV;
         ///out vec3 fragmentNormal;
+        ///#ifdef SHADING
+        ///#ifdef SHADOWS
         ///out vec4 fragmentPositionLightSpace;
-        ///
-        ///// Values that stay constant for the whole mesh.
-        ///uniform mat4 P;
-        ///uniform mat4 V;
-        ///uniform mat4 L [rest of string was truncated]&quot;;.
+        ///#endif //SHADOWS
+        ///#ifndef QUALITY_SHADING
+        ///out float vBrightness;
+        ///# [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_skel {
             get {

@@ -112,8 +112,9 @@ namespace SpellforceDataEditor
 
             return bytearray;
         }
-
+/*
         //turns string into a char array of a given length
+        // pending fixing?
         static public Byte[] FixedLengthString(string s, int length)
         {
             byte[] charray = new byte[length];
@@ -126,23 +127,7 @@ namespace SpellforceDataEditor
                     charray[i] = 0;
 
             return charray;
-        }
-
-        //turns string variant into actual string (all zeros are truncated)
-        static public string CleanString(object ch)
-        {
-            if (ch.GetType() !=  typeof(byte[]))
-                return "";
-
-            byte[] bytearray = (byte[])ch;
-            return (Encoding.Default.GetString(bytearray)).Replace("\0", string.Empty);
-        }
-
-        //turns char array into actual string (all zeros are truncated)
-        static public string CleanString(byte[] ch)
-        {
-            return (Encoding.Default.GetString(ch)).Replace("\0", string.Empty);
-        }
+        }*/
 
         //used for header manipulation, inserts unsigned int into a given array at a given index
         //prone to endianess errors...

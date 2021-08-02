@@ -30,8 +30,8 @@ namespace SpellforceDataEditor.special_forms
             int elem_num = text7055.GetSize() / 566;    //566 = sub-element's size
             for (int i = 0; i < elem_num; i++)
             {
-                string single_text = Utility.CleanString(text7055[i * 5 + 4]);
                 int lang_id = (Byte)(text7055[i * 5 + 1]);
+                string single_text = text7055[i * 5 + 4].ToString();
                 ListSample.Items.Add(lang_id.ToString() + " " + single_text);
             }
         }

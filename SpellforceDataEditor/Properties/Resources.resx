@@ -121,7 +121,14 @@
     <value>in vec3 fragmentPosition;
 in vec2 UV;
 in vec3 fragmentNormal;
+#ifdef SHADING
+#ifdef SHADOWS
 in vec4 fragmentPositionLightSpace;
+#endif //SHADOWS
+#ifndef QUALITY_SHADING
+in float vBrightness;
+#endif //QUALITY_SHADING
+#endif //SHADING
 
 out vec4 color;
 
@@ -182,16 +189,23 @@ void main(){
     discard;
 
   float brightness = 1.0;
-  #ifdef APPLY_SHADING
-    // calculate brightness resulting from light coming from sun
-    mat3 normalMatrix = transpose(inverse(mat3(M)));
-    vec3 normal = normalize(normalMatrix * fragmentNormal);
-    vec3 fragVec = fragmentPosition;
-    brightness = dot(normal, SunDirection); // both vectors are normalized
-    // calculate shadow
-    brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
-    brightness = clamp(brightness, 0, 1);  
-  #endif // APPLY_SHADING
+  #ifdef SHADING
+  #ifdef QUALITY_SHADING
+  // calculate brightness resulting from light coming from sun
+  mat3 normalMatrix = transpose(inverse(mat3(M)));
+  vec3 normal = normalize(normalMatrix * fragmentNormal);
+  vec3 fragVec = fragmentPosition;
+  brightness = dot(normal, SunDirection); // both vectors are normalized
+  #endif //QUALITY_SHADING
+  #ifndef QUALITY_SHADING
+  brightness = vBrightness;
+  #endif //QUALITY_SHADING
+  // calculate shadow
+  #ifdef SHADOWS
+  brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
+  #endif //SHADOWS
+  brightness = clamp(brightness, 0, 1);
+  #endif // SHADING
 
   // calculate output color
   vec4 ambient_color = AmbientColor * AmbientStrength;
@@ -225,12 +239,26 @@ layout(location = 4) in vec4 vertexBoneIndex;
 out vec3 fragmentPosition;
 out vec2 UV;
 out vec3 fragmentNormal;
+#ifdef SHADING
+#ifdef SHADOWS
 out vec4 fragmentPositionLightSpace;
+#endif //SHADOWS
+#ifndef QUALITY_SHADING
+out float vBrightness;
+#endif //QUALITY_SHADING
+#endif //SHADING
 
 // Values that stay constant for the whole mesh.
 uniform mat4 P;
 uniform mat4 V;
+#ifdef SHADING
+#ifdef SHADOWS
 uniform mat4 LSM;
+#endif //SHADOWS
+#ifndef QUALITY_SHADING
+uniform vec3 SunDirection;
+#endif //QUALITY_SHADING
+#endif //SHADING
 uniform mat4 M;
 uniform mat4 boneTransforms[224];
   
@@ -265,10 +293,22 @@ void main(){
   
   // Output position of the vertex, in clip space : MVP * position
   gl_Position =  P * V * M * vec4(newVertex.xyz, 1.0);
-  fragmentPositionLightSpace = LSM * M * vec4(newVertex.xyz, 1);
   fragmentPosition = newVertex.xyz;
   UV = vertexUV;
   fragmentNormal = vec3(newNormal);
+  
+#ifdef SHADING
+#ifdef SHADOWS
+  fragmentPositionLightSpace = LSM * M * vec4(newVertex.xyz, 1);
+#endif //SHADOWS
+#ifndef QUALITY_SHADING
+  vBrightness = 1.0;
+  mat3 normalMatrix = transpose(inverse(mat3(M)));
+  vec3 normal = normalize(normalMatrix * newNormal.xyz);
+  vBrightness = dot(normal, SunDirection); // both vectors are normalized
+  vBrightness = clamp(vBrightness, 0, 1);
+#endif //QUALITY_SHADING
+#endif //SHADING
 }</value>
   </data>
   <data name="vshader" xml:space="preserve">
@@ -283,23 +323,53 @@ out vec3 fragmentPosition;
 out vec3 fragmentNormal;
 out vec4 fragmentColor;
 out vec2 UV;
+#ifdef SHADING
+#ifdef SHADOWS
 out vec4 fragmentPositionLightSpace;
+#endif
+#ifdef QUALITY_SHADING
 out mat4 M;
+#endif //QUALITY_SHADING
+#ifndef QUALITY_SHADING
+out float vBrightness;
+#endif //QUALITY_SHADING
+#endif //SHADING
 
 // Values that stay constant for the whole mesh.
 //uniform mat4 M;
 uniform mat4 VP;
+#ifdef SHADING
+#ifdef SHADOWS
 uniform mat4 LSM;
+#endif //SHADOWS
+#ifndef QUALITY_SHADING
+uniform vec3 SunDirection;
+#endif //QUALITY_SHADING
+#endif //SHADING
   
 void main(){
-  M = instanceMatrix;
   // Output position of the vertex, in clip space : MVP * position
-  gl_Position = VP * M * vec4(vertexPosition_modelspace,1);
-  fragmentPositionLightSpace = LSM * M * vec4(vertexPosition_modelspace, 1);
-  fragmentPosition = vec3(M * vec4(vertexPosition_modelspace, 1));
+  gl_Position = VP * instanceMatrix * vec4(vertexPosition_modelspace,1);
+  fragmentPosition = vec3(instanceMatrix * vec4(vertexPosition_modelspace, 1));
   UV = vertexUV;
   fragmentNormal = vertexNormal;
   fragmentColor = vertexColor;
+  
+#ifdef SHADING
+#ifdef SHADOWS
+  fragmentPositionLightSpace = LSM * instanceMatrix * vec4(vertexPosition_modelspace, 1);
+#endif //SHADOWS
+#ifdef QUALITY_SHADING
+  M = instanceMatrix;
+#endif //QUALITY_SHADING
+#ifndef QUALITY_SHADING
+  mat3 normalMatrix = transpose(inverse(mat3(instanceMatrix)));
+  vec3 normal = normalize(normalMatrix * vertexNormal);
+  vBrightness = dot(normal, SunDirection); // both vectors are normalized
+  vBrightness = clamp(vBrightness, 0, 1);
+#endif //QUALITY_SHADING
+#endif //SHADING
+
 }</value>
   </data>
   <data name="vshader_overlay" xml:space="preserve">
@@ -323,12 +393,20 @@ void main(){
 in vec3 fragmentNormal;
 in vec2 UV;
 in vec4 fragmentColor;
+#ifdef SHADING
+#ifdef SHADOWS
 in vec4 fragmentPositionLightSpace;
+#endif //SHADOWS
+#ifdef QUALITY_SHADING
 in mat4 M;
+#endif //QUALITY_SHADING
+#ifndef QUALITY_SHADING
+in float vBrightness;
+#endif //QUALITY_SHADING
+#endif //SHADING
 
 out vec4 color;
 
-//uniform mat4 M;
 uniform float SunStrength;
 uniform vec3 SunDirection;
 uniform vec4 SunColor;
@@ -345,8 +423,6 @@ uniform float ObjectFadeStart;
 uniform float ObjectFadeEnd;
 uniform float DepthBias;
 uniform float ShadowDepth;
-uniform bool ApplyShadow;
-uniform bool ApplyShading;
 uniform float DistanceFade;
 
 vec2 poissonDisk[4] = vec2[](
@@ -379,8 +455,6 @@ float CalculateShadow(vec4 FPLS, float b){
     vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
     if(ProjectionCoordinates.z &gt; 1.0)
         return 1.0;
-    if(!ApplyShadow)
-        return 1.0;
 
     ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
     return chebyshevUpperBound(ProjectionCoordinates);
@@ -394,20 +468,23 @@ void main(){
   temp_c.a = 1.0;
 
   float brightness = 1.0;
-  #ifdef APPLY_SHADING
-    if(ApplyShading)
-    {
-      // calculate brightness resulting from light coming from sun
-      mat3 normalMatrix = transpose(inverse(mat3(M)));
-      vec3 normal = normalize(normalMatrix * fragmentNormal);
-      vec3 fragVec = fragmentPosition;
-      brightness = dot(normal, SunDirection); // both vectors are normalized
-    }
-    // calculate shadow
-    brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
-    brightness = clamp(brightness, 0, 1);
-    
-  #endif // APPLY_SHADING
+  #ifdef SHADING
+  #ifdef QUALITY_SHADING
+  // calculate brightness resulting from light coming from sun
+  mat3 normalMatrix = transpose(inverse(mat3(M)));
+  vec3 normal = normalize(normalMatrix * fragmentNormal);
+  vec3 fragVec = fragmentPosition;
+  brightness = dot(normal, SunDirection); // both vectors are normalized
+  #endif //QUALITY_SHADING
+  #ifndef QUALITY_SHADING
+  brightness = vBrightness;
+  #endif //QUALITY_SHADING
+  // calculate shadow
+  #ifdef SHADOWS
+  brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
+  #endif //SHADOWS
+  brightness = clamp(brightness, 0, 1);
+  #endif // SHADING
 
 
   // calculate output color
@@ -586,23 +663,25 @@ void main(){
   #ifndef VISUALIZE_HEIGHT
   float dist = gl_FragCoord.z / gl_FragCoord.w;
 
-  #ifdef APPLY_SHADING
+  #ifdef SHADING
   float brightness = vBrightness;
   if(brightness &gt; 0)
   {
     // calculate shadow
+	#ifdef SHADOWS
     float calc_shadow = CalculateShadow(fragmentPositionLightSpace, brightness);
     float shadow_fade_factor = pow(clamp((dist - ShadowFadeStart)/(ShadowFadeEnd-ShadowFadeStart), 0.0, 1.0), 2.0);
     calc_shadow += shadow_fade_factor;
     brightness = min(brightness, calc_shadow);
     brightness = clamp(brightness, 0, 1);  
     brightness = pow(brightness, 0.6);
+	#endif // SHADOWS
   }
-  #endif // APPLY_SHADING
+  #endif // SHADING
   
-  #ifndef APPLY_SHADING
+  #ifndef SHADING
   float brightness = 1.0;
-  #endif // APPLY_SHADING
+  #endif // SHADING
 
   vec4 tex1_1 = vec4(0.0);
   vec4 tex1_2 = vec4(0.0);
@@ -1316,8 +1395,17 @@ void main(){
 in vec3 fragmentNormal;
 in vec2 UV;
 in vec4 fragmentColor;
+#ifdef SHADING
+#ifdef SHADOWS
 in vec4 fragmentPositionLightSpace;
+#endif //SHADOWS
+#ifdef QUALITY_SHADING
 in mat4 M;
+#endif //QUALITY_SHADING
+#ifndef QUALITY_SHADING
+in float vBrightness;
+#endif //QUALITY_SHADING
+#endif //SHADING
 
 out vec4 color;
 
@@ -1372,8 +1460,6 @@ float CalculateShadow(vec4 FPLS, float b){
     vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
     if(ProjectionCoordinates.z &gt; 1.0)
         return 1.0;
-    if(!ApplyShadow)
-        return 1.0;
 
     ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
     return chebyshevUpperBound(ProjectionCoordinates);
@@ -1386,20 +1472,23 @@ void main(){
     discard;
 
   float brightness = 1.0;
-  #ifdef APPLY_SHADING
-    if(ApplyShading)
-    {
-      // calculate brightness resulting from light coming from sun
-      mat3 normalMatrix = transpose(inverse(mat3(M)));
-      vec3 normal = normalize(normalMatrix * fragmentNormal);
-      vec3 fragVec = fragmentPosition;
-      brightness = dot(normal, SunDirection); // both vectors are normalized
-    }
-    // calculate shadow
-    brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
-    brightness = clamp(brightness, 0, 1);
-    
-  #endif // APPLY_SHADING
+  #ifdef SHADING
+  #ifdef QUALITY_SHADING
+  // calculate brightness resulting from light coming from sun
+  mat3 normalMatrix = transpose(inverse(mat3(M)));
+  vec3 normal = normalize(normalMatrix * fragmentNormal);
+  vec3 fragVec = fragmentPosition;
+  brightness = dot(normal, SunDirection); // both vectors are normalized
+  #endif //QUALITY_SHADING
+  #ifndef QUALITY_SHADING
+  brightness = vBrightness;
+  #endif //QUALITY_SHADING
+  // calculate shadow
+  #ifdef SHADOWS
+  brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
+  #endif //SHADOWS
+  brightness = clamp(brightness, 0, 1);
+  #endif // SHADING
 
 
   // calculate output color

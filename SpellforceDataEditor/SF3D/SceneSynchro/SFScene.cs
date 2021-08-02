@@ -351,7 +351,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
                 anim_name = "figure_hero";
 
             //special case: monument unit, needs to be considered separately
-            string unit_handle = Utility.CleanString(unit_data[10]);
+            string unit_handle = unit_data[10].ToString();
             if ((unit_handle.StartsWith("Unit")) && (!unit_handle.Contains("Titan")))
             {
                 chest_name += "_cold";

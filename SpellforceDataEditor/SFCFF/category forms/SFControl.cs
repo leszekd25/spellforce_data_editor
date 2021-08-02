@@ -107,7 +107,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public string string_repr(int index)
         {
             System.Diagnostics.Debug.Assert(!category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
-            return Encoding.UTF8.GetString((byte[])category[current_element][index]);
+            return category[current_element][index].ToString();
         }
 
         //turns a given variant from current element into a text to display on text box
@@ -115,7 +115,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public string string_repr(int subelem_index, int index)
         {
             System.Diagnostics.Debug.Assert(category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
-            return Encoding.UTF8.GetString((byte[])category[current_element, subelem_index][index]);
+            return category[current_element, subelem_index][index].ToString();
         }
 
         //turns a given variant from current element into a text to display on text box
@@ -125,8 +125,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             System.Diagnostics.Debug.Assert(!category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
 
             Byte[] bytes = new Byte[count];
-            for(int i = 0; i < count; i++)
-                bytes[i] = (Byte)category[current_element][index+i];
+            for (int i = 0; i < count; i++)
+                bytes[i] = (Byte)category[current_element][index + i];
             return BitConverter.ToString(bytes).Replace('-', ' ');
         }
 
@@ -137,7 +137,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             if (bt == null)
                 return;
-            if ((bt.IsDisposed)||(bt.Disposing))
+            if ((bt.IsDisposed) || (bt.Disposing))
                 return;
 
             int cur_id = category.GetElementID(current_element);
@@ -155,6 +155,26 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 bt.Text = String.Format("Go to {0} of this {1}", label1, label2);
                 bt.BackColor = Color.DarkOrange;
             }
+        }
+
+        // sets textbox (a helper function)
+        public void textbox_repr(TextBox tb, int cat_i)
+        {
+            System.Diagnostics.Debug.Assert(!category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
+
+            if (tb == null)
+                return;
+            if ((tb.IsDisposed) || (tb.Disposing))
+                return;
+
+            int cur_id = Utility.TryParseInt32(tb.Text);
+
+            SFCategory cat = SFCategoryManager.gamedata[cat_i];
+            int real_elem_id = cat.GetElementIndex(cur_id);
+            if ((real_elem_id == Utility.NO_INDEX)||(real_elem_id == 0))
+                tb.BackColor = Color.Yellow;
+            else
+                tb.BackColor = Color.DarkOrange;
         }
 
         public void button_step_into(Button bt, int cat_i)

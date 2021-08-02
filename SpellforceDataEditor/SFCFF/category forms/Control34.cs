@@ -53,7 +53,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 5, Utility.FixedLengthString(textBox7.Text, 40));
+            set_element_variant(current_element, 5, SFString.FromString(textBox7.Text, 0, 40));// Utility.FixedLengthString(textBox7.Text, 40));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
@@ -111,7 +111,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             UInt16 object_id = (UInt16)category[index][0];
 
             string txt = SFCategoryManager.GetTextFromElement(category[index], 1);
-            string object_handle = Utility.CleanString(category[index][5]);
+            string object_handle = category[index][5].ToString();
             return object_id.ToString() + " " + object_handle + "/" + txt;
         }
 

@@ -67,8 +67,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         public static Vector2 render_size = Vector2.Zero;
 
-        public static int drawcall_count = 0;
-        public static int triangle_count = 0;
         public static bool is_rendering = false;
         static bool initialized = false;
 
@@ -363,15 +361,22 @@ namespace SpellforceDataEditor.SF3D.SFRender
         public static void RecompileMainShaders()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.RecompileMainShaders() called");
-            shader_simple.SetDefine("APPLY_SHADING", (Settings.EnableShadows));
+            shader_simple.SetDefine("SHADING", (Settings.ShadingQuality > 0));
+            shader_simple.SetDefine("QUALITY_SHADING", (Settings.ShadingQuality > 1));
+            shader_simple.SetDefine("SHADOWS", (Settings.EnableShadows));
             shader_simple.SetDefine("TONEMAPPING", (Settings.ToneMapping));
-            shader_simple_transparency.SetDefine("APPLY_SHADING", (Settings.EnableShadows));
+            shader_simple_transparency.SetDefine("SHADING", (Settings.ShadingQuality > 0));
+            shader_simple_transparency.SetDefine("QUALITY_SHADING", (Settings.ShadingQuality > 1));
+            shader_simple_transparency.SetDefine("SHADOWS", (Settings.EnableShadows));
             shader_simple_transparency.SetDefine("TONEMAPPING", (Settings.ToneMapping));
-            shader_animated.SetDefine("APPLY_SHADING", Settings.EnableShadows);
+            shader_animated.SetDefine("SHADING", (Settings.ShadingQuality > 0));
+            shader_animated.SetDefine("QUALITY_SHADING", (Settings.ShadingQuality > 1));
+            shader_animated.SetDefine("SHADOWS", (Settings.EnableShadows));
             shader_animated.SetDefine("TONEMAPPING", (Settings.ToneMapping));
             shader_heightmap.SetDefine("DISPLAY_GRID", Settings.DisplayGrid);
             shader_heightmap.SetDefine("VISUALIZE_HEIGHT", Settings.VisualizeHeight);
-            shader_heightmap.SetDefine("APPLY_SHADING", Settings.EnableShadows);
+            shader_heightmap.SetDefine("SHADING", (Settings.ShadingQuality > 0));
+            shader_heightmap.SetDefine("SHADOWS", (Settings.EnableShadows));
             shader_heightmap.SetDefine("TONEMAPPING", (Settings.ToneMapping));
             shader_heightmap.SetDefine("TEXTURE_LOD", (Settings.TerrainTextureLOD));
 
@@ -382,7 +387,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             });
             shader_simple.AddParameter("VP");
             // shader_simple.AddParameter("M");
-            shader_simple.AddParameter("LSM");
+            if (Settings.EnableShadows)
+                shader_simple.AddParameter("LSM");
             shader_simple.AddParameter("DiffuseTex");
             shader_simple.AddParameter("ShadowMap");
             shader_simple.AddParameter("SunDirection");
@@ -409,8 +415,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_transparent }
 });
             shader_simple_transparency.AddParameter("VP");
-            // shader_simple.AddParameter("M");
-            shader_simple_transparency.AddParameter("LSM");
+            if (Settings.EnableShadows)
+                shader_simple_transparency.AddParameter("LSM");
             shader_simple_transparency.AddParameter("DiffuseTex");
             shader_simple_transparency.AddParameter("ShadowMap");
             shader_simple_transparency.AddParameter("SunDirection");
@@ -439,7 +445,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_animated.AddParameter("P");
             shader_animated.AddParameter("V");
             shader_animated.AddParameter("M");
-            shader_animated.AddParameter("LSM");
+            if (Settings.EnableShadows)
+                shader_animated.AddParameter("LSM");
             shader_animated.AddParameter("DiffuseTex");
             shader_animated.AddParameter("ShadowMap");
             shader_animated.AddParameter("boneTransforms");
@@ -934,9 +941,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             GL.Uniform1(active_shader["AspectRatio"], 1.0f);
             GL.BindVertexArray(Atmosphere.sky_vao);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
-
-            drawcall_count += 1;
-            triangle_count += 2;
         }
 
         static void RenderHeightmapDepthPrePass()
@@ -961,14 +965,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
             if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
             {
                 GL.DrawElements(PrimitiveType.TriangleStrip, 2 * (heightmap.width + 1) * heightmap.height, DrawElementsType.UnsignedInt, 0);
-                triangle_count += 2 * heightmap.width * heightmap.height;
             }
             else if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
             {
                 GL.DrawArrays(PrimitiveType.Patches, 0, 4 * heightmap.mesh_tesselated.patch_count);
-                triangle_count += 2 * heightmap.mesh_tesselated.patch_count;    // very low estimate
             }
-            drawcall_count += 1;
 
             GL.ActiveTexture(TextureUnit.Texture0);
         }
@@ -1020,14 +1021,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
             if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
             {
                 GL.DrawElements(PrimitiveType.TriangleStrip, 2 * (heightmap.width + 1) * heightmap.height, DrawElementsType.UnsignedInt, 0);
-                triangle_count += 2 * heightmap.width * heightmap.height;
             }
             else if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
             {
                 GL.DrawArrays(PrimitiveType.Patches, 0, 4 * heightmap.mesh_tesselated.patch_count);
-                triangle_count += 2 * heightmap.mesh_tesselated.patch_count;    // very low estimate
             }
-            drawcall_count += 1;
 
             if(current_pass == RenderPass.SCENE)
                 GL.BindTexture(TextureTarget.Texture2DArray, 0);
@@ -1037,7 +1035,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static void RenderSimpleObjects()
         {
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-            GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
+            if(Settings.EnableShadows)
+                GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
 
             if (current_pass == RenderPass.SCENE)
             {
@@ -1075,7 +1074,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 }
 
                 GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
-                //DumpAddTexDict(mat.texture, 0);
 
                 int vri = SFSubModel3D.Cache.Meshes[SFSubModel3D.Cache.MeshesIndex[mii]].VertexRangeIndex;
                 int eri = SFSubModel3D.Cache.Meshes[SFSubModel3D.Cache.MeshesIndex[mii]].ElementRangeIndex;
@@ -1087,21 +1085,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     submodel.owner.MatrixCount,
                     SFSubModel3D.Cache.VertexRanges[vri].Start,
                     submodel.owner.MatrixOffset);
-
-                drawcall_count += 1;
-                triangle_count += SFSubModel3D.Cache.ElementRanges[eri].Count / 3;
-                //DumpAddTexDict(mat.texture, 1);
-                //DumpAddMeshDict(mesh);
-
-                //drawcalls_simple += 1;
-                //triangles += mesh.MatrixCount * (SFSubModel3D.Cache.ElementRanges[eri].Count / 3);
             }
         }
 
         static void RenderWaterObjects()
         {
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-            GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
+            if (Settings.EnableShadows)
+                GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
 
             SetDepthBias(0);
             SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
@@ -1129,7 +1120,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     SetDepthBias(mat.matDepthBias);
 
                 GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
-                //DumpAddTexDict(mat.texture, 0);
 
                 int vri = SFSubModel3D.Cache.Meshes[SFSubModel3D.Cache.MeshesIndex[mii]].VertexRangeIndex;
                 int eri = SFSubModel3D.Cache.Meshes[SFSubModel3D.Cache.MeshesIndex[mii]].ElementRangeIndex;
@@ -1141,21 +1131,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     submodel.owner.MatrixCount,
                     SFSubModel3D.Cache.VertexRanges[vri].Start,
                     submodel.owner.MatrixOffset);
-
-                drawcall_count += 1;
-                triangle_count += SFSubModel3D.Cache.ElementRanges[eri].Count / 3;
-                //DumpAddTexDict(mat.texture, 1);
-                //DumpAddMeshDict(mesh);
-
-                //drawcalls_simple += 1;
-                //triangles += mesh.MatrixCount * (SFSubModel3D.Cache.ElementRanges[eri].Count / 3);
             }
         }
 
         static void RenderAdditiveObjects()
         {
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-            GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
+            if (Settings.EnableShadows)
+                GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
 
             if (current_pass == RenderPass.SCENE)
             {
@@ -1194,7 +1177,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 }
 
                 GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
-                //DumpAddTexDict(mat.texture, 0);
 
                 int vri = SFSubModel3D.Cache.Meshes[SFSubModel3D.Cache.MeshesIndex[mii]].VertexRangeIndex;
                 int eri = SFSubModel3D.Cache.Meshes[SFSubModel3D.Cache.MeshesIndex[mii]].ElementRangeIndex;
@@ -1206,22 +1188,14 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     submodel.owner.MatrixCount,
                     SFSubModel3D.Cache.VertexRanges[vri].Start,
                     submodel.owner.MatrixOffset);
-
-
-                drawcall_count += 1;
-                triangle_count += SFSubModel3D.Cache.ElementRanges[eri].Count / 3;
-                //DumpAddTexDict(mat.texture, 1);
-                //DumpAddMeshDict(mesh);
-
-                //drawcalls_simple += 1;
-                //triangles += mesh.MatrixCount * (SFSubModel3D.Cache.ElementRanges[eri].Count / 3);
             }
         }
 
         static void RenderTransparentObjects()
         {
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-            GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
+            if (Settings.EnableShadows)
+                GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
             Matrix4 vp_mat = scene.camera.ViewProjMatrix;
             GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
 
@@ -1247,7 +1221,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     SetDepthBias(mat.matDepthBias);
 
                 GL.BindTexture(TextureTarget.Texture2D, mat.texture.tex_id);
-                //DumpAddTexDict(mat.texture, 0);
 
                 int vri = SFSubModel3D.Cache.Meshes[SFSubModel3D.Cache.MeshesIndex[mii]].VertexRangeIndex;
                 int eri = SFSubModel3D.Cache.Meshes[SFSubModel3D.Cache.MeshesIndex[mii]].ElementRangeIndex;
@@ -1259,15 +1232,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     submodel.owner.MatrixCount,
                     SFSubModel3D.Cache.VertexRanges[vri].Start,
                     submodel.owner.MatrixOffset);
-
-
-                drawcall_count += 1;
-                triangle_count += SFSubModel3D.Cache.ElementRanges[eri].Count / 3;
-                //DumpAddTexDict(mat.texture, 1);
-                //DumpAddMeshDict(mesh);
-
-                //drawcalls_simple += 1;
-                //triangles += mesh.MatrixCount * (SFSubModel3D.Cache.ElementRanges[eri].Count / 3);
             }
         }
 
@@ -1275,7 +1239,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static void RenderAnimatedObjects()
         {
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-            GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
+            if (Settings.EnableShadows)
+                GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
 
             if (current_pass == RenderPass.SCENE)
             {
@@ -1298,7 +1263,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 {
                     var msc = an.Skin.submodels[i];
                     GL.BindTexture(TextureTarget.Texture2D, msc.material.texture.tex_id);
-                    //DumpAddTexDict(msc.material.texture, 0);
 
                     if (current_pass == RenderPass.SCENE)
                         SetRenderMode(msc.material.texRenderMode);
@@ -1311,15 +1275,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                         DrawElementsType.UnsignedInt,
                         new IntPtr(SFModelSkinChunk.Cache.ElementRanges[eri].Start * 4),
                         SFModelSkinChunk.Cache.VertexRanges[vri].Start);
-
-
-                    drawcall_count += 1;
-                    triangle_count += SFModelSkinChunk.Cache.ElementRanges[eri].Count / 3;
-                    //DumpAddTexDict(msc.material.texture, 2);
-                    //DumpAddSkinDict(an.Skin);
-
-                    //drawcalls_anim += 1;
-                    //triangles += SFModelSkinChunk.Cache.ElementRanges[eri].Count / 3;
                 }
             }
         }
@@ -1332,7 +1287,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             foreach (SFTexture tex in ui.storages.Keys)
             {
                 GL.BindTexture(TextureTarget.Texture2D, tex.tex_id);
-                //DumpAddTexDict(tex, 0);
 
                 UIQuadStorage storage = ui.storages[tex];
                 GL.BindVertexArray(storage.vertex_array);
@@ -1346,11 +1300,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                     GL.Uniform2(active_shader["offset"], storage.spans[i].position);
                     GL.DrawArrays(PrimitiveType.Triangles, storage.spans[i].start * 6, storage.spans[i].used * 6);
-
-                    drawcall_count += 1;
-                    triangle_count += storage.spans[i].used * 2;
-                    //drawcalls_ui += 1;
-                    //triangles += storage.spans[i].used * 2;
                 }
             }
         }
@@ -1382,9 +1331,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             RenderEnable enable_flags = RenderEnable.ALL;
 
             is_rendering = true;
-
-            drawcall_count = 0;
-            triangle_count = 0;
 
             // generate shadowmap
             current_pass = RenderPass.SHADOWMAP;
@@ -1450,9 +1396,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     GL.BindTexture(TextureTarget.Texture2D, shadowmap_depth_helper.texture_colors[0]);
                     GL.Uniform1(active_shader["horizontal"], 0);
                     GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-
-                    drawcall_count += 2;
-                    triangle_count += 2;
                 }
             }
 
@@ -1485,14 +1428,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 RenderSky();
                 GL.DepthMask(true);
             }
-            /*else
-            {
-                GL.ClearColor(scene.atmosphere.ambient_light.Color.X,
-                    scene.atmosphere.ambient_light.Color.Y,
-                    scene.atmosphere.ambient_light.Color.Z,
-                    0.0f);
-                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            }*/
 
             GL.Enable(EnableCap.DepthTest);
 
@@ -1600,9 +1535,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
             GL.BindVertexArray(FrameBuffer.screen_vao);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-
-            drawcall_count += 1;
-            triangle_count += 1;
 
             // UI
             if (enable_flags.HasFlag(RenderEnable.UI))

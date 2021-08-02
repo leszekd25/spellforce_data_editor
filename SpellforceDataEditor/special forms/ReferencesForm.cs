@@ -245,12 +245,24 @@ namespace SpellforceDataEditor.special_forms
                     break;
 
                 default:    //literally everything else
-                    results_intermediate = SFSearchModule.Search(SFCategoryManager.gamedata[column_looked_at.category], 
-                                                                 preload_indices, 
-                                                                 SFCategoryManager.gamedata[element_looked_for.category][element_looked_for.element][0].ToString(), 
-                                                                 SearchType.TYPE_NUMBER, 
-                                                                 column_looked_at.column, 
-                                                                 null);
+                    if (SFCategoryManager.gamedata[element_looked_for.category].category_allow_multiple)
+                    {
+                        results_intermediate = SFSearchModule.Search(SFCategoryManager.gamedata[column_looked_at.category],
+                                                                     preload_indices,
+                                                                     SFCategoryManager.gamedata[element_looked_for.category].element_lists[element_looked_for.element].GetID().ToString(),
+                                                                     SearchType.TYPE_NUMBER,
+                                                                     column_looked_at.column,
+                                                                     null);
+                    }
+                    else
+                    {
+                        results_intermediate = SFSearchModule.Search(SFCategoryManager.gamedata[column_looked_at.category],
+                                                                     preload_indices,
+                                                                     SFCategoryManager.gamedata[element_looked_for.category][element_looked_for.element][0].ToString(),
+                                                                     SearchType.TYPE_NUMBER,
+                                                                     column_looked_at.column,
+                                                                     null);
+                    }
                     break;
             }
 

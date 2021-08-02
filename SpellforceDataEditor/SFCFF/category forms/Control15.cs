@@ -33,6 +33,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 ListLanguages.Items.Add("Language #"+((Byte)category[current_element, i][1]).ToString());
 
             int safe_index = Utility.NO_INDEX;
+            if (category.element_lists[current_element].Elements.Count != 0)
+                safe_index = 0;
             int lang_index = Utility.NO_INDEX;
             for(int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
             {
@@ -75,7 +77,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
 
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                set_element_variant(current_element, i, 3, Utility.FixedLengthString(textBox4.Text, 50));
+                set_element_variant(current_element, i, 3, SFString.FromString(textBox4.Text, 0, 50));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
@@ -83,7 +85,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (ListLanguages.SelectedIndex == -1)
                 return;
 
-            set_element_variant(current_element, ListLanguages.SelectedIndex, 4, Utility.FixedLengthString(textBox5.Text, 512));
+            set_element_variant(current_element, ListLanguages.SelectedIndex, 4, SFString.FromString(textBox5.Text, (byte)(category[current_element, ListLanguages.SelectedIndex][1]), 512));
         }
 
         public override void show_element()
@@ -149,8 +151,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             category[current_element, new_elem_index][0] = (UInt16)cur_elem[0];
             category[current_element, new_elem_index][1] = (Byte)new_lang_id;
             category[current_element, new_elem_index][2] = (Byte)cur_elem[2];
-            category[current_element, new_elem_index][3] = Utility.FixedLengthString(Utility.CleanString(cur_elem[3]), 50);
-            category[current_element, new_elem_index][4] = Utility.FixedLengthString("", 512);
+            category[current_element, new_elem_index][3] = SFString.FromString(cur_elem[3].ToString(), 0, 50);// Utility.FixedLengthString(cur_elem[3].ToString(), 50);
+            category[current_element, new_elem_index][4] = SFString.FromString("", new_lang_id, 512);// Utility.FixedLengthString("", 512);
 
             set_element(current_element);
             show_element();

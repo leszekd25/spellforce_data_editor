@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace SpellforceDataEditor.SFCFF
 {
@@ -39,6 +40,93 @@ namespace SpellforceDataEditor.SFCFF
             ret.Data.AddRange(Data);
 
             return ret;
+        }
+    }
+
+    public struct SFString
+    {
+        public byte LanguageID;
+        public byte[] RawData;
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is SFString))
+                return false;
+
+            if (((SFString)obj).LanguageID != LanguageID)
+                return false;
+
+            if (!RawData.SequenceEqual(((SFString)obj).RawData))
+                return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            int h = 1300813;
+            h = h * 1300367 + LanguageID.GetHashCode();
+            for (int i = 0; i < RawData.Length; i++)
+                h = (h * 31) ^ RawData[i];
+
+            return h;
+        }
+
+        public SFString GetCopy()
+        {
+            SFString str = new SFString();
+            str.LanguageID = LanguageID;
+            str.RawData = new byte[RawData.Length];
+            Array.Copy(RawData, str.RawData, RawData.Length);
+            return str;
+        }
+
+        public override string ToString()
+        {
+            Encoding encoding;
+            switch (LanguageID)
+            {
+                case 5:
+                    encoding = Encoding.GetEncoding(1251);
+                    break;
+                case 6:
+                    encoding = Encoding.GetEncoding(1250);
+                    break;
+                default:
+                    encoding = Encoding.Default;
+                    break;
+            }
+
+            return (encoding.GetString(RawData)).Replace("\0", string.Empty);
+        }
+
+        static public SFString FromString(string s, byte lang_id, int char_count = 0)
+        {
+            SFString str = new SFString() { LanguageID = lang_id };
+            Encoding encoding;
+            switch (lang_id)
+            {
+                case 5:
+                    encoding = Encoding.GetEncoding(1251);
+                    break;
+                case 6:
+                    encoding = Encoding.GetEncoding(1250);
+                    break;
+                default:
+                    encoding = Encoding.Default;
+                    break;
+            }
+
+            byte[] data = encoding.GetBytes(s);
+            if(char_count == 0)
+                str.RawData = data;
+            else
+            {
+                str.RawData = new byte[char_count];
+                str.RawData.Initialize();
+                Array.Copy(data, str.RawData, Math.Min(char_count, data.Length));
+            }
+            return str;
         }
     }
 
@@ -95,8 +183,8 @@ namespace SpellforceDataEditor.SFCFF
                     s += 2;
                 else if ((t == typeof(Int32)) || (t == typeof(UInt32)))
                     s += 4;
-                else if (t == typeof(byte[]))
-                    s += ((byte[])v).Length;
+                else if (t == typeof(SFString))
+                    s += ((SFString)v).RawData.Length;
                 else if (t == typeof(SFOutlineData))
                     s += 1+((SFOutlineData)v).Data.Count * 2;
             }
@@ -113,11 +201,6 @@ namespace SpellforceDataEditor.SFCFF
             {
                 if (variants[i].GetType() != elem.variants[i].GetType())
                     return false;
-                if(variants[i].GetType()==typeof(byte[]))
-                {
-                    if (!((byte[])variants[i]).SequenceEqual((byte[])elem.variants[i]))
-                        return false;
-                }
                 else if (!variants[i].Equals(elem.variants[i]))
                     return false;
             }
@@ -135,11 +218,6 @@ namespace SpellforceDataEditor.SFCFF
             {
                 if (e1.variants[i+start1].GetType() != e2.variants[i+start2].GetType())
                     return false;
-                if (e1.variants[i+start1].GetType() == typeof(byte[]))
-                {
-                    if (!((byte[])e1.variants[i+start1]).SequenceEqual((byte[])e2.variants[i+start2]))
-                        return false;
-                }
                 else if (!e1.variants[i+start1].Equals(e2.variants[i+start2]))
                     return false;
             }
@@ -176,12 +254,8 @@ namespace SpellforceDataEditor.SFCFF
             {
                 object v = variants[i + index_start];
                 Type t = v.GetType();
-                if (t == typeof(byte[]))
-                {
-                    byte[] barr = new byte[((byte[])v).Length];
-                    Array.Copy(((byte[])v), barr, barr.Length);
-                    res[i] = barr;
-                }
+                if (t == typeof(SFString))
+                    res[i] = ((SFString)v).GetCopy();
                 else if (t == typeof(SByte))
                     res[i] = (SByte)v;
                 else if (t == typeof(Byte))
@@ -240,7 +314,7 @@ namespace SpellforceDataEditor.SFCFF
 
         public SFCategoryElement this[int i] { get { return Elements[i]; } set { Elements[i] = value; } }
 
-        public SFCategoryElement GetByID(int id)
+        public SFCategoryElement GetElementByID(int id)
         {
             for (int i = 0; i < Elements.Count; i++)
                 if (Elements[i].ToInt(1) == id)
@@ -249,7 +323,7 @@ namespace SpellforceDataEditor.SFCFF
             return null;
         }
 
-        public int GetSubIndexBySubID(int id)
+        public int GetIndexByID(int id)
         {
             for (int i = 0; i < Elements.Count; i++)
                 if (Elements[i].ToInt(1) == id)

@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Text;
 
 using SpellforceDataEditor.SFCFF;
 
@@ -56,6 +57,10 @@ namespace SpellforceDataEditor.special_forms
                 mapeditor_set_gamedata();
                 MessageBox.Show("Gamedata editor is now synchronized with map editor! Any changes saved will permanently alter gamedata in your Spellforce directory.");
             }
+
+#if DEBUG
+            clipboardTooldebugToolStripMenuItem.Visible = true;
+#endif
         }
 
         //load game data
@@ -71,22 +76,30 @@ namespace SpellforceDataEditor.special_forms
             if (LoadGD.ShowDialog() != DialogResult.OK)
                 return;
 
+            bool success = false;
             switch(LoadGD.Mode)
             {
                 case SFCFF.helper_forms.LoadGamedataForm.GDMode.FULL:
-                    load_data(LoadGD.MainGDFileName);
+                    success = load_data(LoadGD.MainGDFileName);
                     break;
                 case SFCFF.helper_forms.LoadGamedataForm.GDMode.DEPENDENCY:
-                    load_data_dependency(LoadGD.MainGDFileName, LoadGD.DependencyGDFileNames);
+                    success = load_data_dependency(LoadGD.MainGDFileName, LoadGD.DependencyGDFileNames);
                     break;
                 case SFCFF.helper_forms.LoadGamedataForm.GDMode.DIFF:
-                    load_data_diff(LoadGD.MainGDFileName, LoadGD.DiffGDFileName, LoadGD.DependencyGDFileNames);
+                    success = load_data_diff(LoadGD.MainGDFileName, LoadGD.DiffGDFileName, LoadGD.DependencyGDFileNames);
                     break;
                 case SFCFF.helper_forms.LoadGamedataForm.GDMode.MERGE:
-                    load_data_merge(LoadGD.MergeGDFileNames);
+                    success = load_data_merge(LoadGD.MergeGDFileNames);
                     break;
                 default:
                     break;
+            }
+
+            if(success)
+            {
+#if DEBUG
+                extractLangDataToolStripMenuItem.Visible = true;
+#endif
             }
         }
 
@@ -613,6 +626,7 @@ namespace SpellforceDataEditor.special_forms
                 ButtonElemAdd.BackColor = SystemColors.Control;
                 ButtonElemInsert.BackColor = SystemColors.Control;
                 insert_copy_element = null;
+                insert_copy_element_list = null;
             }
             selected_category_id = ((Tuple<int, string>)CategorySelect.SelectedItem).Item1;
             real_category_id = selected_category_id;
@@ -761,7 +775,13 @@ namespace SpellforceDataEditor.special_forms
             selected_element_index = cat_e;
 
             set_element_display(cat_i);
-            if (SFCategoryManager.gamedata[cat_i][cat_e] != null)
+
+            bool elem_exists = false;
+            if (SFCategoryManager.gamedata[cat_i].category_allow_multiple)
+                elem_exists = (SFCategoryManager.gamedata[cat_i].element_lists[cat_e] != null);
+            else
+                elem_exists = SFCategoryManager.gamedata[cat_i][cat_e] != null;
+            if (elem_exists)
             {
                 ElementDisplay.Visible = true;
                 ElementDisplay.set_element(cat_e);
@@ -896,16 +916,34 @@ namespace SpellforceDataEditor.special_forms
             resolve_category_index();
 
             SFCategory ctg = SFCategoryManager.gamedata[real_category_id];
-            List<SFCategoryElement> elems = ctg.elements;
-
-            int current_elem = elems.Count-1;
-            int last_id = ctg.GetElementID(current_elem);
+            int current_elem = ctg.GetElementCount();
+            int last_id = ctg.GetElementID(current_elem - 1);
 
             SFCategoryElement elem;
-            if (insert_copy_element == null)
-                elem = ctg.GetEmptyElement();
+
+            if (ctg.category_allow_multiple)
+            {
+                SFCategoryElementList elem_list;
+
+                if (insert_copy_element_list == null)
+                    elem_list = ctg.GetEmptyElementList();
+                else
+                    elem_list = insert_copy_element_list.GetCopy();
+
+                elem = elem_list[0];
+
+                ctg.element_lists.Insert(current_elem, elem_list);
+            }
             else
-                elem = insert_copy_element.GetCopy();
+            {
+                if (insert_copy_element == null)
+                    elem = ctg.GetEmptyElement();
+                else
+                    elem = insert_copy_element.GetCopy();
+
+
+                ctg.elements.Insert(current_elem, elem);
+            }
 
             if (ctg.GetElementFormat()[0] == 'B')
                 elem[0] = (byte)(last_id + 1);
@@ -919,16 +957,15 @@ namespace SpellforceDataEditor.special_forms
                 throw new Exception("Unknown category format");
             }
 
+            ElementSelect.Items.Insert(current_elem, CachedElementDisplays[real_category_id].get_element_string(current_elem));
 
-            elems.Insert(current_elem + 1, elem);
-            ElementSelect.Items.Insert(current_elem + 1, CachedElementDisplays[real_category_id].get_element_string(current_elem + 1));
-            for (int i = current_elem + 1; i < current_indices.Count; i++)
+            for (int i = current_elem; i < current_indices.Count; i++)
                 current_indices[i] = current_indices[i] + 1;
-            current_indices.Insert(current_elem + 1, current_elem + 1);
+            current_indices.Insert(current_elem, current_elem);
 
             Tracer_Clear();
 
-            ElementSelect.SelectedIndex = current_elem + 1;
+            ElementSelect.SelectedIndex = current_elem;
         }
 
         //what happens when you insert an element to a category
@@ -943,22 +980,37 @@ namespace SpellforceDataEditor.special_forms
             int current_elem = current_indices[ElementSelect.SelectedIndex];
 
             SFCategory ctg = SFCategoryManager.gamedata[real_category_id];
-            SFCategoryElement elem;
-            if (insert_copy_element == null)
-                elem = ctg.GetEmptyElement();
-            else
-                elem = insert_copy_element.GetCopy();
 
-            List<SFCategoryElement> elems = ctg.elements;
-            elems.Insert(current_elem+1, elem);
-            ElementSelect.Items.Insert(current_elem+1, CachedElementDisplays[real_category_id].get_element_string(current_elem + 1));
-            for (int i = current_elem+1; i < current_indices.Count; i++)
+            if(ctg.category_allow_multiple)
+            {
+                SFCategoryElementList elem_list;
+                if (insert_copy_element_list == null)
+                    elem_list = ctg.GetEmptyElementList();
+                else
+                    elem_list = insert_copy_element_list.GetCopy();
+
+                ctg.element_lists.Insert(current_elem, elem_list);
+            }
+            else
+            {
+                SFCategoryElement elem;
+                if (insert_copy_element == null)
+                    elem = ctg.GetEmptyElement();
+                else
+                    elem = insert_copy_element.GetCopy();
+
+                ctg.elements.Insert(current_elem, elem);
+            }
+
+
+            ElementSelect.Items.Insert(current_elem, CachedElementDisplays[real_category_id].get_element_string(current_elem));
+            for (int i = current_elem; i < current_indices.Count; i++)
                 current_indices[i] = current_indices[i] + 1;
-            current_indices.Insert(current_elem+1, current_elem+1);
+            current_indices.Insert(current_elem, current_elem);
 
             Tracer_Clear();
 
-            ElementSelect.SelectedIndex = current_elem + 1;
+            ElementSelect.SelectedIndex = current_elem;
         }
 
         //what happens when you remove element from category
@@ -970,16 +1022,17 @@ namespace SpellforceDataEditor.special_forms
             resolve_category_index();
 
             int current_elem = current_indices[ElementSelect.SelectedIndex];
-
             SFCategory ctg = SFCategoryManager.gamedata[real_category_id];
-            SFCategoryElement elem = ctg[current_elem].GetCopy();
 
-            List<SFCategoryElement> elems = ctg.elements;
             for (int i = current_elem; i < current_indices.Count; i++)
                 current_indices[i] = current_indices[i] - 1;
             current_indices.RemoveAt(current_elem);
             ElementSelect.Items.RemoveAt(ElementSelect.SelectedIndex);
-            elems.RemoveAt(current_elem);
+
+            if(ctg.category_allow_multiple)
+                ctg.element_lists.RemoveAt(current_elem);
+            else
+                ctg.elements.RemoveAt(current_elem);
 
             ElementDisplay.Visible = false;
 
@@ -1105,6 +1158,7 @@ namespace SpellforceDataEditor.special_forms
             ButtonElemAdd.BackColor = SystemColors.Control;
             ButtonElemInsert.BackColor = SystemColors.Control;
             insert_copy_element = null;
+            insert_copy_element_list = null;
 
             if (ElementDisplay != null)
                 ElementDisplay.Visible = false;
@@ -1172,7 +1226,11 @@ namespace SpellforceDataEditor.special_forms
             if (ElementSelect.SelectedIndex == -1)
                 return;
 
-            insert_copy_element = SFCategoryManager.gamedata[selected_category_id][selected_element_index].GetCopy();
+            SFCategory ctg = SFCategoryManager.gamedata[selected_category_id];
+            if (ctg.category_allow_multiple)
+                insert_copy_element_list = ctg.element_lists[selected_element_index].GetCopy();
+            else
+                insert_copy_element = ctg[selected_element_index].GetCopy();
             ButtonElemAdd.BackColor = Color.Yellow;
             ButtonElemInsert.BackColor = Color.Yellow;
         }
@@ -1184,6 +1242,7 @@ namespace SpellforceDataEditor.special_forms
                 return;
 
             insert_copy_element = null;
+            insert_copy_element_list = null;
             ButtonElemAdd.BackColor = SystemColors.Control;
             ButtonElemInsert.BackColor = SystemColors.Control;
         }
@@ -1285,6 +1344,36 @@ namespace SpellforceDataEditor.special_forms
         public void poke_data()
         {
             data_changed = true;
+        }
+
+        private void extractLangDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExtractLangDataForm form = new ExtractLangDataForm();
+
+            form.ShowDialog();
+        }
+
+        private void clipboardTooldebugToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!SFCategoryManager.ready)
+                return;
+
+            StringBuilder sb = new StringBuilder();
+
+            SFCategory spelltype_cat = SFCategoryManager.gamedata[2054];
+            foreach(var spelltype_elem in spelltype_cat.elements)
+            {
+                ushort spelltype_id = (ushort)spelltype_elem[0];
+                ushort desc_id = (ushort)spelltype_elem[8];
+                int desc_index = SFCategoryManager.gamedata[2058].GetElementIndex(desc_id);
+                if (desc_index == Utility.NO_INDEX)
+                    continue;
+                SFCategoryElement desc_elem = SFCategoryManager.gamedata[2058][desc_index];
+
+                sb.AppendLine(spelltype_id.ToString() + " | " + SFCategoryManager.GetTextFromElement(desc_elem, 1));
+            }
+
+            Clipboard.SetText(sb.ToString());
         }
     }
 }
