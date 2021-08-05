@@ -106,9 +106,10 @@ namespace SpellforceDataEditor.SFMap
         private void DisposeLakeMesh(SFMapLake lake)
         {
             if (lake.node.Mesh != null)
+            {
+                lake.node.Mesh = null;
                 SFResources.SFResourceManager.Models.Dispose(lake.GetObjectName());
-
-            lake.node.Mesh = null;
+            }
         }
 
         public void RemoveLake(SFMapLake lake)
@@ -289,15 +290,22 @@ namespace SpellforceDataEditor.SFMap
             material.texture = tex;
             material.casts_shadow = false;
             material.transparent_pass = false;
-            if (lake.type == 0)
+            if (lake.type == 0)   // water
             {
                 material.water_pass = true;
                 material.apply_shadow = false;
             }
-            else
+            else                  // other than water
             {
                 material.water_pass = false;
-                material.apply_shading = true;
+                material.apply_shadow = true;
+            }
+            if (lake.type == 2)   // lava
+            {
+                material.emission_strength = 1.0f;
+                if (!Settings.ToneMapping)
+                    material.emission_strength *= 0.8f;
+                material.emission_color = new Vector4(1.0f, 0.5f, 0.5f, 1.0f);
             }
             
             submodel.CreateRaw(vertices, uvs, colors, normals, indices, material);

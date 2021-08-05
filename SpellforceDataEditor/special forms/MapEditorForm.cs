@@ -139,7 +139,9 @@ namespace SpellforceDataEditor.special_forms
                 minimap_tex.UpdateImage();
             }
 
-            // redraw only selected pixels, and set them to chosen color
+            // redraws given area with chosen tile color
+            // shades pixels if they're on terrain
+            // draws lakes and water if the pixels are on water
             public void RedrawMinimap(IEnumerable<SFCoord> pixels, byte tile_id)
             {
                 if (minimap_tex == null)
@@ -178,7 +180,7 @@ namespace SpellforceDataEditor.special_forms
                 minimap_tex.UpdateImage();
             }
 
-            // only redraw selected pixels
+            // only redraws selected pixels, according to the contents of the map
             public void RedrawMinimap(IEnumerable<SFCoord> pixels)
             {
                 if (minimap_tex == null)
@@ -221,6 +223,25 @@ namespace SpellforceDataEditor.special_forms
                             minimap_tex.data[(j * hmap.width + i) * 4 + 3] = 255;
                         }
                     }
+                }
+
+                minimap_tex.UpdateImage();
+            }
+
+            // only redraws selected pixels, paint them on specified color
+            public void RedrawMinimap(IEnumerable<SFCoord> pixels, Color c)
+            {
+                if (minimap_tex == null)
+                    return;
+
+                SFMapHeightMap hmap = map.heightmap;
+
+                foreach (SFCoord p in pixels)
+                {
+                    minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 0] = c.R;
+                    minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 1] = c.G;
+                    minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 2] = c.B;
+                    minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 3] = 255;
                 }
 
                 minimap_tex.UpdateImage();

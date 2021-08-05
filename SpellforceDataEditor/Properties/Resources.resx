@@ -145,7 +145,6 @@ uniform float FogStrength;
 uniform float FogStart;
 uniform float FogEnd;
 uniform float FogExponent;
-uniform float ShadowDepth;
 
 vec2 poissonDisk[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
@@ -412,6 +411,10 @@ uniform vec3 SunDirection;
 uniform vec4 SunColor;
 uniform float AmbientStrength;
 uniform vec4 AmbientColor;
+#ifdef QUALITY_SHADING
+uniform float EmissionStrength;
+uniform vec4 EmissionColor;
+#endif //QUALITY_SHADING
 uniform sampler2D DiffuseTex;
 uniform sampler2D ShadowMap;
 uniform vec4 FogColor;
@@ -422,7 +425,6 @@ uniform float FogExponent;
 uniform float ObjectFadeStart;
 uniform float ObjectFadeEnd;
 uniform float DepthBias;
-uniform float ShadowDepth;
 uniform float DistanceFade;
 
 vec2 poissonDisk[4] = vec2[](
@@ -487,20 +489,26 @@ void main(){
   #endif // SHADING
 
 
+
   // calculate output color
   vec4 ambient_color = AmbientColor * AmbientStrength;
   vec4 sun_color = SunColor * SunStrength;
   #ifndef TONEMAPPING
   color = (ambient_color*(1-brightness))+(sun_color*brightness);
-  color.a = 1.0;
-  color = color*temp_c;
-  color = clamp(color, 0.0, 1.0);
   #endif // TONEMAPPING
   #ifdef TONEMAPPING
   color = ambient_color + sun_color * brightness;
+  #endif //TONEMAPPING
+  #ifdef QUALITY_SHADING
+  vec4 emissive_color = EmissionColor * EmissionStrength;
+  color += emissive_color;
+  #endif //QUALITY_SHADING
   color.a = 1.0;
   color = color * temp_c;
-  #endif
+  #ifndef TONEMAPPING
+  color = clamp(color, 0.0, 1.0);
+  #endif // TONEMAPPING
+
 
   // fog calculation
   float dist = gl_FragCoord.z / gl_FragCoord.w;
@@ -1415,6 +1423,10 @@ uniform vec3 SunDirection;
 uniform vec4 SunColor;
 uniform float AmbientStrength;
 uniform vec4 AmbientColor;
+#ifdef QUALITY_SHADING
+uniform float EmissionStrength;
+uniform vec4 EmissionColor;
+#endif //QUALITY_SHADING
 uniform sampler2D DiffuseTex;
 uniform sampler2D ShadowMap;
 uniform vec4 FogColor;
@@ -1425,9 +1437,6 @@ uniform float FogExponent;
 uniform float ObjectFadeStart;
 uniform float ObjectFadeEnd;
 uniform float DepthBias;
-uniform float ShadowDepth;
-uniform bool ApplyShadow;
-uniform bool ApplyShading;
 uniform float DistanceFade;
 
 vec2 poissonDisk[4] = vec2[](
@@ -1496,15 +1505,19 @@ void main(){
   vec4 sun_color = SunColor * SunStrength;
   #ifndef TONEMAPPING
   color = (ambient_color*(1-brightness))+(sun_color*brightness);
-  color.a = 1.0;
-  color = color*temp_c;
-  color = clamp(color, 0.0, 1.0);
   #endif // TONEMAPPING
   #ifdef TONEMAPPING
   color = ambient_color + sun_color * brightness;
+  #endif //TONEMAPPING
+  #ifdef QUALITY_SHADING
+  vec4 emissive_color = EmissionColor * EmissionStrength;
+  color += emissive_color;
+  #endif //QUALITY_SHADING
   color.a = 1.0;
   color = color * temp_c;
-  #endif
+  #ifndef TONEMAPPING
+  color = clamp(color, 0.0, 1.0);
+  #endif // TONEMAPPING
 
   // fog calculation
   float dist = gl_FragCoord.z / gl_FragCoord.w;

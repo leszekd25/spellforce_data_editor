@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,16 @@ namespace SpellforceDataEditor
         public const string S_NONE = "<none>";
         public const int NO_INDEX = -1;
         public static CultureInfo ci { get; } = CultureInfo.CreateSpecificCulture("en-GB");
-        
+
+        // brushes for unified color scheme
+        public static SolidBrush BrushBackgroundDefault = new SolidBrush(Color.White);
+        public static SolidBrush BrushBackgroundElemModified = new SolidBrush(Color.FromArgb(200, 200, 100));
+        public static SolidBrush BrushBackgroundElemAdded = new SolidBrush(Color.FromArgb(100, 200, 100));
+        public static SolidBrush BrushBackgroundElemRemoved = new SolidBrush(Color.FromArgb(200, 100, 100));
+        public static SolidBrush BrushBackgroundElemSelected = new SolidBrush(Color.FromArgb(40, 40, 200));
+        public static SolidBrush BrushTextDefault = new SolidBrush(Color.Black);
+        public static SolidBrush BrushTextElemSelected = new SolidBrush(Color.White);
+
         //functions which try to convert a string to the respective type
         static public SByte TryParseInt8(string s, SByte def = 0)
         {

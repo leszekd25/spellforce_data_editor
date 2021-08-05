@@ -39,6 +39,8 @@ namespace SpellforceDataEditor.SF3D
         public float matDepthBias = 0;
         public float texTiling = 1f;
         public SFTexture texture = null;
+        public Vector4 emission_color = new Vector4(1);
+        public float emission_strength = 0.0f;
         public bool apply_shading = true;
         public bool casts_shadow = true;
         public bool transparent_pass = false;

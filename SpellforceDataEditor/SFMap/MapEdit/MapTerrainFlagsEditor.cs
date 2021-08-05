@@ -63,15 +63,16 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             data_list.Add(p);
                             // determine color
                             byte cur_color = map.heightmap.overlay_data_flags[j * map.width + i];
-                            if ((overlay_color == 2) && ((cur_color == 5) || (cur_color == 10)))
-                                overlay_color = 10;
-                            else if ((overlay_color == 5) && ((cur_color == 2) || (cur_color == 9) || (cur_color == 10)))
-                                overlay_color = 10;
+                            byte new_color = overlay_color;
+                            if ((overlay_color == 2) && ((cur_color == 5) || (cur_color == 7)))
+                                new_color = 7;
+                            else if ((overlay_color == 5) && ((cur_color == 2) || (cur_color == 9) || (cur_color == 7)))
+                                new_color = 7;
 
                             if (!op_flag.PreOperatorFlags.ContainsKey(p))
                                 op_flag.PreOperatorFlags.Add(p, cur_color);
 
-                            map.heightmap.overlay_data_flags[j * map.width + i] = overlay_color;
+                            map.heightmap.overlay_data_flags[j * map.width + i] = new_color;
                         }
                     }
                 }
@@ -90,44 +91,45 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             data_list.Remove(p);
                             // determine color
                             byte cur_color = map.heightmap.overlay_data_flags[j * map.width + i];
+                            byte new_color = overlay_color;
                             if(overlay_color == 5)
                             {
                                 if (cur_color == 5)
-                                    overlay_color = 0;
-                                else if (cur_color == 10)
+                                    new_color = 0;
+                                else if (cur_color == 7)
                                 {
                                     if (!map.heightmap.chunk42_data.Contains(p))
-                                        overlay_color = 9;
+                                        new_color = 9;
                                     else
-                                        overlay_color = 2;
+                                        new_color = 2;
                                 }
                                 else
-                                    overlay_color = cur_color;
+                                    new_color = cur_color;
                             }
                             else if(overlay_color == 2)
                             {
                                 if (cur_color == 2)
                                 {
                                     if (map.heightmap.texture_manager.texture_tiledata[map.heightmap.tile_data[j * map.width + i]].blocks_movement)
-                                        overlay_color = 9;
+                                        new_color = 9;
                                     else
-                                        overlay_color = 0;
+                                        new_color = 0;
                                 }
-                                else if (cur_color == 10)
+                                else if (cur_color == 7)
                                 {
                                     if (map.heightmap.texture_manager.texture_tiledata[map.heightmap.tile_data[j * map.width + i]].blocks_movement)
-                                        overlay_color = 10;
+                                        new_color = 7;
                                     else
-                                        overlay_color = 5;
+                                        new_color = 5;
                                 }
                                 else
-                                    overlay_color = cur_color;
+                                    new_color = cur_color;
                             }
 
                             if (!op_flag.PreOperatorFlags.ContainsKey(p))
                                 op_flag.PreOperatorFlags.Add(p, cur_color);
 
-                            map.heightmap.overlay_data_flags[j * map.width + i] = overlay_color;
+                            map.heightmap.overlay_data_flags[j * map.width + i] = new_color;
                         }
                     }
                 }

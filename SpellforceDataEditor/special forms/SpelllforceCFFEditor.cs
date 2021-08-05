@@ -38,15 +38,6 @@ namespace SpellforceDataEditor.special_forms
         private special_forms.ChangeDataLangForm change_lang = null;
         private special_forms.CalculatorsForm calc = null;
 
-        // element selection coloring stuff
-        private SolidBrush bckg_unchanged = new SolidBrush(Color.White);
-        private SolidBrush bckg_modified = new SolidBrush(Color.FromArgb(200, 200, 100));
-        private SolidBrush bckg_added = new SolidBrush(Color.FromArgb(100, 200, 100));
-        private SolidBrush bckg_removed = new SolidBrush(Color.FromArgb(200, 100, 100));
-        private SolidBrush bckg_selected = new SolidBrush(Color.FromArgb(40, 40, 200));
-        private SolidBrush text_default = new SolidBrush(Color.Black);
-        private SolidBrush text_selected = new SolidBrush(Color.White);
-
         //constructor
         public SpelllforceCFFEditor()
         {
@@ -716,23 +707,23 @@ namespace SpellforceDataEditor.special_forms
                 //background:
                 SolidBrush backgroundBrush;
                 if (selected)
-                    backgroundBrush = bckg_selected;
+                    backgroundBrush = Utility.BrushBackgroundElemSelected;
                 else
                 {
                     switch (ctg.element_status[index])
                     {
                         case SFCategoryElementStatus.ADDED:
-                            backgroundBrush = bckg_added;
+                            backgroundBrush = Utility.BrushBackgroundElemAdded;
                             break;
                         case SFCategoryElementStatus.MODIFIED:
-                            backgroundBrush = bckg_modified;
+                            backgroundBrush = Utility.BrushBackgroundElemModified;
                             break;
                         case SFCategoryElementStatus.REMOVED:
-                            backgroundBrush = bckg_removed;
+                            backgroundBrush = Utility.BrushBackgroundElemRemoved;
                             break;
                         case SFCategoryElementStatus.UNCHANGED:
                         default:
-                            backgroundBrush = bckg_unchanged;
+                            backgroundBrush = Utility.BrushBackgroundDefault;
                             break;
                     }
                 }
@@ -740,7 +731,7 @@ namespace SpellforceDataEditor.special_forms
                 g.FillRectangle(backgroundBrush, e.Bounds);
 
                 //text:
-                SolidBrush foregroundBrush = (selected) ? text_selected : text_default;
+                SolidBrush foregroundBrush = (selected) ? Utility.BrushTextElemSelected : Utility.BrushTextDefault;
                 g.DrawString(text, e.Font, foregroundBrush, ElementSelect.GetItemRectangle(index).Location);
             }
         }

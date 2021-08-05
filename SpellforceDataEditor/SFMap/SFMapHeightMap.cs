@@ -202,7 +202,6 @@ namespace SpellforceDataEditor.SFMap
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
                 GL.BufferSubData<Vector3>(BufferTarget.ArrayBuffer, IntPtr.Zero, patch_count * 48, vertices);
-                //GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
             }
         }
 
@@ -618,7 +617,7 @@ namespace SpellforceDataEditor.SFMap
                 if (overlay_data_flags[p.y * width + p.x] == 0)
                     overlay_data_flags[p.y * width + p.x] = 5;
                 else
-                    overlay_data_flags[p.y * width + p.x] = 10;
+                    overlay_data_flags[p.y * width + p.x] = 7;
             }
         }
 
@@ -980,22 +979,44 @@ namespace SpellforceDataEditor.SFMap
 
         private void SetOverlayColors()
         {
-            uniformOverlays[0] = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);    // empty
-            uniformOverlays[1] = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);    // white
-            uniformOverlays[2] = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);    // full red
-            uniformOverlays[3] = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);    // full green
-            uniformOverlays[4] = new Vector4(0.0f, 0.0f, 1.0f, 1.0f);    // full blue
-            uniformOverlays[5] = new Vector4(1.0f, 1.0f, 0.0f, 1.0f);    // full yellow
-            uniformOverlays[6] = new Vector4(1.0f, 0.0f, 1.0f, 1.0f);    // full fuchsia
-            uniformOverlays[7] = new Vector4(0.0f, 1.0f, 1.0f, 1.0f);    // full teal
-            uniformOverlays[8] = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);    // full black
-            uniformOverlays[9] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
-            uniformOverlays[10] = new Vector4(1.0f, 0.7f, 0.0f, 1.0f);    // orange
-            uniformOverlays[11] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
-            uniformOverlays[12] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
-            uniformOverlays[13] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
-            uniformOverlays[14] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
-            uniformOverlays[15] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
+            if (Settings.ToneMapping)
+            {
+                uniformOverlays[0] = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);    // empty
+                uniformOverlays[1] = new Vector4(2.0f, 2.0f, 2.0f, 1.0f);    // white
+                uniformOverlays[2] = new Vector4(2.0f, 0.0f, 0.0f, 1.0f);    // full red
+                uniformOverlays[3] = new Vector4(0.0f, 2.0f, 0.0f, 1.0f);    // full green
+                uniformOverlays[4] = new Vector4(0.0f, 0.0f, 2.0f, 1.0f);    // full blue
+                uniformOverlays[5] = new Vector4(2.0f, 2.0f, 0.0f, 1.0f);    // full yellow
+                uniformOverlays[6] = new Vector4(2.0f, 0.0f, 2.0f, 1.0f);    // full fuchsia
+                uniformOverlays[7] = new Vector4(0.0f, 2.0f, 2.0f, 1.0f);    // full teal
+                uniformOverlays[8] = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);    // full black
+                uniformOverlays[9] = new Vector4(0.9f, 0.0f, 0.0f, 1.0f);    // dark red
+                uniformOverlays[10] = new Vector4(1.8f, 1.0f, 0.0f, 1.0f);    // orange
+                uniformOverlays[11] = new Vector4(0.9f, 0.0f, 0.0f, 1.0f);    // dark red
+                uniformOverlays[12] = new Vector4(0.9f, 0.0f, 0.0f, 1.0f);    // dark red
+                uniformOverlays[13] = new Vector4(0.9f, 0.0f, 0.0f, 1.0f);    // dark red
+                uniformOverlays[14] = new Vector4(0.9f, 0.0f, 0.0f, 1.0f);    // dark red
+                uniformOverlays[15] = new Vector4(0.9f, 0.0f, 0.0f, 1.0f);    // dark red
+            }
+            else
+            {
+                uniformOverlays[0] = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);    // empty
+                uniformOverlays[1] = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);    // white
+                uniformOverlays[2] = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);    // full red
+                uniformOverlays[3] = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);    // full green
+                uniformOverlays[4] = new Vector4(0.0f, 0.0f, 1.0f, 1.0f);    // full blue
+                uniformOverlays[5] = new Vector4(1.0f, 1.0f, 0.0f, 1.0f);    // full yellow
+                uniformOverlays[6] = new Vector4(1.0f, 0.0f, 1.0f, 1.0f);    // full fuchsia
+                uniformOverlays[7] = new Vector4(0.0f, 1.0f, 1.0f, 1.0f);    // full teal
+                uniformOverlays[8] = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);    // full black
+                uniformOverlays[9] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
+                uniformOverlays[10] = new Vector4(1.0f, 0.7f, 0.0f, 1.0f);    // orange
+                uniformOverlays[11] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
+                uniformOverlays[12] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
+                uniformOverlays[13] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
+                uniformOverlays[14] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
+                uniformOverlays[15] = new Vector4(0.6f, 0.0f, 0.0f, 1.0f);    // dark red
+            }
             GL.BindBuffer(BufferTarget.UniformBuffer, uniformOverlays_buffer);
             GL.BufferSubData(BufferTarget.UniformBuffer, new IntPtr(0), 16 * 4 * 4, ref uniformOverlays[0]);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);

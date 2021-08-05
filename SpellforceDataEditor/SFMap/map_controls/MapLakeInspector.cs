@@ -56,11 +56,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
             {
                 lake_index = map.lake_manager.GetLakeIndexAt(selected_lake.start),
                 PreOperatorType = selected_lake.type,
-                PostOperatorType = 0
+                PostOperatorType = 0,
+                ApplyOnPush = true
             });
-            selected_lake.type = 0;
-            map.lake_manager.RebuildLake(selected_lake);
-            MainForm.mapedittool.update_render = true;
         }
 
         private void LakeTypeSwamp_Click(object sender, EventArgs e)
@@ -72,11 +70,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
             {
                 lake_index = map.lake_manager.GetLakeIndexAt(selected_lake.start),
                 PreOperatorType = selected_lake.type,
-                PostOperatorType = 1
+                PostOperatorType = 1,
+                ApplyOnPush = true
             });
-            selected_lake.type = 1;
-            map.lake_manager.RebuildLake(selected_lake);
-            MainForm.mapedittool.update_render = true;
         }
 
         private void LakeTypeLava_Click(object sender, EventArgs e)
@@ -88,11 +84,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
             {
                 lake_index = map.lake_manager.GetLakeIndexAt(selected_lake.start),
                 PreOperatorType = selected_lake.type,
-                PostOperatorType = 2
+                PostOperatorType = 2,
+                ApplyOnPush = true
             });
-            selected_lake.type = 2;
-            map.lake_manager.RebuildLake(selected_lake);
-            MainForm.mapedittool.update_render = true;
         }
 
         private void LakeTypeIce_Click(object sender, EventArgs e)
@@ -104,11 +98,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
             {
                 lake_index = map.lake_manager.GetLakeIndexAt(selected_lake.start),
                 PreOperatorType = selected_lake.type,
-                PostOperatorType = 3
+                PostOperatorType = 3,
+                ApplyOnPush = true
             });
-            selected_lake.type = 3;
-            map.lake_manager.RebuildLake(selected_lake);
-            MainForm.mapedittool.update_render = true;
         }
     }
 }

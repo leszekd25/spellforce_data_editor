@@ -191,6 +191,7 @@ namespace SpellforceDataEditor.SFLua
         // specialized version; arguments are named
         static public int OpenNPCScript(int platform_id, int npc_id)
         {
+            // construct file path
             string fname = "script\\p" + platform_id.ToString() + "\\n" + npc_id.ToString() + ".lua";
             if (!SFUnPak.SFUnPak.game_directory_specified)
             {
@@ -212,6 +213,7 @@ namespace SpellforceDataEditor.SFLua
                             Directory.CreateDirectory(SFUnPak.SFUnPak.game_directory_name + "\\script\\p" + platform_id.ToString());
 
                         var f = File.Create(SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
+                        f.Close();
                     }
                     else
                         return -2;

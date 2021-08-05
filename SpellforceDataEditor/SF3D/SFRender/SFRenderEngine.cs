@@ -31,13 +31,15 @@ namespace SpellforceDataEditor.SF3D.SFRender
         public static float min_render_distance = 0.1f;
         public static float max_render_distance = 1000f;
 
-        static float CurrentDepthBias = 0;
+        static float CurrentDepthBias = 0.0f;
         static RenderMode CurrentRenderMode = RenderMode.SRCALPHA_INVSRCALPHA;
         static bool CurrentApplyShadow = true;
         static bool CurrentDistanceFade = true;
         static bool CurrentApplyShading = true;
         static float CurrentFadeStart = 150.0f;
         static float CurrentFadeEnd = 200.0f;
+        static float CurrentEmissionStrength = -1.0f;
+        static Vector4 CurrentEmissionColor = new Vector4(-1.0f);
 
         public static SFTexture opaque_tex { get; private set; } = null;
 
@@ -396,6 +398,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_simple.AddParameter("SunColor");
             shader_simple.AddParameter("AmbientStrength");
             shader_simple.AddParameter("AmbientColor");
+            if (Settings.ShadingQuality > 1)
+            {
+                shader_simple.AddParameter("EmissionStrength");
+                shader_simple.AddParameter("EmissionColor");
+            }
             shader_simple.AddParameter("FogColor");
             shader_simple.AddParameter("FogStrength");
             shader_simple.AddParameter("FogStart");
@@ -404,9 +411,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_simple.AddParameter("DepthBias");
             shader_simple.AddParameter("ObjectFadeStart");
             shader_simple.AddParameter("ObjectFadeEnd");
-            shader_simple.AddParameter("ShadowDepth");
-            shader_simple.AddParameter("ApplyShadow");
-            shader_simple.AddParameter("ApplyShading");
             shader_simple.AddParameter("DistanceFade");
 
             shader_simple_transparency.CompileShader(new ShaderInfo[]
@@ -424,6 +428,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_simple_transparency.AddParameter("SunColor");
             shader_simple_transparency.AddParameter("AmbientStrength");
             shader_simple_transparency.AddParameter("AmbientColor");
+            if (Settings.ShadingQuality > 1)
+            {
+                shader_simple_transparency.AddParameter("EmissionStrength");
+                shader_simple_transparency.AddParameter("EmissionColor");
+            }
             shader_simple_transparency.AddParameter("FogColor");
             shader_simple_transparency.AddParameter("FogStrength");
             shader_simple_transparency.AddParameter("FogStart");
@@ -432,9 +441,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_simple_transparency.AddParameter("DepthBias");
             shader_simple_transparency.AddParameter("ObjectFadeStart");
             shader_simple_transparency.AddParameter("ObjectFadeEnd");
-            shader_simple_transparency.AddParameter("ShadowDepth");
-            shader_simple_transparency.AddParameter("ApplyShadow");
-            shader_simple_transparency.AddParameter("ApplyShading");
             shader_simple_transparency.AddParameter("DistanceFade");
 
             shader_animated.CompileShader(new ShaderInfo[]
@@ -460,7 +466,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_animated.AddParameter("FogStart");
             shader_animated.AddParameter("FogEnd");
             shader_animated.AddParameter("FogExponent");
-            shader_animated.AddParameter("ShadowDepth");
 
             if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
                 shader_heightmap.CompileShader(new ShaderInfo[]
@@ -724,24 +729,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
         }
 
-        private static void SetApplyShadow(bool b)
-        {
-            if (b != CurrentApplyShadow)
-            {
-                CurrentApplyShadow = b;
-                GL.Uniform1(active_shader["ApplyShadow"], b ? 1 : 0);
-            }
-        }
-
-        private static void SetApplyShading(bool b)
-        {
-            if (b != CurrentApplyShading)
-            {
-                CurrentApplyShading = b;
-                GL.Uniform1(active_shader["ApplyShading"], b ? 1 : 0);
-            }
-        }
-
         private static void SetDistanceFade(bool b)
         {
             if (b != CurrentDistanceFade)
@@ -791,6 +778,20 @@ namespace SpellforceDataEditor.SF3D.SFRender
             }
 
             CurrentRenderMode = rm;
+        }
+
+        private static void SetEmission(Vector4 col, float f)
+        {
+            if(CurrentEmissionColor != col)
+            {
+                CurrentEmissionColor = col;
+                GL.Uniform4(active_shader["EmissionColor"], col);
+            }
+            if(CurrentEmissionStrength != f)
+            {
+                CurrentEmissionStrength = f;
+                GL.Uniform1(active_shader["EmissionStrength"], f);
+            }
         }
 
         // turns heightmap nodes visible/invisible depending on if theyre in camera frustum
@@ -1045,7 +1046,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                 Matrix4 vp_mat = scene.camera.ViewProjMatrix;
                 GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
-                GL.Uniform1(active_shader["ShadowDepth"], scene.atmosphere.sun_light.ShadowDepth);
             }
 
             foreach (var submodel in scene.opaque_pass_models)
@@ -1058,10 +1058,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                 if (current_pass == RenderPass.SCENE)
                 {
-                    SetApplyShading(mat.apply_shading);
-                    SetApplyShadow(mat.apply_shadow);
                     SetDistanceFade(mat.distance_fade);
                     SetRenderMode(mat.texRenderMode);
+                    if(Settings.ShadingQuality > 1)
+                        SetEmission(mat.emission_color, mat.emission_strength);
                     if ((mat.matFlags & 4) == 0)
                         SetDepthBias(0);
                     else
@@ -1099,7 +1099,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             Matrix4 vp_mat = scene.camera.ViewProjMatrix;
             GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
-            GL.Uniform1(active_shader["ShadowDepth"], scene.atmosphere.sun_light.ShadowDepth);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             foreach (var submodel in scene.water_pass_models)
@@ -1110,10 +1109,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 if (mii == Utility.NO_INDEX)
                     continue;
 
-                SetApplyShading(mat.apply_shading);
-                SetApplyShadow(mat.apply_shadow);
                 SetDistanceFade(mat.distance_fade);
                 SetRenderMode(mat.texRenderMode);
+                if (Settings.ShadingQuality > 1)
+                    SetEmission(mat.emission_color, mat.emission_strength);
                 if ((mat.matFlags & 4) == 0)
                     SetDepthBias(0);
                 else
@@ -1147,7 +1146,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                 Matrix4 vp_mat = scene.camera.ViewProjMatrix;
                 GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
-                GL.Uniform1(active_shader["ShadowDepth"], scene.atmosphere.sun_light.ShadowDepth);
             }
 
             // additive pass
@@ -1161,10 +1159,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
                 if (current_pass == RenderPass.SCENE)
                 {
-                    SetApplyShading(mat.apply_shading);
-                    SetApplyShadow(mat.apply_shadow);
                     SetDistanceFade(mat.distance_fade);
                     SetRenderMode(mat.texRenderMode);
+                    if (Settings.ShadingQuality > 1)
+                        SetEmission(mat.emission_color, mat.emission_strength);
                     if ((mat.matFlags & 4) == 0)
                         SetDepthBias(0);
                     else
@@ -1199,8 +1197,6 @@ namespace SpellforceDataEditor.SF3D.SFRender
             Matrix4 vp_mat = scene.camera.ViewProjMatrix;
             GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
 
-            GL.Uniform1(active_shader["ShadowDepth"], scene.atmosphere.sun_light.ShadowDepth);
-
             // transparent pass
             foreach (SFSubModel3D submodel in scene.transparent_pass_models)
             {
@@ -1210,11 +1206,10 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 if (mii == Utility.NO_INDEX)
                     continue;
 
-                //GL.Uniform1(active_shader["apply_shading"], sbm.material.matFlags);
-                SetApplyShading(mat.apply_shading);
-                SetApplyShadow(mat.apply_shadow);
                 SetDistanceFade(mat.distance_fade);
                 SetRenderMode(mat.texRenderMode);
+                if (Settings.ShadingQuality > 1)
+                    SetEmission(mat.emission_color, mat.emission_strength);
                 if ((mat.matFlags & 4) == 0)
                     SetDepthBias(0);
                 else
@@ -1248,16 +1243,27 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.UniformMatrix4(active_shader["P"], false, ref p_mat);
                 Matrix4 v_mat = scene.camera.ViewMatrix;
                 GL.UniformMatrix4(active_shader["V"], false, ref v_mat);
-                GL.Uniform1(active_shader["ShadowDepth"], scene.atmosphere.sun_light.ShadowDepth);
             }
 
+            Matrix4[] cur_bone_transforms = null;
             foreach (SceneNodeAnimated an in scene.an_nodes)
             {
                 if (an.Skin == null)
                     continue;
 
+                Matrix4[] bone_transforms;
+                if (an.Primary == null)
+                    bone_transforms = an.BoneTransforms;
+                else
+                    bone_transforms = an.Primary.BoneTransforms;
+
                 GL.UniformMatrix4(active_shader["M"], false, ref an.ResultTransform);
-                GL.UniformMatrix4(active_shader["boneTransforms"], an.BoneTransforms.Length, false, ref an.BoneTransforms[0].Row0.X);
+
+                if (bone_transforms != cur_bone_transforms)
+                {
+                    GL.UniformMatrix4(active_shader["boneTransforms"], bone_transforms.Length, false, ref bone_transforms[0].Row0.X);
+                    cur_bone_transforms = bone_transforms;
+                }
 
                 for (int i = 0; i < an.Skin.submodels.Length; i++)
                 {
@@ -1339,13 +1345,16 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             if (Settings.EnableShadows)
             {
+                // clear existing shadowmap
                 SetFramebuffer(shadowmap_depth);
                 GL.ClearColor(Color.White);
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+                // depth testing enabled for shadowmap rendering, cull front faces (helps with variance shadow mapping technique)
                 GL.Enable(EnableCap.DepthTest);
                 GL.CullFace(CullFaceMode.Front);
 
+                // draw heightmap shadows
                 if (enable_flags.HasFlag(RenderEnable.SHADOWMAP_HMAP))
                 {
                     if (scene.map != null)
@@ -1355,7 +1364,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     }
                 }
 
-
+                // draw animated object shadows
                 GL.BindVertexArray(SFModelSkinChunk.Cache.VertexArrayObjectID);
                 if (enable_flags.HasFlag(RenderEnable.SHADOWMAP_ANIM))
                 {
@@ -1363,6 +1372,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     RenderAnimatedObjects();
                 }
 
+                // draw simple (and additive!) object shadows
                 GL.BindVertexArray(SFSubModel3D.Cache.VertexArrayObjectID);
                 if (enable_flags.HasFlag(RenderEnable.SHADOWMAP_SIMPLE))
                 {
@@ -1371,10 +1381,11 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     RenderAdditiveObjects();
                 }
 
+                // revert cull mode, disable depth test
                 GL.CullFace(CullFaceMode.Back);
-
                 GL.Disable(EnableCap.DepthTest);
 
+                // variance shadow mapping technique allows smooth shadows by simply blurring the shadowmap
                 if (enable_flags.HasFlag(RenderEnable.SHADOWMAP_BLUR))
                 {
                     GL.BindVertexArray(FrameBuffer.screen_vao);
@@ -1402,6 +1413,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             // render actual view
             current_pass = RenderPass.SCENE;
+            // setup blend mode, render to screenspace framebuffer
             GL.Enable(EnableCap.Blend);
             SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
             SetFramebuffer(Settings.AntiAliasingSamples > 1 ? screenspace_framebuffer : screenspace_intermediate);
@@ -1414,11 +1426,13 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.ActiveTexture(TextureUnit.Texture0);
             }
 
+            // clear contents of framebuffer
             GL.ClearColor(scene.atmosphere.ambient_light.Color.X,
                 scene.atmosphere.ambient_light.Color.Y,
                 scene.atmosphere.ambient_light.Color.Z,
                 0.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
             // render sky
             if ((Settings.ToneMapping) && (enable_flags.HasFlag(RenderEnable.SKY)))
             {
@@ -1429,20 +1443,19 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.DepthMask(true);
             }
 
+            // enable depth test
             GL.Enable(EnableCap.DepthTest);
-
             SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
 
+            // depth function set to less or equal, for heightmap pre-pass
+            // first draw just heightmap, without anything fancy, only then draw details of the heightmap
             GL.DepthFunc(DepthFunction.Lequal);
             // terrain
             if ((scene.map != null) && (enable_flags.HasFlag(RenderEnable.HMAP)))
             {
                 // depth pre-pass
-                if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
-                {
-                    UseShader(shader_heightmap_depth_prepass);
-                    RenderHeightmapDepthPrePass();
-                }
+                UseShader(shader_heightmap_depth_prepass);
+                RenderHeightmapDepthPrePass();
                 // colored
                 UseShader(shader_heightmap);
                 RenderHeightmap();
@@ -1480,6 +1493,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 RenderWaterObjects();
             }
 
+            // disable depth write
+            // note that this is done *after* water is drawn, to improve performance and reduce artefacts involved with drawing transparent things underwater
             GL.DepthMask(false);
 
             // simple transparent objects
@@ -1499,6 +1514,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 RenderAdditiveObjects();
             }
 
+            // re-enable depth write
             GL.DepthMask(true);
 
             SetDepthBias(0);
@@ -1506,7 +1522,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             // what is below doesnt depend on whats above
 
-            // anitialiasing
+            // anitialiasing - move antialiased framebuffer to the non-antialiased one, since nothing else will rely on multisampled AA
             if (Settings.AntiAliasingSamples > 1)
             {
                 GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, screenspace_framebuffer.fbo);

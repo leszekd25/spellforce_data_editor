@@ -727,9 +727,9 @@ namespace SpellforceDataEditor.SFMap
             foreach (SFCoord p in heightmap.chunk56_data)
             {
                 if (heightmap.overlay_data_flags[p.y * width + p.x] == 0)
-                    heightmap.overlay_data_flags[p.y * width + p.x] = 10;
-                else
                     heightmap.overlay_data_flags[p.y * width + p.x] = 5;
+                else
+                    heightmap.overlay_data_flags[p.y * width + p.x] = 7;
             }
 
             // selection helper stuff
@@ -937,19 +937,6 @@ namespace SpellforceDataEditor.SFMap
                             }
                         }
                     }
-                    // flags type 67
-                    foreach(SFCoord p in merged_flags)
-                    {
-                        if (obj_positions.Contains(p))
-                            continue;
-                        bw.Write((short)p.x);
-                        bw.Write((short)p.y);
-                        bw.Write((short)67);
-                        bw.Write((short)0);
-                        bw.Write((short)0);
-                        bw.Write((short)0);
-                        bw.Write((int)0);
-                    }
                     // flags type 65
                     foreach (SFCoord p in heightmap.chunk42_data)
                         if (!merged_flags.Contains(p))
@@ -978,6 +965,19 @@ namespace SpellforceDataEditor.SFMap
                             bw.Write((short)0);
                             bw.Write((int)0);
                         }
+                    // flags type 67
+                    foreach (SFCoord p in merged_flags)
+                    {
+                        if (obj_positions.Contains(p))
+                            continue;
+                        bw.Write((short)p.x);
+                        bw.Write((short)p.y);
+                        bw.Write((short)67);
+                        bw.Write((short)0);
+                        bw.Write((short)0);
+                        bw.Write((short)0);
+                        bw.Write((int)0);
+                    }
                 }
                 c29_data = ms.ToArray();
             }
@@ -1384,9 +1384,9 @@ namespace SpellforceDataEditor.SFMap
             foreach (SFCoord p in heightmap.chunk56_data)
             {
                 if (heightmap.overlay_data_flags[p.y * width + p.x] == 0)
-                    heightmap.overlay_data_flags[p.y * width + p.x] = 10;
-                else
                     heightmap.overlay_data_flags[p.y * width + p.x] = 5;
+                else
+                    heightmap.overlay_data_flags[p.y * width + p.x] = 7;
             }
 
             // selection helper stuff

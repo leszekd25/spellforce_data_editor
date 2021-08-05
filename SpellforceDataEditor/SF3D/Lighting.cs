@@ -28,6 +28,14 @@ namespace SpellforceDataEditor.SF3D
         public float ZNear;
         public float ZFar;
         public float ShadowDepth;
+        public float[] CascadeZNear;
+        public float[] CascadeZFar;
+
+        public LightingSun()
+        {
+            CascadeZNear = new float[Settings.ShadowCascadeCount];
+            CascadeZFar = new float[Settings.ShadowCascadeCount];
+        }
 
         public void SetupLightView(Vector3 camerapos)
         {

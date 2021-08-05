@@ -114,7 +114,7 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 SunColor;
         ///uniform float AmbientStrength;
         ///uniform vec4 AmbientColor;
-        ///uniform sampler2D Dif [rest of string was truncated]&quot;;.
+        ///#ifdef QUALITY_SHADIN [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader {
             get {
@@ -395,7 +395,7 @@ namespace SpellforceDataEditor.Properties {
         ///uniform vec4 SunColor;
         ///uniform float AmbientStrength;
         ///uniform vec4 AmbientColor;
-        ///un [rest of string was truncated]&quot;;.
+        ///#i [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_transparent {
             get {

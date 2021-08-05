@@ -725,10 +725,8 @@ namespace SpellforceDataEditor.SFCFF
             gamedata.SaveDiff(filename);
         }
 
-        //using the fact that all text data is saved in category 15 (ind 14)
         //searches for a text with a given ID and in a given language
         //returns a sub-element in a given language which contains text data looked for (or null if it doesnt exist)
-        //this is quite fast (O(log n))
         //returns reference to an element from db! remember to drop it later
         public static SFCategoryElement FindElementText(int t_index, int t_lang)
         {

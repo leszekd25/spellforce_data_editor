@@ -88,7 +88,48 @@ namespace SpellforceDataEditor.SFMap
                 return;
             }
 
-            texture_filenames = SFUnPak.SFUnPak.ListAllWithFilename("texture\\terrain", "l8", new string[] { "sf0.pak" });
+            List<string> tmp_terrain_list = SFUnPak.SFUnPak.ListAllWithFilename("texture", "landscape_island_", new string[] { "sf1.pak" });
+            tmp_terrain_list.Remove("landscape_island_100_mud.dds");
+            tmp_terrain_list.Remove("landscape_island_100_mudd.dds");
+
+            texture_filenames = new List<string>();
+            texture_filenames.Add("landscape_island_worldd.dds");
+
+            List<string> tmp_helper_list = new List<string>();
+            for(int i = 1; i <= TEXTURES_AVAILABLE; i++)
+            {
+                string s = String.Format("{0,3:000}", i);
+
+                for(int j = 0; j < tmp_terrain_list.Count; j++)
+                {
+                    if(tmp_terrain_list[j].Contains(s))
+                    {
+                        tmp_helper_list.Add(tmp_terrain_list[j]);
+                    }
+                }
+                if(tmp_helper_list.Count == 0)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.LoadTextureNames(): Could not find texture with ID " + i.ToString());
+                    continue;
+                }
+
+                // add longer of the filenames
+                int max_ind = 0;
+                int max_len = tmp_helper_list[0].Length;
+                for (int j = 1; j < tmp_helper_list.Count; j++)
+                {
+                    if(tmp_helper_list[j].Length > max_len)
+                    {
+                        max_ind = j;
+                        max_len = tmp_helper_list[j].Length;
+                    }
+                }
+
+                texture_filenames.Add(tmp_helper_list[max_ind]);
+
+                tmp_helper_list.Clear();
+            }
+
             // texture_filenames = SFUnPak.SFUnPak.ListAllWithFilename("texture", "landscape_island_", new string[] { "sf1.pak" });
             // bugfix for sf1.pak texture list
             /*texture_filenames.Remove("landscape_island_100_mud.dds");
@@ -104,16 +145,11 @@ namespace SpellforceDataEditor.SFMap
 
         public string GetTextureNameByID(int id)
         {
-            if (id == 0)
-                return "landscape_island_worldd_l8.tga";//.dds";
-            int d_offset = 0;
             if(id > TEXTURES_AVAILABLE)
             {
                 id -= TEXTURES_AVAILABLE;
-                d_offset = 1;
             }
-            id -= 1;
-            return texture_filenames[id * 2 + d_offset];
+            return texture_filenames[id];
         }
 
         // loads terrain texture with a given id
@@ -122,15 +158,15 @@ namespace SpellforceDataEditor.SFMap
             string filename = GetTextureNameByID(tex_id);
             SFTexture tex = new SFTexture();
 
-            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf0.pak", "texture\\terrain\\" + filename);//SFUnPak.SFUnPak.LoadFileFrom("sf32.pak", "texture\\" + filename);
-            //if (ms == null) ms = SFUnPak.SFUnPak.LoadFileFrom("sf22.pak", "texture\\" + filename);
-            //if (ms == null) ms = SFUnPak.SFUnPak.LoadFileFrom("sf1.pak", "texture\\" + filename);
+            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf32.pak", "texture\\" + filename);
+            if (ms == null) ms = SFUnPak.SFUnPak.LoadFileFrom("sf22.pak", "texture\\" + filename);
+            if (ms == null) ms = SFUnPak.SFUnPak.LoadFileFrom("sf1.pak", "texture\\" + filename);
             if (ms == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.LoadTerrainTexture(): Could not find texture " + filename);
                 throw new Exception("SFMapTerrainTextureManager.Init(): Can't find texture!");
             }
-            int res_code = tex.Load(ms, null);
+            int res_code = tex.Load(ms, 1);
             if (res_code != 0)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.LoadTerrainTexture(): Could not load texture " + filename);
@@ -138,7 +174,7 @@ namespace SpellforceDataEditor.SFMap
             }
             ms.Close();
 
-            //tex.Uncompress();     // needed for this to work in texture atlas (?)
+            tex.Uncompress();     // needed for this to work in texture atlas (?)
             tex.Init();
             return tex;
         }

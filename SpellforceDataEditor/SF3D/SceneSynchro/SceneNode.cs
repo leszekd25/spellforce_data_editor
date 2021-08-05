@@ -550,6 +550,11 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
 
         public void SetAnimation(SFAnimation _animation, bool play = true)
         {
+            if (Primary != null)
+            {
+                LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SceneNodeAnimated.SetAnimation(): Node is not primary; this call has no effect");
+                return;
+            }
             if(skeleton == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SceneNodeAnimated.SetAnimation(): Skeleton is missing!");
@@ -563,35 +568,31 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         }
 
         // calculates bone transforms for this node
+        // only ever called if primary is not set - means this node is primary
         private void UpdateBoneTransforms()
         {
-            if (Primary == null)
+            for (int i = 0; i < BoneTransforms.Length; i++)
             {
-                for (int i = 0; i < BoneTransforms.Length; i++)
-                {
-                    Animation.bone_animations[i].GetMatrix4(AnimCurrentTime, ref BoneTransforms[i]);
+                Animation.bone_animations[i].GetMatrix4(AnimCurrentTime, ref BoneTransforms[i]);
 
-                    if (Skeleton.bone_parents[i] != Utility.NO_INDEX)
-                        BoneTransforms[i] = BoneTransforms[i] * BoneTransforms[Skeleton.bone_parents[i]];
-                }
-
-                for (int i = 0; i < BoneTransforms.Length; i++)
-                    BoneTransforms[i] = skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
-
-                TouchResultTransform();
+                if (Skeleton.bone_parents[i] != Utility.NO_INDEX)
+                    BoneTransforms[i] = BoneTransforms[i] * BoneTransforms[Skeleton.bone_parents[i]];
             }
-            else
-            {
-                for (int i = 0; i < BoneTransforms.Length; i++)
-                    BoneTransforms[i] = Primary.BoneTransforms[i];
-            }
+
+            for (int i = 0; i < BoneTransforms.Length; i++)
+                BoneTransforms[i] = skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
+
+            TouchResultTransform();
         }
 
         public void SetAnimationCurrentTime(float t)
         {
-            if (Animation == null)
+            // if this node has a primary animation node, early exit - primary always drives its children's animation
+            if (Primary != null)
                 return;
 
+            if (Animation == null)
+                return;
 
             AnimCurrentTime = t;
             if (AnimCurrentTime > Animation.max_time)
@@ -601,12 +602,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             {
                 // determine if should update, based on scene camera distance and on bounding box
                 float dist = (SFRender.SFRenderEngine.scene.camera.position - ResultTransform.Row3.Xyz).Length;
-                float size;
-
-                if(Primary == null)
-                    size = (aabb.a - aabb.center).Length;
-                else
-                    size = (Primary.aabb.a - Primary.aabb.center).Length;
+                float size = (aabb.a - aabb.center).Length;
                 if (size == 0)
                     return;
 

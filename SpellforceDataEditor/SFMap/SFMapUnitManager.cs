@@ -169,6 +169,9 @@ namespace SpellforceDataEditor.SFMap
                     anim = SFResources.SFResourceManager.Animations.Get(anim_name);
                     foreach (SF3D.SceneSynchro.SceneNodeAnimated anim_node in unit.node.Children)
                     {
+                        if (anim_node.Primary != null)
+                            continue;
+
                         anim_node.SetAnimation(anim);
                         if (anim_node.Animation != null)
                             anim_node.SetAnimationCurrentTime(MathUtils.Randf(0, anim_node.Animation.max_time));

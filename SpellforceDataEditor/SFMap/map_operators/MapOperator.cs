@@ -269,7 +269,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
         private void UpdateMap(SFMap map)
         {
             map.lake_manager.RebuildLake(map.lake_manager.lakes[lake_index]);
-            MainForm.mapedittool.ui.RedrawMinimap();
+            MainForm.mapedittool.ui.RedrawMinimap(map.lake_manager.lakes[lake_index].cells);
             MainForm.mapedittool.update_render = true;
         }
 

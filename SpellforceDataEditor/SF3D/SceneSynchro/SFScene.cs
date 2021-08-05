@@ -573,7 +573,7 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
         {
             // first, clear mesh matrices
             int cur_offset = 0;
-            foreach (var mesh in model_set_simple.ToList())
+            foreach (var mesh in model_set_simple)
             {
                 mesh.CurrentMatrixIndex = 0;
                 mesh.MatrixOffset = cur_offset;
