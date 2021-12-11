@@ -240,7 +240,14 @@ out vec2 UV;
 out vec3 fragmentNormal;
 #ifdef SHADING
 #ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+out vec4 fragmentPositionLightSpace1;
+out vec4 fragmentPositionLightSpace2;
+out vec4 fragmentPositionLightSpace3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
 out vec4 fragmentPositionLightSpace;
+#endif //CASCADED_SHADOWS
 #endif //SHADOWS
 #ifndef QUALITY_SHADING
 out float vBrightness;
@@ -252,7 +259,14 @@ uniform mat4 P;
 uniform mat4 V;
 #ifdef SHADING
 #ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+uniform mat4 LSM1;
+uniform mat4 LSM2;
+uniform mat4 LSM3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
 uniform mat4 LSM;
+#endif //CASCADED_SHADOWS
 #endif //SHADOWS
 #ifndef QUALITY_SHADING
 uniform vec3 SunDirection;
@@ -298,7 +312,14 @@ void main(){
   
 #ifdef SHADING
 #ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+  fragmentPositionLightSpace1 = LSM1 * M * vec4(newVertex.xyz, 1);
+  fragmentPositionLightSpace2 = LSM2 * M * vec4(newVertex.xyz, 1);
+  fragmentPositionLightSpace3 = LSM3 * M * vec4(newVertex.xyz, 1);
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
   fragmentPositionLightSpace = LSM * M * vec4(newVertex.xyz, 1);
+#endif //CASCADED_SHADOWS
 #endif //SHADOWS
 #ifndef QUALITY_SHADING
   vBrightness = 1.0;
@@ -324,8 +345,15 @@ out vec4 fragmentColor;
 out vec2 UV;
 #ifdef SHADING
 #ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+out vec4 fragmentPositionLightSpace1;
+out vec4 fragmentPositionLightSpace2;
+out vec4 fragmentPositionLightSpace3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
 out vec4 fragmentPositionLightSpace;
-#endif
+#endif //CASCADED_SHADOWS
+#endif //SHADOWS
 #ifdef QUALITY_SHADING
 out mat4 M;
 #endif //QUALITY_SHADING
@@ -335,11 +363,17 @@ out float vBrightness;
 #endif //SHADING
 
 // Values that stay constant for the whole mesh.
-//uniform mat4 M;
 uniform mat4 VP;
 #ifdef SHADING
 #ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+uniform mat4 LSM1;
+uniform mat4 LSM2;
+uniform mat4 LSM3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
 uniform mat4 LSM;
+#endif //CASCADED_SHADOWS
 #endif //SHADOWS
 #ifndef QUALITY_SHADING
 uniform vec3 SunDirection;
@@ -356,7 +390,14 @@ void main(){
   
 #ifdef SHADING
 #ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+  fragmentPositionLightSpace1 = LSM1 * instanceMatrix * vec4(vertexPosition_modelspace, 1);
+  fragmentPositionLightSpace2 = LSM2 * instanceMatrix * vec4(vertexPosition_modelspace, 1);
+  fragmentPositionLightSpace3 = LSM3 * instanceMatrix * vec4(vertexPosition_modelspace, 1);
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
   fragmentPositionLightSpace = LSM * instanceMatrix * vec4(vertexPosition_modelspace, 1);
+#endif //CASCADED_SHADOWS
 #endif //SHADOWS
 #ifdef QUALITY_SHADING
   M = instanceMatrix;
@@ -394,7 +435,14 @@ in vec2 UV;
 in vec4 fragmentColor;
 #ifdef SHADING
 #ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+in vec4 fragmentPositionLightSpace1;
+in vec4 fragmentPositionLightSpace2;
+in vec4 fragmentPositionLightSpace3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
 in vec4 fragmentPositionLightSpace;
+#endif //CASCADED_SHADOWS
 #endif //SHADOWS
 #ifdef QUALITY_SHADING
 in mat4 M;
@@ -416,7 +464,15 @@ uniform float EmissionStrength;
 uniform vec4 EmissionColor;
 #endif //QUALITY_SHADING
 uniform sampler2D DiffuseTex;
+#ifdef CASCADED_SHADOWS
+uniform sampler2D ShadowMap1;
+uniform sampler2D ShadowMap2;
+uniform sampler2D ShadowMap3;
+uniform vec3 CascadeZNear;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
 uniform sampler2D ShadowMap;
+#endif //CASCADED_SHADOWS
 uniform vec4 FogColor;
 uniform float FogStrength;
 uniform float FogStart;
@@ -439,28 +495,39 @@ float linstep(float low, float high, float v)
     return clamp((v-low)/(high-low), 0.0, 1.0);
 }
 
-// From http://fabiensanglard.net/shadowmappingVSM/index.php
-float chebyshevUpperBound(vec3 proj)
+#ifdef CASCADED_SHADOWS
+sampler2D GetCascadeSampler(int index)
 {
-	vec2 moments = texture2D(ShadowMap, proj.xy).rg;
+	return (index == 0 ? ShadowMap1 : (index == 1 ? ShadowMap2 : ShadowMap3));
+}
+vec4 GetCascadeFragmentPositionLightSpace(int index)
+{
+	return (index == 0 ? fragmentPositionLightSpace1 : (index == 1 ? fragmentPositionLightSpace2 : fragmentPositionLightSpace3));
+}
+#endif //CASCADED_SHADOWS
 
+// From http://fabiensanglard.net/shadowmappingVSM/index.php
+float chebyshevUpperBound(float proj_depth, vec2 moments)
+{
 	float variance = max(moments.y - (moments.x*moments.x), 0.000002);
 
-	float d = proj.z - moments.x;
-                   float p = float(proj.z &lt;= moments.x);
+	float d = proj_depth - moments.x;
+                   float p = float(proj_depth &lt;= moments.x);
 	float p_max = variance / (variance + d*d);
 
 	return max(p, linstep(0.5, 1.0, p_max));// clamp((p_max * 1.3)-0.3, 0.0, 1.0);
 }
 
-float CalculateShadow(vec4 FPLS, float b){
+float CalculateShadow(sampler2D shadowmap, vec4 FPLS, float b){
     vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
     if(ProjectionCoordinates.z &gt; 1.0)
         return 1.0;
 
     ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
-    return chebyshevUpperBound(ProjectionCoordinates);
+	
+    return chebyshevUpperBound(ProjectionCoordinates.z, texture2D(shadowmap, ProjectionCoordinates.xy).rg);
 }
+
 
 
 void main(){
@@ -469,6 +536,7 @@ void main(){
     discard;
   temp_c.a = 1.0;
 
+  float dist = gl_FragCoord.z / gl_FragCoord.w;
   float brightness = 1.0;
   #ifdef SHADING
   #ifdef QUALITY_SHADING
@@ -483,7 +551,17 @@ void main(){
   #endif //QUALITY_SHADING
   // calculate shadow
   #ifdef SHADOWS
-  brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
+  #ifdef CASCADED_SHADOWS
+  int cascade_index = 0;
+  if(dist &gt; CascadeZNear.z)
+	  cascade_index = 2;
+  else if(dist &gt; CascadeZNear.y)
+	  cascade_index = 1;
+  brightness = min(brightness, CalculateShadow(GetCascadeSampler(cascade_index), GetCascadeFragmentPositionLightSpace(cascade_index), brightness));
+  #endif //CASCADED_SHADOWS
+  #ifndef CASCADED_SHADOWS
+  brightness = min(brightness, CalculateShadow(ShadowMap, fragmentPositionLightSpace, brightness));
+  #endif //CASCADED_SHADOWS
   #endif //SHADOWS
   brightness = clamp(brightness, 0, 1);
   #endif // SHADING
@@ -511,7 +589,6 @@ void main(){
 
 
   // fog calculation
-  float dist = gl_FragCoord.z / gl_FragCoord.w;
   float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
   color = mix(color, vec4(FogColor.rgb * FogStrength, 1.0), fog_factor);
   // object fade in alpha calculation
@@ -830,7 +907,16 @@ layout(location = 0) in vec3 vertexPosition_modelspace;
 out vec3 fragmentPosition;
 out vec2 UV;
 out vec3 fragmentNormal;
+#ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+out vec4 fragmentPositionLightSpace1;
+out vec4 fragmentPositionLightSpace2;
+out vec4 fragmentPositionLightSpace3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
 out vec4 fragmentPositionLightSpace;
+#endif //CASCADED_SHADOWS
+#endif //SHADOWS
 out vec3 vpos_orig;
 out float vBrightness;
 
@@ -839,7 +925,16 @@ out float vBrightness;
 uniform int GridSize;
 uniform sampler2D HeightMap;
 uniform mat4 VP;
+#ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+uniform mat4 LSM1;
+uniform mat4 LSM2;
+uniform mat4 LSM3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
 uniform mat4 LSM;
+#endif //CASCADED_SHADOWS
+#endif //SHADOWS
 uniform vec3 SunDirection;
 
 vec3 GetVertexNormal(vec2 grid_pos)
@@ -865,7 +960,16 @@ void main(){
   // Output position of the vertex, in clip space : MVP * position
   vec3 vpos = GetVertexPos(vertexPosition_modelspace.xz);
   gl_Position = VP * vec4(vpos, 1.0);
+  #ifdef SHADOWS
+  #ifdef CASCADED_SHADOWS
+  fragmentPositionLightSpace1 = LSM1 * vec4(vpos, 1.0);
+  fragmentPositionLightSpace2 = LSM2 * vec4(vpos, 1.0);
+  fragmentPositionLightSpace3 = LSM3 * vec4(vpos, 1.0);
+  #endif //CASCADED_SHADOWS
+  #ifndef CASCADED_SHADOWS
   fragmentPositionLightSpace = LSM * vec4(vpos, 1.0);
+  #endif //CASCADED_SHADOWS
+  #endif //SHADOWS
   UV = vertexPosition_modelspace.xz/4;
   fragmentPosition = vpos;
   fragmentNormal = GetVertexNormal(vertexPosition_modelspace.xz);

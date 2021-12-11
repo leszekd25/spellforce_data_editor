@@ -96,6 +96,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             if (e.Button == MouseButtons.Right)
             {
+                if (SFCategoryManager.gamedata[2058] == null)
+                    return;
+
                 int cur_id = Utility.TryParseInt32(textBox9.Text);
                 int ind = SFCategoryManager.gamedata[2058].GetElementIndex(cur_id);
 

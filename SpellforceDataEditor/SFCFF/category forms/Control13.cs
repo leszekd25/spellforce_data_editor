@@ -91,7 +91,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             SFCategoryElement elem = category[current_element, 0];
 
-            Byte max_index = 0;
+            Byte max_index = 1;
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
             {
                 max_index = Math.Max(max_index, (Byte)(category[current_element, i][1]));

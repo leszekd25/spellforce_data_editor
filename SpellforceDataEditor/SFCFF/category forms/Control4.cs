@@ -217,10 +217,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             UInt16 stats_id = (UInt16)category[index][0];
             UInt16 stats_level = (UInt16)category[index][1];
-            SFCategoryElement elem = SFCategoryManager.gamedata[2024].FindElement<UInt16>(2, stats_id);
-            string unit_txt = SFCategoryManager.GetTextFromElement(elem, 1);
-            if (unit_txt == Utility.S_NONAME)
-                unit_txt = SFCategoryManager.GetRuneheroName(stats_id);
+
+            string unit_txt;
+            if (SFCategoryManager.gamedata[2024] != null)
+            {
+                SFCategoryElement elem = SFCategoryManager.gamedata[2024].FindElement<UInt16>(2, stats_id);
+                unit_txt = SFCategoryManager.GetTextFromElement(elem, 1);
+                if (unit_txt == Utility.S_NONAME)
+                    unit_txt = SFCategoryManager.GetRuneheroName(stats_id);
+            }
+            else
+                unit_txt = Utility.S_UNKNOWN;
+
             return stats_id.ToString() + " " + unit_txt + " (lvl " + stats_level.ToString() + ")";
         }
 
@@ -231,16 +239,19 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int mana = (int)(UInt16)category[index][9];
             int lvl = ((int)(UInt16)category[index][1]) - 1;
             string stat_txt = "";
-            if ((lvl >= 0) && (lvl < SFCategoryManager.gamedata[2048].GetElementCount()))
+            if (SFCategoryManager.gamedata[2048] != null)
             {
-                SFCategoryElement lvl_elem = SFCategoryManager.gamedata[2048][lvl];
-                if (lvl_elem != null)
+                if ((lvl >= 0) && (lvl < SFCategoryManager.gamedata[2048].GetElementCount()))
                 {
-                    hp *= (int)(UInt16)lvl_elem[1];
-                    mana *= (int)(UInt16)lvl_elem[2];
-                    hp /= 100;
-                    mana /= 100;
-                    stat_txt = "\r\nHealth: " + hp.ToString() + "\r\nMana: " + mana.ToString();
+                    SFCategoryElement lvl_elem = SFCategoryManager.gamedata[2048][lvl];
+                    if (lvl_elem != null)
+                    {
+                        hp *= (int)(UInt16)lvl_elem[1];
+                        mana *= (int)(UInt16)lvl_elem[2];
+                        hp /= 100;
+                        mana /= 100;
+                        stat_txt = "\r\nHealth: " + hp.ToString() + "\r\nMana: " + mana.ToString();
+                    }
                 }
             }
             Byte race_id = (Byte)category[index][2];

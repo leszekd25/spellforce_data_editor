@@ -28,6 +28,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             combo_values.Clear();
             combo_values.Add(0);    //default null value
 
+            if (SFCategoryManager.gamedata[2044] == null)
+                return;
+
             SFCategory cat_res = SFCategoryManager.gamedata[2044];
             int elem_count = cat_res.GetElementCount();
             for(int i = 0; i < elem_count; i++)

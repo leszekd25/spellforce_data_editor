@@ -136,5 +136,32 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             string txt = SFCategoryManager.GetRuneheroName(hero_id);
             return hero_id.ToString() + " " + txt;
         }
+
+        public override void on_add_subelement(int subelem_index)
+        {
+            base.on_add_subelement(subelem_index);
+
+            ListSpells.Items.Insert(subelem_index, "");
+            set_list_text(subelem_index);
+        }
+
+        public override void on_remove_subelement(int subelem_index)
+        {
+            base.on_remove_subelement(subelem_index);
+
+            ListSpells.Items.RemoveAt(subelem_index);
+        }
+
+        public override void on_update_subelement(int subelem_index)
+        {
+            base.on_update_subelement(subelem_index);
+
+            set_list_text(subelem_index);
+
+            if (ListSpells.SelectedIndex == subelem_index)
+            {
+                textBox3.Text = variant_repr(subelem_index, 2);
+            }
+        }
     }
 }

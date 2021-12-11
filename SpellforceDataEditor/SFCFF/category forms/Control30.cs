@@ -48,14 +48,21 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 MerchantGrid.Rows[i].Cells[0].Value = item_id;
                 MerchantGrid.Rows[i].Cells[1].Value = item_count;
 
-                SFCategoryElement item_elem = SFCategoryManager.gamedata[2003].FindElementBinary<UInt16>(0, item_id);
-                if (item_elem == null)
+                if (SFCategoryManager.gamedata[2003] == null)
                 {
-                    MerchantGrid.Rows[i].Cells[2].Value = "<no name>";
+                    MerchantGrid.Rows[i].Cells[2].Value = Utility.S_MISSING;
                 }
                 else
                 {
-                    MerchantGrid.Rows[i].Cells[2].Value = SFCategoryManager.GetItemName(item_id);
+                    SFCategoryElement item_elem = SFCategoryManager.gamedata[2003].FindElementBinary<UInt16>(0, item_id);
+                    if (item_elem == null)
+                    {
+                        MerchantGrid.Rows[i].Cells[2].Value = Utility.S_NONAME;
+                    }
+                    else
+                    {
+                        MerchantGrid.Rows[i].Cells[2].Value = SFCategoryManager.GetItemName(item_id);
+                    }
                 }
             }
 
@@ -86,15 +93,22 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if(cell.ColumnIndex == 0)
             {
                 UInt16 item_id = Utility.TryParseUInt16(cell.Value.ToString());
-                SFCategoryElement item_elem = SFCategoryManager.gamedata[2003].FindElementBinary(0, item_id);
-                if (item_elem == null)
+                if (SFCategoryManager.gamedata[2003] == null)
                 {
                     cell.Value = variant_repr(i, 1);
                 }
                 else
                 {
-                    set_element_variant(current_element, i, 1, item_id);
-                    MerchantGrid.Rows[i].Cells[2].Value = SFCategoryManager.GetItemName(item_id);
+                    SFCategoryElement item_elem = SFCategoryManager.gamedata[2003].FindElementBinary(0, item_id);
+                    if (item_elem == null)
+                    {
+                        cell.Value = variant_repr(i, 1);
+                    }
+                    else
+                    {
+                        set_element_variant(current_element, i, 1, item_id);
+                        MerchantGrid.Rows[i].Cells[2].Value = SFCategoryManager.GetItemName(item_id);
+                    }
                 }
             }
             else if(cell.ColumnIndex == 1)

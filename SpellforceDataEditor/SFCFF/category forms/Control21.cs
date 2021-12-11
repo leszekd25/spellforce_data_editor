@@ -28,7 +28,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             combo_values.Clear();
             combo_values.Add(0);    //default null value
 
+            if(SFCategoryManager.gamedata[2044] == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "Control21.load_resources(): Could not find category ID 2044");
+                return;
+            }
+
             SFCategory cat_res = SFCategoryManager.gamedata[2044];
+
             int elem_count = cat_res.GetElementCount();
             for (int i = 0; i < elem_count; i++)
             {
@@ -54,7 +61,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 int res_index = combo_values.IndexOf((Byte)category[current_element, i][1]);
                 string res_name = "";
-                if (res_index == 0)
+                if ((res_index > comboRes.Items.Count)||(res_index <= 0))
                     res_name = Utility.S_NONE;
                 else
                     res_name = comboRes.Items[res_index - 1].ToString();    //-1 because of null value
@@ -91,8 +98,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
 
             int index = ListResources.SelectedIndex;
+            int found_index = combo_values.IndexOf((Byte)category[current_element, index][1]);
+            if ((found_index > comboRes.Items.Count) || (found_index <= 0))
+            {
 
-            comboRes.SelectedIndex = combo_values.IndexOf((Byte)category[current_element, index][1]) - 1;
+            }
+            else
+            {
+                comboRes.SelectedIndex = combo_values.IndexOf((Byte)category[current_element, index][1]) - 1;
+            }
             textBox3.Text = variant_repr(index, 2);
         }
 

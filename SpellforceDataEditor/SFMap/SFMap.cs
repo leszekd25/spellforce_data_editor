@@ -1865,23 +1865,33 @@ namespace SpellforceDataEditor.SFMap
             unit.node.SetPosition(heightmap.GetFixedPosition(pos));
             unit.node.SetAnglePlane(0);
             // find unit scale
+            if(SFCFF.SFCategoryManager.gamedata[2024] == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): There is no unit data block in gamedata!");
+                throw new InvalidDataException("SFMap.AddUnit(): Malformed gamedata!");
+            }
             int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(game_id);
             if (unit_index == -1)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit with given id does not exist! Unit id = "+game_id.ToString());
                 throw new InvalidDataException("SFMap.AddUnit(): Invalid unit ID!");
             }
-            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
-
-            unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
             float unit_size = 1f;
-            if (unit_index != -1)
-            {
-                unit_data = SFCFF.SFCategoryManager.gamedata[2005][unit_index];
-                unit_size = Math.Max((ushort)unit_data[18], (ushort)40) / 100.0f;
-            }
+
+            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
+            unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
+            if (SFCFF.SFCategoryManager.gamedata[2024] == null)
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): There is no unit stats block in gamedata, setting unit scale to 100%");
             else
-                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + game_id.ToString() + "), setting unit scale to 100%");
+            {
+                if (unit_index != -1)
+                {
+                    unit_data = SFCFF.SFCategoryManager.gamedata[2005][unit_index];
+                    unit_size = Math.Min((ushort)200, Math.Max((ushort)unit_data[18], (ushort)50)) / 100.0f;
+                }
+                else
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + game_id.ToString() + "), setting unit scale to 100%");
+            }
             unit.node.Scale = new OpenTK.Vector3(unit_size*100/128);
 
             if(Settings.DynamicMap)
@@ -1968,22 +1978,33 @@ namespace SpellforceDataEditor.SFMap
             float z = heightmap.GetZ(unit.grid_position) / 100.0f;
             unit.node.SetPosition(heightmap.GetFixedPosition(unit.grid_position));
             unit.node.SetAnglePlane(0);
-            // unit scale
+            // find unit scale
+            if (SFCFF.SFCategoryManager.gamedata[2024] == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): There is no unit data block in gamedata!");
+                throw new InvalidDataException("SFMap.AddUnit(): Malformed gamedata!");
+            }
             int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(unit.game_id);
             if (unit_index == -1)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Unit with given id does not exist! Unit id = " + unit.game_id.ToString());
-                throw new InvalidDataException("SFMap.ReplaceUnit(): Invalid unit ID!");
+                throw new InvalidDataException("SFMap.AddUnit(): Invalid unit ID!");
             }
-            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
-            
-            unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
             float unit_size = 1f;
-            if (unit_index != -1)
+
+            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
+            unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
+            if (SFCFF.SFCategoryManager.gamedata[2024] == null)
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): There is no unit stats block in gamedata, setting unit scale to 100%");
+            else
             {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Could not find unit stats data (unit id = " + unit.game_id.ToString() + "), setting unit scale to 100%");
-                unit_data = SFCFF.SFCategoryManager.gamedata[2005][unit_index];
-                unit_size = Math.Max(((ushort)unit_data[18]), (ushort)40) / 100.0f;
+                if (unit_index != -1)
+                {
+                    unit_data = SFCFF.SFCategoryManager.gamedata[2005][unit_index];
+                    unit_size = Math.Min((ushort)200, Math.Max((ushort)unit_data[18], (ushort)50)) / 100.0f;
+                }
+                else
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Could not find unit stats data (unit id = " + unit.game_id.ToString() + "), setting unit scale to 100%");
             }
             unit.node.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
 
@@ -2008,6 +2029,9 @@ namespace SpellforceDataEditor.SFMap
 
             fname = fname.Substring(li + 4, fname.Length - li - 8);
             fname = fname.ToUpper();
+
+            if (SFCFF.SFCategoryManager.gamedata[2052] == null)
+                return;
 
             foreach(SFCFF.SFCategoryElement e in SFCFF.SFCategoryManager.gamedata[2052].elements)
             {

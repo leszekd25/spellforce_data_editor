@@ -384,8 +384,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override string get_element_string(int index)
         {
             UInt16 type_id = (UInt16)category[index][1];
-            SFCategoryElement stype_elem = SFCategoryManager.gamedata[2054].FindElementBinary<UInt16>(0, type_id);
-            string stype_txt = SFCategoryManager.GetTextFromElement(stype_elem, 1);
+
+            string stype_txt;
+            if (SFCategoryManager.gamedata[2054] == null)
+                stype_txt = Utility.S_UNKNOWN;
+            else
+            {
+                SFCategoryElement stype_elem = SFCategoryManager.gamedata[2054].FindElementBinary<UInt16>(0, type_id);
+                stype_txt = SFCategoryManager.GetTextFromElement(stype_elem, 1);
+            }
+
             Byte spell_level = (Byte)category[index][4];
             return category[index][0].ToString() + " " + stype_txt + " level " + spell_level.ToString();
         }

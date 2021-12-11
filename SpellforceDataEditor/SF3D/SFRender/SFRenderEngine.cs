@@ -33,13 +33,12 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
         static float CurrentDepthBias = 0.0f;
         static RenderMode CurrentRenderMode = RenderMode.SRCALPHA_INVSRCALPHA;
-        static bool CurrentApplyShadow = true;
         static bool CurrentDistanceFade = true;
-        static bool CurrentApplyShading = true;
         static float CurrentFadeStart = 150.0f;
         static float CurrentFadeEnd = 200.0f;
         static float CurrentEmissionStrength = -1.0f;
         static Vector4 CurrentEmissionColor = new Vector4(-1.0f);
+
 
         public static SFTexture opaque_tex { get; private set; } = null;
 
@@ -55,16 +54,21 @@ namespace SpellforceDataEditor.SF3D.SFRender
         static SFShader shader_ui = new SFShader();
         static SFShader active_shader = null;
         static RenderPass current_pass = RenderPass.NONE;
+        static int current_shadow_cascade = Utility.NO_INDEX;
 
 
         static SFShader shader_framebuffer_simple = new SFShader();
         static SFShader shader_framebuffer_tonemapped = new SFShader();
         static SFShader shader_shadowmap_blur = new SFShader();
 
+
         static FrameBuffer shadowmap_depth = null;
         static FrameBuffer shadowmap_depth_helper = null;
         static FrameBuffer screenspace_framebuffer = null;
         static FrameBuffer screenspace_intermediate = null;
+
+        static FrameBuffer[] shadowmap_cascades = null;
+
         public static bool render_shadowmap_depth = false;
 
         public static Vector2 render_size = Vector2.Zero;
@@ -244,6 +248,13 @@ namespace SpellforceDataEditor.SF3D.SFRender
             {
                 if ((Settings.EnableShadows) && (shadowmap_depth != null))
                 {
+                    if(Settings.EnableCascadeShadows)
+                    {
+                        for(int i = 0; i < Settings.ShadowCascadeCount; i++)
+                        {
+                            shadowmap_cascades[i].Dispose();
+                        }
+                    }
                     shadowmap_depth.Dispose();
                     shadowmap_depth_helper.Dispose();
                 }
@@ -251,6 +262,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     screenspace_framebuffer.Dispose();
                 screenspace_intermediate.Dispose();
 
+                shadowmap_cascades = null;
                 screenspace_framebuffer = null;
                 screenspace_intermediate = null;
                 shadowmap_depth = null;
@@ -262,6 +274,35 @@ namespace SpellforceDataEditor.SF3D.SFRender
 
             if (Settings.EnableShadows)
             {
+                // cascaded shadow maps
+                if (Settings.EnableCascadeShadows)
+                {
+                    shadowmap_cascades = new FrameBuffer[Settings.ShadowCascadeCount];
+                    for (int i = 0; i < Settings.ShadowCascadeCount; i++)
+                    {
+                        shadowmap_cascades[i] = new FrameBuffer(
+                            Settings.ShadowMapSize / 2,
+                            Settings.ShadowMapSize / 2,
+                            new FrameBufferColorAttachmentInfo[]
+                            {
+                            new FrameBufferColorAttachmentInfo()
+                            {
+                                format = PixelFormat.Rgba,
+                                internal_format = PixelInternalFormat.Rg32f,
+                                pixeltype = PixelType.Float
+                            }
+                            },
+                            0,
+                            new FrameBufferDepthInfo() { use_depth = true, parent_depth = null });
+                        GL.BindTexture(TextureTarget.Texture2D, shadowmap_cascades[i].texture_colors[0]);
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+                        float[] cols = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, cols);
+                    }
+                }
                 // shadowmap framebuffer - shadows are drawn into this buffer
                 // after that, this is horizontally blurred and stored in shadowmap_depth_helper
                 shadowmap_depth = new FrameBuffer(
@@ -366,6 +407,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
             shader_simple.SetDefine("SHADING", (Settings.ShadingQuality > 0));
             shader_simple.SetDefine("QUALITY_SHADING", (Settings.ShadingQuality > 1));
             shader_simple.SetDefine("SHADOWS", (Settings.EnableShadows));
+            shader_simple.SetDefine("CASCADED_SHADOWS", (Settings.EnableCascadeShadows));
             shader_simple.SetDefine("TONEMAPPING", (Settings.ToneMapping));
             shader_simple_transparency.SetDefine("SHADING", (Settings.ShadingQuality > 0));
             shader_simple_transparency.SetDefine("QUALITY_SHADING", (Settings.ShadingQuality > 1));
@@ -557,6 +599,8 @@ namespace SpellforceDataEditor.SF3D.SFRender
                     screenspace_framebuffer.Resize((int)view_size.X, (int)view_size.Y);
                 screenspace_intermediate.Resize((int)view_size.X, (int)view_size.Y);
             }
+            if(Settings.EnableCascadeShadows)
+                scene.atmosphere.sun_light.CalculateCascadeSplits(scene.camera.Frustum);
         }
 
         // updates shader lighting parameters
@@ -1028,7 +1072,7 @@ namespace SpellforceDataEditor.SF3D.SFRender
                 GL.DrawArrays(PrimitiveType.Patches, 0, 4 * heightmap.mesh_tesselated.patch_count);
             }
 
-            if(current_pass == RenderPass.SCENE)
+            if (current_pass == RenderPass.SCENE)
                 GL.BindTexture(TextureTarget.Texture2DArray, 0);
         }
 

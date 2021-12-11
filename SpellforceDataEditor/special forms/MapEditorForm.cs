@@ -1459,12 +1459,15 @@ namespace SpellforceDataEditor.special_forms
             // heavy tasks go here
             if (update_render)
             {
-                //SFRenderEngine.scene.camera.Update(0);
                 map.ocean.SetPosition(SFRenderEngine.scene.camera.position);
                 SFRenderEngine.UpdateVisibleChunks();
                 map.selection_helper.Update();
                 SFRenderEngine.scene.Update();
                 SFRenderEngine.ui.Update();
+                if (Settings.EnableCascadeShadows)
+                {
+                    SFRenderEngine.scene.atmosphere.sun_light.CalculateCascadeLightMatrix(SFRenderEngine.scene.camera);
+                }
                 UpdateSunFrustum();
                 RenderWindow.Invalidate();
                 updates_this_second += 1;

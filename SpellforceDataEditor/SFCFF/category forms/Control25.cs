@@ -19,7 +19,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             InitializeComponent();
             column_dict.Add("Building ID", new int[1] { 0 });
             column_dict.Add("Polygon index", new int[1] { 1 });
-            column_dict.Add("Unknown", new int[1] { 2 });
+            column_dict.Add("Casts shadow", new int[1] { 2 });
             column_dict.Add("Vertex count", new int[1] { 3 });
             vertex_index = -1;
         }
@@ -153,7 +153,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             ListPolygons.Items.Clear();
 
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                ListPolygons.Items.Add(i.ToString());
+                ListPolygons.Items.Add((i + 1).ToString());
         }
 
         private void ListPolygons_SelectedIndexChanged(object sender, EventArgs e)

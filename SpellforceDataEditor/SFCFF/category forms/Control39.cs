@@ -87,11 +87,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             string map_handle = "";
             UInt32 map_id = (UInt32)category[index][1];
-            SFCategoryElement map_elem = SFCategoryManager.gamedata[2052].FindElementBinary<UInt32>(0, map_id);
-            if (map_elem == null)
-                map_handle = Utility.S_NONAME;
+
+            if (SFCategoryManager.gamedata[2052] == null)
+                map_handle = Utility.S_UNKNOWN;
             else
-                map_handle = map_elem[2].ToString();
+            {
+                SFCategoryElement map_elem = SFCategoryManager.gamedata[2052].FindElementBinary<UInt32>(0, map_id);
+                if (map_elem == null)
+                    map_handle = Utility.S_NONAME;
+                else
+                    map_handle = map_elem[2].ToString();
+            }
+
             return "Map handle: " + map_handle;
         }
     }

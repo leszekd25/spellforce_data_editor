@@ -272,10 +272,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            UInt16 unit_id = (UInt16)category[index, 0][0];
+            UInt16 object_id = (UInt16)category[index, 0][0];
             int slot_count = category.element_lists[index].Elements.Count;
-            string txt_unit = SFCategoryManager.GetUnitName(unit_id);
-            return unit_id.ToString() + " " + txt_unit + " - " + slot_count.ToString() + ((slot_count == 1) ? " slot" : " slots");
+            string txt_object = SFCategoryManager.GetObjectName(object_id);
+            return object_id.ToString() + " " + txt_object + " - " + slot_count.ToString() + ((slot_count == 1) ? " slot" : " slots");
         }
     }
 }

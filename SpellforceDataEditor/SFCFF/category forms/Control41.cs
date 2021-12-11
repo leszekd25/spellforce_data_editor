@@ -41,6 +41,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             if (e.Button == MouseButtons.Right)
             {
+                if (SFCategoryManager.gamedata[2016] == null)
+                    return;
+
                 int cur_id = Utility.TryParseInt32(tb_sd2.Text);
                 int ind = SFCategoryManager.gamedata[2016].GetElementIndex(cur_id);
 
@@ -55,7 +58,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     }
                     else
                     {
-                        new_ind = SFCategoryManager.gamedata[2058].GetNextNewElementIndex(cur_id, out new_id);
+                        new_ind = SFCategoryManager.gamedata[2016].GetNextNewElementIndex(cur_id, out new_id);
                     }
 
                     SFCategoryElementList new_elem_list = SFCategoryManager.gamedata[2016].GetEmptyElementList();

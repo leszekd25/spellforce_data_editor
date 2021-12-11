@@ -43,6 +43,24 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             current_element = index;
         }
 
+        // updates UI when subelement is added at given index
+        public virtual void on_add_subelement(int subelem_index)
+        {
+
+        }
+
+        // updates UI when subelement is removed at given index
+        public virtual void on_remove_subelement(int subelem_index)
+        {
+
+        }
+
+        // updates UI when a subelement is updated at given index
+        public virtual void on_update_subelement(int subelem_index)
+        {
+
+        }
+
         //sets category for this control
         public void set_category(SFCategory cat)
         {
@@ -67,7 +85,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             System.Diagnostics.Debug.Assert(!category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
 
             category[elem_index][var_index] = obj;
-            ((special_forms.SpelllforceCFFEditor)ParentForm).external_set_element_select_string(category, elem_index);
+            MainForm.data.external_set_element_select_string(category, elem_index);
         }
 
         //updates data element and displayed description
@@ -76,7 +94,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             System.Diagnostics.Debug.Assert(category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
 
             category[elem_index, subelem_index][var_index] = obj;
-            ((special_forms.SpelllforceCFFEditor)ParentForm).external_set_element_select_string(category, elem_index);
+            MainForm.data.external_set_element_select_string(category, elem_index);
         }
 
         //this depends on actual control
@@ -143,6 +161,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_id = category.GetElementID(current_element);
 
             SFCategory cat = SFCategoryManager.gamedata[cat_i];
+            if (cat == null)
+                return;
+
             int real_elem_id = cat.GetElementIndex(cur_id);
             bt.Tag = (real_elem_id == Utility.NO_INDEX);
             if ((bool)bt.Tag)
@@ -170,6 +191,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_id = Utility.TryParseInt32(tb.Text);
 
             SFCategory cat = SFCategoryManager.gamedata[cat_i];
+            if (cat == null)
+                return;
+
             int real_elem_id = cat.GetElementIndex(cur_id);
             if ((real_elem_id == Utility.NO_INDEX)||(real_elem_id == 0))
                 tb.BackColor = Color.Yellow;
@@ -184,6 +208,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 int cur_id = category.GetElementID(current_element);
 
                 SFCategory cat = SFCategoryManager.gamedata[cat_i];
+                if(cat == null)
+                {
+                    // todo: create new category for this element
+                    // problem: how to handle versioning?
+                    return;
+                }
+
                 int new_ind = cat.GetNewElementIndex(cur_id);
                 SFCategoryElement new_elem = cat.GetEmptyElement();
                 switch (cat.GetElementFormat()[0])
@@ -231,6 +262,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public void step_into(int cat_i, int elem_key)
         {
             SFCategory cat = SFCategoryManager.gamedata[cat_i];
+            if (cat == null)
+                return;
+
             int real_elem_id = cat.GetElementIndex(elem_key);
             if (real_elem_id == Utility.NO_INDEX)
                 return;

@@ -14,6 +14,7 @@ namespace SpellforceDataEditor
         public static int IgnoredMipMapsCount { get; private set; } = 0;
         public static int MaximumAllowedTextureSize { get; private set; } = 2048;
         public static bool EnableShadows { get; set; } = true;
+        public static bool EnableCascadeShadows { get; set; } = false;
         public static int ShadowCascadeCount { get; private set; } = 3;
         public static int ShadowMapSize { get; private set; } = 2048;
         public static int ShadingQuality { get; set; } = 2;

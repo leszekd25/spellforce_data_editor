@@ -50,7 +50,7 @@ namespace SpellforceDataEditor.special_forms
             SFCFF.SFGameData new_gd = new SFCFF.SFGameData();
 
             // create new category
-            SFCFF.SFCategory new_cat = SFCFF.SFCategory.Create(2016, 3);
+            SFCFF.SFCategory new_cat = new SFCFF.SFCategory(Tuple.Create<ushort, ushort>(2016, 3));
 
             // move text entries with given ID from main gd to new gd
             for(int i = 0; i < text_cat.GetElementCount(); i++)

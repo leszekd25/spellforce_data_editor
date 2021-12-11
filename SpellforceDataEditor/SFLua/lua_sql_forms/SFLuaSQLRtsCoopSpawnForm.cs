@@ -385,6 +385,8 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                     return;
                 if (!SFCFF.SFCategoryManager.ready)
                     return;
+                if (SFCFF.SFCategoryManager.gamedata[2024] == null)
+                    return;
 
                 ushort unit_id = Utility.TryParseUInt16(SelectedUnitID.Text);
                 int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
@@ -400,6 +402,8 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 if (MainForm.data == null)
                     return;
                 if (!SFCFF.SFCategoryManager.ready)
+                    return;
+                if (SFCFF.SFCategoryManager.gamedata[2024] == null)
                     return;
 
                 ushort unit_id = Utility.TryParseUInt16(SelectedSpawnDataUnitID.Text);

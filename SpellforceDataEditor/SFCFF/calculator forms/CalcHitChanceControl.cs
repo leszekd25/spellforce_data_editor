@@ -43,12 +43,18 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
                 return;
 
             // unit stuff
+            if (SFCategoryManager.gamedata[2024] == null)
+                return;
+
             int index = SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
             if (index == Utility.NO_INDEX)
                 return;
             ushort stats_id = (ushort)SFCategoryManager.gamedata[2024][index][2];
 
             // unit stats
+            if (SFCategoryManager.gamedata[2005] == null)
+                return;
+
             int index2 = SFCategoryManager.gamedata[2005].GetElementIndex((int)stats_id);
             if (index2 == Utility.NO_INDEX)
                 return;
@@ -59,6 +65,11 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
             int agi = (int)(ushort)stats[3];
 
             // get unit eq
+            if (SFCategoryManager.gamedata[2025] == null)
+                return;
+            if (SFCategoryManager.gamedata[2004] == null)
+                return;
+
             int index3 = SFCategoryManager.gamedata[2025].GetElementIndex(unit_id);
             if (index3 != Utility.NO_INDEX)
             {

@@ -246,9 +246,19 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (set_type != 0)
             {
                 Byte elem_id = set_type;
+
                 string txt;
-                SFCategoryElement set_elem = SFCategoryManager.gamedata[48].FindElementBinary<Byte>(0, elem_id);
-                txt = SFCategoryManager.GetTextFromElement(set_elem, 1);
+                if (SFCategoryManager.gamedata[2072] != null)
+                {
+                    SFCategoryElement set_elem = SFCategoryManager.gamedata[2072].FindElementBinary<Byte>(0, elem_id);
+                    if (set_elem == null)
+                        txt = Utility.S_MISSING;
+                    else
+                        txt = SFCategoryManager.GetTextFromElement(set_elem, 1);
+                }
+                else
+                    txt = Utility.S_UNKNOWN;
+
                 total_text += "\r\nPart of set: " + txt;
             }
 

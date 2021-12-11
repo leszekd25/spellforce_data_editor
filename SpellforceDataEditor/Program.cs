@@ -19,11 +19,14 @@ namespace SpellforceDataEditor
             Settings.Load();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            
-            //try
-            //{
+
+#if DEBUG
+            Application.Run(new MainForm());
+#else
+            try
+            {
                 Application.Run(new MainForm());
-            /*}
+            }
             catch (Exception e)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.Main, "Program.Main() terminated due to error! Exception data: " + e.ToString() + " # " + e.Message);
@@ -34,7 +37,8 @@ namespace SpellforceDataEditor
                 SFUnPak.SFUnPak.CloseAllPaks();
                 LogUtils.Log.Info(LogUtils.LogSource.Main, "Program.Main(): session finish time: " + DateTime.Now.ToLongTimeString());
                 LogUtils.Log.SaveLog("UserLog.txt");
-            }*/
+            }
+#endif
         }
     }
 }

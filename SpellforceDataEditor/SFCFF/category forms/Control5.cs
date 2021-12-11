@@ -137,12 +137,48 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override string get_element_string(int index)
         {
             UInt16 stats_id = (UInt16)category[index, 0][0];
-            SFCategoryElement elem = SFCategoryManager.gamedata[2024].FindElement<UInt16>(2, stats_id);
-            string unit_txt = SFCategoryManager.GetTextFromElement(elem, 1);
-            if (unit_txt == Utility.S_NONAME)
-                unit_txt = SFCategoryManager.GetRuneheroName(stats_id);
+            string unit_txt;
+            if (SFCategoryManager.gamedata[2024] == null)
+            {
+                unit_txt = Utility.S_MISSING;
+            }
+            else
+            {
+                SFCategoryElement elem = SFCategoryManager.gamedata[2024].FindElement<UInt16>(2, stats_id);
+                unit_txt = SFCategoryManager.GetTextFromElement(elem, 1);
+                if (unit_txt == Utility.S_NONAME)
+                    unit_txt = SFCategoryManager.GetRuneheroName(stats_id);
+            }
             return stats_id.ToString() + " " + unit_txt;
 
+        }
+
+        public override void on_add_subelement(int subelem_index)
+        {
+            base.on_add_subelement(subelem_index);
+
+            ListSkills.Items.Insert(subelem_index, "");
+            set_list_text(subelem_index);
+        }
+
+        public override void on_remove_subelement(int subelem_index)
+        {
+            base.on_remove_subelement(subelem_index);
+
+            ListSkills.Items.RemoveAt(subelem_index);
+        }
+
+        public override void on_update_subelement(int subelem_index)
+        {
+            base.on_update_subelement(subelem_index);
+
+            set_list_text(subelem_index);
+            if (ListSkills.SelectedIndex == subelem_index)
+            {
+                textBox3.Text = variant_repr(subelem_index, 1);
+                textBox4.Text = variant_repr(subelem_index, 2);
+                textBox2.Text = variant_repr(subelem_index, 3);
+            }
         }
     }
 }

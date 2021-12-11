@@ -430,6 +430,12 @@
     <Compile Include="SF3D\SFRender\SFRenderEngine.cs" />
     <Compile Include="SF3D\SFRender\SFShader.cs" />
     <Compile Include="SFCFF\CustomScript.cs" />
+    <Compile Include="SFCFF\helper_forms\CategorySelectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFCFF\helper_forms\CategorySelectForm.Designer.cs">
+      <DependentUpon>CategorySelectForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFCFF\helper_forms\ListBoxNoFlicker.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -445,6 +451,7 @@
     <Compile Include="SFCFF\helper_forms\LoadGamedataForm.Designer.cs">
       <DependentUpon>LoadGamedataForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFCFF\operators\CFFOperator.cs" />
     <Compile Include="SFChunk\SFChunkFile.cs" />
     <Compile Include="SFChunk\SFChunkFileChunk.cs" />
     <Compile Include="SFLua\ILuaParsable.cs" />
@@ -987,6 +994,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SFCFF\helper_forms\CategorySelectForm.resx">
+      <DependentUpon>CategorySelectForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SFCFF\helper_forms\SaveGamedataForm.resx">
       <DependentUpon>SaveGamedataForm.cs</DependentUpon>
     </EmbeddedResource>

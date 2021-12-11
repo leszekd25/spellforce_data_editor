@@ -14,11 +14,78 @@ using SpellforceDataEditor.SFChunk;
 
 namespace SpellforceDataEditor.SFCFF
 {
+    public struct CatColumn
+    {
+        public int category;
+        public int column;
+        public CatColumn(int c, int co)
+        {
+            category = c;
+            column = co;
+        }
+    }
+
     public class SFGameData
     {
-        public Dictionary<int, SFCategory> categories = new Dictionary<int, SFCategory>();
+        public static Dictionary<int, CatColumn[]> ReferenceCategoryTable = new Dictionary<int, CatColumn[]>();
 
+        public Dictionary<int, SFCategory> categories = new Dictionary<int, SFCategory>();
         public string fname = "";            // points nowhere if gamedata is not loaded, points to last know gamedata file which at some point of time had same content as this gamedata
+
+        static SFGameData()
+        {
+            // -1 - spell ID in category 2002
+            // -2 - unit ID in category 2002
+            ReferenceCategoryTable.Add(2002, new CatColumn[] { new CatColumn(2002, -1), new CatColumn(2067, 2), new CatColumn(2014, 2), new CatColumn(2018, 1), new CatColumn(2026, 2) });  //-1 means custom columns
+            ReferenceCategoryTable.Add(2054, new CatColumn[] { new CatColumn(2002, 1) });
+            ReferenceCategoryTable.Add(2056, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2005, new CatColumn[] { new CatColumn(2006, 0), new CatColumn(2067, 0), new CatColumn(2003, 4), new CatColumn(2024, 2) });
+            ReferenceCategoryTable.Add(2006, new CatColumn[] { new CatColumn(2005, 0), new CatColumn(2067, 0), new CatColumn(2003, 4), new CatColumn(2024, 2) });
+            ReferenceCategoryTable.Add(2067, new CatColumn[] { new CatColumn(2005, 0), new CatColumn(2006, 0), new CatColumn(2003, 4), new CatColumn(2024, 2) });
+            ReferenceCategoryTable.Add(2003, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2015, 0), new CatColumn(2017, 0), new CatColumn(2014, 0), new CatColumn(2012, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2004, new CatColumn[] { new CatColumn(2003, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2015, 0), new CatColumn(2017, 0), new CatColumn(2014, 0), new CatColumn(2012, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2013, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2003, 0), new CatColumn(2015, 0), new CatColumn(2017, 0), new CatColumn(2014, 0), new CatColumn(2012, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2015, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2003, 0), new CatColumn(2017, 0), new CatColumn(2014, 0), new CatColumn(2012, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2017, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2015, 0), new CatColumn(2003, 0), new CatColumn(2014, 0), new CatColumn(2012, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2014, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2015, 0), new CatColumn(2017, 0), new CatColumn(2003, 0), new CatColumn(2012, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2012, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2015, 0), new CatColumn(2017, 0), new CatColumn(2014, 0), new CatColumn(2003, 0), new CatColumn(2018, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2018, new CatColumn[] { new CatColumn(2004, 0), new CatColumn(2013, 0), new CatColumn(2013, 1), new CatColumn(2015, 0), new CatColumn(2017, 0), new CatColumn(2014, 0), new CatColumn(2012, 0), new CatColumn(2003, 0), new CatColumn(2025, 2), new CatColumn(2040, 2), new CatColumn(2040, 4), new CatColumn(2040, 6), new CatColumn(2042, 1), new CatColumn(2065, 2), new CatColumn(2065, 4), new CatColumn(2065, 6), });
+            ReferenceCategoryTable.Add(2016, new CatColumn[] { new CatColumn(2054, 1), new CatColumn(2003, 3), new CatColumn(2022, 7), new CatColumn(2024, 1), new CatColumn(2029, 5), new CatColumn(2039, 2), new CatColumn(2044, 1), new CatColumn(2050, 1), new CatColumn(2051, 1), new CatColumn(2052, 3), new CatColumn(2053, 5), new CatColumn(2058, 1), new CatColumn(2059, 1), new CatColumn(2059, 2), new CatColumn(2061, 3), new CatColumn(2063, 1), new CatColumn(2064, 1), new CatColumn(2036, 2), new CatColumn(2072, 1) });
+            ReferenceCategoryTable.Add(2022, new CatColumn[] { new CatColumn(2005, 2) });
+            ReferenceCategoryTable.Add(2023, new CatColumn[] { new CatColumn(2022, 9) });
+            ReferenceCategoryTable.Add(2024, new CatColumn[] { new CatColumn(2002, -2), new CatColumn(2003, 5), new CatColumn(2025, 0), new CatColumn(2026, 0), new CatColumn(2028, 0), new CatColumn(2040, 0), new CatColumn(2001, 0), new CatColumn(2041, 1) });
+            ReferenceCategoryTable.Add(2025, new CatColumn[] { new CatColumn(2002, -2), new CatColumn(2003, 5), new CatColumn(2024, 0), new CatColumn(2026, 0), new CatColumn(2028, 0), new CatColumn(2040, 0), new CatColumn(2001, 0), new CatColumn(2041, 1) });
+            ReferenceCategoryTable.Add(2026, new CatColumn[] { new CatColumn(2002, -2), new CatColumn(2003, 5), new CatColumn(2025, 0), new CatColumn(2024, 0), new CatColumn(2028, 0), new CatColumn(2040, 0), new CatColumn(2001, 0), new CatColumn(2041, 1) });
+            ReferenceCategoryTable.Add(2028, new CatColumn[] { new CatColumn(2002, -2), new CatColumn(2003, 5), new CatColumn(2025, 0), new CatColumn(2026, 0), new CatColumn(2024, 0), new CatColumn(2040, 0), new CatColumn(2001, 0), new CatColumn(2041, 1) });
+            ReferenceCategoryTable.Add(2040, new CatColumn[] { new CatColumn(2002, -2), new CatColumn(2003, 5), new CatColumn(2025, 0), new CatColumn(2026, 0), new CatColumn(2028, 0), new CatColumn(2024, 0), new CatColumn(2001, 0), new CatColumn(2041, 1) });
+            ReferenceCategoryTable.Add(2001, new CatColumn[] { new CatColumn(2002, -2), new CatColumn(2003, 5), new CatColumn(2025, 0), new CatColumn(2026, 0), new CatColumn(2028, 0), new CatColumn(2040, 0), new CatColumn(2024, 0), new CatColumn(2041, 1) });
+            ReferenceCategoryTable.Add(2029, new CatColumn[] { new CatColumn(2003, 6), new CatColumn(2001, 2), new CatColumn(2029, 10), new CatColumn(2030, 0), new CatColumn(2031, 0), new CatColumn(2036, 1) });
+            ReferenceCategoryTable.Add(2030, new CatColumn[] { new CatColumn(2003, 6), new CatColumn(2001, 2), new CatColumn(2029, 10), new CatColumn(2029, 0), new CatColumn(2031, 0), new CatColumn(2036, 1) });
+            ReferenceCategoryTable.Add(2031, new CatColumn[] { new CatColumn(2003, 6), new CatColumn(2001, 2), new CatColumn(2029, 10), new CatColumn(2030, 0), new CatColumn(2029, 0), new CatColumn(2036, 1) });
+            ReferenceCategoryTable.Add(2039, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2062, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2041, new CatColumn[] { new CatColumn(2042, 0), new CatColumn(2047, 0) });
+            ReferenceCategoryTable.Add(2042, new CatColumn[] { new CatColumn(2041, 0), new CatColumn(2047, 0) });
+            ReferenceCategoryTable.Add(2047, new CatColumn[] { new CatColumn(2042, 0), new CatColumn(2041, 0) });
+            ReferenceCategoryTable.Add(2044, new CatColumn[] { new CatColumn(2028, 1), new CatColumn(2031, 1) });
+            ReferenceCategoryTable.Add(2048, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2050, new CatColumn[] { new CatColumn(2057, 0), new CatColumn(2065, 0) });
+            ReferenceCategoryTable.Add(2057, new CatColumn[] { new CatColumn(2050, 0), new CatColumn(2065, 0) });
+            ReferenceCategoryTable.Add(2065, new CatColumn[] { new CatColumn(2050, 0), new CatColumn(2057, 0) });
+            ReferenceCategoryTable.Add(2051, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2052, new CatColumn[] { new CatColumn(2053, 1) });
+            ReferenceCategoryTable.Add(2053, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2055, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2058, new CatColumn[] { new CatColumn(2054, 8), new CatColumn(2036, 3) });
+            ReferenceCategoryTable.Add(2059, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2061, new CatColumn[] { new CatColumn(2061, 1) });
+            ReferenceCategoryTable.Add(2063, new CatColumn[] { new CatColumn(2015, 6) });
+            ReferenceCategoryTable.Add(2064, new CatColumn[] { new CatColumn(2015, 7) });
+            ReferenceCategoryTable.Add(2032, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2049, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2036, new CatColumn[] { });
+            ReferenceCategoryTable.Add(2072, new CatColumn[] { new CatColumn(2003, 10) });
+        }
 
         public SFCategory this[int index]
         {
@@ -66,6 +133,10 @@ namespace SpellforceDataEditor.SFCFF
             }
 
             CompatibilitySortCategories();
+#if DEBUG
+            CustomScript();                         // only for experimental purposes
+#endif
+
 
             fname = filename;
 
@@ -149,7 +220,7 @@ namespace SpellforceDataEditor.SFCFF
             }
 
             // fix up cat 2016
-            SFCategory cat_text = categories[2016];
+            SFCategory cat_text = this[2016];
             if (cat_text != null)
                 cat_text.special_cat2016_DetermineLanguageIDs();
 
@@ -161,7 +232,8 @@ namespace SpellforceDataEditor.SFCFF
         // if chunk already exists, but is of a different type, the function fails
         public int ImportChunk(SFChunkFileChunk sfcfc)
         {
-            SFCategory existing_cat = GetPrecise(Tuple.Create((ushort)sfcfc.header.ChunkID, (ushort)sfcfc.header.ChunkDataType));
+            Tuple<ushort, ushort> cat_id = Tuple.Create((ushort)sfcfc.header.ChunkID, (ushort)sfcfc.header.ChunkDataType);
+            SFCategory existing_cat = GetPrecise(cat_id);
             if(existing_cat == null)
             {
                 existing_cat = this[sfcfc.header.ChunkID];
@@ -171,7 +243,7 @@ namespace SpellforceDataEditor.SFCFF
                 }
             }
 
-            SFCategory cat = new SFCategory();
+            SFCategory cat = new SFCategory(cat_id);
             int cat_status = cat.Read(sfcfc);
             if (cat_status != 0)
             {
@@ -279,7 +351,7 @@ namespace SpellforceDataEditor.SFCFF
 
 
 
-        private void CompatibilitySortCategories()
+        public void CompatibilitySortCategories()
         {
             int[] categories_proper_order = new int[]
             {
@@ -299,6 +371,140 @@ namespace SpellforceDataEditor.SFCFF
             }
 
             categories = new_categories;
+        }
+
+        public void CustomScript()
+        {
+            // shift text IDs from a given region by a certain amount
+            /*ushort start_id = 48294;
+            ushort end_id = 49928;
+            ushort new_id = 50000;
+
+            if (categories[2016] == null)
+                return;
+
+            foreach(var elem_list in categories[2016].element_lists)
+            {
+                foreach(var elem in elem_list.Elements)
+                {
+                    if (((ushort)(elem[0]) >= start_id) && ((ushort)(elem[0]) <= end_id)) 
+                        elem[0] = (ushort)((ushort)(elem[0]) + (new_id - start_id));
+                }
+            }
+
+            foreach(var ref_cat in ReferenceCategoryTable[2016])
+            {
+                if (categories[ref_cat.category] == null)
+                    continue;
+
+                if(categories[ref_cat.category].category_allow_multiple)
+                {
+                    foreach(var elem_list in categories[ref_cat.category].element_lists)
+                    {
+                        foreach(var elem in elem_list.Elements)
+                        {
+                            if (((ushort)(elem[ref_cat.column]) >= start_id) && ((ushort)(elem[ref_cat.column]) <= end_id))
+                                elem[ref_cat.column] = (ushort)((ushort)(elem[ref_cat.column]) + (new_id - start_id));
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var elem in categories[ref_cat.category].elements)
+                    {
+                        if (((ushort)(elem[ref_cat.column]) >= start_id) && ((ushort)(elem[ref_cat.column]) <= end_id))
+                            elem[ref_cat.column] = (ushort)((ushort)(elem[ref_cat.column]) + (new_id - start_id));
+                    }
+                }
+            }*/
+
+            // extract ID texts from languages 0, 2-6
+            /*if (categories[2016] == null)
+                return;
+
+            HashSet<int> removed_cat = new HashSet<int>();
+            foreach (var kv in categories)
+            { 
+                if (kv.Key != 2016)
+                    removed_cat.Add(kv.Key);
+            }
+            foreach (var cat in removed_cat)
+                categories.Remove(cat);
+
+            foreach(var elem_list in categories[2016].element_lists)
+            {
+                for(int i = 0; i < elem_list.Elements.Count; i++)
+                {
+                    if((byte)(elem_list[i][1]) == 1)
+                    {
+                        elem_list.Elements.RemoveAt(i);
+                        i -= 1;
+                    }
+                }
+            }*/
+
+            // fix category 2012
+            /*if (categories[2012] == null)
+                return;
+
+            foreach(var elem_list in categories[2012].element_lists)
+            {
+                int min = (byte)(elem_list.Elements[0][1]);
+                for(int i = 1; i < elem_list.Elements.Count; i++)
+                {
+                    min = Math.Min(min, (int)(byte)(elem_list.Elements[i][1]));
+                }
+
+                if(min == 0)
+                {
+                    foreach(var elem in elem_list.Elements)
+                    {
+                        elem[1] = (byte)((byte)(elem[1]) + 1);
+                    }
+                }
+            }
+
+            // fix category 2026
+            if (categories[2026] == null)
+                return;
+
+            foreach(var elem_list in categories[2026].element_lists)
+            {
+                int min = (byte)(elem_list.Elements[0][1]);
+                for(int i = 1; i < elem_list.Elements.Count; i++)
+                {
+                    min = Math.Min(min, (int)(byte)(elem_list.Elements[i][1]));
+                }
+
+                if(min == 0)
+                {
+                    foreach(var elem in elem_list.Elements)
+                    {
+                        elem[1] = (byte)((byte)(elem[1]) + 1);
+                    }
+                }
+            }
+
+            // fix category 2014
+            if (categories[2014] == null)
+                return;
+
+            foreach(var elem_list in categories[2014].element_lists)
+            {
+                int min = (byte)(elem_list.Elements[0][1]);
+                for(int i = 1; i < elem_list.Elements.Count; i++)
+                {
+                    min = Math.Min(min, (int)(byte)(elem_list.Elements[i][1]));
+                }
+
+                if(min == 0)
+                {
+                    foreach(var elem in elem_list.Elements)
+                    {
+                        elem[1] = (byte)((byte)(elem[1]) + 1);
+                    }
+                }
+            }*/
         }
 
         // unloads all stored data

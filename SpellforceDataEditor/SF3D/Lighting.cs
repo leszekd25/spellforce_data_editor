@@ -28,13 +28,73 @@ namespace SpellforceDataEditor.SF3D
         public float ZNear;
         public float ZFar;
         public float ShadowDepth;
-        public float[] CascadeZNear;
-        public float[] CascadeZFar;
+
+        public Matrix4[] ShadowCascadeLightProjection;
+        public Matrix4[] ShadowCascadeLightMatrix;
+        public Physics.Frustum[] ShadowCascadeFrustum;
 
         public LightingSun()
         {
-            CascadeZNear = new float[Settings.ShadowCascadeCount];
-            CascadeZFar = new float[Settings.ShadowCascadeCount];
+            if (Settings.EnableCascadeShadows)
+            {
+                ShadowCascadeLightProjection = new Matrix4[Settings.ShadowCascadeCount];
+                ShadowCascadeLightMatrix = new Matrix4[Settings.ShadowCascadeCount];
+                ShadowCascadeFrustum = new Physics.Frustum[Settings.ShadowCascadeCount];
+                for (int i = 0; i < Settings.ShadowCascadeCount; i++)
+                {
+                    ShadowCascadeFrustum[i] = new Physics.Frustum(Vector3.Zero, Vector3.UnitX, 0.1f, 100f, 1f);
+                }
+            }
+        }
+
+        // run once right after camera init, and every time camera's znear, zfar or aspect ratio changes
+        public void CalculateCascadeSplits(Physics.Frustum base_frustum)
+        {
+            float correction = 0.7f;
+
+            for (int i = 0; i < Settings.ShadowCascadeCount; i++)
+            {
+                ShadowCascadeFrustum[i].aspect_ratio = base_frustum.aspect_ratio;
+                if (i == 0)
+                    ShadowCascadeFrustum[i].ZNear = base_frustum.ZNear;
+                else
+                    ShadowCascadeFrustum[i].ZNear = correction * base_frustum.ZNear * (float)Math.Pow(base_frustum.ZFar / base_frustum.ZNear, (float)i / Settings.ShadowCascadeCount) + (1 - correction) * (base_frustum.ZNear + ((float)i / Settings.ShadowCascadeCount) * (base_frustum.ZFar - base_frustum.ZNear));
+            }
+
+            for(int i = 0; i < Settings.ShadowCascadeCount; i++)
+            {
+                if (i == Settings.ShadowCascadeCount - 1)
+                    ShadowCascadeFrustum[i].ZFar = base_frustum.ZFar;
+                else
+                    ShadowCascadeFrustum[i].ZFar = ShadowCascadeFrustum[i + 1].ZNear;
+            }
+        }
+
+        public void CalculateCascadeLightMatrix(SceneSynchro.SceneNodeCamera camera)
+        {
+            Physics.Frustum camera_frustum = camera.Frustum;
+
+            for(int i = 0; i < Settings.ShadowCascadeCount; i++)
+            {
+                ShadowCascadeFrustum[i].start = camera_frustum.start;
+                ShadowCascadeFrustum[i].direction = camera_frustum.direction;
+                ShadowCascadeFrustum[i].Calculate();
+
+                Physics.BoundingBox aabb = Physics.BoundingBox.FromPoints(ShadowCascadeFrustum[i].frustum_vertices);
+                Physics.BoundingBox rotated_aabb = aabb.RotatedByAzimuthAltitude(camera.Direction.X * 180 / (float)Math.PI, camera.Direction.Y * 180 / (float)Math.PI);
+
+                SetLightProjection(rotated_aabb, ShadowCascadeFrustum[i].ZNear, ShadowCascadeFrustum[i].ZFar, ref ShadowCascadeLightProjection[i], ref ShadowCascadeLightMatrix[i]);
+            }
+        }
+
+        public void SetLightProjection(Physics.BoundingBox aabb, float znear, float zfar, ref Matrix4 lp, ref Matrix4 lm)
+        {
+            lp = Matrix4.CreateOrthographic(aabb.b.X - aabb.a.X, aabb.b.Z - aabb.a.Z, znear, zfar);
+
+            Vector3 camera_pos = aabb.center;
+            camera_pos += Direction * (zfar / 2);
+
+            lm = Matrix4.LookAt(camera_pos, camera_pos - Direction, new Vector3(0, 1, 0)) * lp; //camera_pos-Direction+new Vector3(0, 0, 0.05f)
         }
 
         public void SetupLightView(Vector3 camerapos)

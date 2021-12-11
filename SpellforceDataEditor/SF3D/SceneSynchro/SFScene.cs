@@ -74,6 +74,9 @@ namespace SpellforceDataEditor.SF3D.SceneSynchro
             camera = new SceneNodeCamera("Camera");
 
             atmosphere = new Atmosphere();
+            if(Settings.EnableCascadeShadows)
+                atmosphere.sun_light.CalculateCascadeSplits(camera.Frustum);
+
             // setup lighting
             if (atmosphere.altitude_ambient_color == null)
             {

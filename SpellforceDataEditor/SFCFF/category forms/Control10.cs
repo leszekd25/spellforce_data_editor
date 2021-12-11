@@ -115,10 +115,24 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             UInt16 type_id = (UInt16)category[index][6];
             UInt16 material_id = (UInt16)category[index][7];
 
-            SFCategoryElement type_elem = SFCategoryManager.gamedata[2063].FindElementBinary<UInt16>(0, type_id);
-            string type_name = SFCategoryManager.GetTextFromElement(type_elem, 1);
-            SFCategoryElement material_elem = SFCategoryManager.gamedata[2064].FindElementBinary<UInt16>(0, material_id);
-            string material_name = SFCategoryManager.GetTextFromElement(material_elem, 1);
+            string type_name;
+            string material_name;
+
+            if (SFCategoryManager.gamedata[2063] == null)
+                type_name = Utility.S_UNKNOWN;
+            else
+            {
+                SFCategoryElement type_elem = SFCategoryManager.gamedata[2063].FindElementBinary<UInt16>(0, type_id);
+                type_name = SFCategoryManager.GetTextFromElement(type_elem, 1);
+            }
+
+            if (SFCategoryManager.gamedata[2064] == null)
+                material_name = Utility.S_UNKNOWN;
+            else
+            {
+                SFCategoryElement material_elem = SFCategoryManager.gamedata[2064].FindElementBinary<UInt16>(0, material_id);
+                material_name = SFCategoryManager.GetTextFromElement(material_elem, 1);
+            }
 
             UInt16 min_dmg = (UInt16)category[index][1];
             UInt16 max_dmg = (UInt16)category[index][2];

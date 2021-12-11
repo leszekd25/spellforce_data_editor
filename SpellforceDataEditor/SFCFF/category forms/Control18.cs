@@ -22,8 +22,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             column_dict.Add("Experience falloff", new int[1] { 4 });
             column_dict.Add("Money in copper", new int[1] { 5 });
             column_dict.Add("Gold variance", new int[1] { 6 });
-            column_dict.Add("Unknown1 1", new int[1] { 7 });
-            column_dict.Add("Unknown1 2", new int[1] { 8 });
+            column_dict.Add("Rangedness", new int[1] { 7 });
+            column_dict.Add("Meat amount", new int[1] { 8 });
             column_dict.Add("Armor", new int[1] { 9 });
             column_dict.Add("Unit handle", new int[1] { 10 });
             column_dict.Add("Placeable in map editor", new int[1] { 11 });

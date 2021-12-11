@@ -667,6 +667,9 @@ namespace SpellforceDataEditor.SFCFF
                     p[3] = "Fight speed bonus (%)";
                     p[4] = "Duration (ms)";
                     break;
+                default:
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, String.Format("SFSpellDescriptor[]: Unknown spell type {0}", spell_id));
+                    break;
             }
             return p;
         }
@@ -730,6 +733,9 @@ namespace SpellforceDataEditor.SFCFF
         //returns reference to an element from db! remember to drop it later
         public static SFCategoryElement FindElementText(int t_index, int t_lang)
         {
+            if (gamedata[2016] == null)
+                return null;
+
             int index = gamedata[2016].FindMultipleElementIndexBinary<UInt16>(0, (UInt16)t_index);
             if (index == Utility.NO_INDEX)
                 return null;
@@ -782,9 +788,15 @@ namespace SpellforceDataEditor.SFCFF
         //optionally with effect level
         public static string GetEffectName(UInt16 effect_id, bool effect_level = false)
         {
+            if (gamedata[2002] == null)
+                return Utility.S_MISSING;
+
             SFCategoryElement effect_elem = gamedata[2002].FindElementBinary<UInt16>(0, effect_id);
             if (effect_elem == null)
                 return Utility.S_NONAME;
+
+            if (gamedata[2054] == null)
+                return Utility.S_MISSING;
 
             UInt16 spell_type = (UInt16)effect_elem[1];
             SFCategoryElement spell_elem = gamedata[2054].FindElementBinary<UInt16>(0, spell_type);
@@ -798,6 +810,9 @@ namespace SpellforceDataEditor.SFCFF
         //returns a name of a given unit
         public static string GetUnitName(UInt16 unit_id, bool include_level = false)
         {
+            if (gamedata[2024] == null)
+                return Utility.S_UNKNOWN;
+
             SFCategoryElement unit_elem = gamedata[2024].FindElementBinary<UInt16>(0, unit_id);
             if (unit_elem==null)
                 return Utility.S_NONAME;
@@ -806,6 +821,11 @@ namespace SpellforceDataEditor.SFCFF
             if(include_level)
             {
                 ushort stats_id = (ushort)unit_elem[2];
+                if(gamedata[2005] == null)
+                {
+                    txt += " (<NO_LVL_DATA>)";
+                    return txt;
+                }
                 SFCategoryElement unit_stats_elem = gamedata[2005].FindElementBinary<UInt16>(0, stats_id);
                 if (unit_stats_elem == null)
                 {
@@ -821,8 +841,14 @@ namespace SpellforceDataEditor.SFCFF
 
         public static UInt16 GetUnitItem(UInt16 unit_id, byte slot_id)
         {
+            if (gamedata[2024] == null)
+                return 0;
+
             SFCategoryElement unit_elem = gamedata[2024].FindElementBinary<UInt16>(0, unit_id);
             if (unit_elem == null)
+                return 0;
+
+            if (gamedata[2025] == null)
                 return 0;
 
             int unit_eq_index = gamedata[2025].FindMultipleElementIndexBinary(0, (UInt16)unit_id);
@@ -872,6 +898,9 @@ namespace SpellforceDataEditor.SFCFF
             string txt_major = "";
             string txt_minor = "";
 
+            if (gamedata[2039] == null)
+                return Utility.S_UNKNOWN;
+
             txt_major = SFCategoryManager.GetTextFromElement(gamedata[2039][skill_major, 0], 2);
 
             if ((skill_major == 0) && (skill_minor != 0))
@@ -897,6 +926,9 @@ namespace SpellforceDataEditor.SFCFF
         //returns a name of a given race
         public static string GetRaceName(Byte race_id)
         {
+            if (gamedata[2022] == null)
+                return Utility.S_UNKNOWN;
+
             SFCategoryElement race_elem = gamedata[2022].FindElementBinary<Byte>(0, race_id);
             return SFCategoryManager.GetTextFromElement(race_elem, 7);
         }
@@ -904,6 +936,9 @@ namespace SpellforceDataEditor.SFCFF
         //returns a name of a given item
         public static string GetItemName(UInt16 item_id)
         {
+            if (gamedata[2003] == null)
+                return Utility.S_UNKNOWN;
+
             SFCategoryElement item_elem = gamedata[2003].FindElementBinary<UInt16>(0, item_id);
             return SFCategoryManager.GetTextFromElement(item_elem, 3);
         }
@@ -911,6 +946,9 @@ namespace SpellforceDataEditor.SFCFF
         //returns a name of a given building
         public static string GetBuildingName(UInt16 building_id)
         {
+            if (gamedata[2029] == null)
+                return Utility.S_UNKNOWN;
+
             SFCategoryElement building_elem = gamedata[2029].FindElementBinary<UInt16>(0, building_id);
             return SFCategoryManager.GetTextFromElement(building_elem, 5);
         }
@@ -918,6 +956,9 @@ namespace SpellforceDataEditor.SFCFF
         //returns a name of a given merchant
         public static string GetMerchantName(UInt16 merchant_id)
         {
+            if (gamedata[2041] == null)
+                return Utility.S_UNKNOWN;
+
             SFCategoryElement merchant_elem = gamedata[2041].FindElementBinary<UInt16>(0, merchant_id);
             if (merchant_elem == null)
                 return Utility.S_NONAME;
@@ -928,6 +969,9 @@ namespace SpellforceDataEditor.SFCFF
         //returns a name of a given object
         public static string GetObjectName(UInt16 object_id)
         {
+            if (gamedata[2050] == null)
+                return Utility.S_UNKNOWN;
+
             SFCategoryElement object_elem = gamedata[2050].FindElementBinary<UInt16>(0, object_id);
             return SFCategoryManager.GetTextFromElement(object_elem, 1);
         }
@@ -935,6 +979,9 @@ namespace SpellforceDataEditor.SFCFF
         //returns a description given its id
         public static string GetDescriptionName(UInt16 desc_id)
         {
+            if (gamedata[2058] == null)
+                return Utility.S_UNKNOWN;
+
             SFCategoryElement desc_elem = gamedata[2058].FindElementBinary<UInt16>(0, desc_id);
             return SFCategoryManager.GetTextFromElement(desc_elem, 1);
         }
@@ -952,6 +999,9 @@ namespace SpellforceDataEditor.SFCFF
         // gets min unit level, given skill level
         public static int GetMinUnitLevel(int level)
         {
+            if (gamedata[2048] == null)
+                return 0;
+
             SFCategoryElement lvl_elem = gamedata[2048].FindElement<byte>(5, (byte)level);
             if (lvl_elem == null)
                 return 0;
@@ -961,6 +1011,9 @@ namespace SpellforceDataEditor.SFCFF
         // gets max skill level, given unit level
         public static int GetMaxSkillLevel(int level)
         {
+            if (gamedata[2048] == null)
+                return 0;
+
             SFCategoryElement lvl_elem = gamedata[2048].FindElementBinary<byte>(0, (byte)level);
             if (lvl_elem == null)
                 return 0;

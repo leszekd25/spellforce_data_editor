@@ -12,12 +12,18 @@ namespace SpellforceDataEditor.special_forms
 {
     public partial class SpelllforceCFFEditor : Form
     {
+        public class GamedataOperatorQueue
+        {
+
+        }
+
         public bool data_loaded { get; private set; } = false;
         public bool data_changed { get; private set; } = false;
 
         private int selected_category_id = -1;
         private int real_category_id = -1;                   //tracer helper
         private int selected_element_index = -1;
+        private bool search_active = false;
 
         private SFCFF.category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
         public Dictionary<int, SFCFF.category_forms.SFControl> CachedElementDisplays = new Dictionary<int, SFCFF.category_forms.SFControl>();   // element names and descriptions are read from here
@@ -28,6 +34,7 @@ namespace SpellforceDataEditor.special_forms
         private int loaded_count = 0;
 
         protected List<int> current_indices = new List<int>();  //list of indices corrsponding to all displayed elements
+        protected Dictionary<int, int> reverse_current_indices = new Dictionary<int, int>();    // list of elements corresponding to all displayed indices
 
         protected SFCategoryElement insert_copy_element = null; //if there was an element copied, it's stored here
         protected SFCategoryElementList insert_copy_element_list = null; //if there was an element copied, it's stored here - multiple allowed only
@@ -37,6 +44,8 @@ namespace SpellforceDataEditor.special_forms
         private special_forms.ReferencesForm refs = null;
         private special_forms.ChangeDataLangForm change_lang = null;
         private special_forms.CalculatorsForm calc = null;
+
+        public GamedataOperatorQueue op_queue { get; private set; } = null;
 
         //constructor
         public SpelllforceCFFEditor()
@@ -91,6 +100,26 @@ namespace SpellforceDataEditor.special_forms
 #if DEBUG
                 extractLangDataToolStripMenuItem.Visible = true;
 #endif
+                CategorySelect.Enabled = true;
+                foreach (var cat in SFCategoryManager.gamedata.categories)
+                {
+                    CategorySelect.Items.Add(Tuple.Create(cat.Key, cat.Value.category_name));
+                    CachedElementDisplays.Add(cat.Key, get_element_display_from_category(cat.Key));
+                    CachedElementDisplays[cat.Key].set_category(SFCategoryManager.gamedata[cat.Key]);
+                }
+                CategorySelect.Items.Add("<Add new category>");
+
+                data_loaded = true;
+                data_changed = false;
+
+                if (SFCategoryManager.gamedata.categories.Count > 0)
+                    CategorySelect.SelectedIndex = 0;
+                else
+                    CategorySelect.SelectedIndex = -1;
+
+                op_queue = new GamedataOperatorQueue();
+
+                GC.Collect();
             }
         }
 
@@ -116,24 +145,6 @@ namespace SpellforceDataEditor.special_forms
 
             this.Text = "GameData Editor - " + fname;
             labelStatus.Text = "Ready";
-
-            CategorySelect.Enabled = true;
-            foreach(var cat in SFCategoryManager.gamedata.categories)
-            {
-                CategorySelect.Items.Add(Tuple.Create(cat.Key, cat.Value.category_name));
-                CachedElementDisplays.Add(cat.Key, get_element_display_from_category(cat.Key));
-                CachedElementDisplays[cat.Key].set_category(SFCategoryManager.gamedata[cat.Key]);
-            }
-
-            data_loaded = true;
-            data_changed = false;
-
-            if (SFCategoryManager.gamedata.categories.Count > 0)
-                CategorySelect.SelectedIndex = 0;
-            else
-                CategorySelect.SelectedIndex = -1;
-
-            GC.Collect();
 
             return true;
         }
@@ -194,24 +205,6 @@ namespace SpellforceDataEditor.special_forms
 
             this.Text = "GameData Editor - " + main_fname;
             labelStatus.Text = "Ready";
-
-            CategorySelect.Enabled = true;
-            foreach (var cat in SFCategoryManager.gamedata.categories)
-            {
-                CategorySelect.Items.Add(Tuple.Create(cat.Key, cat.Value.category_name));
-                CachedElementDisplays.Add(cat.Key, get_element_display_from_category(cat.Key));
-                CachedElementDisplays[cat.Key].set_category(SFCategoryManager.gamedata[cat.Key]);
-            }
-
-            data_loaded = true;
-            data_changed = false;
-
-            if (SFCategoryManager.gamedata.categories.Count > 0)
-                CategorySelect.SelectedIndex = 0;
-            else
-                CategorySelect.SelectedIndex = -1;
-
-            GC.Collect();
 
             return true;
         }
@@ -297,24 +290,6 @@ namespace SpellforceDataEditor.special_forms
             this.Text = "GameData Editor - " + main_fname;
             labelStatus.Text = "Ready";
 
-            CategorySelect.Enabled = true;
-            foreach (var cat in SFCategoryManager.gamedata.categories)
-            {
-                CategorySelect.Items.Add(Tuple.Create(cat.Key, cat.Value.category_name));
-                CachedElementDisplays.Add(cat.Key, get_element_display_from_category(cat.Key));
-                CachedElementDisplays[cat.Key].set_category(SFCategoryManager.gamedata[cat.Key]);
-            }
-
-            data_loaded = true;
-            data_changed = false;
-
-            if (SFCategoryManager.gamedata.categories.Count > 0)
-                CategorySelect.SelectedIndex = 0;
-            else
-                CategorySelect.SelectedIndex = -1;
-
-            GC.Collect();
-
             return true;
         }
 
@@ -358,24 +333,6 @@ namespace SpellforceDataEditor.special_forms
             this.Text = "GameData Editor - multiple files";
             labelStatus.Text = "Ready";
 
-            CategorySelect.Enabled = true;
-            foreach (var cat in SFCategoryManager.gamedata.categories)
-            {
-                CategorySelect.Items.Add(Tuple.Create(cat.Key, cat.Value.category_name));
-                CachedElementDisplays.Add(cat.Key, get_element_display_from_category(cat.Key));
-                CachedElementDisplays[cat.Key].set_category(SFCategoryManager.gamedata[cat.Key]);
-            }
-
-            data_loaded = true;
-            data_changed = false;
-
-            if (SFCategoryManager.gamedata.categories.Count > 0)
-                CategorySelect.SelectedIndex = 0;
-            else
-                CategorySelect.SelectedIndex = -1;
-
-            GC.Collect();
-
             return true;
         }
 
@@ -386,22 +343,6 @@ namespace SpellforceDataEditor.special_forms
 
             this.Text = "GameData Editor - synchronized with MapEditor";
             labelStatus.Text = "Ready";
-            
-            CategorySelect.Enabled = true;
-            foreach (var cat in SFCategoryManager.gamedata.categories)
-            {
-                CategorySelect.Items.Add(Tuple.Create(cat.Key, cat.Value.category_name));
-                CachedElementDisplays.Add(cat.Key, get_element_display_from_category(cat.Key));
-                CachedElementDisplays[cat.Key].set_category(SFCategoryManager.gamedata[cat.Key]);
-            }
-
-            data_loaded = true;
-            data_changed = false;
-
-            if (SFCategoryManager.gamedata.categories.Count > 0)
-                CategorySelect.SelectedIndex = 0;
-            else
-                CategorySelect.SelectedIndex = -1;
         }
 
         //save game data
@@ -602,6 +543,29 @@ namespace SpellforceDataEditor.special_forms
             if (CategorySelect.SelectedIndex == -1)
                 return;
 
+            // only elements which are not existing categories are of type string
+            if (CategorySelect.SelectedItem.GetType() == typeof(string))
+            {
+                SFCFF.helper_forms.CategorySelectForm csf = new SFCFF.helper_forms.CategorySelectForm();
+                if(csf.ShowDialog() == DialogResult.OK)
+                {
+                    if(csf.CategoryID == Tuple.Create<ushort, ushort>(0, 0))
+                    {
+                        return;
+                    }
+
+                    SFCategory new_cat = new SFCategory(csf.CategoryID);
+                    SFCategoryManager.gamedata.categories.Add(csf.CategoryID.Item1, new_cat);
+
+                    CategorySelect.Items.Insert(CategorySelect.Items.Count - 1, Tuple.Create<int, string>(csf.CategoryID.Item1, new_cat.category_name));
+                    CachedElementDisplays.Add(csf.CategoryID.Item1, get_element_display_from_category(csf.CategoryID.Item1));
+                    CachedElementDisplays[csf.CategoryID.Item1].set_category(SFCategoryManager.gamedata[csf.CategoryID.Item1]);
+                }
+                return;
+            }
+
+            int cat_id = ((Tuple<int, string>)CategorySelect.SelectedItem).Item1;
+
             // force textboxes to validate, submitting data
             Focus();
 
@@ -610,9 +574,10 @@ namespace SpellforceDataEditor.special_forms
             panelElemCopy.Visible = false;
             ElementSelect.Enabled = true;
 
+
             // set current category
-            SFCategory ctg = SFCategoryManager.gamedata[((Tuple<int, string>)CategorySelect.SelectedItem).Item1];
-            if (selected_category_id != ((Tuple<int, string>)CategorySelect.SelectedItem).Item1)
+            SFCategory ctg = SFCategoryManager.gamedata[cat_id];
+            if (selected_category_id != cat_id)
             {
                 ButtonElemAdd.BackColor = SystemColors.Control;
                 ButtonElemInsert.BackColor = SystemColors.Control;
@@ -621,6 +586,7 @@ namespace SpellforceDataEditor.special_forms
             }
             selected_category_id = ((Tuple<int, string>)CategorySelect.SelectedItem).Item1;
             real_category_id = selected_category_id;
+            search_active = false;
 
             // set display form for elements of this category
             set_element_display(real_category_id);
@@ -682,10 +648,15 @@ namespace SpellforceDataEditor.special_forms
         {
             ElementSelect.Items.Clear();
             current_indices.Clear();
+            reverse_current_indices.Clear();
 
             for (int i = 0; i < ctg.GetElementCount(); i++)
+            {
                 current_indices.Add(i);
+                reverse_current_indices.Add(i, i);
+            }
 
+            search_active = false;
             labelDescription.Text = "";
             labelStatus.Text = "Loading...";
 
@@ -843,14 +814,16 @@ namespace SpellforceDataEditor.special_forms
                 col = -1;
 
             current_indices.Clear();
-            for (int i = 0; i < cat.GetElementCount(); i++)
-                current_indices.Add(i);
+            reverse_current_indices.Clear();
 
             labelStatus.Text = "Searching...";
 
             statusStrip1.Refresh();
+            search_active = true;
 
             current_indices = SFSearchModule.Search(cat, current_indices, query, stype, col, ProgressBar_Main);
+            for (int i = 0; i < current_indices.Count; i++)
+                reverse_current_indices.Add(current_indices[i], i);
 
             ElementSelect.Items.Clear();
 
@@ -886,8 +859,12 @@ namespace SpellforceDataEditor.special_forms
                 col = -1;
 
             labelStatus.Text = "Searching...";
+            search_active = true;
 
             current_indices = SFSearchModule.Search(cat, current_indices, query, stype, col, ProgressBar_Main);
+            reverse_current_indices.Clear();
+            for (int i = 0; i < current_indices.Count; i++)
+                reverse_current_indices.Add(current_indices[i], i);
 
             ElementSelect.Items.Clear();
 
@@ -951,8 +928,12 @@ namespace SpellforceDataEditor.special_forms
             ElementSelect.Items.Insert(current_elem, CachedElementDisplays[real_category_id].get_element_string(current_elem));
 
             for (int i = current_elem; i < current_indices.Count; i++)
+            {
+                reverse_current_indices[current_indices[i]] = i + 1;
                 current_indices[i] = current_indices[i] + 1;
+            }
             current_indices.Insert(current_elem, current_elem);
+            reverse_current_indices.Add(current_elem, current_elem);
 
             Tracer_Clear();
 
@@ -996,8 +977,12 @@ namespace SpellforceDataEditor.special_forms
 
             ElementSelect.Items.Insert(current_elem, CachedElementDisplays[real_category_id].get_element_string(current_elem));
             for (int i = current_elem; i < current_indices.Count; i++)
+            {
+                reverse_current_indices[current_indices[i] + 1] = i;
                 current_indices[i] = current_indices[i] + 1;
+            }
             current_indices.Insert(current_elem, current_elem);
+            reverse_current_indices[current_elem] = current_elem;
 
             Tracer_Clear();
 
@@ -1016,7 +1001,11 @@ namespace SpellforceDataEditor.special_forms
             SFCategory ctg = SFCategoryManager.gamedata[real_category_id];
 
             for (int i = current_elem; i < current_indices.Count; i++)
+            {
+                reverse_current_indices[current_indices[i]] = i - 1;
                 current_indices[i] = current_indices[i] - 1;
+            }
+            reverse_current_indices.Remove(current_indices[current_elem]);
             current_indices.RemoveAt(current_elem);
             ElementSelect.Items.RemoveAt(ElementSelect.SelectedIndex);
 
@@ -1066,6 +1055,11 @@ namespace SpellforceDataEditor.special_forms
                 labelStatus.Text = "Ready";
 
                 ElementSelect_RefreshTimer.Enabled = false;
+
+                if (ElementSelect.Items.Count == 0)
+                    ElementSelect.SelectedIndex = -1;
+                else
+                    ElementSelect.SelectedIndex = 0;
                 
                 if (max_items == ctg.GetElementCount())
                 {
@@ -1142,6 +1136,7 @@ namespace SpellforceDataEditor.special_forms
             ElementSelect.Items.Clear();
             ElementSelect.Enabled = false;
             current_indices.Clear();
+            reverse_current_indices.Clear();
             loaded_count = 0;
 
             panelElemManipulate.Visible = false;
@@ -1164,6 +1159,7 @@ namespace SpellforceDataEditor.special_forms
             selected_category_id = -1;
             real_category_id = -1;
             selected_element_index = -1;
+            search_active = false;
 
             labelStatus.Text = "";
             ProgressBar_Main.Visible = false;
@@ -1365,6 +1361,126 @@ namespace SpellforceDataEditor.special_forms
             }
 
             Clipboard.SetText(sb.ToString());
+        }
+
+        public void OperatorCategoryAdded(ushort category_id)
+        {
+            // todo: sorting
+            for (int i = 0; i < CategorySelect.Items.Count; i++)
+            {
+                if (CategorySelect.Items[i].GetType() == typeof(Tuple<int, string>))
+                {
+                    Tuple<int, string> cat_info = (Tuple<int, string>)(CategorySelect.Items[i]);
+                    if (cat_info.Item1 == category_id)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            CategorySelect.Items.Add(new Tuple<int, string>(category_id, SFCategoryManager.gamedata[category_id].category_name));
+        }
+
+        public void OperatorCategoryRemoved(ushort category_id)
+        {
+            // todo: sorting
+            for(int i = 0; i < CategorySelect.Items.Count; i++)
+            {
+                if(CategorySelect.Items[i].GetType() == typeof(Tuple<int, string>))
+                {
+                    Tuple<int, string> cat_info = (Tuple<int, string>)(CategorySelect.Items[i]);
+                    if(cat_info.Item1 == category_id)
+                    {
+                        CategorySelect.Items.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void OperatorElementAdded(ushort category_id, int element_index, int subelement_index)
+        {
+            if (!data_loaded)
+                return;
+
+            if (real_category_id != category_id)
+                return;
+
+            SFCategory ctg = SFCategoryManager.gamedata[real_category_id];
+
+            if (subelement_index == Utility.NO_INDEX)
+            {
+                // add element to the element list
+                if (loaded_count == ctg.GetElementCount())
+                {
+                    ElementSelect.Items.Insert(element_index, CachedElementDisplays[real_category_id].get_element_string(element_index));
+                    for (int i = current_indices.Count-1; current_indices[i] >= element_index; i--)
+                    {
+                        reverse_current_indices.Remove(current_indices[i]);
+                        current_indices[i] = current_indices[i] + 1;
+                        reverse_current_indices[current_indices[i]] = i;
+                    }
+                    current_indices.Insert(element_index, element_index);
+                    reverse_current_indices[element_index] = element_index;
+                }
+            }
+            else    // another subelement added
+            {
+                if (selected_element_index != element_index)
+                    return;
+
+                ElementDisplay.on_add_subelement(subelement_index);
+            }
+        }
+
+        public void OperatorElementRemoved(ushort category_id, int element_index, int subelement_index)
+        {
+            if (!data_loaded)
+                return;
+
+            if (real_category_id != category_id)
+                return;
+
+            SFCategory ctg = SFCategoryManager.gamedata[real_category_id];
+
+            if (subelement_index == Utility.NO_INDEX)
+            {
+                // remove element from the element list
+                if (loaded_count == ctg.GetElementCount())
+                {
+                    for (int i = current_indices.Count - 1; current_indices[i] > element_index; i--)
+                    {
+                        reverse_current_indices.Remove(current_indices[i]);
+                        current_indices[i] = current_indices[i] - 1;
+                        reverse_current_indices[current_indices[i]] = i;
+                    }
+                    current_indices.RemoveAt(element_index);
+                    reverse_current_indices.Remove(current_indices[element_index]);
+                }
+            }
+            else    // another subelement removed
+            {
+                if (selected_element_index != element_index)
+                    return;
+
+                ElementDisplay.on_remove_subelement(subelement_index);
+            }
+        }
+
+        public void OperatorElementModified(ushort category_id, int element_index, int subelement_index)
+        {
+            if (!data_loaded)
+                return;
+
+            if (real_category_id != category_id)
+                return;
+
+            SFCategory ctg = SFCategoryManager.gamedata[category_id];
+
+            if(selected_element_index != element_index)
+                return;
+
+            ElementDisplay.on_update_subelement(subelement_index);
         }
     }
 }
