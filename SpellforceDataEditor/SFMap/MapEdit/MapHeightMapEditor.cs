@@ -5,6 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
+
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
     public enum HMapBrushInterpolationMode { CONSTANT = 0, LINEAR, SQUARE, SINUSOIDAL }
@@ -77,7 +81,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 SFCoord coord = new SFCoord(i, j);
 
                                 float cell_strength = GetStrengthAt(coord);
-                                if (map.lake_manager.GetLakeIndexAt(coord) != Utility.NO_INDEX)
+                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
                                     continue;
 
                                 if (!op_height.PreOperatorHeights.ContainsKey(coord))
@@ -104,7 +108,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 float cell_strength = GetStrengthAt(coord);
                                 if (cell_strength == 0)
                                     continue;
-                                if (map.lake_manager.GetLakeIndexAt(coord) != Utility.NO_INDEX)
+                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
                                     continue;
 
                                 if (!op_height.PreOperatorHeights.ContainsKey(coord))
@@ -127,7 +131,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 SFCoord coord = new SFCoord(i, j);
 
                                 float cell_strength = GetStrengthAt(coord);
-                                if (map.lake_manager.GetLakeIndexAt(coord) != Utility.NO_INDEX)
+                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
                                     continue;
 
                                 terrain_sum += map.heightmap.height_data[j * map.width + i] * cell_strength;
@@ -146,7 +150,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 SFCoord coord = new SFCoord(i, j);
 
                                 float cell_strength = GetStrengthAt(coord);
-                                if (map.lake_manager.GetLakeIndexAt(coord) != Utility.NO_INDEX)
+                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
                                     continue;
 
                                 if (!op_height.PreOperatorHeights.ContainsKey(coord))
@@ -176,7 +180,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 SFCoord coord = new SFCoord(i, j);
 
                                 float cell_strength = GetStrengthAt(coord);
-                                if (map.lake_manager.GetLakeIndexAt(coord) != Utility.NO_INDEX)
+                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
                                     continue;
 
                                 if (!op_height.PreOperatorHeights.ContainsKey(coord))
@@ -214,7 +218,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 SFCoord coord = new SFCoord(i, j);
 
                                 float cell_strength = GetStrengthAt(coord);
-                                if (map.lake_manager.GetLakeIndexAt(coord) != Utility.NO_INDEX)
+                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
                                     continue;
 
                                 terrain_sum += map.heightmap.height_data[j * map.width + i] * cell_strength;
@@ -233,7 +237,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 SFCoord coord = new SFCoord(i, j);
 
                                 float cell_strength = GetStrengthAt(coord);
-                                if (map.lake_manager.GetLakeIndexAt(coord) != Utility.NO_INDEX)
+                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
                                     continue;
 
                                 if (!op_height.PreOperatorHeights.ContainsKey(coord))

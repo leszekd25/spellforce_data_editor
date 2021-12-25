@@ -14,7 +14,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 
     public partial class MapSelectTile : Form
     {
-        SFMap map = null;
+        SFEngine.SFMap.SFMap map = null;
         MapTileSelectType SelectionType { get; set; } = MapTileSelectType.BASE;
         public int SelectedTile { get; private set; } = -1;
 
@@ -23,7 +23,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             InitializeComponent();
         }
 
-        public MapSelectTile(SFMap m, MapTileSelectType t)
+        public MapSelectTile(SFEngine.SFMap.SFMap m, MapTileSelectType t)
         {
             map = m;
             SelectionType = t;

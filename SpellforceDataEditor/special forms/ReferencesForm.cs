@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using SpellforceDataEditor.SFCFF;
+using SFEngine.SFCFF;
 
 
 

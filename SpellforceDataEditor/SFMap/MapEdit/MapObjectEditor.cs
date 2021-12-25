@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
@@ -45,7 +48,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     SFCoord previous_pos = new SFCoord(0, 0);
 
                     // if dragging unit, just move selected unit, dont create a new one
-                    if ((specials.Shift) && (selected_object != Utility.NO_INDEX))
+                    if ((specials.Shift) && (selected_object != SFEngine.Utility.NO_INDEX))
                     {
                         // undo/redo
                         previous_pos = map.object_manager.objects[selected_object].grid_position;
@@ -55,7 +58,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     else if (!first_click)
                     {
                         ushort new_object_id = (ushort)placement_object;
-                        if (SFCFF.SFCategoryManager.gamedata[2050].GetElementIndex(new_object_id) == Utility.NO_INDEX)
+                        if (SFCategoryManager.gamedata[2050].GetElementIndex(new_object_id) == SFEngine.Utility.NO_INDEX)
                             return;
                         // create new unit and drag it until mouse released
 
@@ -69,7 +72,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         special_forms.MapEditorForm.AngleInfo angle_info = MainForm.mapedittool.GetAngleInfo();
                         UInt16 angle = angle_info.angle;
                         if (angle_info.random)
-                            angle = (UInt16)(MathUtils.Rand() % 360);
+                            angle = (UInt16)(SFEngine.MathUtils.Rand() % 360);
                         map.RotateObject(selected_object, angle);
                         map.object_manager.objects[selected_object].angle = angle;
 
@@ -88,7 +91,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
 
                     // undo/redo
-                    if ((selected_object != Utility.NO_INDEX) && (!first_click))
+                    if ((selected_object != SFEngine.Utility.NO_INDEX) && (!first_click))
                     {
                         op_change_pos = new map_operators.MapOperatorEntityChangeProperty()
                         {
@@ -103,7 +106,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 }
                 else if(button == MouseButtons.Right)
                 {
-                    Select(Utility.NO_INDEX);
+                    Select(SFEngine.Utility.NO_INDEX);
                     MainForm.mapedittool.InspectorSelect(null);
                 }
             }
@@ -132,7 +135,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 {
                     if (object_map_index == selected_object)
                     {
-                        Select(Utility.NO_INDEX);
+                        Select(SFEngine.Utility.NO_INDEX);
                         MainForm.mapedittool.InspectorSelect(null);
                     }
 

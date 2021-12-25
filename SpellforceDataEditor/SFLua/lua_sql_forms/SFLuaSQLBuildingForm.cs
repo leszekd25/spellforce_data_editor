@@ -7,13 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
+
 
 namespace SpellforceDataEditor.SFLua.lua_sql_forms
 {
     public partial class SFLuaSQLBuildingForm : Form
     {
         List<int> index_to_key = null;
-        int selected_id = Utility.NO_INDEX;
+        int selected_id = SFEngine.Utility.NO_INDEX;
 
         public SFLuaSQLBuildingForm()
         {
@@ -49,14 +53,14 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private string GetBuildingString(int id)
         {
-            if (!SFCFF.SFCategoryManager.ready)
+            if (!SFCategoryManager.ready)
                 return "";
-            return SFCFF.SFCategoryManager.GetBuildingName((ushort)id);
+            return SFCategoryManager.GetBuildingName((ushort)id);
         }
 
         private void ListBuildings_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListBuildings.SelectedIndex == Utility.NO_INDEX)
+            if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
             {
                 Mesh.Items.Clear();
                 SelectedMesh.Text = "";
@@ -82,12 +86,12 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void Mesh_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (selected_id == Utility.NO_INDEX)
+            if (selected_id == SFEngine.Utility.NO_INDEX)
                 return;
 
             var buildings = SFLuaEnvironment.buildings.buildings;
 
-            if (Mesh.SelectedIndex == Utility.NO_INDEX)
+            if (Mesh.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 SelectedMesh.Text = "";
             else
                 SelectedMesh.Text = buildings[selected_id].Mesh[Mesh.SelectedIndex];
@@ -95,22 +99,22 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ButtonAddMesh_Click(object sender, EventArgs e)
         {
-            if (selected_id == Utility.NO_INDEX)
+            if (selected_id == SFEngine.Utility.NO_INDEX)
                 return;
 
             var buildings = SFLuaEnvironment.buildings.buildings;
 
             buildings[selected_id].Mesh.Add("");
-            Mesh.Items.Add(Utility.S_MISSING);
+            Mesh.Items.Add(SFEngine.Utility.S_MISSING);
 
             Mesh.SelectedIndex = buildings[selected_id].Mesh.Count - 1;
         }
 
         private void ButtonRemoveMesh_Click(object sender, EventArgs e)
         {
-            if (selected_id == Utility.NO_INDEX)
+            if (selected_id == SFEngine.Utility.NO_INDEX)
                 return;
-            if (Mesh.SelectedIndex == Utility.NO_INDEX)
+            if (Mesh.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             var buildings = SFLuaEnvironment.buildings.buildings;
@@ -126,9 +130,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SelectedMesh_Validated(object sender, EventArgs e)
         {
-            if (selected_id == Utility.NO_INDEX)
+            if (selected_id == SFEngine.Utility.NO_INDEX)
                 return;
-            if (Mesh.SelectedIndex == Utility.NO_INDEX)
+            if (Mesh.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             var buildings = SFLuaEnvironment.buildings.buildings;
@@ -139,22 +143,22 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SelectionSize_Validated(object sender, EventArgs e)
         {
-            if (selected_id == Utility.NO_INDEX)
+            if (selected_id == SFEngine.Utility.NO_INDEX)
                 return;
             SFLuaEnvironment.buildings.buildings[selected_id].SelectionScaling =
-                Utility.TryParseDouble(SelectionSize.Text,
+                SFEngine.Utility.TryParseDouble(SelectionSize.Text,
                                        SFLuaEnvironment.buildings.buildings[selected_id].SelectionScaling);
         }
 
         private void BuildingID_Validated(object sender, EventArgs e)
         {
-            if (selected_id == Utility.NO_INDEX)
+            if (selected_id == SFEngine.Utility.NO_INDEX)
                 return;
 
             int previous_id = selected_id;
             int previous_index = ListBuildings.SelectedIndex;
-            lua_sql.SFLuaSQLBuildingData building = SFLuaEnvironment.buildings.buildings[previous_id];
-            int new_id = (int)Utility.TryParseUInt32(BuildingID.Text, (uint)previous_id);
+            SFEngine.SFLua.lua_sql.SFLuaSQLBuildingData building = SFLuaEnvironment.buildings.buildings[previous_id];
+            int new_id = (int)SFEngine.Utility.TryParseUInt32(BuildingID.Text, (uint)previous_id);
             if (new_id == previous_id)
                 return;
 
@@ -162,8 +166,8 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             index_to_key.RemoveAt(previous_index);
             ListBuildings.Items.RemoveAt(previous_index);
 
-            int new_index = Utility.FindNewIndexOf(index_to_key, new_id);
-            if (new_index == Utility.NO_INDEX)
+            int new_index = SFEngine.Utility.FindNewIndexOf(index_to_key, new_id);
+            if (new_index == SFEngine.Utility.NO_INDEX)
             {
                 new_index = previous_index;
                 new_id = previous_id;
@@ -187,7 +191,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
             }
 
-            lua_sql.SFLuaSQLBuildingData building = new lua_sql.SFLuaSQLBuildingData();
+            SFEngine.SFLua.lua_sql.SFLuaSQLBuildingData building = new SFEngine.SFLua.lua_sql.SFLuaSQLBuildingData();
             building.Mesh = new List<string>();
             building.SelectionScaling = 1;
 
@@ -201,7 +205,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ButtonRemove_Click(object sender, EventArgs e)
         {
-            if (selected_id == Utility.NO_INDEX)
+            if (selected_id == SFEngine.Utility.NO_INDEX)
                 return;
 
             int ind = ListBuildings.SelectedIndex;

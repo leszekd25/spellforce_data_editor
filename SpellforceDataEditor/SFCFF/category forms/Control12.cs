@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -31,7 +32,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                set_element_variant(current_element, i, 0, Utility.TryParseUInt16(textBox1.Text));
+                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -39,7 +40,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListEffects.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected, 2, Utility.TryParseUInt16(textBox3.Text));
+            set_element_variant(current_element, cur_selected, 2, SFEngine.Utility.TryParseUInt16(textBox3.Text));
             set_list_text(cur_selected);
         }
 
@@ -74,7 +75,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void button1_Click(object sender, EventArgs e)
         {
             int new_index;
-            if (ListEffects.SelectedIndex == Utility.NO_INDEX)
+            if (ListEffects.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 new_index = ListEffects.Items.Count - 1;
             else
                 new_index = ListEffects.SelectedIndex;
@@ -97,7 +98,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (ListEffects.SelectedIndex == Utility.NO_INDEX)
+            if (ListEffects.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
             if (ListEffects.Items.Count == 1)
                 return;
@@ -135,6 +136,32 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             string txt_effect = SFCategoryManager.GetEffectName(effect_id, true);
 
             return item_id.ToString() + " " + txt_item + " | " + txt_effect;
+        }
+
+        public override void on_add_subelement(int subelem_index)
+        {
+            base.on_add_subelement(subelem_index);
+
+            ListEffects.Items.Insert(subelem_index, "");
+            set_list_text(subelem_index);
+        }
+
+        public override void on_remove_subelement(int subelem_index)
+        {
+            base.on_remove_subelement(subelem_index);
+
+            ListEffects.Items.RemoveAt(subelem_index);
+        }
+
+        public override void on_update_subelement(int subelem_index)
+        {
+            base.on_update_subelement(subelem_index);
+
+            set_list_text(subelem_index);
+            if (ListEffects.SelectedIndex == subelem_index)
+            {
+                textBox3.Text = variant_repr(subelem_index, 2);
+            }
         }
     }
 }

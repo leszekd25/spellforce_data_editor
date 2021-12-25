@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -25,22 +26,22 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, Utility.TryParseUInt16(tb_effID.Text));
+            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(tb_effID.Text));
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, Utility.TryParseUInt32(textBox1.Text));
+            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt32(textBox1.Text));
         }
 
         private void tb_rng_min_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, Utility.TryParseUInt16(tb_rng_min.Text));
+            set_element_variant(current_element, 2, SFEngine.Utility.TryParseUInt16(tb_rng_min.Text));
         }
 
         private void tb_rng_max_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, Utility.TryParseUInt16(tb_rng_max.Text));
+            set_element_variant(current_element, 3, SFEngine.Utility.TryParseUInt16(tb_rng_max.Text));
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -50,7 +51,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_req4_1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 5, Utility.TryParseUInt16(tb_req4_1.Text));
+            set_element_variant(current_element, 5, SFEngine.Utility.TryParseUInt16(tb_req4_1.Text));
         }
 
         public override void show_element()
@@ -89,12 +90,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             UInt32 map_id = (UInt32)category[index][1];
 
             if (SFCategoryManager.gamedata[2052] == null)
-                map_handle = Utility.S_UNKNOWN;
+                map_handle = SFEngine.Utility.S_UNKNOWN;
             else
             {
                 SFCategoryElement map_elem = SFCategoryManager.gamedata[2052].FindElementBinary<UInt32>(0, map_id);
                 if (map_elem == null)
-                    map_handle = Utility.S_NONAME;
+                    map_handle = SFEngine.Utility.S_NONAME;
                 else
                     map_handle = map_elem[2].ToString();
             }

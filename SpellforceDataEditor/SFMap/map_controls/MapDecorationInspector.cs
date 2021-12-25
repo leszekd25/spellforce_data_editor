@@ -5,6 +5,9 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -47,11 +50,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void DecGroupData_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex == Utility.NO_INDEX)
+            if (e.RowIndex == SFEngine.Utility.NO_INDEX)
                 return;
             
-            ushort new_id = Utility.TryParseUInt16(DecGroupData.Rows[e.RowIndex].Cells[0].Value.ToString());
-            byte new_weight = Utility.TryParseUInt8(DecGroupData.Rows[e.RowIndex].Cells[1].Value.ToString());
+            ushort new_id = SFEngine.Utility.TryParseUInt16(DecGroupData.Rows[e.RowIndex].Cells[0].Value.ToString());
+            byte new_weight = SFEngine.Utility.TryParseUInt8(DecGroupData.Rows[e.RowIndex].Cells[1].Value.ToString());
 
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorDecorationModifyGroup()
             {

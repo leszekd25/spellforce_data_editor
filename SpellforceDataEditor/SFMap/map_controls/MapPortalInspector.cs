@@ -5,6 +5,9 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -36,14 +39,14 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private string GetPortalString(SFMapPortal portal)
         {
             string ret = "";
-            if (SFCFF.SFCategoryManager.ready)
+            if (SFCategoryManager.ready)
             {
                 int portal_id = portal.game_id;
-                int portal_index = SFCFF.SFCategoryManager.gamedata[2053].GetElementIndex(portal_id);
-                if (portal_index != Utility.NO_INDEX)
+                int portal_index = SFCategoryManager.gamedata[2053].GetElementIndex(portal_id);
+                if (portal_index != SFEngine.Utility.NO_INDEX)
                 {
-                    SFCFF.SFCategoryElement portal_data = SFCFF.SFCategoryManager.gamedata[2053][portal_index];
-                    ret += SFCFF.SFCategoryManager.GetTextFromElement(portal_data, 5);
+                    SFCategoryElement portal_data = SFCategoryManager.gamedata[2053][portal_index];
+                    ret += SFCategoryManager.GetTextFromElement(portal_data, 5);
                 }
             }
             ret += portal.grid_position.ToString();
@@ -106,7 +109,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ListPortals_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListPortals.SelectedIndex == Utility.NO_INDEX)
+            if (ListPortals.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             PanelProperties.Enabled = true;
@@ -125,7 +128,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void PortalID_Validated(object sender, EventArgs e)
         {
-            if (ListPortals.SelectedIndex == Utility.NO_INDEX)
+            if (ListPortals.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             // undo/redo
@@ -135,20 +138,20 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 index = ListPortals.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.ID,
                 PreChangeProperty = map.portal_manager.portals[ListPortals.SelectedIndex].game_id,
-                PostChangeProperty = Utility.TryParseUInt16(PortalID.Text)
+                PostChangeProperty = SFEngine.Utility.TryParseUInt16(PortalID.Text)
             });
 
-            map.portal_manager.portals[ListPortals.SelectedIndex].game_id = Utility.TryParseUInt16(PortalID.Text);
+            map.portal_manager.portals[ListPortals.SelectedIndex].game_id = SFEngine.Utility.TryParseUInt16(PortalID.Text);
         }
 
         private void Angle_Validated(object sender, EventArgs e)
         {
-            if (ListPortals.SelectedIndex == Utility.NO_INDEX)
+            if (ListPortals.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapPortal portal = map.portal_manager.portals[ListPortals.SelectedIndex];
 
-            int v = Utility.TryParseUInt16(Angle.Text, (ushort)portal.angle);
+            int v = SFEngine.Utility.TryParseUInt16(Angle.Text, (ushort)portal.angle);
             v = (v >= 0 ? (v <= 359 ? v : 359) : 0);
 
             // undo/redo
@@ -166,7 +169,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
         {
-            if (ListPortals.SelectedIndex == Utility.NO_INDEX)
+            if (ListPortals.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapPortal portal = map.portal_manager.portals[ListPortals.SelectedIndex];
@@ -180,7 +183,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         // this is to make sure the undo/redo queue only receives the latest angle changed as an action to perform
         private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
         {
-            if (ListPortals.SelectedIndex == Utility.NO_INDEX)
+            if (ListPortals.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             trackbar_clicked = true;
@@ -225,9 +228,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(PortalID.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[2053].GetElementIndex(elem_id);
-                if (real_elem_id != Utility.NO_INDEX)
+                int elem_id = SFEngine.Utility.TryParseUInt16(PortalID.Text);
+                int real_elem_id = SFCategoryManager.gamedata[2053].GetElementIndex(elem_id);
+                if (real_elem_id != SFEngine.Utility.NO_INDEX)
                     MainForm.data.Tracer_StepForward(38, real_elem_id);
             }
         }

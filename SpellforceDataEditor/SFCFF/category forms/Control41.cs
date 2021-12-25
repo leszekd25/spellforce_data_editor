@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
+
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -21,12 +23,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_sd1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, Utility.TryParseUInt16(tb_sd1.Text));
+            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(tb_sd1.Text));
         }
 
         private void tb_sd2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, Utility.TryParseUInt16(tb_sd2.Text));
+            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt16(tb_sd2.Text));
         }
 
         public override void show_element()
@@ -44,10 +46,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 if (SFCategoryManager.gamedata[2016] == null)
                     return;
 
-                int cur_id = Utility.TryParseInt32(tb_sd2.Text);
+                int cur_id = SFEngine.Utility.TryParseInt32(tb_sd2.Text);
                 int ind = SFCategoryManager.gamedata[2016].GetElementIndex(cur_id);
 
-                if ((ind == Utility.NO_INDEX)||(ind == 0))
+                if ((ind == SFEngine.Utility.NO_INDEX)||(ind == 0))
                 {
                     int new_id;
                     int new_ind;

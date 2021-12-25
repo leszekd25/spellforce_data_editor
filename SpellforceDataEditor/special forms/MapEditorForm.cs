@@ -1,6 +1,15 @@
 ﻿using OpenTK;
-using SpellforceDataEditor.SF3D.SFRender;
-using SpellforceDataEditor.SFMap;
+using SFEngine;
+using SFEngine.SF3D;
+using SFEngine.SF3D.SFRender;
+using SFEngine.SF3D.UI;
+using SFEngine.SF3D.SceneSynchro;
+using SFEngine.SF3D.Physics;
+using SFEngine.SFMap;
+using SFEngine.SFResources;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
+using SFEngine.SFUnPak;
 using SpellforceDataEditor.SFMap.MapEdit;
 using System;
 using System.Collections.Generic;
@@ -42,32 +51,32 @@ namespace SpellforceDataEditor.special_forms
             };
 
 
-            SF3D.UI.UIElementIndex image_minimap;
-            SF3D.UI.UIElementIndex image_minimap_frame_left;
-            SF3D.UI.UIElementIndex image_minimap_frame_top;
-            SF3D.UI.UIElementIndex image_minimap_icons_border;
-            SF3D.UI.UIElementIndex image_minimap_icons;
+            UIElementIndex image_minimap;
+            UIElementIndex image_minimap_frame_left;
+            UIElementIndex image_minimap_frame_top;
+            UIElementIndex image_minimap_icons_border;
+            UIElementIndex image_minimap_icons;
             int next_icon = 0;
             bool icons_visible = true;
 
             // minimap texture
-            public SF3D.SFTexture minimap_tex { get; private set; } = null;
-            public SF3D.SFTexture minimap_icons_tex { get; private set; } = null;
+            public SFTexture minimap_tex { get; private set; } = null;
+            public SFTexture minimap_icons_tex { get; private set; } = null;
 
-            SFMap.SFMap map = null;
+            SFEngine.SFMap.SFMap map = null;
             int minimap_size;
             bool resizing = false;
             bool clicked = false;
             SFCoord clicked_pos = new SFCoord(0, 0);
 
-            public MapEditorUI(SFMap.SFMap _map)
+            public MapEditorUI(SFEngine.SFMap.SFMap _map)
             {
                 map = _map;
             }
 
             public void InitMinimap(int m_width, int m_height)
             {
-                minimap_tex = SF3D.SFTexture.RGBAImage((ushort)m_width, (ushort)m_height);
+                minimap_tex = SFTexture.RGBAImage((ushort)m_width, (ushort)m_height);
                 minimap_tex.Init();
                 minimap_tex.SetName("minimap");
 
@@ -79,13 +88,13 @@ namespace SpellforceDataEditor.special_forms
                 image_minimap_frame_top = SFRenderEngine.ui.AddElementImage(SFRenderEngine.opaque_tex, new Vector2(m_width, 3), new Vector2(0, 0), new Vector2(0, 0), false);
 
                 // minimap icons
-                int tex_code = SFResources.SFResourceManager.Textures.Load("ui_oth1", (int)1);
+                int tex_code = SFResourceManager.Textures.Load("ui_oth1", (int)1);
                 if ((tex_code != 0) && (tex_code != -1))
                 {
-                    LogUtils.Log.Error(LogUtils.LogSource.SF3D, "MapEditorUI.InitMinimap(): Could not load texture (texture name = ui_oth1)");
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SF3D, "MapEditorUI.InitMinimap(): Could not load texture (texture name = ui_oth1)");
                     throw new Exception("MapEditorUI.InitMinimap(): Could not load texture ui_oth1");
                 }
-                minimap_icons_tex = SFResources.SFResourceManager.Textures.Get("ui_oth1");
+                minimap_icons_tex = SFResourceManager.Textures.Get("ui_oth1");
 
                 // 2000 units, 1000 buildings, 500 interactive objects, 100 portals
                 SFRenderEngine.ui.AddStorage(minimap_icons_tex, 7200);
@@ -152,7 +161,7 @@ namespace SpellforceDataEditor.special_forms
                 Color col = hmap.texture_manager.tile_average_color[tile_id];
                 foreach (SFCoord p in pixels)
                 {
-                    if (map.lake_manager.GetLakeIndexAt(p) != Utility.NO_INDEX)
+                    if (map.lake_manager.GetLakeIndexAt(p) != SFEngine.Utility.NO_INDEX)
                         continue;
 
                     int i = p.x;
@@ -192,7 +201,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     int i = p.x;
                     int j = p.y;
-                    if (map.lake_manager.GetLakeIndexAt(p) != Utility.NO_INDEX)
+                    if (map.lake_manager.GetLakeIndexAt(p) != SFEngine.Utility.NO_INDEX)
                     {
                         Color col = map.lake_manager.GetLakeMinimapColor(map.lake_manager.lakes[map.lake_manager.GetLakeIndexAt(p)].type);
 
@@ -278,21 +287,21 @@ namespace SpellforceDataEditor.special_forms
             private int GetUnitRelationToMainChar(int unit_id)
             {
                 // clan player = 11
-                var unit_data = SFCFF.SFCategoryManager.gamedata[2024].FindElementBinary(0, (ushort)unit_id);
+                var unit_data = SFCategoryManager.gamedata[2024].FindElementBinary(0, (ushort)unit_id);
                 if (unit_data == null)
                     return 6;
-                var unit_stats_data = SFCFF.SFCategoryManager.gamedata[2005].FindElementBinary(0, (ushort)unit_data[2]);
+                var unit_stats_data = SFCategoryManager.gamedata[2005].FindElementBinary(0, (ushort)unit_data[2]);
                 if (unit_stats_data == null)
                     return 6;
-                var race_data = SFCFF.SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)unit_stats_data[2]);
+                var race_data = SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)unit_stats_data[2]);
                 if (race_data == null)
                     return 6;
 
-                var clan_data_index = SFCFF.SFCategoryManager.gamedata[2023].FindMultipleElementIndexBinary(0, (byte)((ushort)race_data[9]));
-                if (clan_data_index == Utility.NO_INDEX)
+                var clan_data_index = SFCategoryManager.gamedata[2023].FindMultipleElementIndexBinary(0, (byte)((ushort)race_data[9]));
+                if (clan_data_index == SFEngine.Utility.NO_INDEX)
                     return 6;
 
-                var clan_data = SFCFF.SFCategoryManager.gamedata[2023].element_lists[clan_data_index];
+                var clan_data = SFCategoryManager.gamedata[2023].element_lists[clan_data_index];
                 var player_relation = (byte)clan_data[10][2];
                 if (player_relation == 0)
                     return 1;
@@ -306,24 +315,24 @@ namespace SpellforceDataEditor.special_forms
             private int GetBuildingRelationToMainChar(SFMapBuilding bld)
             {
                 // clan player = 11
-                SFCFF.SFCategoryElement race_data;
+                SFCategoryElement race_data;
                 if (bld.race_id == 0)
                 {
-                    var building_data = SFCFF.SFCategoryManager.gamedata[2029].FindElementBinary(0, (ushort)bld.game_id);
+                    var building_data = SFCategoryManager.gamedata[2029].FindElementBinary(0, (ushort)bld.game_id);
                     if (building_data == null)
                         return 6;
-                    race_data = SFCFF.SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)building_data[1]);
+                    race_data = SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)building_data[1]);
                 }
                 else
-                    race_data = SFCFF.SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)bld.race_id);
+                    race_data = SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)bld.race_id);
                 if (race_data == null)
                     return 6;
 
-                var clan_data_index = SFCFF.SFCategoryManager.gamedata[2023].FindMultipleElementIndexBinary(0, (byte)((ushort)race_data[9]));
-                if (clan_data_index == Utility.NO_INDEX)
+                var clan_data_index = SFCategoryManager.gamedata[2023].FindMultipleElementIndexBinary(0, (byte)((ushort)race_data[9]));
+                if (clan_data_index == SFEngine.Utility.NO_INDEX)
                     return 6;
 
-                var clan_data = SFCFF.SFCategoryManager.gamedata[2023].element_lists[clan_data_index];
+                var clan_data = SFCategoryManager.gamedata[2023].element_lists[clan_data_index];
                 var player_relation = (byte)clan_data[10][2];
                 if (player_relation == 0)
                     return 1;
@@ -499,9 +508,9 @@ namespace SpellforceDataEditor.special_forms
         // essentially, this is an implementation of undo/redo function in map editor
         public class MapEditorOperatorQueue
         {
-            public SFMap.SFMap map = null;
+            public SFEngine.SFMap.SFMap map = null;
             public List<SFMap.map_operators.IMapOperator> operators { get; private set; } = new List<SFMap.map_operators.IMapOperator>();
-            public int current_operator { get; set; } = Utility.NO_INDEX;
+            public int current_operator { get; set; } = SFEngine.Utility.NO_INDEX;
 
             // operator queue can contain clusters
             // cluster is a sub-list of operators
@@ -543,7 +552,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 if(IsClusterOpen())
                 {
-                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "MapEditorOperatorQueue.OpenCluster(): Another cluster is already open, skipping");
+                    SFEngine.LogUtils.Log.Warning(SFEngine.LogUtils.LogSource.SFMap, "MapEditorOperatorQueue.OpenCluster(): Another cluster is already open, skipping");
                     return;
                 }
 
@@ -575,7 +584,7 @@ namespace SpellforceDataEditor.special_forms
                     }
                 }
                 else
-                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "MapEditorOperatorQueue.CloseCluster(): Not a cluster, or already closed!");
+                    SFEngine.LogUtils.Log.Warning(SFEngine.LogUtils.LogSource.SFMap, "MapEditorOperatorQueue.CloseCluster(): Not a cluster, or already closed!");
 
 
             }
@@ -585,10 +594,10 @@ namespace SpellforceDataEditor.special_forms
             // will do nothing if there are no actions to undo
             public void Undo()
             {
-                if (current_operator == Utility.NO_INDEX)
+                if (current_operator == SFEngine.Utility.NO_INDEX)
                     return;
 
-                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorOperatorQueue.Undo(): operator " + operators[current_operator].ToString());
+                SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMap, "MapEditorOperatorQueue.Undo(): operator " + operators[current_operator].ToString());
                 operators[current_operator].Revert(map);
                 current_operator -= 1;
 
@@ -605,7 +614,7 @@ namespace SpellforceDataEditor.special_forms
                     return;
 
                 current_operator += 1;
-                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorOperatorQueue.Redo(): operator " + operators[current_operator].ToString());
+                SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMap, "MapEditorOperatorQueue.Redo(): operator " + operators[current_operator].ToString());
                 operators[current_operator].Apply(map);
 
                 if (MainForm.mapedittool.undohistory_form != null)
@@ -614,7 +623,7 @@ namespace SpellforceDataEditor.special_forms
         }
 
 
-        SFMap.SFMap map = null;
+        SFEngine.SFMap.SFMap map = null;
         public bool ready = false;
 
         GLControl RenderWindow = null;
@@ -692,15 +701,15 @@ namespace SpellforceDataEditor.special_forms
                 {
                     SFRenderEngine.scene.atmosphere.Dispose();
 
-                    SF3D.SFSubModel3D.Cache.Dispose();
-                    SF3D.SFModelSkinChunk.Cache.Dispose();
+                    SFSubModel3D.Cache.Dispose();
+                    SFModelSkinChunk.Cache.Dispose();
 
                     DestroyRenderWindow();
                 }
 
-                if((SFCFF.SFCategoryManager.ready)&&(MainForm.data == null))
+                if((SFCategoryManager.ready)&&(MainForm.data == null))
                 {
-                    SFCFF.SFCategoryManager.UnloadAll();
+                    SFCategoryManager.UnloadAll();
                 }
             }
         }
@@ -763,11 +772,11 @@ namespace SpellforceDataEditor.special_forms
 
         private int CreateMap()
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap() called");
+            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap() called");
 
             // get new map parameters
             ushort map_size = 0;
-            SFMap.MapGen.MapGenerator generator = null;
+            SFEngine.SFMap.MapGen.MapGenerator generator = null;
             SFMap.map_dialog.MapPromptNewMap newmap = new SFMap.map_dialog.MapPromptNewMap();
             if (newmap.ShowDialog() == DialogResult.OK)
             {
@@ -782,7 +791,7 @@ namespace SpellforceDataEditor.special_forms
                 return -1;
 
             // close current gamedata
-            bool is_gd_correct = ((SFCFF.SFCategoryManager.gamedata != null) && (SFCFF.SFCategoryManager.gamedata.fname == SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff"));
+            bool is_gd_correct = ((SFCategoryManager.gamedata != null) && (SFCategoryManager.gamedata.fname == SFUnPak.game_directory_name + "\\data\\GameData.cff"));
 
             if (!is_gd_correct)
             {
@@ -797,8 +806,8 @@ namespace SpellforceDataEditor.special_forms
                         }
                     }
                 }
-                else if (SFCFF.SFCategoryManager.ready)
-                    SFCFF.SFCategoryManager.UnloadAll();
+                else if (SFCategoryManager.ready)
+                    SFCategoryManager.UnloadAll();
             }
 
             // first, load view
@@ -809,20 +818,20 @@ namespace SpellforceDataEditor.special_forms
                 if(!initialized_view)
                 {
                     StatusText.Text = "Could not initialize view. Aborting";
-                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap(): Failed to initialize view!");
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap(): Failed to initialize view!");
                     return -1;
                 }
             }
 
             // load SQL Lua files
-            if (!SFLua.SFLuaEnvironment.data_loaded)
+            if (!SFLuaEnvironment.data_loaded)
             {
                 ForceSetStatusText("Loading SQL Lua files...", Color.Blue);
-                SFLua.SFLuaEnvironment.LoadSQL(false);
-                if (!SFLua.SFLuaEnvironment.data_loaded)
+                SFLuaEnvironment.LoadSQL(false);
+                if (!SFLuaEnvironment.data_loaded)
                 {
                     StatusText.Text = "Could not load SQL Lua files. Can't create new map";
-                    LogUtils.Log.Error(LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap(): Failed to load SQL data!");
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap(): Failed to load SQL data!");
                     return -1;
                 }
             }
@@ -831,7 +840,7 @@ namespace SpellforceDataEditor.special_forms
             if (!is_gd_correct)
             {
                 ForceSetStatusText("Loading GameData.cff...", Color.DarkOrange);
-                if (SFCFF.SFCategoryManager.gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
+                if (SFCategoryManager.gamedata.Load(SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
                 {
                     StatusText.Text = "Failed to load gamedata";
                     return -2;
@@ -840,20 +849,20 @@ namespace SpellforceDataEditor.special_forms
                 if (MainForm.data != null)
                     MainForm.data.mapeditor_set_gamedata();
                 else
-                    SFCFF.SFCategoryManager.manual_SetGamedata();
+                    SFCategoryManager.manual_SetGamedata();
             }
 
             // load resource names
-            if (!SFResources.SFResourceManager.ready)
+            if (!SFResourceManager.ready)
             {
                 ForceSetStatusText("Loading resource names...", Color.Purple);
-                SFResources.SFResourceManager.FindAllMeshes();
+                SFResourceManager.FindAllMeshes();
             }
 
             SFRenderEngine.scene.root.Visible = true;
 
             // create and generate map
-            map = new SFMap.SFMap();
+            map = new SFEngine.SFMap.SFMap();
             map.OnMapLoadStateChange = ForceSetStatusText;
             map.CreateDefault(map_size, generator);
 
@@ -878,12 +887,12 @@ namespace SpellforceDataEditor.special_forms
             RenderWindow.Enabled = true;
             RenderWindow.Invalidate();
 
-            if (Settings.DynamicMap)
+            if (SFEngine.Settings.DynamicMap)
                 EnableAnimation(true);
 
             if (MainForm.data != null)
             {
-                LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap(): Synchronized with gamedata editor");
+                SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap(): Synchronized with gamedata editor");
                 if (!is_gd_correct) 
                     MessageBox.Show("Note: Editor now operates on gamedata file in your Spellforce directory. Modifying in-editor gamedata and saving results will result in permanent change to your gamedata in your Spellforce directory.");
             }
@@ -893,8 +902,8 @@ namespace SpellforceDataEditor.special_forms
             GC.Collect();
             this.Text = "Map Editor - new map";
 
-            LogUtils.Log.TotalMemoryUsage();
-            SFResources.SFResourceManager.LogMemoryUsage();
+            SFEngine.LogUtils.Log.TotalMemoryUsage();
+            SFResourceManager.LogMemoryUsage();
             return 0;
         }
 
@@ -907,11 +916,11 @@ namespace SpellforceDataEditor.special_forms
 
         private int LoadMap()
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap() called");
+            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap() called");
 
             if (OpenMap.ShowDialog() == DialogResult.OK)
             {
-                bool is_gd_correct = ((SFCFF.SFCategoryManager.gamedata != null) && (SFCFF.SFCategoryManager.gamedata.fname == SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff"));
+                bool is_gd_correct = ((SFCategoryManager.gamedata != null) && (SFCategoryManager.gamedata.fname == SFUnPak.game_directory_name + "\\data\\GameData.cff"));
                 // check if gamedata is open in the editor and prompt to close it
                 if (!is_gd_correct)
                 {
@@ -926,8 +935,8 @@ namespace SpellforceDataEditor.special_forms
                             }
                         }
                     }
-                    else if (SFCFF.SFCategoryManager.ready)
-                        SFCFF.SFCategoryManager.UnloadAll();
+                    else if (SFCategoryManager.ready)
+                        SFCategoryManager.UnloadAll();
                 }
 
                 // first, load view
@@ -938,20 +947,20 @@ namespace SpellforceDataEditor.special_forms
                     if (!initialized_view)
                     {
                         StatusText.Text = "Could not initialize view. Aborting";
-                        LogUtils.Log.Error(LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap(): Failed to initialize view!");
+                        SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap(): Failed to initialize view!");
                         return -1;
                     }
                 }
 
                 // load SQL Lua files
-                if (!SFLua.SFLuaEnvironment.data_loaded)
+                if (!SFLuaEnvironment.data_loaded)
                 {
                     ForceSetStatusText("Loading SQL Lua files...", Color.Blue);
-                    SFLua.SFLuaEnvironment.LoadSQL(false);
-                    if (!SFLua.SFLuaEnvironment.data_loaded)
+                    SFLuaEnvironment.LoadSQL(false);
+                    if (!SFLuaEnvironment.data_loaded)
                     {
                         StatusText.Text = "Could not load SQL Lua files. Can't load map.";
-                        LogUtils.Log.Error(LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap(): Failed to load SQL data!");
+                        SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap(): Failed to load SQL data!");
                         return -1;
                     }
                 }
@@ -960,7 +969,7 @@ namespace SpellforceDataEditor.special_forms
                 if (!is_gd_correct)
                 {
                     ForceSetStatusText("Loading GameData.cff...", Color.DarkOrange);
-                    if (SFCFF.SFCategoryManager.gamedata.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
+                    if (SFCategoryManager.gamedata.Load(SFUnPak.game_directory_name + "\\data\\GameData.cff") != 0)
                     {
                         StatusText.Text = "Failed to load gamedata";
                         return -2;
@@ -969,19 +978,19 @@ namespace SpellforceDataEditor.special_forms
                     if (MainForm.data != null)
                         MainForm.data.mapeditor_set_gamedata();
                     else
-                        SFCFF.SFCategoryManager.manual_SetGamedata();
+                        SFCategoryManager.manual_SetGamedata();
                 }
 
                 // load resource names
-                if(!SFResources.SFResourceManager.ready)
+                if(!SFResourceManager.ready)
                 {
                     ForceSetStatusText("Loading resource names...", Color.Purple);
-                    SFResources.SFResourceManager.FindAllMeshes();
+                    SFResourceManager.FindAllMeshes();
                 }
 
                 SFRenderEngine.scene.root.Visible = true;
 
-                map = new SFMap.SFMap();
+                map = new SFEngine.SFMap.SFMap();
                 map.OnMapLoadStateChange = ForceSetStatusText;
                 try
                 {
@@ -1021,12 +1030,12 @@ namespace SpellforceDataEditor.special_forms
                 RenderWindow.Enabled = true;
                 RenderWindow.Invalidate();
 
-                if (Settings.DynamicMap)
+                if (SFEngine.Settings.DynamicMap)
                     EnableAnimation(true);
 
                 if (MainForm.data != null)
                 {
-                    LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap(): Synchronized with gamedata editor");
+                    SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap(): Synchronized with gamedata editor");
                     if (!is_gd_correct) 
                         MessageBox.Show("Note: Editor now operates on gamedata file in your Spellforce directory. Modifying in-editor gamedata and saving results will result in permanent change to your gamedata in your Spellforce directory.");
                 }
@@ -1037,8 +1046,8 @@ namespace SpellforceDataEditor.special_forms
 
                 ready = true;
 
-                LogUtils.Log.TotalMemoryUsage();
-                SFResources.SFResourceManager.LogMemoryUsage();
+                SFEngine.LogUtils.Log.TotalMemoryUsage();
+                SFResourceManager.LogMemoryUsage();
                 return 0;
             }
 
@@ -1049,7 +1058,7 @@ namespace SpellforceDataEditor.special_forms
 
         private DialogResult SaveMap()
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.SaveMap() called");
+            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMap, "MapEditorForm.SaveMap() called");
 
             if (map == null)
                 return DialogResult.No;
@@ -1082,8 +1091,8 @@ namespace SpellforceDataEditor.special_forms
 
         private int CloseMap()
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "MapEditorForm.CloseMap() called");
-            SFResources.SFResourceManager.LogMemoryUsage();
+            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMap, "MapEditorForm.CloseMap() called");
+            SFResourceManager.LogMemoryUsage();
 
             if (map == null)
                 return 0;
@@ -1136,8 +1145,8 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.tex_list_simple.Clear();*/
             SFRenderEngine.scene.Clear();
 
-            SF3D.SFSubModel3D.Cache.Clear();
-            SF3D.SFModelSkinChunk.Cache.Clear();
+            SFSubModel3D.Cache.Clear();
+            SFModelSkinChunk.Cache.Clear();
 
             //ui.UninitMinimap();
             if (ui != null)
@@ -1156,13 +1165,13 @@ namespace SpellforceDataEditor.special_forms
                 MainForm.viewer.ResetScene();
             map = null;
             // for good measure (bad! bad!) (TODO: make this do nothing since all resources should be properly disposed at this point)
-            SFResources.SFResourceManager.DisposeAll();
+            SFResourceManager.DisposeAll();
             //DestroyRenderWindow();
             this.Text = "Map Editor";
             GC.Collect();
 
-            LogUtils.Log.TotalMemoryUsage();
-            SFResources.SFResourceManager.LogMemoryUsage();
+            SFEngine.LogUtils.Log.TotalMemoryUsage();
+            SFResourceManager.LogMemoryUsage();
 
             return 0;
         }
@@ -1184,7 +1193,7 @@ namespace SpellforceDataEditor.special_forms
             RenderWindow.Location = new Point(xstart, ystart);
             RenderWindow.Size = new Size(w_width, w_height);
             RenderWindow.Enabled = false;
-            RenderWindow.VSync = Settings.VSync;
+            RenderWindow.VSync = SFEngine.Settings.VSync;
 
             RenderWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.RenderWindow_Paint);
             RenderWindow.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RenderWindow_MouseDown);
@@ -1204,11 +1213,11 @@ namespace SpellforceDataEditor.special_forms
             // set light direction (move somewhere else in the future, before this function is called)
             SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
             // set up object fadein fadeout
-            SFRenderEngine.SetObjectFadeRange(Settings.ObjectFadeMin, Settings.ObjectFadeMax);
+            SFRenderEngine.SetObjectFadeRange(SFEngine.Settings.ObjectFadeMin, SFEngine.Settings.ObjectFadeMax);
 
             initialized_view = true;
 
-            LogUtils.Log.TotalMemoryUsage();
+            SFEngine.LogUtils.Log.TotalMemoryUsage();
         }
 
         // after this is called, memory will be freed (?)
@@ -1297,8 +1306,8 @@ namespace SpellforceDataEditor.special_forms
         // enables unit animation, if DynamicMap is enabled
         public void EnableAnimation(bool force_load = false)
         {
-            dynamic_render = Settings.DynamicMap;
-            if (!Settings.DynamicMap)
+            dynamic_render = SFEngine.Settings.DynamicMap;
+            if (!SFEngine.Settings.DynamicMap)
                 return;
             SFRenderEngine.scene.delta_timer.Restart();
             if (!force_load)
@@ -1323,7 +1332,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 foreach (var unit in map.unit_manager.units)
                 {
-                    foreach (SF3D.SceneSynchro.SceneNodeAnimated anim_node in unit.node.Children)
+                    foreach (SceneNodeAnimated anim_node in unit.node.Children)
                     {
                         anim_node.SetAnimation(null, false);
                         anim_node.SetSkeletonSkin(anim_node.Skeleton, anim_node.Skin);
@@ -1410,7 +1419,7 @@ namespace SpellforceDataEditor.special_forms
                     wy = py / RenderWindow.Size.Height;
                     Vector3 r_start = SFRenderEngine.scene.camera.position;
                     Vector3 r_end = SFRenderEngine.scene.camera.ScreenToWorld(new Vector2(wx, wy));
-                    SF3D.Physics.Ray ray = new SF3D.Physics.Ray(r_start, r_end - r_start) { Length = 400 };
+                    Ray ray = new Ray(r_start, r_end - r_start) { Length = 400 };
 
                     Vector3 result = new Vector3(0, 0, 0);
                     bool ray_success = ray.Intersect(map.heightmap, out result);
@@ -1462,9 +1471,14 @@ namespace SpellforceDataEditor.special_forms
                 map.ocean.SetPosition(SFRenderEngine.scene.camera.position);
                 SFRenderEngine.UpdateVisibleChunks();
                 map.selection_helper.Update();
-                SFRenderEngine.scene.Update();
+
+                SFRenderEngine.scene.delta_timer.Stop();
+                SFRenderEngine.scene.deltatime = SFRenderEngine.scene.delta_timer.ElapsedMilliseconds / (float)1000;
+                SFRenderEngine.scene.delta_timer.Restart();
+                SFRenderEngine.scene.Update(SFRenderEngine.scene.deltatime);
+
                 SFRenderEngine.ui.Update();
-                if (Settings.EnableCascadeShadows)
+                if (SFEngine.Settings.EnableCascadeShadows)
                 {
                     SFRenderEngine.scene.atmosphere.sun_light.CalculateCascadeLightMatrix(SFRenderEngine.scene.camera);
                 }
@@ -1542,7 +1556,7 @@ namespace SpellforceDataEditor.special_forms
 
             float xmin, xmax, ymin, ymax, zmin, zmax;
             xmin = 9999; ymin = 9999; xmax = -9999; ymax = -9999; zmin = 9999; zmax = -9999;
-            foreach (SF3D.SceneSynchro.SceneNodeMapChunk chunk_node in map.heightmap.visible_chunks)
+            foreach (SceneNodeMapChunk chunk_node in map.heightmap.visible_chunks)
             {
                 Vector3 pos = chunk_node.position;
 
@@ -1563,7 +1577,7 @@ namespace SpellforceDataEditor.special_forms
                 if (chunk_node.MapChunk.aabb.b.Y > zmax)
                     zmax = chunk_node.MapChunk.aabb.b.Y;
             }
-            SF3D.Physics.BoundingBox aabb = new SF3D.Physics.BoundingBox(new Vector3(xmin, zmin, ymin), new Vector3(xmax, zmax, ymax));
+            BoundingBox aabb = new BoundingBox(new Vector3(xmin, zmin, ymin), new Vector3(xmax, zmax, ymax));
             //SF3D.Physics.BoundingBox aabb = SF3D.Physics.BoundingBox.FromPoints(SFRenderEngine.scene.camera.Frustum.frustum_vertices);
 
             SFRenderEngine.scene.atmosphere.sun_light.SetupLightView(aabb);
@@ -1734,13 +1748,13 @@ namespace SpellforceDataEditor.special_forms
                     AddCameraZoom(1);
                     return true;
                 case Keys.G | Keys.Control:
-                    Settings.DisplayGrid = !Settings.DisplayGrid;
-                    SF3D.SFRender.SFRenderEngine.RecompileMainShaders();
+                    SFEngine.Settings.DisplayGrid = !SFEngine.Settings.DisplayGrid;
+                    SFRenderEngine.RecompileMainShaders();
                     update_render = true;
                     return true;
                 case Keys.H | Keys.Control:
-                    Settings.VisualizeHeight = !Settings.VisualizeHeight;
-                    SF3D.SFRender.SFRenderEngine.RecompileMainShaders();
+                    SFEngine.Settings.VisualizeHeight = !SFEngine.Settings.VisualizeHeight;
+                    SFRenderEngine.RecompileMainShaders();
                     update_render = true;
                     return true;
                 case Keys.M | Keys.Control:
@@ -1832,70 +1846,70 @@ namespace SpellforceDataEditor.special_forms
                 case Keys.D1 | Keys.Control:
                     if (QuickSelect_GetCurrent() != null)
                     {
-                        QuickSelect_GetCurrent().ID[0] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect_GetCurrent().ID[0] = SFEngine.Utility.TryParseUInt16(EntityID.Text, 0);
                         QuickSelect.UpdateIDs();
                     }
                     return true;
                 case Keys.D2 | Keys.Control:
                     if (QuickSelect_GetCurrent() != null)
                     {
-                        QuickSelect_GetCurrent().ID[1] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect_GetCurrent().ID[1] = SFEngine.Utility.TryParseUInt16(EntityID.Text, 0);
                         QuickSelect.UpdateIDs();
                     }
                     return true;
                 case Keys.D3 | Keys.Control:
                     if (QuickSelect_GetCurrent() != null)
                     {
-                        QuickSelect_GetCurrent().ID[2] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect_GetCurrent().ID[2] = SFEngine.Utility.TryParseUInt16(EntityID.Text, 0);
                         QuickSelect.UpdateIDs();
                     }
                     return true;
                 case Keys.D4 | Keys.Control:
                     if (QuickSelect_GetCurrent() != null)
                     {
-                        QuickSelect_GetCurrent().ID[3] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect_GetCurrent().ID[3] = SFEngine.Utility.TryParseUInt16(EntityID.Text, 0);
                         QuickSelect.UpdateIDs();
                     }
                     return true;
                 case Keys.D5 | Keys.Control:
                     if (QuickSelect_GetCurrent() != null)
                     {
-                        QuickSelect_GetCurrent().ID[4] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect_GetCurrent().ID[4] = SFEngine.Utility.TryParseUInt16(EntityID.Text, 0);
                         QuickSelect.UpdateIDs();
                     }
                     return true;
                 case Keys.D6 | Keys.Control:
                     if (QuickSelect_GetCurrent() != null)
                     {
-                        QuickSelect_GetCurrent().ID[5] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect_GetCurrent().ID[5] = SFEngine.Utility.TryParseUInt16(EntityID.Text, 0);
                         QuickSelect.UpdateIDs();
                     }
                     return true;
                 case Keys.D7 | Keys.Control:
                     if (QuickSelect_GetCurrent() != null)
                     {
-                        QuickSelect_GetCurrent().ID[6] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect_GetCurrent().ID[6] = SFEngine.Utility.TryParseUInt16(EntityID.Text, 0);
                         QuickSelect.UpdateIDs();
                     }
                     return true;
                 case Keys.D8 | Keys.Control:
                     if (QuickSelect_GetCurrent() != null)
                     {
-                        QuickSelect_GetCurrent().ID[7] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect_GetCurrent().ID[7] = SFEngine.Utility.TryParseUInt16(EntityID.Text, 0);
                         QuickSelect.UpdateIDs();
                     }
                     return true;
                 case Keys.D9 | Keys.Control:
                     if (QuickSelect_GetCurrent() != null)
                     {
-                        QuickSelect_GetCurrent().ID[8] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect_GetCurrent().ID[8] = SFEngine.Utility.TryParseUInt16(EntityID.Text, 0);
                         QuickSelect.UpdateIDs();
                     }
                     return true;
                 case Keys.D0 | Keys.Control:
                     if (QuickSelect_GetCurrent() != null)
                     {
-                        QuickSelect_GetCurrent().ID[9] = Utility.TryParseUInt16(EntityID.Text, 0);
+                        QuickSelect_GetCurrent().ID[9] = SFEngine.Utility.TryParseUInt16(EntityID.Text, 0);
                         QuickSelect.UpdateIDs();
                     }
                     return true;
@@ -2131,7 +2145,7 @@ namespace SpellforceDataEditor.special_forms
             selected_editor = new MapHeightMapEditor()
             {
                 Brush = terrain_brush,
-                Value = Utility.TryParseUInt16(TerrainValue.Text),
+                Value = SFEngine.Utility.TryParseUInt16(TerrainValue.Text),
                 EditMode = GetHeightMapEditMode(),
                 Interpolation = GetHeightMapInterpolationMode(),
                 map = this.map
@@ -2144,7 +2158,7 @@ namespace SpellforceDataEditor.special_forms
             PanelWeather.Visible = false;
             PanelAtmoPreview.Visible = false;
 
-            terrain_brush.size = (float)Utility.TryParseUInt8(BrushSizeVal.Text);
+            terrain_brush.size = (float)SFEngine.Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
 
             map.heightmap.overlay_active_texture = -1;
@@ -2159,7 +2173,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void BrushSizeVal_Validated(object sender, EventArgs e)
         {
-            int v = Utility.TryParseUInt16(BrushSizeVal.Text);
+            int v = SFEngine.Utility.TryParseUInt16(BrushSizeVal.Text);
             BrushSizeTrackbar.Value = (v < BrushSizeTrackbar.Minimum ? BrushSizeTrackbar.Minimum :
                                       (v > BrushSizeTrackbar.Maximum ? BrushSizeTrackbar.Maximum : v));
             terrain_brush.size = (float)v;
@@ -2188,7 +2202,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void TerrainValue_Validated(object sender, EventArgs e)
         {
-            int v = Utility.TryParseUInt16(TerrainValue.Text);
+            int v = SFEngine.Utility.TryParseUInt16(TerrainValue.Text);
             TerrainTrackbar.Value = (v < TerrainTrackbar.Minimum ? TerrainTrackbar.Minimum :
                                       (v > TerrainTrackbar.Maximum ? TerrainTrackbar.Maximum : v));
 
@@ -2199,7 +2213,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void UpdateHeightmapModeValueCache()
         {
-            int v = Utility.TryParseUInt16(TerrainValue.Text);
+            int v = SFEngine.Utility.TryParseUInt16(TerrainValue.Text);
 
             switch (GetHeightMapEditMode())
             {
@@ -2304,7 +2318,7 @@ namespace SpellforceDataEditor.special_forms
             PanelWeather.Visible = false;
             PanelAtmoPreview.Visible = false;
 
-            terrain_brush.size = (float)Utility.TryParseUInt8(BrushSizeVal.Text);
+            terrain_brush.size = (float)SFEngine.Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
 
             map.heightmap.overlay_active_texture = map.heightmap.overlay_texture_flags;
@@ -2402,47 +2416,47 @@ namespace SpellforceDataEditor.special_forms
 
         private void WClear_Validated(object sender, EventArgs e)
         {
-            map.weather_manager.weather[0] = Utility.TryParseUInt8(WClear.Text, map.weather_manager.weather[0]);
+            map.weather_manager.weather[0] = SFEngine.Utility.TryParseUInt8(WClear.Text, map.weather_manager.weather[0]);
         }
 
         private void WCloud_Validated(object sender, EventArgs e)
         {
-            map.weather_manager.weather[1] = Utility.TryParseUInt8(WCloud.Text, map.weather_manager.weather[1]);
+            map.weather_manager.weather[1] = SFEngine.Utility.TryParseUInt8(WCloud.Text, map.weather_manager.weather[1]);
         }
 
         private void WStorm_Validated(object sender, EventArgs e)
         {
-            map.weather_manager.weather[2] = Utility.TryParseUInt8(WStorm.Text, map.weather_manager.weather[2]);
+            map.weather_manager.weather[2] = SFEngine.Utility.TryParseUInt8(WStorm.Text, map.weather_manager.weather[2]);
         }
 
         private void WLavafog_Validated(object sender, EventArgs e)
         {
-            map.weather_manager.weather[3] = Utility.TryParseUInt8(WLavafog.Text, map.weather_manager.weather[3]);
+            map.weather_manager.weather[3] = SFEngine.Utility.TryParseUInt8(WLavafog.Text, map.weather_manager.weather[3]);
         }
 
         private void WLavafogBright_Validated(object sender, EventArgs e)
         {
-            map.weather_manager.weather[4] = Utility.TryParseUInt8(WLavafogBright.Text, map.weather_manager.weather[4]);
+            map.weather_manager.weather[4] = SFEngine.Utility.TryParseUInt8(WLavafogBright.Text, map.weather_manager.weather[4]);
         }
 
         private void WDesertfog_Validated(object sender, EventArgs e)
         {
-            map.weather_manager.weather[5] = Utility.TryParseUInt8(WDesertfog.Text, map.weather_manager.weather[5]);
+            map.weather_manager.weather[5] = SFEngine.Utility.TryParseUInt8(WDesertfog.Text, map.weather_manager.weather[5]);
         }
 
         private void WSwampfog_Validated(object sender, EventArgs e)
         {
-            map.weather_manager.weather[6] = Utility.TryParseUInt8(WSwampfog.Text, map.weather_manager.weather[6]);
+            map.weather_manager.weather[6] = SFEngine.Utility.TryParseUInt8(WSwampfog.Text, map.weather_manager.weather[6]);
         }
 
         private void WLavanight_Validated(object sender, EventArgs e)
         {
-            map.weather_manager.weather[7] = Utility.TryParseUInt8(WLavanight.Text, map.weather_manager.weather[7]);
+            map.weather_manager.weather[7] = SFEngine.Utility.TryParseUInt8(WLavanight.Text, map.weather_manager.weather[7]);
         }
 
         private void SunAzimuthVal_Validated(object sender, EventArgs e)
         {
-            int v = Utility.TryParseInt32(SunAzimuthVal.Text, (int)(SFRenderEngine.scene.atmosphere.sun_light.Azimuth));
+            int v = SFEngine.Utility.TryParseInt32(SunAzimuthVal.Text, (int)(SFRenderEngine.scene.atmosphere.sun_light.Azimuth));
             if (v < 0)
                 v = 0;
             if (v > 359)
@@ -2452,7 +2466,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void SunAltitudeVal_Validated(object sender, EventArgs e)
         {
-            int v = Utility.TryParseInt32(SunAltitudeVal.Text, (int)(SFRenderEngine.scene.atmosphere.sun_light.Altitude));
+            int v = SFEngine.Utility.TryParseInt32(SunAltitudeVal.Text, (int)(SFRenderEngine.scene.atmosphere.sun_light.Altitude));
             if (v < -89)
                 v = -89;
             if (v > 89)
@@ -2520,7 +2534,7 @@ namespace SpellforceDataEditor.special_forms
 
             PanelBrushShape.Visible = true;
 
-            terrain_brush.size = (float)Utility.TryParseUInt8(BrushSizeVal.Text);
+            terrain_brush.size = (float)SFEngine.Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
         }
 
@@ -2674,24 +2688,24 @@ namespace SpellforceDataEditor.special_forms
             TreeEntities.Nodes.Clear();
             if (unit_tree != null)
             {
-                Utility.TreeShallowCopy(unit_tree, TreeEntities.Nodes);
+                WinFormsUtility.TreeShallowCopy(unit_tree, TreeEntities.Nodes);
                 return;
             }
 
             unit_tree = new Dictionary<string, TreeNode>();
             // generate race nodes
-            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[2022];
+            SFCategory cat = SFCategoryManager.gamedata[2022];
             for (int i = 0; i < cat.GetElementCount(); i++)
             {
                 byte race_id = (byte)cat[i][0];
                 ushort race_name_index = (ushort)(cat[i][7]);
-                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
 
                 string race_name;
                 if (name_elem != null)
                     race_name = name_elem[4].ToString();
                 else
-                    race_name = Utility.S_MISSING;
+                    race_name = SFEngine.Utility.S_MISSING;
 
                 race_name = race_id.ToString() + ". " + race_name;
                 unit_tree.Add(race_name, new TreeNode(race_name));
@@ -2699,14 +2713,14 @@ namespace SpellforceDataEditor.special_forms
 
             }
             // generate unit nodes
-            SFCFF.SFCategory units_cat = SFCFF.SFCategoryManager.gamedata[2024];
+            SFCategory units_cat = SFCategoryManager.gamedata[2024];
             for (int i = 0; i < units_cat.GetElementCount(); i++)
             {
                 ushort unit_id = (ushort)units_cat[i][0];
-                string unit_name = unit_id.ToString() + ". " + SFCFF.SFCategoryManager.GetUnitName(unit_id, true);
+                string unit_name = unit_id.ToString() + ". " + SFCategoryManager.GetUnitName(unit_id, true);
 
                 ushort stats_id = (ushort)(units_cat[i][2]);
-                SFCFF.SFCategoryElement stats_elem = SFCFF.SFCategoryManager.gamedata[2005].FindElementBinary(0, stats_id);
+                SFCategoryElement stats_elem = SFCategoryManager.gamedata[2005].FindElementBinary(0, stats_id);
                 if (stats_elem == null)
                 {
                     unit_tree.Add(unit_name, new TreeNode(unit_name) { Tag = unit_id });
@@ -2717,12 +2731,12 @@ namespace SpellforceDataEditor.special_forms
                 int race_cat_index = cat.GetElementIndex(unit_race_id);
 
                 ushort race_name_index = (ushort)(cat[race_cat_index][7]);
-                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
                     race_name = name_elem[4].ToString();
                 else
-                    race_name = Utility.S_MISSING;
+                    race_name = SFEngine.Utility.S_MISSING;
 
                 race_name = unit_race_id.ToString() + ". " + race_name;
                 if (unit_tree.ContainsKey(race_name))
@@ -2738,7 +2752,7 @@ namespace SpellforceDataEditor.special_forms
             foreach (string s in nodes_to_remove)
                 unit_tree.Remove(s);
 
-            Utility.TreeShallowCopy(unit_tree, TreeEntities.Nodes);
+            WinFormsUtility.TreeShallowCopy(unit_tree, TreeEntities.Nodes);
             GC.Collect();
         }
 
@@ -2753,18 +2767,18 @@ namespace SpellforceDataEditor.special_forms
 
             TreeEntities.Nodes.Clear();
             // generate race nodes
-            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[2022];
+            SFCategory cat = SFCategoryManager.gamedata[2022];
             for (int i = 0; i < cat.GetElementCount(); i++)
             {
                 byte race_id = (byte)cat[i][0];
                 ushort race_name_index = (ushort)(cat[i][7]);
-                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
 
                 string race_name;
                 if (name_elem != null)
                     race_name = name_elem[4].ToString();
                 else
-                    race_name = Utility.S_MISSING;
+                    race_name = SFEngine.Utility.S_MISSING;
 
                 race_name = race_id.ToString() + ". " + race_name;
                 TreeEntities.Nodes.Add(race_name, race_name);
@@ -2772,14 +2786,14 @@ namespace SpellforceDataEditor.special_forms
 
             }
             // generate unit nodes
-            SFCFF.SFCategory units_cat = SFCFF.SFCategoryManager.gamedata[2024];
+            SFCategory units_cat = SFCategoryManager.gamedata[2024];
             for (int i = 0; i < units_cat.GetElementCount(); i++)
             {
                 ushort unit_id = (ushort)units_cat[i][0];
-                string unit_name = unit_id.ToString() + ". " + SFCFF.SFCategoryManager.GetUnitName(unit_id, true);
+                string unit_name = unit_id.ToString() + ". " + SFCategoryManager.GetUnitName(unit_id, true);
 
                 ushort stats_id = (ushort)(units_cat[i][2]);
-                SFCFF.SFCategoryElement stats_elem = SFCFF.SFCategoryManager.gamedata[2005].FindElementBinary(0, stats_id);
+                SFCategoryElement stats_elem = SFCategoryManager.gamedata[2005].FindElementBinary(0, stats_id);
                 if (stats_elem == null)
                 {
                     if (unit_name.ToLower().Contains(txt))
@@ -2791,12 +2805,12 @@ namespace SpellforceDataEditor.special_forms
                 int race_cat_index = cat.GetElementIndex(unit_race_id);
 
                 ushort race_name_index = (ushort)(cat[race_cat_index][7]);
-                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
                     race_name = name_elem[4].ToString();
                 else
-                    race_name = Utility.S_MISSING;
+                    race_name = SFEngine.Utility.S_MISSING;
 
                 race_name = unit_race_id.ToString() + ". " + race_name;
 
@@ -2834,18 +2848,18 @@ namespace SpellforceDataEditor.special_forms
 
             if (RadioEntityModeUnit.Checked)
             {
-                ((MapUnitEditor)selected_editor).placement_unit = Utility.TryParseUInt16(EntityID.Text);
-                map.selection_helper.SetPreviewUnit(Utility.TryParseUInt16(EntityID.Text));
+                ((MapUnitEditor)selected_editor).placement_unit = SFEngine.Utility.TryParseUInt16(EntityID.Text);
+                map.selection_helper.SetPreviewUnit(SFEngine.Utility.TryParseUInt16(EntityID.Text));
             }
             if (RadioEntityModeBuilding.Checked)
             {
-                ((MapBuildingEditor)selected_editor).placement_building = Utility.TryParseUInt16(EntityID.Text);
-                map.selection_helper.SetPreviewBuilding(Utility.TryParseUInt16(EntityID.Text));
+                ((MapBuildingEditor)selected_editor).placement_building = SFEngine.Utility.TryParseUInt16(EntityID.Text);
+                map.selection_helper.SetPreviewBuilding(SFEngine.Utility.TryParseUInt16(EntityID.Text));
             }
             if (RadioEntityModeObject.Checked)
             {
-                ((MapObjectEditor)selected_editor).placement_object = Utility.TryParseUInt16(EntityID.Text);
-                map.selection_helper.SetPreviewObject(Utility.TryParseUInt16(EntityID.Text));
+                ((MapObjectEditor)selected_editor).placement_object = SFEngine.Utility.TryParseUInt16(EntityID.Text);
+                map.selection_helper.SetPreviewObject(SFEngine.Utility.TryParseUInt16(EntityID.Text));
                 map.selection_helper.SetPreviewAngle((ushort)AngleTrackbar.Value);
             }
             if(RadioModeCoopCamps.Checked)
@@ -2940,8 +2954,8 @@ namespace SpellforceDataEditor.special_forms
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(EntityID.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
+                int elem_id = SFEngine.Utility.TryParseUInt16(EntityID.Text);
+                int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
             }
@@ -2953,24 +2967,24 @@ namespace SpellforceDataEditor.special_forms
             TreeEntities.Nodes.Clear();
             if (building_tree != null)
             {
-                Utility.TreeShallowCopy(building_tree, TreeEntities.Nodes);
+                WinFormsUtility.TreeShallowCopy(building_tree, TreeEntities.Nodes);
                 return;
             }
 
             building_tree = new Dictionary<string, TreeNode>();
             // generate race nodes
-            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[2022];
+            SFCategory cat = SFCategoryManager.gamedata[2022];
             for (int i = 0; i < cat.GetElementCount(); i++)
             {
                 byte race_id = (byte)cat[i][0];
                 ushort race_name_index = (ushort)(cat[i][7]);
-                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
 
                 string race_name;
                 if (name_elem != null)
                     race_name = name_elem[4].ToString();
                 else
-                    race_name = Utility.S_MISSING;
+                    race_name = SFEngine.Utility.S_MISSING;
 
                 race_name = race_id.ToString() + ". " + race_name;
                 building_tree.Add(race_name, new TreeNode(race_name));
@@ -2978,7 +2992,7 @@ namespace SpellforceDataEditor.special_forms
 
             }
             // generate building nodes
-            SFCFF.SFCategory buildings_cat = SFCFF.SFCategoryManager.gamedata[2029];
+            SFCategory buildings_cat = SFCategoryManager.gamedata[2029];
             for (int i = 0; i < buildings_cat.GetElementCount(); i++)
             {
                 ushort building_id = (ushort)buildings_cat[i][0];
@@ -2987,15 +3001,15 @@ namespace SpellforceDataEditor.special_forms
                 int race_cat_index = cat.GetElementIndex(building_race_id);
 
                 ushort race_name_index = (ushort)(cat[race_cat_index][7]);
-                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
                     race_name = name_elem[4].ToString();
                 else
-                    race_name = Utility.S_MISSING;
+                    race_name = SFEngine.Utility.S_MISSING;
 
                 race_name = building_race_id.ToString() + ". " + race_name;
-                string building_name = building_id.ToString() + ". " + SFCFF.SFCategoryManager.GetBuildingName(building_id);
+                string building_name = building_id.ToString() + ". " + SFCategoryManager.GetBuildingName(building_id);
                 if (building_tree.ContainsKey(race_name))
                     building_tree[race_name].Nodes.Add(new TreeNode(building_name) { Tag = building_id });
                 else
@@ -3009,7 +3023,7 @@ namespace SpellforceDataEditor.special_forms
             foreach (string s in nodes_to_remove)
                 building_tree.Remove(s);
 
-            Utility.TreeShallowCopy(building_tree, TreeEntities.Nodes);
+            WinFormsUtility.TreeShallowCopy(building_tree, TreeEntities.Nodes);
             GC.Collect();
         }
 
@@ -3025,18 +3039,18 @@ namespace SpellforceDataEditor.special_forms
             TreeEntities.Nodes.Clear();
 
             // generate race nodes
-            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[2022];
+            SFCategory cat = SFCategoryManager.gamedata[2022];
             for (int i = 0; i < cat.GetElementCount(); i++)
             {
                 byte race_id = (byte)cat[i][0];
                 ushort race_name_index = (ushort)(cat[i][7]);
-                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
 
                 string race_name;
                 if (name_elem != null)
                     race_name = name_elem[4].ToString();
                 else
-                    race_name = Utility.S_MISSING;
+                    race_name = SFEngine.Utility.S_MISSING;
 
                 race_name = race_id.ToString() + ". " + race_name;
                 TreeEntities.Nodes.Add(race_name, race_name);
@@ -3044,7 +3058,7 @@ namespace SpellforceDataEditor.special_forms
 
             }
             // generate building nodes
-            SFCFF.SFCategory buildings_cat = SFCFF.SFCategoryManager.gamedata[2029];
+            SFCategory buildings_cat = SFCategoryManager.gamedata[2029];
             for (int i = 0; i < buildings_cat.GetElementCount(); i++)
             {
                 ushort building_id = (ushort)buildings_cat[i][0];
@@ -3053,15 +3067,15 @@ namespace SpellforceDataEditor.special_forms
                 int race_cat_index = cat.GetElementIndex(building_race_id);
 
                 ushort race_name_index = (ushort)(cat[race_cat_index][7]);
-                SFCFF.SFCategoryElement name_elem = SFCFF.SFCategoryManager.FindElementText(race_name_index, Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
                     race_name = name_elem[4].ToString();
                 else
-                    race_name = Utility.S_MISSING;
+                    race_name = SFEngine.Utility.S_MISSING;
 
                 race_name = building_race_id.ToString() + ". " + race_name;
-                string building_name = building_id.ToString() + ". " + SFCFF.SFCategoryManager.GetBuildingName(building_id);
+                string building_name = building_id.ToString() + ". " + SFCategoryManager.GetBuildingName(building_id);
                 if ((!race_name.ToLower().Contains(txt)) && (!building_name.ToLower().Contains(txt)))
                     continue;
 
@@ -3114,14 +3128,14 @@ namespace SpellforceDataEditor.special_forms
             TreeEntities.Nodes.Clear();
             if (obj_tree != null)
             {
-                Utility.TreeShallowCopy(obj_tree, TreeEntities.Nodes);
+                WinFormsUtility.TreeShallowCopy(obj_tree, TreeEntities.Nodes);
                 return;
             }
 
             obj_tree = new Dictionary<string, TreeNode>();
 
-            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[2050];
-            foreach(SFCFF.SFCategoryElement e in cat.elements)
+            SFCategory cat = SFCategoryManager.gamedata[2050];
+            foreach(SFCategoryElement e in cat.elements)
             {
                 UInt16 id = (UInt16)e[0];
                 if((id > 64)&&(id < 128))
@@ -3134,7 +3148,7 @@ namespace SpellforceDataEditor.special_forms
                     continue;
 
 
-                string name = id.ToString()+". "+SFCFF.SFCategoryManager.GetObjectName(id);
+                string name = id.ToString()+". "+SFCategoryManager.GetObjectName(id);
                 string path = e[5].ToString();
                 string[] path_items = path.Split('/');
                 if ((path_items.Length == 1) && (path_items[0] == ""))
@@ -3161,7 +3175,7 @@ namespace SpellforceDataEditor.special_forms
                 tnc.Nodes.Add(new TreeNode(name) { Tag = id });
             }
 
-            Utility.TreeShallowCopy(obj_tree, TreeEntities.Nodes);
+            WinFormsUtility.TreeShallowCopy(obj_tree, TreeEntities.Nodes);
             GC.Collect();
         }
 
@@ -3176,8 +3190,8 @@ namespace SpellforceDataEditor.special_forms
 
             TreeEntities.Nodes.Clear();
 
-            SFCFF.SFCategory cat = SFCFF.SFCategoryManager.gamedata[2050];
-            foreach (SFCFF.SFCategoryElement e in cat.elements)
+            SFCategory cat = SFCategoryManager.gamedata[2050];
+            foreach (SFCategoryElement e in cat.elements)
             {
                 UInt16 id = (UInt16)e[0];
                 if ((id > 64) && (id < 128))
@@ -3190,7 +3204,7 @@ namespace SpellforceDataEditor.special_forms
                     continue;
 
 
-                string name = id.ToString() + ". " + SFCFF.SFCategoryManager.GetObjectName(id);
+                string name = id.ToString() + ". " + SFCategoryManager.GetObjectName(id);
                 string path = e[5].ToString();
                 string[] path_items = path.Split('/');
                 if ((path_items.Length == 1) && (path_items[0] == ""))
@@ -3244,7 +3258,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void Angle_Validated(object sender, EventArgs e)
         {
-            int v = Utility.TryParseUInt16(Angle.Text);
+            int v = SFEngine.Utility.TryParseUInt16(Angle.Text);
             AngleTrackbar.Value = (v >= 0 ? (v <= 359 ? v : 359) : 0);
         }
 
@@ -3263,7 +3277,7 @@ namespace SpellforceDataEditor.special_forms
 
         public AngleInfo GetAngleInfo()
         {
-            return new AngleInfo() { angle = Utility.TryParseUInt16(Angle.Text), random = CheckRandomRange.Checked };
+            return new AngleInfo() { angle = SFEngine.Utility.TryParseUInt16(Angle.Text), random = CheckRandomRange.Checked };
         }
 
         private void RadioEntityModeObject_CheckedChanged(object sender, EventArgs e)
@@ -3317,7 +3331,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void EditCoopCampTypes_Click(object sender, EventArgs e)
         {
-            SFLua.SFLuaEnvironment.ShowRtsCoopSpawnGroupsForm();
+            SFLua.SFLuaWinformManager.ShowRtsCoopSpawnGroupsForm();
             InspectorSet(new SFMap.map_controls.MapCoopCampInspector());
         }
 
@@ -3545,7 +3559,7 @@ namespace SpellforceDataEditor.special_forms
 
             PanelBrushShape.Visible = true;
 
-            terrain_brush.size = (float)Utility.TryParseUInt8(BrushSizeVal.Text);
+            terrain_brush.size = (float)SFEngine.Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
 
             map.heightmap.overlay_active_texture = map.heightmap.overlay_texture_decals;
@@ -3660,73 +3674,73 @@ namespace SpellforceDataEditor.special_forms
 
         private void CoopSpawnParam11_Validated(object sender, EventArgs e)
         {
-            map.metadata.coop_spawn_params[0].param1 = Utility.TryParseFloat(
+            map.metadata.coop_spawn_params[0].param1 = SFEngine.Utility.TryParseFloat(
                 CoopSpawnParam11.Text, map.metadata.coop_spawn_params[0].param1);
         }
 
         private void CoopSpawnParam12_Validated(object sender, EventArgs e)
         {
-            map.metadata.coop_spawn_params[0].param2 = Utility.TryParseFloat(
+            map.metadata.coop_spawn_params[0].param2 = SFEngine.Utility.TryParseFloat(
                 CoopSpawnParam12.Text, map.metadata.coop_spawn_params[0].param2);
         }
 
         private void CoopSpawnParam13_Validated(object sender, EventArgs e)
         {
-            map.metadata.coop_spawn_params[0].param3 = Utility.TryParseFloat(
+            map.metadata.coop_spawn_params[0].param3 = SFEngine.Utility.TryParseFloat(
                 CoopSpawnParam13.Text, map.metadata.coop_spawn_params[0].param3);
         }
 
         private void CoopSpawnParam14_Validated(object sender, EventArgs e)
         {
-            map.metadata.coop_spawn_params[0].param4 = Utility.TryParseFloat(
+            map.metadata.coop_spawn_params[0].param4 = SFEngine.Utility.TryParseFloat(
                 CoopSpawnParam14.Text, map.metadata.coop_spawn_params[0].param4);
         }
 
         private void CoopSpawnParam21_Validated(object sender, EventArgs e)
         {
-            map.metadata.coop_spawn_params[1].param1 = Utility.TryParseFloat(
+            map.metadata.coop_spawn_params[1].param1 = SFEngine.Utility.TryParseFloat(
                 CoopSpawnParam21.Text, map.metadata.coop_spawn_params[1].param1);
         }
 
         private void CoopSpawnParam22_Validated(object sender, EventArgs e)
         {
-            map.metadata.coop_spawn_params[1].param2 = Utility.TryParseFloat(
+            map.metadata.coop_spawn_params[1].param2 = SFEngine.Utility.TryParseFloat(
                 CoopSpawnParam22.Text, map.metadata.coop_spawn_params[1].param2);
         }
 
         private void CoopSpawnParam23_Validated(object sender, EventArgs e)
         {
-            map.metadata.coop_spawn_params[1].param3 = Utility.TryParseFloat(
+            map.metadata.coop_spawn_params[1].param3 = SFEngine.Utility.TryParseFloat(
                 CoopSpawnParam23.Text, map.metadata.coop_spawn_params[1].param3);
         }
 
         private void CoopSpawnParam24_Validated(object sender, EventArgs e)
         {
-            map.metadata.coop_spawn_params[1].param4 = Utility.TryParseFloat(
+            map.metadata.coop_spawn_params[1].param4 = SFEngine.Utility.TryParseFloat(
                 CoopSpawnParam24.Text, map.metadata.coop_spawn_params[1].param4);
         }
 
         private void CoopSpawnParam31_Validated(object sender, EventArgs e)
         {
-            map.metadata.coop_spawn_params[2].param1 = Utility.TryParseFloat(
+            map.metadata.coop_spawn_params[2].param1 = SFEngine.Utility.TryParseFloat(
                 CoopSpawnParam31.Text, map.metadata.coop_spawn_params[2].param1);
         }
 
         private void CoopSpawnParam32_Validated(object sender, EventArgs e)
         {
-            map.metadata.coop_spawn_params[2].param2 = Utility.TryParseFloat(
+            map.metadata.coop_spawn_params[2].param2 = SFEngine.Utility.TryParseFloat(
                 CoopSpawnParam32.Text, map.metadata.coop_spawn_params[2].param2);
         }
 
         private void CoopSpawnParam33_Validated(object sender, EventArgs e)
         {
-            map.metadata.coop_spawn_params[2].param3 = Utility.TryParseFloat(
+            map.metadata.coop_spawn_params[2].param3 = SFEngine.Utility.TryParseFloat(
                 CoopSpawnParam33.Text, map.metadata.coop_spawn_params[2].param3);
         }
 
         private void CoopSpawnParam34_Validated(object sender, EventArgs e)
         {
-            map.metadata.coop_spawn_params[2].param4 = Utility.TryParseFloat(
+            map.metadata.coop_spawn_params[2].param4 = SFEngine.Utility.TryParseFloat(
                 CoopSpawnParam34.Text, map.metadata.coop_spawn_params[2].param4);
         }
 

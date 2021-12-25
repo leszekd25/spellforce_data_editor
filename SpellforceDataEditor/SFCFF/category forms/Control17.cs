@@ -18,9 +18,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             "Hostile [Undead]", "Hostile [monsters/demons]", "Player", "Player Elves",
             "Player Humans", "Player Dwarves", "Player Orcs", "Player Trolls",
             "Player Darkelves", "Hostile [animals]", "KillAll", "Hostile [Beastmen]",
-            "Hostile [Gorge]", Utility.S_UNKNOWN, Utility.S_NONE, "Hostile [Blades]",
-            Utility.S_NONE, "Hostile [Multiplayer enemies]", "Hostile [Ogres]", "Neutral [NPCs]",
-            "Hostile [Soulforger]", "Hostile [Bloodash]", Utility.S_UNKNOWN, "Hostile [Dervish]"};
+            "Hostile [Gorge]", SFEngine.Utility.S_UNKNOWN, SFEngine.Utility.S_NONE, "Hostile [Blades]",
+            SFEngine.Utility.S_NONE, "Hostile [Multiplayer enemies]", "Hostile [Ogres]", "Neutral [NPCs]",
+            "Hostile [Soulforger]", "Hostile [Bloodash]", SFEngine.Utility.S_UNKNOWN, "Hostile [Dervish]"};
 
         static private Dictionary<Byte, string> relations = new Dictionary<Byte, string>();
         static private Dictionary<string, Byte> inv_relations = new Dictionary<string, Byte>();
@@ -95,13 +95,28 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                set_element_variant(current_element, i, 0, Utility.TryParseUInt8(textBox1.Text));
+                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt8(textBox1.Text));
         }
 
         public override string get_element_string(int index)
         {
             string txt = clan_names[(int)(Byte)(category[index, 0][0]) - 1];
             return category[index, 0][0].ToString() + " " + txt;
+        }
+
+        public override void on_update_subelement(int subelem_index)
+        {
+            base.on_update_subelement(subelem_index);
+
+            Byte clan_id = (Byte)(category[current_element, subelem_index][1]);
+            Byte relation = (Byte)(category[current_element, subelem_index][2]);
+
+            string txt = "<MISSING!>";
+            if ((clan_id >= 1) && (clan_id <= (Byte)clan_names.Length))
+                txt = clan_names[clan_id - 1];
+
+            RelationGrid.Rows[subelem_index].Cells[0].Value = txt;
+            ((DataGridViewComboBoxCell)RelationGrid.Rows[subelem_index].Cells[1]).Value = relations[relation];
         }
     }
 }

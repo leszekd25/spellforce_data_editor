@@ -19,8 +19,8 @@ namespace SpellforceDataEditor.special_forms
 
         private void ExtractionSettingsForm_Load(object sender, EventArgs e)
         {
-            TextBoxExtractionDirectory.Text = Settings.ExtractDirectory;
-            if (Settings.ExtractAllInOne)
+            TextBoxExtractionDirectory.Text = SFEngine.Settings.ExtractDirectory;
+            if (SFEngine.Settings.ExtractAllInOne)
                 AllInOne.Checked = true;
             else
                 Subdirectories.Checked = true;
@@ -30,9 +30,9 @@ namespace SpellforceDataEditor.special_forms
         {
             if(AllInOne.Checked)
             {
-                Settings.ExtractAllInOne = true;
+                SFEngine.Settings.ExtractAllInOne = true;
                 DescriptionExtractionMode.Text = "Using \"Extract\" option will extract all relevant assets to the directory specified above.";
-                Settings.Save();
+                SFEngine.Settings.Save();
             }
         }
 
@@ -40,9 +40,9 @@ namespace SpellforceDataEditor.special_forms
         {
             if (Subdirectories.Checked)
             {
-                Settings.ExtractAllInOne = false;
+                SFEngine.Settings.ExtractAllInOne = false;
                 DescriptionExtractionMode.Text = "Using \"Extract\" option will extract all relevant assets to respective subdirectories in the directory specified above.";
-                Settings.Save();
+                SFEngine.Settings.Save();
             }
         }
 
@@ -50,9 +50,9 @@ namespace SpellforceDataEditor.special_forms
         {
             if(SelectExtractionDirectory.ShowDialog() == DialogResult.OK)
             {
-                Settings.ExtractDirectory = SelectExtractionDirectory.SelectedPath;
-                TextBoxExtractionDirectory.Text = Settings.ExtractDirectory;
-                Settings.Save();
+                SFEngine.Settings.ExtractDirectory = SelectExtractionDirectory.SelectedPath;
+                TextBoxExtractionDirectory.Text = SFEngine.Settings.ExtractDirectory;
+                SFEngine.Settings.Save();
             }
         }
 

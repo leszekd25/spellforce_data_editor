@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
+
 
 using SpellforceDataEditor.SFCFF;
 
@@ -46,19 +48,19 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         // updates UI when subelement is added at given index
         public virtual void on_add_subelement(int subelem_index)
         {
-
+            throw new NotImplementedException("Category '" + category.category_name + "' does not support add subelement operation.");
         }
 
         // updates UI when subelement is removed at given index
         public virtual void on_remove_subelement(int subelem_index)
         {
-
+            throw new NotImplementedException("Category '" + category.category_name + "' does not support remove subelement operation.");
         }
 
         // updates UI when a subelement is updated at given index
         public virtual void on_update_subelement(int subelem_index)
         {
-
+            throw new NotImplementedException("Category '" + category.category_name + "' does not support update subelement operation.");
         }
 
         //sets category for this control
@@ -137,7 +139,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         }
 
         //turns a given variant from current element into a text to display on text box
-        //this actually operates on a sequence of byte variants (see Utility.TryParseByteArray)
+        //this actually operates on a sequence of byte variants (see SFEngine.Utility.TryParseByteArray)
         public string bytearray_repr(int index, int count)
         {
             System.Diagnostics.Debug.Assert(!category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
@@ -165,7 +167,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
 
             int real_elem_id = cat.GetElementIndex(cur_id);
-            bt.Tag = (real_elem_id == Utility.NO_INDEX);
+            bt.Tag = (real_elem_id == SFEngine.Utility.NO_INDEX);
             if ((bool)bt.Tag)
             {
                 bt.Text = String.Format("Add {0} for this {1}", label1, label2);
@@ -188,14 +190,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if ((tb.IsDisposed) || (tb.Disposing))
                 return;
 
-            int cur_id = Utility.TryParseInt32(tb.Text);
+            int cur_id = SFEngine.Utility.TryParseInt32(tb.Text);
 
             SFCategory cat = SFCategoryManager.gamedata[cat_i];
             if (cat == null)
                 return;
 
             int real_elem_id = cat.GetElementIndex(cur_id);
-            if ((real_elem_id == Utility.NO_INDEX)||(real_elem_id == 0))
+            if ((real_elem_id == SFEngine.Utility.NO_INDEX)||(real_elem_id == 0))
                 tb.BackColor = Color.Yellow;
             else
                 tb.BackColor = Color.DarkOrange;
@@ -255,7 +257,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public void step_into(TextBox tb, int cat_i)
         {
-            int elem_id = Utility.TryParseInt32(tb.Text);
+            int elem_id = SFEngine.Utility.TryParseInt32(tb.Text);
             step_into(cat_i, elem_id);
         }
 
@@ -266,7 +268,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
 
             int real_elem_id = cat.GetElementIndex(elem_key);
-            if (real_elem_id == Utility.NO_INDEX)
+            if (real_elem_id == SFEngine.Utility.NO_INDEX)
                 return;
             MainForm.data.Tracer_StepForward(cat_i, real_elem_id);
         }

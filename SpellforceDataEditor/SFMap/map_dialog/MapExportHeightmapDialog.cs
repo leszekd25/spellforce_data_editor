@@ -12,7 +12,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 {
     public partial class MapExportHeightmapDialog : Form
     {
-        public SFMap map;
+        public SFEngine.SFMap.SFMap map;
         byte scale = 0;
         byte offset = 55;
         byte h_Scale
@@ -76,7 +76,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             if (PreviewPic.BackgroundImage != null)
             {
                 HMapScale.ValueChanged -= new EventHandler(HMapScale_ValueChanged);
-                h_Scale = Utility.TryParseUInt8(HMapScaleText.Text, h_Scale);
+                h_Scale = SFEngine.Utility.TryParseUInt8(HMapScaleText.Text, h_Scale);
                 HMapScale.Value = Math.Min(HMapScale.Maximum, Math.Max((byte)1, h_Scale));
                 HMapScale.ValueChanged += new EventHandler(HMapScale_ValueChanged);
             }
@@ -96,7 +96,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             if (PreviewPic.BackgroundImage != null)
             {
                 HMapOffset.ValueChanged -= new EventHandler(HMapOffset_ValueChanged);
-                h_Offset = Utility.TryParseUInt8(HMapOffsetText.Text, h_Scale);
+                h_Offset = SFEngine.Utility.TryParseUInt8(HMapOffsetText.Text, h_Scale);
                 HMapOffset.Value = Math.Min(HMapOffset.Maximum, Math.Max((byte)0, h_Offset));
                 HMapOffset.ValueChanged += new EventHandler(HMapOffset_ValueChanged);
             }

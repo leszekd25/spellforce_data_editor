@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -45,7 +46,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                set_element_variant(current_element, i, 0, Utility.TryParseUInt16(textBox1.Text));
+                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
 
@@ -58,7 +59,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 int res_index = combo_values.IndexOf((Byte)category[current_element, i][1]);
                 string res_name = "";
                 if (res_index == 0)
-                    res_name = Utility.S_NONE;
+                    res_name = SFEngine.Utility.S_NONE;
                 else
                     res_name = comboRes.Items[res_index-1].ToString();    //-1 because of null value
                 string elem_name = ((UInt16)category[current_element, i][2]).ToString() + " " + res_name;
@@ -90,7 +91,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void ListResources_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListResources.SelectedIndex == Utility.NO_INDEX)
+            if (ListResources.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             int index = ListResources.SelectedIndex;
@@ -101,7 +102,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void comboRes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboRes.SelectedIndex == Utility.NO_INDEX)
+            if (comboRes.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             int cur_index = ListResources.SelectedIndex;
@@ -143,7 +144,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
             int index = ListResources.SelectedIndex;
-            set_element_variant(current_element, index, 2, Utility.TryParseUInt16(textBox3.Text));
+            set_element_variant(current_element, index, 2, SFEngine.Utility.TryParseUInt16(textBox3.Text));
             RefreshListResources();
             ListResources.SelectedIndex = index;
         }
@@ -160,7 +161,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (ListResources.SelectedIndex == Utility.NO_INDEX)
+            if (ListResources.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
             if (ListResources.Items.Count == 1)
                 return;

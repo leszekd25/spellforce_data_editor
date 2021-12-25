@@ -13,7 +13,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
-using SpellforceDataEditor.SFUnPak;
+using SFEngine.SFCFF;
+using SFEngine.SFUnPak;
 
 namespace SpellforceDataEditor.special_forms
 {
@@ -40,18 +41,18 @@ namespace SpellforceDataEditor.special_forms
             // if no files in backup folder, add them from the game dir
             if (!Directory.Exists("backup"))
             {
-                LogUtils.Log.Info(LogUtils.LogSource.SFMod, "ModManagerForm.Prepare(): Creating backup of important game files");
+                SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMod, "ModManagerForm.Prepare(): Creating backup of important game files");
                 Directory.CreateDirectory("backup");
             }
             if (!File.Exists("backup\\GameData.cff"))
-                status += Utility.CopyFile(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff", "backup\\GameData.cff");
+                status += SFEngine.Utility.CopyFile(SFUnPak.game_directory_name + "\\data\\GameData.cff", "backup\\GameData.cff");
             if (!File.Exists("backup\\SpellForce.exe"))
-                status += Utility.CopyFile(SFUnPak.SFUnPak.game_directory_name + "\\SpellForce.exe", "backup\\SpellForce.exe");
+                status += SFEngine.Utility.CopyFile(SFUnPak.game_directory_name + "\\SpellForce.exe", "backup\\SpellForce.exe");
             if(!Directory.Exists("backup\\map"))
-                status += Utility.CopyDirectory(SFUnPak.SFUnPak.game_directory_name + "\\map", "backup\\map");
+                status += SFEngine.Utility.CopyDirectory(SFUnPak.game_directory_name + "\\map", "backup\\map");
             if(status != 0)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMod, "ModManagerForm.Prepare(): Can't access game files!");
+                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFMod, "ModManagerForm.Prepare(): Can't access game files!");
                 StatusText.Text = "Can't access game files. Try running in administrator mode and make sure game files aren't missing.";
                 ready = false;
                 return;
@@ -86,7 +87,7 @@ namespace SpellforceDataEditor.special_forms
             // load mod names
             if (!Directory.Exists("mods"))
             {
-                LogUtils.Log.Info(LogUtils.LogSource.SFMod, "ModManagerForm.RefreshModList(): Creating directory mods");
+                SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMod, "ModManagerForm.RefreshModList(): Creating directory mods");
                 Directory.CreateDirectory("mods");
             }
             else
@@ -112,7 +113,7 @@ namespace SpellforceDataEditor.special_forms
                     ModList.SetItemChecked(ModList.Items.IndexOf(name), true);
                 else
                 {
-                    LogUtils.Log.Warning(LogUtils.LogSource.SFMod, "ModManagerForm.SelectedModsRefresh(): Mod " + name + " not found!");
+                    SFEngine.LogUtils.Log.Warning(SFEngine.LogUtils.LogSource.SFMod, "ModManagerForm.SelectedModsRefresh(): Mod " + name + " not found!");
                     last_used.mod_names.RemoveAt(i);
                     i -= 1;
                 }
@@ -137,7 +138,7 @@ namespace SpellforceDataEditor.special_forms
                 if (result != DialogResult.OK)
                     return;
             }
-            LogUtils.Log.Info(LogUtils.LogSource.SFMod, "ModManagerForm.RestoreGameFiles() called");
+            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMod, "ModManagerForm.RestoreGameFiles() called");
             StatusText.Text = "Restoring game to original state...";
             statusStrip1.Refresh();
             foreach(string s in ModList.Items)
@@ -146,10 +147,10 @@ namespace SpellforceDataEditor.special_forms
                 mod.Load("mods\\"+s+".sfmd", SFMod.ModLoadOption.ASSETS);
                 foreach(string f in mod.assets.GetFileNames())
                 {
-                    string fname = SFUnPak.SFUnPak.game_directory_name + "\\" + f;
+                    string fname = SFUnPak.game_directory_name + "\\" + f;
                     if (File.Exists(fname))
                     {
-                        LogUtils.Log.Info(LogUtils.LogSource.SFMod, "ModManagerForm.RestoreGameFiles(): Removing file "+fname);
+                        SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMod, "ModManagerForm.RestoreGameFiles(): Removing file "+fname);
                         File.Delete(fname);
                     }
                 }
@@ -157,9 +158,9 @@ namespace SpellforceDataEditor.special_forms
                 mod.Unload();
             }
             
-            Utility.CopyFile("backup\\GameData.cff", SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff");
-            Utility.CopyFile("backup\\SpellForce.exe", SFUnPak.SFUnPak.game_directory_name + "\\SpellForce.exe");
-            Utility.CopyDirectory("backup\\map", SFUnPak.SFUnPak.game_directory_name + "\\map");
+            SFEngine.Utility.CopyFile("backup\\GameData.cff", SFUnPak.game_directory_name + "\\data\\GameData.cff");
+            SFEngine.Utility.CopyFile("backup\\SpellForce.exe", SFUnPak.game_directory_name + "\\SpellForce.exe");
+            SFEngine.Utility.CopyDirectory("backup\\map", SFUnPak.game_directory_name + "\\map");
 
             StatusText.Text = "Done";
         }
@@ -198,13 +199,13 @@ namespace SpellforceDataEditor.special_forms
             if (result != DialogResult.OK)
                 return false;
             // restore to original
-            LogUtils.Log.Info(LogUtils.LogSource.SFMod, "ModManagerForm.ApplyMods() called");
+            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMod, "ModManagerForm.ApplyMods() called");
             RestoreGameFiles(false);
             // modify files according to selected mods and save template as last used
-            SFCFF.SFGameData gd_to_modify = new SFCFF.SFGameData();
+            SFGameData gd_to_modify = new SFGameData();
             StatusText.Text = "Loading gamedata to modify...";
             statusStrip1.Refresh();
-            gd_to_modify.Load(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff");
+            gd_to_modify.Load(SFUnPak.game_directory_name + "\\data\\GameData.cff");
             List<string> failed_mods = new List<string>();
             for (int i = 0; i < ModList.Items.Count; i++)
             {
@@ -212,7 +213,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     SFMod.SFMod mod = new SFMod.SFMod();
                     string mod_name = ModList.Items[i].ToString();
-                    LogUtils.Log.Info(LogUtils.LogSource.SFMod, "ModManagerForm.ApplyMods(): Applying mod " + mod_name);
+                    SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMod, "ModManagerForm.ApplyMods(): Applying mod " + mod_name);
                     StatusText.Text = "Loading mod "+mod_name+"...";
                     statusStrip1.Refresh();
                     int result_load = mod.Load("mods\\" + mod_name + ".sfmd", SFMod.ModLoadOption.DATA | SFMod.ModLoadOption.ASSETS);
@@ -241,7 +242,7 @@ namespace SpellforceDataEditor.special_forms
 
             StatusText.Text = "Saving modified gamedata...";
             statusStrip1.Refresh();
-            gd_to_modify.Save(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff");
+            gd_to_modify.Save(SFUnPak.game_directory_name + "\\data\\GameData.cff");
 
             // if some mods were not applied, show a box with all failed mods
             if (failed_mods.Count != 0)
@@ -310,10 +311,10 @@ namespace SpellforceDataEditor.special_forms
             try
             {
                 System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo(
-                   SFUnPak.SFUnPak.game_directory_name + "\\SpellForce.exe");
+                   SFUnPak.game_directory_name + "\\SpellForce.exe");
 
-                psi.Arguments = Settings.GameRunArguments;
-                psi.WorkingDirectory = SFUnPak.SFUnPak.game_directory_name + "\\";
+                psi.Arguments = SFEngine.Settings.GameRunArguments;
+                psi.WorkingDirectory = SFUnPak.game_directory_name + "\\";
                 System.Diagnostics.Process.Start(psi);
             }
             catch(Exception)
@@ -330,9 +331,9 @@ namespace SpellforceDataEditor.special_forms
 
         private void specifySpellforceexeArgumentsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Settings.GameRunArguments = Utility.GetString("Input SpellForce.exe arguments", 
+            SFEngine.Settings.GameRunArguments = WinFormsUtility.GetString("Input SpellForce.exe arguments", 
                                                           "Input arguments to run the game with:", 
-                                                          Settings.GameRunArguments);
+                                                          SFEngine.Settings.GameRunArguments);
         }
 
         private void OnAssetUpdateEvent(string fname)

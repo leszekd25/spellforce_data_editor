@@ -76,8 +76,8 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 16;
-            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
+            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label4
             // 
@@ -95,8 +95,9 @@
             this.CheckHelmet.Name = "CheckHelmet";
             this.CheckHelmet.Size = new System.Drawing.Size(15, 14);
             this.CheckHelmet.TabIndex = 23;
+            this.CheckHelmet.Tag = "0";
             this.CheckHelmet.UseVisualStyleBackColor = true;
-            this.CheckHelmet.CheckedChanged += new System.EventHandler(this.CheckHelmet_CheckedChanged);
+            this.CheckHelmet.Click += new System.EventHandler(this.CheckItem_Click);
             // 
             // HelmetID
             // 
@@ -106,9 +107,10 @@
             this.HelmetID.Name = "HelmetID";
             this.HelmetID.Size = new System.Drawing.Size(126, 20);
             this.HelmetID.TabIndex = 24;
+            this.HelmetID.Tag = "0";
             this.HelmetID.Text = "0";
-            this.HelmetID.Validated += new System.EventHandler(this.HelmetID_TextChanged);
-            this.HelmetID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.HelmetID_MouseDown);
+            this.HelmetID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
+            this.HelmetID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // HelmetName
             // 
@@ -134,9 +136,10 @@
             this.RightHandID.Name = "RightHandID";
             this.RightHandID.Size = new System.Drawing.Size(126, 20);
             this.RightHandID.TabIndex = 28;
+            this.RightHandID.Tag = "1";
             this.RightHandID.Text = "0";
-            this.RightHandID.Validated += new System.EventHandler(this.RightHandID_TextChanged);
-            this.RightHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RightHandID_MouseDown);
+            this.RightHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
+            this.RightHandID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // CheckRightHand
             // 
@@ -145,8 +148,9 @@
             this.CheckRightHand.Name = "CheckRightHand";
             this.CheckRightHand.Size = new System.Drawing.Size(15, 14);
             this.CheckRightHand.TabIndex = 27;
+            this.CheckRightHand.Tag = "1";
             this.CheckRightHand.UseVisualStyleBackColor = true;
-            this.CheckRightHand.CheckedChanged += new System.EventHandler(this.CheckRightHand_CheckedChanged);
+            this.CheckRightHand.Click += new System.EventHandler(this.CheckItem_Click);
             // 
             // label7
             // 
@@ -173,9 +177,10 @@
             this.ChestID.Name = "ChestID";
             this.ChestID.Size = new System.Drawing.Size(126, 20);
             this.ChestID.TabIndex = 32;
+            this.ChestID.Tag = "2";
             this.ChestID.Text = "0";
-            this.ChestID.Validated += new System.EventHandler(this.ChestID_TextChanged);
-            this.ChestID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ChestID_MouseDown);
+            this.ChestID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
+            this.ChestID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // CheckChest
             // 
@@ -184,8 +189,9 @@
             this.CheckChest.Name = "CheckChest";
             this.CheckChest.Size = new System.Drawing.Size(15, 14);
             this.CheckChest.TabIndex = 31;
+            this.CheckChest.Tag = "2";
             this.CheckChest.UseVisualStyleBackColor = true;
-            this.CheckChest.CheckedChanged += new System.EventHandler(this.CheckChest_CheckedChanged);
+            this.CheckChest.Click += new System.EventHandler(this.CheckItem_Click);
             // 
             // label9
             // 
@@ -212,9 +218,10 @@
             this.LeftHandID.Name = "LeftHandID";
             this.LeftHandID.Size = new System.Drawing.Size(126, 20);
             this.LeftHandID.TabIndex = 36;
+            this.LeftHandID.Tag = "3";
             this.LeftHandID.Text = "0";
-            this.LeftHandID.Validated += new System.EventHandler(this.LeftHandID_TextChanged);
-            this.LeftHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.LeftHandID_MouseDown);
+            this.LeftHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
+            this.LeftHandID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // CheckLeftHand
             // 
@@ -223,8 +230,9 @@
             this.CheckLeftHand.Name = "CheckLeftHand";
             this.CheckLeftHand.Size = new System.Drawing.Size(15, 14);
             this.CheckLeftHand.TabIndex = 35;
+            this.CheckLeftHand.Tag = "3";
             this.CheckLeftHand.UseVisualStyleBackColor = true;
-            this.CheckLeftHand.CheckedChanged += new System.EventHandler(this.CheckLeftHand_CheckedChanged);
+            this.CheckLeftHand.Click += new System.EventHandler(this.CheckItem_Click);
             // 
             // label11
             // 
@@ -251,9 +259,10 @@
             this.RightRingID.Name = "RightRingID";
             this.RightRingID.Size = new System.Drawing.Size(126, 20);
             this.RightRingID.TabIndex = 40;
+            this.RightRingID.Tag = "4";
             this.RightRingID.Text = "0";
-            this.RightRingID.Validated += new System.EventHandler(this.RightRingID_TextChanged);
-            this.RightRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RightRingID_MouseDown);
+            this.RightRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
+            this.RightRingID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // CheckRightRing
             // 
@@ -262,8 +271,9 @@
             this.CheckRightRing.Name = "CheckRightRing";
             this.CheckRightRing.Size = new System.Drawing.Size(15, 14);
             this.CheckRightRing.TabIndex = 39;
+            this.CheckRightRing.Tag = "4";
             this.CheckRightRing.UseVisualStyleBackColor = true;
-            this.CheckRightRing.CheckedChanged += new System.EventHandler(this.CheckRightRing_CheckedChanged);
+            this.CheckRightRing.Click += new System.EventHandler(this.CheckItem_Click);
             // 
             // label13
             // 
@@ -290,9 +300,10 @@
             this.LegsID.Name = "LegsID";
             this.LegsID.Size = new System.Drawing.Size(126, 20);
             this.LegsID.TabIndex = 44;
+            this.LegsID.Tag = "5";
             this.LegsID.Text = "0";
-            this.LegsID.Validated += new System.EventHandler(this.LegsID_TextChanged);
-            this.LegsID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.LegsID_MouseDown);
+            this.LegsID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
+            this.LegsID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // CheckLegs
             // 
@@ -301,8 +312,9 @@
             this.CheckLegs.Name = "CheckLegs";
             this.CheckLegs.Size = new System.Drawing.Size(15, 14);
             this.CheckLegs.TabIndex = 43;
+            this.CheckLegs.Tag = "5";
             this.CheckLegs.UseVisualStyleBackColor = true;
-            this.CheckLegs.CheckedChanged += new System.EventHandler(this.CheckLegs_CheckedChanged);
+            this.CheckLegs.Click += new System.EventHandler(this.CheckItem_Click);
             // 
             // label15
             // 
@@ -329,9 +341,10 @@
             this.LeftRingID.Name = "LeftRingID";
             this.LeftRingID.Size = new System.Drawing.Size(126, 20);
             this.LeftRingID.TabIndex = 48;
+            this.LeftRingID.Tag = "6";
             this.LeftRingID.Text = "0";
-            this.LeftRingID.Validated += new System.EventHandler(this.LeftRingID_TextChanged);
-            this.LeftRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.LeftRingID_MouseDown);
+            this.LeftRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
+            this.LeftRingID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // CheckLeftRing
             // 
@@ -340,8 +353,9 @@
             this.CheckLeftRing.Name = "CheckLeftRing";
             this.CheckLeftRing.Size = new System.Drawing.Size(15, 14);
             this.CheckLeftRing.TabIndex = 47;
+            this.CheckLeftRing.Tag = "6";
             this.CheckLeftRing.UseVisualStyleBackColor = true;
-            this.CheckLeftRing.CheckedChanged += new System.EventHandler(this.CheckLeftRing_CheckedChanged);
+            this.CheckLeftRing.Click += new System.EventHandler(this.CheckItem_Click);
             // 
             // label17
             // 

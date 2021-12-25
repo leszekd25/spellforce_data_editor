@@ -7,13 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control19 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
         private Dictionary<CheckBox, TextBox> check_to_text;
-        private Dictionary<CheckBox, int> check_to_flag;
         private Dictionary<int, CheckBox> flag_to_check;
         private Dictionary<TextBox, Label> text_to_name;
 
@@ -35,15 +35,6 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             check_to_text[CheckRightRing] = RightRingID;
             check_to_text[CheckLegs] = LegsID;
             check_to_text[CheckLeftRing] = LeftRingID;
-
-            check_to_flag = new Dictionary<CheckBox, int>();
-            check_to_flag[CheckHelmet] = 0;
-            check_to_flag[CheckRightHand] = 1;
-            check_to_flag[CheckChest] = 2;
-            check_to_flag[CheckLeftHand] = 3;
-            check_to_flag[CheckRightRing] = 4;
-            check_to_flag[CheckLegs] = 5;
-            check_to_flag[CheckLeftRing] = 6;
 
             flag_to_check = new Dictionary<int, CheckBox>();
             flag_to_check[0] = CheckHelmet;
@@ -70,49 +61,28 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int elem_count = elem.variants.Count / 3;
 
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                set_element_variant(current_element, i, 0, Utility.TryParseUInt16(textBox1.Text));
+                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
-        private void TryToFlip(CheckBox ch)
+
+        private void CheckItem_Click(object sender, EventArgs e)
         {
-            bool checkd = ch.Checked;
-            int flag = check_to_flag[ch];
+            if (!edit_ready)
+                return;
+
+            CheckBox ch = (CheckBox)sender;
+
+
+            int flag = (int)(ch.Tag);
 
             //if it's the last checked flag, disallow unchecking it
-            if (checkd == false)
+            if (ch.Checked)
             {
                 if ((item_flags - (0x1 << flag)) == 0)
                 {
-                    ch.Checked = true;
                     return;
                 }
-            }
 
-            if (checkd == true)
-            {
-                //find if element exists already, stop if true
-                item_flags = item_flags | (uint)(0x1 << flag);
-                check_to_text[ch].Enabled = true;
-                for(int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                {
-                    Byte item_slot = (Byte)(category[current_element, i][1]);
-                    if(flag == item_slot)
-                    {
-                        return;
-                    }
-                }
-
-                //add checked element
-
-                //can be added at the end? need to test
-                int count = category.element_lists[current_element].Elements.Count;
-                category.element_lists[current_element].Elements.Add(category.GetEmptyElement());
-                category[current_element, count][0] = (UInt16)(category.element_lists[current_element].GetID());
-                category[current_element, count][1] = (Byte)flag;
-                category[current_element, count][2] = Utility.TryParseUInt16(check_to_text[ch].Text);
-            }
-            else
-            {
                 //find if element doesn't exist, stop if true
                 if ((item_flags & (uint)(0x1 << flag)) != 0)
                 {
@@ -137,50 +107,30 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 //remove unchecked element
                 category.element_lists[current_element].Elements.RemoveAt(flag);
             }
+            else
+            {
+                //find if element exists already, stop if true
+                item_flags = item_flags | (uint)(0x1 << flag);
+                for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+                {
+                    Byte item_slot = (Byte)(category[current_element, i][1]);
+                    if (flag == item_slot)
+                    {
+                        return;
+                    }
+                }
 
-            //set_element(current_element);
-        }
+                //add checked element
 
-        private void CheckHelmet_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!edit_ready) return;
-            TryToFlip(CheckHelmet);
-        }
+                //can be added at the end? need to test
+                int count = category.element_lists[current_element].Elements.Count;
+                category.element_lists[current_element].Elements.Add(category.GetEmptyElement());
+                category[current_element, count][0] = (UInt16)(category.element_lists[current_element].GetID());
+                category[current_element, count][1] = (Byte)flag;
+                category[current_element, count][2] = (UInt16)0;
+            }
 
-        private void CheckRightHand_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!edit_ready) return;
-            TryToFlip(CheckRightHand);
-        }
-
-        private void CheckChest_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!edit_ready) return;
-            TryToFlip(CheckChest);
-        }
-
-        private void CheckLeftHand_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!edit_ready) return;
-            TryToFlip(CheckLeftHand);
-        }
-
-        private void CheckRightRing_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!edit_ready) return;
-            TryToFlip(CheckRightRing);
-        }
-
-        private void CheckLegs_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!edit_ready) return;
-            TryToFlip(CheckLegs);
-        }
-
-        private void CheckLeftRing_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!edit_ready) return;
-            TryToFlip(CheckLeftRing);
+            set_element(current_element);
         }
 
         private void set_single_variant(TextBox item_id, Byte item_slot)
@@ -190,7 +140,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 if((Byte)(category[current_element, i][1]) == item_slot)
                 {
-                    UInt16 id = Utility.TryParseUInt16(item_id.Text);
+                    UInt16 id = SFEngine.Utility.TryParseUInt16(item_id.Text);
                     category[current_element, i][2] = id;
                     text_to_name[item_id].Text = SFCategoryManager.GetItemName(id);
                     return;
@@ -198,53 +148,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
         }
 
-        private void HelmetID_TextChanged(object sender, EventArgs e)
+        private void TextBoxItem_Validated(object sender, EventArgs e)
         {
-            if (!edit_ready) return;
+            if (!edit_ready)
+                return;
 
-            set_single_variant(HelmetID, (Byte)check_to_flag[CheckHelmet]);
-        }
-
-        private void RightHandID_TextChanged(object sender, EventArgs e)
-        {
-            if (!edit_ready) return;
-
-            set_single_variant(RightHandID, (Byte)check_to_flag[CheckRightHand]);
-        }
-
-        private void ChestID_TextChanged(object sender, EventArgs e)
-        {
-            if (!edit_ready) return;
-
-            set_single_variant(ChestID, (Byte)check_to_flag[CheckChest]);
-        }
-
-        private void LeftHandID_TextChanged(object sender, EventArgs e)
-        {
-            if (!edit_ready) return;
-
-            set_single_variant(LeftHandID, (Byte)check_to_flag[CheckLeftHand]);
-        }
-
-        private void RightRingID_TextChanged(object sender, EventArgs e)
-        {
-            if (!edit_ready) return;
-
-            set_single_variant(RightRingID, (Byte)check_to_flag[CheckRightRing]);
-        }
-
-        private void LegsID_TextChanged(object sender, EventArgs e)
-        {
-            if (!edit_ready) return;
-
-            set_single_variant(LegsID, (Byte)check_to_flag[CheckLegs]);
-        }
-
-        private void LeftRingID_TextChanged(object sender, EventArgs e)
-        {
-            if (!edit_ready) return;
-
-            set_single_variant(LeftRingID, (Byte)check_to_flag[CheckLeftRing]);
+            set_single_variant((TextBox)sender, (Byte)((int)(((TextBox)sender).Tag)));
         }
 
         public override void set_element(int index)
@@ -293,46 +202,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 step_into(textBox1, 2024);
         }
 
-        private void HelmetID_MouseDown(object sender, MouseEventArgs e)
+        private void TextboxItem_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
-                step_into(HelmetID, 2003);
-        }
-
-        private void RightHandID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-                step_into(RightHandID, 2003);
-        }
-
-        private void ChestID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-                step_into(ChestID, 2003);
-        }
-
-        private void LeftHandID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-                step_into(LeftHandID, 2003);
-        }
-
-        private void RightRingID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-                step_into(RightRingID, 2003);
-        }
-
-        private void LegsID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-                step_into(LegsID, 2003);
-        }
-
-        private void LeftRingID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-                step_into(LeftRingID, 2003);
+                step_into((TextBox)sender, 2003);
         }
 
         public override string get_element_string(int index)
@@ -340,6 +213,27 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             UInt16 unit_id = (UInt16)category[index, 0][0];
             string txt_unit = SFCategoryManager.GetUnitName(unit_id);
             return unit_id.ToString() + " " + txt_unit;
+        }
+
+        public override void on_add_subelement(int subelem_index)
+        {
+            base.on_add_subelement(subelem_index);
+
+            set_element(current_element);
+        }
+
+        public override void on_remove_subelement(int subelem_index)
+        {
+            base.on_remove_subelement(subelem_index);
+
+            set_element(current_element);
+        }
+
+        public override void on_update_subelement(int subelem_index)
+        {
+            base.on_update_subelement(subelem_index);
+
+            set_element(current_element);
         }
     }
 }

@@ -14,9 +14,9 @@ namespace SpellforceDataEditor
         [STAThread]
         static void Main()
         {
-            LogUtils.Log.SetOption(LogUtils.LogOption.ALL);
-            LogUtils.Log.Info(LogUtils.LogSource.Main, "Program.Main(): session start time: " + DateTime.Now.ToLongTimeString());
-            Settings.Load();
+            SFEngine.LogUtils.Log.SetOption(SFEngine.LogUtils.LogOption.ALL);
+            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "Program.Main(): session start time: " + DateTime.Now.ToLongTimeString());
+            SFEngine.Settings.Load();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -29,14 +29,14 @@ namespace SpellforceDataEditor
             }
             catch (Exception e)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.Main, "Program.Main() terminated due to error! Exception data: " + e.ToString() + " # " + e.Message);
+                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.Main, "Program.Main() terminated due to error! Exception data: " + e.ToString() + " # " + e.Message);
             }
             finally
             {
                 SFLua.SFLuaEnvironment.UnloadSQL();
                 SFUnPak.SFUnPak.CloseAllPaks();
-                LogUtils.Log.Info(LogUtils.LogSource.Main, "Program.Main(): session finish time: " + DateTime.Now.ToLongTimeString());
-                LogUtils.Log.SaveLog("UserLog.txt");
+                SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "Program.Main(): session finish time: " + DateTime.Now.ToLongTimeString());
+                SFEngine.LogUtils.Log.SaveLog("UserLog.txt");
             }
 #endif
         }

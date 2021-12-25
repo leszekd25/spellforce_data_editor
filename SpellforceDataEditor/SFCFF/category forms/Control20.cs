@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -31,7 +32,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                set_element_variant(current_element, i, 0, Utility.TryParseUInt16(textBox1.Text));
+                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -39,7 +40,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListSpells.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected, 2, Utility.TryParseUInt16(textBox3.Text));
+            set_element_variant(current_element, cur_selected, 2, SFEngine.Utility.TryParseUInt16(textBox3.Text));
             set_list_text(cur_selected);
         }
 
@@ -78,7 +79,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void button1_Click(object sender, EventArgs e)
         {
             int new_index;
-            if (ListSpells.SelectedIndex == Utility.NO_INDEX)
+            if (ListSpells.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 new_index = ListSpells.Items.Count - 1;
             else
                 new_index = ListSpells.SelectedIndex;
@@ -101,7 +102,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (ListSpells.SelectedIndex == Utility.NO_INDEX)
+            if (ListSpells.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
             if (ListSpells.Items.Count == 1)
                 return;

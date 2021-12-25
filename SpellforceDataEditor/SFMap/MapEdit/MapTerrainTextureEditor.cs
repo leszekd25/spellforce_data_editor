@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
+using SFEngine.SFMap;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {

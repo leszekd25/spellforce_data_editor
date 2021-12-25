@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFLua.lua_sql_forms
 {
@@ -42,7 +43,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ListHeads_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListHeads.SelectedIndex == Utility.NO_INDEX)
+            if (ListHeads.SelectedIndex == SFEngine.Utility.NO_INDEX)
             {
                 MM.Text = "";
                 MF.Text = "";
@@ -59,7 +60,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void MM_Validated(object sender, EventArgs e)
         {
-            if (ListHeads.SelectedIndex == Utility.NO_INDEX)
+            if (ListHeads.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.heads.heads[ListHeads.SelectedIndex+1].MeshMale = MM.Text.ToString();
@@ -67,7 +68,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void MF_Validated(object sender, EventArgs e)
         {
-            if (ListHeads.SelectedIndex == Utility.NO_INDEX)
+            if (ListHeads.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFLuaEnvironment.heads.heads[ListHeads.SelectedIndex+1].MeshFemale = MF.Text.ToString();
@@ -75,7 +76,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ButtonAdd_Click(object sender, EventArgs e)
         {
-            lua_sql.SFLuaSQLHeadData head = new lua_sql.SFLuaSQLHeadData();
+            SFEngine.SFLua.lua_sql.SFLuaSQLHeadData head = new SFEngine.SFLua.lua_sql.SFLuaSQLHeadData();
             head.MeshMale = "";
             head.MeshFemale = "";
 
@@ -88,7 +89,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ButtonRemove_Click(object sender, EventArgs e)
         {
-            if (ListHeads.SelectedIndex == Utility.NO_INDEX)
+            if (ListHeads.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             int old_index = ListHeads.SelectedIndex;

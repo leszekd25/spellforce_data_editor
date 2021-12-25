@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using SFEngine.SFLua.LuaDecompiler;
 
 namespace SpellforceDataEditor.SFLua.lua_controls
 {
@@ -46,9 +47,9 @@ namespace SpellforceDataEditor.SFLua.lua_controls
                 BinaryReader br = new BinaryReader(fs, Encoding.GetEncoding(1252));
                 try
                 {
-                    LuaDecompiler.LuaBinaryScript scr = new LuaDecompiler.LuaBinaryScript(br);
-                    LuaDecompiler.Decompiler dec = new LuaDecompiler.Decompiler();
-                    LuaDecompiler.Node n = dec.Decompile(scr.func);
+                    LuaBinaryScript scr = new LuaBinaryScript(br);
+                    Decompiler dec = new Decompiler();
+                    Node n = dec.Decompile(scr.func);
                     br.Close();
 
 
@@ -61,7 +62,7 @@ namespace SpellforceDataEditor.SFLua.lua_controls
                 catch (Exception)
                 {
                     failed_scripts += 1;
-                    LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaDecompilerForm.DecompileFiles(): Failed to decompile script "
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFLua, "LuaDecompilerForm.DecompileFiles(): Failed to decompile script "
                         +fo.Name+"!");
                 }
                 finally
@@ -85,7 +86,7 @@ namespace SpellforceDataEditor.SFLua.lua_controls
             ButtonDecDirectory.Enabled = true;
             ButtonOK.Enabled = true;
 
-            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "LuaDecompilerForm.DecompileFiles(): Decompiled files: "
+            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFLua, "LuaDecompilerForm.DecompileFiles(): Decompiled files: "
                 +decompiled_scripts.ToString()+", failed to decompile: "+failed_scripts.ToString());
         }
 

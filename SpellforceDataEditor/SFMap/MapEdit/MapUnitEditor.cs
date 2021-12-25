@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
@@ -45,7 +47,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     // undo/redo
                     SFCoord previous_pos = new SFCoord(0, 0);
 
-                    if ((specials.Shift) && (selected_unit != Utility.NO_INDEX))
+                    if ((specials.Shift) && (selected_unit != SFEngine.Utility.NO_INDEX))
                     {
                         // undo/redo
                         previous_pos = map.unit_manager.units[selected_unit].grid_position;
@@ -55,7 +57,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     else if (!first_click)
                     {
                         ushort new_unit_id = (ushort)placement_unit;
-                        if (SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(new_unit_id) == Utility.NO_INDEX)
+                        if (SFCategoryManager.gamedata[2024].GetElementIndex(new_unit_id) == SFEngine.Utility.NO_INDEX)
                             return;
                         // create new unit and drag it until mouse released
                         map.AddUnit(new_unit_id, pos, 0, 0, 0, 0, 0);
@@ -74,7 +76,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
 
                     // undo/redo
-                    if((selected_unit != Utility.NO_INDEX)&&(!first_click))
+                    if((selected_unit != SFEngine.Utility.NO_INDEX)&&(!first_click))
                     {
                         op_change_pos = new map_operators.MapOperatorEntityChangeProperty()
                         {
@@ -90,7 +92,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 else if (b == MouseButtons.Right)
                 {
                     MainForm.mapedittool.InspectorSelect(null);
-                    Select(Utility.NO_INDEX);
+                    Select(SFEngine.Utility.NO_INDEX);
                 }
             }
             else
@@ -119,7 +121,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if (unit_map_index == selected_unit)
                     {
                         MainForm.mapedittool.InspectorSelect(null);
-                        Select(Utility.NO_INDEX);
+                        Select(SFEngine.Utility.NO_INDEX);
                     }
 
                     // undo/redo

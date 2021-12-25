@@ -330,7 +330,7 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
 
             int index = ListboxDependencyGD.SelectedIndex;
 
-            if (index == Utility.NO_INDEX)
+            if (index == SFEngine.Utility.NO_INDEX)
                 return;
 
             ref_list.RemoveAt(index);
@@ -360,7 +360,7 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
 
             int index = ListboxDependencyGD.SelectedIndex;
 
-            if (index == Utility.NO_INDEX)
+            if (index == SFEngine.Utility.NO_INDEX)
                 return;
             if (index == 0)
                 return;
@@ -399,7 +399,7 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
 
             int index = ListboxDependencyGD.SelectedIndex;
 
-            if (index == Utility.NO_INDEX)
+            if (index == SFEngine.Utility.NO_INDEX)
                 return;
             if (index == ref_list.Count - 1)
                 return;

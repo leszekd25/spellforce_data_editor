@@ -12,7 +12,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 {
     public partial class MapModifyTextureSet : Form
     {
-        SFMap map = null;
+        SFEngine.SFMap.SFMap map = null;
         int selected_base = -1;
 
         public map_operators.MapOperatorModifyTextureSet operator_modify_texture_set = new map_operators.MapOperatorModifyTextureSet();
@@ -22,7 +22,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             InitializeComponent();
         }
 
-        public MapModifyTextureSet(SFMap m)
+        public MapModifyTextureSet(SFEngine.SFMap.SFMap m)
         {
             map = m;
             InitializeComponent();
@@ -44,7 +44,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                 mttc.Location = new Point(((i - 1) % 7) * 54, ((i - 1) / 7) * 70);
             }
 
-            for (int i = 1; i <= SFMapTerrainTextureManager.TEXTURES_AVAILABLE; i++)
+            for (int i = 1; i <= SFEngine.SFMap.SFMapTerrainTextureManager.TEXTURES_AVAILABLE; i++)
             {
                 map_controls.MapTerrainTextureControl mttc = new map_controls.MapTerrainTextureControl();
                 mttc.ID = i;

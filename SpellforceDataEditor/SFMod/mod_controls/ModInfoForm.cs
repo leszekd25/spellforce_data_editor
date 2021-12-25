@@ -27,7 +27,7 @@ namespace SpellforceDataEditor.SFMod.mod_controls
         {
             mod_info.Name = textBox1.Text;
             mod_info.Author = textBox2.Text;
-            mod_info.Revision = Utility.TryParseInt32(textBox3.Text);
+            mod_info.Revision = SFEngine.Utility.TryParseInt32(textBox3.Text);
             mod_info.Description = textBox4.Text;
         }
     }

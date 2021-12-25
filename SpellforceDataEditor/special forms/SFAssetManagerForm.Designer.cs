@@ -121,7 +121,7 @@
             // 
             this.exportSettingsToolStripMenuItem.Name = "exportSettingsToolStripMenuItem";
             this.exportSettingsToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
-            this.exportSettingsToolStripMenuItem.Text = "Extraction settings...";
+            this.exportSettingsToolStripMenuItem.Text = "Extraction SFEngine.Settings...";
             this.exportSettingsToolStripMenuItem.Click += new System.EventHandler(this.exportSettingsToolStripMenuItem_Click);
             // 
             // statusStrip1

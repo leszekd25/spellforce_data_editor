@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DD55FDE3-46AC-4558-9665-0F0CD25E5289}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SFEngine</RootNamespace>
+    <AssemblyName>SFEngine</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NAudio, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.9.0\lib\net35\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=3.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.1.0\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ArrayPool.cs" />
+    <Compile Include="LinearPool.cs" />
+    <Compile Include="LogUtils\Log.cs" />
+    <Compile Include="MathUtils.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Settings.cs" />
+    <Compile Include="SF3D\ColorUtility.cs" />
+    <Compile Include="SF3D\InterpolatedValue.cs" />
+    <Compile Include="SF3D\Lighting.cs" />
+    <Compile Include="SF3D\MeshCache.cs" />
+    <Compile Include="SF3D\Physics\BoundingBox.cs" />
+    <Compile Include="SF3D\Physics\CollisionMesh.cs" />
+    <Compile Include="SF3D\Physics\Frustum.cs" />
+    <Compile Include="SF3D\Physics\Line.cs" />
+    <Compile Include="SF3D\Physics\Plane.cs" />
+    <Compile Include="SF3D\Physics\Ray.cs" />
+    <Compile Include="SF3D\Physics\Triangle.cs" />
+    <Compile Include="SF3D\SceneSynchro\SceneNode.cs" />
+    <Compile Include="SF3D\SceneSynchro\SFScene.cs" />
+    <Compile Include="SF3D\SceneSynchro\TexturedGeometryList.cs" />
+    <Compile Include="SF3D\SFAnimation.cs" />
+    <Compile Include="SF3D\SFBoneIndex.cs" />
+    <Compile Include="SF3D\SFMaterial.cs" />
+    <Compile Include="SF3D\SFModel3D.cs" />
+    <Compile Include="SF3D\SFModelSkin.cs" />
+    <Compile Include="SF3D\SFRender\FrameBuffer.cs" />
+    <Compile Include="SF3D\SFRender\SFRenderEngine.cs" />
+    <Compile Include="SF3D\SFRender\SFShader.cs" />
+    <Compile Include="SF3D\SFSkeleton.cs" />
+    <Compile Include="SF3D\SFTexture.cs" />
+    <Compile Include="SF3D\UI\UIFont.cs" />
+    <Compile Include="SF3D\UI\UIManager.cs" />
+    <Compile Include="SF3D\UI\UIQuadStorage.cs" />
+    <Compile Include="SFCFF\SFCategory.cs" />
+    <Compile Include="SFCFF\SFCategoryElement.cs" />
+    <Compile Include="SFCFF\SFCategoryManager.cs" />
+    <Compile Include="SFCFF\SFGameData.cs" />
+    <Compile Include="SFChunk\SFChunkFile.cs" />
+    <Compile Include="SFChunk\SFChunkFileChunk.cs" />
+    <Compile Include="SFLua\ILuaParsable.cs" />
+    <Compile Include="SFLua\LuaDecompiler\Assignment.cs" />
+    <Compile Include="SFLua\LuaDecompiler\Chunk.cs" />
+    <Compile Include="SFLua\LuaDecompiler\Decompiler.cs" />
+    <Compile Include="SFLua\LuaDecompiler\Executable.cs" />
+    <Compile Include="SFLua\LuaDecompiler\Fork.cs" />
+    <Compile Include="SFLua\LuaDecompiler\Loop.cs" />
+    <Compile Include="SFLua\LuaDecompiler\LuaBinaryScript.cs" />
+    <Compile Include="SFLua\LuaDecompiler\LuaInstruction.cs" />
+    <Compile Include="SFLua\LuaDecompiler\LuaLocalVariableRegistry.cs" />
+    <Compile Include="SFLua\LuaDecompiler\LuaStack.cs" />
+    <Compile Include="SFLua\LuaDecompiler\LuaState.cs" />
+    <Compile Include="SFLua\LuaDecompiler\LValue.cs" />
+    <Compile Include="SFLua\LuaDecompiler\Node.cs" />
+    <Compile Include="SFLua\LuaDecompiler\Operator.cs" />
+    <Compile Include="SFLua\LuaDecompiler\Primitive.cs" />
+    <Compile Include="SFLua\LuaDecompiler\Return.cs" />
+    <Compile Include="SFLua\LuaDecompiler\Table.cs" />
+    <Compile Include="SFLua\LuaDialogBuilderNode.cs" />
+    <Compile Include="SFLua\LuaParser\LuaScript.cs" />
+    <Compile Include="SFLua\LuaParser\LuaTable.cs" />
+    <Compile Include="SFLua\lua_sql\ILuaSQL.cs" />
+    <Compile Include="SFLua\lua_sql\SFLuaSQLBuilding.cs" />
+    <Compile Include="SFLua\lua_sql\SFLuaSQLHead.cs" />
+    <Compile Include="SFLua\lua_sql\SFLuaSQLItem.cs" />
+    <Compile Include="SFLua\lua_sql\SFLuaSQLObject.cs" />
+    <Compile Include="SFLua\lua_sql\SFLuaSQLRtsCoopSpawn.cs" />
+    <Compile Include="SFLua\SFLuaDialog.cs" />
+    <Compile Include="SFLua\SFLuaEnvironment.cs" />
+    <Compile Include="SFMap\MapGen\GradientMap.cs" />
+    <Compile Include="SFMap\MapGen\LatticeKernel.cs" />
+    <Compile Include="SFMap\MapGen\MapGenerator.cs" />
+    <Compile Include="SFMap\SFCoord.cs" />
+    <Compile Include="SFMap\SFMap.cs" />
+    <Compile Include="SFMap\SFMapBuildingManager.cs" />
+    <Compile Include="SFMap\SFMapCollisionBoundary.cs" />
+    <Compile Include="SFMap\SFMapDecorationManager.cs" />
+    <Compile Include="SFMap\SFMapEntity.cs" />
+    <Compile Include="SFMap\SFMapHeightMap.cs" />
+    <Compile Include="SFMap\SFMapInteractiveObjectManager.cs" />
+    <Compile Include="SFMap\SFMapLakeManager.cs" />
+    <Compile Include="SFMap\SFMapMetaData.cs" />
+    <Compile Include="SFMap\SFMapObjectManager.cs" />
+    <Compile Include="SFMap\SFMapOcean.cs" />
+    <Compile Include="SFMap\SFMapPortalManager.cs" />
+    <Compile Include="SFMap\SFMapQuickSelectHelper.cs" />
+    <Compile Include="SFMap\SFMapSelectionHelper.cs" />
+    <Compile Include="SFMap\SFMapTerrainTextureManager.cs" />
+    <Compile Include="SFMap\SFMapUnitManager.cs" />
+    <Compile Include="SFMap\SFMapWeatherManager.cs" />
+    <Compile Include="SFResources\SFResource.cs" />
+    <Compile Include="SFResources\SFResourceContainer.cs" />
+    <Compile Include="SFResources\SFResourceManager.cs" />
+    <Compile Include="SFSound\SFSoundEngine.cs" />
+    <Compile Include="SFSound\StreamResource.cs" />
+    <Compile Include="SFUnPak\SFPakFileSystem.cs" />
+    <Compile Include="SFUnPak\SFPakMap.cs" />
+    <Compile Include="SFUnPak\SFUnPak.cs" />
+    <Compile Include="Utility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

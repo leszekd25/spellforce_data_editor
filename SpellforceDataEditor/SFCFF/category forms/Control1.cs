@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -48,167 +49,167 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, Utility.TryParseUInt16(tb_effID.Text));
+            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(tb_effID.Text));
         }
 
         private void tb_typeID_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, Utility.TryParseUInt16(tb_typeID.Text));
+            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt16(tb_typeID.Text));
         }
 
         private void tb_req1_1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, Utility.TryParseUInt8(tb_req1_1.Text));
+            set_element_variant(current_element, 2, SFEngine.Utility.TryParseUInt8(tb_req1_1.Text));
         }
 
         private void tb_req1_2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, Utility.TryParseUInt8(tb_req1_2.Text));
+            set_element_variant(current_element, 3, SFEngine.Utility.TryParseUInt8(tb_req1_2.Text));
         }
 
         private void tb_req1_3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 4, Utility.TryParseUInt8(tb_req1_3.Text));
+            set_element_variant(current_element, 4, SFEngine.Utility.TryParseUInt8(tb_req1_3.Text));
         }
 
         private void tb_req2_1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 5, Utility.TryParseUInt8(tb_req2_1.Text));
+            set_element_variant(current_element, 5, SFEngine.Utility.TryParseUInt8(tb_req2_1.Text));
         }
 
         private void tb_req2_2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 6, Utility.TryParseUInt8(tb_req2_2.Text));
+            set_element_variant(current_element, 6, SFEngine.Utility.TryParseUInt8(tb_req2_2.Text));
         }
 
         private void tb_req2_3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 7, Utility.TryParseUInt8(tb_req2_3.Text));
+            set_element_variant(current_element, 7, SFEngine.Utility.TryParseUInt8(tb_req2_3.Text));
         }
 
         private void tb_req3_1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 8, Utility.TryParseUInt8(tb_req3_1.Text));
+            set_element_variant(current_element, 8, SFEngine.Utility.TryParseUInt8(tb_req3_1.Text));
         }
 
         private void tb_req3_2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 9, Utility.TryParseUInt8(tb_req3_2.Text));
+            set_element_variant(current_element, 9, SFEngine.Utility.TryParseUInt8(tb_req3_2.Text));
         }
 
         private void tb_req3_3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 10, Utility.TryParseUInt8(tb_req3_3.Text));
+            set_element_variant(current_element, 10, SFEngine.Utility.TryParseUInt8(tb_req3_3.Text));
         }
 
         private void tb_req4_1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 11, Utility.TryParseUInt8(tb_req4_1.Text));
+            set_element_variant(current_element, 11, SFEngine.Utility.TryParseUInt8(tb_req4_1.Text));
         }
 
         private void tb_req4_2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 12, Utility.TryParseUInt8(tb_req4_2.Text));
+            set_element_variant(current_element, 12, SFEngine.Utility.TryParseUInt8(tb_req4_2.Text));
         }
 
         private void tb_req4_3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 13, Utility.TryParseUInt8(tb_req4_3.Text));
+            set_element_variant(current_element, 13, SFEngine.Utility.TryParseUInt8(tb_req4_3.Text));
         }
 
         private void tb_mnc_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 14, Utility.TryParseUInt16(tb_mnc.Text));
+            set_element_variant(current_element, 14, SFEngine.Utility.TryParseUInt16(tb_mnc.Text));
         }
 
         private void tb_ctm_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 15, Utility.TryParseUInt32(tb_ctm.Text));
+            set_element_variant(current_element, 15, SFEngine.Utility.TryParseUInt32(tb_ctm.Text));
         }
 
         private void tb_rtm_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 16, Utility.TryParseUInt32(tb_rtm.Text));
+            set_element_variant(current_element, 16, SFEngine.Utility.TryParseUInt32(tb_rtm.Text));
         }
 
         private void tb_rng_min_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 17, Utility.TryParseUInt16(tb_rng_min.Text));
+            set_element_variant(current_element, 17, SFEngine.Utility.TryParseUInt16(tb_rng_min.Text));
         }
 
         private void tb_rng_max_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 18, Utility.TryParseUInt16(tb_rng_max.Text));
+            set_element_variant(current_element, 18, SFEngine.Utility.TryParseUInt16(tb_rng_max.Text));
         }
 
         private void tb_ct1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 19, Utility.TryParseUInt8(tb_ct1.Text));
+            set_element_variant(current_element, 19, SFEngine.Utility.TryParseUInt8(tb_ct1.Text));
         }
 
         private void tb_ct2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 20, Utility.TryParseUInt8(tb_ct2.Text));
+            set_element_variant(current_element, 20, SFEngine.Utility.TryParseUInt8(tb_ct2.Text));
         }
 
         private void tb_sd1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 21, Utility.TryParseUInt32(tb_sd1.Text));
+            set_element_variant(current_element, 21, SFEngine.Utility.TryParseUInt32(tb_sd1.Text));
         }
 
         private void tb_sd2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 22, Utility.TryParseUInt32(tb_sd2.Text));
+            set_element_variant(current_element, 22, SFEngine.Utility.TryParseUInt32(tb_sd2.Text));
         }
 
         private void tb_sd3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 23, Utility.TryParseUInt32(tb_sd3.Text));
+            set_element_variant(current_element, 23, SFEngine.Utility.TryParseUInt32(tb_sd3.Text));
         }
 
         private void tb_sd4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 24, Utility.TryParseUInt32(tb_sd4.Text));
+            set_element_variant(current_element, 24, SFEngine.Utility.TryParseUInt32(tb_sd4.Text));
         }
 
         private void tb_sd5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 25, Utility.TryParseUInt32(tb_sd5.Text));
+            set_element_variant(current_element, 25, SFEngine.Utility.TryParseUInt32(tb_sd5.Text));
         }
 
         private void tb_sd6_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 26, Utility.TryParseUInt32(tb_sd6.Text));
+            set_element_variant(current_element, 26, SFEngine.Utility.TryParseUInt32(tb_sd6.Text));
         }
 
         private void tb_sd7_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 27, Utility.TryParseUInt32(tb_sd7.Text));
+            set_element_variant(current_element, 27, SFEngine.Utility.TryParseUInt32(tb_sd7.Text));
         }
 
         private void tb_sd8_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 28, Utility.TryParseUInt32(tb_sd8.Text));
+            set_element_variant(current_element, 28, SFEngine.Utility.TryParseUInt32(tb_sd8.Text));
         }
 
         private void tb_sd9_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 29, Utility.TryParseUInt32(tb_sd9.Text));
+            set_element_variant(current_element, 29, SFEngine.Utility.TryParseUInt32(tb_sd9.Text));
         }
 
         private void tb_sd10_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 30, Utility.TryParseUInt32(tb_sd10.Text));
+            set_element_variant(current_element, 30, SFEngine.Utility.TryParseUInt32(tb_sd10.Text));
         }
 
         private void tb_effpow_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 31, Utility.TryParseUInt16(tb_effpow.Text));
+            set_element_variant(current_element, 31, SFEngine.Utility.TryParseUInt16(tb_effpow.Text));
         }
 
         private void tb_effrng_Validated(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 32, Utility.TryParseUInt16(tb_effpow.Text));
+            set_element_variant(current_element, 32, SFEngine.Utility.TryParseUInt16(tb_effpow.Text));
         }
 
         private void set_data_labels(string[] p)
@@ -230,7 +231,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 if (c == '0')
                 {
                     t.BackColor = SystemColors.Window;
-                    tracetable[i] = Utility.NO_INDEX;
+                    tracetable[i] = SFEngine.Utility.NO_INDEX;
                 }
                 else
                 {
@@ -278,7 +279,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             tb_sd10.Text = variant_repr(30);
             tb_effpow.Text = variant_repr(31);
             tb_effrng.Text = variant_repr(32);
-            set_data_labels(SFSpellDescriptor.get(Utility.TryParseUInt16(tb_typeID.Text)));
+            set_data_labels(SFSpellDescriptor.get(SFEngine.Utility.TryParseUInt16(tb_typeID.Text)));
         }
 
         private void tb_typeID_MouseClick(object sender, MouseEventArgs e)
@@ -289,60 +290,60 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_sd1_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[0] != Utility.NO_INDEX))
+            if ((e.Button == MouseButtons.Right) && (tracetable[0] != SFEngine.Utility.NO_INDEX))
                 step_into(tb_sd1, tracetable[0]);
         }
 
         private void tb_sd2_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[1] != Utility.NO_INDEX))
+            if ((e.Button == MouseButtons.Right) && (tracetable[1] != SFEngine.Utility.NO_INDEX))
                 step_into(tb_sd2, tracetable[1]);
         }
 
         private void tb_sd3_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[2] != Utility.NO_INDEX))
+            if ((e.Button == MouseButtons.Right) && (tracetable[2] != SFEngine.Utility.NO_INDEX))
                 step_into(tb_sd3, tracetable[2]);
         }
 
         private void tb_sd4_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[3] != Utility.NO_INDEX))
+            if ((e.Button == MouseButtons.Right) && (tracetable[3] != SFEngine.Utility.NO_INDEX))
                 step_into(tb_sd4, tracetable[3]);
         }
 
         private void tb_sd5_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[4] != Utility.NO_INDEX))
+            if ((e.Button == MouseButtons.Right) && (tracetable[4] != SFEngine.Utility.NO_INDEX))
                 step_into(tb_sd5, tracetable[4]);
         }
 
         private void tb_sd6_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[5] != Utility.NO_INDEX))
+            if ((e.Button == MouseButtons.Right) && (tracetable[5] != SFEngine.Utility.NO_INDEX))
                 step_into(tb_sd6, tracetable[5]);
         }
 
         private void tb_sd7_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[6] != Utility.NO_INDEX))
+            if ((e.Button == MouseButtons.Right) && (tracetable[6] != SFEngine.Utility.NO_INDEX))
                 step_into(tb_sd7, tracetable[6]);
         }
 
         private void tb_sd8_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[7] != Utility.NO_INDEX))
+            if ((e.Button == MouseButtons.Right) && (tracetable[7] != SFEngine.Utility.NO_INDEX))
                 step_into(tb_sd8, tracetable[7]);
         }
 
         private void tb_sd9_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[8] != Utility.NO_INDEX))
+            if ((e.Button == MouseButtons.Right) && (tracetable[8] != SFEngine.Utility.NO_INDEX))
                 step_into(tb_sd9, tracetable[8]);
         }
         private void tb_sd10_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Right) && (tracetable[9] != Utility.NO_INDEX))
+            if ((e.Button == MouseButtons.Right) && (tracetable[9] != SFEngine.Utility.NO_INDEX))
                 step_into(tb_sd10, tracetable[9]);
         }
 
@@ -362,7 +363,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 case 5:
                     return "in Area";
                 default:
-                    return Utility.S_NONAME;
+                    return SFEngine.Utility.S_NONAME;
             }
         }
 
@@ -377,7 +378,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 case 3:
                     return "Other";
                 default:
-                    return Utility.S_NONAME;
+                    return SFEngine.Utility.S_NONAME;
             }
         }
 
@@ -387,7 +388,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             string stype_txt;
             if (SFCategoryManager.gamedata[2054] == null)
-                stype_txt = Utility.S_UNKNOWN;
+                stype_txt = SFEngine.Utility.S_UNKNOWN;
             else
             {
                 SFCategoryElement stype_elem = SFCategoryManager.gamedata[2054].FindElementBinary<UInt16>(0, type_id);

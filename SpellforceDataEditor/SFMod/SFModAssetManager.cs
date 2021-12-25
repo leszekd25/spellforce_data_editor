@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SFEngine.SFCFF;
+using SFEngine.SFUnPak;
 
 using System.IO;
 
@@ -67,9 +69,9 @@ namespace SpellforceDataEditor.SFMod
             long ChunkMaxSize = 0x1000000; // 16 MB
             long cur_filesize = size;
             // open file
-            if(!Directory.Exists(SFUnPak.SFUnPak.game_directory_name + "\\" + dname))
-                Directory.CreateDirectory(SFUnPak.SFUnPak.game_directory_name + "\\" + dname);
-            BinaryWriter abw = new BinaryWriter(File.Open(SFUnPak.SFUnPak.game_directory_name + "\\" + dname + "\\" + fname, FileMode.OpenOrCreate, FileAccess.Write));
+            if(!Directory.Exists(SFUnPak.game_directory_name + "\\" + dname))
+                Directory.CreateDirectory(SFUnPak.game_directory_name + "\\" + dname);
+            BinaryWriter abw = new BinaryWriter(File.Open(SFUnPak.game_directory_name + "\\" + dname + "\\" + fname, FileMode.OpenOrCreate, FileAccess.Write));
             while (cur_filesize > 0)
             {
                 int loaded_chunk_size = (int)Math.Min(ChunkMaxSize, cur_filesize);

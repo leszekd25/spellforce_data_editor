@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using SFEngine.SFUnPak;
 
 namespace SpellforceDataEditor.SFMap.map_dialog
 {
@@ -31,10 +32,10 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             // 1) find all scripts in sf34.pak:script\\p%ID 
             string dname = "script\\p" + PlatformID.ToString();
 
-            List<string> scripts_found = SFUnPak.SFUnPak.ListAllInDirectory(dname, new string[] { "sf34.pak" });
+            List<string> scripts_found = SFUnPak.ListAllInDirectory(dname, new string[] { "sf34.pak" });
 
             // 2) find all files in game_directory\\script\\p%ID
-            string real_dname = SFUnPak.SFUnPak.game_directory_name + "\\" + dname;
+            string real_dname = SFUnPak.game_directory_name + "\\" + dname;
             if (Directory.Exists(real_dname))
             {
                 string[] real_files = Directory.GetFiles(real_dname, "*.lua");

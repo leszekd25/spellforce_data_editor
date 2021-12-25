@@ -20,7 +20,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = Utility.TryParseByteArray(textBox1.Text, 6);
+            Byte[] data_array = SFEngine.Utility.TryParseByteArray(textBox1.Text, 6);
             set_element_variant(current_element, 0, data_array[0]);
             set_element_variant(current_element, 1, data_array[1]);
             set_element_variant(current_element, 2, data_array[2]);

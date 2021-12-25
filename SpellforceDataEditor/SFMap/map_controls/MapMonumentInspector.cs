@@ -5,6 +5,9 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -37,15 +40,15 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private int GetMonumentIndex(SFMapInteractiveObject o)
         {
             int i = map.int_object_manager.int_objects.IndexOf(o);
-            if(i != Utility.NO_INDEX)
+            if(i != SFEngine.Utility.NO_INDEX)
                 return map.int_object_manager.monuments_index.IndexOf(i);
 
-            return Utility.NO_INDEX;
+            return SFEngine.Utility.NO_INDEX;
         }
 
         private string GetMonumentString(SFMapInteractiveObject io)
         {
-            string ret = SFCFF.SFCategoryManager.GetObjectName((ushort)io.game_id)+" ";
+            string ret = SFCategoryManager.GetObjectName((ushort)io.game_id)+" ";
             ret += io.grid_position.ToString();
             return ret;
         }
@@ -105,7 +108,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ListMonuments_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListMonuments.SelectedIndex == Utility.NO_INDEX)
+            if (ListMonuments.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             PanelProperties.Enabled = true;
@@ -132,12 +135,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void Angle_Validated(object sender, EventArgs e)
         {
-            if (ListMonuments.SelectedIndex == Utility.NO_INDEX)
+            if (ListMonuments.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapInteractiveObject monument = map.int_object_manager.int_objects[map.int_object_manager.monuments_index[ListMonuments.SelectedIndex]];
 
-            int v = Utility.TryParseUInt16(Angle.Text, (ushort)monument.angle);
+            int v = SFEngine.Utility.TryParseUInt16(Angle.Text, (ushort)monument.angle);
             v = (v >= 0 ? (v <= 359 ? v : 359) : 0);
 
             // undo/redo
@@ -155,7 +158,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
         {
-            if (ListMonuments.SelectedIndex == Utility.NO_INDEX)
+            if (ListMonuments.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapInteractiveObject monument = map.int_object_manager.int_objects[map.int_object_manager.monuments_index[ListMonuments.SelectedIndex]];
@@ -169,7 +172,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         // this is to make sure the undo/redo queue only receives the latest angle changed as an action to perform
         private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
         {
-            if (ListMonuments.SelectedIndex == Utility.NO_INDEX)
+            if (ListMonuments.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             trackbar_clicked = true;

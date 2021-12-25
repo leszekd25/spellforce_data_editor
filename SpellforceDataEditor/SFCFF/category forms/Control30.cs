@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -26,7 +27,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                set_element_variant(current_element, i, 0, Utility.TryParseUInt16(textBox1.Text));
+                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         public override void set_element(int index)
@@ -50,14 +51,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
                 if (SFCategoryManager.gamedata[2003] == null)
                 {
-                    MerchantGrid.Rows[i].Cells[2].Value = Utility.S_MISSING;
+                    MerchantGrid.Rows[i].Cells[2].Value = SFEngine.Utility.S_MISSING;
                 }
                 else
                 {
                     SFCategoryElement item_elem = SFCategoryManager.gamedata[2003].FindElementBinary<UInt16>(0, item_id);
                     if (item_elem == null)
                     {
-                        MerchantGrid.Rows[i].Cells[2].Value = Utility.S_NONAME;
+                        MerchantGrid.Rows[i].Cells[2].Value = SFEngine.Utility.S_NONAME;
                     }
                     else
                     {
@@ -92,7 +93,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             
             if(cell.ColumnIndex == 0)
             {
-                UInt16 item_id = Utility.TryParseUInt16(cell.Value.ToString());
+                UInt16 item_id = SFEngine.Utility.TryParseUInt16(cell.Value.ToString());
                 if (SFCategoryManager.gamedata[2003] == null)
                 {
                     cell.Value = variant_repr(i, 1);
@@ -113,7 +114,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
             else if(cell.ColumnIndex == 1)
             {
-                UInt16 item_count = Utility.TryParseUInt16(cell.Value.ToString());
+                UInt16 item_count = SFEngine.Utility.TryParseUInt16(cell.Value.ToString());
                 set_element_variant(current_element, i, 2, item_count);
             }
 
@@ -125,7 +126,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             SFCategoryElement elem = category[current_element, 0];
 
             int new_index = MerchantGrid.Rows.Count;
-            UInt16 item_id = Utility.TryParseUInt16(textBox2.Text);
+            UInt16 item_id = SFEngine.Utility.TryParseUInt16(textBox2.Text);
 
             // if item already exists, add count to that item instead
             for(int i = 0; i < new_index; i++)
@@ -184,7 +185,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 int CurrentRowMouseOver = MerchantGrid.HitTest(e.X, e.Y).RowIndex;
 
                 DataGridViewCell cell = MerchantGrid[CurrentColumnMouseOver, CurrentRowMouseOver];
-                int item_id = Utility.TryParseInt32(cell.Value.ToString());
+                int item_id = SFEngine.Utility.TryParseInt32(cell.Value.ToString());
 
                 step_into(2003, item_id);
             }

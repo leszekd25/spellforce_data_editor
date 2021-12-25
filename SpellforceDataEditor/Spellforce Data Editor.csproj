@@ -39,6 +39,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -50,6 +51,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>382940043477778432.ico</ApplicationIcon>
@@ -80,28 +82,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayPool.cs" />
-    <Compile Include="LinearPool.cs" />
-    <Compile Include="LogUtils\Log.cs" />
-    <Compile Include="MathUtils.cs" />
     <Compile Include="MultimediaTimer.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="SF3D\ColorUtility.cs" />
-    <Compile Include="SF3D\Lighting.cs" />
-    <Compile Include="SF3D\Physics\BoundingBox.cs" />
-    <Compile Include="SF3D\Physics\CollisionMesh.cs" />
-    <Compile Include="SF3D\Physics\Frustum.cs" />
-    <Compile Include="SF3D\Physics\Line.cs" />
-    <Compile Include="SF3D\Physics\Plane.cs" />
-    <Compile Include="SF3D\Physics\Ray.cs" />
-    <Compile Include="SF3D\Physics\Triangle.cs" />
-    <Compile Include="SF3D\SFRender\FrameBuffer.cs" />
-    <Compile Include="SF3D\SceneSynchro\SceneNode.cs" />
-    <Compile Include="SF3D\SceneSynchro\TexturedGeometryList.cs" />
-    <Compile Include="SF3D\MeshCache.cs" />
-    <Compile Include="SF3D\UI\UIFont.cs" />
-    <Compile Include="SF3D\UI\UIManager.cs" />
-    <Compile Include="SF3D\UI\UIQuadStorage.cs" />
     <Compile Include="SFCFF\calculator forms\CalcControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -420,15 +401,6 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SF3D\InterpolatedValue.cs" />
-    <Compile Include="SF3D\SceneSynchro\SFScene.cs" />
-    <Compile Include="SF3D\SFAnimation.cs" />
-    <Compile Include="SF3D\SFBoneIndex.cs" />
-    <Compile Include="SF3D\SFMaterial.cs" />
-    <Compile Include="SF3D\SFModel3D.cs" />
-    <Compile Include="SF3D\SFModelSkin.cs" />
-    <Compile Include="SF3D\SFRender\SFRenderEngine.cs" />
-    <Compile Include="SF3D\SFRender\SFShader.cs" />
     <Compile Include="SFCFF\CustomScript.cs" />
     <Compile Include="SFCFF\helper_forms\CategorySelectForm.cs">
       <SubType>Form</SubType>
@@ -452,29 +424,8 @@
       <DependentUpon>LoadGamedataForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SFCFF\operators\CFFOperator.cs" />
-    <Compile Include="SFChunk\SFChunkFile.cs" />
-    <Compile Include="SFChunk\SFChunkFileChunk.cs" />
-    <Compile Include="SFLua\ILuaParsable.cs" />
-    <Compile Include="SFLua\LuaDecompiler\Assignment.cs" />
-    <Compile Include="SFLua\LuaDecompiler\Chunk.cs" />
-    <Compile Include="SFLua\LuaDecompiler\Decompiler.cs" />
-    <Compile Include="SFLua\LuaDecompiler\Executable.cs" />
-    <Compile Include="SFLua\LuaDecompiler\Fork.cs" />
-    <Compile Include="SFLua\LuaDecompiler\Loop.cs" />
-    <Compile Include="SFLua\LuaDecompiler\LuaBinaryScript.cs" />
-    <Compile Include="SFLua\LuaDecompiler\LuaInstruction.cs" />
-    <Compile Include="SFLua\LuaDecompiler\LuaLocalVariableRegistry.cs" />
-    <Compile Include="SFLua\LuaDecompiler\LuaStack.cs" />
-    <Compile Include="SFLua\LuaDecompiler\LuaState.cs" />
-    <Compile Include="SFLua\LuaDecompiler\LValue.cs" />
-    <Compile Include="SFLua\LuaDecompiler\Node.cs" />
-    <Compile Include="SFLua\LuaDecompiler\Operator.cs" />
-    <Compile Include="SFLua\LuaDecompiler\Primitive.cs" />
-    <Compile Include="SFLua\LuaDecompiler\Return.cs" />
-    <Compile Include="SFLua\LuaDecompiler\Table.cs" />
-    <Compile Include="SFLua\LuaDialogBuilderNode.cs" />
-    <Compile Include="SFLua\LuaParser\LuaScript.cs" />
-    <Compile Include="SFLua\LuaParser\LuaTable.cs" />
+    <Compile Include="SFCFF\SFDataTracer.cs" />
+    <Compile Include="SFCFF\SFSearchModule.cs" />
     <Compile Include="SFLua\lua_controls\LuaDecTestForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -487,12 +438,6 @@
     <Compile Include="SFLua\lua_controls\LuaDialogBuilderForm.Designer.cs">
       <DependentUpon>LuaDialogBuilderForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFLua\lua_sql\ILuaSQL.cs" />
-    <Compile Include="SFLua\lua_sql\SFLuaSQLBuilding.cs" />
-    <Compile Include="SFLua\lua_sql\SFLuaSQLHead.cs" />
-    <Compile Include="SFLua\lua_sql\SFLuaSQLItem.cs" />
-    <Compile Include="SFLua\lua_sql\SFLuaSQLObject.cs" />
-    <Compile Include="SFLua\lua_sql\SFLuaSQLRtsCoopSpawn.cs" />
     <Compile Include="SFLua\lua_sql_forms\SFLuaSQLBuildingForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -523,8 +468,7 @@
     <Compile Include="SFLua\lua_sql_forms\SFLuaSQLRtsCoopSpawnForm.Designer.cs">
       <DependentUpon>SFLuaSQLRtsCoopSpawnForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFLua\SFLuaDialog.cs" />
-    <Compile Include="SFLua\SFLuaEnvironment.cs" />
+    <Compile Include="SFLua\SFLuaWinformManager.cs" />
     <Compile Include="SFMap\MapEdit\MapMonumentEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapBrush.cs" />
     <Compile Include="SFMap\MapEdit\MapBindstoneEditor.cs" />
@@ -539,9 +483,6 @@
     <Compile Include="SFMap\MapEdit\MapLakesEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapTerrainFlagsEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapTerrainTextureEditor.cs" />
-    <Compile Include="SFMap\MapGen\GradientMap.cs" />
-    <Compile Include="SFMap\MapGen\LatticeKernel.cs" />
-    <Compile Include="SFMap\MapGen\MapGenerator.cs" />
     <Compile Include="SFMap\map_controls\MapBindstoneInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -687,24 +628,6 @@
       <DependentUpon>MapVisibilitySettings.cs</DependentUpon>
     </Compile>
     <Compile Include="SFMap\map_operators\MapOperator.cs" />
-    <Compile Include="SFMap\SFCoord.cs" />
-    <Compile Include="SFMap\SFMap.cs" />
-    <Compile Include="SFMap\SFMapBuildingManager.cs" />
-    <Compile Include="SFMap\SFMapCollisionBoundary.cs" />
-    <Compile Include="SFMap\SFMapDecorationManager.cs" />
-    <Compile Include="SFMap\SFMapEntity.cs" />
-    <Compile Include="SFMap\SFMapHeightMap.cs" />
-    <Compile Include="SFMap\SFMapInteractiveObjectManager.cs" />
-    <Compile Include="SFMap\SFMapLakeManager.cs" />
-    <Compile Include="SFMap\SFMapMetaData.cs" />
-    <Compile Include="SFMap\SFMapObjectManager.cs" />
-    <Compile Include="SFMap\SFMapOcean.cs" />
-    <Compile Include="SFMap\SFMapPortalManager.cs" />
-    <Compile Include="SFMap\SFMapQuickSelectHelper.cs" />
-    <Compile Include="SFMap\SFMapSelectionHelper.cs" />
-    <Compile Include="SFMap\SFMapTerrainTextureManager.cs" />
-    <Compile Include="SFMap\SFMapUnitManager.cs" />
-    <Compile Include="SFMap\SFMapWeatherManager.cs" />
     <Compile Include="SFMod\mod_controls\ModInfoForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -714,7 +637,6 @@
     <Compile Include="SFMod\SFMod.cs" />
     <Compile Include="SFMod\SFModAssetManager.cs" />
     <Compile Include="SFMod\SFModCFFChanges.cs" />
-    <Compile Include="SFCFF\SFGameData.cs" />
     <Compile Include="SFMod\SFModInfo.cs" />
     <Compile Include="SFMod\SFModTemplate.cs" />
     <Compile Include="special forms\AboutForm.cs">
@@ -777,23 +699,8 @@
     <Compile Include="special forms\utility_forms\ShowCodeForm.Designer.cs">
       <DependentUpon>ShowCodeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFResources\SFResource.cs" />
-    <Compile Include="SFResources\SFResourceContainer.cs" />
-    <Compile Include="SFResources\SFResourceManager.cs" />
-    <Compile Include="SF3D\SFSkeleton.cs" />
-    <Compile Include="SFSound\SFSoundEngine.cs" />
-    <Compile Include="SF3D\SFTexture.cs" />
-    <Compile Include="SFSound\StreamResource.cs" />
-    <Compile Include="SFCFF\SFCategory.cs" />
-    <Compile Include="SFCFF\SFCategoryElement.cs" />
-    <Compile Include="SFCFF\SFCategoryManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SFCFF\SFDataTracer.cs" />
-    <Compile Include="SFCFF\SFSearchModule.cs" />
-    <Compile Include="SFUnPak\SFPakFileSystem.cs" />
-    <Compile Include="SFUnPak\SFPakMap.cs" />
-    <Compile Include="SFUnPak\SFUnPak.cs" />
     <Compile Include="special forms\ChangeDataLangForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -824,7 +731,7 @@
     <Compile Include="special forms\SpelllforceCFFEditor.Designer.cs">
       <DependentUpon>SpelllforceCFFEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Utility.cs" />
+    <Compile Include="WinFormsUtility.cs" />
     <EmbeddedResource Include="SFCFF\calculator forms\CalcControl.resx">
       <DependentUpon>CalcControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -1197,6 +1104,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SFLua\lua_dialog_controls\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SFEngine\SFEngine.csproj">
+      <Project>{dd55fde3-46ac-4558-9665-0f0cd25e5289}</Project>
+      <Name>SFEngine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

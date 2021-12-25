@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -35,7 +36,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                set_element_variant(current_element, i, 0, Utility.TryParseUInt16(textBox1.Text));
+                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -43,7 +44,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListRequirements.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected, 2, Utility.TryParseUInt8(textBox3.Text));
+            set_element_variant(current_element, cur_selected, 2, SFEngine.Utility.TryParseUInt8(textBox3.Text));
             set_list_text(cur_selected);
         }
 
@@ -52,7 +53,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListRequirements.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected, 3, Utility.TryParseUInt8(textBox5.Text));
+            set_element_variant(current_element, cur_selected, 3, SFEngine.Utility.TryParseUInt8(textBox5.Text));
             set_list_text(cur_selected);
         }
 
@@ -61,7 +62,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListRequirements.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected, 4, Utility.TryParseUInt8(textBox4.Text));
+            set_element_variant(current_element, cur_selected, 4, SFEngine.Utility.TryParseUInt8(textBox4.Text));
             set_list_text(cur_selected);
         }
 
@@ -94,7 +95,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void button1_Click(object sender, EventArgs e)
         {
             int new_index;
-            if (ListRequirements.SelectedIndex == Utility.NO_INDEX)
+            if (ListRequirements.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 new_index = ListRequirements.Items.Count - 1;
             else
                 new_index = ListRequirements.SelectedIndex;
@@ -118,7 +119,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (ListRequirements.SelectedIndex == Utility.NO_INDEX)
+            if (ListRequirements.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
             if (ListRequirements.Items.Count == 1)
                 return;
@@ -151,6 +152,34 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             UInt16 item_id = (UInt16)category[index, 0][0];
             string txt = SFCategoryManager.GetItemName(item_id);
             return item_id.ToString() + " " + txt;
+        }
+
+        public override void on_add_subelement(int subelem_index)
+        {
+            base.on_add_subelement(subelem_index);
+
+            ListRequirements.Items.Insert(subelem_index, "");
+            set_list_text(subelem_index);
+        }
+
+        public override void on_remove_subelement(int subelem_index)
+        {
+            base.on_remove_subelement(subelem_index);
+
+            ListRequirements.Items.RemoveAt(subelem_index);
+        }
+
+        public override void on_update_subelement(int subelem_index)
+        {
+            base.on_update_subelement(subelem_index);
+
+            set_list_text(subelem_index);
+            if (ListRequirements.SelectedIndex == subelem_index)
+            {
+                textBox3.Text = variant_repr(subelem_index, 2);
+                textBox5.Text = variant_repr(subelem_index, 3);
+                textBox4.Text = variant_repr(subelem_index, 4);
+            }
         }
     }
 }

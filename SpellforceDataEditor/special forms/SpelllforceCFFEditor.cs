@@ -6,6 +6,10 @@ using System.Windows.Forms;
 using System.Text;
 
 using SpellforceDataEditor.SFCFF;
+using SpellforceDataEditor.SFCFF.category_forms;
+using SpellforceDataEditor.SFCFF.helper_forms;
+using SFEngine.SFCFF;
+using SFEngine.SFUnPak;
 
 
 namespace SpellforceDataEditor.special_forms
@@ -25,8 +29,8 @@ namespace SpellforceDataEditor.special_forms
         private int selected_element_index = -1;
         private bool search_active = false;
 
-        private SFCFF.category_forms.SFControl ElementDisplay;        //a control which displays all element parameters
-        public Dictionary<int, SFCFF.category_forms.SFControl> CachedElementDisplays = new Dictionary<int, SFCFF.category_forms.SFControl>();   // element names and descriptions are read from here
+        private SFControl ElementDisplay;        //a control which displays all element parameters
+        public Dictionary<int, SFControl> CachedElementDisplays = new Dictionary<int, SFControl>();   // element names and descriptions are read from here
 
         //these parameters control item loading behavior
         private int elementselect_refresh_size = 1000;
@@ -72,23 +76,23 @@ namespace SpellforceDataEditor.special_forms
                 return;
             }
 
-            SFCFF.helper_forms.LoadGamedataForm LoadGD = new SFCFF.helper_forms.LoadGamedataForm();
+            LoadGamedataForm LoadGD = new LoadGamedataForm();
             if (LoadGD.ShowDialog() != DialogResult.OK)
                 return;
 
             bool success = false;
             switch(LoadGD.Mode)
             {
-                case SFCFF.helper_forms.LoadGamedataForm.GDMode.FULL:
+                case LoadGamedataForm.GDMode.FULL:
                     success = load_data(LoadGD.MainGDFileName);
                     break;
-                case SFCFF.helper_forms.LoadGamedataForm.GDMode.DEPENDENCY:
+                case LoadGamedataForm.GDMode.DEPENDENCY:
                     success = load_data_dependency(LoadGD.MainGDFileName, LoadGD.DependencyGDFileNames);
                     break;
-                case SFCFF.helper_forms.LoadGamedataForm.GDMode.DIFF:
+                case LoadGamedataForm.GDMode.DIFF:
                     success = load_data_diff(LoadGD.MainGDFileName, LoadGD.DiffGDFileName, LoadGD.DependencyGDFileNames);
                     break;
-                case SFCFF.helper_forms.LoadGamedataForm.GDMode.MERGE:
+                case LoadGamedataForm.GDMode.MERGE:
                     success = load_data_merge(LoadGD.MergeGDFileNames);
                     break;
                 default:
@@ -132,7 +136,7 @@ namespace SpellforceDataEditor.special_forms
             labelStatus.Text = "Loading...";
             statusStrip1.Refresh();
 
-            SFCFF.SFGameData gamedata = new SFGameData();
+            SFGameData gamedata = new SFGameData();
 
             if (gamedata.Load(fname) < 0)
             {
@@ -140,8 +144,8 @@ namespace SpellforceDataEditor.special_forms
                 return false;
             }
 
-            SFCFF.SFCategoryManager.Set(gamedata);
-            SFCFF.SFGameData.CalculateStatus(null, null, ref gamedata);
+            SFCategoryManager.Set(gamedata);
+            SFGameData.CalculateStatus(null, null, ref gamedata);
 
             this.Text = "GameData Editor - " + fname;
             labelStatus.Text = "Ready";
@@ -162,7 +166,7 @@ namespace SpellforceDataEditor.special_forms
             statusStrip1.Refresh();
 
             // merge dependencies
-            SFCFF.SFGameData dep_gamedata = new SFGameData();
+            SFGameData dep_gamedata = new SFGameData();
             if (dep_gamedata.Load(dependency[0]) < 0)
             {
                 labelStatus.Text = "Failed to open file " + dependency[0];
@@ -172,8 +176,8 @@ namespace SpellforceDataEditor.special_forms
             {
                 labelStatus.Text = string.Format("Loading dependencies ({0}/{1})...", i, dependency.Count);
                 statusStrip1.Refresh();
-                SFCFF.SFGameData dep2_gamedata = new SFGameData();
-                SFCFF.SFGameData dep_result_gamedata;
+                SFGameData dep2_gamedata = new SFGameData();
+                SFGameData dep_result_gamedata;
                 if (dep2_gamedata.Load(dependency[i]) < 0)
                 {
                     labelStatus.Text = "Failed to open file " + dependency[i];
@@ -186,7 +190,7 @@ namespace SpellforceDataEditor.special_forms
             // load main gd
             labelStatus.Text = "Loading main gamedata...";
             statusStrip1.Refresh();
-            SFCFF.SFGameData main_gamedata = new SFGameData();
+            SFGameData main_gamedata = new SFGameData();
             if (main_gamedata.Load(main_fname) < 0)
             {
                 labelStatus.Text = "Failed to open file " + main_fname;
@@ -196,12 +200,12 @@ namespace SpellforceDataEditor.special_forms
             // calculate status
             labelStatus.Text = "Calculating changes...";
             statusStrip1.Refresh();
-            SFCFF.SFGameData result_gamedata = new SFGameData();
-            SFCFF.SFGameData.Merge(dep_gamedata, main_gamedata, out result_gamedata);
-            SFCFF.SFGameData.CalculateStatus(dep_gamedata, main_gamedata, ref result_gamedata);
+            SFGameData result_gamedata = new SFGameData();
+            SFGameData.Merge(dep_gamedata, main_gamedata, out result_gamedata);
+            SFGameData.CalculateStatus(dep_gamedata, main_gamedata, ref result_gamedata);
 
-            SFCFF.SFCategoryManager.Set(result_gamedata);
-            SFCFF.SFCategoryManager.gd_dependencies = dependency;
+            SFCategoryManager.Set(result_gamedata);
+            SFCategoryManager.gd_dependencies = dependency;
 
             this.Text = "GameData Editor - " + main_fname;
             labelStatus.Text = "Ready";
@@ -219,7 +223,7 @@ namespace SpellforceDataEditor.special_forms
                 if (close_data() == DialogResult.Cancel)
                     return false;
 
-            SFCFF.SFGameData dep_gamedata = null;
+            SFGameData dep_gamedata = null;
 
             // load and merge dependencies
             if ((dependency != null)&&(dependency.Count > 0))
@@ -237,8 +241,8 @@ namespace SpellforceDataEditor.special_forms
                 {
                     labelStatus.Text = string.Format("Loading dependencies ({0}/{1})...", i, dependency.Count);
                     statusStrip1.Refresh();
-                    SFCFF.SFGameData dep2_gamedata = new SFGameData();
-                    SFCFF.SFGameData dep_result_gamedata;
+                    SFGameData dep2_gamedata = new SFGameData();
+                    SFGameData dep_result_gamedata;
                     if (dep2_gamedata.Load(dependency[i]) < 0)
                     {
                         labelStatus.Text = "Failed to open file " + dependency[i];
@@ -252,7 +256,7 @@ namespace SpellforceDataEditor.special_forms
             // load main gd
             labelStatus.Text = "Loading main gamedata...";
             statusStrip1.Refresh();
-            SFCFF.SFGameData main_gamedata = new SFGameData();
+            SFGameData main_gamedata = new SFGameData();
             if (main_gamedata.Load(main_fname) < 0)
             {
                 labelStatus.Text = "Failed to open file " + main_fname;
@@ -262,15 +266,15 @@ namespace SpellforceDataEditor.special_forms
             // merge main with dependencies
             if(dep_gamedata != null)
             {
-                SFCFF.SFGameData tmp_gamedata = new SFGameData();
-                SFCFF.SFGameData.Merge(dep_gamedata, main_gamedata, out tmp_gamedata);
+                SFGameData tmp_gamedata = new SFGameData();
+                SFGameData.Merge(dep_gamedata, main_gamedata, out tmp_gamedata);
                 main_gamedata = tmp_gamedata;
             }
 
             // load diff gd
             labelStatus.Text = "Loading diff gamedata...";
             statusStrip1.Refresh();
-            SFCFF.SFGameData diff_gamedata = new SFGameData();
+            SFGameData diff_gamedata = new SFGameData();
             if (diff_gamedata.Load(diff_fname) < 0)
             {
                 labelStatus.Text = "Failed to open file " + diff_fname;
@@ -280,12 +284,12 @@ namespace SpellforceDataEditor.special_forms
             // calculate status
             labelStatus.Text = "Calculating changes...";
             statusStrip1.Refresh();
-            SFCFF.SFGameData result_gamedata = new SFGameData();
-            SFCFF.SFGameData.Merge(main_gamedata, diff_gamedata, out result_gamedata);
-            SFCFF.SFGameData.CalculateStatus(main_gamedata, diff_gamedata, ref result_gamedata);
+            SFGameData result_gamedata = new SFGameData();
+            SFGameData.Merge(main_gamedata, diff_gamedata, out result_gamedata);
+            SFGameData.CalculateStatus(main_gamedata, diff_gamedata, ref result_gamedata);
 
-            SFCFF.SFCategoryManager.Set(result_gamedata);
-            SFCFF.SFCategoryManager.gd_dependencies = dependency;
+            SFCategoryManager.Set(result_gamedata);
+            SFCategoryManager.gd_dependencies = dependency;
 
             this.Text = "GameData Editor - " + main_fname;
             labelStatus.Text = "Ready";
@@ -306,7 +310,7 @@ namespace SpellforceDataEditor.special_forms
             statusStrip1.Refresh();
 
             // merge dependencies
-            SFCFF.SFGameData merge_gamedata = new SFGameData();
+            SFGameData merge_gamedata = new SFGameData();
             if (merge_gamedata.Load(merge_list[0]) < 0)
             {
                 labelStatus.Text = "Failed to open file " + merge_list[0];
@@ -316,8 +320,8 @@ namespace SpellforceDataEditor.special_forms
             {
                 labelStatus.Text = string.Format("Loading ({0}/{1})...", i, merge_list.Count);
                 statusStrip1.Refresh();
-                SFCFF.SFGameData merge2_gamedata = new SFGameData();
-                SFCFF.SFGameData merge_result_gamedata;
+                SFGameData merge2_gamedata = new SFGameData();
+                SFGameData merge_result_gamedata;
                 if (merge2_gamedata.Load(merge_list[i]) < 0)
                 {
                     labelStatus.Text = "Failed to open file " + merge_list[i];
@@ -327,8 +331,8 @@ namespace SpellforceDataEditor.special_forms
                 merge_gamedata = merge_result_gamedata;
             }
 
-            SFCFF.SFCategoryManager.Set(merge_gamedata);
-            SFCFF.SFGameData.CalculateStatus(null, null, ref merge_gamedata);
+            SFCategoryManager.Set(merge_gamedata);
+            SFGameData.CalculateStatus(null, null, ref merge_gamedata);
 
             this.Text = "GameData Editor - multiple files";
             labelStatus.Text = "Ready";
@@ -358,19 +362,19 @@ namespace SpellforceDataEditor.special_forms
 
             if ((MainForm.mapedittool != null) && (MainForm.mapedittool.ready))    // dont ask when synchronized
             {
-                return save_data_full(SFUnPak.SFUnPak.game_directory_name + "\\data\\GameData.cff");
+                return save_data_full(SFUnPak.game_directory_name + "\\data\\GameData.cff");
             }
             else
             {
-                SFCFF.helper_forms.SaveGamedataForm sgd = new SFCFF.helper_forms.SaveGamedataForm();
+                SaveGamedataForm sgd = new SaveGamedataForm();
                 if (sgd.ShowDialog() != DialogResult.OK)
                     return false;
 
                 switch (sgd.Mode)
                 {
-                    case SFCFF.helper_forms.SaveGamedataForm.GDMode.FULL:
+                    case SaveGamedataForm.GDMode.FULL:
                         return save_data_full(sgd.MainGDFileName);
-                    case SFCFF.helper_forms.SaveGamedataForm.GDMode.DEPENDENCY:
+                    case SaveGamedataForm.GDMode.DEPENDENCY:
                         return save_data_dependency(sgd.MainGDFileName);
                     default:
                         break;
@@ -406,108 +410,108 @@ namespace SpellforceDataEditor.special_forms
             return true;
         }
 
-        private SFCFF.category_forms.SFControl get_element_display_from_category(int cat)
+        private SFControl get_element_display_from_category(int cat)
         {
             switch(cat)
             {
                 case 2002:
-                    return new SFCFF.category_forms.Control1();
+                    return new Control1();
                 case 2054:
-                    return new SFCFF.category_forms.Control2();
+                    return new Control2();
                 case 2056:
-                    return new SFCFF.category_forms.Control3();
+                    return new Control3();
                 case 2005:
-                    return new SFCFF.category_forms.Control4();
+                    return new Control4();
                 case 2006:
-                    return new SFCFF.category_forms.Control5();
+                    return new Control5();
                 case 2067:
-                    return new SFCFF.category_forms.Control6();
+                    return new Control6();
                 case 2003:
-                    return new SFCFF.category_forms.Control7();
+                    return new Control7();
                 case 2004:
-                    return new SFCFF.category_forms.Control8();
+                    return new Control8();
                 case 2013:
-                    return new SFCFF.category_forms.Control9();
+                    return new Control9();
                 case 2015:
-                    return new SFCFF.category_forms.Control10();
+                    return new Control10();
                 case 2017:
-                    return new SFCFF.category_forms.Control11();
+                    return new Control11();
                 case 2014:
-                    return new SFCFF.category_forms.Control12();
+                    return new Control12();
                 case 2012:
-                    return new SFCFF.category_forms.Control13();
+                    return new Control13();
                 case 2018:
-                    return new SFCFF.category_forms.Control14();
+                    return new Control14();
                 case 2016:
-                    return new SFCFF.category_forms.Control15();
+                    return new Control15();
                 case 2022:
-                    return new SFCFF.category_forms.Control16();
+                    return new Control16();
                 case 2023:
-                    return new SFCFF.category_forms.Control17();
+                    return new Control17();
                 case 2024:
-                    return new SFCFF.category_forms.Control18();
+                    return new Control18();
                 case 2025:
-                    return new SFCFF.category_forms.Control19();
+                    return new Control19();
                 case 2026:
-                    return new SFCFF.category_forms.Control20();
+                    return new Control20();
                 case 2028:
-                    return new SFCFF.category_forms.Control21();
+                    return new Control21();
                 case 2040:
-                    return new SFCFF.category_forms.Control22();
+                    return new Control22();
                 case 2001:
-                    return new SFCFF.category_forms.Control23();
+                    return new Control23();
                 case 2029:
-                    return new SFCFF.category_forms.Control24();
+                    return new Control24();
                 case 2030:
-                    return new SFCFF.category_forms.Control25();
+                    return new Control25();
                 case 2031:
-                    return new SFCFF.category_forms.Control26();
+                    return new Control26();
                 case 2039:
-                    return new SFCFF.category_forms.Control27();
+                    return new Control27();
                 case 2062:
-                    return new SFCFF.category_forms.Control28();
+                    return new Control28();
                 case 2041:
-                    return new SFCFF.category_forms.Control29();
+                    return new Control29();
                 case 2042:
-                    return new SFCFF.category_forms.Control30();
+                    return new Control30();
                 case 2047:
-                    return new SFCFF.category_forms.Control31();
+                    return new Control31();
                 case 2044:
-                    return new SFCFF.category_forms.Control32();
+                    return new Control32();
                 case 2048:
-                    return new SFCFF.category_forms.Control33();
+                    return new Control33();
                 case 2050:
-                    return new SFCFF.category_forms.Control34();
+                    return new Control34();
                 case 2057:
-                    return new SFCFF.category_forms.Control35();
+                    return new Control35();
                 case 2065:
-                    return new SFCFF.category_forms.Control36();
+                    return new Control36();
                 case 2051:
-                    return new SFCFF.category_forms.Control37();
+                    return new Control37();
                 case 2052:
-                    return new SFCFF.category_forms.Control38();
+                    return new Control38();
                 case 2053:
-                    return new SFCFF.category_forms.Control39();
+                    return new Control39();
                 case 2055:
-                    return new SFCFF.category_forms.Control40();
+                    return new Control40();
                 case 2058:
-                    return new SFCFF.category_forms.Control41();
+                    return new Control41();
                 case 2059:
-                    return new SFCFF.category_forms.Control42();
+                    return new Control42();
                 case 2061:
-                    return new SFCFF.category_forms.Control43();
+                    return new Control43();
                 case 2063:
-                    return new SFCFF.category_forms.Control44();
+                    return new Control44();
                 case 2064:
-                    return new SFCFF.category_forms.Control45();
+                    return new Control45();
                 case 2032:
-                    return new SFCFF.category_forms.Control46();
+                    return new Control46();
                 case 2049:
-                    return new SFCFF.category_forms.Control47();
+                    return new Control47();
                 case 2036:
-                    return new SFCFF.category_forms.Control48();
+                    return new Control48();
                 case 2072:
-                    return new SFCFF.category_forms.Control49();
+                    return new Control49();
                 default:
                     return null;
             }
@@ -546,7 +550,7 @@ namespace SpellforceDataEditor.special_forms
             // only elements which are not existing categories are of type string
             if (CategorySelect.SelectedItem.GetType() == typeof(string))
             {
-                SFCFF.helper_forms.CategorySelectForm csf = new SFCFF.helper_forms.CategorySelectForm();
+                CategorySelectForm csf = new CategorySelectForm();
                 if(csf.ShowDialog() == DialogResult.OK)
                 {
                     if(csf.CategoryID == Tuple.Create<ushort, ushort>(0, 0))
@@ -678,23 +682,23 @@ namespace SpellforceDataEditor.special_forms
                 //background:
                 SolidBrush backgroundBrush;
                 if (selected)
-                    backgroundBrush = Utility.BrushBackgroundElemSelected;
+                    backgroundBrush = WinFormsUtility.BrushBackgroundElemSelected;
                 else
                 {
                     switch (ctg.element_status[index])
                     {
                         case SFCategoryElementStatus.ADDED:
-                            backgroundBrush = Utility.BrushBackgroundElemAdded;
+                            backgroundBrush = WinFormsUtility.BrushBackgroundElemAdded;
                             break;
                         case SFCategoryElementStatus.MODIFIED:
-                            backgroundBrush = Utility.BrushBackgroundElemModified;
+                            backgroundBrush = WinFormsUtility.BrushBackgroundElemModified;
                             break;
                         case SFCategoryElementStatus.REMOVED:
-                            backgroundBrush = Utility.BrushBackgroundElemRemoved;
+                            backgroundBrush = WinFormsUtility.BrushBackgroundElemRemoved;
                             break;
                         case SFCategoryElementStatus.UNCHANGED:
                         default:
-                            backgroundBrush = Utility.BrushBackgroundDefault;
+                            backgroundBrush = WinFormsUtility.BrushBackgroundDefault;
                             break;
                     }
                 }
@@ -702,7 +706,7 @@ namespace SpellforceDataEditor.special_forms
                 g.FillRectangle(backgroundBrush, e.Bounds);
 
                 //text:
-                SolidBrush foregroundBrush = (selected) ? Utility.BrushTextElemSelected : Utility.BrushTextDefault;
+                SolidBrush foregroundBrush = (selected) ? WinFormsUtility.BrushTextElemSelected : WinFormsUtility.BrushTextDefault;
                 g.DrawString(text, e.Font, foregroundBrush, ElementSelect.GetItemRectangle(index).Location);
             }
         }
@@ -921,7 +925,7 @@ namespace SpellforceDataEditor.special_forms
                 elem[0] = (uint)(last_id + 1);
             else
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "ButtonElemAdd_Click(): Unknown category format");
+                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFCFF, "ButtonElemAdd_Click(): Unknown category format");
                 throw new Exception("Unknown category format");
             }
 
@@ -1262,7 +1266,7 @@ namespace SpellforceDataEditor.special_forms
                 return;
             if (SFCategoryManager.gamedata[selected_category_id] != ctg)
                 return;
-            int index = Utility.find_binary_index(current_indices, elem_index);
+            int index = SFEngine.Utility.find_binary_index(current_indices, elem_index);
             if (index != -1)
             {
                 ElementSelect.SelectedIndexChanged -= new System.EventHandler(this.ElementSelect_SelectedIndexChanged);
@@ -1353,7 +1357,7 @@ namespace SpellforceDataEditor.special_forms
                 ushort spelltype_id = (ushort)spelltype_elem[0];
                 ushort desc_id = (ushort)spelltype_elem[8];
                 int desc_index = SFCategoryManager.gamedata[2058].GetElementIndex(desc_id);
-                if (desc_index == Utility.NO_INDEX)
+                if (desc_index == SFEngine.Utility.NO_INDEX)
                     continue;
                 SFCategoryElement desc_elem = SFCategoryManager.gamedata[2058][desc_index];
 
@@ -1408,7 +1412,7 @@ namespace SpellforceDataEditor.special_forms
 
             SFCategory ctg = SFCategoryManager.gamedata[real_category_id];
 
-            if (subelement_index == Utility.NO_INDEX)
+            if (subelement_index == SFEngine.Utility.NO_INDEX)
             {
                 // add element to the element list
                 if (loaded_count == ctg.GetElementCount())
@@ -1443,7 +1447,7 @@ namespace SpellforceDataEditor.special_forms
 
             SFCategory ctg = SFCategoryManager.gamedata[real_category_id];
 
-            if (subelement_index == Utility.NO_INDEX)
+            if (subelement_index == SFEngine.Utility.NO_INDEX)
             {
                 // remove element from the element list
                 if (loaded_count == ctg.GetElementCount())

@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Forms;
-using OpenTK;
+using SFEngine.SFUnPak;
 
 namespace SpellforceDataEditor
 {
@@ -58,7 +58,7 @@ namespace SpellforceDataEditor
             }
             sf0.Close();*/
 
-            LogUtils.Log.Info(LogUtils.LogSource.Main, "MainForm() called");
+            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "MainForm() called");
             InitializeComponent();
             linkEditor.Links.Add(0, linkEditor.Text.Length, "https://github.com/leszekd25/spellforce_data_editor/tree/with_viewer/bin");
             linkEditor.Visible = false;
@@ -68,12 +68,12 @@ namespace SpellforceDataEditor
             TimerCheckUpdateStatus.Start();
 
             // check if data loaded from settings
-            if (SFUnPak.SFUnPak.game_directory_specified)
+            if (SFUnPak.game_directory_specified)
                 LabelIsSpecifiedGameDir.Text = "Game directory:\r\nSpecified";
             else
                 LabelIsSpecifiedGameDir.Text = "Game directory:\r\nNOT specified";
 
-            LogUtils.Log.TotalMemoryUsage();
+            SFEngine.LogUtils.Log.TotalMemoryUsage();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -104,30 +104,30 @@ namespace SpellforceDataEditor
             update_finished = true;
             if (e.Cancelled)
             {
-                LogUtils.Log.Warning(LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Could not retrieve update info");
+                SFEngine.LogUtils.Log.Warning(SFEngine.LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Could not retrieve update info");
                 return;
             }
             if (e.Error != null)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Error while retrieving update info");
+                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Error while retrieving update info");
                 return;
             }
             string str = e.Result;
             int i = str.IndexOf("Latest version:");
-            if (i == Utility.NO_INDEX)
+            if (i == SFEngine.Utility.NO_INDEX)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Invalid update info");
+                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Invalid update info");
                 return;
             }
             string newest_version = str.Substring(i + "Latest version:".Length).Trim();
-            if (labelVersion.Text.IndexOf(newest_version) == Utility.NO_INDEX)
+            if (labelVersion.Text.IndexOf(newest_version) == SFEngine.Utility.NO_INDEX)
             {
-                LogUtils.Log.Info(LogUtils.LogSource.Main, "MainForm.getVersion_completed(): New editor version available");
+                SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "MainForm.getVersion_completed(): New editor version available");
                 update_available = true;
             }
             else
             {
-                LogUtils.Log.Info(LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Editor is up-to-date");
+                SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Editor is up-to-date");
             }
         }
 
@@ -135,12 +135,12 @@ namespace SpellforceDataEditor
         {
             if (GameDirDialog.ShowDialog() == DialogResult.OK)
             {
-                int result = SFUnPak.SFUnPak.SpecifyGameDirectory(GameDirDialog.SelectedPath);
+                int result = SFUnPak.SpecifyGameDirectory(GameDirDialog.SelectedPath);
                 if (result == 0)
                 {
-                    Settings.GameDirectory = GameDirDialog.SelectedPath;
+                    SFEngine.Settings.GameDirectory = GameDirDialog.SelectedPath;
                     LabelIsSpecifiedGameDir.Text = "Game directory:\r\nSpecified";
-                    Settings.Save();
+                    SFEngine.Settings.Save();
                 }
                 else
                     LabelIsSpecifiedGameDir.Text = "Game directory:\r\nFailed to specify!";
@@ -172,7 +172,7 @@ namespace SpellforceDataEditor
                 MessageBox.Show("Can't run both Map Editor and Asset Viewer simultaneously! Fix coming soon :^)");
                 return;
             }
-            if (!SFUnPak.SFUnPak.game_directory_specified)
+            if (!SFUnPak.game_directory_specified)
             {
                 MessageBox.Show("Game directory is not specified!");
                 return;
@@ -194,7 +194,7 @@ namespace SpellforceDataEditor
         {
             if (modmanager != null)
                 return;
-            if (!SFUnPak.SFUnPak.game_directory_specified)
+            if (!SFUnPak.game_directory_specified)
             {
                 MessageBox.Show("Game directory is not specified!");
                 return;
@@ -236,7 +236,7 @@ namespace SpellforceDataEditor
                 MessageBox.Show("Can't run both Map Editor and Asset Viewer simultaneously! Fix coming soon :^)");
                 return;
             }
-            if (!SFUnPak.SFUnPak.game_directory_specified)
+            if (!SFUnPak.game_directory_specified)
             {
                 MessageBox.Show("Game directory is not specified!");
                 return;
@@ -264,7 +264,7 @@ namespace SpellforceDataEditor
         {
             if (sqlmodify != null)
                 return;
-            if (!SFUnPak.SFUnPak.game_directory_specified)
+            if (!SFUnPak.game_directory_specified)
             {
                 MessageBox.Show("Game directory is not specified!");
                 return;

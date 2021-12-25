@@ -10,11 +10,13 @@ using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using SpellforceDataEditor.SF3D;
-using SpellforceDataEditor.SF3D.SceneSynchro;
-using SpellforceDataEditor.SF3D.SFRender;
-using SpellforceDataEditor.SFSound;
-using SpellforceDataEditor.SFResources;
+using SFEngine.SF3D;
+using SFEngine.SF3D.SceneSynchro;
+using SFEngine.SF3D.SFRender;
+using SFEngine.SF3D.UI;
+using SFEngine.SFLua;
+using SFEngine.SFSound;
+using SFEngine.SFResources;
 
 namespace SpellforceDataEditor.special_forms
 {
@@ -59,24 +61,24 @@ namespace SpellforceDataEditor.special_forms
 
         class SFAssetManagerUI
         {
-            SF3D.UI.UIFont font_outline;
-            SF3D.UI.UIFont font_main;
+            UIFont font_outline;
+            UIFont font_main;
 
-            SF3D.UI.UIElementIndex label_name_outline;
-            SF3D.UI.UIElementIndex label_detail1_outline;
-            SF3D.UI.UIElementIndex label_detail2_outline;
-            SF3D.UI.UIElementIndex label_detail3_outline;
-            SF3D.UI.UIElementIndex label_name;
-            SF3D.UI.UIElementIndex label_detail1;
-            SF3D.UI.UIElementIndex label_detail2;
-            SF3D.UI.UIElementIndex label_detail3;
+            UIElementIndex label_name_outline;
+            UIElementIndex label_detail1_outline;
+            UIElementIndex label_detail2_outline;
+            UIElementIndex label_detail3_outline;
+            UIElementIndex label_name;
+            UIElementIndex label_detail1;
+            UIElementIndex label_detail2;
+            UIElementIndex label_detail3;
 
             public SFAssetManagerUI()
             {
-                font_outline = new SF3D.UI.UIFont() { space_between_letters = 2 };
+                font_outline = new UIFont() { space_between_letters = 2 };
                 font_outline.Load("font_fonttable_0512_12px_outline_l9");
 
-                font_main = new SF3D.UI.UIFont() { space_between_letters = 2 };
+                font_main = new UIFont() { space_between_letters = 2 };
                 font_main.Load("font_fonttable_0512_12px_l9");
 
                 SFRenderEngine.ui.AddStorage(font_outline.font_texture, 1024);
@@ -136,7 +138,8 @@ namespace SpellforceDataEditor.special_forms
         Vector2 scroll_mouse_start = new Vector2(0, 0);
         bool[] arrows_pressed = new bool[] { false, false, false, false };  // left, right, up, down, pageup, pagedown
 
-        bool tmp_shadows = Settings.EnableShadows;
+        bool tmp_shadows = SFEngine.Settings.EnableShadows;
+        int tmp_shading_quality = SFEngine.Settings.ShadingQuality;
         bool update_render = true;
         bool dynamic_render = false;
 
@@ -161,13 +164,15 @@ namespace SpellforceDataEditor.special_forms
         {
             SFResourceManager.FindAllMeshes();
 
-            SFLua.SFLuaEnvironment.LoadSQL(false);
-            if (!SFLua.SFLuaEnvironment.data_loaded)
+            SFLuaEnvironment.LoadSQL(false);
+            if (!SFLuaEnvironment.data_loaded)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFAssetManagerForm(): Failed to load SQL data!");
+                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFMap, "SFAssetManagerForm(): Failed to load SQL data!");
                 Close();
                 return;
             }
+
+            SFEngine.Settings.ShadingQuality = Math.Min(1, SFEngine.Settings.ShadingQuality);
 
             SFRenderEngine.scene.Init();
             SFRenderEngine.Initialize(new Vector2(glControl1.ClientSize.Width, glControl1.ClientSize.Height));
@@ -176,7 +181,7 @@ namespace SpellforceDataEditor.special_forms
             glControl1.MakeCurrent();
 
             SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
-            SFRenderEngine.SetObjectFadeRange(Settings.ObjectFadeMin, Settings.ObjectFadeMax);
+            SFRenderEngine.SetObjectFadeRange(SFEngine.Settings.ObjectFadeMin, SFEngine.Settings.ObjectFadeMax);
 
             SFRenderEngine.scene.camera.SetPosition(new Vector3(0, 2, 6));
             SFRenderEngine.scene.camera.SetLookat(new Vector3(0, 0, 0));
@@ -199,7 +204,7 @@ namespace SpellforceDataEditor.special_forms
             SFTexture tex = null;
             int tex_code = SFResourceManager.Textures.Load(tex_name);
             if ((tex_code != 0) && (tex_code != -1))
-                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFAssetManagerForm.SF3DManagerForm_Load(): Could not load texture (texture name = " + tex_name + ")");
+                SFEngine.LogUtils.Log.Warning(SFEngine.LogUtils.LogSource.SF3D, "SFAssetManagerForm.SF3DManagerForm_Load(): Could not load texture (texture name = " + tex_name + ")");
             else
             {
                 tex = SFResourceManager.Textures.Get(tex_name);
@@ -240,14 +245,16 @@ namespace SpellforceDataEditor.special_forms
 
             SFRenderEngine.scene.Clear();
 
-            SF3D.SFSubModel3D.Cache.Dispose();
-            SF3D.SFModelSkinChunk.Cache.Dispose();
+            SFSubModel3D.Cache.Dispose();
+            SFModelSkinChunk.Cache.Dispose();
 
             SFRenderEngine.ui.Dispose();
             ui.Dispose();
             SFResourceManager.DisposeAll();
             sound_engine.UnloadSound();
             glControl1.MouseWheel -= new MouseEventHandler(glControl1_MouseWheel);
+
+            SFEngine.Settings.ShadingQuality = tmp_shading_quality;
         }
 
         private void SFAssetManagerForm_Resize(object sender, EventArgs e)
@@ -676,7 +683,7 @@ namespace SpellforceDataEditor.special_forms
                         {
                             if(node.Skeleton.bone_count != SFResourceManager.Animations.Get(anim_name).bone_animations.Length)
                             {
-                                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFAssetManagerForm.ListAnimations_SelectedIndexChanged(): invalid bone count!");
+                                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SF3D, "SFAssetManagerForm.ListAnimations_SelectedIndexChanged(): invalid bone count!");
                                 StatusText.Text = "Invalid animation " + anim_name;
                                 dynamic_render = false;
                                 return;
@@ -750,7 +757,7 @@ namespace SpellforceDataEditor.special_forms
             if (movement_vector != new Vector2(0, 0))
             {
                 float angle = SFRenderEngine.scene.camera.Direction.X - (float)(Math.PI * 3 / 2);
-                movement_vector = MathUtils.RotateVec2(movement_vector, angle);
+                movement_vector = SFEngine.MathUtils.RotateVec2(movement_vector, angle);
                 movement_vector *= 6 * SFRenderEngine.scene.DeltaTime;
                 SFRenderEngine.scene.camera.translate(new Vector3(movement_vector.X, 0, movement_vector.Y));
                 update_render = true;
@@ -760,9 +767,14 @@ namespace SpellforceDataEditor.special_forms
             if (update_render)
             {
                 SFRenderEngine.scene.camera.Update(0);
-                SFRenderEngine.scene.Update();
+
+                SFRenderEngine.scene.delta_timer.Stop();
+                SFRenderEngine.scene.deltatime = SFRenderEngine.scene.delta_timer.ElapsedMilliseconds / (float)1000;
+                SFRenderEngine.scene.delta_timer.Restart();
+                SFRenderEngine.scene.Update(SFRenderEngine.scene.deltatime);
+
                 SFRenderEngine.ui.Update();
-                SFRenderEngine.scene.atmosphere.sun_light.SetupLightView(new SF3D.Physics.BoundingBox(new Vector3(-5, 0, -5), new Vector3(5, 30, 5)));
+                SFRenderEngine.scene.atmosphere.sun_light.SetupLightView(new SFEngine.SF3D.Physics.BoundingBox(new Vector3(-5, 0, -5), new Vector3(5, 30, 5)));
                 glControl1.Invalidate();
                 update_render = false;
             }
@@ -785,7 +797,7 @@ namespace SpellforceDataEditor.special_forms
         {
             if(skel == null)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFAssetManagerForm.GetAllSkeletonAnimations(): Skeleton is null!");
+                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SF3D, "SFAssetManagerForm.GetAllSkeletonAnimations(): Skeleton is null!");
                 return new List<string>();
             }
             string skel_name = skel.GetName();
@@ -1026,7 +1038,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 if (SFResourceManager.Models.Extract(m) != 0)
                 {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFResources,
                         "SFAssetManagerForm.ExtractScene(): Could not extract model " + m);
                     failed += 1;
                 }
@@ -1035,7 +1047,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 if (SFResourceManager.Textures.Extract(t) != 0)
                 {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFResources,
                         "SFAssetManagerForm.ExtractScene(): Could not extract texture " + t);
                     failed += 1;
                 }
@@ -1045,7 +1057,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 if (SFResourceManager.Skeletons.Extract(s) != 0)
                 {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFResources,
                         "SFAssetManagerForm.ExtractScene(): Could not extract skeleton " + s);
                     failed += 1;
                 }
@@ -1080,7 +1092,7 @@ namespace SpellforceDataEditor.special_forms
                     return;
 
                 if (SFResourceManager.Musics.Extract(item) != 0)
-                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFResources,
                         "SFAssetManagerForm.button1Extract_Click(): Could not extract music " + item);
 
                 StatusText.Text = "Extraction finished";
@@ -1093,7 +1105,7 @@ namespace SpellforceDataEditor.special_forms
                     return;
 
                 if (SFResourceManager.Sounds.Extract(item) != 0)
-                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFResources,
                          "SFAssetManagerForm.button1Extract_Click(): Could not extract sound " + item);
 
                 StatusText.Text = "Extraction finished";
@@ -1106,7 +1118,7 @@ namespace SpellforceDataEditor.special_forms
                     return;
 
                 if(SFResourceManager.Messages.Extract(item) != 0)
-                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFResources,
                         "SFAssetManagerForm.button1Extract_Click(): Could not extract message " + item);
 
                 StatusText.Text = "Extraction finished";
@@ -1129,7 +1141,7 @@ namespace SpellforceDataEditor.special_forms
                     return;
 
                 if(SFResourceManager.Animations.Extract(item) != 0)
-                    LogUtils.Log.Error(LogUtils.LogSource.SFResources,
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFResources,
                         "SFAssetManagerForm.button1Extract_Click(): Could not extract message " + item);
 
                 StatusText.Text = "Extraction finished";

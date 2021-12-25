@@ -5,6 +5,9 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -69,7 +72,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         public void LoadNextUnit(int index)
         {
-            string unit_name = SFCFF.SFCategoryManager.GetUnitName((ushort)map.unit_manager.units[index].game_id, true);
+            string unit_name = SFCategoryManager.GetUnitName((ushort)map.unit_manager.units[index].game_id, true);
             unit_name += " " + map.unit_manager.units[index].grid_position.ToString();
             ListUnits.Items.Insert(index, unit_name);
         }
@@ -106,7 +109,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ListUnits_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
+            if (ListUnits.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             PanelProperties.Enabled = true;
@@ -129,15 +132,15 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void UnitID_Validated(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
+            if (ListUnits.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
-            int new_unit_id = Utility.TryParseUInt16(UnitID.Text);
+            int new_unit_id = SFEngine.Utility.TryParseUInt16(UnitID.Text);
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
             if (unit.game_id == new_unit_id)
                 return;
 
-            if (SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(new_unit_id) == Utility.NO_INDEX)
+            if (SFCategoryManager.gamedata[2024].GetElementIndex(new_unit_id) == SFEngine.Utility.NO_INDEX)
                 return;
 
             // undo/redo
@@ -152,7 +155,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             map.ReplaceUnit(ListUnits.SelectedIndex, (ushort)new_unit_id);
 
-            LabelUnitName.Text = SFCFF.SFCategoryManager.GetUnitName((ushort)new_unit_id, true);
+            LabelUnitName.Text = SFCategoryManager.GetUnitName((ushort)new_unit_id, true);
             ListUnits.Items[ListUnits.SelectedIndex] = LabelUnitName.Text + " " +
                 map.unit_manager.units[ListUnits.SelectedIndex].grid_position.ToString();
 
@@ -161,12 +164,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void NPCID_Validated(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
+            if (ListUnits.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
 
-            int npc_id = Utility.TryParseInt32(NPCID.Text);
+            int npc_id = SFEngine.Utility.TryParseInt32(NPCID.Text);
 
             // find if any npc exists
             SFMapEntity entity = map.FindNPCEntity(npc_id);
@@ -191,7 +194,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void NPCScript_Click(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
+            if (ListUnits.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
@@ -199,13 +202,13 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             string fname = "script\\p" + map.PlatformID.ToString() + "\\n" + unit.npc_id.ToString() + ".lua";
-            if (SFLua.SFLuaEnvironment.OpenNPCScript((int)map.PlatformID, unit.npc_id) != 0)
+            if (SFLuaEnvironment.OpenNPCScript((int)map.PlatformID, unit.npc_id) != 0)
                 MessageBox.Show("Could not open " + fname);
         }
 
         private void Flags_Validated(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
+            if (ListUnits.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
@@ -217,15 +220,15 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 index = ListUnits.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.UNITFLAGS,
                 PreChangeProperty = unit.unknown_flags,
-                PostChangeProperty = (int)Utility.TryParseUInt16(Flags.Text)
+                PostChangeProperty = (int)SFEngine.Utility.TryParseUInt16(Flags.Text)
             });
 
-            unit.unknown_flags = Utility.TryParseUInt16(Flags.Text);
+            unit.unknown_flags = SFEngine.Utility.TryParseUInt16(Flags.Text);
         }
 
         private void Unknown1_Validated(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
+            if (ListUnits.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
@@ -237,15 +240,15 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 index = ListUnits.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.UNITUNKNOWN,
                 PreChangeProperty = unit.unknown,
-                PostChangeProperty = (int)Utility.TryParseUInt16(Unknown1.Text)
+                PostChangeProperty = (int)SFEngine.Utility.TryParseUInt16(Unknown1.Text)
             });
 
-            unit.unknown = Utility.TryParseUInt16(Unknown1.Text);
+            unit.unknown = SFEngine.Utility.TryParseUInt16(Unknown1.Text);
         }
 
         private void Group_Validated(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
+            if (ListUnits.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
@@ -257,15 +260,15 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 index = ListUnits.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.UNITGROUP,
                 PreChangeProperty = unit.group,
-                PostChangeProperty = (int)Utility.TryParseUInt16(Group.Text)
+                PostChangeProperty = (int)SFEngine.Utility.TryParseUInt16(Group.Text)
             });
 
-            unit.group = Utility.TryParseUInt16(Group.Text);
+            unit.group = SFEngine.Utility.TryParseUInt16(Group.Text);
         }
 
         private void Unknown2_Validated(object sender, EventArgs e)
         {
-            if (ListUnits.SelectedIndex == Utility.NO_INDEX)
+            if (ListUnits.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapUnit unit = map.unit_manager.units[ListUnits.SelectedIndex];
@@ -277,10 +280,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 index = ListUnits.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.UNITUNKNOWN2,
                 PreChangeProperty = unit.unknown2,
-                PostChangeProperty = (int)Utility.TryParseUInt16(Unknown2.Text)
+                PostChangeProperty = (int)SFEngine.Utility.TryParseUInt16(Unknown2.Text)
             });
 
-            unit.unknown2 = Utility.TryParseUInt16(Unknown2.Text);
+            unit.unknown2 = SFEngine.Utility.TryParseUInt16(Unknown2.Text);
         }
 
         private void SearchUnitNext_Click(object sender, EventArgs e)
@@ -343,8 +346,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(UnitID.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(elem_id);
+                int elem_id = SFEngine.Utility.TryParseUInt16(UnitID.Text);
+                int real_elem_id = SFCategoryManager.gamedata[2024].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(17, real_elem_id);
             }

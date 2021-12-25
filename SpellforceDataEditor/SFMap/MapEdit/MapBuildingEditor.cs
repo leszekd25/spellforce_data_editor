@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
@@ -56,7 +59,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     else if (!first_click)
                     {
                         ushort new_building_id = (ushort)placement_building;
-                        if (SFCFF.SFCategoryManager.gamedata[2029].GetElementIndex(new_building_id) == -1)
+                        if (SFCategoryManager.gamedata[2029].GetElementIndex(new_building_id) == -1)
                             return;
                         // create new building and drag it until mouse released
                         map.AddBuilding(new_building_id, pos, 0, 0, 1, -1); 
@@ -77,7 +80,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
 
                     // undo/redo
-                    if ((selected_building != Utility.NO_INDEX) && (!first_click))
+                    if ((selected_building != SFEngine.Utility.NO_INDEX) && (!first_click))
                     {
                         op_change_pos = new map_operators.MapOperatorEntityChangeProperty()
                         {
@@ -90,7 +93,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 }
                 else if(button == MouseButtons.Right)
                 {
-                    Select(Utility.NO_INDEX);
+                    Select(SFEngine.Utility.NO_INDEX);
                     MainForm.mapedittool.InspectorSelect(null);
                 }
             }

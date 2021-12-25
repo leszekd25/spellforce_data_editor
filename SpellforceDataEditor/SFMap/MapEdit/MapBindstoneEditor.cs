@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
@@ -24,7 +27,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 return;
 
             selected_bindstone = index;
-            selected_intobj = (selected_bindstone == Utility.NO_INDEX ? Utility.NO_INDEX : map.int_object_manager.bindstones_index[index]);
+            selected_intobj = (selected_bindstone == SFEngine.Utility.NO_INDEX ? SFEngine.Utility.NO_INDEX : map.int_object_manager.bindstones_index[index]);
         }
 
         public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
@@ -57,7 +60,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     // undo/redo
                     SFCoord previous_pos = new SFCoord(0, 0);
 
-                    if ((specials.Shift) && (selected_intobj != Utility.NO_INDEX))
+                    if ((specials.Shift) && (selected_intobj != SFEngine.Utility.NO_INDEX))
                     {
                         // undo/redo
                         previous_pos = map.int_object_manager.int_objects[selected_intobj].grid_position;
@@ -99,7 +102,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
 
                     // undo/redo
-                    if ((selected_bindstone != Utility.NO_INDEX) && (!first_click))
+                    if ((selected_bindstone != SFEngine.Utility.NO_INDEX) && (!first_click))
                     {
                         op_change_pos = new map_operators.MapOperatorEntityChangeProperty()
                         {
@@ -115,7 +118,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 }
                 else if (b == MouseButtons.Right)
                 {
-                    Select(Utility.NO_INDEX);
+                    Select(SFEngine.Utility.NO_INDEX);
                     MainForm.mapedittool.InspectorSelect(null);
                 }
             }
@@ -150,7 +153,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     {
                         if (selected_intobj == intobj_index)
                         {
-                            Select(Utility.NO_INDEX);
+                            Select(SFEngine.Utility.NO_INDEX);
                             MainForm.mapedittool.InspectorSelect(null);
                         }
 

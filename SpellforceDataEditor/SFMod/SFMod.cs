@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SFEngine.SFCFF;
 
 using System.IO;
 
@@ -33,7 +34,7 @@ namespace SpellforceDataEditor.SFMod
         // assumes file with the filename exists
         public int Load(string fname, ModLoadOption options)
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SFMod, "SFMod.Load() called (filename: " + fname + ", options: "+options.ToString()+")");
+            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMod, "SFMod.Load() called (filename: " + fname + ", options: "+options.ToString()+")");
             int load_status = 0;
 
             FileStream fs = File.Open(fname, FileMode.Open, FileAccess.Read);
@@ -81,7 +82,7 @@ namespace SpellforceDataEditor.SFMod
         // saves mod data, including assets, to a specified file
         public int Save(string fname)
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SFMod, "SFMod.Save() called (filename: "+fname+")");
+            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFMod, "SFMod.Save() called (filename: "+fname+")");
             MemoryStream ms = new MemoryStream();
             BinaryWriter bw = new BinaryWriter(ms);
             bw.Write(special_forms.ModManagerForm.ModToolVersion);
@@ -107,7 +108,7 @@ namespace SpellforceDataEditor.SFMod
         }
 
         // applies mod to the game directory
-        public int Apply(SFCFF.SFGameData gd)
+        public int Apply(SFGameData gd)
         {
             int status = 0;
             status += data.Apply(gd);

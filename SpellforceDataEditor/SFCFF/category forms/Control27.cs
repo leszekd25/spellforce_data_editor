@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -23,7 +24,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                set_element_variant(current_element, i, 0, Utility.TryParseUInt16(textBox3.Text));
+                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox3.Text));
         }
 
         public override void set_element(int index)
@@ -54,7 +55,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void ListSkills_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListSkills.SelectedIndex == Utility.NO_INDEX)
+            if (ListSkills.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             textBox1.Text = variant_repr(ListSkills.SelectedIndex, 2);
@@ -62,7 +63,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListSkills.SelectedIndex, 2, Utility.TryParseUInt16(textBox1.Text));
+            set_element_variant(current_element, ListSkills.SelectedIndex, 2, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void button1_Click(object sender, EventArgs e)

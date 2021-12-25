@@ -5,6 +5,9 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -73,7 +76,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         public void LoadNextBuilding(int index)
         {
-            string building_name = SFCFF.SFCategoryManager.GetBuildingName((ushort)map.building_manager.buildings[index].game_id);
+            string building_name = SFCategoryManager.GetBuildingName((ushort)map.building_manager.buildings[index].game_id);
             building_name += " " + map.building_manager.buildings[index].grid_position.ToString();
             ListBuildings.Items.Insert(index, building_name);
         }
@@ -111,7 +114,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ListBuildings_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListBuildings.SelectedIndex == Utility.NO_INDEX)
+            if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
             ((MapEdit.MapBuildingEditor)MainForm.mapedittool.selected_editor).selected_building = ListBuildings.SelectedIndex;
 
@@ -134,17 +137,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void BuildingID_Validated(object sender, EventArgs e)
         {
-            if (ListBuildings.SelectedIndex == Utility.NO_INDEX)
+            if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
-            ushort new_building_id = Utility.TryParseUInt16(BuildingID.Text);
+            ushort new_building_id = SFEngine.Utility.TryParseUInt16(BuildingID.Text);
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
             if (building.game_id == new_building_id)
                 return;
 
             // check if new building exists
-            if (SFCFF.SFCategoryManager.gamedata[2029].GetElementIndex(new_building_id) == Utility.NO_INDEX)
+            if (SFCategoryManager.gamedata[2029].GetElementIndex(new_building_id) == SFEngine.Utility.NO_INDEX)
                 return;
 
             // undo/redo
@@ -159,7 +162,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             map.ReplaceBuilding(ListBuildings.SelectedIndex, new_building_id);
 
-            LabelBuildingName.Text = SFCFF.SFCategoryManager.GetBuildingName(new_building_id);
+            LabelBuildingName.Text = SFCategoryManager.GetBuildingName(new_building_id);
             ListBuildings.Items[ListBuildings.SelectedIndex] = LabelBuildingName.Text + " "
                 + map.building_manager.buildings[ListBuildings.SelectedIndex].grid_position.ToString();
             MainForm.mapedittool.update_render = true;
@@ -167,12 +170,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void NPCID_Validated(object sender, EventArgs e)
         {
-            if (ListBuildings.SelectedIndex == Utility.NO_INDEX)
+            if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
 
-            int npc_id = Utility.TryParseInt32(NPCID.Text);
+            int npc_id = SFEngine.Utility.TryParseInt32(NPCID.Text);
 
             // find if any npc exists
             SFMapEntity entity = map.FindNPCEntity(npc_id);
@@ -198,7 +201,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void NPCScript_Click(object sender, EventArgs e)
         {
-            if (ListBuildings.SelectedIndex == Utility.NO_INDEX)
+            if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
@@ -206,18 +209,18 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
 
             string fname = "script\\p" + map.PlatformID.ToString() + "\\n" + building.npc_id.ToString() + ".lua";
-            if (SFLua.SFLuaEnvironment.OpenNPCScript((int)map.PlatformID, building.npc_id) != 0)
+            if (SFLuaEnvironment.OpenNPCScript((int)map.PlatformID, building.npc_id) != 0)
                 MessageBox.Show("Could not open " + fname);
         }
 
         private void Angle_Validated(object sender, EventArgs e)
         {
-            if (ListBuildings.SelectedIndex == Utility.NO_INDEX)
+            if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
 
-            int v = Utility.TryParseUInt16(Angle.Text, (ushort)building.angle);
+            int v = SFEngine.Utility.TryParseUInt16(Angle.Text, (ushort)building.angle);
             v = (v >= 0 ? (v <= 359 ? v : 359) : 0);
 
             // undo/redo
@@ -235,7 +238,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
         {
-            if (ListBuildings.SelectedIndex == Utility.NO_INDEX)
+            if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
@@ -249,7 +252,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         // this is to make sure the undo/redo queue only receives the latest angle changed as an action to perform
         private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
         {
-            if (ListBuildings.SelectedIndex == Utility.NO_INDEX)
+            if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             trackbar_clicked = true;
@@ -283,7 +286,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void Level_Validated(object sender, EventArgs e)
         {
-            if (ListBuildings.SelectedIndex == Utility.NO_INDEX)
+            if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
@@ -295,15 +298,15 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 index = ListBuildings.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.BUILDINGLEVEL,
                 PreChangeProperty = building.level,
-                PostChangeProperty = Utility.TryParseUInt16(Level.Text)
+                PostChangeProperty = SFEngine.Utility.TryParseUInt16(Level.Text)
             });
 
-            building.level = Utility.TryParseUInt16(Level.Text);
+            building.level = SFEngine.Utility.TryParseUInt16(Level.Text);
         }
 
         private void RaceID_Validated(object sender, EventArgs e)
         {
-            if (ListBuildings.SelectedIndex == Utility.NO_INDEX)
+            if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
@@ -315,10 +318,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 index = ListBuildings.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.BUILDINGRACE,
                 PreChangeProperty = building.race_id,
-                PostChangeProperty = Utility.TryParseUInt16(RaceID.Text)
+                PostChangeProperty = SFEngine.Utility.TryParseUInt16(RaceID.Text)
             });
 
-            building.race_id = Utility.TryParseUInt16(RaceID.Text);
+            building.race_id = SFEngine.Utility.TryParseUInt16(RaceID.Text);
         }
 
         private void SearchBuildingNext_Click(object sender, EventArgs e)
@@ -381,9 +384,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt8(BuildingID.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[2029].GetElementIndex(elem_id);
-                if (real_elem_id != Utility.NO_INDEX)
+                int elem_id = SFEngine.Utility.TryParseUInt8(BuildingID.Text);
+                int real_elem_id = SFCategoryManager.gamedata[2029].GetElementIndex(elem_id);
+                if (real_elem_id != SFEngine.Utility.NO_INDEX)
                     MainForm.data.Tracer_StepForward(23, real_elem_id);
             }
         }

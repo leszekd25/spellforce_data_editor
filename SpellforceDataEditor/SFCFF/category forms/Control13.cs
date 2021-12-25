@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -31,7 +32,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                set_element_variant(current_element, i, 0, Utility.TryParseUInt16(textBox1.Text));
+                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
@@ -39,7 +40,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListUI.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected, 2, SFString.FromString(textBox4.Text, 0, 64));// Utility.FixedLengthString(textBox4.Text, 64));
+            set_element_variant(current_element, cur_selected, 2, SFString.FromString(textBox4.Text, 0, 64));// SFEngine.Utility.FixedLengthString(textBox4.Text, 64));
             set_list_text(cur_selected);
         }
 
@@ -84,7 +85,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void button1_Click(object sender, EventArgs e)
         {
             int new_index;
-            if (ListUI.SelectedIndex == Utility.NO_INDEX)
+            if (ListUI.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 new_index = ListUI.Items.Count - 1;
             else
                 new_index = ListUI.SelectedIndex;
@@ -101,14 +102,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             category.element_lists[current_element].Elements.Insert(new_index, category.GetEmptyElement());
             category[current_element, new_index][0] = (UInt16)elem[0];
             category[current_element, new_index][1] = (Byte)max_index;
-            category[current_element, new_index][2] = SFString.FromString("", 0, 64);// Utility.FixedLengthString("", 64);
+            category[current_element, new_index][2] = SFString.FromString("", 0, 64);// SFEngine.Utility.FixedLengthString("", 64);
 
             set_element(current_element);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (ListUI.SelectedIndex == Utility.NO_INDEX)
+            if (ListUI.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
             if (ListUI.Items.Count == 1)
                 return;
@@ -136,6 +137,34 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             UInt16 item_id = (UInt16)category[index, 0][0];
             string txt_item = SFCategoryManager.GetItemName(item_id);
             return item_id.ToString() + " " + txt_item;
+        }
+
+        public override void on_add_subelement(int subelem_index)
+        {
+            base.on_add_subelement(subelem_index);
+
+            ListUI.Items.Insert(subelem_index, "");
+            set_list_text(subelem_index);
+        }
+
+        public override void on_remove_subelement(int subelem_index)
+        {
+            base.on_remove_subelement(subelem_index);
+
+            ListUI.Items.RemoveAt(subelem_index);
+        }
+
+        public override void on_update_subelement(int subelem_index)
+        {
+            base.on_update_subelement(subelem_index);
+
+            set_list_text(subelem_index);
+            if (ListUI.SelectedIndex == subelem_index)
+            {
+
+                textBox4.Text = string_repr(subelem_index, 2);
+                checkBox1.Checked = ((UInt16)(category[current_element, subelem_index][3])) == 1;
+            }
         }
     }
 }

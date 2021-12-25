@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
@@ -49,7 +52,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     // undo/redo
                     SFCoord previous_pos = new SFCoord(0, 0);
 
-                    if ((specials.Shift) && (selected_spawn != Utility.NO_INDEX))
+                    if ((specials.Shift) && (selected_spawn != SFEngine.Utility.NO_INDEX))
                     {
                         // undo/redo
                         previous_pos = map.metadata.coop_spawns[selected_spawn].spawn_obj.grid_position;
@@ -59,7 +62,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     else if (!first_click)
                     {
                         ushort new_object_id = 2541;
-                        if (SFCFF.SFCategoryManager.gamedata[2050].GetElementIndex(new_object_id) == Utility.NO_INDEX)
+                        if (SFCategoryManager.gamedata[2050].GetElementIndex(new_object_id) == SFEngine.Utility.NO_INDEX)
                             return;
                         // create new spawn and drag it until mouse released
                         map.AddObject(new_object_id, pos, 0, 0, 0);
@@ -70,10 +73,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             new SFMapCoopAISpawn(map.object_manager.objects[map.object_manager.objects.Count - 1], 0, 0));
 
                         // add mesh to the object
-                        SF3D.SceneSynchro.SceneNode obj_node = map.object_manager.objects[map.object_manager.objects.Count - 1].node;
+                        SFEngine.SF3D.SceneSynchro.SceneNode obj_node = map.object_manager.objects[map.object_manager.objects.Count - 1].node;
 
                         string m = "editor_dummy_spawnpoint";
-                        SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name + "_SPAWNCIRCLE");
+                        SFEngine.SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name + "_SPAWNCIRCLE");
 
                         ((map_controls.MapCoopCampInspector)MainForm.mapedittool.selected_inspector).LoadNextCoopCamp(map.metadata.coop_spawns.Count - 1);
                         Select(map.metadata.coop_spawns.Count - 1);
@@ -93,7 +96,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
 
                     // undo/redo
-                    if ((selected_spawn != Utility.NO_INDEX) && (!first_click))
+                    if ((selected_spawn != SFEngine.Utility.NO_INDEX) && (!first_click))
                     {
                         op_change_pos = new map_operators.MapOperatorEntityChangeProperty()
                         {
@@ -108,7 +111,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 }
                 else if(b == MouseButtons.Right)
                 {
-                    Select(Utility.NO_INDEX);
+                    Select(SFEngine.Utility.NO_INDEX);
                     MainForm.mapedittool.InspectorSelect(null);
                 }
             }
@@ -142,7 +145,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                     if (map.metadata.coop_spawns.IndexOf(spawn) == selected_spawn)
                     {
-                        Select(Utility.NO_INDEX);
+                        Select(SFEngine.Utility.NO_INDEX);
                         MainForm.mapedittool.InspectorSelect(null);
                     }    
 

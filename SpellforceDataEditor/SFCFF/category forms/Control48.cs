@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -32,67 +33,67 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_sd1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, Utility.TryParseUInt16(tb_sd1.Text));
+            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(tb_sd1.Text));
         }
 
         private void tb_sd6_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, Utility.TryParseUInt16(tb_sd6.Text));
+            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt16(tb_sd6.Text));
         }
 
         private void tb_sd2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, Utility.TryParseUInt16(tb_sd2.Text));
+            set_element_variant(current_element, 2, SFEngine.Utility.TryParseUInt16(tb_sd2.Text));
         }
 
         private void tb_sd7_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, Utility.TryParseUInt16(tb_sd7.Text));
+            set_element_variant(current_element, 3, SFEngine.Utility.TryParseUInt16(tb_sd7.Text));
         }
 
         private void tb_sd3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 4, Utility.TryParseUInt16(tb_sd3.Text));
+            set_element_variant(current_element, 4, SFEngine.Utility.TryParseUInt16(tb_sd3.Text));
         }
 
         private void tb_sd4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 5, Utility.TryParseUInt16(tb_sd4.Text));
+            set_element_variant(current_element, 5, SFEngine.Utility.TryParseUInt16(tb_sd4.Text));
         }
 
         private void sb_sd5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 6, Utility.TryParseUInt16(sb_sd5.Text));
+            set_element_variant(current_element, 6, SFEngine.Utility.TryParseUInt16(sb_sd5.Text));
         }
 
         private void tb_sd9_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 7, Utility.TryParseUInt16(tb_sd9.Text));
+            set_element_variant(current_element, 7, SFEngine.Utility.TryParseUInt16(tb_sd9.Text));
         }
 
         private void tb_sd10_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 8, Utility.TryParseUInt16(tb_sd10.Text));
+            set_element_variant(current_element, 8, SFEngine.Utility.TryParseUInt16(tb_sd10.Text));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 9, Utility.TryParseUInt16(textBox2.Text));
+            set_element_variant(current_element, 9, SFEngine.Utility.TryParseUInt16(textBox2.Text));
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 10, Utility.TryParseUInt16(textBox1.Text));
+            set_element_variant(current_element, 10, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 11, SFString.FromString(textBox3.Text, 0, 64));// Utility.FixedLengthString(textBox3.Text, 64));
+            set_element_variant(current_element, 11, SFString.FromString(textBox3.Text, 0, 64));// SFEngine.Utility.FixedLengthString(textBox3.Text, 64));
         }
 
         private void tb_sd8_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 12, Utility.TryParseUInt32(tb_sd8.Text));
+            set_element_variant(current_element, 12, SFEngine.Utility.TryParseUInt32(tb_sd8.Text));
         }
 
         public override void show_element()

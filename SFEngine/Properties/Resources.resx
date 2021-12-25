@@ -1,0 +1,1788 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="fshader" xml:space="preserve">
+    <value>in vec3 fragmentPosition;
+in vec3 fragmentNormal;
+in vec2 UV;
+in vec4 fragmentColor;
+#ifdef SHADING
+#ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+in vec4 fragmentPositionLightSpace1;
+in vec4 fragmentPositionLightSpace2;
+in vec4 fragmentPositionLightSpace3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
+in vec4 fragmentPositionLightSpace;
+#endif //CASCADED_SHADOWS
+#endif //SHADOWS
+#ifdef QUALITY_SHADING
+in mat4 M;
+in vec4 fragmentGroundAmbientColor;
+#endif //QUALITY_SHADING
+#ifndef QUALITY_SHADING
+in float vBrightness;
+#endif //QUALITY_SHADING
+#endif //SHADING
+
+out vec4 color;
+
+uniform float SunStrength;
+uniform vec3 SunDirection;
+uniform vec4 SunColor;
+uniform float AmbientStrength;
+uniform vec4 AmbientColor;
+
+#ifdef QUALITY_SHADING
+uniform float EmissionStrength;
+uniform vec4 EmissionColor;
+#endif //QUALITY_SHADING
+uniform sampler2D DiffuseTex;
+#ifdef CASCADED_SHADOWS
+uniform sampler2D ShadowMap1;
+uniform sampler2D ShadowMap2;
+uniform sampler2D ShadowMap3;
+uniform vec3 CascadeZNear;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
+uniform sampler2D ShadowMap;
+#endif //CASCADED_SHADOWS
+#ifdef SHADING
+uniform int ApplyShading;
+#endif //SHADING
+uniform vec4 FogColor;
+uniform float FogStrength;
+uniform float FogStart;
+uniform float FogEnd;
+uniform float FogExponent;
+uniform float ObjectFadeStart;
+uniform float ObjectFadeEnd;
+uniform float DepthBias;
+uniform float DistanceFade;
+
+vec2 poissonDisk[4] = vec2[](
+  vec2( -0.94201624, -0.39906216 ),
+  vec2( 0.94558609, -0.76890725 ),
+  vec2( -0.094184101, -0.92938870 ),
+  vec2( 0.34495938, 0.29387760 )
+);
+
+float linstep(float low, float high, float v)
+{
+    return clamp((v-low)/(high-low), 0.0, 1.0);
+}
+
+#ifdef CASCADED_SHADOWS
+sampler2D GetCascadeSampler(int index)
+{
+	return (index == 0 ? ShadowMap1 : (index == 1 ? ShadowMap2 : ShadowMap3));
+}
+vec4 GetCascadeFragmentPositionLightSpace(int index)
+{
+	return (index == 0 ? fragmentPositionLightSpace1 : (index == 1 ? fragmentPositionLightSpace2 : fragmentPositionLightSpace3));
+}
+#endif //CASCADED_SHADOWS
+
+// From http://fabiensanglard.net/shadowmappingVSM/index.php
+float chebyshevUpperBound(float proj_depth, vec2 moments)
+{
+	float variance = max(moments.y - (moments.x*moments.x), 0.000002);
+
+	float d = proj_depth - moments.x;
+                   float p = float(proj_depth &lt;= moments.x);
+	float p_max = variance / (variance + d*d);
+
+	return max(p, linstep(0.5, 1.0, p_max));// clamp((p_max * 1.3)-0.3, 0.0, 1.0);
+}
+
+float CalculateShadow(sampler2D shadowmap, vec4 FPLS, float b){
+    vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
+    if(ProjectionCoordinates.z &gt; 1.0)
+        return 1.0;
+
+    ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
+	
+    return chebyshevUpperBound(ProjectionCoordinates.z, texture2D(shadowmap, ProjectionCoordinates.xy).rg);
+}
+
+
+
+void main(){
+  vec4 temp_c = fragmentColor * texture(DiffuseTex, UV);
+  if(temp_c.a &lt; 0.9)
+    discard;
+  temp_c.a = 1.0;
+
+  float dist = gl_FragCoord.z / gl_FragCoord.w;
+  float brightness = 1.0;
+  #ifdef SHADING
+  #ifdef QUALITY_SHADING
+  mat3 normalMatrix = transpose(inverse(mat3(M)));
+  vec3 normal = normalize(normalMatrix * fragmentNormal);
+  vec3 fragVec = fragmentPosition;
+  //if(ApplyShading == 1)
+  //{
+    brightness = max(1.0-ApplyShading, dot(normal, SunDirection));
+    // calculate brightness resulting from light coming from sun
+    //brightness = dot(normal, SunDirection); // both vectors are normalized
+ // }
+  #endif //QUALITY_SHADING
+  #ifndef QUALITY_SHADING
+  brightness = vBrightness;
+  #endif //QUALITY_SHADING
+  // calculate shadow
+  #ifdef SHADOWS
+  #ifdef CASCADED_SHADOWS
+  int cascade_index = 0;
+  if(dist &gt; CascadeZNear.z)
+	  cascade_index = 2;
+  else if(dist &gt; CascadeZNear.y)
+	  cascade_index = 1;
+  if(brightness &gt; 0)
+    brightness = min(brightness, CalculateShadow(GetCascadeSampler(cascade_index), GetCascadeFragmentPositionLightSpace(cascade_index), brightness));
+  #endif //CASCADED_SHADOWS
+  #ifndef CASCADED_SHADOWS
+  if(brightness &gt; 0)
+    brightness = min(brightness, CalculateShadow(ShadowMap, fragmentPositionLightSpace, brightness));
+  #endif //CASCADED_SHADOWS
+  #endif //SHADOWS
+  brightness = clamp(brightness, 0, 1);
+  #endif // SHADING
+
+
+
+  // calculate output color
+  vec4 sun_color = SunColor * SunStrength;
+  vec4 ambient_color = AmbientColor * AmbientStrength;
+  #ifdef QUALITY_SHADING
+  vec4 ground_color = fragmentGroundAmbientColor * (sun_color + ambient_color);
+  ambient_color = mix(ambient_color, ground_color, (-normal.y + 1.0) * 0.33);
+  #endif //QUALITY_SHADING
+  #ifndef TONEMAPPING
+  color = (ambient_color*(1-brightness))+(sun_color*brightness);
+  #endif // TONEMAPPING
+  #ifdef TONEMAPPING
+  color = ambient_color + sun_color * brightness;
+  temp_c = vec4(pow(temp_c.rgb, vec3(2.2)), 1.0);
+  #endif //TONEMAPPING
+  #ifdef QUALITY_SHADING
+  vec4 emissive_color = EmissionColor * EmissionStrength;
+  color += emissive_color;
+  #endif //QUALITY_SHADING
+  color = color * temp_c;
+  //color = ambient_color;
+  #ifndef TONEMAPPING
+  color = clamp(color, 0.0, 1.0);
+  #endif // TONEMAPPING
+
+
+  // fog calculation
+  float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
+  color = mix(color, vec4(FogColor.rgb * FogStrength, 1.0), fog_factor);
+  // object fade in alpha calculation
+  float alpha_factor = 1.0 - clamp((dist - ObjectFadeStart) / (ObjectFadeEnd - ObjectFadeStart), 0.0, 1.0);
+  alpha_factor += 1.0 - DistanceFade;
+  alpha_factor = clamp(alpha_factor, 0.0, 1.0);
+  color.a = alpha_factor;
+
+  // depth bias
+  gl_FragDepth = gl_FragCoord.z + DepthBias;
+}</value>
+  </data>
+  <data name="fshader_framebuffer_simple" xml:space="preserve">
+    <value>out vec4 FragColor;
+  
+in vec2 TexCoords;
+
+uniform sampler2D screenTexture;
+//uniform int renderShadowMap;
+//uniform float ZNear;
+//uniform float ZFar;
+
+//float LinearizeDepth(float z)
+//{
+//  return (2.0 * ZNear) / (ZFar + ZNear - z * (ZFar- ZNear));	
+//}
+
+void main()
+{
+    // this is for shadowmap
+   /* if(renderShadowMap == 1)
+    {
+        float color = LinearizeDepth(texture(screenTexture, TexCoords).r);
+        FragColor = vec4(color, color, color, 1.0);
+    }*/
+   // else
+ //   {
+        // this is for final render
+        FragColor = texture(screenTexture, TexCoords);
+  //  }
+}</value>
+  </data>
+  <data name="fshader_hmap" xml:space="preserve">
+    <value>in vec3 fragmentPosition;
+in vec2 UV;
+in vec3 fragmentNormal;
+in vec4 fragmentPositionLightSpace;
+in vec3 vpos_orig;
+in float vBrightness;
+
+out vec4 color;
+
+uniform int GridSize;
+uniform vec4 GridColor;
+uniform float SunStrength;
+uniform vec3 SunDirection;
+uniform vec4 SunColor;
+uniform float AmbientStrength;
+uniform vec4 AmbientColor;
+uniform vec4 FogColor;
+uniform float FogStrength;
+uniform float FogStart;
+uniform float FogEnd;
+uniform float FogExponent;
+uniform float ShadowFadeStart;
+uniform float ShadowFadeEnd;
+
+uniform sampler2DArray myTextureSampler;
+uniform sampler2D ShadowMap;
+uniform sampler2D TileMap;
+uniform sampler2D OverlayMap;
+uniform sampler2D BumpMap;
+layout(std140) uniform Tiles
+{
+  ivec4 tex_id[255];
+  ivec4 tex_w[255];
+};
+layout(std140) uniform Overlays
+{
+  vec4 ov_colors[16];
+};
+layout(std140) uniform TileColors
+{
+  vec4 tile_col[255];
+};
+
+vec2 poissonDisk[4] = vec2[](
+  vec2( -0.94201624, -0.39906216 ),
+  vec2( 0.94558609, -0.76890725 ),
+  vec2( -0.094184101, -0.92938870 ),
+  vec2( 0.34495938, 0.29387760 )
+);
+
+vec2 gridDisk[4] = vec2[](
+  vec2( -0.5, -0.5 ),
+  vec2( 0.5, -0.5 ),
+  vec2( -0.5, 0.5 ),
+  vec2( 0.5, 0.5 )
+);
+
+vec4 hmap_visualization_colors[3] = vec4[](
+  vec4(0.3, 0, 0, 1.0),
+  vec4(0, 0.3, 0, 1.0),
+  vec4(0, 0, 0.3, 1.0)
+);
+
+float linstep(float low, float high, float v)
+{
+    return clamp((v-low)/(high-low), 0.0, 1.0);
+}
+
+// From http://fabiensanglard.net/shadowmappingVSM/index.php
+float chebyshevUpperBound(vec3 proj)
+{
+	vec2 moments = texture2D(ShadowMap, proj.xy).rg;
+
+	float variance = max(moments.y - (moments.x*moments.x), 0.000002);
+
+	float d = proj.z - moments.x;
+                   float p = float(proj.z &lt;= moments.x);
+	float p_max = variance / (variance + d*d);
+
+	return max(p, linstep(0.0, 1.0, p_max));
+}
+
+float CalculateShadow(vec4 FPLS, float b){
+    vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
+    if(ProjectionCoordinates.z &gt; 1.0)
+        return 1.0;
+
+    ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
+    return chebyshevUpperBound(ProjectionCoordinates);
+}
+
+float CalculateGridIntensity(float x, float y, float d)
+{
+    float linewidth = 0.001*d;
+    float dx = x-round(x);
+    float dy = y-round(y);
+    dx = abs(dx);
+    dy = abs(dy);
+    dx = linewidth+max(dx-0.5, -linewidth);
+    dy = linewidth+max(dy-0.5, -linewidth);
+    return min(1, 2000*(dx+dy));
+}
+
+float lgt(vec2 v)
+{
+  return sqrt(v.x*v.x + v.y*v.y);
+}
+
+float min_tex_blend = 50;
+float max_tex_blend = 60;
+
+void main(){
+  float gridintensity = 0;
+  #ifdef DISPLAY_GRID
+    float depth = gl_FragCoord.z / gl_FragCoord.w;
+    for(int i = 0; i &lt; 4; i++)
+    {
+    float gx = vpos_orig.x+gridDisk[i].x/1000*depth;
+    float gy = vpos_orig.y+gridDisk[i].y/1000*depth;
+    gridintensity += CalculateGridIntensity(gx, gy, depth);
+    }
+    gridintensity += CalculateGridIntensity(vpos_orig.x, vpos_orig.y, depth)*2;
+    gridintensity /= 6;
+  #endif // DISPLAY_GRID
+
+  #ifdef VISUALIZE_HEIGHT
+    float height = vpos_orig.z;
+    float c = ((height/2)-floor(height/2))*0.3;
+    highp int col_index = int(mod(height/2, 3));
+    color = clamp(hmap_visualization_colors[col_index]+vec4(c, c, c, 1.0), 0.0, 1.0);
+    color = mix(color, vec4(1, 1, 1, 1), gridintensity);
+    return;
+  #endif // VISUALIZE_HEIGHT
+  
+  #ifndef VISUALIZE_HEIGHT
+  float dist = gl_FragCoord.z / gl_FragCoord.w;
+
+  #ifdef SHADING
+  float brightness = vBrightness;
+  if(brightness &gt; 0)
+  {
+    // calculate shadow
+	#ifdef SHADOWS
+    float calc_shadow = CalculateShadow(fragmentPositionLightSpace, brightness);
+    float shadow_fade_factor = pow(clamp((dist - ShadowFadeStart)/(ShadowFadeEnd-ShadowFadeStart), 0.0, 1.0), 2.0);
+    calc_shadow += shadow_fade_factor;
+    brightness = min(brightness, calc_shadow);
+    brightness = clamp(brightness, 0, 1);  
+    brightness = pow(brightness, 0.6);
+	#endif // SHADOWS
+  }
+  #endif // SHADING
+  
+  #ifndef SHADING
+  float brightness = 1.0;
+  #endif // SHADING
+
+  vec4 tex1_1 = vec4(0.0);
+  vec4 tex1_2 = vec4(0.0);
+  vec4 tex1_3 = vec4(0.0);
+  vec4 tex2_1 = vec4(0.0);
+  vec4 tex2_2 = vec4(0.0);
+  vec4 tex2_3 = vec4(0.0);
+  vec4 tex3_1 = vec4(0.0);
+  vec4 tex3_2 = vec4(0.0);
+  vec4 tex3_3 = vec4(0.0);
+  vec4 tex4_1 = vec4(0.0);
+  vec4 tex4_2 = vec4(0.0);
+  vec4 tex4_3 = vec4(0.0);
+  vec4 temp_c = vec4(1.0);
+
+  vec2 map_uv = floor(UV*4);
+  vec2 fixed_uv = vec2(UV.x, -UV.y - 0.25);
+  map_uv.y = GridSize-map_uv.y-1;
+  int t1 = int(texture(TileMap, (map_uv+vec2(0, -1))/GridSize).r*255);
+  int t2 = int(texture(TileMap, (map_uv+vec2(1, -1))/GridSize).r*255);
+  int t3 = int(texture(TileMap, (map_uv+vec2(0, 0))/GridSize).r*255);
+  int t4 = int(texture(TileMap, (map_uv+vec2(1, 0))/GridSize).r*255);
+
+  #ifdef TEXTURE_LOD
+  // calculate diffuse color based on heightmap textures
+  vec4 bump_c = texture(BumpMap, 64*UV/GridSize);
+
+  if(dist &gt; max_tex_blend)
+  {
+    tex1_1 = tile_col[t1];
+    tex2_1 = tile_col[t2];
+    tex3_1 = tile_col[t3];
+    tex4_1 = tile_col[t4];
+    temp_c *= texture(BumpMap, 64*UV/GridSize)*1.2;
+  }
+  else
+  {
+    if(tex_w[t1].x &gt; 0) tex1_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].x))*(tex_w[t1].x/255.0f);
+    if(tex_w[t1].y &gt; 0) tex1_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].y))*(tex_w[t1].y/255.0f);
+    if(tex_w[t1].z &gt; 0) tex1_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].z))*(tex_w[t1].z/255.0f);
+    if(tex_w[t2].x &gt; 0) tex2_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].x))*(tex_w[t2].x/255.0f);
+    if(tex_w[t2].y &gt; 0) tex2_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].y))*(tex_w[t2].y/255.0f);
+    if(tex_w[t2].z &gt; 0) tex2_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].z))*(tex_w[t2].z/255.0f);
+    if(tex_w[t3].x &gt; 0) tex3_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].x))*(tex_w[t3].x/255.0f);
+    if(tex_w[t3].y &gt; 0) tex3_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].y))*(tex_w[t3].y/255.0f);
+    if(tex_w[t3].z &gt; 0) tex3_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].z))*(tex_w[t3].z/255.0f);
+    if(tex_w[t4].x &gt; 0) tex4_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].x))*(tex_w[t4].x/255.0f);
+    if(tex_w[t4].y &gt; 0) tex4_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].y))*(tex_w[t4].y/255.0f);
+    if(tex_w[t4].z &gt; 0) tex4_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].z))*(tex_w[t4].z/255.0f);
+    tex1_1 += tex1_2+tex1_3;
+    tex2_1 += tex2_2+tex2_3;
+    tex3_1 += tex3_2+tex3_3;
+    tex4_1 += tex4_2+tex4_3;
+
+    if(dist &gt; min_tex_blend)
+    {
+      float blend_t = (dist - min_tex_blend)/(max_tex_blend - min_tex_blend);
+      tex1_1 = mix(tex1_1, tile_col[t1], blend_t);
+      tex2_1 = mix(tex2_1, tile_col[t2], blend_t);
+      tex3_1 = mix(tex3_1, tile_col[t3], blend_t);
+      tex4_1 = mix(tex4_1, tile_col[t4], blend_t);
+      temp_c *= mix(vec4(1.0), texture(BumpMap, 64*UV/GridSize)*1.2, blend_t);
+    }
+  }
+  #endif //TEXTURE_LOD
+
+  #ifndef TEXTURE_LOD
+  if(tex_w[t1].x &gt; 0) tex1_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].x))*(tex_w[t1].x/255.0f);
+  if(tex_w[t1].y &gt; 0) tex1_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].y))*(tex_w[t1].y/255.0f);
+  if(tex_w[t1].z &gt; 0) tex1_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t1].z))*(tex_w[t1].z/255.0f);
+  if(tex_w[t2].x &gt; 0) tex2_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].x))*(tex_w[t2].x/255.0f);
+  if(tex_w[t2].y &gt; 0) tex2_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].y))*(tex_w[t2].y/255.0f);
+  if(tex_w[t2].z &gt; 0) tex2_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t2].z))*(tex_w[t2].z/255.0f);
+  if(tex_w[t3].x &gt; 0) tex3_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].x))*(tex_w[t3].x/255.0f);
+  if(tex_w[t3].y &gt; 0) tex3_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].y))*(tex_w[t3].y/255.0f);
+  if(tex_w[t3].z &gt; 0) tex3_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t3].z))*(tex_w[t3].z/255.0f);
+  if(tex_w[t4].x &gt; 0) tex4_1 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].x))*(tex_w[t4].x/255.0f);
+  if(tex_w[t4].y &gt; 0) tex4_2 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].y))*(tex_w[t4].y/255.0f);
+  if(tex_w[t4].z &gt; 0) tex4_3 = texture(myTextureSampler, vec3(fixed_uv, tex_id[t4].z))*(tex_w[t4].z/255.0f);
+  tex1_1 += tex1_2+tex1_3;
+  tex2_1 += tex2_2+tex2_3;
+  tex3_1 += tex3_2+tex3_3;
+  tex4_1 += tex4_2+tex4_3;
+  #endif //TEXTURE_LOD
+
+
+  vec2 vt = vec2((UV*4).x-map_uv.x, (UV*4).y-(GridSize-map_uv.y-1));
+  // linear interpolation
+  vec4 col1 = tex2_1*vt.x+tex1_1*(1-vt.x);
+  vec4 col2 = tex4_1*vt.x+tex3_1*(1-vt.x);
+  temp_c *= col1*vt.y+col2*(1-vt.y);
+
+  temp_c.a = 1.0;
+
+  // calculate output color
+  vec4 ambient_color = AmbientColor * AmbientStrength;
+  vec4 sun_color = SunColor * SunStrength;
+  #ifndef TONEMAPPING
+  color = (ambient_color*(1-brightness))+(sun_color*brightness);
+  color.a = 1.0;
+  color = color*temp_c;
+  color = clamp(color, 0.0, 1.0);
+  #endif // TONEMAPPING
+  #ifdef TONEMAPPING
+  color = ambient_color + sun_color * brightness;
+  color.a = 1.0;
+  temp_c = vec4(pow(temp_c.rgb, vec3(2.2)), temp_c.a);
+  color = color * temp_c;
+  #endif  // TONEMAPPING
+
+  // overlay
+  vec2 fixed_UV = (UV*4);
+  fixed_UV.y = GridSize-fixed_UV.y;
+  int ov_col_index = int(texture(OverlayMap, (fixed_UV+vec2(0.5, -0.5))/float(GridSize)).r*255);
+  vec4 ov_col_final = ov_colors[ov_col_index];
+  color = mix(color, ov_col_final, 0.7*ov_col_final.a);
+
+  // grid
+  #ifdef TONEMAPPING
+    color = mix(color, vec4((GridColor*2.0).xyz, GridColor.a), gridintensity);
+  #endif //TONEMAPPING
+  #ifndef TONEMAPPING
+    color = mix(color, GridColor, gridintensity);
+  #endif //TONEMAPPING
+
+  // fog calculation
+  float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
+  color = mix(color, vec4(FogColor.rgb * FogStrength, 1.0), fog_factor);
+  #endif // VISUALIZE_HEIGHT
+}</value>
+  </data>
+  <data name="fshader_hmap_depth_prepass" xml:space="preserve">
+    <value>
+out vec4 color;
+
+void main(){
+  color = vec4(1.0, 0.2, 0.2, 1.0);
+
+  // depth bias, ugly hack to circumvent tesselation issues on nvidia with pre-pass
+  gl_FragDepth = gl_FragCoord.z + 0.0002;
+}</value>
+  </data>
+  <data name="fshader_overlay" xml:space="preserve">
+    <value>in vec4 fragmentColor;
+
+out vec4 color;
+
+void main(){
+  color = fragmentColor;
+}</value>
+  </data>
+  <data name="fshader_shadowmap" xml:space="preserve">
+    <value>in vec2 UV;
+uniform sampler2D DiffuseTexture;
+
+out vec2 col;
+
+void main()
+{
+    if(texture(DiffuseTexture, UV).a &lt; 0.5)
+        discard;
+
+    float depth = gl_FragCoord.z;
+
+    float dx = dFdx(depth);
+    float dy = dFdy(depth);
+    float moment2 = depth * depth + 0.25 * (dx * dx + dy * dy);
+    
+    col = vec2(depth, moment2);
+}</value>
+  </data>
+  <data name="fshader_shadowmap_blur" xml:space="preserve">
+    <value>out vec2 FragColor;
+
+in vec2 TexCoords;
+
+uniform sampler2D image;
+
+uniform int horizontal;
+uniform float weight[3] = float[] (0.250301, 0.221461, 0.153388);
+
+vec2 GaussianBlur( sampler2D tex0, vec2 centreUV, vec2 pixelOffset )
+{
+    vec2 colOut = vec2( 0.0, 0.0 );
+    const int stepCount = 2;
+    //
+    const float gWeights[stepCount] ={
+       0.44908,
+       0.05092
+    };
+    const float gOffsets[stepCount] ={
+       0.53805,
+       2.06278
+    };
+
+    for( int i = 0; i &lt; stepCount; i++ )
+    {
+        vec2 texCoordOffset = gOffsets[i] * pixelOffset;
+        vec2 col = texture( tex0, centreUV + texCoordOffset ).rg + texture( tex0, centreUV - texCoordOffset ).rg;
+        colOut += gWeights[i] * col;
+    }
+
+    return colOut;
+}
+
+
+void main()
+{
+    vec2 tex_offset = 1.0 / textureSize(image, 0); // gets size of single texel
+    vec2 arg_offset = horizontal*vec2(tex_offset.x, 0.0)+(1-horizontal)*vec2(0.0, tex_offset.y);
+    vec2 result = GaussianBlur(image, TexCoords, arg_offset);
+
+    FragColor = vec2(result);
+}</value>
+  </data>
+  <data name="fshader_skel" xml:space="preserve">
+    <value>in vec3 fragmentPosition;
+in vec2 UV;
+in vec3 fragmentNormal;
+#ifdef SHADING
+#ifdef SHADOWS
+in vec4 fragmentPositionLightSpace;
+#endif //SHADOWS
+#ifndef QUALITY_SHADING
+in float vBrightness;
+#endif //QUALITY_SHADING
+#ifdef QUALITY_SHADING
+in vec4 fragmentGroundAmbientColor;
+#endif //QUALITY_SHADING
+#endif //SHADING
+
+out vec4 color;
+
+uniform mat4 M;
+uniform float SunStrength;
+uniform vec3 SunDirection;
+uniform vec4 SunColor;
+uniform float AmbientStrength;
+uniform vec4 AmbientColor;
+uniform sampler2D DiffuseTex;
+uniform sampler2D ShadowMap;
+uniform vec4 FogColor;
+uniform float FogStrength;
+uniform float FogStart;
+uniform float FogEnd;
+uniform float FogExponent;
+
+vec2 poissonDisk[4] = vec2[](
+  vec2( -0.94201624, -0.39906216 ),
+  vec2( 0.94558609, -0.76890725 ),
+  vec2( -0.094184101, -0.92938870 ),
+  vec2( 0.34495938, 0.29387760 )
+);
+
+float linstep(float low, float high, float v)
+{
+    return clamp((v-low)/(high-low), 0.0, 1.0);
+}
+
+// From http://fabiensanglard.net/shadowmappingVSM/index.php
+float chebyshevUpperBound(vec3 proj)
+{
+	vec2 moments = texture2D(ShadowMap, proj.xy).rg;
+
+	float variance = max(moments.y - (moments.x*moments.x), 0.000002);
+
+	float d = proj.z - moments.x;
+                   float p = float(proj.z &lt;= moments.x);
+	float p_max = variance / (variance + d*d);
+
+	return max(p, linstep(0.5, 1.0, p_max));// clamp((p_max * 1.3)-0.3, 0.0, 1.0);
+}
+
+float CalculateShadow(vec4 FPLS, float b){
+    vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
+    if(ProjectionCoordinates.z &gt; 1.0)
+        return 1.0;
+
+    ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
+    return chebyshevUpperBound(ProjectionCoordinates);
+}
+
+
+void main(){
+  vec4 temp_c = texture(DiffuseTex, UV);
+  if (temp_c.a == 0.0)
+    discard;
+
+  float brightness = 1.0;
+  #ifdef SHADING
+  #ifdef QUALITY_SHADING
+  // calculate brightness resulting from light coming from sun
+  mat3 normalMatrix = transpose(inverse(mat3(M)));
+  vec3 normal = normalize(normalMatrix * fragmentNormal);
+  vec3 fragVec = fragmentPosition;
+  brightness = dot(normal, SunDirection); // both vectors are normalized
+  #endif //QUALITY_SHADING
+  #ifndef QUALITY_SHADING
+  brightness = vBrightness;
+  #endif //QUALITY_SHADING
+  // calculate shadow
+  #ifdef SHADOWS
+  brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
+  #endif //SHADOWS
+  brightness = clamp(brightness, 0, 1);
+  #endif // SHADING
+
+  // calculate output color
+  vec4 sun_color = SunColor * SunStrength;
+  vec4 ambient_color = AmbientColor * AmbientStrength;
+  #ifdef QUALITY_SHADING
+  vec4 ground_color = fragmentGroundAmbientColor * (sun_color + ambient_color);
+  ambient_color = mix(ambient_color, ground_color, (-normal.y + 1.0) * 0.33);
+  #endif //QUALITY_SHADING
+  #ifndef TONEMAPPING
+  color = (ambient_color*(1-brightness))+(sun_color*brightness);
+  color.a = 1.0;
+  color = color*temp_c;
+  color = clamp(color, 0.0, 1.0);
+  #endif // TONEMAPPING
+  #ifdef TONEMAPPING
+  color = ambient_color + sun_color * brightness;
+  color.a = 1.0;
+  temp_c = vec4(pow(temp_c.rgb, vec3(2.2)), temp_c.a);
+  color = color * temp_c;
+  //color = ambient_color;
+  //color.a = 1.0;
+  #endif
+
+  // fog calculation
+  float dist = gl_FragCoord.z / gl_FragCoord.w;
+  float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
+  color = mix(color, vec4(FogColor.rgb * FogStrength, 1.0), fog_factor);
+}</value>
+  </data>
+  <data name="fshader_sky" xml:space="preserve">
+    <value>out vec4 FragColor;
+  
+in vec2 TexCoords;
+
+uniform mat4 V;
+uniform float AspectRatio;
+uniform float AmbientStrength;
+uniform vec4 AmbientColor;
+uniform vec4 FogColor;
+uniform float FogStrength;
+
+vec3 CalcLookat(mat4 view, vec2 uv)
+{
+  return vec3(-view[3]-view[2]-(view[0]*AspectRatio*(uv.x-0.5)) + (view[1]*(uv.y-0.5)));
+}
+
+void main()
+{
+    vec3 raydir = CalcLookat(V, TexCoords);
+    float horizon_closeness = clamp(1.0 - dot(normalize(raydir), vec3(0.0, 1.0, 0.0)), 0.0, 1.0);    // 0% - pole, 100% - horizon
+
+    vec3 ambient_color = AmbientColor.rgb;
+    vec3 fog_color =FogColor.rgb*FogStrength;    // with gamma
+    vec3 skycol = vec3(mix(ambient_color, fog_color, pow(horizon_closeness, 4.0)));
+
+    FragColor = vec4(skycol, 1.0);
+}</value>
+  </data>
+  <data name="fshader_tonemap" xml:space="preserve">
+    <value>out vec4 FragColor;
+  
+in vec2 TexCoords;
+
+uniform sampler2D screenTexture;
+uniform float exposure;
+
+float luminance(vec3 v)
+{
+    return dot(v, vec3(0.2126f, 0.7152f, 0.0722f));
+}
+
+vec3 change_luminance(vec3 c_in, float l_out)
+{
+    float l_in = luminance(c_in);
+    return c_in * (l_out / l_in);
+}
+
+vec3 reinhard(vec3 v)
+{
+    return v / (1.0f + v);
+}
+
+vec3 reinhard_extended(vec3 v, float max_white)
+{
+    vec3 numerator = v * (1.0f + (v / vec3(max_white * max_white)));
+    return numerator / (1.0f + v);
+}
+
+vec3 reinhard_extended_luminance(vec3 v, float max_white_l)
+{
+    float l_old = luminance(v);
+    float numerator = l_old * (1.0f + (l_old / (max_white_l * max_white_l)));
+    float l_new = numerator / (1.0f + l_old);
+    return change_luminance(v, l_new);
+}
+
+vec3 reinhard_jodie(vec3 v)
+{
+    float l = luminance(v);
+    vec3 tc=v/(v+1.0f);
+    return mix(v/(l+1.0f),tc,tc);
+}
+
+vec3 aces_approx(vec3 v)
+{
+    v *= 0.6f;
+    float a = 2.51f;
+    float b = 0.03f;
+    float c = 2.43f;
+    float d = 0.59f;
+    float e = 0.14f;
+    return clamp((v*(a*v+b))/(v*(c*v+d)+e), 0.0f, 1.0f);
+}
+
+void main()
+{             
+    vec3 hdrColor = texture(screenTexture, TexCoords).rgb;
+  
+    //vec3 mapped = hdrColor;
+    // exposure tone mapping
+    //vec3 mapped = aces_approx(hdrColor);
+    //vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
+    //vec3 mapped = reinhard(hdrColor);
+    //vec3 mapped = reinhard_extended(hdrColor, exposure);
+    vec3 mapped = reinhard_extended_luminance(hdrColor, exposure);
+    //vec3 mapped = reinhard_jodie(hdrColor);
+
+    // test gamma
+    mapped = pow(mapped.rgb, vec3(1.0/2.2));
+
+    FragColor = vec4(mapped, 1.0);
+}</value>
+  </data>
+  <data name="fshader_transparent" xml:space="preserve">
+    <value>in vec3 fragmentPosition;
+in vec3 fragmentNormal;
+in vec2 UV;
+in vec4 fragmentColor;
+#ifdef SHADING
+#ifdef SHADOWS
+in vec4 fragmentPositionLightSpace;
+#endif //SHADOWS
+#ifdef QUALITY_SHADING
+in mat4 M;
+in vec4 fragmentGroundAmbientColor;
+#endif //QUALITY_SHADING
+#ifndef QUALITY_SHADING
+in float vBrightness;
+#endif //QUALITY_SHADING
+#endif //SHADING
+
+out vec4 color;
+
+//uniform mat4 M;
+uniform float SunStrength;
+uniform vec3 SunDirection;
+uniform vec4 SunColor;
+uniform float AmbientStrength;
+uniform vec4 AmbientColor;
+#ifdef QUALITY_SHADING
+uniform float EmissionStrength;
+uniform vec4 EmissionColor;
+#endif //QUALITY_SHADING
+uniform sampler2D DiffuseTex;
+uniform sampler2D ShadowMap;
+uniform vec4 FogColor;
+uniform float FogStrength;
+uniform float FogStart;
+uniform float FogEnd;
+uniform float FogExponent;
+uniform float ObjectFadeStart;
+uniform float ObjectFadeEnd;
+uniform float DepthBias;
+uniform float DistanceFade;
+
+vec2 poissonDisk[4] = vec2[](
+  vec2( -0.94201624, -0.39906216 ),
+  vec2( 0.94558609, -0.76890725 ),
+  vec2( -0.094184101, -0.92938870 ),
+  vec2( 0.34495938, 0.29387760 )
+);
+
+float linstep(float low, float high, float v)
+{
+    return clamp((v-low)/(high-low), 0.0, 1.0);
+}
+
+// From http://fabiensanglard.net/shadowmappingVSM/index.php
+float chebyshevUpperBound(vec3 proj)
+{
+	vec2 moments = texture2D(ShadowMap, proj.xy).rg;
+
+	float variance = max(moments.y - (moments.x*moments.x), 0.000002);
+
+	float d = proj.z - moments.x;
+                   float p = float(proj.z &lt;= moments.x);
+	float p_max = variance / (variance + d*d);
+
+	return max(p, linstep(0.5, 1.0, p_max));// clamp((p_max * 1.3)-0.3, 0.0, 1.0);
+}
+
+float CalculateShadow(vec4 FPLS, float b){
+    vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
+    if(ProjectionCoordinates.z &gt; 1.0)
+        return 1.0;
+
+    ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
+    return chebyshevUpperBound(ProjectionCoordinates);
+}
+
+
+void main(){
+  vec4 temp_c = fragmentColor * texture(DiffuseTex, UV);
+  if(temp_c.a == floor(temp_c.a))    // discard if a == 1.0 or a == 0.0
+    discard;
+
+  float brightness = 1.0;
+  #ifdef SHADING
+  #ifdef QUALITY_SHADING
+  // calculate brightness resulting from light coming from sun
+  mat3 normalMatrix = transpose(inverse(mat3(M)));
+  vec3 normal = normalize(normalMatrix * fragmentNormal);
+  vec3 fragVec = fragmentPosition;
+  brightness = dot(normal, SunDirection); // both vectors are normalized
+  #endif //QUALITY_SHADING
+  #ifndef QUALITY_SHADING
+  brightness = vBrightness;
+  #endif //QUALITY_SHADING
+  // calculate shadow
+  #ifdef SHADOWS
+  brightness = min(brightness, CalculateShadow(fragmentPositionLightSpace, brightness));
+  #endif //SHADOWS
+  brightness = clamp(brightness, 0, 1);
+  #endif // SHADING
+
+
+  // calculate output color
+  vec4 sun_color = SunColor * SunStrength;
+  vec4 ambient_color = AmbientColor * AmbientStrength;
+  #ifdef QUALITY_SHADING
+  vec4 ground_color = fragmentGroundAmbientColor * (sun_color + ambient_color);
+  ambient_color = mix(ambient_color, ground_color, (-normal.y +1.0) * 0.33);
+  #endif //QUALITY_SHADING
+  #ifndef TONEMAPPING
+  color = (ambient_color*(1-brightness))+(sun_color*brightness);
+  #endif // TONEMAPPING
+  #ifdef TONEMAPPING
+  color = ambient_color + sun_color * brightness;
+  temp_c = vec4(pow(temp_c.rgb, vec3(2.2)), temp_c.a);
+  #endif //TONEMAPPING
+  #ifdef QUALITY_SHADING
+  vec4 emissive_color = EmissionColor * EmissionStrength;
+  color += emissive_color;
+  #endif //QUALITY_SHADING
+  color.a = 1.0;
+  color = color * temp_c;
+  #ifndef TONEMAPPING
+  color = clamp(color, 0.0, 1.0);
+  #endif // TONEMAPPING
+
+  // fog calculation
+  float dist = gl_FragCoord.z / gl_FragCoord.w;
+  float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
+  color = mix(color, vec4(FogColor.rgb * FogStrength, 1.0), fog_factor);
+  // object fade in alpha calculation
+  float alpha_factor = 1.0 - clamp((dist - ObjectFadeStart) / (ObjectFadeEnd - ObjectFadeStart), 0.0, 1.0);
+  alpha_factor += 1.0 - DistanceFade;
+  alpha_factor = clamp(alpha_factor, 0.0, 1.0);
+  color.a *=  alpha_factor;
+
+  // depth bias
+  gl_FragDepth = gl_FragCoord.z + DepthBias;
+}</value>
+  </data>
+  <data name="fshader_ui" xml:space="preserve">
+    <value>in vec2 UV;
+in vec4 color;
+
+out vec4 out_color;
+
+uniform sampler2D Tex;
+
+void main(){
+  vec4 temp_c;
+  temp_c = texture(Tex, UV);
+  if(temp_c.a == 0.0)
+    discard;
+
+  out_color = temp_c * color;
+}</value>
+  </data>
+  <data name="tcsshader_hmap_tesselated" xml:space="preserve">
+    <value>layout(vertices = 4) out;
+
+uniform vec3 cameraPos;
+
+// for now, there's no correction for average  patch height (all patches are of height 0)
+// doing the correction will surely improve peformance
+
+float distance(vec2 p1, vec2 p2)
+{
+    return sqrt(dot(p1-p2, p1-p2));
+}
+
+float edgeCameraDistance(vec4 p1, vec4 p2)
+{
+    vec2 res_pos = (p1 + p2).xz * 0.5;
+    return distance(res_pos, cameraPos.xz);
+}
+
+float tesselationPerDistance(float d)
+{
+    // 0-50 -&gt; 1, 50-100 -&gt; 2, 100-200 -&gt; 4, 200-400 -&gt; 8, 400-inf -&gt;16
+    return 16.0 / pow(2.0, ceil(log2(clamp(d, 50.0, 401.0) / 50.0)));
+}
+
+void main()
+{
+    if(gl_InvocationID == 0)
+    {
+        gl_TessLevelOuter[0] = tesselationPerDistance(edgeCameraDistance(gl_in[0].gl_Position, gl_in[1].gl_Position));
+        gl_TessLevelOuter[1] = tesselationPerDistance(edgeCameraDistance(gl_in[0].gl_Position, gl_in[3].gl_Position));
+        gl_TessLevelOuter[2] = tesselationPerDistance(edgeCameraDistance(gl_in[2].gl_Position, gl_in[3].gl_Position));
+        gl_TessLevelOuter[3] = tesselationPerDistance(edgeCameraDistance(gl_in[1].gl_Position, gl_in[2].gl_Position));
+
+        gl_TessLevelInner[0] = 0.5 * (gl_TessLevelOuter[0] + gl_TessLevelOuter[2]);
+        gl_TessLevelInner[1] = 0.5 * (gl_TessLevelOuter[1] + gl_TessLevelOuter[3]);
+    }
+    
+    gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+}
+</value>
+  </data>
+  <data name="tesshader_hmap_shadowmap_tesselated" xml:space="preserve">
+    <value>layout(quads) in;
+
+out vec2 UV;
+
+// Values that stay constant for the whole mesh.
+
+uniform int GridSize;
+uniform sampler2D HeightMap;
+uniform mat4 LSM;
+
+vec4 GetTesselatedVertex(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
+{
+    vec4 a = mix(v0, v1, gl_TessCoord.x);
+    vec4 b = mix(v2, v3, gl_TessCoord.x);
+    return mix(a, b, gl_TessCoord.y);
+}
+
+vec3 GetVertexPos(vec2 grid_pos)
+{
+    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+}
+
+void main()
+{
+  // get tesselated vertex
+  vec3 vertexPosition_modelspace = GetTesselatedVertex(gl_in[0].gl_Position, gl_in[3].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position).xyz;
+
+  vec3 vpos = GetVertexPos(vertexPosition_modelspace.xz);
+
+  gl_Position = LSM * vec4(vpos, 1.0);
+  UV = vec2(0.0, 0.0);
+}</value>
+  </data>
+  <data name="tesshader_hmap_tesselated" xml:space="preserve">
+    <value>layout(quads) in;
+
+out vec3 fragmentPosition;
+out vec2 UV;
+out vec3 fragmentNormal;
+out vec4 fragmentPositionLightSpace;
+out vec3 vpos_orig;
+out float vBrightness;
+
+// Values that stay constant for the whole mesh.
+
+uniform int GridSize;
+uniform sampler2D HeightMap;
+uniform mat4 VP;
+uniform mat4 LSM;
+uniform vec3 SunDirection;
+
+vec4 GetTesselatedVertex(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
+{
+    vec4 a = mix(v0, v1, gl_TessCoord.x);
+    vec4 b = mix(v2, v3, gl_TessCoord.x);
+    return mix(a, b, gl_TessCoord.y);
+}
+
+vec3 GetVertexNormal(vec2 grid_pos)
+{
+    vec2 neighbor_pos;
+    neighbor_pos = grid_pos+vec2(1.0, 0.0);
+    float ah = texture(HeightMap, vec2(neighbor_pos.x, GridSize - 1 - neighbor_pos.y)/GridSize).r * 655.35;
+    neighbor_pos = grid_pos+vec2(0.0, 1.0);
+    float bh = texture(HeightMap, vec2(neighbor_pos.x, GridSize - 1 - neighbor_pos.y)/GridSize).r * 655.35;
+    neighbor_pos = grid_pos+vec2(-1.0, 0.0);
+    float ch = texture(HeightMap, vec2(neighbor_pos.x, GridSize - 1 - neighbor_pos.y)/GridSize).r * 655.35;
+    neighbor_pos = grid_pos+vec2(0.0, -1.0);
+    float dh = texture(HeightMap, vec2(neighbor_pos.x, GridSize - 1 - neighbor_pos.y)/GridSize).r * 655.35;
+    return normalize(vec3(ch-ah, 2.0, dh-bh));
+}
+
+vec3 GetVertexPos(vec2 grid_pos)
+{
+    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+}
+
+void main()
+{
+  // get tesselated vertex
+  vec3 vertexPosition_modelspace = GetTesselatedVertex(gl_in[0].gl_Position, gl_in[3].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position).xyz;
+
+  // Output position of the vertex, in clip space : MVP * position
+  vec3 vpos = GetVertexPos(vertexPosition_modelspace.xz);
+  gl_Position = VP * vec4(vpos, 1.0);
+  fragmentPositionLightSpace = LSM * vec4(vpos, 1.0);
+  UV = vertexPosition_modelspace.xz/4;
+  fragmentPosition = vpos;
+  fragmentNormal = GetVertexNormal(vertexPosition_modelspace.xz);
+  vpos_orig = vpos.xzy;
+  // calculate brightness coming from the sun
+  vBrightness = clamp(dot(fragmentNormal, SunDirection), 0.0, 1.0);
+}</value>
+  </data>
+  <data name="tesshader_hmap_tesselated_depth_prepass" xml:space="preserve">
+    <value>layout(quads) in;
+
+out vec3 fragmentPosition;
+
+// Values that stay constant for the whole mesh.
+
+uniform int GridSize;
+uniform sampler2D HeightMap;
+uniform mat4 VP;
+
+vec4 GetTesselatedVertex(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
+{
+    vec4 a = mix(v0, v1, gl_TessCoord.x);
+    vec4 b = mix(v2, v3, gl_TessCoord.x);
+    return mix(a, b, gl_TessCoord.y);
+}
+
+vec3 GetVertexPos(vec2 grid_pos)
+{
+    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+}
+
+void main()
+{
+  // get tesselated vertex
+  vec3 vertexPosition_modelspace = GetTesselatedVertex(gl_in[0].gl_Position, gl_in[3].gl_Position, gl_in[1].gl_Position, gl_in[2].gl_Position).xyz;
+
+  // Output position of the vertex, in clip space : MVP * position
+  vec3 vpos = GetVertexPos(vertexPosition_modelspace.xz);
+  gl_Position = VP * vec4(vpos, 1.0);
+}</value>
+  </data>
+  <data name="vshader" xml:space="preserve">
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vertexNormal;
+layout(location = 2) in vec4 vertexColor;
+layout(location = 3) in vec2 vertexUV;
+layout(location = 4) in mat4 instanceMatrix;
+
+out vec3 fragmentPosition;
+out vec3 fragmentNormal;
+out vec4 fragmentColor;
+out vec2 UV;
+#ifdef SHADING
+#ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+out vec4 fragmentPositionLightSpace1;
+out vec4 fragmentPositionLightSpace2;
+out vec4 fragmentPositionLightSpace3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
+out vec4 fragmentPositionLightSpace;
+#endif //CASCADED_SHADOWS
+#endif //SHADOWS
+#ifdef QUALITY_SHADING
+out mat4 M;
+out vec4 fragmentGroundAmbientColor;
+#endif //QUALITY_SHADING
+#ifndef QUALITY_SHADING
+out float vBrightness;
+#endif //QUALITY_SHADING
+#endif //SHADING
+
+// Values that stay constant for the whole mesh.
+uniform mat4 VP;
+#ifdef SHADING
+#ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+uniform mat4 LSM1;
+uniform mat4 LSM2;
+uniform mat4 LSM3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
+uniform mat4 LSM;
+#endif //CASCADED_SHADOWS
+#endif //SHADOWS
+#ifndef QUALITY_SHADING
+uniform int ApplyShading;
+uniform vec3 SunDirection;
+#endif //QUALITY_SHADING
+#ifdef QUALITY_SHADING
+uniform float AmbientStrength;
+uniform int GridSize;
+uniform sampler2D GroundMap;
+
+layout(std140) uniform TileColors
+{
+  vec4 tile_col[255];
+};
+#endif //QUALITY_SHADING
+#endif //SHADING
+  
+void main(){
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position = VP * instanceMatrix * vec4(vertexPosition_modelspace,1);
+  fragmentPosition = vec3(instanceMatrix * vec4(vertexPosition_modelspace, 1));
+  UV = vertexUV;
+  fragmentNormal = vertexNormal;
+  fragmentColor = vertexColor;
+  
+  #ifdef QUALITY_SHADING
+  vec2 fragmentPositionGroundSpace = (instanceMatrix * vec4(vertexPosition_modelspace, 1)).xz;
+  
+  vec2 map_uv = floor(fragmentPositionGroundSpace);
+  map_uv.y = GridSize-map_uv.y-1;
+  int t1 = int(texture(GroundMap, (map_uv+vec2(0, -1))/GridSize).r*255);
+  int t2 = int(texture(GroundMap, (map_uv+vec2(1, -1))/GridSize).r*255);
+  int t3 = int(texture(GroundMap, (map_uv+vec2(0, 0))/GridSize).r*255);
+  int t4 = int(texture(GroundMap, (map_uv+vec2(1, 0))/GridSize).r*255);
+  vec4 tex1 = tile_col[t1];
+  vec4 tex2 = tile_col[t2];
+  vec4 tex3 = tile_col[t3];
+  vec4 tex4 = tile_col[t4];
+  
+  vec2 vt = vec2(fragmentPositionGroundSpace.x - map_uv.x, fragmentPositionGroundSpace.y - (GridSize - map_uv.y - 1));
+  // linear interpolation
+  vec4 col1 = tex2*vt.x+tex1*(1-vt.x);
+  vec4 col2 = tex4*vt.x+tex3*(1-vt.x);
+  
+  fragmentGroundAmbientColor = pow(col1*vt.y + col2*(1-vt.y), vec4(2.2)) * AmbientStrength;
+  #endif //QUALITY_SHADING
+  
+#ifdef SHADING
+#ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+  fragmentPositionLightSpace1 = LSM1 * instanceMatrix * vec4(vertexPosition_modelspace, 1);
+  fragmentPositionLightSpace2 = LSM2 * instanceMatrix * vec4(vertexPosition_modelspace, 1);
+  fragmentPositionLightSpace3 = LSM3 * instanceMatrix * vec4(vertexPosition_modelspace, 1);
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
+  fragmentPositionLightSpace = LSM * instanceMatrix * vec4(vertexPosition_modelspace, 1);
+#endif //CASCADED_SHADOWS
+#endif //SHADOWS
+#ifdef QUALITY_SHADING
+  M = instanceMatrix;
+#endif //QUALITY_SHADING
+#ifndef QUALITY_SHADING
+  if(ApplyShading == 1)
+  {
+  mat3 normalMatrix = transpose(inverse(mat3(instanceMatrix)));
+  vec3 normal = normalize(normalMatrix * vertexNormal);
+  vBrightness = dot(normal, SunDirection); // both vectors are normalized
+  vBrightness = clamp(vBrightness, 0.0, 1.0);
+  }
+  else
+  {
+    vBrightness = 1.0;
+  }
+#endif //QUALITY_SHADING
+#endif //SHADING
+
+}</value>
+  </data>
+  <data name="vshader_framebuffer" xml:space="preserve">
+    <value>layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec2 aTexCoords;
+
+out vec2 TexCoords;
+
+void main()
+{
+    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
+    TexCoords = aTexCoords;
+}</value>
+  </data>
+  <data name="vshader_hmap" xml:space="preserve">
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+//layout(location = 1) in vec3 vertexNormal;
+//layout(location = 2) in vec3 texID;
+//layout(location = 3) in vec3 texWeight;
+
+out vec3 fragmentPosition;
+out vec2 UV;
+out vec3 fragmentNormal;
+#ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+out vec4 fragmentPositionLightSpace1;
+out vec4 fragmentPositionLightSpace2;
+out vec4 fragmentPositionLightSpace3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
+out vec4 fragmentPositionLightSpace;
+#endif //CASCADED_SHADOWS
+#endif //SHADOWS
+out vec3 vpos_orig;
+out float vBrightness;
+
+// Values that stay constant for the whole mesh.
+
+uniform int GridSize;
+uniform sampler2D HeightMap;
+uniform mat4 VP;
+#ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+uniform mat4 LSM1;
+uniform mat4 LSM2;
+uniform mat4 LSM3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
+uniform mat4 LSM;
+#endif //CASCADED_SHADOWS
+#endif //SHADOWS
+uniform vec3 SunDirection;
+
+vec3 GetVertexNormal(vec2 grid_pos)
+{
+    vec2 neighbor_pos;
+    neighbor_pos = grid_pos+vec2(1.0, 0.0);
+    float ah = texture(HeightMap, vec2(neighbor_pos.x, GridSize - 1 - neighbor_pos.y)/GridSize).r * 655.35;
+    neighbor_pos = grid_pos+vec2(0.0, 1.0);
+    float bh = texture(HeightMap, vec2(neighbor_pos.x, GridSize - 1 - neighbor_pos.y)/GridSize).r * 655.35;
+    neighbor_pos = grid_pos+vec2(-1.0, 0.0);
+    float ch = texture(HeightMap, vec2(neighbor_pos.x, GridSize - 1 - neighbor_pos.y)/GridSize).r * 655.35;
+    neighbor_pos = grid_pos+vec2(0.0, -1.0);
+    float dh = texture(HeightMap, vec2(neighbor_pos.x, GridSize - 1 - neighbor_pos.y)/GridSize).r * 655.35;
+    return normalize(vec3(ch-ah, 2.0, dh-bh));
+}
+
+vec3 GetVertexPos(vec2 grid_pos)
+{
+    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+}
+  
+void main(){
+  // Output position of the vertex, in clip space : MVP * position
+  vec3 vpos = GetVertexPos(vertexPosition_modelspace.xz);
+  gl_Position = VP * vec4(vpos, 1.0);
+  #ifdef SHADOWS
+  #ifdef CASCADED_SHADOWS
+  fragmentPositionLightSpace1 = LSM1 * vec4(vpos, 1.0);
+  fragmentPositionLightSpace2 = LSM2 * vec4(vpos, 1.0);
+  fragmentPositionLightSpace3 = LSM3 * vec4(vpos, 1.0);
+  #endif //CASCADED_SHADOWS
+  #ifndef CASCADED_SHADOWS
+  fragmentPositionLightSpace = LSM * vec4(vpos, 1.0);
+  #endif //CASCADED_SHADOWS
+  #endif //SHADOWS
+  UV = vertexPosition_modelspace.xz/4;
+  fragmentPosition = vpos;
+  fragmentNormal = GetVertexNormal(vertexPosition_modelspace.xz);
+  vpos_orig = vpos.xzy;
+  vBrightness = clamp(dot(fragmentNormal, SunDirection), 0.0, 1.0);
+}</value>
+  </data>
+  <data name="vshader_hmap_depth_prepass" xml:space="preserve">
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+
+out vec3 fragmentPosition;
+
+// Values that stay constant for the whole mesh.
+
+uniform int GridSize;
+uniform sampler2D HeightMap;
+uniform mat4 VP;
+
+vec3 GetVertexPos(vec2 grid_pos)
+{
+    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+}
+  
+void main(){
+  // Output position of the vertex, in clip space : MVP * position
+  vec3 vpos = GetVertexPos(vertexPosition_modelspace.xz);
+  gl_Position = VP * vec4(vpos, 1.0);
+}</value>
+  </data>
+  <data name="vshader_hmap_tesselated" xml:space="preserve">
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+
+void main(){
+  gl_Position = vec4(vertexPosition_modelspace, 1.0);
+}</value>
+  </data>
+  <data name="vshader_overlay" xml:space="preserve">
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+
+out vec4 fragmentColor;
+
+// Values that stay constant for the whole mesh.
+uniform mat4 MVP;
+uniform vec4 Color;
+  
+void main(){
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position = MVP * vec4(vertexPosition_modelspace,1);
+  fragmentColor = Color;
+}</value>
+  </data>
+  <data name="vshader_shadowmap" xml:space="preserve">
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vertexNormal;
+layout(location = 2) in vec4 vertexColor;
+layout(location = 3) in vec2 vertexUV;
+layout(location = 4) in mat4 instanceMatrix;
+
+out vec2 UV;
+
+uniform mat4 LSM;  // light space matrix
+
+void main()
+{
+    gl_Position = LSM * instanceMatrix * vec4(vertexPosition_modelspace, 1.0);
+    UV = vertexUV;
+}</value>
+  </data>
+  <data name="vshader_shadowmap_animated" xml:space="preserve">
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vertexNormal;
+layout(location = 2) in vec4 vertexBoneWeight;
+layout(location = 3) in vec2 vertexUV;
+layout(location = 4) in vec4 vertexBoneIndex;
+
+out vec2 UV;
+
+// Values that stay constant for the whole mesh.
+uniform mat4 LSM;
+uniform mat4 M;
+uniform mat4 boneTransforms[224];
+  
+void main(){
+  vec4 Vertex;
+  vec4 newVertex;
+  int index;
+
+  Vertex = vec4(vertexPosition_modelspace, 1.0);
+  newVertex = vec4(0.0, 0.0, 0.0, 1.0);
+
+  index = int(vertexBoneIndex.x);
+  if(index != -1)
+  {
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.x;
+  }
+  index = int(vertexBoneIndex.y);
+  if(index != -1)
+  {
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.y + newVertex;
+  }
+  index = int(vertexBoneIndex.z);
+  if(index != -1)
+  {
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.z + newVertex;
+  }
+  index = int(vertexBoneIndex.w);
+  if(index != -1)
+  {
+    newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.w + newVertex;
+  }
+
+  
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position =  LSM * M * vec4(newVertex.xyz, 1.0);
+  UV = vertexUV;
+}</value>
+  </data>
+  <data name="vshader_shadowmap_heightmap" xml:space="preserve">
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+
+out vec2 UV;
+
+// Values that stay constant for the whole mesh.
+uniform int GridSize;
+uniform sampler2D HeightMap;
+uniform mat4 LSM;
+  
+vec3 GetVertexPos(vec2 grid_pos)
+{
+    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+}
+
+void main(){
+  vec3 vpos = GetVertexPos(vertexPosition_modelspace.xz);
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position = LSM * vec4(vpos, 1.0);
+  UV = vec2(0.0, 0.0);
+}</value>
+  </data>
+  <data name="vshader_skel" xml:space="preserve">
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vertexNormal;
+layout(location = 2) in vec4 vertexBoneWeight;
+layout(location = 3) in vec2 vertexUV;
+layout(location = 4) in vec4 vertexBoneIndex;
+
+out vec3 fragmentPosition;
+out vec2 UV;
+out vec3 fragmentNormal;
+#ifdef SHADING
+#ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+out vec4 fragmentPositionLightSpace1;
+out vec4 fragmentPositionLightSpace2;
+out vec4 fragmentPositionLightSpace3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
+out vec4 fragmentPositionLightSpace;
+#endif //CASCADED_SHADOWS
+#endif //SHADOWS
+#ifdef QUALITY_SHADING
+out vec4 fragmentGroundAmbientColor;
+#endif //QUALITY_SHADING
+#ifndef QUALITY_SHADING
+out float vBrightness;
+#endif //QUALITY_SHADING
+#endif //SHADING
+
+// Values that stay constant for the whole mesh.
+uniform mat4 P;
+uniform mat4 V;
+#ifdef SHADING
+#ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+uniform mat4 LSM1;
+uniform mat4 LSM2;
+uniform mat4 LSM3;
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
+uniform mat4 LSM;
+#endif //CASCADED_SHADOWS
+#endif //SHADOWS
+#ifndef QUALITY_SHADING
+uniform vec3 SunDirection;
+#endif //QUALITY_SHADING
+#ifdef QUALITY_SHADING
+uniform float AmbientStrength;
+uniform int GridSize;
+uniform sampler2D GroundMap;
+
+layout(std140) uniform TileColors
+{
+  vec4 tile_col[255];
+};
+#endif //QUALITY_SHADING
+#endif //SHADING
+uniform mat4 M;
+uniform mat4 boneTransforms[224];
+  
+void main(){
+  vec4 Vertex;
+  vec4 newVertex;
+  vec4 Normal;
+  vec4 newNormal;
+  int index;
+
+  Vertex = vec4(vertexPosition_modelspace, 1.0);
+  Normal = vec4(vertexNormal, 0.0);
+  newVertex = vec4(0.0, 0.0, 0.0, 1.0);
+  newNormal = vec4(0.0, 0.0, 0.0, 0.0);
+
+  index = int(vertexBoneIndex.x);
+  newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.x;
+  newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.x;
+
+  index = int(vertexBoneIndex.y);
+  newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.y + newVertex;
+  newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.y + newNormal;
+
+  index = int(vertexBoneIndex.z);
+  newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.z + newVertex;
+  newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.z + newNormal;
+
+  index = int(vertexBoneIndex.w);
+  newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.w + newVertex;
+  newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.w + newNormal;
+
+  
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position =  P * V * M * vec4(newVertex.xyz, 1.0);
+  fragmentPosition = newVertex.xyz;
+  UV = vertexUV;
+  fragmentNormal = vec3(newNormal);
+  
+  #ifdef QUALITY_SHADING
+  vec2 fragmentPositionGroundSpace = (M * vec4(newVertex.xyz, 1.0)).xz;
+  
+  vec2 map_uv = floor(fragmentPositionGroundSpace);
+  map_uv.y = GridSize-map_uv.y-1;
+  int t1 = int(texture(GroundMap, (map_uv+vec2(0, -1))/GridSize).r*255);
+  int t2 = int(texture(GroundMap, (map_uv+vec2(1, -1))/GridSize).r*255);
+  int t3 = int(texture(GroundMap, (map_uv+vec2(0, 0))/GridSize).r*255);
+  int t4 = int(texture(GroundMap, (map_uv+vec2(1, 0))/GridSize).r*255);
+  vec4 tex1 = tile_col[t1];
+  vec4 tex2 = tile_col[t2];
+  vec4 tex3 = tile_col[t3];
+  vec4 tex4 = tile_col[t4];
+  
+  vec2 vt = vec2(fragmentPositionGroundSpace.x - map_uv.x, fragmentPositionGroundSpace.y - (GridSize - map_uv.y - 1));
+  // linear interpolation
+  vec4 col1 = tex2*vt.x+tex1*(1-vt.x);
+  vec4 col2 = tex4*vt.x+tex3*(1-vt.x);
+  
+  fragmentGroundAmbientColor = pow(col1*vt.y + col2*(1-vt.y), vec4(2.2)) * AmbientStrength;
+  #endif //QUALITY_SHADING
+  
+#ifdef SHADING
+#ifdef SHADOWS
+#ifdef CASCADED_SHADOWS
+  fragmentPositionLightSpace1 = LSM1 * M * vec4(newVertex.xyz, 1);
+  fragmentPositionLightSpace2 = LSM2 * M * vec4(newVertex.xyz, 1);
+  fragmentPositionLightSpace3 = LSM3 * M * vec4(newVertex.xyz, 1);
+#endif //CASCADED_SHADOWS
+#ifndef CASCADED_SHADOWS
+  fragmentPositionLightSpace = LSM * M * vec4(newVertex.xyz, 1);
+#endif //CASCADED_SHADOWS
+#endif //SHADOWS
+#ifndef QUALITY_SHADING
+  vBrightness = 1.0;
+  mat3 normalMatrix = transpose(inverse(mat3(M)));
+  vec3 normal = normalize(normalMatrix * newNormal.xyz);
+  vBrightness = dot(normal, SunDirection); // both vectors are normalized
+  vBrightness = clamp(vBrightness, 0, 1);
+#endif //QUALITY_SHADING
+#endif //SHADING
+}</value>
+  </data>
+  <data name="vshader_sky" xml:space="preserve">
+    <value>layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec2 aTexCoords;
+
+out vec2 TexCoords;
+
+void main()
+{
+    gl_Position = vec4(aPos.x, aPos.y, 1.0, 1.0); 
+    TexCoords = aTexCoords;
+}</value>
+  </data>
+  <data name="vshader_ui" xml:space="preserve">
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec2 vertexUV;
+layout(location = 2) in vec4 vertexColor;
+
+out vec2 UV;
+out vec4 color;
+
+uniform vec2 offset;
+uniform vec2 ScreenSize;
+  
+void main(){
+  // Output position of the vertex, in clip space : MVP * position
+  
+  vec2 real_pos = vec2(vertexPosition_modelspace.x+offset.x - (ScreenSize.x/2), -(vertexPosition_modelspace.y + offset.y - (ScreenSize.y/2)))*2;
+  gl_Position = vec4(real_pos/ScreenSize, vertexPosition_modelspace.z, 1.0);
+
+  UV = vertexUV;
+  color = vertexColor;
+}</value>
+  </data>
+</root>

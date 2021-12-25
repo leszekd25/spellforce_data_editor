@@ -12,7 +12,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 {
     public partial class MapInspector : UserControl
     {
-        public SFMap map = null;
+        public SFEngine.SFMap.SFMap map = null;
 
         public MapInspector()
         {

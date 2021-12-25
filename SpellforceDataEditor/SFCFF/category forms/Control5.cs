@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -37,7 +38,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int elem_count = elem.variants.Count / 4;
 
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                set_element_variant(current_element, i, 0, Utility.TryParseUInt16(textBox1.Text));
+                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -45,7 +46,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListSkills.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected, 1, Utility.TryParseUInt8(textBox3.Text));
+            set_element_variant(current_element, cur_selected, 1, SFEngine.Utility.TryParseUInt8(textBox3.Text));
             set_list_text(cur_selected);
         }
 
@@ -54,7 +55,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListSkills.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected, 2, Utility.TryParseUInt8(textBox4.Text));
+            set_element_variant(current_element, cur_selected, 2, SFEngine.Utility.TryParseUInt8(textBox4.Text));
             set_list_text(cur_selected);
         }
 
@@ -63,7 +64,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int cur_selected = ListSkills.SelectedIndex;
             if (cur_selected < 0)
                 return;
-            set_element_variant(current_element, cur_selected, 3, Utility.TryParseUInt8(textBox2.Text));
+            set_element_variant(current_element, cur_selected, 3, SFEngine.Utility.TryParseUInt8(textBox2.Text));
             set_list_text(cur_selected);
         }
 
@@ -140,13 +141,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             string unit_txt;
             if (SFCategoryManager.gamedata[2024] == null)
             {
-                unit_txt = Utility.S_MISSING;
+                unit_txt = SFEngine.Utility.S_MISSING;
             }
             else
             {
                 SFCategoryElement elem = SFCategoryManager.gamedata[2024].FindElement<UInt16>(2, stats_id);
                 unit_txt = SFCategoryManager.GetTextFromElement(elem, 1);
-                if (unit_txt == Utility.S_NONAME)
+                if (unit_txt == SFEngine.Utility.S_NONAME)
                     unit_txt = SFCategoryManager.GetRuneheroName(stats_id);
             }
             return stats_id.ToString() + " " + unit_txt;

@@ -61,7 +61,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             map_dialog.MapSelectTile tileselectdialog = new map_dialog.MapSelectTile(map, map_dialog.MapTileSelectType.BASE);
             tileselectdialog.ShowDialog();
 
-            if(tileselectdialog.SelectedTile != Utility.NO_INDEX)
+            if(tileselectdialog.SelectedTile != SFEngine.Utility.NO_INDEX)
             {
                 byte selected_tile = (byte)((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile;
 
@@ -243,7 +243,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void TexWeight1_Validated(object sender, EventArgs e)
         {
             byte selected_tile = (byte)((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile;
-            TexWeight1.Text = Utility.TryParseUInt8(TexWeight1.Text).ToString();
+            TexWeight1.Text = SFEngine.Utility.TryParseUInt8(TexWeight1.Text).ToString();
 
             map_operators.MapOperatorTileChangeState op_tcs = new map_operators.MapOperatorTileChangeState()
             {
@@ -251,7 +251,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PreOperatorTileState = map.heightmap.texture_manager.texture_tiledata[selected_tile]
             };
 
-            map.heightmap.texture_manager.texture_tiledata[selected_tile].weight1 = Utility.TryParseUInt8(TexWeight1.Text);
+            map.heightmap.texture_manager.texture_tiledata[selected_tile].weight1 = SFEngine.Utility.TryParseUInt8(TexWeight1.Text);
 
             op_tcs.Finish(map);
             MainForm.mapedittool.op_queue.Push(op_tcs);
@@ -262,7 +262,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void TexWeight2_Validated(object sender, EventArgs e)
         {
             byte selected_tile = (byte)((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile;
-            TexWeight2.Text = Utility.TryParseUInt8(TexWeight2.Text).ToString();
+            TexWeight2.Text = SFEngine.Utility.TryParseUInt8(TexWeight2.Text).ToString();
 
             map_operators.MapOperatorTileChangeState op_tcs = new map_operators.MapOperatorTileChangeState()
             {
@@ -270,7 +270,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PreOperatorTileState = map.heightmap.texture_manager.texture_tiledata[selected_tile]
             };
 
-            map.heightmap.texture_manager.texture_tiledata[selected_tile].weight2 = Utility.TryParseUInt8(TexWeight2.Text);
+            map.heightmap.texture_manager.texture_tiledata[selected_tile].weight2 = SFEngine.Utility.TryParseUInt8(TexWeight2.Text);
 
             op_tcs.Finish(map);
             MainForm.mapedittool.op_queue.Push(op_tcs);
@@ -281,7 +281,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void TexWeight3_Validated(object sender, EventArgs e)
         {
             byte selected_tile = (byte)((MapEdit.MapTerrainTextureEditor)MainForm.mapedittool.selected_editor).SelectedTile;
-            TexWeight3.Text = Utility.TryParseUInt8(TexWeight3.Text).ToString();
+            TexWeight3.Text = SFEngine.Utility.TryParseUInt8(TexWeight3.Text).ToString();
 
             map_operators.MapOperatorTileChangeState op_tcs = new map_operators.MapOperatorTileChangeState()
             {
@@ -289,7 +289,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PreOperatorTileState = map.heightmap.texture_manager.texture_tiledata[selected_tile]
             };
 
-            map.heightmap.texture_manager.texture_tiledata[selected_tile].weight3 = Utility.TryParseUInt8(TexWeight3.Text);
+            map.heightmap.texture_manager.texture_tiledata[selected_tile].weight3 = SFEngine.Utility.TryParseUInt8(TexWeight3.Text);
 
             op_tcs.Finish(map);
             MainForm.mapedittool.op_queue.Push(op_tcs);

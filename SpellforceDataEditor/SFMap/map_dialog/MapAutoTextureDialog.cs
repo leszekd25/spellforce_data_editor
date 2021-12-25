@@ -7,6 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
+
 
 namespace SpellforceDataEditor.SFMap.map_dialog
 {
@@ -28,7 +32,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             }
         }
 
-        public SFMap map = null;
+        public SFEngine.SFMap.SFMap map = null;
         public List<AutotextureTileData> tex_below = new List<AutotextureTileData>();
         int wsum_below = 0;
         public List<AutotextureTileData> tex_above = new List<AutotextureTileData>();
@@ -138,7 +142,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             else
                 td = tex_below[tex_index];
 
-            td.tile_id = Utility.TryParseUInt8(tb.Text);
+            td.tile_id = SFEngine.Utility.TryParseUInt8(tb.Text);
             if (td.tile_id >= 224)
                 td.tile_id = 0;
             tb.Text = td.tile_id.ToString();
@@ -158,14 +162,14 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             else
                 td = tex_below[tex_index];
 
-            td.tile_weight = Utility.TryParseUInt8(tb.Text);
+            td.tile_weight = SFEngine.Utility.TryParseUInt8(tb.Text);
             tb.Text = td.tile_weight.ToString();
 
         }
 
         private void SlopeValue_Validated(object sender, EventArgs e)
         {
-            SlopeValueTrackbar.Value = (int)Math.Max(0, Math.Min(90, Utility.TryParseUInt32(SlopeValue.Text)));
+            SlopeValueTrackbar.Value = (int)Math.Max(0, Math.Min(90, SFEngine.Utility.TryParseUInt32(SlopeValue.Text)));
         }
 
         private void SlopeValueTrackbar_ValueChanged(object sender, EventArgs e)
@@ -175,7 +179,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 
         private byte ChooseTile(List<AutotextureTileData> list, int w_sum)
         {
-            int r = MathUtils.Rand() % w_sum;
+            int r = SFEngine.MathUtils.Rand() % w_sum;
             int cur = 0;
             for (int i = 0; i < list.Count - 1; i++)
             {

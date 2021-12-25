@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -33,12 +34,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, Utility.TryParseUInt16(textBox1.Text));
+            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox2.Text));
+            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt8(textBox2.Text));
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -48,57 +49,57 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, Utility.TryParseUInt8(textBox3.Text));
+            set_element_variant(current_element, 3, SFEngine.Utility.TryParseUInt8(textBox3.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 4, Utility.TryParseUInt16(textBox4.Text));
+            set_element_variant(current_element, 4, SFEngine.Utility.TryParseUInt16(textBox4.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 5, Utility.TryParseUInt16(textBox5.Text));
+            set_element_variant(current_element, 5, SFEngine.Utility.TryParseUInt16(textBox5.Text));
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 6, Utility.TryParseInt16(textBox6.Text));
+            set_element_variant(current_element, 6, SFEngine.Utility.TryParseInt16(textBox6.Text));
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 7, Utility.TryParseInt16(textBox7.Text));
+            set_element_variant(current_element, 7, SFEngine.Utility.TryParseInt16(textBox7.Text));
         }
 
         private void textBox9_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 8, Utility.TryParseUInt8(textBox9.Text));
+            set_element_variant(current_element, 8, SFEngine.Utility.TryParseUInt8(textBox9.Text));
         }
 
         private void textBox10_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 9, Utility.TryParseUInt16(textBox10.Text));
+            set_element_variant(current_element, 9, SFEngine.Utility.TryParseUInt16(textBox10.Text));
         }
 
         private void textBox11_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 10, Utility.TryParseUInt16(textBox11.Text));
+            set_element_variant(current_element, 10, SFEngine.Utility.TryParseUInt16(textBox11.Text));
         }
 
         private void textBox8_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 11, Utility.TryParseUInt16(textBox8.Text));
+            set_element_variant(current_element, 11, SFEngine.Utility.TryParseUInt16(textBox8.Text));
         }
 
         private void textBox12_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 12, Utility.TryParseUInt16(textBox12.Text));
+            set_element_variant(current_element, 12, SFEngine.Utility.TryParseUInt16(textBox12.Text));
         }
 
         private void textBox13_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 13, Utility.TryParseUInt8(textBox13.Text));
+            set_element_variant(current_element, 13, SFEngine.Utility.TryParseUInt8(textBox13.Text));
         }
 
         public override void show_element()

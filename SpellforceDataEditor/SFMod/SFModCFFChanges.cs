@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 
 using System.IO;
 using SpellforceDataEditor.SFCFF;
+using SFEngine.SFCFF;
+using SFEngine.SFChunk;
 
 
 namespace SpellforceDataEditor.SFMod
@@ -122,8 +124,8 @@ namespace SpellforceDataEditor.SFMod
         {
             changes.Clear();
 
-            SFChunk.SFChunkFile sfcf_orig = new SFChunk.SFChunkFile();
-            SFChunk.SFChunkFile sfcf_new = new SFChunk.SFChunkFile();
+            SFChunkFile sfcf_orig = new SFChunkFile();
+            SFChunkFile sfcf_new = new SFChunkFile();
             sfcf_orig.OpenFile(orig_fname);
             sfcf_new.OpenFile(new_fname);
 

@@ -14,7 +14,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
     public partial class MapTerrainTextureControl : UserControl
     {
-        public int ID { get; set; } = Utility.NO_INDEX;
+        public int ID { get; set; } = SFEngine.Utility.NO_INDEX;
         public OnButtonPress delegate_onpress = null;
 
         public MapTerrainTextureControl()

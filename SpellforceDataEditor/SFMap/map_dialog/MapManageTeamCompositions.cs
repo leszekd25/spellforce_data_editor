@@ -7,12 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.map_dialog
 {
     public partial class MapManageTeamCompositions : Form
     {
-        public SFMap map = null;
+        public SFEngine.SFMap.SFMap map = null;
 
         public MapManageTeamCompositions()
         {
@@ -211,13 +214,13 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             SFMapTeamPlayer tp = map.metadata.multi_teams[ListTeamComps.SelectedIndex]
                 .players[ListTeams.SelectedIndex][ListTeamMembers.SelectedIndex];
             SelectedPlayerTextID.Text = tp.text_id.ToString();
-            if (SFCFF.SFCategoryManager.ready)
+            if (SFCategoryManager.ready)
             {
-                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.FindElementText(tp.text_id, Settings.LanguageID);
+                SFCategoryElement text_elem = SFCategoryManager.FindElementText(tp.text_id, SFEngine.Settings.LanguageID);
                 if (text_elem != null)
                     LabelSelectedPlayerText.Text = text_elem[4].ToString();
                 else
-                    LabelSelectedPlayerText.Text = Utility.S_MISSING;
+                    LabelSelectedPlayerText.Text = SFEngine.Utility.S_MISSING;
             }
             SelectedPlayerName.Text = tp.coop_map_type;
             SelectedPlayerLevelRange.Text = tp.coop_map_lvl;
@@ -231,13 +234,13 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             SFMapTeamPlayer tp = map.metadata.multi_teams[teamcomp_index]
                    .players[team_index][teamplayer_index];
 
-            if (SFCFF.SFCategoryManager.ready)
+            if (SFCategoryManager.ready)
             {
-                SFCFF.SFCategoryElement text_elem = SFCFF.SFCategoryManager.FindElementText(tp.text_id, Settings.LanguageID);
+                SFCategoryElement text_elem = SFCategoryManager.FindElementText(tp.text_id, SFEngine.Settings.LanguageID);
                 if (text_elem != null)
                     LabelSelectedPlayerText.Text = text_elem[4].ToString();
                 else
-                    LabelSelectedPlayerText.Text = Utility.S_MISSING;
+                    LabelSelectedPlayerText.Text = SFEngine.Utility.S_MISSING;
             }
 
             SelectedPlayerLevelRange.Text = tp.coop_map_lvl;
@@ -265,9 +268,9 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                 team_index = ListTeams.SelectedIndex,
                 player_index = ListTeamMembers.SelectedIndex,
                 PreOperatorState = tp.text_id,
-                PostOperatorState = Utility.TryParseUInt16(SelectedPlayerTextID.Text)
+                PostOperatorState = SFEngine.Utility.TryParseUInt16(SelectedPlayerTextID.Text)
             });
-            tp.text_id = Utility.TryParseUInt16(SelectedPlayerTextID.Text);
+            tp.text_id = SFEngine.Utility.TryParseUInt16(SelectedPlayerTextID.Text);
 
             UpdatePlayerDataUI(ListTeamComps.SelectedIndex, ListTeams.SelectedIndex, ListTeamMembers.SelectedIndex);
         }
@@ -402,8 +405,8 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(SelectedPlayerTextID.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[2016].GetElementIndex(elem_id);
+                int elem_id = SFEngine.Utility.TryParseUInt16(SelectedPlayerTextID.Text);
+                int real_elem_id = SFCategoryManager.gamedata[2016].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(14, real_elem_id);
             }

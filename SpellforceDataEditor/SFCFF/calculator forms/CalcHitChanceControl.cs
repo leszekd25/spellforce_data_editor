@@ -5,6 +5,8 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
+
 
 namespace SpellforceDataEditor.SFCFF.calculator_forms
 {
@@ -47,7 +49,7 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
                 return;
 
             int index = SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
-            if (index == Utility.NO_INDEX)
+            if (index == SFEngine.Utility.NO_INDEX)
                 return;
             ushort stats_id = (ushort)SFCategoryManager.gamedata[2024][index][2];
 
@@ -56,7 +58,7 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
                 return;
 
             int index2 = SFCategoryManager.gamedata[2005].GetElementIndex((int)stats_id);
-            if (index2 == Utility.NO_INDEX)
+            if (index2 == SFEngine.Utility.NO_INDEX)
                 return;
             SFCategoryElement stats = SFCategoryManager.gamedata[2005][index2];
             
@@ -71,7 +73,7 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
                 return;
 
             int index3 = SFCategoryManager.gamedata[2025].GetElementIndex(unit_id);
-            if (index3 != Utility.NO_INDEX)
+            if (index3 != SFEngine.Utility.NO_INDEX)
             {
                 SFCategoryElementList items = SFCategoryManager.gamedata[2025].element_lists[index];
                 for(int i = 0; i < items.Elements.Count; i++)
@@ -79,7 +81,7 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
                     //item stats
                     ushort item_id = (ushort)items[i][2];
                     int index4 = SFCategoryManager.gamedata[2004].GetElementIndex((int)item_id);
-                    if (index4 == Utility.NO_INDEX)
+                    if (index4 == SFEngine.Utility.NO_INDEX)
                         continue;
 
                     SFCategoryElement item = SFCategoryManager.gamedata[2004][index4];
@@ -142,12 +144,12 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SetUnitStats(0, Utility.TryParseInt32(textBox1.Text));
+            SetUnitStats(0, SFEngine.Utility.TryParseInt32(textBox1.Text));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            SetUnitStats(1, Utility.TryParseInt32(textBox2.Text));
+            SetUnitStats(1, SFEngine.Utility.TryParseInt32(textBox2.Text));
         }
 
 

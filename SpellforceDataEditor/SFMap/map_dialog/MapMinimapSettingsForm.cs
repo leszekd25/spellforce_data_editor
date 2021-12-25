@@ -7,12 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.map_dialog
 {
     public partial class MapMinimapSettingsForm : Form
     {
-        public SFMap map;
+        public SFEngine.SFMap.SFMap map;
         public SFMapMinimap new_minimap;
         public SFMapMinimapSource new_source;
 
@@ -48,9 +51,9 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                     new_minimap = new SFMapMinimap();
                     new_minimap.FromBitmap(
                         MainForm.mapedittool.ui.minimap_tex.ToBitmap(
-                            new SF3D.SFTexture.SFTextureToBitmapArgs() 
+                            new SFEngine.SF3D.SFTexture.SFTextureToBitmapArgs() 
                             { 
-                                ConversionType = SF3D.SFTexture.SFTextureToBitmapArgType.DIMENSION, 
+                                ConversionType = SFEngine.SF3D.SFTexture.SFTextureToBitmapArgType.DIMENSION, 
                                 DimWidth = 128, 
                                 DimHeight = 128 }));
                     break;
@@ -86,7 +89,6 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void UseEditorMap_Click(object sender, EventArgs e)
         {
             SetSource(SFMapMinimapSource.EDITOR);
-
         }
 
         private void CustomMap_Click(object sender, EventArgs e)

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -22,17 +23,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_sd3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, Utility.TryParseUInt16(tb_sd3.Text));
+            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(tb_sd3.Text));
         }
 
         private void tb_sd4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, Utility.TryParseUInt16(tb_sd4.Text));
+            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt16(tb_sd4.Text));
         }
 
         private void sb_sd5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, Utility.TryParseUInt16(sb_sd5.Text));
+            set_element_variant(current_element, 2, SFEngine.Utility.TryParseUInt16(sb_sd5.Text));
         }
 
         public override void show_element()

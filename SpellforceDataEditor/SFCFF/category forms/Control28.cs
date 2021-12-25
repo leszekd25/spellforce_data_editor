@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -29,42 +30,42 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                set_element_variant(current_element, i, 0, Utility.TryParseUInt8(textBox1.Text));
+                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt8(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 2, Utility.TryParseUInt8(textBox3.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 2, SFEngine.Utility.TryParseUInt8(textBox3.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 3, Utility.TryParseUInt8(textBox5.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 3, SFEngine.Utility.TryParseUInt8(textBox5.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 4, Utility.TryParseUInt8(textBox4.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 4, SFEngine.Utility.TryParseUInt8(textBox4.Text));
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 5, Utility.TryParseUInt8(textBox7.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 5, SFEngine.Utility.TryParseUInt8(textBox7.Text));
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 6, Utility.TryParseUInt8(textBox6.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 6, SFEngine.Utility.TryParseUInt8(textBox6.Text));
         }
 
         private void textBox9_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 7, Utility.TryParseUInt8(textBox9.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 7, SFEngine.Utility.TryParseUInt8(textBox9.Text));
         }
 
         private void textBox8_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 8, Utility.TryParseUInt8(textBox8.Text));
+            set_element_variant(current_element, ListLevels.SelectedIndex, 8, SFEngine.Utility.TryParseUInt8(textBox8.Text));
         }
 
         public override void set_element(int index)
@@ -88,7 +89,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void ListLevels_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListLevels.SelectedIndex == Utility.NO_INDEX)
+            if (ListLevels.SelectedIndex == SFEngine.Utility.NO_INDEX)
                 return;
 
             int index = ListLevels.SelectedIndex;

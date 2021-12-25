@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -40,45 +41,45 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-                set_element_variant(current_element, i, 0, Utility.TryParseUInt16(textBox1.Text));
+                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
-            set_element_variant(current_element, index, 2, Utility.TryParseUInt16(textBox2.Text));
+            set_element_variant(current_element, index, 2, SFEngine.Utility.TryParseUInt16(textBox2.Text));
 
-            item1_name.Text = SFCategoryManager.GetItemName(Utility.TryParseUInt16(textBox2.Text, 0));
+            item1_name.Text = SFCategoryManager.GetItemName(SFEngine.Utility.TryParseUInt16(textBox2.Text, 0));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
-            set_element_variant(current_element, index, 3, Utility.TryParseUInt8(textBox3.Text));
+            set_element_variant(current_element, index, 3, SFEngine.Utility.TryParseUInt8(textBox3.Text));
             UpdateEffectiveChance();
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
-            set_element_variant(current_element, index, 4, Utility.TryParseUInt16(textBox5.Text));
+            set_element_variant(current_element, index, 4, SFEngine.Utility.TryParseUInt16(textBox5.Text));
 
-            item2_name.Text = SFCategoryManager.GetItemName(Utility.TryParseUInt16(textBox5.Text, 0));
+            item2_name.Text = SFCategoryManager.GetItemName(SFEngine.Utility.TryParseUInt16(textBox5.Text, 0));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
-            set_element_variant(current_element, index, 5, Utility.TryParseUInt8(textBox4.Text));
+            set_element_variant(current_element, index, 5, SFEngine.Utility.TryParseUInt8(textBox4.Text));
             UpdateEffectiveChance();
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
-            set_element_variant(current_element, index, 6, Utility.TryParseUInt16(textBox7.Text));
+            set_element_variant(current_element, index, 6, SFEngine.Utility.TryParseUInt16(textBox7.Text));
 
-            item3_name.Text = SFCategoryManager.GetItemName(Utility.TryParseUInt16(textBox7.Text, 0));
+            item3_name.Text = SFCategoryManager.GetItemName(SFEngine.Utility.TryParseUInt16(textBox7.Text, 0));
         }
 
         public override void set_element(int index)
@@ -189,7 +190,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void ListSlots_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = ListSlots.SelectedIndex;
-            if (index == Utility.NO_INDEX)
+            if (index == SFEngine.Utility.NO_INDEX)
                 return;
 
             index = get_subelem_index_by_slot_id(index + 1);
@@ -213,9 +214,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox4.Text = variant_repr(index, 5);
             textBox7.Text = variant_repr(index, 6);
 
-            item1_name.Text = SFCategoryManager.GetItemName(Utility.TryParseUInt16(textBox2.Text, 0));
-            item2_name.Text = SFCategoryManager.GetItemName(Utility.TryParseUInt16(textBox5.Text, 0));
-            item3_name.Text = SFCategoryManager.GetItemName(Utility.TryParseUInt16(textBox7.Text, 0));
+            item1_name.Text = SFCategoryManager.GetItemName(SFEngine.Utility.TryParseUInt16(textBox2.Text, 0));
+            item2_name.Text = SFCategoryManager.GetItemName(SFEngine.Utility.TryParseUInt16(textBox5.Text, 0));
+            item3_name.Text = SFCategoryManager.GetItemName(SFEngine.Utility.TryParseUInt16(textBox7.Text, 0));
 
             UpdateEffectiveChance();
         }
@@ -241,9 +242,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 int old_item_slot = e.Index + 1;
 
                 int tmp_index = category.element_lists[current_element].GetIndexByID(old_item_slot);
-                if (tmp_index == Utility.NO_INDEX)
+                if (tmp_index == SFEngine.Utility.NO_INDEX)
                 {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "ListSlots_ItemCheck(): Could not find item at given ID (ID: " + old_item_slot.ToString() + ")");
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFCFF, "ListSlots_ItemCheck(): Could not find item at given ID (ID: " + old_item_slot.ToString() + ")");
                     throw new Exception("Could not find item at given ID");
                 }
                 category.element_lists[current_element].Elements.RemoveAt(tmp_index);
@@ -266,7 +267,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 set_element(current_element);
             }
 
-            ListSlots.SelectedIndex = Utility.NO_INDEX;
+            ListSlots.SelectedIndex = SFEngine.Utility.NO_INDEX;
             ListSlots.SelectedIndex = e.Index;
         }
 

@@ -7,6 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFMap;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -54,52 +57,52 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void textBox1_Validated(object sender, EventArgs e)
         {
-            MainForm.mapedittool.external_QuickSelect_OnSet(0, Utility.TryParseUInt16(textBox1.Text, 0));
+            MainForm.mapedittool.external_QuickSelect_OnSet(0, SFEngine.Utility.TryParseUInt16(textBox1.Text, 0));
         }
 
         private void textBox2_Validated(object sender, EventArgs e)
         {
-            MainForm.mapedittool.external_QuickSelect_OnSet(1, Utility.TryParseUInt16(textBox2.Text, 0));
+            MainForm.mapedittool.external_QuickSelect_OnSet(1, SFEngine.Utility.TryParseUInt16(textBox2.Text, 0));
         }
 
         private void textBox3_Validated(object sender, EventArgs e)
         {
-            MainForm.mapedittool.external_QuickSelect_OnSet(2, Utility.TryParseUInt16(textBox3.Text, 0));
+            MainForm.mapedittool.external_QuickSelect_OnSet(2, SFEngine.Utility.TryParseUInt16(textBox3.Text, 0));
         }
 
         private void textBox4_Validated(object sender, EventArgs e)
         {
-            MainForm.mapedittool.external_QuickSelect_OnSet(3, Utility.TryParseUInt16(textBox4.Text, 0));
+            MainForm.mapedittool.external_QuickSelect_OnSet(3, SFEngine.Utility.TryParseUInt16(textBox4.Text, 0));
         }
 
         private void textBox5_Validated(object sender, EventArgs e)
         {
-            MainForm.mapedittool.external_QuickSelect_OnSet(4, Utility.TryParseUInt16(textBox5.Text, 0));
+            MainForm.mapedittool.external_QuickSelect_OnSet(4, SFEngine.Utility.TryParseUInt16(textBox5.Text, 0));
         }
 
         private void textBox6_Validated(object sender, EventArgs e)
         {
-            MainForm.mapedittool.external_QuickSelect_OnSet(5, Utility.TryParseUInt16(textBox6.Text, 0));
+            MainForm.mapedittool.external_QuickSelect_OnSet(5, SFEngine.Utility.TryParseUInt16(textBox6.Text, 0));
         }
 
         private void textBox7_Validated(object sender, EventArgs e)
         {
-            MainForm.mapedittool.external_QuickSelect_OnSet(6, Utility.TryParseUInt16(textBox7.Text, 0));
+            MainForm.mapedittool.external_QuickSelect_OnSet(6, SFEngine.Utility.TryParseUInt16(textBox7.Text, 0));
         }
 
         private void textBox8_Validated(object sender, EventArgs e)
         {
-            MainForm.mapedittool.external_QuickSelect_OnSet(7, Utility.TryParseUInt16(textBox8.Text, 0));
+            MainForm.mapedittool.external_QuickSelect_OnSet(7, SFEngine.Utility.TryParseUInt16(textBox8.Text, 0));
         }
 
         private void textBox9_Validated(object sender, EventArgs e)
         {
-            MainForm.mapedittool.external_QuickSelect_OnSet(8, Utility.TryParseUInt16(textBox9.Text, 0));
+            MainForm.mapedittool.external_QuickSelect_OnSet(8, SFEngine.Utility.TryParseUInt16(textBox9.Text, 0));
         }
 
         private void textBox10_Validated(object sender, EventArgs e)
         {
-            MainForm.mapedittool.external_QuickSelect_OnSet(9, Utility.TryParseUInt16(textBox10.Text, 0));
+            MainForm.mapedittool.external_QuickSelect_OnSet(9, SFEngine.Utility.TryParseUInt16(textBox10.Text, 0));
         }
 
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
@@ -113,8 +116,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(textBox1.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
+                int elem_id = SFEngine.Utility.TryParseUInt16(textBox1.Text);
+                int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
             }
@@ -131,8 +134,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(textBox2.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
+                int elem_id = SFEngine.Utility.TryParseUInt16(textBox2.Text);
+                int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
             }
@@ -149,8 +152,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(textBox3.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
+                int elem_id = SFEngine.Utility.TryParseUInt16(textBox3.Text);
+                int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
             }
@@ -167,8 +170,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(textBox4.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
+                int elem_id = SFEngine.Utility.TryParseUInt16(textBox4.Text);
+                int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
             }
@@ -185,8 +188,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(textBox5.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
+                int elem_id = SFEngine.Utility.TryParseUInt16(textBox5.Text);
+                int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
             }
@@ -203,8 +206,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(textBox6.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
+                int elem_id = SFEngine.Utility.TryParseUInt16(textBox6.Text);
+                int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
             }
@@ -221,8 +224,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(textBox7.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
+                int elem_id = SFEngine.Utility.TryParseUInt16(textBox7.Text);
+                int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
             }
@@ -239,8 +242,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(textBox8.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
+                int elem_id = SFEngine.Utility.TryParseUInt16(textBox8.Text);
+                int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
             }
@@ -257,8 +260,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(textBox9.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
+                int elem_id = SFEngine.Utility.TryParseUInt16(textBox9.Text);
+                int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
             }
@@ -275,8 +278,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (e.Button == MouseButtons.Right)
             {
-                int elem_id = Utility.TryParseUInt16(textBox10.Text);
-                int real_elem_id = SFCFF.SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
+                int elem_id = SFEngine.Utility.TryParseUInt16(textBox10.Text);
+                int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
             }

@@ -22,17 +22,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, Utility.TryParseUInt16(tb_effID.Text));
+            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(tb_effID.Text));
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox1.Text));
+            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt8(textBox1.Text));
         }
 
         private void textBox2_Validated(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, Utility.TryParseUInt8(textBox2.Text));
+            set_element_variant(current_element, 2, SFEngine.Utility.TryParseUInt8(textBox2.Text));
         }
 
         public override void show_element()

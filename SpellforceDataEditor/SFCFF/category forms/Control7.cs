@@ -7,16 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control7 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
-        static string[] item_types = { Utility.S_UNKNOWN, "Equipment", "Inventory rune", "Installed rune",
+        static string[] item_types = { SFEngine.Utility.S_UNKNOWN, "Equipment", "Inventory rune", "Installed rune",
             "Spell scroll", "Equipped scroll", "Unit plan", "Building plan", "Equipped unit plan",
             "Equipped building plan", "Miscellaneous" };
 
-        static string[] equipment_types = { Utility.S_UNKNOWN, "Headpiece", "Chestpiece", "Legpiece", "Unknown", "Unknown", "Ring",
+        static string[] equipment_types = { SFEngine.Utility.S_UNKNOWN, "Headpiece", "Chestpiece", "Legpiece", "Unknown", "Unknown", "Ring",
             "1H Weapon", "2H Weapon", "Shield", "Robe", "ItemChestFake (monsters)", "Ranged Weapon", "ItemChestFake (playable)" };
 
         public Control7()
@@ -37,57 +38,57 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, Utility.TryParseUInt16(textBox1.Text));
+            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox10_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, Utility.TryParseUInt8(textBox10.Text));
+            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt8(textBox10.Text));
         }
 
         private void textBox11_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, Utility.TryParseUInt8(textBox11.Text));
+            set_element_variant(current_element, 2, SFEngine.Utility.TryParseUInt8(textBox11.Text));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, Utility.TryParseUInt16(textBox2.Text));
+            set_element_variant(current_element, 3, SFEngine.Utility.TryParseUInt16(textBox2.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 4, Utility.TryParseUInt16(textBox3.Text));
+            set_element_variant(current_element, 4, SFEngine.Utility.TryParseUInt16(textBox3.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 5, Utility.TryParseUInt16(textBox4.Text));
+            set_element_variant(current_element, 5, SFEngine.Utility.TryParseUInt16(textBox4.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 6, Utility.TryParseUInt16(textBox5.Text));
+            set_element_variant(current_element, 6, SFEngine.Utility.TryParseUInt16(textBox5.Text));
         }
 
         private void textBox8_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 7, Utility.TryParseUInt8(textBox8.Text));
+            set_element_variant(current_element, 7, SFEngine.Utility.TryParseUInt8(textBox8.Text));
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 8, Utility.TryParseUInt32(textBox6.Text));
+            set_element_variant(current_element, 8, SFEngine.Utility.TryParseUInt32(textBox6.Text));
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 9, Utility.TryParseUInt32(textBox7.Text));
+            set_element_variant(current_element, 9, SFEngine.Utility.TryParseUInt32(textBox7.Text));
         }
 
         private void textBox9_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 10, Utility.TryParseUInt8(textBox9.Text));
+            set_element_variant(current_element, 10, SFEngine.Utility.TryParseUInt8(textBox9.Text));
         }
 
         public override void show_element()
@@ -229,7 +230,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             if (item_type == 1)
             {
-                string bonus_type_text = String.Copy(Utility.S_UNKNOWN);
+                string bonus_type_text = String.Copy(SFEngine.Utility.S_UNKNOWN);
                 if ((bonus_type > 0) && (bonus_type < (Byte)equipment_types.Length))
                     bonus_type_text = equipment_types[(int)bonus_type];
                 item_type_text += " (" + bonus_type_text + ")";
@@ -252,12 +253,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 {
                     SFCategoryElement set_elem = SFCategoryManager.gamedata[2072].FindElementBinary<Byte>(0, elem_id);
                     if (set_elem == null)
-                        txt = Utility.S_MISSING;
+                        txt = SFEngine.Utility.S_MISSING;
                     else
                         txt = SFCategoryManager.GetTextFromElement(set_elem, 1);
                 }
                 else
-                    txt = Utility.S_UNKNOWN;
+                    txt = SFEngine.Utility.S_UNKNOWN;
 
                 total_text += "\r\nPart of set: " + txt;
             }
