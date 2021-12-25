@@ -306,6 +306,16 @@ void main(){
   gl_FragDepth = gl_FragCoord.z + DepthBias;
 }</value>
   </data>
+  <data name="fshader_depth_prepass" xml:space="preserve">
+    <value>in vec2 UV;
+uniform sampler2D DiffuseTexture;
+
+void main(){
+  vec4 temp_c = texture(DiffuseTexture, UV);
+  if(temp_c.a &lt; 0.9)
+    discard;
+}</value>
+  </data>
   <data name="fshader_framebuffer_simple" xml:space="preserve">
     <value>out vec4 FragColor;
   
@@ -626,13 +636,9 @@ void main(){
   </data>
   <data name="fshader_hmap_depth_prepass" xml:space="preserve">
     <value>
-out vec4 color;
-
 void main(){
-  color = vec4(1.0, 0.2, 0.2, 1.0);
-
   // depth bias, ugly hack to circumvent tesselation issues on nvidia with pre-pass
-  gl_FragDepth = gl_FragCoord.z + 0.0002;
+  //gl_FragDepth = gl_FragCoord.z + 0.0002;
 }</value>
   </data>
   <data name="fshader_overlay" xml:space="preserve">
@@ -1382,6 +1388,24 @@ void main(){
 
 }</value>
   </data>
+  <data name="vshader_depth_prepass" xml:space="preserve">
+    <value>// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 3) in vec2 vertexUV;
+layout(location = 4) in mat4 instanceMatrix;
+
+out vec3 fragmentPosition;
+out vec2 UV;
+
+// Values that stay constant for the whole mesh.
+uniform mat4 VP;
+  
+void main(){
+  // Output position of the vertex, in clip space : MVP * position
+  gl_Position = VP * instanceMatrix * vec4(vertexPosition_modelspace,1);
+  UV = vertexUV;
+}</value>
+  </data>
   <data name="vshader_framebuffer" xml:space="preserve">
     <value>layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec2 aTexCoords;
@@ -1450,7 +1474,7 @@ vec3 GetVertexNormal(vec2 grid_pos)
 
 vec3 GetVertexPos(vec2 grid_pos)
 {
-    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1.0 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
 }
   
 void main(){
@@ -1488,7 +1512,7 @@ uniform mat4 VP;
 
 vec3 GetVertexPos(vec2 grid_pos)
 {
-    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1.0 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
 }
   
 void main(){

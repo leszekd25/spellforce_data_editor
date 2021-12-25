@@ -1512,10 +1512,20 @@ namespace SFEngine.SF3D.SFRender
             }
 
             // clear contents of framebuffer
-            GL.ClearColor(scene.atmosphere.ambient_light.Color.X,
-                scene.atmosphere.ambient_light.Color.Y,
-                scene.atmosphere.ambient_light.Color.Z,
-                0.0f);
+            if (Settings.ToneMapping)
+            {
+                GL.ClearColor(scene.atmosphere.FogColor.X * scene.atmosphere.FogStrength,
+                    scene.atmosphere.FogColor.Y * scene.atmosphere.FogStrength,
+                    scene.atmosphere.FogColor.Z * scene.atmosphere.FogStrength,
+                    0.0f);
+            }
+            else
+            {
+                GL.ClearColor(scene.atmosphere.ambient_light.Color.X,
+                    scene.atmosphere.ambient_light.Color.Y,
+                    scene.atmosphere.ambient_light.Color.Z,
+                    0.0f);
+            }
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             // render sky
@@ -1543,7 +1553,7 @@ namespace SFEngine.SF3D.SFRender
                 RenderHeightmapDepthPrePass();
                 // colored
                 UseShader(shader_heightmap);
-                RenderHeightmap();
+                RenderHeightmap(); 
             }
 
 

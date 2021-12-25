@@ -89,6 +89,22 @@ namespace SFEngine.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to in vec2 UV;
+        ///uniform sampler2D DiffuseTexture;
+        ///
+        ///void main(){
+        ///  vec4 temp_c = texture(DiffuseTexture, UV);
+        ///  if(temp_c.a &lt; 0.9)
+        ///    discard;
+        ///}.
+        /// </summary>
+        internal static string fshader_depth_prepass {
+            get {
+                return ResourceManager.GetString("fshader_depth_prepass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to out vec4 FragColor;
         ///  
         ///in vec2 TexCoords;
@@ -152,13 +168,9 @@ namespace SFEngine.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to 
-        ///out vec4 color;
-        ///
         ///void main(){
-        ///  color = vec4(1.0, 0.2, 0.2, 1.0);
-        ///
         ///  // depth bias, ugly hack to circumvent tesselation issues on nvidia with pre-pass
-        ///  gl_FragDepth = gl_FragCoord.z + 0.0002;
+        ///  //gl_FragDepth = gl_FragCoord.z + 0.0002;
         ///}.
         /// </summary>
         internal static string fshader_hmap_depth_prepass {
@@ -530,6 +542,30 @@ namespace SFEngine.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
+        ///layout(location = 0) in vec3 vertexPosition_modelspace;
+        ///layout(location = 3) in vec2 vertexUV;
+        ///layout(location = 4) in mat4 instanceMatrix;
+        ///
+        ///out vec3 fragmentPosition;
+        ///out vec2 UV;
+        ///
+        ///// Values that stay constant for the whole mesh.
+        ///uniform mat4 VP;
+        ///  
+        ///void main(){
+        ///  // Output position of the vertex, in clip space : MVP * position
+        ///  gl_Position = VP * instanceMatrix * vec4(vertexPosition_modelspace,1);
+        ///  UV = vertexUV;
+        ///}.
+        /// </summary>
+        internal static string vshader_depth_prepass {
+            get {
+                return ResourceManager.GetString("vshader_depth_prepass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to layout (location = 0) in vec2 aPos;
         ///layout (location = 1) in vec2 aTexCoords;
         ///
@@ -585,11 +621,11 @@ namespace SFEngine.Properties {
         ///
         ///vec3 GetVertexPos(vec2 grid_pos)
         ///{
-        ///    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
+        ///    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1.0 - grid_pos.y)/GridSize).r * 655.35, grid_pos.y);
         ///}
         ///  
         ///void main(){
-        ///  // Output position of the vertex, in clip s [rest of string was truncated]&quot;;.
+        ///  // Output position of the vertex, in clip [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_hmap_depth_prepass {
             get {

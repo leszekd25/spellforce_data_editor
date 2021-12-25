@@ -43,6 +43,7 @@ namespace MapViewerNetNative
         bool[] rotation_pressed = new bool[] { false, false, false, false };// left, right, up, down
         SpecialKeysPressed special_pressed = new SpecialKeysPressed();
 
+        double cur_time = 0.0;
         int updates_this_second = 0;
 
         public MapViewerWindow(): base(800, 600, new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(32), 24, 8), "Map Viewer", GameWindowFlags.Default, DisplayDevice.Default, 4, 2, OpenTK.Graphics.GraphicsContextFlags.Default)
@@ -58,7 +59,7 @@ namespace MapViewerNetNative
             KeyUp += OnWindowKeyRelease;
             Resize += OnWindowResize;
 
-            VSync = VSyncMode.Off;
+            VSync = (SFEngine.Settings.VSync ? VSyncMode.On : VSyncMode.Off);
         }
 
         private void AddCameraZoom(int delta)
@@ -439,6 +440,14 @@ namespace MapViewerNetNative
         void OnWindowUpdate(object sender, FrameEventArgs e)
         {
             ProcessEvents(true);
+
+            cur_time += e.Time;
+            if(cur_time > 1.0)
+            {
+                cur_time -= 1.0;
+                Title = "Map Viewer (fps: " + updates_this_second + ")";
+                updates_this_second = 0;
+            }
 
             if (map == null)
                 return;
