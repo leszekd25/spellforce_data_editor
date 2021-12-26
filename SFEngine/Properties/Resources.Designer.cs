@@ -78,9 +78,9 @@ namespace SFEngine.Properties {
         ///#endif //SHADOWS
         ///#ifdef QUALITY_SHADING
         ///in mat4 M;
+        ///in vec3 fragmentNormalTangentSpace;
         ///in vec4 fragmentGroundAmbientColor;
-        ///#endif //QUALITY_SHADING
-        ///#ifndef QUALITY_SH [rest of string was truncated]&quot;;.
+        ///#endif  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader {
             get {
@@ -264,6 +264,7 @@ namespace SFEngine.Properties {
         ///in float vBrightness;
         ///#endif //QUALITY_SHADING
         ///#ifdef QUALITY_SHADING
+        ///in vec3 fragmentNormalTangentSpace;
         ///in vec4 fragmentGroundAmbientColor;
         ///#endif //QUALITY_SHADING
         ///#endif //SHADING
@@ -274,9 +275,7 @@ namespace SFEngine.Properties {
         ///uniform float SunStrength;
         ///uniform vec3 SunDirection;
         ///uniform vec4 SunColor;
-        ///uniform float AmbientStrength;
-        ///uniform vec4 AmbientColor;
-        ///uni [rest of string was truncated]&quot;;.
+        ///uniform float AmbientStren [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_skel {
             get {
@@ -358,6 +357,7 @@ namespace SFEngine.Properties {
         ///#endif //SHADOWS
         ///#ifdef QUALITY_SHADING
         ///in mat4 M;
+        ///in vec3 fragmentNormalTangentSpace;
         ///in vec4 fragmentGroundAmbientColor;
         ///#endif //QUALITY_SHADING
         ///#ifndef QUALITY_SHADING
@@ -370,8 +370,7 @@ namespace SFEngine.Properties {
         /////uniform mat4 M;
         ///uniform float SunStrength;
         ///uniform vec3 SunDirection;
-        ///uniform vec4 SunColor;
-        ///uniform float AmbientStre [rest of string was truncated]&quot;;.
+        ///uniform vec4 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_transparent {
             get {
@@ -462,6 +461,8 @@ namespace SFEngine.Properties {
         /// <summary>
         ///   Looks up a localized string similar to layout(quads) in;
         ///
+        ///invariant gl_Position;
+        ///
         ///out vec3 fragmentPosition;
         ///out vec2 UV;
         ///out vec3 fragmentNormal;
@@ -480,8 +481,7 @@ namespace SFEngine.Properties {
         ///vec4 GetTesselatedVertex(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
         ///{
         ///    vec4 a = mix(v0, v1, gl_TessCoord.x);
-        ///    vec4 b = mix(v2, v3, gl_TessCoord.x);
-        ///    [rest of string was truncated]&quot;;.
+        ///    vec4 b = mix(v2, [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string tesshader_hmap_tesselated {
             get {
@@ -492,6 +492,7 @@ namespace SFEngine.Properties {
         /// <summary>
         ///   Looks up a localized string similar to layout(quads) in;
         ///
+        ///invariant gl_Position;
         ///out vec3 fragmentPosition;
         ///
         ///// Values that stay constant for the whole mesh.
@@ -509,7 +510,7 @@ namespace SFEngine.Properties {
         ///
         ///vec3 GetVertexPos(vec2 grid_pos)
         ///{
-        ///    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, GridSize - 1 - grid_pos.y)/G [rest of string was truncated]&quot;;.
+        ///    return vec3(grid_pos.x, texture(HeightMap, vec2(grid_pos.x, Grid [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string tesshader_hmap_tesselated_depth_prepass {
             get {
@@ -590,6 +591,8 @@ namespace SFEngine.Properties {
         /////layout(location = 2) in vec3 texID;
         /////layout(location = 3) in vec3 texWeight;
         ///
+        ///invariant gl_Position;
+        ///
         ///out vec3 fragmentPosition;
         ///out vec2 UV;
         ///out vec3 fragmentNormal;
@@ -598,8 +601,7 @@ namespace SFEngine.Properties {
         ///out vec4 fragmentPositionLightSpace1;
         ///out vec4 fragmentPositionLightSpace2;
         ///out vec4 fragmentPositionLightSpace3;
-        ///#endif //CASCADED_SHADOWS
-        ///#ifn [rest of string was truncated]&quot;;.
+        ///#endi [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_hmap {
             get {
@@ -611,7 +613,7 @@ namespace SFEngine.Properties {
         ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
         ///
-        ///out vec3 fragmentPosition;
+        ///invariant gl_Position;
         ///
         ///// Values that stay constant for the whole mesh.
         ///
@@ -625,7 +627,7 @@ namespace SFEngine.Properties {
         ///}
         ///  
         ///void main(){
-        ///  // Output position of the vertex, in clip [rest of string was truncated]&quot;;.
+        ///  // Output position of the vertex, in clip spa [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_hmap_depth_prepass {
             get {
@@ -636,6 +638,8 @@ namespace SFEngine.Properties {
         /// <summary>
         ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
+        ///
+        ///invariant gl_Position;
         ///
         ///void main(){
         ///  gl_Position = vec4(vertexPosition_modelspace, 1.0);

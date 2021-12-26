@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Input;
+using OpenTK.Platform;
+using OpenTK.Graphics;
 using SFEngine.SF3D;
 using SFEngine.SF3D.Physics;
 using SFEngine.SF3D.SceneSynchro;
@@ -14,6 +16,7 @@ using SFEngine.SFCFF;
 using SFEngine.SFUnPak;
 using SFEngine.SFResources;
 using SFEngine.SFMap;
+using System.Windows.Forms;
 
 namespace MapViewerNetNative
 {
@@ -271,8 +274,18 @@ namespace MapViewerNetNative
             SFRenderEngine.scene.root.Visible = true;
 
             // create and generate map
+            string map_name = "";
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.CheckFileExists = true;
+            ofd.DefaultExt = ".map";
+            ofd.Filter = "MAP files (*.map)|*.map";
+            if (ofd.ShowDialog() != DialogResult.OK)
+                throw new Exception("DID NOT SELECT MAP");
+            map_name = ofd.FileName;
+
+
             map = new SFMap();
-            if (map.Load(SFUnPak.game_directory_name + "\\map\\campaign\\000_Greyfell.map") != 0)
+            if (map.Load(ofd.FileName) != 0)
                 throw new Exception("FAILED TO LOAD MAP");
 
             SFRenderEngine.scene.map = map;

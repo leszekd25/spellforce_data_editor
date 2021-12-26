@@ -429,7 +429,7 @@ namespace SFEngine.SF3D.SFRender
                 new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader },
                 new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader }
             });
-            shader_simple.AddParameter("VP");
+            shader_simple.AddParameter("VP"); ;
             // shader_simple.AddParameter("M");
             if (Settings.EnableShadows)
                 shader_simple.AddParameter("LSM");
@@ -446,6 +446,7 @@ namespace SFEngine.SF3D.SFRender
                 shader_simple.AddParameter("GridSize");
                 shader_simple.AddParameter("EmissionStrength");
                 shader_simple.AddParameter("EmissionColor");
+                shader_simple.AddParameter("ViewPos");
 
                 int uniform_tilecol_simple = GL.GetUniformBlockIndex(shader_simple.ProgramID, "TileColors");
                 GL.UniformBlockBinding(shader_simple.ProgramID, uniform_tilecol_simple, 2);
@@ -478,8 +479,14 @@ namespace SFEngine.SF3D.SFRender
             shader_simple_transparency.AddParameter("AmbientColor");
             if (Settings.ShadingQuality > 1)
             {
+                shader_simple_transparency.AddParameter("GroundMap");
+                shader_simple_transparency.AddParameter("GridSize");
                 shader_simple_transparency.AddParameter("EmissionStrength");
                 shader_simple_transparency.AddParameter("EmissionColor");
+                shader_simple_transparency.AddParameter("ViewPos");
+
+                int uniform_tilecol_simple = GL.GetUniformBlockIndex(shader_simple_transparency.ProgramID, "TileColors");
+                GL.UniformBlockBinding(shader_simple_transparency.ProgramID, uniform_tilecol_simple, 2);
             }
             shader_simple_transparency.AddParameter("ApplyShading");
             shader_simple_transparency.AddParameter("FogColor");
@@ -514,6 +521,7 @@ namespace SFEngine.SF3D.SFRender
             {
                 shader_animated.AddParameter("GroundMap");
                 shader_animated.AddParameter("GridSize");
+                shader_animated.AddParameter("ViewPos");
 
                 int uniform_tilecol_simple = GL.GetUniformBlockIndex(shader_animated.ProgramID, "TileColors");
                 GL.UniformBlockBinding(shader_animated.ProgramID, uniform_tilecol_simple, 2);
@@ -1117,6 +1125,7 @@ namespace SFEngine.SF3D.SFRender
                 if (Settings.ShadingQuality > 1)
                 {
                     GL.Uniform1(active_shader["GridSize"], scene.map.heightmap.width);
+                    GL.Uniform3(active_shader["ViewPos"], scene.camera.position);
                     GL.ActiveTexture(TextureUnit.Texture2);
                     GL.BindTexture(TextureTarget.Texture2D, scene.map.heightmap.tile_data_texture);
                     GL.ActiveTexture(TextureUnit.Texture0);
@@ -1175,6 +1184,8 @@ namespace SFEngine.SF3D.SFRender
 
             Matrix4 vp_mat = scene.camera.ViewProjMatrix;
             GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+            if (Settings.ShadingQuality > 1)
+                GL.Uniform3(active_shader["ViewPos"], scene.camera.position);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             foreach (var submodel in scene.water_pass_models)
@@ -1222,6 +1233,8 @@ namespace SFEngine.SF3D.SFRender
 
                 Matrix4 vp_mat = scene.camera.ViewProjMatrix;
                 GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+                if (Settings.ShadingQuality > 1)
+                    GL.Uniform3(active_shader["ViewPos"], scene.camera.position);
             }
 
             // additive pass
@@ -1272,6 +1285,15 @@ namespace SFEngine.SF3D.SFRender
                 GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
             Matrix4 vp_mat = scene.camera.ViewProjMatrix;
             GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+
+            if (Settings.ShadingQuality > 1)
+            {
+                GL.Uniform1(active_shader["GridSize"], scene.map.heightmap.width);
+                GL.ActiveTexture(TextureUnit.Texture2);
+                GL.BindTexture(TextureTarget.Texture2D, scene.map.heightmap.tile_data_texture);
+                GL.ActiveTexture(TextureUnit.Texture0);
+                GL.Uniform3(active_shader["ViewPos"], scene.camera.position);
+            }
 
             // transparent pass
             foreach (SFSubModel3D submodel in scene.transparent_pass_models)
@@ -1327,6 +1349,7 @@ namespace SFEngine.SF3D.SFRender
                     GL.ActiveTexture(TextureUnit.Texture2);
                     GL.BindTexture(TextureTarget.Texture2D, scene.map.heightmap.tile_data_texture);
                     GL.ActiveTexture(TextureUnit.Texture0);
+                    GL.Uniform3(active_shader["ViewPos"], scene.camera.position);
                 }
             }
 
@@ -1498,6 +1521,7 @@ namespace SFEngine.SF3D.SFRender
 
             // render actual view
             current_pass = RenderPass.SCENE;
+
             // setup blend mode, render to screenspace framebuffer
             GL.Enable(EnableCap.Blend);
             SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
@@ -1528,16 +1552,6 @@ namespace SFEngine.SF3D.SFRender
             }
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            // render sky
-            if ((Settings.ToneMapping) && (enable_flags.HasFlag(RenderEnable.SKY)))
-            {
-                GL.Disable(EnableCap.DepthTest);
-                UseShader(shader_sky);
-                GL.DepthMask(false);
-                RenderSky();
-                GL.DepthMask(true);
-            }
-
             // enable depth test
             GL.Enable(EnableCap.DepthTest);
             SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
@@ -1553,7 +1567,7 @@ namespace SFEngine.SF3D.SFRender
                 RenderHeightmapDepthPrePass();
                 // colored
                 UseShader(shader_heightmap);
-                RenderHeightmap(); 
+                RenderHeightmap();
             }
 
 
@@ -1591,6 +1605,15 @@ namespace SFEngine.SF3D.SFRender
             // disable depth write
             // note that this is done *after* water is drawn, to improve performance and reduce artefacts involved with drawing transparent things underwater
             GL.DepthMask(false);
+
+            // render sky
+            if ((Settings.ToneMapping) && (enable_flags.HasFlag(RenderEnable.SKY)))
+            {
+                UseShader(shader_sky);
+                RenderSky();
+            }
+
+            GL.BindVertexArray(SFSubModel3D.Cache.VertexArrayObjectID);
 
             // simple transparent objects
             if (enable_flags.HasFlag(RenderEnable.TRANSPARENT))
@@ -1638,7 +1661,7 @@ namespace SFEngine.SF3D.SFRender
             if ((Settings.ToneMapping)&&(enable_flags.HasFlag(RenderEnable.TONEMAP)))
             {
                 UseShader(shader_framebuffer_tonemapped);
-                GL.Uniform1(active_shader["exposure"], 1.4f);
+                GL.Uniform1(active_shader["exposure"], 1.0f);
             }
             else
             {
