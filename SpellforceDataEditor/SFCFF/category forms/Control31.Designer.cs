@@ -47,7 +47,7 @@
             this.comboItemType.Size = new System.Drawing.Size(126, 21);
             this.comboItemType.TabIndex = 58;
             this.comboItemType.SelectedIndexChanged += new System.EventHandler(this.comboItemType_SelectedIndexChanged);
-            this.comboItemType.TextChanged += new System.EventHandler(this.comboItemType_SelectedIndexChanged);
+            this.comboItemType.Invalidated += new System.Windows.Forms.InvalidateEventHandler(this.comboItemType_SelectedIndexChanged);
             // 
             // button2
             // 
@@ -111,7 +111,7 @@
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(126, 20);
             this.textBox4.TabIndex = 51;
-            this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
+            this.textBox4.Invalidated += new System.Windows.Forms.InvalidateEventHandler(this.textBox4_TextChanged);
             // 
             // textBox5
             // 
@@ -120,7 +120,7 @@
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(126, 20);
             this.textBox5.TabIndex = 50;
-            this.textBox5.TextChanged += new System.EventHandler(this.textBox5_TextChanged);
+            this.textBox5.Invalidated += new System.Windows.Forms.InvalidateEventHandler(this.textBox5_TextChanged);
             // 
             // Control31
             // 

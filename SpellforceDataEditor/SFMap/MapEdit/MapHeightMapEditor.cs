@@ -1,20 +1,14 @@
-﻿using System;
+﻿using SFEngine.SFMap;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using SFEngine.SFMap;
-using SFEngine.SFCFF;
-using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
     public enum HMapBrushInterpolationMode { CONSTANT = 0, LINEAR, SQUARE, SINUSOIDAL }
     public enum HMapEditMode { RAISE = 0, SET, SMOOTH }
 
-    public class MapHeightMapEditor: MapEditor
+    public class MapHeightMapEditor : MapEditor
     {
         public MapBrush Brush { get; set; }
         public int Value { get; set; }
@@ -25,6 +19,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
         map_operators.MapOperatorTerrainHeight op_height = null;
         map_operators.MapOperatorTerrainTexture op_tex_correction = null;
+        bool first_clicked = false;
+        bool only_first_click = false;
 
         private float GetStrengthAt(SFCoord pos)
         {
@@ -46,28 +42,69 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public override void OnMousePress(SFCoord clicked_pos, MouseButtons button, ref special_forms.SpecialKeysPressed specials)
         {
             if (!((button == MouseButtons.Left) || (button == MouseButtons.Right)))
+            {
                 return;
+            }
+            if(only_first_click)
+            {
+                return;
+            }
+            if(specials.Ctrl)
+            {
+                only_first_click = true;
+            }
 
             int size = (int)Math.Ceiling(Brush.size);
             Brush.center = clicked_pos;
             SFCoord topleft = new SFCoord(clicked_pos.x - size, clicked_pos.y - size);
             SFCoord bottomright = new SFCoord(clicked_pos.x + size, clicked_pos.y + size);
             if (topleft.x < 0)
+            {
                 topleft.x = 0;
+            }
+
             if (topleft.y < 0)
+            {
                 topleft.y = 0;
+            }
+
             if (bottomright.x >= map.width)
+            {
                 bottomright.x = (short)(map.width - 1);
+            }
+
             if (bottomright.y >= map.height)
+            {
                 bottomright.y = (short)(map.height - 1);
+            }
+
+            float tmp_size = Brush.size;
+            HMapBrushInterpolationMode tmp_interp = Interpolation;
+            if (specials.Shift)
+            {
+                if (first_clicked)
+                {
+                    return;
+                }
+
+                Brush.size = 2048.0f;
+                Interpolation = HMapBrushInterpolationMode.CONSTANT;
+                topleft = new SFCoord(0, 0);
+                bottomright = new SFCoord(map.width - 1, map.height - 1);
+            }
             double terrain_sum = 0;
             double terrain_weight = 0;
             bool update_texture = false;
 
             if (op_height == null)
+            {
                 op_height = new map_operators.MapOperatorTerrainHeight();
+            }
+
             if (op_tex_correction == null)
+            {
                 op_tex_correction = new map_operators.MapOperatorTerrainTexture();
+            }
 
             if (button == MouseButtons.Left)
             {
@@ -80,16 +117,27 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
-                                float cell_strength = GetStrengthAt(coord);
-                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                {
                                     continue;
+                                }
+
+                                float cell_strength = GetStrengthAt(coord);
+                                if (cell_strength == 0)
+                                {
+                                    continue;
+                                }
 
                                 if (!op_height.PreOperatorHeights.ContainsKey(coord))
+                                {
                                     op_height.PreOperatorHeights.Add(coord, map.heightmap.height_data[j * map.width + i]);
+                                }
 
                                 map.heightmap.height_data[j * map.width + i] += (ushort)(Value * cell_strength);
                                 if (map.heightmap.height_data[j * map.width + i] > 65535)
+                                {
                                     map.heightmap.height_data[j * map.width + i] = 65535;
+                                }
 
                                 pixels.Add(coord);
                             }
@@ -98,25 +146,56 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                     case HMapEditMode.SET:  // set
                         if (Value == 0)
+                        {
                             update_texture = true;
+                        }
+
                         for (int i = topleft.x; i <= bottomright.x; i++)
                         {
                             for (int j = topleft.y; j <= bottomright.y; j++)
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                {
+                                    continue;
+                                }
+
                                 float cell_strength = GetStrengthAt(coord);
                                 if (cell_strength == 0)
+                                {
                                     continue;
-                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
-                                    continue;
+                                }
+
+                                // do not modify shores that would set lake above surface level
+                                if (map.heightmap.IsFlagSet(coord, SFMapHeightMapFlag.LAKE_SHORE))
+                                {
+                                    bool skip = false;
+                                    for (int k = 0; k < map.lake_manager.lakes.Count; k++)
+                                    {
+                                        if (map.lake_manager.lakes[k].shore.Contains(coord))
+                                        {
+                                            ushort level = (ushort)(map.lake_manager.lakes[k].z_diff + map.heightmap.GetZ(map.lake_manager.lakes[k].start));
+                                            if (level >= (ushort)Value)
+                                            {
+                                                skip = true;
+                                            }
+
+                                            break;
+                                        }
+                                    }
+                                    if (skip)
+                                    {
+                                        continue;
+                                    }
+                                }
 
                                 if (!op_height.PreOperatorHeights.ContainsKey(coord))
+                                {
                                     op_height.PreOperatorHeights.Add(coord, map.heightmap.height_data[j * map.width + i]);
+                                }
 
                                 map.heightmap.height_data[j * map.width + i] = (ushort)(Value);
-                                if (Value == 0)
-                                    map.heightmap.tile_data[j * map.width + i] = 0;
 
                                 pixels.Add(coord);
                             }
@@ -130,16 +209,26 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
-                                float cell_strength = GetStrengthAt(coord);
-                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                {
                                     continue;
+                                }
+
+                                float cell_strength = GetStrengthAt(coord);
+                                if (cell_strength == 0)
+                                {
+                                    continue;
+                                }
 
                                 terrain_sum += map.heightmap.height_data[j * map.width + i] * cell_strength;
                                 terrain_weight += cell_strength;
                             }
                         }
                         if (terrain_weight == 0)
+                        {
                             break;
+                        }
+
                         terrain_sum /= terrain_weight;
 
                         float smooth_str = Value / 100.0f;
@@ -149,21 +238,54 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
-                                float cell_strength = GetStrengthAt(coord);
-                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                {
                                     continue;
+                                }
+
+                                float cell_strength = GetStrengthAt(coord);
+                                if (cell_strength == 0)
+                                {
+                                    continue;
+                                }
+
+                                ushort new_level = (ushort)(map.heightmap.height_data[j * map.width + i]
+                                    + ((terrain_sum - map.heightmap.height_data[j * map.width + i]) * cell_strength * smooth_str));
+                                // do not modify shores that would set lake above or at surface level
+                                if (map.heightmap.IsFlagSet(coord, SFMapHeightMapFlag.LAKE_SHORE))
+                                {
+                                    bool skip = false;
+                                    for (int k = 0; k < map.lake_manager.lakes.Count; k++)
+                                    {
+                                        if (map.lake_manager.lakes[k].shore.Contains(coord))
+                                        {
+                                            ushort level = (ushort)(map.lake_manager.lakes[k].z_diff + map.heightmap.GetZ(map.lake_manager.lakes[k].start));
+                                            if (level >= new_level)
+                                            {
+                                                skip = true;
+                                            }
+
+                                            break;
+                                        }
+                                    }
+                                    if (skip)
+                                    {
+                                        continue;
+                                    }
+                                }
 
                                 if (!op_height.PreOperatorHeights.ContainsKey(coord))
+                                {
                                     op_height.PreOperatorHeights.Add(coord, map.heightmap.height_data[j * map.width + i]);
+                                }
 
-                                map.heightmap.height_data[j * map.width + i] +=
-                                    (ushort)((terrain_sum - map.heightmap.height_data[j * map.width + i]) * cell_strength * smooth_str);
+                                map.heightmap.height_data[j * map.width + i] = new_level;
 
                                 pixels.Add(coord);
                             }
                         }
                         break;
-                        
+
                     default:
                         break;
                 }
@@ -179,26 +301,59 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
-                                float cell_strength = GetStrengthAt(coord);
-                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                {
                                     continue;
+                                }
+
+                                float cell_strength = GetStrengthAt(coord);
+                                if (cell_strength == 0)
+                                {
+                                    continue;
+                                }
+
+                                ushort new_level = (ushort)(Math.Max(0, map.heightmap.height_data[j * map.width + i] - Value * cell_strength));
+                                // do not modify shores that would set lake above surface level
+                                if (map.heightmap.IsFlagSet(coord, SFMapHeightMapFlag.LAKE_SHORE))
+                                {
+                                    bool skip = false;
+                                    ushort z = map.heightmap.height_data[j * map.width + i];
+                                    for (int k = 0; k < map.lake_manager.lakes.Count; k++)
+                                    {
+                                        if (map.lake_manager.lakes[k].shore.Contains(coord))
+                                        {
+                                            ushort level = (ushort)(map.lake_manager.lakes[k].z_diff + map.heightmap.GetZ(map.lake_manager.lakes[k].start));
+                                            if (level >= new_level)
+                                            {
+                                                skip = true;
+                                            }
+
+                                            break;
+                                        }
+                                    }
+                                    if (skip)
+                                    {
+                                        continue;
+                                    }
+                                }
 
                                 if (!op_height.PreOperatorHeights.ContainsKey(coord))
+                                {
                                     op_height.PreOperatorHeights.Add(coord, map.heightmap.height_data[j * map.width + i]);
+                                }
 
-                                if (Value * cell_strength >= map.heightmap.height_data[j * map.width + i])
+                                if (new_level == 0)
                                 {
                                     if (!op_tex_correction.PreOperatorTextures.ContainsKey(coord))
-                                        op_tex_correction.PreOperatorTextures.Add(coord, map.heightmap.tile_data[j * map.width + i]);
+                                    {
+                                        op_tex_correction.PreOperatorTextures.Add(coord, map.heightmap.GetTile(coord));//map.heightmap.tile_data[j * map.width + i]);
+                                    }
 
-                                    map.heightmap.height_data[j * map.width + i] = 0;
-                                    map.heightmap.tile_data[j * map.width + i] = 0;
+                                    //map.heightmap.tile_data[j * map.width + i] = 0;
+                                    map.heightmap.SetTile(coord, 0);
                                     update_texture = true;
                                 }
-                                else
-                                {
-                                    map.heightmap.height_data[j * map.width + i] -= (ushort)(Value * cell_strength);
-                                }
+                                map.heightmap.height_data[j * map.width + i] = new_level;
 
                                 pixels.Add(coord);
                             }
@@ -217,16 +372,26 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
-                                float cell_strength = GetStrengthAt(coord);
-                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                {
                                     continue;
+                                }
+
+                                float cell_strength = GetStrengthAt(coord);
+                                if (cell_strength == 0)
+                                {
+                                    continue;
+                                }
 
                                 terrain_sum += map.heightmap.height_data[j * map.width + i] * cell_strength;
                                 terrain_weight += cell_strength;
                             }
                         }
                         if (terrain_weight == 0)
+                        {
                             break;
+                        }
+
                         terrain_sum /= terrain_weight;
 
                         float rough_str = Value / 100.0f;
@@ -236,29 +401,58 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
-                                float cell_strength = GetStrengthAt(coord);
-                                if (map.lake_manager.GetLakeIndexAt(coord) != SFEngine.Utility.NO_INDEX)
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                {
                                     continue;
+                                }
 
-                                if (!op_height.PreOperatorHeights.ContainsKey(coord))
-                                    op_height.PreOperatorHeights.Add(coord, map.heightmap.height_data[j * map.width + i]);
+                                float cell_strength = GetStrengthAt(coord);
+                                if (cell_strength == 0)
+                                {
+                                    continue;
+                                }
 
                                 int v = (int)((terrain_sum - map.heightmap.height_data[j * map.width + i]) * cell_strength * rough_str);
-                                if (v > map.heightmap.height_data[j * map.width + i])
+                                ushort new_level = (ushort)(Math.Min(65535, Math.Max(0, map.heightmap.height_data[j * map.width + i] - v)));
+                                if (map.heightmap.IsFlagSet(coord, SFMapHeightMapFlag.LAKE_SHORE))
+                                {
+                                    bool skip = false;
+                                    for (int k = 0; k < map.lake_manager.lakes.Count; k++)
+                                    {
+                                        if (map.lake_manager.lakes[k].shore.Contains(coord))
+                                        {
+                                            ushort level = (ushort)(map.lake_manager.lakes[k].z_diff + map.heightmap.GetZ(map.lake_manager.lakes[k].start));
+                                            if (level >= new_level)
+                                            {
+                                                skip = true;
+                                            }
+
+                                            break;
+                                        }
+                                    }
+                                    if (skip)
+                                    {
+                                        continue;
+                                    }
+                                }
+
+                                if (!op_height.PreOperatorHeights.ContainsKey(coord))
+                                {
+                                    op_height.PreOperatorHeights.Add(coord, map.heightmap.height_data[j * map.width + i]);
+                                }
+
+                                if (new_level == 0)
                                 {
                                     if (!op_tex_correction.PreOperatorTextures.ContainsKey(coord))
-                                        op_tex_correction.PreOperatorTextures.Add(coord, map.heightmap.tile_data[j * map.width + i]);
+                                    {
+                                        op_tex_correction.PreOperatorTextures.Add(coord, map.heightmap.GetTile(coord));//map.heightmap.tile_data[j * map.width + i]);
+                                    }
 
-                                    map.heightmap.height_data[j * map.width + i] = 0;
-                                    map.heightmap.tile_data[j * map.width + i] = 0;
+                                    //map.heightmap.tile_data[j * map.width + i] = 0;
+                                    map.heightmap.SetTile(coord, 0);
                                     update_texture = true;
                                 }
-                                else if (v + map.heightmap.height_data[j * map.width + i] > 65535)
-                                    map.heightmap.height_data[j * map.width + i] = 65535;
-                                else
-                                    map.heightmap.height_data[j * map.width + i] =
-                                        (ushort)(map.heightmap.height_data[j * map.width + i] -
-                                        (ushort)(v * cell_strength * rough_str));
+                                map.heightmap.height_data[j * map.width + i] = new_level;
 
                                 pixels.Add(coord);
                             }
@@ -270,13 +464,25 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 }
             }
 
+            first_clicked = true;
+
             map.heightmap.RebuildGeometry(topleft, bottomright);
             if (update_texture)
+            {
                 map.heightmap.RebuildTerrainTexture(topleft, bottomright);
+            }
+
+            Brush.size = tmp_size;
+            Interpolation = tmp_interp;
         }
 
         public override void OnMouseUp(MouseButtons b)
         {
+            if (!((b == MouseButtons.Left) || (b == MouseButtons.Right)))
+            {
+                return;
+            }
+
             // submit operators
             if (op_height != null)
             {
@@ -298,14 +504,20 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             MainForm.mapedittool.op_queue.Push(op_cluster);
                         }
                         else
+                        {
                             MainForm.mapedittool.op_queue.Push(op_height);
+                        }
                     }
                     else
+                    {
                         MainForm.mapedittool.op_queue.Push(op_height);
+                    }
                 }
             }
             op_tex_correction = null;
             op_height = null;
+            first_clicked = false;
+            only_first_click = false;
 
             MainForm.mapedittool.ui.RedrawMinimap(pixels);
             pixels.Clear();

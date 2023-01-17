@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -39,7 +32,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox1, 2016);
+            }
         }
 
 

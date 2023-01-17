@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System;
 
 namespace SFEngine.SFMap
 {
@@ -35,7 +31,7 @@ namespace SFEngine.SFMap
             {
                 normals[i] = new Vector3(0.0f, 1.0f, 0.0f);
             }
-            for(int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 colors[4 * i + 0] = 0x33;
                 colors[4 * i + 1] = 0xB2;
@@ -52,11 +48,14 @@ namespace SFEngine.SFMap
             SF3D.SFTexture tex = null;
             int tex_code = SFResources.SFResourceManager.Textures.Load(tex_name);
             if ((tex_code != 0) && (tex_code != -1))
+            {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapOcean(): Could not load texture (texture name = " + tex_name + ")");
+                tex = SF3D.SFRender.SFRenderEngine.opaque_tex;
+            }
             else
             {
                 tex = SFResources.SFResourceManager.Textures.Get(tex_name);
-                tex.FreeMemory();
+                tex.SetWrapMode((int)All.Repeat);
             }
             material.texture = tex;
             material.casts_shadow = false;
@@ -89,6 +88,7 @@ namespace SFEngine.SFMap
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapOcean.Dispose() called");
             SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(SF3D.SFRender.SFRenderEngine.scene.root.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("_OCEAN_"));
+            SFResources.SFResourceManager.Models.Dispose("_OCEAN_");
             ocean_obj = null;
         }
     }

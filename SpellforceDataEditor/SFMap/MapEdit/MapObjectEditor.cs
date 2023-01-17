@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using SFEngine.SFCFF;
 using SFEngine.SFMap;
-using SFEngine.SFCFF;
-using SFEngine.SFLua;
+using System;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
-    public class MapObjectEditor: MapEditor
+    public class MapObjectEditor : MapEditor
     {
         bool first_click = false;
         public int selected_object { get; private set; } = -1;    // unit index
@@ -24,7 +19,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public override void Select(int index)
         {
             if (first_click)
+            {
                 return;
+            }
 
             selected_object = index;
         }
@@ -32,7 +29,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public override void OnMousePress(SFCoord pos, MouseButtons button, ref special_forms.SpecialKeysPressed specials)
         {
             if (map == null)
+            {
                 return;
+            }
 
             SFMapObject obj = map.FindObjectApprox(pos);
 
@@ -41,8 +40,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 if (button == MouseButtons.Left)
                 {
-                    if (map.heightmap.PositionOccupiedByObject(pos))
+                    if (map.heightmap.IsFlagSet(pos, SFMapHeightMapFlag.ENTITY_OBJECT))
+                    {
                         return;
+                    }
 
                     // undo/redo
                     SFCoord previous_pos = new SFCoord(0, 0);
@@ -59,7 +60,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     {
                         ushort new_object_id = (ushort)placement_object;
                         if (SFCategoryManager.gamedata[2050].GetElementIndex(new_object_id) == SFEngine.Utility.NO_INDEX)
+                        {
                             return;
+                        }
                         // create new unit and drag it until mouse released
 
                         map.AddObject(new_object_id, pos, 0, 0, 0);
@@ -72,9 +75,11 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         special_forms.MapEditorForm.AngleInfo angle_info = MainForm.mapedittool.GetAngleInfo();
                         UInt16 angle = angle_info.angle;
                         if (angle_info.random)
+                        {
                             angle = (UInt16)(SFEngine.MathUtils.Rand() % 360);
+                        }
+
                         map.RotateObject(selected_object, angle);
-                        map.object_manager.objects[selected_object].angle = angle;
 
                         MainForm.mapedittool.InspectorSelect(map.object_manager.objects[selected_object]);
 
@@ -88,6 +93,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
                         { type = map_operators.MapOperatorEntityType.OBJECT, index = selected_object, property = map_operators.MapOperatorEntityProperty.ANGLE, PreChangeProperty = 0, PostChangeProperty = (int)angle });
                         MainForm.mapedittool.op_queue.CloseCluster();
+
+                        map.heightmap.RefreshOverlay();
                     }
 
                     // undo/redo
@@ -104,7 +111,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                     first_click = true;
                 }
-                else if(button == MouseButtons.Right)
+                else if (button == MouseButtons.Right)
                 {
                     Select(SFEngine.Utility.NO_INDEX);
                     MainForm.mapedittool.InspectorSelect(null);
@@ -114,15 +121,19 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 int object_map_index = map.object_manager.objects.IndexOf(obj);
                 if (object_map_index == -1)
+                {
                     return;
+                }
 
                 if (button == MouseButtons.Left)
                 {
                     // if dragging unit, just move selected unit, dont create a new one
                     if ((specials.Shift) && (selected_object != -1))
                     {
-                        if (!map.heightmap.PositionOccupiedByObject(pos))
+                        if (!map.heightmap.IsFlagSet(pos, SFMapHeightMapFlag.ENTITY_OBJECT))
+                        {
                             map.MoveObject(selected_object, pos);
+                        }
                     }
                     else
                     {
@@ -139,17 +150,18 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         MainForm.mapedittool.InspectorSelect(null);
                     }
 
-                        // undo/redo
+                    // undo/redo
                     MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorObjectAddOrRemove()
-                    { 
+                    {
                         obj = map.object_manager.objects[object_map_index],
                         index = object_map_index,
-                        is_adding = false 
+                        is_adding = false
                     });
 
                     map.DeleteObject(object_map_index);
                     ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).RemoveObject(object_map_index);
 
+                    map.heightmap.RefreshOverlay();
                     MainForm.mapedittool.ui.RedrawMinimapIcons();
                 }
             }
@@ -166,10 +178,13 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if (op_change_pos != null)
                     {
                         op_change_pos.PostChangeProperty = map.object_manager.objects[selected_object].grid_position;
-                        if (!op_change_pos.PreChangeProperty.Equals(op_change_pos.PostChangeProperty))
+                        if ((SFCoord)op_change_pos.PreChangeProperty != (SFCoord)op_change_pos.PostChangeProperty)
                         {
                             op_change_pos.Finish(map);
                             MainForm.mapedittool.op_queue.Push(op_change_pos);
+
+                            map.heightmap.RefreshOverlay();
+                            MainForm.mapedittool.ui.RedrawMinimapIcons();
                         }
                     }
                     op_change_pos = null;

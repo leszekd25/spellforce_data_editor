@@ -5,12 +5,8 @@
  * Currently this interface is implemented by InterpolatedVector3 and InterpolatedQuaternion
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
+using System;
 
 namespace SFEngine.SF3D
 {
@@ -52,19 +48,28 @@ namespace SFEngine.SF3D
                 throw new IndexOutOfRangeException("Array is empty");
             }
             if (size == 1)
+            {
                 return value[0];
+            }
 
             if (t < 0)
+            {
                 t = 0;
+            }
+
             if (t > max_time)
+            {
                 t = max_time;
+            }
 
             for (int i = 0; i < size; i++)
             {
                 if (time[i] >= t)
                 {
                     if (i == 0)
+                    {
                         return value[0];
+                    }
 
                     float t1 = time[i - 1];
                     return value[i - 1] + ((t - t1) / (time[i] - t1)) * (value[i] - value[i - 1]);
@@ -124,19 +129,28 @@ namespace SFEngine.SF3D
                 throw new IndexOutOfRangeException("Array is empty");
             }
             if (size == 1)
+            {
                 return value[0];
+            }
 
             if (t < 0)
+            {
                 t = 0;
+            }
+
             if (t > max_time)
+            {
                 t = max_time;
+            }
 
             for (int i = 0; i < size; i++)
             {
                 if (time[i] >= t)
                 {
                     if (i == 0)
+                    {
                         return value[0];
+                    }
 
                     float t1 = time[i - 1];
                     return value[i - 1] + ((t - t1) / (time[i] - t1)) * (value[i] - value[i - 1]);
@@ -196,14 +210,21 @@ namespace SFEngine.SF3D
         public Vector3 Get(float t)
         {
             if (is_static)
+            {
                 return value[0];
+            }
 
             int size = value.Length;
 
             if (t < 0)
+            {
                 t = 0;
+            }
+
             if (t > max_time)
+            {
                 t = max_time;
+            }
 
             if (size < 10)
             {
@@ -212,7 +233,9 @@ namespace SFEngine.SF3D
                     if (time[i] >= t)
                     {
                         if (i == 0)
+                        {
                             return value[0];
+                        }
 
                         float t1 = time[i - 1];
                         return Vector3.Lerp(value[i - 1], value[i], (t - t1) / (time[i] - t1));
@@ -221,8 +244,10 @@ namespace SFEngine.SF3D
             }
             else
             {
-                if (t == time[size-1])
-                    return value[size-1];
+                if (t == time[size - 1])
+                {
+                    return value[size - 1];
+                }
 
                 int min = 0; int max = size;
                 while (true)
@@ -236,7 +261,7 @@ namespace SFEngine.SF3D
                     {
                         max = mid_index;
                     }
-                    if (max-min == 1)
+                    if (max - min == 1)
                     {
                         return Vector3.Lerp(value[min], value[max], (t - time[min]) / (time[max] - time[min]));
                     }
@@ -297,14 +322,21 @@ namespace SFEngine.SF3D
         public Quaternion Get(float t)
         {
             if (is_static)
+            {
                 return value[0];
+            }
 
             int size = value.Length;
 
             if (t < 0)
+            {
                 t = 0;
+            }
+
             if (t > max_time)
+            {
                 t = max_time;
+            }
 
             // optimization: instead of reading data from start every time, read from last point it was read
             if (size < 10)
@@ -314,7 +346,9 @@ namespace SFEngine.SF3D
                     if (time[i] >= t)
                     {
                         if (i == 0)
+                        {
                             return value[0];
+                        }
 
                         float t1 = time[i - 1];
                         return Quaternion.Slerp(value[i - 1], value[i], (t - t1) / (time[i] - t1));
@@ -323,11 +357,13 @@ namespace SFEngine.SF3D
             }
             else
             {
-                if (t == time[size-1])
-                    return value[size-1];
+                if (t == time[size - 1])
+                {
+                    return value[size - 1];
+                }
 
                 int min = 0; int max = size;
-                while(true)
+                while (true)
                 {
                     int mid_index = (min + max) / 2;
                     if (time[mid_index] <= t)
@@ -398,19 +434,28 @@ namespace SFEngine.SF3D
                 throw new IndexOutOfRangeException("Array is empty");
             }
             if (size == 1)
+            {
                 return value[0];
+            }
 
             if (t < 0)
+            {
                 t = 0;
+            }
+
             if (t > max_time)
+            {
                 t = max_time;
+            }
 
             for (int i = 0; i < time.Length; i++)
             {
                 if (time[i] >= t)
                 {
                     if (i == 0)
+                    {
                         return value[0];
+                    }
 
                     float t1 = time[i - 1];
                     return Vector4.Lerp(value[i - 1], value[i], (t - t1) / (time[i] - t1));

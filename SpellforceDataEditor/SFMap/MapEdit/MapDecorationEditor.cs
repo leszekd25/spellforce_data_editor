@@ -1,14 +1,11 @@
-﻿using System;
+﻿using SFEngine.SFMap;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SFEngine.SFMap;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
-    public class MapDecorationEditor: MapEditor
+    public class MapDecorationEditor : MapEditor
     {
         public int selected_dec_group = 0;
         public MapBrush Brush { get; set; } = null;
@@ -26,13 +23,24 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 SFCoord topleft = new SFCoord(pos.x - size, pos.y - size);
                 SFCoord bottomright = new SFCoord(pos.x + size, pos.y + size);
                 if (topleft.x < 0)
+                {
                     topleft.x = 0;
+                }
+
                 if (topleft.y < 0)
+                {
                     topleft.y = 0;
+                }
+
                 if (bottomright.x >= map.width)
+                {
                     bottomright.x = (short)(map.width - 1);
+                }
+
                 if (bottomright.y >= map.height)
+                {
                     bottomright.y = (short)(map.height - 1);
+                }
 
                 for (int i = topleft.x; i <= bottomright.x; i++)
                 {
@@ -40,10 +48,17 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     {
                         SFCoord p = new SFCoord(i, j);
                         if (Brush.GetInvertedDistanceNormalized(p) == 1)
+                        {
                             continue;
+                        }
+
+                        if (map.heightmap.IsFlagSet(p, SFMapHeightMapFlag.EDITOR_MASK))
+                        {
+                            continue;
+                        }
 
                         selection.Add(p);
-                        map.heightmap.overlay_data_decals[p.y * map.width + p.x] = 6;
+                        map.heightmap.SetFlag(p, SFMapHeightMapFlag.EDITOR_DECAL, true);
                     }
                 }
 
@@ -62,25 +77,24 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 map_operators.MapOperatorDecorationPaint dec_op = new map_operators.MapOperatorDecorationPaint();
                 foreach (SFCoord p in selection)
+                {
                     dec_op.PreOperatorDecals.Add(p, map.decoration_manager.GetDecAssignment(p));
+                }
 
-                map.decoration_manager.SetDecorationsToGroup(selection, selected_dec_group);
+                map.decoration_manager.SetDecorationsToGroup(selection, (byte)selected_dec_group);
+
+                foreach (SFCoord p in selection)
+                {
+                    map.heightmap.SetFlag(p, SFMapHeightMapFlag.EDITOR_DECAL, false);
+                }
 
                 selection.Clear();
                 is_adding = false;
 
-                if(selected_dec_group == 0)
-                {
-                    for (int i = 0; i < map.width; i++)
-                        for (int j = 0; j < map.height; j++)
-                            map.heightmap.overlay_data_decals[j * map.width + i] = 0;
-
-                    map.heightmap.RefreshOverlay();
-                }
-
                 dec_op.Finish(map);
                 MainForm.mapedittool.op_queue.Push(dec_op);
 
+                map.heightmap.RefreshOverlay();
                 MainForm.mapedittool.update_render = true;
             }
         }

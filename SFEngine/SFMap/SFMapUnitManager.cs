@@ -1,13 +1,10 @@
-﻿using System;
+﻿using SFEngine.SF3D;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SFEngine.SF3D;
 
 namespace SFEngine.SFMap
 {
-    public class SFMapUnit: SFMapEntity
+    public class SFMapUnit : SFMapEntity
     {
         static int max_id = 0;
 
@@ -37,7 +34,7 @@ namespace SFEngine.SFMap
 
         public SFMapUnitManager()
         {
-            // generate unknown idle values (see object/object_figure_init.lua
+            // generate unknown idle values (see object/object_figure_init.lua)
             idle_anim_dict.Add("figure_npc_gargoyle_normal", "figure_npc_gargoyle_idle");
             idle_anim_dict.Add("figure_animal_buffalo_normal", "figure_animal_buffalo_idle");
             idle_anim_dict.Add("figure_animal_wolf_", "figure_animal_wolf_idle");
@@ -62,13 +59,16 @@ namespace SFEngine.SFMap
             unit.game_id = id;
 
             if (index == -1)
+            {
                 index = units.Count;
+            }
+
             units.Insert(index, unit);
 
             string obj_name = unit.GetName();
             unit.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(id, obj_name);
             unit.node.SetParent(map.heightmap.GetChunkNode(position));
-            
+
             // 3. add new unit in respective chunk
             map.heightmap.GetChunk(position).AddUnit(unit);
 
@@ -80,7 +80,9 @@ namespace SFEngine.SFMap
             units.Remove(u);
 
             if (u.node != null)
+            {
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(u.node);
+            }
 
             map.heightmap.GetChunk(u.grid_position).RemoveUnit(u);
         }
@@ -89,7 +91,10 @@ namespace SFEngine.SFMap
         {
             int m_group = 0;
             for (int i = 0; i < units.Count; i++)
+            {
                 m_group = Math.Max(m_group, units[i].group);
+            }
+
             return m_group;
         }
 
@@ -101,11 +106,16 @@ namespace SFEngine.SFMap
                 foreach (string anim_name in SFResources.SFResourceManager.animation_names)
                 {
                     if ((anim_name.StartsWith(anim_lib)) && (anim_name.Contains("idle")))
+                    {
                         return anim_name;
+                    }
                 }
                 int last_index = anim_lib.LastIndexOf('_');
                 if (last_index < 0)
+                {
                     break;
+                }
+
                 anim_lib = anim_lib.Substring(0, last_index);
             }
 
@@ -114,12 +124,16 @@ namespace SFEngine.SFMap
 
         public string GetIdleAnim(string anim_lib)
         {
-            if(idle_anim_dict.ContainsKey(anim_lib))
+            if (idle_anim_dict.ContainsKey(anim_lib))
+            {
                 return idle_anim_dict[anim_lib];
+            }
 
             string res = FindIdleAnim(anim_lib);
-            if(res != "")
+            if (res != "")
+            {
                 idle_anim_dict[anim_lib] = res;
+            }
 
             return res;
         }
@@ -134,17 +148,25 @@ namespace SFEngine.SFMap
                 {
                     SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024].FindElementBinary<UInt16>(0, (UInt16)(unit.game_id));
                     if (unit_data == null)
+                    {
                         return "";
+                    }
 
                     SFCFF.SFCategoryElement unit_stats = SFCFF.SFCategoryManager.gamedata[2005].FindElementBinary<UInt16>(0, (UInt16)unit_data[2]);
                     bool is_female = false;
                     if (unit_stats != null)
+                    {
                         is_female = ((Byte)unit_stats[21] % 2) == 1;
+                    }
 
                     if (is_female)
+                    {
                         return "figure_hero_female";
+                    }
                     else
+                    {
                         return "figure_hero_male";
+                    }
                 }
 
                 return anim_lib;
@@ -170,11 +192,15 @@ namespace SFEngine.SFMap
                     foreach (SF3D.SceneSynchro.SceneNodeAnimated anim_node in unit.node.Children)
                     {
                         if (anim_node.Primary != null)
+                        {
                             continue;
+                        }
 
                         anim_node.SetAnimation(anim);
                         if (anim_node.Animation != null)
+                        {
                             anim_node.SetAnimationCurrentTime(MathUtils.Randf(0, anim_node.Animation.max_time));
+                        }
                     }
                 }
             }

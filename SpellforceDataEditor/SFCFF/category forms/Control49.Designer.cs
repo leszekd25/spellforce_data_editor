@@ -43,7 +43,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 17;
-            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
             // 
             // label1
@@ -63,7 +63,7 @@
             this.tb_effID.Name = "tb_effID";
             this.tb_effID.Size = new System.Drawing.Size(126, 20);
             this.tb_effID.TabIndex = 15;
-            this.tb_effID.Validated += new System.EventHandler(this.tb_effID_TextChanged);
+            this.tb_effID.Leave += new System.EventHandler(this.tb_effID_TextChanged);
             // 
             // lb_effID
             // 
@@ -82,7 +82,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(126, 20);
             this.textBox2.TabIndex = 19;
-            this.textBox2.Validated += new System.EventHandler(this.textBox2_TextChanged);
+            this.textBox2.Leave += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // label2
             // 

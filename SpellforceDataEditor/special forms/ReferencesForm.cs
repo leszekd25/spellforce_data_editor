@@ -3,12 +3,11 @@
  * References are displayed on a list, user can choose elements from that list to edit them
  */
 
+using SFEngine.SFCFF;
+using SpellforceDataEditor.SFCFF;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
-using SpellforceDataEditor.SFCFF;
-using SFEngine.SFCFF;
 
 
 
@@ -26,7 +25,7 @@ namespace SpellforceDataEditor.special_forms
                 element = e;
             }
         }
-        
+
         CatElem referenced;
         private List<CatElem> elements = new List<CatElem>();
 
@@ -55,7 +54,9 @@ namespace SpellforceDataEditor.special_forms
             int category = referenced.category;
 
             foreach (var column in SFGameData.ReferenceCategoryTable[category])
+            {
                 add_entries(elements, referenced, column);
+            }
 
             fill_listbox(listBox1, elements);
         }
@@ -64,7 +65,9 @@ namespace SpellforceDataEditor.special_forms
         {
             List<int> preload_indices = new List<int>();
             for (int i = 0; i < SFCategoryManager.gamedata[column_looked_at.category].GetElementCount(); i++)
+            {
                 preload_indices.Add(i);
+            }
 
             List<int> results_intermediate = new List<int>();
             switch (column_looked_at.column)
@@ -73,7 +76,7 @@ namespace SpellforceDataEditor.special_forms
                     //search for all spell references in category 0
                     SFCategory ctg = SFCategoryManager.gamedata[2002];
                     int id_looked_for = (int)((UInt16)SFCategoryManager.gamedata[element_looked_for.category][element_looked_for.element][0]);
-                    for(int i = 0; i < ctg.GetElementCount(); i++)
+                    for (int i = 0; i < ctg.GetElementCount(); i++)
                     {
                         SFCategoryElement elem = ctg[i];
 
@@ -143,7 +146,9 @@ namespace SpellforceDataEditor.special_forms
                                 break;
                         }
                         if (searched_id == id_looked_for)
+                        {
                             results_intermediate.Add(i);
+                        }
                     }
                     break;
 
@@ -178,7 +183,9 @@ namespace SpellforceDataEditor.special_forms
                                 break;
                         }
                         if (searched_id == id_looked_for2)
+                        {
                             results_intermediate.Add(i);
+                        }
                     }
                     break;
 
@@ -204,21 +211,27 @@ namespace SpellforceDataEditor.special_forms
                     break;
             }
 
-            foreach(int elem_i in results_intermediate)
+            foreach (int elem_i in results_intermediate)
+            {
                 elements_so_far.Add(new CatElem(column_looked_at.category, elem_i));
+            }
         }
 
         private void fill_listbox(ListBox lb, List<CatElem> elems)
         {
             lb.Items.Clear();
             foreach (CatElem elem in elems)
+            {
                 lb.Items.Add(get_catelement_string(elem));
+            }
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listBox1.SelectedIndex == -1)
+            {
                 return;
+            }
 
             CatElem elem = elements[listBox1.SelectedIndex];
 

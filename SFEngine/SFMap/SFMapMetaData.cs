@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using System.Linq;
 
 namespace SFEngine.SFMap
 {
@@ -82,9 +77,9 @@ namespace SFEngine.SFMap
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
-                    for(int i = 0; i < height; i++)
+                    for (int i = 0; i < height; i++)
                     {
-                        for(int j = 0; j < width; j++)
+                        for (int j = 0; j < width; j++)
                         {
                             var col = bmp.GetPixel(j, height - 1 - i);
                             bw.Write(col.B);
@@ -165,11 +160,17 @@ namespace SFEngine.SFMap
         public int FindPlayerBySpawnPos(SFCoord pos)
         {
             if (spawns == null)
+            {
                 spawns = new List<SFMapSpawn>();
+            }
 
             for (int i = 0; i < spawns.Count; i++)
+            {
                 if (pos == spawns[i].pos)
+                {
                     return i;
+                }
+            }
 
             return Utility.NO_INDEX;
         }
@@ -177,11 +178,17 @@ namespace SFEngine.SFMap
         public int FindPlayerByBindstoneIndex(int index)
         {
             if (spawns == null)
+            {
                 spawns = new List<SFMapSpawn>();
+            }
 
             for (int i = 0; i < spawns.Count; i++)
+            {
                 if (index == spawns[i].bindstone_index)
+                {
                     return i;
+                }
+            }
 
             return Utility.NO_INDEX;
         }
@@ -190,11 +197,14 @@ namespace SFEngine.SFMap
         public bool GetCoopAISpawnByObject(SFMapObject o, ref SFMapCoopAISpawn sp)
         {
             foreach (SFMapCoopAISpawn cs in coop_spawns)
+            {
                 if (cs.spawn_obj == o)
                 {
                     sp = cs;
                     return true;
                 }
+            }
+
             return false;
         }
 
@@ -204,8 +214,10 @@ namespace SFEngine.SFMap
             for (int i = 0; i < multi_teams.Count; i++)
             {
                 if (tc.team_count == multi_teams[i].team_count)
+                {
                     throw new Exception("SFMapMetaData.InsertTeamComp(): Can't add another team comp with same team count!");
-                else if(tc.team_count < multi_teams[i].team_count)
+                }
+                else if (tc.team_count < multi_teams[i].team_count)
                 {
                     multi_teams.Insert(i, tc);
                     return;
@@ -219,8 +231,13 @@ namespace SFEngine.SFMap
         public SFMapMultiplayerTeamComposition GetTeamCompByTeamNumber(int num)
         {
             for (int i = 0; i < multi_teams.Count; i++)
+            {
                 if (multi_teams[i].team_count == num)
+                {
                     return multi_teams[i];
+                }
+            }
+
             return null;
         }
 
@@ -230,22 +247,24 @@ namespace SFEngine.SFMap
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
-                    for(int i = min_teams; i <= 4; i++)
+                    for (int i = min_teams; i <= 4; i++)
                     {
                         SFMapMultiplayerTeamComposition team = GetTeamCompByTeamNumber(i);
                         if (team == null)
+                        {
                             bw.Write(0);
+                        }
                         else
                         {
-                            for(int j = 0; j < i; j++)
+                            for (int j = 0; j < i; j++)
                             {
                                 bw.Write(team.players[j].Count);
-                                for(int k = 0; k < team.players[j].Count; k++)
+                                for (int k = 0; k < team.players[j].Count; k++)
                                 {
                                     bw.Write((short)spawns[team.players[j][k].player_id].pos.x);
                                     bw.Write((short)spawns[team.players[j][k].player_id].pos.y);
                                     bw.Write((short)team.players[j][k].text_id);
-                                    if(include_strings)
+                                    if (include_strings)
                                     {
                                         Utility.WriteSFString(bw, team.players[j][k].coop_map_type);
                                         Utility.WriteSFString(bw, team.players[j][k].coop_map_lvl);
@@ -263,15 +282,20 @@ namespace SFEngine.SFMap
         public bool IsPlayerActive(int p_id)
         {
             if (multi_teams == null)
-                return false;
-            foreach(SFMapMultiplayerTeamComposition teamcomp in multi_teams)
             {
-                foreach(List<SFMapTeamPlayer> list in teamcomp.players)
+                return false;
+            }
+
+            foreach (SFMapMultiplayerTeamComposition teamcomp in multi_teams)
+            {
+                foreach (List<SFMapTeamPlayer> list in teamcomp.players)
                 {
-                    foreach(SFMapTeamPlayer player in list)
+                    foreach (SFMapTeamPlayer player in list)
                     {
                         if (p_id == player.player_id)
+                        {
                             return true;
+                        }
                     }
                 }
             }

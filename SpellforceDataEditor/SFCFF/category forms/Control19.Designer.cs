@@ -77,7 +77,7 @@
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 16;
             this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
-            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label4
             // 
@@ -110,7 +110,7 @@
             this.HelmetID.Tag = "0";
             this.HelmetID.Text = "0";
             this.HelmetID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
-            this.HelmetID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
+            this.HelmetID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // HelmetName
             // 
@@ -139,7 +139,7 @@
             this.RightHandID.Tag = "1";
             this.RightHandID.Text = "0";
             this.RightHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
-            this.RightHandID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
+            this.RightHandID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // CheckRightHand
             // 
@@ -180,7 +180,7 @@
             this.ChestID.Tag = "2";
             this.ChestID.Text = "0";
             this.ChestID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
-            this.ChestID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
+            this.ChestID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // CheckChest
             // 
@@ -221,7 +221,7 @@
             this.LeftHandID.Tag = "3";
             this.LeftHandID.Text = "0";
             this.LeftHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
-            this.LeftHandID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
+            this.LeftHandID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // CheckLeftHand
             // 
@@ -262,7 +262,7 @@
             this.RightRingID.Tag = "4";
             this.RightRingID.Text = "0";
             this.RightRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
-            this.RightRingID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
+            this.RightRingID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // CheckRightRing
             // 
@@ -303,7 +303,7 @@
             this.LegsID.Tag = "5";
             this.LegsID.Text = "0";
             this.LegsID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
-            this.LegsID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
+            this.LegsID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // CheckLegs
             // 
@@ -344,7 +344,7 @@
             this.LeftRingID.Tag = "6";
             this.LeftRingID.Text = "0";
             this.LeftRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
-            this.LeftRingID.Validated += new System.EventHandler(this.TextBoxItem_Validated);
+            this.LeftRingID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
             // 
             // CheckLeftRing
             // 

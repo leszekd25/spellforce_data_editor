@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.SFMap
 {
@@ -12,7 +9,7 @@ namespace SFEngine.SFMap
 
         public SFCoord grid_position = new SFCoord(0, 0);
         public int id = -1;
-        public int game_id = -1;
+        public byte game_id = 0;
         public SF3D.SceneSynchro.SceneNode node = null;
 
         public string GetObjectName()
@@ -36,7 +33,6 @@ namespace SFEngine.SFMap
     {
         public Byte[] weight = new byte[30];
         public ushort[] dec_id = new ushort[30];
-        public List<int> random_cache = new List<int>();
 
         public SFMapDecorationGroup()
         {
@@ -44,25 +40,8 @@ namespace SFEngine.SFMap
             dec_id.Initialize();
         }
 
-        public ushort ChooseRandom()
-        {
-            if (random_cache.Count == 0)
-                return 0;
-            return dec_id[random_cache[MathUtils.Rand() % random_cache.Count]];
-        }
-
         public void SetDecoration(int dec_index, ushort d_id, byte d_w = 255)
         {
-            if ((dec_id[dec_index] == 0) || (weight[dec_index] == 0)) 
-            {
-                if ((d_id != 0) && (d_w != 0))
-                    random_cache.Add(dec_index);
-            }
-            if ((dec_id[dec_index] != 0) && (weight[dec_index] != 0)) 
-            {
-                if ((d_id == 0) || (d_w == 0))
-                    random_cache.Remove(dec_index);
-            }
             dec_id[dec_index] = d_id;
             weight[dec_index] = d_w;
         }
@@ -75,18 +54,49 @@ namespace SFEngine.SFMap
         public List<SFMapDecoration> decorations { get; private set; } = new List<SFMapDecoration>();
         public SFMap map = null;
 
-        public SFMapDecoration AddDecoration(int id, SFCoord position)
+        public SFMapDecoration AddDecoration(byte id, SFCoord position)
         {
+            System.Diagnostics.Debug.Assert(id != 0, "SFMapDecorationManager.AddDecoration(): ID is 0!");
+
             SFMapDecoration dec = new SFMapDecoration();
             dec.grid_position = position;
             dec.game_id = id;
             decorations.Add(dec);
 
-            string dec_name = dec.GetObjectName();
-            dec.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(id, dec_name, false, true, Settings.DecalShadows);
-            dec.node.SetParent(map.heightmap.GetChunkNode(position));
+            dec.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeEmpty(map.heightmap.GetChunkNode(position), dec.GetObjectName());
+            SetDecAssignment(position, id);
 
-            
+            SFMapDecorationGroup dec_group = dec_groups[id];
+            for (int i = 0; i < 30; i++)
+            {
+                if (dec_group.dec_id[i] == 0)
+                {
+                    continue;
+                }
+
+                if (dec_group.weight[i] == 0)
+                {
+                    continue;
+                }
+
+                if ((MathUtils.Rand() % 255) >= (dec_group.weight[i] - 1))
+                {
+                    continue;
+                }
+
+                SF3D.SceneSynchro.SceneNode dec_node_i = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(dec_group.dec_id[i], i.ToString(), (Settings.ShadingQuality == 2), Settings.DecalShadows); ;
+                dec_node_i.SetParent(dec.node);
+
+                OpenTK.Vector2 offset = new OpenTK.Vector2(MathUtils.Randf(-0.4f, 0.4f), MathUtils.Randf(-0.4f, 0.4f));
+                dec_node_i.SetPosition(new OpenTK.Vector3(
+                (position.x % SFMapHeightMapMesh.CHUNK_SIZE) + offset.X,
+                map.heightmap.GetRealZ(new OpenTK.Vector2(position.x + offset.X, map.height - position.y - 1 - offset.Y)),
+                ((map.height - position.y - 1) % SFMapHeightMapMesh.CHUNK_SIZE) - offset.Y));
+
+                dec_node_i.SetAnglePlane(MathUtils.Rand() % 360);
+                dec_node_i.Scale = new OpenTK.Vector3(100 / 128f);
+            }
+
             // 3. add new unit in respective chunk
             map.heightmap.GetChunk(position).AddDecoration(dec);
 
@@ -96,31 +106,63 @@ namespace SFEngine.SFMap
         public void RemoveDecoration(SFMapDecoration d)
         {
             decorations.Remove(d);
+            SetDecAssignment(d.grid_position, 0);
 
             if (d.node != null)
+            {
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(d.node);
+            }
+
             d.node = null;
 
             map.heightmap.GetChunk(d.grid_position).RemoveDecoration(d);
         }
 
-        public void ReplaceDecoration(SFMapDecoration d, int new_id)
+        public void ReplaceDecoration(SFMapDecoration d, byte new_id)
         {
-            if (d.game_id == new_id)
-                return;
+            System.Diagnostics.Debug.Assert(new_id != 0, "SFMapDecorationManager.ReplaceDecoration(): ID is 0!");
 
             if (d.node != null)
+            {
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(d.node);
+            }
 
-            d.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(new_id, d.GetObjectName(), false, true, Settings.DecalShadows);
-            d.node.SetParent(map.heightmap.GetChunkNode(d.grid_position));
-            d.node.SetPosition(map.heightmap.GetFixedPosition(d.grid_position));
-            d.node.Rotation = OpenTK.Quaternion.FromAxisAngle(new OpenTK.Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-            d.node.Scale = new OpenTK.Vector3(100 / 128f);
+            d.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeEmpty(map.heightmap.GetChunkNode(d.grid_position), d.GetObjectName());
 
-            d.game_id = new_id;
+            SFMapDecorationGroup dec_group = dec_groups[new_id];
+            for (int i = 0; i < 30; i++)
+            {
+                if (dec_group.dec_id[i] == 0)
+                {
+                    continue;
+                }
+
+                if (dec_group.weight[i] == 0)
+                {
+                    continue;
+                }
+
+                if ((MathUtils.Rand() % 255) > (dec_group.weight[i] - 1))
+                {
+                    continue;
+                }
+
+                SF3D.SceneSynchro.SceneNode dec_node_i = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(dec_group.dec_id[i], i.ToString(), (Settings.ShadingQuality == 2), Settings.DecalShadows); ;
+                dec_node_i.SetParent(d.node);
+
+                OpenTK.Vector2 offset = new OpenTK.Vector2(MathUtils.Randf(-0.4f, 0.4f), MathUtils.Randf(-0.4f, 0.4f));
+                dec_node_i.SetPosition(new OpenTK.Vector3(
+                (d.grid_position.x % SFMapHeightMapMesh.CHUNK_SIZE) + offset.X,
+                map.heightmap.GetRealZ(new OpenTK.Vector2(d.grid_position.x + offset.X, map.height - d.grid_position.y - 1 - offset.Y)),
+                ((map.height - d.grid_position.y - 1) % SFMapHeightMapMesh.CHUNK_SIZE) - offset.Y));
+
+                dec_node_i.SetAnglePlane(MathUtils.Rand() % 360);
+                dec_node_i.Scale = new OpenTK.Vector3(100 / 128f);
+            }
+
+            d.game_id = (byte)new_id;
         }
-        
+
         public byte GetDecAssignment(SFCoord pos)
         {
             return dec_assignment[pos.x * 1024 + pos.y];
@@ -129,6 +171,7 @@ namespace SFEngine.SFMap
         public void SetDecAssignment(SFCoord pos, byte dec)
         {
             dec_assignment[pos.x * 1024 + pos.y] = dec;
+            map.heightmap.SetFlag(pos, SFMapHeightMapFlag.ENTITY_DECAL, dec != 0);
         }
 
         public SFCoord GetDecPosition(int offset)
@@ -139,53 +182,56 @@ namespace SFEngine.SFMap
         public void GenerateDecorations()
         {
             ushort size = (ushort)map.width;
-            SFCoord pos;
-            for(int i = 0; i < 1048576; i++)
+            for (int x = 0; x < size; x++)
             {
-                if(dec_assignment[i] != 0)
+                for (int y = 0; y < size; y++)
                 {
-                    // choose decoration
-                    pos = GetDecPosition(i);
-                    ushort dec_id = dec_groups[dec_assignment[i]].ChooseRandom();
-                    if (dec_id != 0)
-                        map.AddDecoration(dec_id, pos);
+                    byte dec_a = dec_assignment[x * 1024 + y];
+                    if (dec_a != 0)
+                    {
+                        SFCoord pos = new SFCoord(x, y);
+                        AddDecoration(dec_a, pos);
+                    }
                 }
             }
         }
 
         // assumes positions are valid
-        // fast version
-        public void SetDecorationsToGroup(HashSet<SFCoord> pos, int dec_type)
+        public void SetDecorationsToGroup(HashSet<SFCoord> pos, byte dec_type)
         {
-            foreach(SFCoord p in pos)
+            foreach (SFCoord p in pos)
             {
-                SetDecAssignment(p, (byte)dec_type);
-
-                SFMapHeightMapChunk chunk = map.heightmap.GetChunk(p);
-                SFMapDecoration dec = null;
-                foreach(SFMapDecoration d in chunk.decorations)
-                    if(d.grid_position == p)
+                if (map.heightmap.IsFlagSet(p, SFMapHeightMapFlag.ENTITY_DECAL))
+                {
+                    SFMapHeightMapChunk chunk = map.heightmap.GetChunk(p);
+                    SFMapDecoration dec = null;
+                    foreach (SFMapDecoration d in chunk.decorations)
                     {
-                        dec = d;
-                        break;
+                        if (d.grid_position == p)
+                        {
+                            dec = d;
+                            break;
+                        }
                     }
 
-                if (dec != null)    // if there exists a decoration at position
-                {
-
-                    ushort dec_id = dec_groups[dec_type].ChooseRandom();
-                    if (dec_id != 0)   // if chosen decoration id is not 0, simply replace
-                        ReplaceDecoration(dec, dec_id);
+                    if (dec_type != 0)  // if chosen decoration id is not 0, simply replace
+                    {
+                        if (dec.id != dec_type)
+                        {
+                            ReplaceDecoration(dec, dec_type);
+                        }
+                    }
                     else               // else, remove (this happens if group 0 or empty group is chosen as well)
+                    {
                         RemoveDecoration(dec);
+                    }
                 }
-                else                // if theres no existing decoration at position
+                else
                 {
-                    ushort dec_id = dec_groups[dec_type].ChooseRandom();
-                    if (dec_id != 0)   // if chosen decoration id is not 0, add new decoration at position
-                        map.AddDecoration(dec_id, p);
-                    // else               // otherwise do nothing lol
-                    //    ;
+                    if (dec_type != 0)   // if chosen decoration id is not 0, add new decoration at position
+                    {
+                        AddDecoration(dec_type, p);
+                    }
                 }
             }
         }
@@ -195,74 +241,62 @@ namespace SFEngine.SFMap
         public void UpdateDecorationsOfGroup(byte dec_type)
         {
             if (dec_type == 0)
-                return;
-            for(int i = 0; i < 1048576; i++)
             {
-                if (dec_assignment[i] == dec_type)
-                {
-                    SFCoord p = GetDecPosition(i);
-                    SFMapHeightMapChunk chunk = map.heightmap.GetChunk(p);
-                    SFMapDecoration dec = null;
-                    foreach (SFMapDecoration d in chunk.decorations)
-                        if (d.grid_position == p)
-                        {
-                            dec = d;
-                            break;
-                        }
-                    if (dec != null)    // if there exists a decoration at position
-                    {
+                return;
+            }
 
-                        ushort dec_id = dec_groups[dec_type].ChooseRandom();
-                        if (dec_id != 0)   // if chosen decoration id is not 0, simply replace
-                            ReplaceDecoration(dec, dec_id);
-                        else               // else, remove (this happens if group 0 or empty group is chosen as well)
-                            RemoveDecoration(dec);
-                    }
-                    else                // if theres no existing decoration at position
+            ushort size = (ushort)map.width;
+            foreach (var chunk_node in map.heightmap.chunk_nodes)
+            {
+                SFMapHeightMapChunk chunk = chunk_node.MapChunk;
+                foreach (SFMapDecoration d in chunk.decorations)
+                {
+                    if (d.game_id != dec_type)
                     {
-                        ushort dec_id = dec_groups[dec_type].ChooseRandom();
-                        if (dec_id != 0)   // if chosen decoration id is not 0, add new decoration at position
-                            map.AddDecoration(dec_id, p);
-                        // else               // otherwise do nothing lol
-                        //     ;
+                        continue;
                     }
+
+                    ReplaceDecoration(d, dec_type);
                 }
             }
         }
 
         // sets decorations to given groups
-        // slower, but universal
         public void SetDecorations(Dictionary<SFCoord, byte> decals)
         {
             foreach (SFCoord p in decals.Keys)
             {
-                byte g = decals[p];
-                SetDecAssignment(p, g);
-
-                SFMapHeightMapChunk chunk = map.heightmap.GetChunk(p);
-                SFMapDecoration dec = null;
-                foreach (SFMapDecoration d in chunk.decorations)
-                    if (d.grid_position == p)
+                if (map.heightmap.IsFlagSet(p, SFMapHeightMapFlag.ENTITY_DECAL))
+                {
+                    SFMapHeightMapChunk chunk = map.heightmap.GetChunk(p);
+                    SFMapDecoration dec = null;
+                    foreach (SFMapDecoration d in chunk.decorations)
                     {
-                        dec = d;
-                        break;
+                        if (d.grid_position == p)
+                        {
+                            dec = d;
+                            break;
+                        }
                     }
 
-                if (dec != null)    // if there exists a decoration at position
-                {
-                    ushort dec_id = dec_groups[g].ChooseRandom();
-                    if (dec_id != 0)   // if chosen decoration id is not 0, simply replace
-                        ReplaceDecoration(dec, dec_id);
+                    if (decals[p] != 0)  // if chosen decoration id is not 0, simply replace
+                    {
+                        if (dec.id != decals[p])
+                        {
+                            ReplaceDecoration(dec, decals[p]);
+                        }
+                    }
                     else               // else, remove (this happens if group 0 or empty group is chosen as well)
+                    {
                         RemoveDecoration(dec);
+                    }
                 }
-                else                // if theres no existing decoration at position
+                else
                 {
-                    ushort dec_id = dec_groups[g].ChooseRandom();
-                    if (dec_id != 0)   // if chosen decoration id is not 0, add new decoration at position
-                        map.AddDecoration(dec_id, p);
-                    // else               // otherwise do nothing lol
-                    //    ;
+                    if (decals[p] != 0)   // if chosen decoration id is not 0, add new decoration at position
+                    {
+                        AddDecoration(decals[p], p);
+                    }
                 }
             }
         }

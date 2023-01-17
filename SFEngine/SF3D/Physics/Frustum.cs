@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
+﻿using OpenTK;
+using System;
 
 namespace SFEngine.SF3D.Physics
 {
@@ -35,7 +31,9 @@ namespace SFEngine.SF3D.Physics
             foreach (Plane pl in frustum_planes)
             {
                 if (pl.SideOf(p))
+                {
                     return false;
+                }
             }
 
             return true;
@@ -43,10 +41,12 @@ namespace SFEngine.SF3D.Physics
 
         public bool ContainsPointIgnoreZFar(Vector3 p)
         {
-            for(int i = 0; i < 5; i++)
+            for (int i = 0; i < 5; i++)
             {
                 if (frustum_planes[i].SideOf(p))
+                {
                     return false;
+                }
             }
 
             return true;

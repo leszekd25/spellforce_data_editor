@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace SFEngine.SFLua.LuaDecompiler
 {
@@ -12,7 +7,7 @@ namespace SFEngine.SFLua.LuaDecompiler
 
     }
 
-    public class Identifier: Node, ILValue, IRValue
+    public class Identifier : Node, ILValue, IRValue
     {
         public string name;
 
@@ -27,7 +22,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         }
     }
 
-    public class IndexedIdentifier: Node, ILValue, IRValue
+    public class IndexedIdentifier : Node, ILValue, IRValue
     {
         public ILValue name;
         public IRValue index;
@@ -46,7 +41,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         }
     }
 
-    public class DottedIdentifier: Node, ILValue, IRValue
+    public class DottedIdentifier : Node, ILValue, IRValue
     {
         public ILValue instance;
         public ILValue member;
@@ -82,7 +77,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         }
     }
 
-    public class UpIdentifier: Node, ILValue, IRValue
+    public class UpIdentifier : Node, ILValue, IRValue
     {
         public string name;
 
@@ -97,7 +92,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         }
     }
 
-    public class LocalIdentifier: Node, ILValue, IRValue
+    public class LocalIdentifier : Node, ILValue, IRValue
     {
         public string name;
 

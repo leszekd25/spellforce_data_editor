@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System;
 
 namespace SFEngine.SF3D
 {
@@ -14,7 +9,7 @@ namespace SFEngine.SF3D
         public float Strength = 1.0f;
         public Vector4 Color = new Vector4(1.0f);
     }
-    
+
     public class LightingSun
     {
         public float Strength = 1.0f;
@@ -35,56 +30,7 @@ namespace SFEngine.SF3D
 
         public LightingSun()
         {
-            if (Settings.EnableCascadeShadows)
-            {
-                ShadowCascadeLightProjection = new Matrix4[Settings.ShadowCascadeCount];
-                ShadowCascadeLightMatrix = new Matrix4[Settings.ShadowCascadeCount];
-                ShadowCascadeFrustum = new Physics.Frustum[Settings.ShadowCascadeCount];
-                for (int i = 0; i < Settings.ShadowCascadeCount; i++)
-                {
-                    ShadowCascadeFrustum[i] = new Physics.Frustum(Vector3.Zero, Vector3.UnitX, 0.1f, 100f, 1f);
-                }
-            }
-        }
 
-        // run once right after camera init, and every time camera's znear, zfar or aspect ratio changes
-        public void CalculateCascadeSplits(Physics.Frustum base_frustum)
-        {
-            float correction = 0.7f;
-
-            for (int i = 0; i < Settings.ShadowCascadeCount; i++)
-            {
-                ShadowCascadeFrustum[i].aspect_ratio = base_frustum.aspect_ratio;
-                if (i == 0)
-                    ShadowCascadeFrustum[i].ZNear = base_frustum.ZNear;
-                else
-                    ShadowCascadeFrustum[i].ZNear = correction * base_frustum.ZNear * (float)Math.Pow(base_frustum.ZFar / base_frustum.ZNear, (float)i / Settings.ShadowCascadeCount) + (1 - correction) * (base_frustum.ZNear + ((float)i / Settings.ShadowCascadeCount) * (base_frustum.ZFar - base_frustum.ZNear));
-            }
-
-            for(int i = 0; i < Settings.ShadowCascadeCount; i++)
-            {
-                if (i == Settings.ShadowCascadeCount - 1)
-                    ShadowCascadeFrustum[i].ZFar = base_frustum.ZFar;
-                else
-                    ShadowCascadeFrustum[i].ZFar = ShadowCascadeFrustum[i + 1].ZNear;
-            }
-        }
-
-        public void CalculateCascadeLightMatrix(SceneSynchro.SceneNodeCamera camera)
-        {
-            Physics.Frustum camera_frustum = camera.Frustum;
-
-            for(int i = 0; i < Settings.ShadowCascadeCount; i++)
-            {
-                ShadowCascadeFrustum[i].start = camera_frustum.start;
-                ShadowCascadeFrustum[i].direction = camera_frustum.direction;
-                ShadowCascadeFrustum[i].Calculate();
-
-                Physics.BoundingBox aabb = Physics.BoundingBox.FromPoints(ShadowCascadeFrustum[i].frustum_vertices);
-                Physics.BoundingBox rotated_aabb = aabb.RotatedByAzimuthAltitude(camera.Direction.X * 180 / (float)Math.PI, camera.Direction.Y * 180 / (float)Math.PI);
-
-                SetLightProjection(rotated_aabb, ShadowCascadeFrustum[i].ZNear, ShadowCascadeFrustum[i].ZFar, ref ShadowCascadeLightProjection[i], ref ShadowCascadeLightMatrix[i]);
-            }
         }
 
         public void SetLightProjection(Physics.BoundingBox aabb, float znear, float zfar, ref Matrix4 lp, ref Matrix4 lm)
@@ -94,7 +40,7 @@ namespace SFEngine.SF3D
             Vector3 camera_pos = aabb.center;
             camera_pos += Direction * (zfar / 2);
 
-            lm = Matrix4.LookAt(camera_pos, camera_pos - Direction, new Vector3(0, 1, 0)) * lp; //camera_pos-Direction+new Vector3(0, 0, 0.05f)
+            lm = Matrix4.LookAt(camera_pos, camera_pos - Direction, new Vector3(0, 1, 0)) * lp;
         }
 
         public void SetupLightView(Vector3 camerapos)
@@ -112,29 +58,39 @@ namespace SFEngine.SF3D
             Vector3 d2 = dir;
             d2.Z = 0;
             if (d2.LengthSquared == 0)
+            {
                 Azimuth = 0;
+            }
             else
             {
                 d2.Normalize();
-                Azimuth = (float)(Vector3.CalculateAngle(Vector3.UnitX, d2)*180/Math.PI);
+                Azimuth = (float)(Vector3.CalculateAngle(Vector3.UnitX, d2) * 180 / Math.PI);
             }
 
             d2 = dir;
             d2.Y = 0;
-            if(d2.LengthSquared == 0)
+            if (d2.LengthSquared == 0)
             {
                 if (dir.Z > 0)
+                {
                     Altitude = 90;
+                }
                 else
+                {
                     Altitude = -90;
+                }
             }
             else
             {
                 d2.Normalize();
                 if (dir.X > 0)
-                    Altitude = (float)(Vector3.CalculateAngle(Vector3.UnitX, d2)*180/Math.PI);
+                {
+                    Altitude = (float)(Vector3.CalculateAngle(Vector3.UnitX, d2) * 180 / Math.PI);
+                }
                 else
-                    Altitude = (float)(Vector3.CalculateAngle(-Vector3.UnitX, d2)*180/Math.PI);
+                {
+                    Altitude = (float)(Vector3.CalculateAngle(-Vector3.UnitX, d2) * 180 / Math.PI);
+                }
             }
         }
 
@@ -145,16 +101,20 @@ namespace SFEngine.SF3D
 
             // construct direction from azimuth and altitude
 
-            if(al >= 0)
+            if (al >= 0)
+            {
                 Direction = -new Vector3((float)Math.Cos(-az * Math.PI / 180) * (float)Math.Cos(-al * Math.PI / 180),
                                 (float)Math.Sin(-al * Math.PI / 180),
                                 (float)Math.Sin(-az * Math.PI / 180) * (float)Math.Cos(-al * Math.PI / 180)).Normalized();
+            }
             else
+            {
                 Direction = new Vector3((float)Math.Cos(-az * Math.PI / 180) * (float)Math.Cos(-al * Math.PI / 180),
                  (float)Math.Sin(-al * Math.PI / 180),
                  (float)Math.Sin(-az * Math.PI / 180) * (float)Math.Cos(-al * Math.PI / 180)).Normalized();
+            }
         }
-        
+
         public void SetupLightView(Physics.BoundingBox aabb)
         {
             Physics.BoundingBox rotated_aabb = aabb.RotatedByAzimuthAltitude(Azimuth, Altitude);
@@ -166,7 +126,7 @@ namespace SFEngine.SF3D
             Vector3 camera_pos = rotated_aabb.center;
             camera_pos += Direction * (ZFar / 2);
 
-            LightMatrix = Matrix4.LookAt(camera_pos, camera_pos-Direction, new Vector3(0, 1, 0)) * LightProjection; //camera_pos-Direction+new Vector3(0, 0, 0.05f)
+            LightMatrix = Matrix4.LookAt(camera_pos, camera_pos - Direction, new Vector3(0, 1, 0)) * LightProjection; //camera_pos-Direction+new Vector3(0, 0, 0.05f)
         }
     }
 
@@ -174,18 +134,18 @@ namespace SFEngine.SF3D
     {
         // vao used to render sky
         static float[] vertices = new float[] {
-            -1, -1, 
+            -1, -1,
             -1, 1,
-            1, -1, 
+            1, -1,
             -1, 1,
-            1, -1, 
+            1, -1,
             1, 1 };
         static float[] uvs = new float[] {
-            0, 0, 
-            0, 1, 
-            1, 0, 
-            0, 1, 
-            1, 0, 
+            0, 0,
+            0, 1,
+            1, 0,
+            0, 1,
+            1, 0,
             1, 1 };
 
         public static int sky_vao { get; private set; } = -1;
@@ -252,10 +212,12 @@ namespace SFEngine.SF3D
         public void Dispose()
         {
             if (ref_count == 0)
+            {
                 return;
+            }
 
             ref_count -= 1;
-            if(ref_count == 0)
+            if (ref_count == 0)
             {
                 GL.DeleteBuffer(uvs_vbo);
                 GL.DeleteBuffer(vertices_vbo);

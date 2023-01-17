@@ -1,22 +1,19 @@
 ﻿// Files of type ChunkFile store its data in chunks, which are described using SFChunkFileChunk class
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.IO.Compression;
+using System.Text;
 
 namespace SFEngine.SFChunk
 {
     public struct SFChunkFileChunkHeader
     {
-        public  short ChunkID;
+        public short ChunkID;
         public short ChunkOccurence;
         public short ChunkIsPacked;
-        public  int ChunkDataLength;
-        public  short ChunkDataType;
+        public int ChunkDataLength;
+        public short ChunkDataType;
     }
 
     public class SFChunkFileChunk
@@ -30,9 +27,13 @@ namespace SFEngine.SFChunk
         public int get_original_data_length()
         {
             if (header.ChunkIsPacked == 0)
+            {
                 return header.ChunkDataLength;
+            }
             else
+            {
                 return unpacked_data_length;
+            }
         }
 
         public byte[] get_raw_data()
@@ -74,8 +75,11 @@ namespace SFEngine.SFChunk
             h.ChunkIsPacked = br.ReadInt16();
             h.ChunkDataLength = br.ReadInt32();
             h.ChunkDataType = br.ReadInt16();
-            if(!proceed)
+            if (!proceed)
+            {
                 br.BaseStream.Position -= 12;
+            }
+
             return h;
         }
 
@@ -133,7 +137,7 @@ namespace SFEngine.SFChunk
 
                 if (data.Length != unpacked_data_length)
                 {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.Read(): Decompressed data length does not match expected length! Expected: "+unpacked_data_length.ToString()+", got: "+data.Length.ToString());
+                    LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFileChunk.Read(): Decompressed data length does not match expected length! Expected: " + unpacked_data_length.ToString() + ", got: " + data.Length.ToString());
                     return -3;
                 }
                 return 0;

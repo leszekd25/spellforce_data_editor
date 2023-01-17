@@ -1,15 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFUnPak;
+using System;
 using System.Threading;
 using System.Windows.Forms;
-using SFEngine.SFUnPak;
 
 namespace SpellforceDataEditor
 {
@@ -24,7 +16,6 @@ namespace SpellforceDataEditor
         public static special_forms.SpelllforceCFFEditor data = null;
         public static special_forms.SFAssetManagerForm viewer = null;
         public static special_forms.SQLModifierForm sqlmodify = null;
-        public static special_forms.ModManagerForm modmanager = null;
         public static special_forms.MapEditorForm mapedittool = null;
         public static special_forms.AboutForm applicationinfo = null;
         public static special_forms.SaveDataEditorForm svdata = null;
@@ -62,16 +53,19 @@ namespace SpellforceDataEditor
             InitializeComponent();
             linkEditor.Links.Add(0, linkEditor.Text.Length, "https://github.com/leszekd25/spellforce_data_editor/tree/with_viewer/bin");
             linkEditor.Visible = false;
-            //CheckNewVersionAvailable();
             checknewversion_thread = new Thread(CheckNewVersionAvailable);
             checknewversion_thread.Start();
             TimerCheckUpdateStatus.Start();
 
             // check if data loaded from settings
             if (SFUnPak.game_directory_specified)
+            {
                 LabelIsSpecifiedGameDir.Text = "Game directory:\r\nSpecified";
+            }
             else
+            {
                 LabelIsSpecifiedGameDir.Text = "Game directory:\r\nNOT specified";
+            }
 
             SFEngine.LogUtils.Log.TotalMemoryUsage();
         }
@@ -84,7 +78,7 @@ namespace SpellforceDataEditor
         }
 
         void CheckNewVersionAvailable()
-        {           
+        {
             System.Net.WebClient wc = new System.Net.WebClient();
             wc.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(getVersion_completed);
 
@@ -143,22 +137,27 @@ namespace SpellforceDataEditor
                     SFEngine.Settings.Save();
                 }
                 else
+                {
                     LabelIsSpecifiedGameDir.Text = "Game directory:\r\nFailed to specify!";
+                }
             }
         }
 
         private void bGDEditor_Click(object sender, EventArgs e)
         {
             if (data != null)
+            {
                 return;
+            }
+
             data = new special_forms.SpelllforceCFFEditor();
-            data.FormClosed += new FormClosedEventHandler(this.data_FormClosed);
+            data.FormClosed += new FormClosedEventHandler(data_FormClosed);
             data.Show();
         }
 
         private void data_FormClosed(object sender, FormClosedEventArgs e)
         {
-            data.FormClosed -= new FormClosedEventHandler(this.data_FormClosed);
+            data.FormClosed -= new FormClosedEventHandler(data_FormClosed);
             data = null;
             GC.Collect();
         }
@@ -166,8 +165,11 @@ namespace SpellforceDataEditor
         private void bAssets_Click(object sender, EventArgs e)
         {
             if (viewer != null)
+            {
                 return;
-            if(mapedittool != null)
+            }
+
+            if (mapedittool != null)
             {
                 MessageBox.Show("Can't run both Map Editor and Asset Viewer simultaneously! Fix coming soon :^)");
                 return;
@@ -178,36 +180,14 @@ namespace SpellforceDataEditor
                 return;
             }
             viewer = new special_forms.SFAssetManagerForm();
-            viewer.FormClosed += new FormClosedEventHandler(this.viewer_FormClosed);
+            viewer.FormClosed += new FormClosedEventHandler(viewer_FormClosed);
             viewer.Show();
         }
 
         private void viewer_FormClosed(object sender, FormClosedEventArgs e)
         {
-            viewer.FormClosed -= new FormClosedEventHandler(this.viewer_FormClosed);
+            viewer.FormClosed -= new FormClosedEventHandler(viewer_FormClosed);
             viewer = null;
-            GC.Collect();
-        }
-
-
-        private void bMods_Click(object sender, EventArgs e)
-        {
-            if (modmanager != null)
-                return;
-            if (!SFUnPak.game_directory_specified)
-            {
-                MessageBox.Show("Game directory is not specified!");
-                return;
-            }
-            modmanager = new special_forms.ModManagerForm();
-            modmanager.FormClosed += new FormClosedEventHandler(this.modmanager_FormClosed);
-            modmanager.Show();
-        }
-
-        private void modmanager_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            modmanager.FormClosed -= new FormClosedEventHandler(this.modmanager_FormClosed);
-            modmanager = null;
             GC.Collect();
         }
 
@@ -219,18 +199,25 @@ namespace SpellforceDataEditor
         private void TimerCheckUpdateStatus_Tick(object sender, EventArgs e)
         {
             if (!update_finished)
+            {
                 TimerCheckUpdateStatus.Start();
+            }
             else
             {
                 if (update_available)
+                {
                     linkEditor.Visible = true;
+                }
             }
         }
 
         private void bMap_Click(object sender, EventArgs e)
         {
             if (mapedittool != null)
+            {
                 return;
+            }
+
             if (viewer != null)
             {
                 MessageBox.Show("Can't run both Map Editor and Asset Viewer simultaneously! Fix coming soon :^)");
@@ -244,10 +231,10 @@ namespace SpellforceDataEditor
             try
             {
                 mapedittool = new special_forms.MapEditorForm();
-                mapedittool.FormClosed += new FormClosedEventHandler(this.mapedittool_FormClosed);
+                mapedittool.FormClosed += new FormClosedEventHandler(mapedittool_FormClosed);
                 mapedittool.Show();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 MessageBox.Show("Error while starting Map Editor!");
             }
@@ -255,7 +242,7 @@ namespace SpellforceDataEditor
 
         private void mapedittool_FormClosed(object sender, FormClosedEventArgs e)
         {
-            mapedittool.FormClosed -= new FormClosedEventHandler(this.mapedittool_FormClosed);
+            mapedittool.FormClosed -= new FormClosedEventHandler(mapedittool_FormClosed);
             mapedittool = null;
             GC.Collect();
         }
@@ -263,20 +250,23 @@ namespace SpellforceDataEditor
         private void bSQLEdit_Click(object sender, EventArgs e)
         {
             if (sqlmodify != null)
+            {
                 return;
+            }
+
             if (!SFUnPak.game_directory_specified)
             {
                 MessageBox.Show("Game directory is not specified!");
                 return;
             }
             sqlmodify = new special_forms.SQLModifierForm();
-            sqlmodify.FormClosed += new FormClosedEventHandler(this.sqlmodify_FormClosed);
+            sqlmodify.FormClosed += new FormClosedEventHandler(sqlmodify_FormClosed);
             sqlmodify.Show();
         }
 
         private void sqlmodify_FormClosed(object sender, FormClosedEventArgs e)
         {
-            sqlmodify.FormClosed -= new FormClosedEventHandler(this.sqlmodify_FormClosed);
+            sqlmodify.FormClosed -= new FormClosedEventHandler(sqlmodify_FormClosed);
             sqlmodify = null;
             GC.Collect();
         }
@@ -284,16 +274,18 @@ namespace SpellforceDataEditor
         private void ButtonAbout_Click(object sender, EventArgs e)
         {
             if (applicationinfo != null)
+            {
                 return;
+            }
 
             applicationinfo = new special_forms.AboutForm();
-            applicationinfo.FormClosed += new FormClosedEventHandler(this.applicationinfo_FormClosed);
+            applicationinfo.FormClosed += new FormClosedEventHandler(applicationinfo_FormClosed);
             applicationinfo.Show();
         }
 
         private void applicationinfo_FormClosed(object sender, FormClosedEventArgs e)
         {
-            applicationinfo.FormClosed -= new FormClosedEventHandler(this.applicationinfo_FormClosed);
+            applicationinfo.FormClosed -= new FormClosedEventHandler(applicationinfo_FormClosed);
             applicationinfo = null;
             GC.Collect();
         }
@@ -301,16 +293,18 @@ namespace SpellforceDataEditor
         private void bSaveData_Click(object sender, EventArgs e)
         {
             if (svdata != null)
+            {
                 return;
+            }
 
             svdata = new special_forms.SaveDataEditorForm();
-            svdata.FormClosed += new FormClosedEventHandler(this.svdata_FormClosed);
+            svdata.FormClosed += new FormClosedEventHandler(svdata_FormClosed);
             svdata.Show();
         }
 
         private void svdata_FormClosed(object sender, FormClosedEventArgs e)
         {
-            applicationinfo.FormClosed -= new FormClosedEventHandler(this.svdata_FormClosed);
+            applicationinfo.FormClosed -= new FormClosedEventHandler(svdata_FormClosed);
             applicationinfo = null;
             GC.Collect();
         }

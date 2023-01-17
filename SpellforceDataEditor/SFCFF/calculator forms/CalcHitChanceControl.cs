@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 
 namespace SpellforceDataEditor.SFCFF.calculator_forms
@@ -21,20 +16,39 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
         {
             int chance = 60;
             if (charmed)
+            {
                 chance = 90;
-            if(attacker_lvl > target_lvl)
-                chance += 10 * (((attacker_lvl * 100) / target_lvl - 100)/100);
-            else if(attacker_lvl < target_lvl)
-                chance -= 20*((100-(attacker_lvl*100)/target_lvl)/100);
+            }
+
+            if (attacker_lvl > target_lvl)
+            {
+                chance += 10 * (((attacker_lvl * 100) / target_lvl - 100) / 100);
+            }
+            else if (attacker_lvl < target_lvl)
+            {
+                chance -= 20 * ((100 - (attacker_lvl * 100) / target_lvl) / 100);
+            }
+
             chance = Math.Max(Math.Min(100, chance), 0);
             if (dex < agi)
+            {
                 chance = ((((dex * 100) / agi) * 6 + 400) * chance) / 1000;
+            }
             else
+            {
                 chance = 100 - (agi * (100 - chance)) / dex;
+            }
+
             if ((!undead) && (fog))
+            {
                 chance /= 2;
+            }
+
             if (human)
+            {
                 chance = (700 * chance + 3 * (ill * 100) / 256) / 1000;
+            }
+
             return chance;
 
         }
@@ -42,47 +56,66 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
         private void SetUnitStats(int set_index, int unit_id)
         {
             if (!SFCategoryManager.ready)
+            {
                 return;
+            }
 
             // unit stuff
             if (SFCategoryManager.gamedata[2024] == null)
+            {
                 return;
+            }
 
             int index = SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
             if (index == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
+
             ushort stats_id = (ushort)SFCategoryManager.gamedata[2024][index][2];
 
             // unit stats
             if (SFCategoryManager.gamedata[2005] == null)
+            {
                 return;
+            }
 
             int index2 = SFCategoryManager.gamedata[2005].GetElementIndex((int)stats_id);
             if (index2 == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
+
             SFCategoryElement stats = SFCategoryManager.gamedata[2005][index2];
-            
+
             int lvl = (int)(ushort)stats[1];
             int dex = (int)(ushort)stats[4];
             int agi = (int)(ushort)stats[3];
 
             // get unit eq
             if (SFCategoryManager.gamedata[2025] == null)
+            {
                 return;
+            }
+
             if (SFCategoryManager.gamedata[2004] == null)
+            {
                 return;
+            }
 
             int index3 = SFCategoryManager.gamedata[2025].GetElementIndex(unit_id);
             if (index3 != SFEngine.Utility.NO_INDEX)
             {
                 SFCategoryElementList items = SFCategoryManager.gamedata[2025].element_lists[index];
-                for(int i = 0; i < items.Elements.Count; i++)
+                for (int i = 0; i < items.Elements.Count; i++)
                 {
                     //item stats
                     ushort item_id = (ushort)items[i][2];
                     int index4 = SFCategoryManager.gamedata[2004].GetElementIndex((int)item_id);
                     if (index4 == SFEngine.Utility.NO_INDEX)
+                    {
                         continue;
+                    }
 
                     SFCategoryElement item = SFCategoryManager.gamedata[2004][index4];
                     dex += (short)item[4];
@@ -90,7 +123,7 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
                 }
             }
 
-            if(set_index == 0)
+            if (set_index == 0)
             {
                 textBox3.Text = lvl.ToString();
                 textBox4.Text = dex.ToString();
@@ -132,14 +165,18 @@ namespace SpellforceDataEditor.SFCFF.calculator_forms
 
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right)
+            {
                 StepInto(textBox1, 2024);
+            }
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 StepInto(textBox2, 2024);
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

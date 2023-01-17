@@ -2,14 +2,8 @@
  * SFShader is a structure which takes care of shader parameters and shader compilation
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using System.Collections.Generic;
 
 namespace SFEngine.SF3D.SFRender
 {
@@ -38,12 +32,16 @@ namespace SFEngine.SF3D.SFRender
             // delete existing program and clear program data
             parameters.Clear();
             if (ProgramID != Utility.NO_INDEX)
+            {
                 GL.DeleteProgram(ProgramID);
+            }
 
             // generate define preamble
             string define_preamble = "#version 420\r\n";
             foreach (string s in defines)
+            {
                 define_preamble += "#define " + s + " 1\r\n";
+            }
 
             // generate shaders and compile them
             int[] shader_ids = new int[shaders.Length];
@@ -66,16 +64,23 @@ namespace SFEngine.SF3D.SFRender
 
             // link program
             for (int i = 0; i < shader_ids.Length; i++)
+            {
                 GL.AttachShader(ProgramID, shader_ids[i]);
+            }
 
             GL.LinkProgram(ProgramID);
             info = GL.GetProgramInfoLog(ProgramID);
             System.Diagnostics.Debug.WriteLine("Link info: " + info);
 
             for (int i = 0; i < shader_ids.Length; i++)
+            {
                 GL.DetachShader(ProgramID, shader_ids[i]);
+            }
+
             for (int i = 0; i < shader_ids.Length; i++)
+            {
                 GL.DeleteShader(shader_ids[i]);
+            }
 
             // done
         }
@@ -86,18 +91,34 @@ namespace SFEngine.SF3D.SFRender
             parameters[name] = GL.GetUniformLocation(ProgramID, name);
         }
 
+        // DEBUG FUNCTION
+        public void ExtractBinary(string path)
+        {
+            byte[] data = new byte[100000];
+            int ret_len = 0;
+            BinaryFormat ret_fmt = (BinaryFormat)0;
+            GL.GetProgramBinary(ProgramID, 100000, out ret_len, out ret_fmt, data);
+            byte[] data2 = new byte[ret_len];
+            System.Array.Copy(data, data2, ret_len);
+            System.IO.File.WriteAllBytes(path, data2);
+        }
+
         // sets shader #define constant for conditional compilation
         public void SetDefine(string name, bool exists)
         {
             if (defines.Contains(name))
             {
                 if (!exists)
+                {
                     defines.Remove(name);
+                }
             }
             else
             {
                 if (exists)
+                {
                     defines.Add(name);
+                }
             }
         }
     }

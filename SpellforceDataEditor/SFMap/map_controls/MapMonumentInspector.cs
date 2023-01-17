@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+﻿using SFEngine.SFCFF;
 using SFEngine.SFMap;
-using SFEngine.SFCFF;
-using SFEngine.SFLua;
+using System;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -34,21 +28,25 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             ListMonuments.Items.Clear();
             for (int i = 0; i < map.int_object_manager.monuments_index.Count; i++)
+            {
                 LoadNextMonument(i);
+            }
         }
 
         private int GetMonumentIndex(SFMapInteractiveObject o)
         {
             int i = map.int_object_manager.int_objects.IndexOf(o);
-            if(i != SFEngine.Utility.NO_INDEX)
+            if (i != SFEngine.Utility.NO_INDEX)
+            {
                 return map.int_object_manager.monuments_index.IndexOf(i);
+            }
 
             return SFEngine.Utility.NO_INDEX;
         }
 
         private string GetMonumentString(SFMapInteractiveObject io)
         {
-            string ret = SFCategoryManager.GetObjectName((ushort)io.game_id)+" ";
+            string ret = SFCategoryManager.GetObjectName((ushort)io.game_id) + " ";
             ret += io.grid_position.ToString();
             return ret;
         }
@@ -56,7 +54,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void ShowList()
         {
             if (ButtonResizeList.Text == "-")
+            {
                 return;
+            }
 
             ResizeList();
 
@@ -65,14 +65,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ResizeList()
         {
-            PanelMonumentList.Height = this.Height - PanelMonumentList.Location.Y - 3;
+            PanelMonumentList.Height = Height - PanelMonumentList.Location.Y - 3;
             ListMonuments.Height = PanelMonumentList.Height - 75;
         }
 
         public void RemoveMonument(int index)
         {
             if (ListMonuments.SelectedIndex == index)
+            {
                 PanelProperties.Enabled = false;
+            }
+
             ListMonuments.Items.RemoveAt(index);
         }
 
@@ -85,7 +88,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void HideList()
         {
             if (ButtonResizeList.Text == "+")
+            {
                 return;
+            }
 
             PanelMonumentList.Height = 30;
 
@@ -103,13 +108,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PanelProperties.Enabled = false;
             }
             else
+            {
                 ListMonuments.SelectedIndex = GetMonumentIndex((SFMapInteractiveObject)o);
+            }
         }
 
         private void ListMonuments_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ListMonuments.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             PanelProperties.Enabled = true;
             SFMapInteractiveObject monument = map.int_object_manager.int_objects[map.int_object_manager.monuments_index[ListMonuments.SelectedIndex]];
@@ -120,7 +129,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             map.selection_helper.SelectInteractiveObject(monument);
             if ((move_camera_on_select) || (monument_selected_from_list))
+            {
                 MainForm.mapedittool.SetCameraViewPoint(monument.grid_position);
+            }
+
             move_camera_on_select = false;
             monument_selected_from_list = true;
         }
@@ -128,15 +140,21 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void ButtonResizeList_Click(object sender, EventArgs e)
         {
             if (ButtonResizeList.Text == "-")
+            {
                 HideList();
+            }
             else
+            {
                 ShowList();
+            }
         }
 
         private void Angle_Validated(object sender, EventArgs e)
         {
             if (ListMonuments.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapInteractiveObject monument = map.int_object_manager.int_objects[map.int_object_manager.monuments_index[ListMonuments.SelectedIndex]];
 
@@ -159,12 +177,13 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
         {
             if (ListMonuments.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapInteractiveObject monument = map.int_object_manager.int_objects[map.int_object_manager.monuments_index[ListMonuments.SelectedIndex]];
             Angle.Text = AngleTrackbar.Value.ToString();
-            monument.angle = AngleTrackbar.Value;
-            map.RotateInteractiveObject(map.int_object_manager.monuments_index[ListMonuments.SelectedIndex], monument.angle);
+            map.RotateInteractiveObject(map.int_object_manager.monuments_index[ListMonuments.SelectedIndex], AngleTrackbar.Value);
 
             MainForm.mapedittool.update_render = true;
         }
@@ -173,7 +192,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
         {
             if (ListMonuments.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             trackbar_clicked = true;
 
@@ -187,7 +208,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void AngleTrackbar_MouseUp(object sender, MouseEventArgs e)
         {
             if (!trackbar_clicked)
+            {
                 return;
+            }
 
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()

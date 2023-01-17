@@ -5,11 +5,9 @@
  */
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.SFUnPak
 {
@@ -17,7 +15,7 @@ namespace SFEngine.SFUnPak
     {
         static public string game_directory_name { get; private set; } = "";
         static public bool game_directory_specified { get; private set; } = false;
-        static List<string> paks= new List<string>();
+        static List<string> paks = new List<string>();
         static SFPakMap pak_map = new SFPakMap();
 
         static public int PakMap_SaveData(string fname)
@@ -34,11 +32,11 @@ namespace SFEngine.SFUnPak
         // returns 0 if succeeded
         static public int SpecifyGameDirectory(string dname)
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory() called, directory: "+dname);
+            LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory() called, directory: " + dname);
             game_directory_specified = false;
             if (!Directory.Exists(dname))
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Directory "+dname+" does not exist!");
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Directory " + dname + " does not exist!");
                 return -1;
             }
             if (!Directory.Exists(dname + "\\pak"))
@@ -54,41 +52,43 @@ namespace SFEngine.SFUnPak
                 return 0;
             }
 
-            if(game_directory_name != "")
+            if (game_directory_name != "")
+            {
                 LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Directory changed, reloading data");
+            }
             else
+            {
                 LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Directory specified, loading data");
-
+            }
 
             game_directory_name = dname;
 
             pak_map.Clear();
             paks.Clear();
 
-            string[] files = Directory.GetFiles(dname+"\\pak", "*.pak");
-            foreach(string file in files)
+            string[] files = Directory.GetFiles(dname + "\\pak", "*.pak");
+            foreach (string file in files)
             {
-                //pak_map.AddPak(file);
                 paks.Add(Path.GetFileName(file));
             }
             // organize paks in descending order
             List<string> ordered_paks = new List<string>();
             int max_pak = -1;
             int next_pak_old_index = -1;
-            while(paks.Count != 0)
+            while (paks.Count != 0)
             {
                 max_pak = -1;
-                for(int i = 0; i < paks.Count; i++)
+                for (int i = 0; i < paks.Count; i++)
                 {
                     string _s = new string(paks[i].Intersect("0123456789").ToArray());
                     int cur_pak_num = Int32.Parse(_s);
-                    if(cur_pak_num > max_pak)
+                    if (cur_pak_num > max_pak)
                     {
                         max_pak = cur_pak_num;
                         next_pak_old_index = i;
                     }
                 }
-                if(max_pak!=-1)
+                if (max_pak != -1)
                 {
                     ordered_paks.Add(paks[next_pak_old_index]);
                     paks.RemoveAt(next_pak_old_index);
@@ -96,7 +96,7 @@ namespace SFEngine.SFUnPak
             }
             paks = ordered_paks;
 
-            if(pak_map.LoadData("pakdata.dat") == 0)
+            if (pak_map.LoadData("pakdata.dat") == 0)
             {
                 LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Pak map loaded");
                 game_directory_specified = true;
@@ -107,7 +107,10 @@ namespace SFEngine.SFUnPak
                 LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Failed to load pak map, generating new one");
 
                 foreach (string file in files)
+                {
                     pak_map.AddPak(file);
+                }
+
                 pak_map.SaveData("pakdata.dat");
             }
             game_directory_specified = true;
@@ -165,7 +168,7 @@ namespace SFEngine.SFUnPak
 
             if (fs == null)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.LoadFileFrom(): Could not find pak file "+pak_name);
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.LoadFileFrom(): Could not find pak file " + pak_name);
 
                 return null;
             }
@@ -180,7 +183,7 @@ namespace SFEngine.SFUnPak
             MemoryStream ms = LoadFileFind(filename);
             if (ms == null)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.ExtractFileFind(): Could not find file "+filename);
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.ExtractFileFind(): Could not find file " + filename);
                 return -1;
             }
 
@@ -218,14 +221,14 @@ namespace SFEngine.SFUnPak
 
             return 0;
         }
-        
+
         // searches for a file in paks and loads it to memory
         // returns stream of bytes which constitute for that file
         static public MemoryStream LoadFileFind(string filename)
         {
             MemoryStream ms = null;
             string real_path = game_directory_name + "\\" + filename;
-            if(File.Exists(real_path))
+            if (File.Exists(real_path))
             {
                 FileStream fs = new FileStream(real_path, FileMode.Open, FileAccess.Read);
                 BinaryReader br = new BinaryReader(fs);
@@ -236,11 +239,13 @@ namespace SFEngine.SFUnPak
             }
             else
             {
-                foreach(string pak in paks)
+                foreach (string pak in paks)
                 {
                     ms = LoadFileFrom(pak, filename);
                     if (ms != null)
+                    {
                         return ms;
+                    }
                 }
                 return null;
             }

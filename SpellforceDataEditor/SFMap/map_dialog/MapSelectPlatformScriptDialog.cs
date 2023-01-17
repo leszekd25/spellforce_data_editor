@@ -1,14 +1,8 @@
-﻿using System;
+﻿using SFEngine.SFUnPak;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.IO;
-using SFEngine.SFUnPak;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.map_dialog
 {
@@ -43,14 +37,18 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                 {
                     string s2 = Path.GetFileName(s);
                     if (!scripts_found.Contains(s2))
+                    {
                         scripts_found.Add(s2);
+                    }
                 }
             }
             scripts_found.Sort();
 
             ListScripts.Items.Clear();
             foreach (string s in scripts_found)
+            {
                 ListScripts.Items.Add(s);
+            }
         }
 
         private void ButtonCancel_Click(object sender, EventArgs e)
@@ -61,7 +59,10 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void ButtonOK_Click(object sender, EventArgs e)
         {
             if (ListScripts.SelectedIndex != -1)
+            {
                 result = ListScripts.Items[ListScripts.SelectedIndex].ToString();
+            }
+
             Close();
         }
     }

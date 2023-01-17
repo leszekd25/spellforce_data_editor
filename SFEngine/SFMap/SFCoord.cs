@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using OpenTK;
+﻿using OpenTK;
+using System;
 
 namespace SFEngine.SFMap
 {
@@ -29,7 +24,7 @@ namespace SFEngine.SFMap
             return new SFCoord(c1.x - c2.x, c1.y - c2.y);
         }
 
-        public static SFCoord operator*(SFCoord c, int q)
+        public static SFCoord operator *(SFCoord c, int q)
         {
             return new SFCoord(c.x * q, c.y * q);
         }
@@ -47,30 +42,48 @@ namespace SFEngine.SFMap
         public static bool operator <(SFCoord c1, SFCoord c2)
         {
             if (c1.y < c2.y)
+            {
                 return true;
+            }
             else if (c1.y == c2.y)
+            {
                 return (c1.x < c2.x);
+            }
             else
+            {
                 return false;
+            }
         }
 
         public static bool operator >(SFCoord c1, SFCoord c2)
         {
             if (c1.y > c2.y)
+            {
                 return true;
+            }
             else if (c1.y == c2.y)
+            {
                 return (c1.x > c2.x);
+            }
             else
+            {
                 return false;
+            }
         }
 
         public int CompareTo(object o)
         {
             SFCoord pos = (SFCoord)o;
             if (this < pos)
+            {
                 return -1;
+            }
+
             if (this == pos)
+            {
                 return 0;
+            }
+
             return 1;
         }
 
@@ -81,7 +94,7 @@ namespace SFEngine.SFMap
 
         public override int GetHashCode()
         {
-            return (x*65536+y).GetHashCode();
+            return (x * 65536 + y).GetHashCode();
         }
 
         public static explicit operator SFCoord(Vector2 v)
@@ -121,7 +134,7 @@ namespace SFEngine.SFMap
 
         public static int DistanceSquared(SFCoord p1, SFCoord p2)
         {
-            return ((p1.x - p2.x) * (p1.x - p2.x)) + ((p1.y - p2.y) * (p1.y * -p2.y));  
+            return ((p1.x - p2.x) * (p1.x - p2.x)) + ((p1.y - p2.y) * (p1.y * -p2.y));
         }
 
         public override string ToString()

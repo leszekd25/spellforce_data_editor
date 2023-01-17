@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+﻿using SFEngine.SFLua;
 using SFEngine.SFMap;
-using SFEngine.SFCFF;
-using SFEngine.SFLua;
+using System;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -31,15 +24,22 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             ListCoopCamps.Items.Clear();
             for (int i = 0; i < map.metadata.coop_spawns.Count; i++)
+            {
                 LoadNextCoopCamp(i);
+            }
         }
 
         private string GetCoopSpawnString(SFMapCoopAISpawn spawn)
         {
             string ret = "";
             if (SFLuaEnvironment.coop_spawns.coop_spawn_types != null)
+            {
                 if (SFLuaEnvironment.coop_spawns.coop_spawn_types.ContainsKey(spawn.spawn_id))
+                {
                     ret += SFLuaEnvironment.coop_spawns.coop_spawn_types[spawn.spawn_id].name + " ";
+                }
+            }
+
             ret += spawn.spawn_obj.grid_position.ToString();
             return ret;
         }
@@ -47,7 +47,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void ShowList()
         {
             if (ButtonResizeList.Text == "-")
+            {
                 return;
+            }
 
             ResizeList();
 
@@ -56,14 +58,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ResizeList()
         {
-            PanelCoopCampList.Height = this.Height - PanelCoopCampList.Location.Y - 3;
+            PanelCoopCampList.Height = Height - PanelCoopCampList.Location.Y - 3;
             ListCoopCamps.Height = PanelCoopCampList.Height - 75;
         }
 
         public void RemoveCoopCamp(int index)
         {
             if (ListCoopCamps.SelectedIndex == index)
+            {
                 PanelProperties.Enabled = false;
+            }
+
             ListCoopCamps.Items.RemoveAt(index);
         }
 
@@ -75,7 +80,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void HideList()
         {
             if (ButtonResizeList.Text == "+")
+            {
                 return;
+            }
 
             PanelCoopCampList.Height = 30;
 
@@ -93,13 +100,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PanelProperties.Enabled = false;
             }
             else
+            {
                 ListCoopCamps.SelectedIndex = map.metadata.coop_spawns.IndexOf((SFMapCoopAISpawn)o);
+            }
         }
 
         private void ListCoopCamps_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ListCoopCamps.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             PanelProperties.Enabled = true;
             SFMapCoopAISpawn spawn = map.metadata.coop_spawns[ListCoopCamps.SelectedIndex];
@@ -109,7 +120,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
             Unknown1.Text = spawn.spawn_certain.ToString();
 
             if ((move_camera_on_select) || (spawn_selected_from_list))
+            {
                 MainForm.mapedittool.SetCameraViewPoint(spawn.spawn_obj.grid_position);
+            }
+
             move_camera_on_select = false;
             spawn_selected_from_list = true;
         }
@@ -117,7 +131,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void CampID_Validated(object sender, EventArgs e)
         {
             if (ListCoopCamps.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
@@ -135,7 +151,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void Unknown1_Validated(object sender, EventArgs e)
         {
             if (ListCoopCamps.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
@@ -153,9 +171,13 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void ButtonResizeList_Click(object sender, EventArgs e)
         {
             if (ButtonResizeList.Text == "-")
+            {
                 HideList();
+            }
             else
+            {
                 ShowList();
+            }
         }
     }
 }

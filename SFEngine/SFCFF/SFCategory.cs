@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using SFEngine.SFChunk;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SFEngine.SFChunk;
 
 namespace SFEngine.SFCFF
 {
@@ -16,8 +14,8 @@ namespace SFEngine.SFCFF
         public bool AllowSubelementID;
         public int[] StringSizes;
 
-        public ChunkFormatInfo(string elem_format, string name, bool allow_multiple, bool allow_subelem_id, int[] string_sizes = null) 
-        { 
+        public ChunkFormatInfo(string elem_format, string name, bool allow_multiple, bool allow_subelem_id, int[] string_sizes = null)
+        {
             ElementFormat = elem_format;
             Name = name;
             AllowMultiple = allow_multiple;
@@ -127,7 +125,9 @@ namespace SFEngine.SFCFF
                 elem_base_size = GetEmptyElement().GetSize();
 
                 if (string_size == null)
+                {
                     string_size = new int[] { 0 };
+                }
             }
             else
             {
@@ -203,7 +203,7 @@ namespace SFEngine.SFCFF
 
             // empty elements for certain categories dont have all zeros
             // todo: move this somewhere else
-            switch(category_id)
+            switch (category_id)
             {
                 case 2012:
                 case 2014:
@@ -257,12 +257,14 @@ namespace SFEngine.SFCFF
                     byte vcount = sr.ReadByte();
                     SFOutlineData ret = new SFOutlineData() { Data = new List<short>() };
 
-                    for(int i = 0; i < vcount*2; i++)
+                    for (int i = 0; i < vcount * 2; i++)
+                    {
                         ret.Data.Add(sr.ReadInt16());
+                    }
 
                     return ret;
                 default:
-                    LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory[): Unrecognized variant type (category: " + category_name+")");
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory[): Unrecognized variant type (category: " + category_name + ")");
 
                     return null;
             }
@@ -274,19 +276,33 @@ namespace SFEngine.SFCFF
         {
             Type t = var.GetType();
             if (t == typeof(SByte))
+            {
                 sw.Write((SByte)var);
+            }
             else if (t == typeof(Byte))
+            {
                 sw.Write((Byte)var);
+            }
             else if (t == typeof(Int16))
+            {
                 sw.Write((Int16)var);
+            }
             else if (t == typeof(UInt16))
+            {
                 sw.Write((UInt16)var);
+            }
             else if (t == typeof(Int32))
+            {
                 sw.Write((Int32)var);
+            }
             else if (t == typeof(UInt32))
+            {
                 sw.Write((UInt32)var);
+            }
             else if (t == typeof(SFString))
+            {
                 sw.Write(((SFString)var).RawData);
+            }
             else if (t == typeof(SFOutlineData))
             {
                 if (((SFOutlineData)var).Data.Count < 3)
@@ -294,12 +310,16 @@ namespace SFEngine.SFCFF
                     LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory.WriteVariantToBuffer(): Insufficient outline points!");
                     throw new Exception("SFCategory.WriteVariantToBuffer(): Invalid outline data!");
                 }
-                sw.Write((byte)(((SFOutlineData)var).Data.Count/2));
+                sw.Write((byte)(((SFOutlineData)var).Data.Count / 2));
                 for (int i = 0; i < ((SFOutlineData)var).Data.Count; i++)
+                {
                     sw.Write(((SFOutlineData)var).Data[i]);
+                }
             }
             else
+            {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.put_single_variant(): Unrecognized variant type (category: " + category_name + ")");
+            }
         }
 
         //retrieves next element (sequence of variants as an array of objects) from a buffer
@@ -330,7 +350,10 @@ namespace SFEngine.SFCFF
             while (true)
             {
                 if (sr.BaseStream.Position >= sr.BaseStream.Length)
+                {
                     break;
+                }
+
                 int next_id = Utility.NO_INDEX;
                 if (char_load == 'B')
                 {
@@ -343,14 +366,19 @@ namespace SFEngine.SFCFF
                     sr.BaseStream.Seek(-2, SeekOrigin.Current);
                 }
                 if (next_id == Utility.NO_INDEX)
+                {
                     break;
+                }
+
                 current_string = 0;
                 if ((next_id == cur_id) || (cur_id == Utility.NO_INDEX))
                 {
                     SFCategoryElement elem = new SFCategoryElement();
                     cur_id = next_id;
                     for (int i = 0; i < elem_format.Length; i++)
+                    {
                         elem.AddVariant(ReadVariantFromBuffer(sr, elem_format[i], string_size[current_string]));
+                    }
 
                     // sometimes gamedata is malformed; this attempts to fix issue here multiple sub-elements with the same sub-ID exist within one element
                     if (category_allow_subelement_id)
@@ -358,9 +386,13 @@ namespace SFEngine.SFCFF
                         int cur_subelem_id = elem.ToInt(1);
                         int prev_subelem_index = elements_loaded.GetIndexByID(cur_subelem_id);
                         if (prev_subelem_index == Utility.NO_INDEX)
+                        {
                             elements_loaded.Elements.Add(elem);
+                        }
                         else
+                        {
                             elements_loaded.Elements[prev_subelem_index] = elem;
+                        }
                     }
                     else
                     {
@@ -368,7 +400,9 @@ namespace SFEngine.SFCFF
                     }
                 }
                 else
+                {
                     break;
+                }
             }
 
             return elements_loaded;
@@ -382,7 +416,9 @@ namespace SFEngine.SFCFF
             for (int i = 0; i < elements.Count; i++)
             {
                 if (((T)elements[i].variants[v_index]).CompareTo(value) == 0)   // if elements[i] == value
+                {
                     return elements[i];
+                }
             }
             LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.find_element(): Element not found (variant index = " + v_index.ToString() + ", value = " + value.ToString() + ", category: " + category_name + ")");
             return null;
@@ -396,7 +432,9 @@ namespace SFEngine.SFCFF
             for (int i = 0; i < elements.Count; i++)
             {
                 if (((T)elements[i].variants[v_index]).CompareTo(value) == 0)
+                {
                     return i;
+                }
             }
             LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.find_element_index(): Element not found (variant index = " + v_index.ToString() + ", value = " + value.ToString() + ", category: " + category_name + ")");
             return Utility.NO_INDEX;
@@ -417,11 +455,18 @@ namespace SFEngine.SFCFF
                 current_center = (current_start + current_end) / 2;    //care about overflow
                 val = (T)elements[current_center].variants[v_index];
                 if (val.CompareTo(value) == 0)
+                {
                     return elements[current_center];
+                }
+
                 if (val.CompareTo(value) < 0)
+                {
                     current_start = current_center + 1;
+                }
                 else
+                {
                     current_end = current_center - 1;
+                }
             }
             LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFCategory.find_binary_element(): Element not found (variant index = " + v_index.ToString() + ", value = " + value.ToString() + ", category: " + category_name + ")");
             return null;
@@ -443,11 +488,18 @@ namespace SFEngine.SFCFF
                 current_center = (current_start + current_end) / 2;    //care about overflow
                 val = (T)elements[current_center].variants[v_index];
                 if (val.CompareTo(value) == 0)
+                {
                     return current_center;
+                }
+
                 if (val.CompareTo(value) < 0)
+                {
                     current_start = current_center + 1;
+                }
                 else
+                {
                     current_end = current_center - 1;
+                }
             }
 
             return Utility.NO_INDEX;
@@ -469,11 +521,18 @@ namespace SFEngine.SFCFF
                 current_center = (current_start + current_end) / 2;    //care about overflow
                 val = (T)element_lists[current_center].Elements[0].variants[v_index];
                 if (val.CompareTo(value) == 0)
+                {
                     return current_center;
+                }
+
                 if (val.CompareTo(value) < 0)
+                {
                     current_start = current_center + 1;
+                }
                 else
+                {
                     current_end = current_center - 1;
+                }
             }
 
             return Utility.NO_INDEX;
@@ -482,8 +541,10 @@ namespace SFEngine.SFCFF
         //puts a new element (as a list of variants) to a buffer
         public void WriteElementToBuffer(BinaryWriter sw, SFCategoryElement elem)
         {
-            foreach(var v in elem.variants)
+            foreach (var v in elem.variants)
+            {
                 WriteVariantToBuffer(sw, v);
+            }
         }
 
         //returns size of all category elements (in bytes)
@@ -492,9 +553,9 @@ namespace SFEngine.SFCFF
             int s = 0;
             if (category_allow_multiple)
             {
-                foreach(SFCategoryElementList elem_list in element_lists)
+                foreach (SFCategoryElementList elem_list in element_lists)
                 {
-                    foreach(SFCategoryElement elem in elem_list.Elements)
+                    foreach (SFCategoryElement elem in elem_list.Elements)
                     {
                         s += elem.GetSize();
                     }
@@ -516,7 +577,6 @@ namespace SFEngine.SFCFF
             {
                 if (category_is_known)
                 {
-                    //int i = 0;
                     int ind = 0;
                     while (br.BaseStream.Position < br.BaseStream.Length)
                     {
@@ -543,11 +603,6 @@ namespace SFEngine.SFCFF
                             LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFCategory.read(): Unknown error while reading! Category: " + category_name);
                             return -3;
                         }
-
-                       /* if (GetElementID(ind) < i)
-                            i = 0;                           // breakpoint for when data is not sorted in ascending order
-
-                        i = GetElementID(ind);*/
                         ind += 1;
                     }
 
@@ -610,12 +665,12 @@ namespace SFEngine.SFCFF
                         for (int i = 0; i < GetElementCount(); i++)
                         {
                             for (int j = 0; j < element_lists[i].Elements.Count; j++)
-							{
-								if ((element_lists[i].ElementStatus[j] == SFCategoryElementStatus.ADDED) || (element_lists[i].ElementStatus[j] == SFCategoryElementStatus.MODIFIED))
-								{
-									WriteElementToBuffer(bw, element_lists[i].Elements[j]);
-								}
-							}
+                            {
+                                if ((element_lists[i].ElementStatus[j] == SFCategoryElementStatus.ADDED) || (element_lists[i].ElementStatus[j] == SFCategoryElementStatus.MODIFIED))
+                                {
+                                    WriteElementToBuffer(bw, element_lists[i].Elements[j]);
+                                }
+                            }
                         }
                     }
                     else
@@ -634,7 +689,9 @@ namespace SFEngine.SFCFF
             }
 
             if (new_block_size_tmp == 0)
+            {
                 return null;
+            }
 
             return data.Take((int)new_block_size_tmp).ToArray();
         }
@@ -649,7 +706,10 @@ namespace SFEngine.SFCFF
         {
             byte[] data = ToRawDataDiff();
             if (data != null)
+            {
                 sfcf.AddChunk(category_id, 0, false, category_type, data);
+            }
+
             return 0;
         }
 
@@ -657,9 +717,13 @@ namespace SFEngine.SFCFF
         public int GetElementCount()
         {
             if (category_allow_multiple)
+            {
                 return element_lists.Count;
+            }
             else
+            {
                 return elements.Count;
+            }
         }
 
         //returns element format string
@@ -672,18 +736,26 @@ namespace SFEngine.SFCFF
         public virtual int GetElementID(int index)
         {
             if (index < 0)
+            {
                 return Utility.NO_INDEX;
+            }
 
             if (category_allow_multiple)
             {
                 if (index >= element_lists.Count)
+                {
                     return Utility.NO_INDEX;
+                }
+
                 return element_lists[index].GetID();
             }
             else
             {
                 if (index >= elements.Count)
+                {
                     return Utility.NO_INDEX;
+                }
+
                 return elements[index].ToInt(0);
             }
         }
@@ -736,11 +808,18 @@ namespace SFEngine.SFCFF
                 current_center = (current_start + current_end) / 2;    //care about overflow (though its not happening in this case)
                 val = GetElementID(current_center);
                 if (val.CompareTo(id) == 0)
+                {
                     return -1;
+                }
+
                 if (val.CompareTo(id) < 0)
+                {
                     current_start = current_center + 1;
+                }
                 else
+                {
                     current_end = current_center - 1;
+                }
             }
             return current_start;
         }
@@ -755,11 +834,11 @@ namespace SFEngine.SFCFF
             int start_index = Utility.NO_INDEX;
 
             int c = GetElementCount();
-            for(int i = 0; i < c; i++)
+            for (int i = 0; i < c; i++)
             {
-                if(GetElementID(i) >= id)
+                if (GetElementID(i) >= id)
                 {
-                    if(GetElementID(i) == id)
+                    if (GetElementID(i) == id)
                     {
                         // there already exists element with given ID
                         start_index = i;
@@ -775,13 +854,17 @@ namespace SFEngine.SFCFF
 
             // all IDs are smaller than new ID -> there is no element with given ID
             if (start_index == Utility.NO_INDEX)
+            {
                 return c;
+            }
 
-            for(int i = start_index+1; i < c; i++)
+            for (int i = start_index + 1; i < c; i++)
             {
                 // next ID is successor of this ID
                 if (GetElementID(i) == id + 1)
+                {
                     id += 1;
+                }
                 else
                 {
                     // there is a gap between this ID and next ID, so set return ID to fit the gap
@@ -810,9 +893,14 @@ namespace SFEngine.SFCFF
             {
                 int id = e1.Elements[i].ToInt(1);
                 if (!subelem1.ContainsKey(id))
+                {
                     subelem1.Add(id, i);
+                }
                 else
+                {
                     subelem1[id] = i;
+                }
+
                 max_id = Math.Max(max_id, id);
             }
 
@@ -820,18 +908,27 @@ namespace SFEngine.SFCFF
             {
                 int id = e2.Elements[i].ToInt(1);
                 if (!subelem2.ContainsKey(id))
+                {
                     subelem2.Add(id, i);
+                }
                 else
+                {
                     subelem2[id] = i;
+                }
+
                 max_id = Math.Max(max_id, id);
             }
 
-            for(int i = 0; i <= max_id; i++)
+            for (int i = 0; i <= max_id; i++)
             {
                 if (subelem2.ContainsKey(i))
+                {
                     ret.Elements.Add(e2.Elements[subelem2[i]].GetCopy());
-                else if(subelem1.ContainsKey(i))
+                }
+                else if (subelem1.ContainsKey(i))
+                {
                     ret.Elements.Add(e1.Elements[subelem1[i]].GetCopy());
+                }
             }
 
             return 0;
@@ -841,7 +938,7 @@ namespace SFEngine.SFCFF
         public static int MergeWithoutSubID(SFCategoryElementList e1, SFCategoryElementList e2, out SFCategoryElementList ret)
         {
             ret = new SFCategoryElementList();
-            for(int i = 0; i < e2.Elements.Count; i++)
+            for (int i = 0; i < e2.Elements.Count; i++)
             {
                 ret.Elements.Add(e2.Elements[i].GetCopy());
             }
@@ -856,9 +953,14 @@ namespace SFEngine.SFCFF
             ret = null;
 
             if (!cat1.category_is_known)
+            {
                 return -1;
+            }
+
             if (!cat2.category_is_known)
+            {
                 return -1;
+            }
 
             ret = new SFCategory()
             {
@@ -887,12 +989,19 @@ namespace SFEngine.SFCFF
             while (true)
             {
                 if (new_i == cat2.GetElementCount())
+                {
                     new_end = true;
+                }
+
                 if (orig_i == cat1.GetElementCount())
+                {
                     orig_end = true;
+                }
 
                 if (orig_end && new_end)
+                {
                     break;
+                }
 
                 orig_id = cat1.GetElementID(orig_i);
                 new_id = cat2.GetElementID(new_i);
@@ -900,39 +1009,58 @@ namespace SFEngine.SFCFF
                 if (orig_end)
                 {
                     if (cat2.category_allow_multiple)
+                    {
                         ret.element_lists.Add(cat2.element_lists[new_i].GetCopy());
+                    }
                     else
+                    {
                         ret.elements.Add(cat2[new_i].GetCopy());
+                    }
                 }
                 else if (new_end)
                 {
                     if (cat1.category_allow_multiple)
+                    {
                         ret.element_lists.Add(cat1.element_lists[orig_i].GetCopy());
+                    }
                     else
+                    {
                         ret.elements.Add(cat1[orig_i].GetCopy());
+                    }
                 }
                 else
                 {
                     if (orig_id == new_id)
                     {
-                        if(cat1.category_allow_multiple)
+                        if (cat1.category_allow_multiple)
                         {
                             SFCategoryElementList new_elem;
                             if (cat1.category_allow_subelement_id)
+                            {
                                 MergeWithSubID(cat1.element_lists[orig_i], cat2.element_lists[new_i], out new_elem);
+                            }
                             else
+                            {
                                 MergeWithoutSubID(cat1.element_lists[orig_i], cat2.element_lists[new_i], out new_elem);
+                            }
+
                             ret.element_lists.Add(new_elem);
                         }
                         else
+                        {
                             ret.elements.Add(cat2[new_i].GetCopy());
+                        }
                     }
                     else if (orig_id > new_id)
                     {
-                        if(cat2.category_allow_multiple)
+                        if (cat2.category_allow_multiple)
+                        {
                             ret.element_lists.Add(cat2.element_lists[new_i].GetCopy());
+                        }
                         else
+                        {
                             ret.elements.Add(cat2[new_i].GetCopy());
+                        }
                         // addition!
 
                         orig_i -= 1;
@@ -940,18 +1068,27 @@ namespace SFEngine.SFCFF
                     else if (orig_id < new_id)
                     {
                         if (cat1.category_allow_multiple)
+                        {
                             ret.element_lists.Add(cat1.element_lists[orig_i].GetCopy());
+                        }
                         else
+                        {
                             ret.elements.Add(cat1[orig_i].GetCopy());
+                        }
 
                         new_i -= 1;
                     }
                 }
 
                 if (orig_i < cat1.GetElementCount())
+                {
                     orig_i += 1;
+                }
+
                 if (new_i < cat2.GetElementCount())
+                {
                     new_i += 1;
+                }
             }
 
             return 0;
@@ -984,28 +1121,34 @@ namespace SFEngine.SFCFF
 
             for (int i = 0; i <= max_id; i++)
             {
-                if(subelem2.ContainsKey(i))
+                if (subelem2.ContainsKey(i))
                 {
-                    if(subelem1.ContainsKey(i))
+                    if (subelem1.ContainsKey(i))
                     {
                         if (elem_base[subelem1[i]].SameAs(elem_new[subelem2[i]]))
+                        {
                             elem_status.ElementStatus.Add(SFCategoryElementStatus.UNCHANGED);
+                        }
                         else
+                        {
                             elem_status.ElementStatus.Add(SFCategoryElementStatus.MODIFIED);
+                        }
                     }
                     else
                     {
                         elem_status.ElementStatus.Add(SFCategoryElementStatus.ADDED);
                     }
                 }
-                else if(subelem1.ContainsKey(i))
+                else if (subelem1.ContainsKey(i))
                 {
                     elem_status.ElementStatus.Add(SFCategoryElementStatus.REMOVED);
                 }
             }
 
             if (elem_status.Elements.Count != elem_status.ElementStatus.Count)
+            {
                 throw new Exception("meme");
+            }
         }
 
         public static void CalculateStatusWithoutSubID(SFCategoryElementList elem_base, SFCategoryElementList elem_new, ref SFCategoryElementList elem_status)
@@ -1026,39 +1169,6 @@ namespace SFEngine.SFCFF
                     elem_status.ElementStatus.Add(SFCategoryElementStatus.ADDED);
                 }
             }
-
-            // make dictionary for both elements: key: subelement id, value: subelement position
-            /*Dictionary<int, int> subelem1 = new Dictionary<int, int>();
-            Dictionary<int, int> subelem2 = new Dictionary<int, int>();
-
-            for (int i = 0; i < elem_base.Elements.Count; i++)
-            {
-                int id = elem_base.Elements[i].GetHashCode();
-                subelem1.Add(id, i);
-            }
-
-            for (int i = 0; i < elem_new.Elements.Count; i++)
-            {
-                int id = elem_new.Elements[i].GetHashCode();
-                subelem2.Add(id, i);
-            }
-
-            foreach (var kv in subelem1)
-            {
-                if (subelem2.ContainsKey(kv.Key))
-                    elem_status.ElementStatus.Add(SFCategoryElementStatus.UNCHANGED);
-                else
-                    elem_status.ElementStatus.Add(SFCategoryElementStatus.REMOVED);
-            }
-            foreach (var kv in subelem2)
-            {
-                if (!subelem1.ContainsKey(kv.Key))
-                    elem_status.ElementStatus.Add(SFCategoryElementStatus.ADDED);
-            }
-
-
-            if (elem_status.Elements.Count != elem_status.ElementStatus.Count)
-                throw new Exception("meme");*/
         }
 
         // only used if both categories are of the same ID and type, and are known
@@ -1075,12 +1185,19 @@ namespace SFEngine.SFCFF
             while (true)
             {
                 if (new_i == cat_new.GetElementCount())
+                {
                     new_end = true;
+                }
+
                 if (orig_i == cat_base.GetElementCount())
+                {
                     orig_end = true;
+                }
 
                 if (orig_end && new_end)
+                {
                     break;
+                }
 
                 orig_id = cat_base.GetElementID(orig_i);
                 new_id = cat_new.GetElementID(new_i);
@@ -1089,14 +1206,17 @@ namespace SFEngine.SFCFF
                 {
                     cat_status.element_status.Add(SFCategoryElementStatus.ADDED);
                     if (cat_base.category_allow_multiple)
+                    {
                         cat_status.element_lists[new_i].SetStatusAll(SFCategoryElementStatus.ADDED);
-
+                    }
                 }
                 else if (new_end)
                 {
                     cat_status.element_status.Add(SFCategoryElementStatus.REMOVED);
                     if (cat_base.category_allow_multiple)
+                    {
                         cat_status.element_lists[orig_i].SetStatusAll(SFCategoryElementStatus.REMOVED);
+                    }
                 }
                 else   // orig_i == new_i
                 {
@@ -1107,31 +1227,41 @@ namespace SFEngine.SFCFF
                             if (cat_base.element_lists[orig_i].SameAs(cat_new.element_lists[new_i]))
                             {
                                 cat_status.element_status.Add(SFCategoryElementStatus.UNCHANGED);
-                                cat_status.element_lists[cat_status.element_status.Count-1].SetStatusAll(SFCategoryElementStatus.UNCHANGED);
+                                cat_status.element_lists[cat_status.element_status.Count - 1].SetStatusAll(SFCategoryElementStatus.UNCHANGED);
                             }
                             else
                             {
                                 cat_status.element_status.Add(SFCategoryElementStatus.MODIFIED);
                                 SFCategoryElementList list_status = cat_status.element_lists[cat_status.element_status.Count - 1];
                                 if (cat_status.category_allow_subelement_id)
+                                {
                                     CalculateStatusWithSubID(cat_base.element_lists[orig_i], cat_new.element_lists[new_i], ref list_status);
+                                }
                                 else
+                                {
                                     CalculateStatusWithoutSubID(cat_base.element_lists[orig_i], cat_new.element_lists[new_i], ref list_status);
+                                }
                             }
                         }
                         else
                         {
                             if (cat_base[orig_i].SameAs(cat_new[new_i]))
+                            {
                                 cat_status.element_status.Add(SFCategoryElementStatus.UNCHANGED);
+                            }
                             else
+                            {
                                 cat_status.element_status.Add(SFCategoryElementStatus.MODIFIED);
+                            }
                         }
                     }
                     else if (orig_id > new_id)
                     {
                         cat_status.element_status.Add(SFCategoryElementStatus.ADDED);
                         if (cat_base.category_allow_multiple)
+                        {
                             cat_status.element_lists[cat_status.element_status.Count - 1].SetStatusAll(SFCategoryElementStatus.ADDED);
+                        }
 
                         orig_i -= 1;
                     }
@@ -1139,24 +1269,31 @@ namespace SFEngine.SFCFF
                     {
                         cat_status.element_status.Add(SFCategoryElementStatus.REMOVED);
                         if (cat_base.category_allow_multiple)
+                        {
                             cat_status.element_lists[cat_status.element_status.Count - 1].SetStatusAll(SFCategoryElementStatus.REMOVED);
+                        }
 
                         new_i -= 1;
                     }
                 }
 
                 if (orig_i < cat_base.GetElementCount())
+                {
                     orig_i += 1;
+                }
+
                 if (new_i < cat_new.GetElementCount())
+                {
                     new_i += 1;
+                }
             }
         }
 
         public void special_cat2016_DetermineLanguageIDs()
         {
-            foreach(var list in element_lists)
+            foreach (var list in element_lists)
             {
-                for(int i = 0; i < list.Elements.Count; i++)
+                for (int i = 0; i < list.Elements.Count; i++)
                 {
                     byte l_id = (byte)(list[i][1]);
                     list[i][4] = new SFString() { LanguageID = l_id, RawData = ((SFString)(list[i][4])).RawData };

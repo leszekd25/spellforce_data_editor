@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using SFEngine.SFMap;
-using SFEngine.SFCFF;
+﻿using SFEngine.SFCFF;
 using SFEngine.SFLua;
+using SFEngine.SFMap;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -34,13 +30,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             ListBuildings.Items.Clear();
             for (int i = 0; i < map.building_manager.buildings.Count; i++)
+            {
                 LoadNextBuilding(i);
+            }
         }
 
         private void ShowList()
         {
             if (ButtonResizeList.Text == "-")
+            {
                 return;
+            }
 
             ResizeList();
 
@@ -49,7 +49,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ResizeList()
         {
-            PanelBuildingList.Height = this.Height - PanelBuildingList.Location.Y - 3;
+            PanelBuildingList.Height = Height - PanelBuildingList.Location.Y - 3;
             ListBuildings.Height = PanelBuildingList.Height - 125;
             SearchBuildingText.Location = new Point(SearchBuildingText.Location.X, ListBuildings.Location.Y + ListBuildings.Height + 8);
             SearchBuildingNext.Location = new Point(SearchBuildingNext.Location.X, SearchBuildingText.Location.Y + 28);
@@ -59,7 +59,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void HideList()
         {
             if (ButtonResizeList.Text == "+")
+            {
                 return;
+            }
 
             PanelBuildingList.Height = 30;
 
@@ -69,7 +71,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         public void RemoveBuilding(int index)
         {
             if (ListBuildings.SelectedIndex == index)
+            {
                 PanelProperties.Enabled = false;
+            }
 
             ListBuildings.Items.RemoveAt(index);
         }
@@ -84,7 +88,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void MapBuildingInspector_Resize(object sender, EventArgs e)
         {
             if (ButtonResizeList.Text == "+")
+            {
                 return;
+            }
 
             ResizeList();
         }
@@ -101,22 +107,29 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PanelProperties.Enabled = false;
             }
             else
+            {
                 ListBuildings.SelectedIndex = map.building_manager.buildings.IndexOf((SFMapBuilding)o);
+            }
         }
 
         private void ButtonResizeList_Click(object sender, EventArgs e)
         {
             if (ButtonResizeList.Text == "-")
+            {
                 HideList();
+            }
             else
+            {
                 ShowList();
+            }
         }
 
         private void ListBuildings_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
-            ((MapEdit.MapBuildingEditor)MainForm.mapedittool.selected_editor).selected_building = ListBuildings.SelectedIndex;
+            } ((MapEdit.MapBuildingEditor)MainForm.mapedittool.selected_editor).selected_building = ListBuildings.SelectedIndex;
 
             PanelProperties.Enabled = true;
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
@@ -127,10 +140,13 @@ namespace SpellforceDataEditor.SFMap.map_controls
             AngleTrackbar.Value = building.angle;
             Level.Text = building.level.ToString();
             RaceID.Text = building.race_id.ToString();
-            
+
             map.selection_helper.SelectBuilding(building);
-            if ((move_camera_on_select)||(building_selected_from_list))
+            if ((move_camera_on_select) || (building_selected_from_list))
+            {
                 MainForm.mapedittool.SetCameraViewPoint(building.grid_position);
+            }
+
             move_camera_on_select = false;
             building_selected_from_list = true;
         }
@@ -138,17 +154,23 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void BuildingID_Validated(object sender, EventArgs e)
         {
             if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             ushort new_building_id = SFEngine.Utility.TryParseUInt16(BuildingID.Text);
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
             if (building.game_id == new_building_id)
+            {
                 return;
+            }
 
             // check if new building exists
             if (SFCategoryManager.gamedata[2029].GetElementIndex(new_building_id) == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
@@ -156,7 +178,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 type = map_operators.MapOperatorEntityType.BUILDING,
                 index = ListBuildings.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.ID,
-                PreChangeProperty = building.game_id,
+                PreChangeProperty = (ushort)building.game_id,
                 PostChangeProperty = new_building_id
             });
 
@@ -165,13 +187,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
             LabelBuildingName.Text = SFCategoryManager.GetBuildingName(new_building_id);
             ListBuildings.Items[ListBuildings.SelectedIndex] = LabelBuildingName.Text + " "
                 + map.building_manager.buildings[ListBuildings.SelectedIndex].grid_position.ToString();
+
+            map.heightmap.RefreshOverlay();
             MainForm.mapedittool.update_render = true;
         }
 
         private void NPCID_Validated(object sender, EventArgs e)
         {
             if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
 
@@ -202,21 +228,29 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void NPCScript_Click(object sender, EventArgs e)
         {
             if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
             if (building.npc_id == 0)
+            {
                 return;
+            }
 
             string fname = "script\\p" + map.PlatformID.ToString() + "\\n" + building.npc_id.ToString() + ".lua";
             if (SFLuaEnvironment.OpenNPCScript((int)map.PlatformID, building.npc_id) != 0)
+            {
                 MessageBox.Show("Could not open " + fname);
+            }
         }
 
         private void Angle_Validated(object sender, EventArgs e)
         {
             if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
 
@@ -239,13 +273,15 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
         {
             if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
             Angle.Text = AngleTrackbar.Value.ToString();
-            building.angle = AngleTrackbar.Value;
-            map.RotateBuilding(ListBuildings.SelectedIndex, building.angle);
+            map.RotateBuilding(ListBuildings.SelectedIndex, AngleTrackbar.Value);
 
+            map.heightmap.RefreshOverlay();
             MainForm.mapedittool.update_render = true;
         }
 
@@ -253,7 +289,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
         {
             if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             trackbar_clicked = true;
 
@@ -267,7 +305,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void AngleTrackbar_MouseUp(object sender, MouseEventArgs e)
         {
             if (!trackbar_clicked)
+            {
                 return;
+            }
 
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
@@ -287,7 +327,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void Level_Validated(object sender, EventArgs e)
         {
             if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
 
@@ -307,7 +349,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void RaceID_Validated(object sender, EventArgs e)
         {
             if (ListBuildings.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
 
@@ -328,66 +372,84 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             string search_phrase = SearchBuildingText.Text.Trim().ToLower();
             if (search_phrase == "")
+            {
                 return;
+            }
 
             int search_start = ListBuildings.SelectedIndex;
 
             move_camera_on_select = true;
 
             for (int i = search_start + 1; i < map.building_manager.buildings.Count; i++)
+            {
                 if (ListBuildings.Items[i].ToString().ToLower().Contains(search_phrase))
                 {
                     ListBuildings.SelectedIndex = i;
                     return;
                 }
+            }
 
             for (int i = 0; i <= search_start; i++)
+            {
                 if (ListBuildings.Items[i].ToString().ToLower().Contains(search_phrase))
                 {
                     ListBuildings.SelectedIndex = i;
                     return;
                 }
+            }
         }
 
         private void SearchBuildingPrevious_Click(object sender, EventArgs e)
         {
             string search_phrase = SearchBuildingText.Text.Trim().ToLower();
             if (search_phrase == "")
+            {
                 return;
+            }
 
             int search_start = ListBuildings.SelectedIndex;
 
             move_camera_on_select = true;
 
             for (int i = search_start - 1; i >= 0; i--)
+            {
                 if (ListBuildings.Items[i].ToString().ToLower().Contains(search_phrase))
                 {
                     ListBuildings.SelectedIndex = i;
                     return;
                 }
+            }
 
             if (search_start == -1)
+            {
                 search_start = 0;
+            }
 
             for (int i = map.building_manager.buildings.Count - 1; i >= search_start; i--)
+            {
                 if (ListBuildings.Items[i].ToString().ToLower().Contains(search_phrase))
                 {
                     ListBuildings.SelectedIndex = i;
                     return;
                 }
+            }
         }
 
         private void BuildingID_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt8(BuildingID.Text);
                 int real_elem_id = SFCategoryManager.gamedata[2029].GetElementIndex(elem_id);
                 if (real_elem_id != SFEngine.Utility.NO_INDEX)
+                {
                     MainForm.data.Tracer_StepForward(23, real_elem_id);
+                }
             }
         }
     }

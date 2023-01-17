@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SFEngine.SFMap;
+﻿using SFEngine.SFMap;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
@@ -35,7 +30,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     break;
             }
             if (distance > (size - 1))
+            {
                 return 1;
+            }
+
             float k = distance / (size - 1);
             return k;
         }

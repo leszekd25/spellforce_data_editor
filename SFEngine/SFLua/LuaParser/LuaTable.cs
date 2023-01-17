@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SFEngine.SFLua.LuaParser
 {
@@ -26,15 +22,22 @@ namespace SFEngine.SFLua.LuaParser
             get
             {
                 if (!entries.ContainsKey(key))
+                {
                     return null;
+                }
+
                 return entries[key];
             }
             set
             {
                 if (!entries.ContainsKey(key))
+                {
                     entries.Add(key, value);
+                }
                 else
+                {
                     entries[key] = value;
+                }
             }
         }
 
@@ -61,25 +64,42 @@ namespace SFEngine.SFLua.LuaParser
                         {
                             LuaTable t = new LuaTable();
                             if (!t.Parse(scr))
+                            {
                                 return false;
+                            }
+
                             if (entries.ContainsKey(next_key))
+                            {
                                 entries[next_key] = t;
+                            }
                             else
+                            {
                                 entries.Add(next_key, t);
+                            }
+
                             next_key = null;
                             state = ParseState.READ_COMMA;
                         }
                         if (state == ParseState.READ_START)
+                        {
                             state = ParseState.READ_IDENTIFIER;
+                        }
+
                         break;
                     case '}':
                         if ((state == ParseState.READ_COMMA) || (state == ParseState.READ_IDENTIFIER))
+                        {
                             state = ParseState.READ_END;
+                        }
+
                         if (state == ParseState.READ_END)
+                        {
                             return true;
+                        }
+
                         break;
                     case '[':
-                        if(state == ParseState.READ_IDENTIFIER)
+                        if (state == ParseState.READ_IDENTIFIER)
                         {
                             int index = scr.ReadIndex();
                             next_key = (double)index;
@@ -88,21 +108,32 @@ namespace SFEngine.SFLua.LuaParser
                         break;
                     case '=':
                         if (state == ParseState.READ_EQUAL_SIGN)
+                        {
                             state = ParseState.READ_VALUE;
+                        }
+
                         break;
                     case ',':
-                        if(state == ParseState.READ_EQUAL_SIGN)
+                        if (state == ParseState.READ_EQUAL_SIGN)
                         {
                             max_index += 1;
                             if (entries.ContainsKey((double)max_index))
+                            {
                                 entries[(double)max_index] = next_key;
+                            }
                             else
+                            {
                                 entries.Add((double)max_index, next_key);   // named constants, named functions etc. (handle differently, todo) 
+                            }
+
                             next_key = null;
                             state = ParseState.READ_COMMA;
                         }
                         if (state == ParseState.READ_COMMA)
+                        {
                             state = ParseState.READ_IDENTIFIER;
+                        }
+
                         break;
                     case '"':
                     case '\'':
@@ -112,48 +143,60 @@ namespace SFEngine.SFLua.LuaParser
                             next_key = (double)max_index;
                             state = ParseState.READ_VALUE;
                         }
-                        if(state == ParseState.READ_VALUE)
+                        if (state == ParseState.READ_VALUE)
                         {
                             string str = scr.ReadString();
                             if (entries.ContainsKey(next_key))
+                            {
                                 entries[next_key] = str;
+                            }
                             else
+                            {
                                 entries.Add(next_key, str);
+                            }
+
                             next_key = null;
                             state = ParseState.READ_COMMA;
                         }
                         break;
                     default:
-                        if(scr.IsWhitespaceCharacter(scr.code[scr.position]))
+                        if (scr.IsWhitespaceCharacter(scr.code[scr.position]))
                         {
                             while (scr.IsWhitespaceCharacter(scr.code[scr.position]))
                             {
                                 scr.position += 1;
                                 if (scr.position == scr.code.Length)
+                                {
                                     break;
+                                }
                             }
                             scr.position -= 1;
                             break;
                         }
-                        if((scr.IsIdentifierCharacter(scr.code[scr.position]))&&(!scr.IsNumberCharacter(scr.code[scr.position])))
+                        if ((scr.IsIdentifierCharacter(scr.code[scr.position])) && (!scr.IsNumberCharacter(scr.code[scr.position])))
                         {
                             if (state == ParseState.READ_IDENTIFIER)
                             {
                                 next_key = scr.ReadIdentifier();
                                 state = ParseState.READ_EQUAL_SIGN;
                             }
-                            if(state == ParseState.READ_VALUE)
+                            if (state == ParseState.READ_VALUE)
                             {
                                 string val = scr.ReadIdentifier();
                                 if (entries.ContainsKey(next_key))
+                                {
                                     entries[next_key] = val;
+                                }
                                 else
+                                {
                                     entries.Add(next_key, val);
+                                }
+
                                 next_key = null;
                                 state = ParseState.READ_COMMA;
                             }
                         }
-                        else if(scr.IsNumberCharacter(scr.code[scr.position]))
+                        else if (scr.IsNumberCharacter(scr.code[scr.position]))
                         {
                             if ((scr.code[scr.position] == '-') && (scr.code[scr.position + 1] == '-')) // comment
                             {
@@ -172,9 +215,14 @@ namespace SFEngine.SFLua.LuaParser
                                 {
                                     double val = scr.ReadNumber();
                                     if (entries.ContainsKey(next_key))
+                                    {
                                         entries[next_key] = val;
+                                    }
                                     else
+                                    {
                                         entries.Add(next_key, val);
+                                    }
+
                                     next_key = null;
                                     state = ParseState.READ_COMMA;
                                 }
@@ -185,7 +233,9 @@ namespace SFEngine.SFLua.LuaParser
                 scr.position += 1;
 
                 if (scr.position == scr.code.Length)
+                {
                     return false;
+                }
             }
         }
     }

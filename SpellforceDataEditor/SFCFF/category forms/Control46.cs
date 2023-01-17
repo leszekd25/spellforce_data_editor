@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -48,11 +40,19 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             string txt = "";
 
             if ((flags & 0x1) == 0x1)
+            {
                 txt += "Allows cultivation of grain\r\n";
+            }
+
             if ((flags & 0x2) == 0x2)
+            {
                 txt += "Allows cultivation of mushroom\r\n";
+            }
+
             if ((flags & 0x4) == 0x4)
+            {
                 txt += "Allows cultivation of trees\r\n";
+            }
 
             return txt;
         }

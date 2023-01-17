@@ -3,20 +3,13 @@
  * CatElemToScene generates scene description based on provided game data element, useful for asset viewer
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-
 using SFEngine.SFCFF;
-using SFEngine.SFResources;
-
 using SFEngine.SFLua;
 using SFEngine.SFLua.lua_sql;
+using SFEngine.SFResources;
+using System;
+using System.Collections.Generic;
 
 namespace SFEngine.SF3D.SceneSynchro
 {
@@ -25,6 +18,16 @@ namespace SFEngine.SF3D.SceneSynchro
         public float duration = 0f;
         public bool is_animated = false;
         public string name = "";
+    }
+
+    public class SFDecalInfo
+    {
+        public Vector2 center;
+        public Vector2 offset;
+        public int angle;
+        public SFMap.SFCoord topleft;
+        public SFMap.SFCoord bottomright;
+        public SceneNodeSimple decal_node;
     }
 
     public class SFScene
@@ -41,7 +44,10 @@ namespace SFEngine.SF3D.SceneSynchro
             get
             {
                 if (time_flowing)
+                {
                     return deltatime;
+                }
+
                 return 0f;
             }
         }
@@ -52,19 +58,22 @@ namespace SFEngine.SF3D.SceneSynchro
         public SFMap.SFMap map = null;  // contains heightmap and lakes
         public SceneNodeCamera camera;  // temporarily not connected to root
 
+        public SceneNode selected_node;    // selected node is rendered differently
 
         public Atmosphere atmosphere { get; private set; }
 
-        //public Dictionary<SFModel3D, LinearPool<SceneNodeSimple>> model_list_simple { get; private set; } = new Dictionary<SFModel3D, LinearPool<SceneNodeSimple>>();
         public HashSet<SFModel3D> model_set_simple { get; private set; } = new HashSet<SFModel3D>();
 
         public HashSet<SFSubModel3D> opaque_pass_models = new HashSet<SFSubModel3D>();
         public HashSet<SFSubModel3D> transparent_pass_models = new HashSet<SFSubModel3D>();
         public HashSet<SFSubModel3D> water_pass_models = new HashSet<SFSubModel3D>();
         public HashSet<SFSubModel3D> additive_pass_models = new HashSet<SFSubModel3D>();
-        //public Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>> tex_list_simple { get; private set; } = new Dictionary<SFTexture, LinearPool<TexturedGeometryListElementSimple>>();
 
         public HashSet<SceneNodeAnimated> an_nodes = new HashSet<SceneNodeAnimated>();
+
+        public LinearPool<SFDecalInfo> decal_info = new LinearPool<SFDecalInfo>();
+
+        public SFModel3D missing_node_mesh;
 
         public void Init()
         {
@@ -74,8 +83,6 @@ namespace SFEngine.SF3D.SceneSynchro
             camera = new SceneNodeCamera("Camera");
 
             atmosphere = new Atmosphere();
-            if(Settings.EnableCascadeShadows)
-                atmosphere.sun_light.CalculateCascadeSplits(camera.Frustum);
 
             // setup lighting
             if (atmosphere.altitude_ambient_color == null)
@@ -109,8 +116,8 @@ namespace SFEngine.SF3D.SceneSynchro
                     atmosphere.altitude_sun_strength.Add(0.4f, 0);
                     atmosphere.altitude_sun_strength.Add(0.4f, 80);
                     atmosphere.altitude_sun_strength.Add(0.0f, 90);
-                    atmosphere.altitude_sun_strength.Add(2.0f, 110);
-                    atmosphere.altitude_sun_strength.Add(2.0f, 180);
+                    atmosphere.altitude_sun_strength.Add(1.5f, 110);
+                    atmosphere.altitude_sun_strength.Add(1.5f, 180);
                     atmosphere.altitude_fog_color.Add(new Vector4(0.03f, 0.03f, 0.20f, 1.0f), 0);
                     atmosphere.altitude_fog_color.Add(new Vector4(0.03f, 0.03f, 0.20f, 1.0f), 80);
                     atmosphere.altitude_fog_color.Add(new Vector4(0.93f, 0.42f, 0.40f, 1.0f), 90);
@@ -132,33 +139,95 @@ namespace SFEngine.SF3D.SceneSynchro
                     atmosphere.altitude_sun_strength = new InterpolatedFloat(1);
                     atmosphere.altitude_fog_color = new InterpolatedColor(6);
                     atmosphere.altitude_fog_strength = new InterpolatedFloat(1);
-                    atmosphere.altitude_ambient_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 0);
-                    atmosphere.altitude_ambient_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 80);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.35f, 0.25f, 0.45f, 1.0f), 0);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.35f, 0.25f, 0.45f, 1.0f), 80);
                     atmosphere.altitude_ambient_color.Add(new Vector4(0.3f, 0.2f, 0.5f, 1.0f), 90);
                     atmosphere.altitude_ambient_color.Add(new Vector4(0.45f, 0.40f, 0.72f, 1.0f), 100);
-                    atmosphere.altitude_ambient_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 110);
-                    atmosphere.altitude_ambient_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 180);
-                    atmosphere.altitude_ambient_strength.Add(1.0f, 0);
-                    atmosphere.altitude_sun_color.Add(new Vector4(0.18f, 0.25f, 0.4f, 1), 0);
-                    atmosphere.altitude_sun_color.Add(new Vector4(0.18f, 0.25f, 0.4f, 1), 70);
-                    atmosphere.altitude_sun_color.Add(new Vector4(0.17f, 0.10f, 0.2f, 1), 80);
-                    atmosphere.altitude_sun_color.Add(new Vector4(0.15f, 0, 0.0f, 1), 89);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.58f, 0.80f, 0.96f, 1.0f), 110);
+                    atmosphere.altitude_ambient_color.Add(new Vector4(0.58f, 0.80f, 0.96f, 1.0f), 180);
+                    atmosphere.altitude_ambient_strength.Add(0.7f, 0);
+                    atmosphere.altitude_sun_color.Add(new Vector4(0.30f, 0.40f, 0.64f, 1), 0);
+                    atmosphere.altitude_sun_color.Add(new Vector4(0.30f, 0.40f, 0.64f, 1), 70);
+                    atmosphere.altitude_sun_color.Add(new Vector4(0.29f, 0.16f, 0.32f, 1), 80);
+                    atmosphere.altitude_sun_color.Add(new Vector4(0.23f, 0, 0.0f, 1), 89);
                     atmosphere.altitude_sun_color.Add(new Vector4(0.8f, 0, 0, 1), 90);
                     atmosphere.altitude_sun_color.Add(new Vector4(0.9f, 0.5f, 0.2f, 1), 100);
                     atmosphere.altitude_sun_color.Add(new Vector4(1, 1, 1, 1), 110);
                     atmosphere.altitude_sun_color.Add(new Vector4(1, 1, 1, 1), 180);
-                    atmosphere.altitude_sun_strength.Add(1.6f, 0);
-                    atmosphere.altitude_fog_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 0);
-                    atmosphere.altitude_fog_color.Add(new Vector4(0.1f, 0.0f, 0.3f, 1.0f), 80);
+                    atmosphere.altitude_sun_strength.Add(1.2f, 0);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.35f, 0.25f, 0.45f, 1.0f), 0);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.35f, 0.25f, 0.45f, 1.0f), 80);
                     atmosphere.altitude_fog_color.Add(new Vector4(0.3f, 0.2f, 0.5f, 1.0f), 90);
                     atmosphere.altitude_fog_color.Add(new Vector4(0.45f, 0.40f, 0.72f, 1.0f), 100);
-                    atmosphere.altitude_fog_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 110);
-                    atmosphere.altitude_fog_color.Add(new Vector4(0.55f, 0.55f, 0.85f, 1.0f), 180);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.58f, 0.80f, 0.96f, 1.0f), 110);
+                    atmosphere.altitude_fog_color.Add(new Vector4(0.58f, 0.80f, 0.96f, 1.0f), 180);
                     atmosphere.altitude_fog_strength.Add(1.0f, 0);
                 }
             }
 
             delta_timer.Start();
+        }
+
+        public void GenerateMissingMesh()
+        {
+            if (missing_node_mesh != null)
+            {
+                return;
+            }
+
+            // model displayed when a node is missing a mesh
+            Vector3[] vertices = new Vector3[8];
+            Vector2[] uvs = new Vector2[8];
+            byte[] colors = new byte[32];
+            Vector3[] normals = new Vector3[8];
+
+            uint[] indices;
+
+            // generate mouse cursor selected position gizmo
+            missing_node_mesh = new SFModel3D();
+
+            float s = 0.5f;
+            float h = 1.5f;   // gizmo height
+            vertices[0] = new Vector3(-s, -s, -s + h);
+            vertices[1] = new Vector3(s, -s, -s + h);
+            vertices[2] = new Vector3(-s, -s, s + h);
+            vertices[3] = new Vector3(s, -s, s + h);
+            vertices[4] = new Vector3(-s, s, -s + h);
+            vertices[5] = new Vector3(s, s, -s + h);
+            vertices[6] = new Vector3(-s, s, s + h);
+            vertices[7] = new Vector3(s, s, s + h);
+            for (int i = 0; i < 8; i++)
+            {
+                colors[4 * i + 0] = 0x7F;
+                colors[4 * i + 1] = 0x7F;
+                colors[4 * i + 2] = 0xCF;
+                colors[4 * i + 3] = 0xFF;
+                normals[i] = (vertices[i] - new Vector3(0, 0, h)).Normalized();
+            }
+            // color two vertices differently to annotate angle
+            colors[8] = 0xCF;
+            colors[9] = 0x7F;
+            colors[10] = 0x7F;
+            colors[12] = 0xCF;
+            colors[13] = 0x7F;
+            colors[14] = 0x7F;
+
+            indices = new uint[] { 0, 2, 1,   1, 2, 3,   4, 5, 6,   5, 7, 6,
+                                   0, 4, 1,   1, 4, 5,   1, 3, 5,   3, 7, 5,
+                                   3, 2, 7,   2, 6, 7,   2, 0, 6,   0, 4, 6};
+
+            SF3D.SFSubModel3D sbm2 = new SF3D.SFSubModel3D();
+            sbm2.CreateRaw(vertices, uvs, colors, normals, indices, null);
+            sbm2.material.apply_shading = true;
+            sbm2.material.apply_shadow = true;
+            sbm2.material.casts_shadow = true;
+            sbm2.material.distance_fade = true;
+            sbm2.material.emission_strength = 0.1f;
+            sbm2.material.emission_color = new Vector4(0.6f, 0.6f, 1.0f, 1.0f);
+            sbm2.material.transparent_pass = false;
+
+            missing_node_mesh.CreateRaw(new SF3D.SFSubModel3D[] { sbm2 });
+            SFResourceManager.Models.AddManually(missing_node_mesh, "_MISSING_MESH_");
         }
 
 
@@ -227,7 +296,7 @@ namespace SFEngine.SF3D.SceneSynchro
                             + ", element is " + element.ToString() + ")");
                         break;
                     }
-                    SceneNode object_node = AddSceneObject(object_id, "object", true, true, true);
+                    SceneNode object_node = AddSceneObject(object_id, "object", true, true);
                     object_node.SetParent(root);
                     object_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
                     scene_meta.name = SFCategoryManager.GetObjectName((ushort)object_id);
@@ -279,6 +348,11 @@ namespace SFEngine.SF3D.SceneSynchro
                 new_node.Mesh = SFResourceManager.Models.Get(model_name);
             }
 
+            if (new_node.Mesh == null)
+            {
+                SFResourceManager.LoadModel("_MISSING_MESH_");
+                new_node.Mesh = SFResourceManager.Models.Get("_MISSING_MESH_");
+            }
             return new_node;
         }
 
@@ -289,12 +363,20 @@ namespace SFEngine.SF3D.SceneSynchro
 
             bool loaded_skin = SFResourceManager.LoadSkeleton(skin_name);
             if (loaded_skin)
+            {
                 loaded_skin = SFResourceManager.LoadSkin(skin_name);
+            }
+
             if (loaded_skin)
+            {
                 new_node.SetSkeletonSkin(SFResourceManager.Skeletons.Get(skin_name), SFResourceManager.Skins.Get(skin_name));
+            }
+
             loaded_skin = SFResourceManager.LoadModel(skin_name);
             if (loaded_skin)
+            {
                 new_node.Mesh = SFResourceManager.Models.Get(skin_name);
+            }
 
             return new_node;
         }
@@ -328,7 +410,9 @@ namespace SFEngine.SF3D.SceneSynchro
             SFCategoryElement unit_stats = SFCategoryManager.gamedata[2005].FindElementBinary<UInt16>(0, (UInt16)unit_data[2]);
             bool is_female = false;
             if (unit_stats != null)
+            {
                 is_female = ((Byte)unit_stats[21] % 2) == 1;
+            }
 
             //get chest item (2) (animated)
             UInt16 chest_id = SFCategoryManager.GetUnitItem((UInt16)unit_id, 2);
@@ -349,7 +433,9 @@ namespace SFEngine.SF3D.SceneSynchro
             string chest_name = SFLuaEnvironment.GetItemMesh(chest_id, is_female);
             string anim_name = chest_data.AnimSet;
             if (anim_name == "")
+            {
                 anim_name = "figure_hero";
+            }
 
             //special case: monument unit, needs to be considered separately
             string unit_handle = unit_data[10].ToString();
@@ -373,7 +459,9 @@ namespace SFEngine.SF3D.SceneSynchro
                     uo2 = AddSceneNodeAnimated(unit_node, legs_name, "Legs");
                     uo2.Primary = uo;
                     if (uo.Skin == null)
+                    {
                         uo2.Primary = null;
+                    }
                 }
             }
             //special case: anim_name is of "figure_hero": need to also add human head (animated)
@@ -390,13 +478,20 @@ namespace SFEngine.SF3D.SceneSynchro
                 {
                     string head_name = "";
                     if (is_female)
+                    {
                         head_name = head_data.MeshFemale;
+                    }
                     else
+                    {
                         head_name = head_data.MeshMale;
+                    }
+
                     uo2 = AddSceneNodeAnimated(unit_node, head_name, "Head");
                     uo2.Primary = uo;
                     if (uo.Skin == null)
+                    {
                         uo2.Primary = null;
+                    }
                 }
             }
 
@@ -453,37 +548,58 @@ namespace SFEngine.SF3D.SceneSynchro
             return unit_node;
         }
 
-        public SceneNode AddSceneObject(int object_id, string object_name, bool apply_shading, bool transparent_pass, bool casts_shadow)
+        public SceneNode AddSceneObject(int object_id, string object_name, bool apply_shading, bool casts_shadow)
         {
             // create root
             SceneNode obj_node = AddSceneNodeEmpty(null, object_name);
 
             SFLuaSQLObjectData obj_data = SFLuaEnvironment.objects[object_id];
+            List<string> m_lst;
             if (obj_data == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneObject(): Can't find object data (object id = "
                     + object_id + ")");
-                return obj_node;
+                m_lst = new List<string>() { "_MISSING_MESH_" };
             }
-            List<string> m_lst = obj_data.Mesh;
+            else
+            {
+                m_lst = obj_data.Mesh;
+            }
 
             // add meshes
             for (int i = 0; i < m_lst.Count; i++)
             {
                 string m = m_lst[i];
                 if (m == "")
-                    continue;
+                {
+                    m = "_MISSING_MESH_";
+                }
+                //continue;
                 SceneNodeSimple n = AddSceneNodeSimple(obj_node, m, i.ToString());
+
                 if (n.Mesh != null)
                 {
                     bool decal = m.Contains("decal");
-                    foreach (SFSubModel3D sbm in n.Mesh.submodels)
+                    if (decal)
                     {
-                        sbm.material.apply_shading = apply_shading;
-                        sbm.material.transparent_pass &= transparent_pass;
-                        sbm.material.casts_shadow = casts_shadow;
-                        if (decal)
-                            sbm.material.matDepthBias = -0.000003f;
+                        n.IsDecal = true;
+                        n.Mesh.submodels[0].material.apply_shading = true;
+                        n.Mesh.submodels[0].material.transparent_pass = true;
+                        n.Mesh.submodels[0].material.casts_shadow = false;
+                        n.Mesh.submodels[0].material.matDepthBias = -0.000003f;
+                        n.DecalIndex = decal_info.Add(new SFDecalInfo() { decal_node = n });
+                        for (int j = 0; j < n.Mesh.submodels.Length; j++)
+                        {
+                            SFResourceManager.Textures.SetRemoveWhenUnused(n.Mesh.submodels[j].material.texture.Name, false);
+                        }
+                    }
+                    else
+                    {
+                        foreach (SFSubModel3D sbm in n.Mesh.submodels)
+                        {
+                            sbm.material.apply_shading = apply_shading;
+                            sbm.material.casts_shadow = casts_shadow;
+                        }
                     }
                 }
             }
@@ -510,17 +626,26 @@ namespace SFEngine.SF3D.SceneSynchro
             {
                 string m = m_lst[i];
                 if (m.Contains("frame"))
+                {
                     continue;
+                }
+
                 SceneNodeSimple n = AddSceneNodeSimple(bld_node, m, i.ToString());
 
-                bool decal = m.Contains("decal");
-                if (decal)
+                if (n.Mesh != null)
                 {
-                    if (n.Mesh != null)
+                    bool decal = m.Contains("decal");
+                    if (decal)
                     {
-                        foreach (SFSubModel3D sbm in n.Mesh.submodels)
+                        n.IsDecal = true;
+                        n.Mesh.submodels[0].material.apply_shading = true;
+                        n.Mesh.submodels[0].material.transparent_pass = true;
+                        n.Mesh.submodels[0].material.casts_shadow = false;
+                        n.Mesh.submodels[0].material.matDepthBias = -0.000003f;
+                        n.DecalIndex = decal_info.Add(new SFDecalInfo() { decal_node = n });
+                        for (int j = 0; j < n.Mesh.submodels.Length; j++)
                         {
-                            sbm.material.matDepthBias = -0.000003f;
+                            SFResourceManager.Textures.SetRemoveWhenUnused(n.Mesh.submodels[j].material.texture.Name, false);
                         }
                     }
                 }
@@ -540,16 +665,24 @@ namespace SFEngine.SF3D.SceneSynchro
             }
             node.SetParent(null);
             if (dispose)
+            {
                 node.Dispose();
+            }
         }
 
         // sets scene time
         public void SetSceneTime(float t)
         {
             if (t < 0)
+            {
                 t = 0;
+            }
+
             if (t > scene_meta.duration)
+            {
                 t = scene_meta.duration;
+            }
+
             current_time = t;
 
             root.SetTime(t);
@@ -563,7 +696,10 @@ namespace SFEngine.SF3D.SceneSynchro
         public void ResumeTimeFlow()
         {
             if (!time_flowing)
+            {
                 deltatime = 1.0f / frames_per_second;
+            }
+
             time_flowing = true;
             delta_timer.Restart();
 
@@ -587,10 +723,12 @@ namespace SFEngine.SF3D.SceneSynchro
 
             current_time += dt;
             if (scene_meta != null)
+            {
                 if (current_time > scene_meta.duration)
+                {
                     current_time -= scene_meta.duration;
-
-            frame_counter++;
+                }
+            }
 
             SFSubModel3D.Cache.CurrentMatrix = cur_offset;
             SFSubModel3D.Cache.MatrixUpload();
@@ -603,7 +741,11 @@ namespace SFEngine.SF3D.SceneSynchro
             transparent_pass_models.Clear();
             water_pass_models.Clear();
             additive_pass_models.Clear();
+            decal_info.Clear();
             an_nodes.Clear();
+
+            SFResourceManager.Models.Dispose("_MISSING_MESH_");
+            missing_node_mesh = null;
         }
     }
 }

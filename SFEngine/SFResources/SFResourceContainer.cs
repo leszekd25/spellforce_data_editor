@@ -6,23 +6,41 @@
  * */
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SFEngine.SFUnPak;
 
 namespace SFEngine.SFResources
 {
-    public class SFResourceContainer<T> where T: SFResource, new()
+    public class SFResourceContainer<T> where T : SFResource, new()
     {
         Dictionary<string, T> cont = new Dictionary<string, T>();
         Dictionary<string, int> reference_count = new Dictionary<string, int>();
         Dictionary<string, bool> remove_when_unused = new Dictionary<string, bool>();
         string prefix_path = "";
         string[] suffix_extensions = null;
-        int total_size = 0;
+
+        public int RAMSize
+        {
+            get
+            {
+                int ret = 0;
+                foreach (T res in cont.Values)
+                    ret += res.RAMSize;
+                return ret;
+            }
+        }
+
+        public int DeviceSize
+        {
+            get
+            {
+                int ret = 0;
+                foreach (T res in cont.Values)
+                    ret += res.DeviceSize;
+                return ret;
+            }
+        }
 
         public SFResourceContainer()
         {
@@ -47,7 +65,6 @@ namespace SFEngine.SFResources
             if (cont.ContainsKey(rname))
             {
                 reference_count[rname] += 1;
-                // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
                 return -1;
             }
 
@@ -58,13 +75,19 @@ namespace SFEngine.SFResources
             {
                 res_to_load = rname;
                 if (!rname.Contains(ext))
+                {
                     res_to_load += ext;
+                }
+
                 ms = SFUnPak.SFUnPak.LoadFileFind(prefix_path + "\\" + res_to_load);
                 if (ms != null)
+                {
                     break;
+                }
+
                 LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Could not find resource " + prefix_path + "\\" + res_to_load);
             }
-            if(ms == null)
+            if (ms == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): None of the suffix extensions matched the given resource");
                 return -2;
@@ -75,6 +98,7 @@ namespace SFEngine.SFResources
             string prev_res = SFResourceManager.current_resource;
             SFResourceManager.current_resource = rname;
             T resource = new T();
+            resource.StorageSize = (int)ms.Length;
             int res_code = resource.Load(ms, custom_data);
             SFResourceManager.current_resource = prev_res;
             //end of stack
@@ -86,15 +110,12 @@ namespace SFEngine.SFResources
                 return res_code;
             }
 
-            total_size += resource.GetSizeBytes();
             resource.Init();
-            resource.SetName(rname);
+            resource.Name = rname;
             cont.Add(rname, resource);
             reference_count.Add(rname, 1);
             remove_when_unused.Add(rname, true);
-            // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
             ms.Close();
-            //System.Diagnostics.Debug.WriteLine("LOADED " + rname + suffix_extension);
             return 0;
         }
 
@@ -103,7 +124,7 @@ namespace SFEngine.SFResources
         {
             if (cont.ContainsKey(rname))
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): Resource "+rname+" already exists!");
+                LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): Resource " + rname + " already exists!");
                 throw new Exception("Can't load directly from memory: Resource already exists!");
             }
             LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): loading resource " + rname + " from memory");
@@ -124,14 +145,12 @@ namespace SFEngine.SFResources
                 LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): Could not load resource " + rname + " from memory!");
                 return res_code;
             }
-            total_size += resource.GetSizeBytes();
+
             resource.Init();
-            resource.SetName(rname);
+            resource.Name = rname;
             cont.Add(rname, resource);
             reference_count.Add(rname, 1);
-            // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
             ms.Close();
-            //System.Diagnostics.Debug.WriteLine("LOADED " + rname + suffix_extension);
             return 0;
         }
 
@@ -143,13 +162,12 @@ namespace SFEngine.SFResources
                 LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.AddManually(): Resource " + rname + " already exists!");
                 throw new Exception("Can't load directly from memory: Resource already exists!");
             }
-            total_size += res.GetSizeBytes();
+
             res.Init();
-            res.SetName(rname);
+            res.Name = rname;
             cont.Add(rname, res);
             reference_count.Add(rname, 1);
             remove_when_unused.Add(rname, true);
-            // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.AddManually(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
 
             return 0;
         }
@@ -163,17 +181,18 @@ namespace SFEngine.SFResources
                 return -1;
             }
             reference_count[rname] -= 1;
-            // LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Resource " + rname + " ref counter = " + reference_count[rname].ToString());
 
             if (reference_count[rname] <= 0)
             {
                 if (remove_when_unused[rname])
                 {
                     if (reference_count[rname] != 0)
+                    {
                         LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Negative reference count!");
+                    }
+
                     LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Removing resource " + rname);
 
-                    total_size -= cont[rname].GetSizeBytes();
                     cont[rname].Dispose();
                     cont.Remove(rname);
                     reference_count.Remove(rname);
@@ -181,20 +200,19 @@ namespace SFEngine.SFResources
                     return 1;
                 }
             }
-            //System.Diagnostics.Debug.WriteLine("DISPOSED " + rname + suffix_extension);
             return 0;
         }
 
         // if a given resource has remove_when_unused set to true, it will be removed when reference count goes to 0
         public void SetRemoveWhenUnused(string rname, bool remove)
         {
-            if(!cont.ContainsKey(rname))
+            if (!cont.ContainsKey(rname))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.SetRemoveWhenUnused(): Resource " + rname + " does not exist!");
                 return;
             }
             remove_when_unused[rname] = remove;
-            if((remove)&&(reference_count[rname] <= 0))
+            if ((remove) && (reference_count[rname] <= 0))
             {
                 reference_count[rname] = 1;
                 Dispose(rname);
@@ -204,22 +222,33 @@ namespace SFEngine.SFResources
         public T Get(string rname)
         {
             if (cont.ContainsKey(rname))
+            {
                 return cont[rname];
+            }
+
             return default(T);   //should return null
         }
 
         public int Extract(string rname)
         {
-            foreach(string ext in suffix_extensions)
+            foreach (string ext in suffix_extensions)
             {
                 string extract_fname = Settings.ExtractDirectory;
                 if (extract_fname != "")
+                {
                     extract_fname += "\\";
+                }
+
                 if (!Settings.ExtractAllInOne)
+                {
                     extract_fname += prefix_path + "\\";
+                }
+
                 extract_fname += rname + ext;
                 if (SFUnPak.SFUnPak.ExtractFileFind(prefix_path + "\\" + rname + ext, extract_fname) == 0)
+                {
                     return 0;
+                }
             }
             return -1;
         }
@@ -227,11 +256,6 @@ namespace SFEngine.SFResources
         public List<string> GetNames()
         {
             return cont.Keys.ToList();
-        }
-
-        public int GetResourceSize()
-        {
-            return total_size;
         }
 
         // removes all resources no matter the reference counters or if remove when unused is marked true
@@ -248,7 +272,12 @@ namespace SFEngine.SFResources
             cont.Clear();
             reference_count.Clear();
             remove_when_unused.Clear();
-            total_size = 0;
+        }
+
+        public void LogUndisposedResources()
+        {
+            foreach (string res in cont.Keys)
+                LogUtils.Log.Info(LogUtils.LogSource.SFResources, res + ": dangling references " + reference_count[res] + (remove_when_unused[res] ? "" : " (marked as permanent)"));
         }
     }
 }

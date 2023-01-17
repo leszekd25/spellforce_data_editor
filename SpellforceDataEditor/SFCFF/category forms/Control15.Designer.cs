@@ -49,7 +49,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(167, 22);
             this.textBox1.TabIndex = 0;
-            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // textBox3
             // 
@@ -58,7 +58,7 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(167, 22);
             this.textBox3.TabIndex = 2;
-            this.textBox3.Validated += new System.EventHandler(this.textBox3_TextChanged);
+            this.textBox3.Leave += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // textBox4
             // 
@@ -68,7 +68,7 @@
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(509, 22);
             this.textBox4.TabIndex = 3;
-            this.textBox4.Validated += new System.EventHandler(this.textBox4_TextChanged);
+            this.textBox4.Leave += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // textBox5
             // 
@@ -79,7 +79,7 @@
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(509, 122);
             this.textBox5.TabIndex = 4;
-            this.textBox5.Validated += new System.EventHandler(this.textBox5_TextChanged);
+            this.textBox5.Leave += new System.EventHandler(this.textBox5_TextChanged);
             // 
             // label1
             // 

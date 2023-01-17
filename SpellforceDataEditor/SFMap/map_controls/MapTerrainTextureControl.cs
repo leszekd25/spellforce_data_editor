@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.map_controls
@@ -24,10 +18,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void MapTerrainTextureControl_Resize(object sender, EventArgs e)
         {
-            ButtonTextureImage.Size = new Size(this.Width - 6, this.Width - 6);
+            ButtonTextureImage.Size = new Size(Width - 6, Width - 6);
             ButtonTextureImage.Location = new Point(3, 3);
-            ButtonTextureID.Size = new Size(this.Width - 6, 16);
-            ButtonTextureID.Location = new Point(3, this.Width);
+            ButtonTextureID.Size = new Size(Width - 6, 16);
+            ButtonTextureID.Location = new Point(3, Width);
         }
 
         public void SetImage(Image im, int tex_id)

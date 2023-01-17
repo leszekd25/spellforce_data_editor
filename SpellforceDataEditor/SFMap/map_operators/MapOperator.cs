@@ -1,9 +1,6 @@
-﻿using System;
+﻿using SFEngine.SFMap;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SFEngine.SFMap;
 
 namespace SpellforceDataEditor.SFMap.map_operators
 {
@@ -26,7 +23,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
     }
 
     // a special type of operator, for when there are multiple sub-operators that should perform its actions in one go
-    public class MapOperatorCluster: IMapOperator
+    public class MapOperatorCluster : IMapOperator
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
@@ -40,18 +37,22 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             for (int i = 0; i < SubOperators.Count; i++)
+            {
                 SubOperators[i].Apply(map);
+            }
         }
 
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             for (int i = SubOperators.Count - 1; i >= 0; i--)
+            {
                 SubOperators[i].Revert(map);
+            }
         }
 
         public override string ToString()
         {
-            return "cluster ("+SubOperators.Count+" sub-operators)";
+            return "cluster (" + SubOperators.Count + " sub-operators)";
         }
     }
 
@@ -67,25 +68,49 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Finish(SFEngine.SFMap.SFMap map)
         {
             foreach (var kv in PreOperatorHeights)
+            {
                 PostOperatorHeights.Add(kv.Key, map.heightmap.height_data[kv.Key.y * map.width + kv.Key.x]);
+            }
 
             Finished = true;
         }
 
         private void UpdateMap(SFEngine.SFMap.SFMap map)
         {
-            SFEngine.SFMap.SFCoord tl, br;
+            SFCoord tl, br;
             map.heightmap.GetBoxFromArea(PostOperatorHeights.Keys, out tl, out br);
 
-            map.heightmap.RebuildGeometry(tl, br);
-            MainForm.mapedittool.ui.RedrawMinimap(PostOperatorHeights.Keys);
-            MainForm.mapedittool.update_render = true;
+            MainForm.mapedittool.op_queue.RebuildGeometry = true;
+            if (tl.x < MainForm.mapedittool.op_queue.RebuildGeometryTopLeft.x)
+            {
+                MainForm.mapedittool.op_queue.RebuildGeometryTopLeft.x = tl.x;
+            }
+
+            if (br.x > MainForm.mapedittool.op_queue.RebuildGeometryBottomRight.x)
+            {
+                MainForm.mapedittool.op_queue.RebuildGeometryBottomRight.x = br.x;
+            }
+
+            if (tl.y < MainForm.mapedittool.op_queue.RebuildGeometryTopLeft.y)
+            {
+                MainForm.mapedittool.op_queue.RebuildGeometryTopLeft.y = tl.y;
+            }
+
+            if (br.y > MainForm.mapedittool.op_queue.RebuildGeometryBottomRight.y)
+            {
+                MainForm.mapedittool.op_queue.RebuildGeometryBottomRight.y = br.y;
+            }
+
+            MainForm.mapedittool.op_queue.RedrawMinimap = true;
+            MainForm.mapedittool.op_queue.RedrawMinimapCells.UnionWith(PostOperatorHeights.Keys);
         }
 
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             foreach (var kv in PostOperatorHeights)
+            {
                 map.heightmap.height_data[kv.Key.y * map.width + kv.Key.x] = kv.Value;
+            }
 
             UpdateMap(map);
         }
@@ -93,7 +118,9 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             foreach (var kv in PreOperatorHeights)
+            {
                 map.heightmap.height_data[kv.Key.y * map.width + kv.Key.x] = kv.Value;
+            }
 
             UpdateMap(map);
         }
@@ -114,26 +141,52 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Finish(SFEngine.SFMap.SFMap map)
         {
             foreach (var kv in PreOperatorTextures)
-                PostOperatorTextures.Add(kv.Key, map.heightmap.tile_data[kv.Key.y * map.width + kv.Key.x]);
+            {
+                PostOperatorTextures.Add(kv.Key, map.heightmap.GetTile(kv.Key));//map.heightmap.tile_data[kv.Key.y * map.width + kv.Key.x]);
+            }
 
             Finished = true;
         }
 
         private void UpdateMap(SFEngine.SFMap.SFMap map)
         {
-            SFEngine.SFMap.SFCoord tl, br;
+            SFCoord tl, br;
             map.heightmap.GetBoxFromArea(PostOperatorTextures.Keys, out tl, out br);
 
-            map.heightmap.RebuildTerrainTexture(tl, br);
-            map.heightmap.RefreshOverlay();
-            MainForm.mapedittool.ui.RedrawMinimap(PostOperatorTextures.Keys);
-            MainForm.mapedittool.update_render = true;
+            MainForm.mapedittool.op_queue.RebuildTerrainTexture = true;
+            if (tl.x < MainForm.mapedittool.op_queue.RebuildTerrainTextureTopLeft.x)
+            {
+                MainForm.mapedittool.op_queue.RebuildTerrainTextureTopLeft.x = tl.x;
+            }
+
+            if (br.x > MainForm.mapedittool.op_queue.RebuildTerrainTextureBottomRight.x)
+            {
+                MainForm.mapedittool.op_queue.RebuildTerrainTextureBottomRight.x = br.x;
+            }
+
+            if (tl.y < MainForm.mapedittool.op_queue.RebuildTerrainTextureTopLeft.y)
+            {
+                MainForm.mapedittool.op_queue.RebuildTerrainTextureTopLeft.y = tl.y;
+            }
+
+            if (br.y > MainForm.mapedittool.op_queue.RebuildTerrainTextureBottomRight.y)
+            {
+                MainForm.mapedittool.op_queue.RebuildTerrainTextureBottomRight.y = br.y;
+            }
+
+            MainForm.mapedittool.op_queue.RefreshOverlay = true;
+
+            MainForm.mapedittool.op_queue.RedrawMinimap = true;
+            MainForm.mapedittool.op_queue.RedrawMinimapCells.UnionWith(PostOperatorTextures.Keys);
         }
 
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             foreach (var kv in PostOperatorTextures)
-                map.heightmap.tile_data[kv.Key.y * map.width + kv.Key.x] = kv.Value;
+            {
+                map.heightmap.SetTile(kv.Key, kv.Value);
+                //map.heightmap.tile_data[kv.Key.y * map.width + kv.Key.x] = kv.Value;
+            }
 
             UpdateMap(map);
         }
@@ -141,7 +194,10 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             foreach (var kv in PreOperatorTextures)
-                map.heightmap.tile_data[kv.Key.y * map.width + kv.Key.x] = kv.Value;
+            {
+                map.heightmap.SetTile(kv.Key, kv.Value);
+                //map.heightmap.tile_data[kv.Key.y * map.width + kv.Key.x] = kv.Value;
+            }
 
             UpdateMap(map);
         }
@@ -152,31 +208,35 @@ namespace SpellforceDataEditor.SFMap.map_operators
         }
     }
 
-    public class MapOperatorTerrainFlag: IMapOperator
+    // use only with FLAG_*** flags! all other flags are set automatically by other operators
+    public class MapOperatorTerrainFlag : IMapOperator
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
-        public Dictionary<SFEngine.SFMap.SFCoord, byte> PreOperatorFlags = new Dictionary<SFEngine.SFMap.SFCoord, byte>();
-        public Dictionary<SFEngine.SFMap.SFCoord, byte> PostOperatorFlags = new Dictionary<SFEngine.SFMap.SFCoord, byte>();
+        public Dictionary<SFCoord, SFMapHeightMapFlag> PreOperatorFlags = new Dictionary<SFCoord, SFMapHeightMapFlag>();
+        public Dictionary<SFCoord, SFMapHeightMapFlag> PostOperatorFlags = new Dictionary<SFCoord, SFMapHeightMapFlag>();
 
         public void Finish(SFEngine.SFMap.SFMap map)
         {
             foreach (var kv in PreOperatorFlags)
-                PostOperatorFlags.Add(kv.Key, map.heightmap.tile_data[kv.Key.y * map.width + kv.Key.x]);
+            {
+                PostOperatorFlags.Add(kv.Key, (SFMapHeightMapFlag)map.heightmap.flag_data[kv.Key.y * map.width + kv.Key.x]);
+            }
 
             Finished = true;
         }
 
         private void UpdateMap(SFEngine.SFMap.SFMap map)
         {
-            map.heightmap.RefreshOverlay();
-            MainForm.mapedittool.update_render = true;
+            MainForm.mapedittool.op_queue.RefreshOverlay = true;
         }
 
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             foreach (var kv in PostOperatorFlags)
-                map.heightmap.overlay_data_flags[kv.Key.y * map.width + kv.Key.x] = kv.Value;
+            {
+                map.heightmap.flag_data[kv.Key.y * map.width + kv.Key.x] = (ushort)kv.Value;
+            }
 
             UpdateMap(map);
         }
@@ -184,7 +244,9 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             foreach (var kv in PreOperatorFlags)
-                map.heightmap.overlay_data_flags[kv.Key.y * map.width + kv.Key.x] = kv.Value;
+            {
+                map.heightmap.flag_data[kv.Key.y * map.width + kv.Key.x] = (ushort)kv.Value;
+            }
 
             UpdateMap(map);
         }
@@ -195,7 +257,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
         }
     }
 
-    public class MapOperatorLake: IMapOperator
+    public class MapOperatorLake : IMapOperator
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
@@ -212,8 +274,16 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void UpdateMap(SFEngine.SFMap.SFMap map)
         {
-            MainForm.mapedittool.ui.RedrawMinimap();
-            MainForm.mapedittool.update_render = true;
+            MainForm.mapedittool.op_queue.RefreshOverlay = true;
+            MainForm.mapedittool.op_queue.RedrawMinimap = true;
+            MainForm.mapedittool.op_queue.RedrawMinimapAll = true;
+            if (MainForm.mapedittool.selected_editor != null)
+            {
+                if (MainForm.mapedittool.selected_inspector is map_controls.MapLakeInspector)
+                {
+                    ((map_controls.MapLakeInspector)MainForm.mapedittool.selected_inspector).OnSelect(null);
+                }
+            }
         }
 
         public void Apply(SFEngine.SFMap.SFMap map)
@@ -222,12 +292,16 @@ namespace SpellforceDataEditor.SFMap.map_operators
             List<SFMapLake> consumed_lakes = new List<SFMapLake>();
             List<int> consumed_lakes_indices = new List<int>();
             if (change_add)
+            {
                 map.lake_manager.AddLake(pos, z_diff, type, lake_index, consumed_lakes, consumed_lakes_indices);
+            }
             else
             {
                 int lake_index = map.lake_manager.GetLakeIndexAt(pos);
                 if (lake_index == SFEngine.Utility.NO_INDEX)
+                {
                     return;
+                }
 
                 map.lake_manager.RemoveLake(map.lake_manager.lakes[lake_index]);
             }
@@ -241,12 +315,16 @@ namespace SpellforceDataEditor.SFMap.map_operators
             List<SFMapLake> consumed_lakes = new List<SFMapLake>();
             List<int> consumed_lakes_indices = new List<int>();
             if (!change_add)
+            {
                 map.lake_manager.AddLake(pos, z_diff, type, lake_index, consumed_lakes, consumed_lakes_indices);
+            }
             else
             {
                 int lake_index = map.lake_manager.GetLakeIndexAt(pos);
                 if (lake_index == SFEngine.Utility.NO_INDEX)
+                {
                     return;
+                }
 
                 map.lake_manager.RemoveLake(map.lake_manager.lakes[lake_index]);
             }
@@ -256,11 +334,11 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public override string ToString()
         {
-            return "set_lake (index: "+lake_index.ToString()+", pos: " + pos.ToString() + ", mode: " + (change_add ? "add" : "remove") + ")";
+            return "set_lake (index: " + lake_index.ToString() + ", pos: " + pos.ToString() + ", mode: " + (change_add ? "add" : "remove") + ")";
         }
     }
 
-    public class MapOperatorLakeType: IMapOperator
+    public class MapOperatorLakeType : IMapOperator
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
@@ -276,8 +354,9 @@ namespace SpellforceDataEditor.SFMap.map_operators
         private void UpdateMap(SFEngine.SFMap.SFMap map)
         {
             map.lake_manager.RebuildLake(map.lake_manager.lakes[lake_index]);
-            MainForm.mapedittool.ui.RedrawMinimap(map.lake_manager.lakes[lake_index].cells);
-            MainForm.mapedittool.update_render = true;
+
+            MainForm.mapedittool.op_queue.RedrawMinimap = true;
+            MainForm.mapedittool.op_queue.RedrawMinimapCells.UnionWith(map.lake_manager.lakes[lake_index].cells);
         }
 
         public void Apply(SFEngine.SFMap.SFMap map)
@@ -288,7 +367,9 @@ namespace SpellforceDataEditor.SFMap.map_operators
             if (MainForm.mapedittool.selected_inspector is map_controls.MapLakeInspector)
             {
                 if (((map_controls.MapLakeInspector)MainForm.mapedittool.selected_inspector).selected_lake == map.lake_manager.lakes[lake_index])
+                {
                     ((map_controls.MapLakeInspector)MainForm.mapedittool.selected_inspector).OnSelect(map.lake_manager.lakes[lake_index]);
+                }
             }
 
             UpdateMap(map);
@@ -297,12 +378,14 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             map.lake_manager.lakes[lake_index].type = PreOperatorType;
-            
+
             // update UI if this is the currently selected lake
             if (MainForm.mapedittool.selected_inspector is map_controls.MapLakeInspector)
             {
                 if (((map_controls.MapLakeInspector)MainForm.mapedittool.selected_inspector).selected_lake == map.lake_manager.lakes[lake_index])
+                {
                     ((map_controls.MapLakeInspector)MainForm.mapedittool.selected_inspector).OnSelect(map.lake_manager.lakes[lake_index]);
+                }
             }
 
             UpdateMap(map);
@@ -329,11 +412,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void SetTexture(SFEngine.SFMap.SFMap map, Dictionary<int, int> tex_id_map)
         {
             foreach (var kv in tex_id_map)
+            {
                 map.heightmap.texture_manager.SetBaseTexture(kv.Key, kv.Value);
+            }
 
             // ui update code here
-            MainForm.mapedittool.update_render = true;
-            MainForm.mapedittool.ui.RedrawMinimap();
+            MainForm.mapedittool.op_queue.RedrawMinimap = true;
+            MainForm.mapedittool.op_queue.RedrawMinimapAll = true;
             MainForm.mapedittool.external_operator_ModifyTextureSet();
         }
 
@@ -353,7 +438,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
         }
     }
 
-    public class MapOperatorAddOrRemoveTileType: IMapOperator
+    public class MapOperatorAddOrRemoveTileType : IMapOperator
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
@@ -380,17 +465,25 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Add(map);
+            }
             else
+            {
                 Remove(map);
+            }
         }
 
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Remove(map);
+            }
             else
+            {
                 Add(map);
+            }
         }
 
         public override string ToString()
@@ -399,7 +492,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
         }
     }
 
-    public class MapOperatorTileChangeState: IMapOperator
+    public class MapOperatorTileChangeState : IMapOperator
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
@@ -416,7 +509,39 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public void SetTileState(SFEngine.SFMap.SFMap map, byte tile_index, SFMapTerrainTextureTileData state)
         {
+            // if flags are different between states, modify heightmap flags
+            bool movement_changed = (map.heightmap.texture_manager.texture_tiledata[tile_index].blocks_movement != state.blocks_movement);
+            bool vision_changed = (map.heightmap.texture_manager.texture_tiledata[tile_index].blocks_movement != state.blocks_movement);
+            if (movement_changed)
+            {
+                for (int y = 0; y < map.height; y++)
+                {
+                    for (int x = 0; x < map.width; x++)
+                    {
+                        SFCoord pos = new SFCoord(x, y);
+                        if (map.heightmap.GetTile(pos) == tile_index)
+                        {
+                            map.heightmap.SetFlag(pos, SFMapHeightMapFlag.TERRAIN_MOVEMENT, state.blocks_movement);
+                        }
+                    }
+                }
+            }
+            if (vision_changed)
+            {
+                for (int y = 0; y < map.height; y++)
+                {
+                    for (int x = 0; x < map.width; x++)
+                    {
+                        SFCoord pos = new SFCoord(x, y);
+                        if (map.heightmap.GetTile(pos) == tile_index)
+                        {
+                            map.heightmap.SetFlag(pos, SFMapHeightMapFlag.TERRAIN_VISION, state.blocks_vision);
+                        }
+                    }
+                }
+            }
             map.heightmap.texture_manager.texture_tiledata[tile_index] = state;
+            MainForm.mapedittool.op_queue.RefreshOverlay = true;
 
             MainForm.mapedittool.external_operator_TileChangeState(tile_index);
         }
@@ -452,8 +577,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void UpdateMap(SFEngine.SFMap.SFMap map)
         {
-            MainForm.mapedittool.ui.RedrawMinimapIcons();
-            MainForm.mapedittool.update_render = true;
+            MainForm.mapedittool.op_queue.RedrawMinimapIcons = true;
         }
 
         private void Add(SFEngine.SFMap.SFMap map)
@@ -481,15 +605,21 @@ namespace SpellforceDataEditor.SFMap.map_operators
                 ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).RemoveUnit(index);
             }
             else
+            {
                 map.DeleteUnit(index);
+            }
         }
 
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Add(map);
+            }
             else
+            {
                 Remove(map);
+            }
 
             UpdateMap(map);
         }
@@ -497,9 +627,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Remove(map);
+            }
             else
+            {
                 Add(map);
+            }
 
             UpdateMap(map);
         }
@@ -526,8 +660,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void UpdateMap(SFEngine.SFMap.SFMap map)
         {
-            MainForm.mapedittool.ui.RedrawMinimapIcons();
-            MainForm.mapedittool.update_render = true;
+            MainForm.mapedittool.op_queue.RedrawMinimapIcons = true;
         }
 
         private void Add(SFEngine.SFMap.SFMap map)
@@ -555,15 +688,21 @@ namespace SpellforceDataEditor.SFMap.map_operators
                 ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).RemoveBuilding(index);
             }
             else
+            {
                 map.DeleteBuilding(index);
+            }
         }
 
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Add(map);
+            }
             else
+            {
                 Remove(map);
+            }
 
             UpdateMap(map);
         }
@@ -571,9 +710,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Remove(map);
+            }
             else
+            {
                 Add(map);
+            }
 
             UpdateMap(map);
         }
@@ -599,8 +742,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void UpdateMap(SFEngine.SFMap.SFMap map)
         {
-            MainForm.mapedittool.ui.RedrawMinimapIcons();
-            MainForm.mapedittool.update_render = true;
+            MainForm.mapedittool.op_queue.RedrawMinimapIcons = true;
         }
 
         private void Add(SFEngine.SFMap.SFMap map)
@@ -628,15 +770,21 @@ namespace SpellforceDataEditor.SFMap.map_operators
                 ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).RemoveObject(index);
             }
             else
+            {
                 map.DeleteObject(index);
+            }
         }
 
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Add(map);
+            }
             else
+            {
                 Remove(map);
+            }
 
             UpdateMap(map);
         }
@@ -644,9 +792,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Remove(map);
+            }
             else
+            {
                 Add(map);
+            }
 
             UpdateMap(map);
         }
@@ -675,8 +827,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void UpdateMap(SFEngine.SFMap.SFMap map)
         {
-            MainForm.mapedittool.ui.RedrawMinimapIcons();
-            MainForm.mapedittool.update_render = true;
+            MainForm.mapedittool.op_queue.RedrawMinimapIcons = true;
         }
 
         private void Add(SFEngine.SFMap.SFMap map)
@@ -723,9 +874,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Add(map);
+            }
             else
+            {
                 Remove(map);
+            }
 
             UpdateMap(map);
         }
@@ -733,9 +888,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Remove(map);
+            }
             else
+            {
                 Add(map);
+            }
 
             UpdateMap(map);
         }
@@ -765,8 +924,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void UpdateMap(SFEngine.SFMap.SFMap map)
         {
-            MainForm.mapedittool.ui.RedrawMinimapIcons();
-            MainForm.mapedittool.update_render = true;
+            MainForm.mapedittool.op_queue.RedrawMinimapIcons = true;
         }
 
         private void Add(SFEngine.SFMap.SFMap map)
@@ -803,7 +961,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
                 map.metadata.spawns.RemoveAt(player_index);
 
                 // reassign bindstone indices to players
-                for(int i = 0; i < map.metadata.spawns.Count; i++)
+                for (int i = 0; i < map.metadata.spawns.Count; i++)
                 {
                     map.metadata.spawns[i].bindstone_index -= (bindstone_index <= map.metadata.spawns[i].bindstone_index ? 1 : 0);
                 }
@@ -819,9 +977,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Add(map);
+            }
             else
+            {
                 Remove(map);
+            }
 
             UpdateMap(map);
         }
@@ -829,9 +991,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Remove(map);
+            }
             else
+            {
                 Add(map);
+            }
 
             UpdateMap(map);
         }
@@ -857,8 +1023,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void UpdateMap(SFEngine.SFMap.SFMap map)
         {
-            MainForm.mapedittool.ui.RedrawMinimapIcons();
-            MainForm.mapedittool.update_render = true;
+            MainForm.mapedittool.op_queue.RedrawMinimapIcons = true;
         }
 
         private void Add(SFEngine.SFMap.SFMap map)
@@ -886,15 +1051,21 @@ namespace SpellforceDataEditor.SFMap.map_operators
                 ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).RemovePortal(index);
             }
             else
+            {
                 map.DeletePortal(index);
+            }
         }
 
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Add(map);
+            }
             else
+            {
                 Remove(map);
+            }
 
             UpdateMap(map);
         }
@@ -902,9 +1073,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Remove(map);
+            }
             else
+            {
                 Add(map);
+            }
 
             UpdateMap(map);
         }
@@ -931,8 +1106,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void UpdateMap(SFEngine.SFMap.SFMap map)
         {
-            MainForm.mapedittool.ui.RedrawMinimapIcons();
-            MainForm.mapedittool.update_render = true;
+            MainForm.mapedittool.op_queue.RedrawMinimapIcons = true;
         }
 
         private void Add(SFEngine.SFMap.SFMap map)
@@ -959,15 +1133,21 @@ namespace SpellforceDataEditor.SFMap.map_operators
                 ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).RemoveMonument(monument_index);
             }
             else
+            {
                 map.DeleteInteractiveObject(intobj_index);
+            }
         }
 
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Add(map);
+            }
             else
+            {
                 Remove(map);
+            }
 
             UpdateMap(map);
         }
@@ -975,29 +1155,33 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Remove(map);
+            }
             else
+            {
                 Add(map);
+            }
 
             UpdateMap(map);
         }
 
         public override string ToString()
         {
-            return (is_adding ? "add_monument" : "remove_monument") + " (index: " + monument_index.ToString() + ", id: " + (intobj.game_id-771).ToString() + ", pos: " + intobj.grid_position.ToString() + ")";
+            return (is_adding ? "add_monument" : "remove_monument") + " (index: " + monument_index.ToString() + ", id: " + (intobj.game_id - 771).ToString() + ", pos: " + intobj.grid_position.ToString() + ")";
         }
     }
 
     public enum MapOperatorEntityType { UNIT = 0, BUILDING = 1, OBJECT = 2, COOPCAMP = 3, BINDSTONE = 4, PORTAL = 5, MONUMENT = 6 }
 
     public enum MapOperatorEntityProperty
-    { 
+    {
         ID, POSITION, NPCID, ANGLE,
         UNITFLAGS, UNITUNKNOWN, UNITGROUP, UNITUNKNOWN2,
         BUILDINGLEVEL, BUILDINGRACE, OBJECTUNKNOWN, COOPCAMPUNKNOWN, BINDSTONEUNKNOWN
     }
 
-    public class MapOperatorEntityChangeProperty: IMapOperator
+    public class MapOperatorEntityChangeProperty : IMapOperator
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
@@ -1016,9 +1200,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
         {
             object prop;
             if (change_forward)
+            {
                 prop = PostChangeProperty;
+            }
             else
+            {
                 prop = PreChangeProperty;
+            }
 
             switch (type)
             {
@@ -1028,7 +1216,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
                         switch (property)
                         {
                             case MapOperatorEntityProperty.ID:
-                                map.ReplaceUnit(index, (ushort)(int)prop);
+                                map.ReplaceUnit(index, (ushort)prop);
                                 break;
                             case MapOperatorEntityProperty.POSITION:
                                 map.MoveUnit(index, (SFEngine.SFMap.SFCoord)prop);
@@ -1060,14 +1248,16 @@ namespace SpellforceDataEditor.SFMap.map_operators
                         switch (property)
                         {
                             case MapOperatorEntityProperty.ID:
-                                map.ReplaceBuilding(index, (ushort)(int)prop);
+                                map.ReplaceBuilding(index, (ushort)prop);
+                                MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION) == SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.POSITION:
                                 map.MoveBuilding(index, (SFEngine.SFMap.SFCoord)prop);
+                                MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION) == SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.ANGLE:
-                                building.angle = (int)prop;
                                 map.RotateBuilding(index, (int)prop);
+                                MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION) == SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.NPCID:
                                 building.npc_id = (int)prop;
@@ -1090,14 +1280,16 @@ namespace SpellforceDataEditor.SFMap.map_operators
                         switch (property)
                         {
                             case MapOperatorEntityProperty.ID:
-                                map.ReplaceObject(index, (ushort)(int)prop);
+                                map.ReplaceObject(index, (ushort)prop);
+                                MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.POSITION:
                                 map.MoveObject(index, (SFEngine.SFMap.SFCoord)prop);
+                                MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.ANGLE:
-                                obj.angle = (int)prop;
                                 map.RotateObject(index, (int)prop);
+                                MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.NPCID:
                                 obj.npc_id = (int)prop;
@@ -1141,18 +1333,21 @@ namespace SpellforceDataEditor.SFMap.map_operators
                         switch (property)
                         {
                             case MapOperatorEntityProperty.ID:   // text id
-                                map.metadata.spawns[player].text_id = (ushort)(int)prop;
+                                map.metadata.spawns[player].text_id = (ushort)prop;
                                 break;
                             case MapOperatorEntityProperty.POSITION:
-                                if(int_obj_index != SFEngine.Utility.NO_INDEX)
+                                if (int_obj_index != SFEngine.Utility.NO_INDEX)
+                                {
                                     map.MoveInteractiveObject(int_obj_index, (SFEngine.SFMap.SFCoord)prop);
+                                    MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
+                                }
                                 map.metadata.spawns[player].pos = (SFEngine.SFMap.SFCoord)prop;
                                 break;
                             case MapOperatorEntityProperty.ANGLE:
                                 if (int_obj_index != SFEngine.Utility.NO_INDEX)
                                 {
-                                    int_obj.angle = (int)prop;
                                     map.RotateInteractiveObject(int_obj_index, (int)prop);
+                                    MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 }
                                 break;
                             case MapOperatorEntityProperty.BINDSTONEUNKNOWN:
@@ -1170,14 +1365,15 @@ namespace SpellforceDataEditor.SFMap.map_operators
                         switch (property)
                         {
                             case MapOperatorEntityProperty.ID:
-                                portal.game_id = (ushort)prop;
+                                portal.game_id = (int)((ushort)prop);
                                 break;
                             case MapOperatorEntityProperty.POSITION:
                                 map.MovePortal(index, (SFEngine.SFMap.SFCoord)prop);
+                                MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.ANGLE:
-                                portal.angle = (int)prop;
                                 map.RotatePortal(index, (int)prop);
+                                MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             default:
                                 SFEngine.LogUtils.Log.Warning(SFEngine.LogUtils.LogSource.SFMap, "MapOperatorEntityChangeProperty.ChangeProperty(): Invalid property " + property.ToString() + " for entity of type " + type.ToString());
@@ -1194,10 +1390,11 @@ namespace SpellforceDataEditor.SFMap.map_operators
                         {
                             case MapOperatorEntityProperty.POSITION:
                                 map.MoveInteractiveObject(int_obj_index, (SFEngine.SFMap.SFCoord)prop);
+                                MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.ANGLE:
-                                int_obj.angle = (int)prop;
                                 map.RotateInteractiveObject(int_obj_index, (int)prop);
+                                MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             default:
                                 SFEngine.LogUtils.Log.Warning(SFEngine.LogUtils.LogSource.SFMap, "MapOperatorEntityChangeProperty.ChangeProperty(): Invalid property " + property.ToString() + " for entity of type " + type.ToString());
@@ -1208,6 +1405,10 @@ namespace SpellforceDataEditor.SFMap.map_operators
                 default:
                     SFEngine.LogUtils.Log.Warning(SFEngine.LogUtils.LogSource.SFMap, "MapOperatorEntityChangeProperty.ChangeProperty(): Unsupported entity type " + type.ToString());
                     break;
+            }
+            if((property == MapOperatorEntityProperty.ID)||(property == MapOperatorEntityProperty.POSITION))
+            {
+                MainForm.mapedittool.op_queue.RedrawMinimapIcons = true;
             }
         }
 
@@ -1232,7 +1433,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
         }
     }
 
-    public class MapOperatorDecorationPaint: IMapOperator
+    public class MapOperatorDecorationPaint : IMapOperator
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
@@ -1242,7 +1443,9 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Finish(SFEngine.SFMap.SFMap map)
         {
             foreach (var kv in PreOperatorDecals)
+            {
                 PostOperatorDecals.Add(kv.Key, map.decoration_manager.GetDecAssignment(kv.Key));
+            }
 
             Finished = true;
         }
@@ -1255,8 +1458,8 @@ namespace SpellforceDataEditor.SFMap.map_operators
             {
                 int dec_g = ((map_controls.MapDecorationInspector)(MainForm.mapedittool.selected_inspector)).selected_dec_group;
 
+                MainForm.mapedittool.op_queue.RefreshOverlay = true;
                 map.heightmap.UpdateDecorationMap(dec_g);
-                map.heightmap.RefreshOverlay();
             }
 
 
@@ -1279,7 +1482,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
         }
     }
 
-    public class MapOperatorDecorationModifyGroup: IMapOperator
+    public class MapOperatorDecorationModifyGroup : IMapOperator
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
@@ -1299,8 +1502,19 @@ namespace SpellforceDataEditor.SFMap.map_operators
         {
             map.decoration_manager.dec_groups[group].SetDecoration(index, PostOperatorID, PostOperatorWeight);
 
-            map.decoration_manager.UpdateDecorationsOfGroup((byte)index);
-            MainForm.mapedittool.UpdateDecGroup((byte)index);
+            if (MainForm.mapedittool.selected_inspector != null)
+            {
+                if (MainForm.mapedittool.selected_inspector is SFMap.map_controls.MapDecorationInspector)
+                {
+                    if (((map_controls.MapDecorationInspector)MainForm.mapedittool.selected_inspector).selected_dec_group == group)
+                    {
+                        ((map_controls.MapDecorationInspector)MainForm.mapedittool.selected_inspector).external_EditRow(index - 1, PostOperatorID, PostOperatorWeight);
+                    }
+                }
+            }
+
+            map.decoration_manager.UpdateDecorationsOfGroup((byte)group);
+            MainForm.mapedittool.UpdateDecGroup((byte)group);
             MainForm.mapedittool.update_render = true;
         }
 
@@ -1308,8 +1522,19 @@ namespace SpellforceDataEditor.SFMap.map_operators
         {
             map.decoration_manager.dec_groups[group].SetDecoration(index, PreOperatorID, PreOperatorWeight);
 
-            map.decoration_manager.UpdateDecorationsOfGroup((byte)index);
-            MainForm.mapedittool.UpdateDecGroup((byte)index);
+            if (MainForm.mapedittool.selected_inspector != null)
+            {
+                if (MainForm.mapedittool.selected_inspector is SFMap.map_controls.MapDecorationInspector)
+                {
+                    if (((map_controls.MapDecorationInspector)MainForm.mapedittool.selected_inspector).selected_dec_group == group)
+                    {
+                        ((map_controls.MapDecorationInspector)MainForm.mapedittool.selected_inspector).external_EditRow(index - 1, PreOperatorID, PreOperatorWeight);
+                    }
+                }
+            }
+
+            map.decoration_manager.UpdateDecorationsOfGroup((byte)group);
+            MainForm.mapedittool.UpdateDecGroup((byte)group);
             MainForm.mapedittool.update_render = true;
         }
 
@@ -1320,7 +1545,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
         }
     }
 
-    public class MapOperatorChangeMapType: IMapOperator
+    public class MapOperatorChangeMapType : IMapOperator
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
@@ -1348,7 +1573,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
         }
     }
 
-    public class MapOperatorMultiplayerAddOrRemoveTeamComp: IMapOperator
+    public class MapOperatorMultiplayerAddOrRemoveTeamComp : IMapOperator
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
@@ -1374,23 +1599,33 @@ namespace SpellforceDataEditor.SFMap.map_operators
                 MainForm.mapedittool.external_operator_AddOrRemoveTeamComp();
             }
             else
+            {
                 throw new Exception("MapOperatorMultiplayerAddOrRemoveTeamComp.Remove(): Could not find team comp to remove!");
+            }
         }
 
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Add(map);
+            }
             else
+            {
                 Remove(map);
+            }
         }
 
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             if (is_adding)
+            {
                 Remove(map);
+            }
             else
+            {
                 Add(map);
+            }
         }
 
         public override string ToString()
@@ -1399,7 +1634,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
         }
     }
 
-    public class MapOperatorMultiplayerMovePlayer: IMapOperator
+    public class MapOperatorMultiplayerMovePlayer : IMapOperator
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
@@ -1429,17 +1664,25 @@ namespace SpellforceDataEditor.SFMap.map_operators
         public void Apply(SFEngine.SFMap.SFMap map)
         {
             if (PostOperatorPlayerTeam != -1)
+            {
                 AddPlayer(map, player, comp_index, PostOperatorPlayerTeam, player_index);
+            }
             else
+            {
                 RemovePlayer(map, comp_index, PreOperatorPlayerTeam, player_index);
+            }
         }
 
         public void Revert(SFEngine.SFMap.SFMap map)
         {
             if (PostOperatorPlayerTeam != -1)
+            {
                 RemovePlayer(map, comp_index, PostOperatorPlayerTeam, player_index);
+            }
             else
+            {
                 AddPlayer(map, player, comp_index, PreOperatorPlayerTeam, player_index);
+            }
         }
 
         public override string ToString()
@@ -1450,7 +1693,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
     }
 
     public enum MapOperatorPlayerStateType { TEXT_ID = 0, NAME, LEVEL_RANGE }
-    public class MapOperatorMultiplayerSetPlayerState: IMapOperator
+    public class MapOperatorMultiplayerSetPlayerState : IMapOperator
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
@@ -1468,7 +1711,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public void SetState(SFEngine.SFMap.SFMap map, MapOperatorPlayerStateType st, object val)
         {
-            switch(st)
+            switch (st)
             {
                 case MapOperatorPlayerStateType.TEXT_ID:
                     map.metadata.multi_teams[comp_index]

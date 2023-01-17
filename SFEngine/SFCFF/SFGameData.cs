@@ -2,15 +2,9 @@
  * SFGameData is a structure which holds all data from a .cff file
  */
 
+using SFEngine.SFChunk;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using System.Reflection;
-using System.IO;
-using SFEngine.SFChunk;
 
 namespace SFEngine.SFCFF
 {
@@ -91,8 +85,10 @@ namespace SFEngine.SFCFF
         {
             get
             {
-                if(categories.ContainsKey(index))
+                if (categories.ContainsKey(index))
+                {
                     return categories[index];
+                }
 
                 return null;
             }
@@ -100,10 +96,12 @@ namespace SFEngine.SFCFF
 
         public SFCategory GetPrecise(Tuple<ushort, ushort> key)
         {
-            if(categories.ContainsKey(key.Item1))
+            if (categories.ContainsKey(key.Item1))
             {
                 if (categories[key.Item1].category_type == key.Item2)
+                {
                     return categories[key.Item1];
+                }
             }
 
             return null;
@@ -117,7 +115,7 @@ namespace SFEngine.SFCFF
             fname = "";
             SFChunkFile sfcf = new SFChunkFile();
             int result = sfcf.OpenFile(filename);
-            if(result != 0)
+            if (result != 0)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFGameData.Load() failed!");
                 return result;
@@ -222,7 +220,9 @@ namespace SFEngine.SFCFF
             // fix up cat 2016
             SFCategory cat_text = this[2016];
             if (cat_text != null)
+            {
                 cat_text.special_cat2016_DetermineLanguageIDs();
+            }
 
             return 0;
         }
@@ -234,10 +234,10 @@ namespace SFEngine.SFCFF
         {
             Tuple<ushort, ushort> cat_id = Tuple.Create((ushort)sfcfc.header.ChunkID, (ushort)sfcfc.header.ChunkDataType);
             SFCategory existing_cat = GetPrecise(cat_id);
-            if(existing_cat == null)
+            if (existing_cat == null)
             {
                 existing_cat = this[sfcfc.header.ChunkID];
-                if(existing_cat != null)
+                if (existing_cat != null)
                 {
                     return -4;                                // chunk with same id but other version already exists, can't merge
                 }
@@ -259,7 +259,9 @@ namespace SFEngine.SFCFF
             {
                 SFCategory merged_cat;
                 if (SFCategory.Merge(existing_cat, cat, out merged_cat) != 0)
+                {
                     return -5;
+                }
 
                 categories[sfcfc.header.ChunkID] = merged_cat;
                 return 1;
@@ -271,35 +273,37 @@ namespace SFEngine.SFCFF
             ret = new SFGameData();
             int result;
 
-            foreach(var cat in GD1.categories)
+            foreach (var cat in GD1.categories)
             {
                 SFCategory cat1 = cat.Value;
                 SFCategory cat2 = GD2[cat.Key];
 
-                if(cat2 == null)
+                if (cat2 == null)
                 {
                     ret.categories.Add(cat.Key, cat1);
                 }
-                else if(cat1.category_type != cat2.category_type)
+                else if (cat1.category_type != cat2.category_type)
                 {
                     return false;
-                }    
+                }
                 else
                 {
                     SFCategory merge_cat;
                     result = SFCategory.Merge(cat1, cat2, out merge_cat);
                     if (result != 0)
+                    {
                         return false;
+                    }
 
                     ret.categories.Add(cat.Key, merge_cat);
                 }
             }
-            foreach(var cat in GD2.categories)
+            foreach (var cat in GD2.categories)
             {
                 SFCategory cat1 = GD1[cat.Key];
                 SFCategory cat2 = cat.Value;
 
-                if(cat1 == null)
+                if (cat1 == null)
                 {
                     ret.categories.Add(cat.Key, cat2);
                 }
@@ -311,17 +315,23 @@ namespace SFEngine.SFCFF
         public static bool CalculateStatus(SFGameData GD1, SFGameData GD2, ref SFGameData GDref)
         {
             foreach (var cat in GDref.categories)
+            {
                 cat.Value.element_status.Clear();
+            }
 
-            if ((GD1 == null)&&(GD2 == null))
+            if ((GD1 == null) && (GD2 == null))
             {
                 foreach (var cat in GDref.categories)
+                {
                     for (int i = 0; i < cat.Value.GetElementCount(); i++)
+                    {
                         cat.Value.element_status.Add(SFCategoryElementStatus.UNCHANGED);
+                    }
+                }
 
                 return true;
             }
-            foreach(var cat in GDref.categories)
+            foreach (var cat in GDref.categories)
             {
                 SFCategory cat1 = GD1[cat.Key];
                 SFCategory cat2 = GD2[cat.Key];
@@ -329,15 +339,21 @@ namespace SFEngine.SFCFF
                 if (cat1 == null)
                 {
                     if (cat2 == null)
+                    {
                         return false;
+                    }
 
                     for (int i = 0; i < cat2.GetElementCount(); i++)
+                    {
                         cat.Value.element_status.Add(SFCategoryElementStatus.ADDED);
+                    }
                 }
                 else if (cat2 == null)
                 {
                     for (int i = 0; i < cat1.GetElementCount(); i++)
+                    {
                         cat.Value.element_status.Add(SFCategoryElementStatus.REMOVED);
+                    }
                 }
                 else
                 {
@@ -362,9 +378,9 @@ namespace SFEngine.SFCFF
             };
 
             Dictionary<int, SFCategory> new_categories = new Dictionary<int, SFCategory>();
-            foreach(int i in categories_proper_order)
+            foreach (int i in categories_proper_order)
             {
-                if(categories.ContainsKey(i))
+                if (categories.ContainsKey(i))
                 {
                     new_categories.Add(i, categories[i]);
                 }
@@ -515,7 +531,10 @@ namespace SFEngine.SFCFF
 
 
             foreach (var cat in categories)
+            {
                 cat.Value.Unload();
+            }
+
             categories.Clear();
 
             fname = "";

@@ -1,16 +1,8 @@
-﻿using System;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
-
-
-using SpellforceDataEditor.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -86,8 +78,49 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             System.Diagnostics.Debug.Assert(!category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
 
-            category[elem_index][var_index] = obj;
-            MainForm.data.external_set_element_select_string(category, elem_index);
+            bool push_change = false;
+            switch (category.elem_format[var_index])
+            {
+                case 'b':
+                    push_change = (sbyte)category[elem_index][var_index] != (sbyte)obj;
+                    break;
+                case 'B':
+                    push_change = (byte)category[elem_index][var_index] != (byte)obj;
+                    break;
+                case 'h':
+                    push_change = (short)category[elem_index][var_index] != (short)obj;
+                    break;
+                case 'H':
+                    push_change = (ushort)category[elem_index][var_index] != (ushort)obj;
+                    break;
+                case 'i':
+                    push_change = (int)category[elem_index][var_index] != (int)obj;
+                    break;
+                case 'I':
+                    push_change = (uint)category[elem_index][var_index] != (uint)obj;
+                    break;
+                case 's':
+                    push_change = !((SFString)category[elem_index][var_index]).Equals((SFString)obj);
+                    break;
+                default:
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFCFF, "SFControl.set_element_variant(): Unknown element type!");
+                    throw new Exception("SFControl.set_element_variant(): Unknown element type!");
+            }
+
+            if (!push_change)
+            {
+                return;
+            }
+
+            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorModifyCategoryElement()
+            {
+                CategoryIndex = category.category_id,
+                ElementIndex = elem_index,
+                SubElementIndex = SFEngine.Utility.NO_INDEX,
+                VariantIndex = var_index,
+                NewVariant = obj,
+                IsSubElement = false
+            });
         }
 
         //updates data element and displayed description
@@ -95,8 +128,49 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             System.Diagnostics.Debug.Assert(category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
 
-            category[elem_index, subelem_index][var_index] = obj;
-            MainForm.data.external_set_element_select_string(category, elem_index);
+            bool push_change = false;
+            switch (category.elem_format[var_index])
+            {
+                case 'b':
+                    push_change = (sbyte)category[elem_index, subelem_index][var_index] != (sbyte)obj;
+                    break;
+                case 'B':
+                    push_change = (byte)category[elem_index, subelem_index][var_index] != (byte)obj;
+                    break;
+                case 'h':
+                    push_change = (short)category[elem_index, subelem_index][var_index] != (short)obj;
+                    break;
+                case 'H':
+                    push_change = (ushort)category[elem_index, subelem_index][var_index] != (ushort)obj;
+                    break;
+                case 'i':
+                    push_change = (int)category[elem_index, subelem_index][var_index] != (int)obj;
+                    break;
+                case 'I':
+                    push_change = (uint)category[elem_index, subelem_index][var_index] != (uint)obj;
+                    break;
+                case 's':
+                    push_change = !((SFString)category[elem_index, subelem_index][var_index]).Equals((SFString)obj);
+                    break;
+                default:
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFCFF, "SFControl.set_element_variant(): Unknown element type!");
+                    throw new Exception("SFControl.set_element_variant(): Unknown element type!");
+            }
+
+            if (!push_change)
+            {
+                return;
+            }
+
+            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorModifyCategoryElement()
+            {
+                CategoryIndex = category.category_id,
+                ElementIndex = elem_index,
+                SubElementIndex = subelem_index,
+                VariantIndex = var_index,
+                NewVariant = obj,
+                IsSubElement = true
+            });
         }
 
         //this depends on actual control
@@ -146,7 +220,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             Byte[] bytes = new Byte[count];
             for (int i = 0; i < count; i++)
+            {
                 bytes[i] = (Byte)category[current_element][index + i];
+            }
+
             return BitConverter.ToString(bytes).Replace('-', ' ');
         }
 
@@ -156,15 +233,22 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             System.Diagnostics.Debug.Assert(!category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
 
             if (bt == null)
+            {
                 return;
+            }
+
             if ((bt.IsDisposed) || (bt.Disposing))
+            {
                 return;
+            }
 
             int cur_id = category.GetElementID(current_element);
 
             SFCategory cat = SFCategoryManager.gamedata[cat_i];
             if (cat == null)
+            {
                 return;
+            }
 
             int real_elem_id = cat.GetElementIndex(cur_id);
             bt.Tag = (real_elem_id == SFEngine.Utility.NO_INDEX);
@@ -186,31 +270,42 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             System.Diagnostics.Debug.Assert(!category.category_allow_multiple, "SFControl.set_element_variant(): Invalid category type");
 
             if (tb == null)
+            {
                 return;
+            }
+
             if ((tb.IsDisposed) || (tb.Disposing))
+            {
                 return;
+            }
 
             int cur_id = SFEngine.Utility.TryParseInt32(tb.Text);
 
             SFCategory cat = SFCategoryManager.gamedata[cat_i];
             if (cat == null)
+            {
                 return;
+            }
 
             int real_elem_id = cat.GetElementIndex(cur_id);
-            if ((real_elem_id == SFEngine.Utility.NO_INDEX)||(real_elem_id == 0))
+            if ((real_elem_id == SFEngine.Utility.NO_INDEX) || (real_elem_id == 0))
+            {
                 tb.BackColor = Color.Yellow;
+            }
             else
+            {
                 tb.BackColor = Color.DarkOrange;
+            }
         }
 
         public void button_step_into(Button bt, int cat_i)
         {
-            if((bool)bt.Tag)     // add new entry
+            if ((bool)bt.Tag)     // add new entry
             {
                 int cur_id = category.GetElementID(current_element);
 
                 SFCategory cat = SFCategoryManager.gamedata[cat_i];
-                if(cat == null)
+                if (cat == null)
                 {
                     // todo: create new category for this element
                     // problem: how to handle versioning?
@@ -239,11 +334,22 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     SFCategoryElementList new_elem_list = new SFCategoryElementList();
                     new_elem_list.Elements.Add(new_elem);
 
-                    cat.element_lists.Insert(new_ind, new_elem_list);
+                    MainForm.data.op_queue.Push(new operators.CFFOperatorAddRemoveCategoryElement()
+                    {
+                        CategoryIndex = cat_i,
+                        ElementIndex = new_ind,
+                        ElementList = new_elem_list,
+                        IsElementList = true,
+                    });
                 }
                 else
                 {
-                    cat.elements.Insert(new_ind, new_elem);
+                    MainForm.data.op_queue.Push(new operators.CFFOperatorAddRemoveCategoryElement()
+                    {
+                        CategoryIndex = cat_i,
+                        ElementIndex = new_ind,
+                        Element = new_elem,
+                    });
                 }
 
                 bt.Tag = false;
@@ -265,11 +371,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             SFCategory cat = SFCategoryManager.gamedata[cat_i];
             if (cat == null)
+            {
                 return;
+            }
 
             int real_elem_id = cat.GetElementIndex(elem_key);
             if (real_elem_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
+
             MainForm.data.Tracer_StepForward(cat_i, real_elem_id);
         }
 

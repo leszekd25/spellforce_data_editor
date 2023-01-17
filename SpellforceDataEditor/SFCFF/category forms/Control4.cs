@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -198,7 +191,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox2, 2022);
+            }
         }
 
         private void ButtonGoto5_Click(object sender, EventArgs e)
@@ -225,10 +220,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 SFCategoryElement elem = SFCategoryManager.gamedata[2024].FindElement<UInt16>(2, stats_id);
                 unit_txt = SFCategoryManager.GetTextFromElement(elem, 1);
                 if (unit_txt == SFEngine.Utility.S_NONAME)
+                {
                     unit_txt = SFCategoryManager.GetRuneheroName(stats_id);
+                }
             }
             else
+            {
                 unit_txt = SFEngine.Utility.S_UNKNOWN;
+            }
 
             return stats_id.ToString() + " " + unit_txt + " (lvl " + stats_level.ToString() + ")";
         }
@@ -262,11 +261,19 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             bool isUnkillable = (flags & 2) == 2;
             string textFlags = "\r\nUnit gender: ";
             if (isMale)
+            {
                 textFlags += "male";
+            }
             else
+            {
                 textFlags += "female";
+            }
+
             if (isUnkillable)
+            {
                 textFlags += "\r\nThis unit is unkillable";
+            }
+
             return "This unit race: " + race_name + stat_txt + textFlags;
         }
     }

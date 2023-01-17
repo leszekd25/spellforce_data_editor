@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-
-using System.IO;
+﻿using SFEngine.SF3D.SFRender;
 using SFEngine.SFChunk;
-using SFEngine.SF3D.SFRender;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SFEngine.SFMap
 {
@@ -109,7 +105,9 @@ namespace SFEngine.SFMap
                 c3.Close();
             }
             else
+            {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find tile definitions! This is seriously bad!");
+            }
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading textures");
             SFChunkFileChunk c4 = f.GetChunkByID(4);
@@ -122,7 +120,9 @@ namespace SFEngine.SFMap
                 c4.Close();
             }
             else
+            {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not load textures! This is very bad and will cause instability!");
+            }
 
             // generate texture data
             heightmap.texture_manager.Init();
@@ -133,7 +133,9 @@ namespace SFEngine.SFMap
             {
                 SFChunkFileChunk c6_i = f.GetChunkByID(6, i);
                 if (c6_i == null)
-                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not read heightmap chunk ID "+i.ToString()+"! This is very bad!");
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not read heightmap chunk ID " + i.ToString() + "! This is very bad!");
+                }
                 else
                 {
                     using (BinaryReader br = c6_i.Open())
@@ -168,9 +170,15 @@ namespace SFEngine.SFMap
                         int b_lvl = 1;
                         int race_id = -1;
                         if (c11.header.ChunkDataType > 1)
+                        {
                             b_lvl = br.ReadByte();
+                        }
+
                         if (c11.header.ChunkDataType > 2)
+                        {
                             race_id = br.ReadByte();
+                        }
+
                         AddBuilding(b_type, pos, angle, npc_id, b_lvl, race_id);
                     }
                 }
@@ -178,7 +186,9 @@ namespace SFEngine.SFMap
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Buildings loaded: " + building_manager.buildings.Count.ToString());
             }
             else
+            {
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find building data");
+            }
 
             // load units
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading units");
@@ -202,7 +212,10 @@ namespace SFEngine.SFMap
                         int group = br.ReadByte();
                         int unknown2 = 0;
                         if (c12.header.ChunkDataType >= 5)
+                        {
                             unknown2 = br.ReadByte();
+                        }
+
                         AddUnit(unit_id, pos, flags, npc_id, unknown, group, unknown2);
                     }
                 }
@@ -210,7 +223,9 @@ namespace SFEngine.SFMap
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Units loaded: " + unit_manager.units.Count.ToString());
             }
             else
+            {
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find unit data");
+            }
 
             // load objects
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading objects");
@@ -236,15 +251,21 @@ namespace SFEngine.SFMap
                             unk1 = br.ReadUInt16();
                             br.ReadBytes(4);
                         }
-                        else if(c29.header.ChunkDataType == 5)
+                        else if (c29.header.ChunkDataType == 5)
                         {
                             unk1 = br.ReadUInt16();
                             br.ReadBytes(2);
                         }
                         else if (c29.header.ChunkDataType == 4)
+                        {
                             unk1 = br.ReadUInt16();
+                        }
+
                         if ((object_id >= 65) && (object_id <= 67))   // editor only
+                        {
                             continue;
+                        }
+
                         AddObject(object_id, pos, angle, npc_id, unk1);
                     }
                 }
@@ -252,7 +273,9 @@ namespace SFEngine.SFMap
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Objects loaded: " + object_manager.objects.Count.ToString());
             }
             else
+            {
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find object data");
+            }
 
             // load interactive objects
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading interactive objects");
@@ -279,7 +302,9 @@ namespace SFEngine.SFMap
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Interactive objects loaded: " + int_object_manager.int_objects.Count.ToString());
             }
             else
+            {
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find interactive object data");
+            }
 
             // load decorations
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading decal data");
@@ -309,12 +334,13 @@ namespace SFEngine.SFMap
                     {
                         decoration_manager.dec_groups[i] = new SFMapDecorationGroup();
                         for (int j = 0; j < 30; j++)
+                        {
                             decoration_manager.dec_groups[i].dec_id[j] = br.ReadUInt16();
+                        }
+
                         for (int j = 0; j < 30; j++)
                         {
                             decoration_manager.dec_groups[i].weight[j] = br.ReadByte();
-                            if (decoration_manager.dec_groups[i].weight[j] != 0)
-                                decoration_manager.dec_groups[i].random_cache.Add(j);
                         }
                     }
                 }
@@ -324,7 +350,9 @@ namespace SFEngine.SFMap
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find decal group data! This is bad...");
                 for (int i = 0; i < 255; i++)
+                {
                     decoration_manager.dec_groups[i] = new SFMapDecorationGroup();
+                }
             }
             decoration_manager.GenerateDecorations();
 
@@ -352,7 +380,9 @@ namespace SFEngine.SFMap
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Portals loaded: " + portal_manager.portals.Count.ToString());
             }
             else
+            {
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find portal data");
+            }
 
             // load lakes
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading lakes");
@@ -381,7 +411,9 @@ namespace SFEngine.SFMap
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Lakes found: " + lake_manager.lakes.Count.ToString());
             }
             else
+            {
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Could not find lake data");
+            }
 
             // load map flags
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading map flags");
@@ -400,13 +432,16 @@ namespace SFEngine.SFMap
                     {
                         pos.x = br.ReadInt16();
                         pos.y = br.ReadInt16();
-                        heightmap.chunk42_data.Add(pos);
+                        heightmap.SetFlag(pos, SFMapHeightMapFlag.FLAG_MOVEMENT, true);
+                        //heightmap.chunk42_data.Add(pos);
                     }
                 }
                 c42.Close();
             }
             else
+            {
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Movement flag data not found");
+            }
 
             SFChunkFileChunk c56 = f.GetChunkByID(56);
             if (c56 != null)
@@ -420,34 +455,48 @@ namespace SFEngine.SFMap
                     {
                         pos.x = br.ReadInt16();
                         pos.y = br.ReadInt16();
-                        heightmap.chunk56_data.Add(pos);
+                        heightmap.SetFlag(pos, SFMapHeightMapFlag.FLAG_VISION, true);
+                        //heightmap.chunk56_data.Add(pos);
                     }
                 }
                 c56.Close();
             }
             else
+            {
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Vision flag data not found");
+            }
 
             SFChunkFileChunk c60 = f.GetChunkByID(60);
             if (c60 != null)
             {
-                byte unk;
+                byte flags;
                 SFCoord pos = new SFCoord();
                 using (BinaryReader br = c60.Open())
                 {
                     int pos_count = br.ReadInt32();
                     for (int i = 0; i < pos_count; i++)
                     {
-                        unk = br.ReadByte();
+                        flags = br.ReadByte();
                         pos.x = br.ReadInt16();
                         pos.y = br.ReadInt16();
-                        heightmap.chunk60_data.Add(new SFMapChunk60Data(unk, pos));
+                        if ((flags & 0x1) == 0x1)
+                        {
+                            heightmap.SetFlag(pos, SFMapHeightMapFlag.FLAG_MOVEMENT, true);
+                        }
+                        //heightmap.chunk42_data.Add(pos);
+                        if ((flags & 0x2) == 0x2)
+                        {
+                            heightmap.SetFlag(pos, SFMapHeightMapFlag.FLAG_VISION, true);
+                        }
+                        //heightmap.chunk56_data.Add(pos);
                     }
                 }
                 c60.Close();
             }
             else
+            {
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Additional flag data not found");
+            }
 
             // load weather
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading weather data");
@@ -455,13 +504,15 @@ namespace SFEngine.SFMap
 
             weather_manager = new SFMapWeatherManager();
             SFChunkFileChunk c44 = f.GetChunkByID(44);
-            if(c44 != null)
+            if (c44 != null)
             {
                 using (BinaryReader br = c44.Open())
                 {
                     int weather_count = br.ReadByte();
-                    for(int i = 0; i < weather_count; i++)
+                    for (int i = 0; i < weather_count; i++)
+                    {
                         weather_manager.weather[i] = br.ReadByte();
+                    }
                 }
             }
 
@@ -486,12 +537,15 @@ namespace SFEngine.SFMap
                         // discard spawns which do not have bindstones at specified positions
                         SFCoord pos = new SFCoord(x, y);
                         int bindstone_index = Utility.NO_INDEX;
-                        for(int j = 0; j < int_object_manager.bindstones_index.Count; j++)
-                            if(int_object_manager.int_objects[int_object_manager.bindstones_index[j]].grid_position == pos)
+                        for (int j = 0; j < int_object_manager.bindstones_index.Count; j++)
+                        {
+                            if (int_object_manager.int_objects[int_object_manager.bindstones_index[j]].grid_position == pos)
                             {
                                 bindstone_index = j;
                                 break;
                             }
+                        }
+
                         if (bindstone_index == Utility.NO_INDEX)
                         {
                             LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Spawn data not associated with bindstone, removing (position: " + pos.ToString() + ")");
@@ -512,7 +566,9 @@ namespace SFEngine.SFMap
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Player spawns loaded: " + metadata.player_count.ToString());
             }
             else
+            {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Player spawn data not found!");
+            }
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading team compositions");
             metadata.multi_teams = new List<SFMapMultiplayerTeamComposition>();
@@ -640,7 +696,9 @@ namespace SFEngine.SFMap
                         metadata.original_minimap.data = br.ReadBytes(width * height * 3);
                     }
                     else
+                    {
                         LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Found team composition data, but could not load it!");
+                    }
                 }
                 c53.Close();
             }
@@ -685,7 +743,9 @@ namespace SFEngine.SFMap
                                 int object_id = br2.ReadInt16();
                                 br2.ReadBytes(6);
                                 if (object_id != 2541)
+                                {
                                     br2.ReadBytes(4);
+                                }
                                 else
                                 {
                                     short spawn_id = br2.ReadInt16();
@@ -702,7 +762,10 @@ namespace SFEngine.SFMap
                                     SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name + "_SPAWNCIRCLE");
                                 }
                                 if ((object_id >= 65) && (object_id <= 67))    // editor only
+                                {
                                     obj_i--;
+                                }
+
                                 obj_i++;
                             }
                         }
@@ -710,31 +773,13 @@ namespace SFEngine.SFMap
                     c29.Close();
                 }
             }
-            else if(metadata.map_type == SFMapType.MULTIPLAYER)
+            else if (metadata.map_type == SFMapType.MULTIPLAYER)
             {
                 LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Coop parameters not found, assuming multiplayer mode");
             }
 
             // terrain flags overlay
-            for (int i = 0; i < width; i++)
-            {
-                for (int j = 0; j < height; j++)
-                {
-                    if (heightmap.texture_manager.texture_tiledata[heightmap.tile_data[j * width + i]].blocks_movement)
-                        heightmap.overlay_data_flags[j * width + i] = 9;
-                    else
-                        heightmap.overlay_data_flags[j * width + i] = 0;
-                }
-            }
-            foreach (SFCoord p in heightmap.chunk42_data)
-                heightmap.overlay_data_flags[p.y * width + p.x] = 2;
-            foreach (SFCoord p in heightmap.chunk56_data)
-            {
-                if (heightmap.overlay_data_flags[p.y * width + p.x] == 0)
-                    heightmap.overlay_data_flags[p.y * width + p.x] = 5;
-                else
-                    heightmap.overlay_data_flags[p.y * width + p.x] = 7;
-            }
+            heightmap.RebuildTerrainTexture(new SFCoord(0, 0), new SFCoord(width - 1, height - 1));
 
             // selection helper stuff
             selection_helper.AssignToMap(this);
@@ -770,12 +815,21 @@ namespace SFEngine.SFMap
             // chunk 2
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving tile data");
             data_size = 3 + heightmap.width * heightmap.height;
+            byte[] tiledata = new byte[heightmap.width * heightmap.height];
+            for(int y = 0; y < heightmap.height; y++)
+            {
+                for(int x = 0; x < heightmap.width; x++)
+                {
+                    tiledata[y * heightmap.width + x] = heightmap.GetTile(new SFCoord(x, y));
+                }
+            }
             byte[] c2_data = new byte[data_size];
             using (BinaryWriter bw = new BinaryWriter(new MemoryStream(c2_data)))
             {
                 bw.Write((short)heightmap.height);
                 bw.Write((byte)0);
-                bw.Write(heightmap.tile_data);
+                //bw.Write(heightmap.tile_data);
+                bw.Write(tiledata);
             }
             f.AddChunk(2, 0, true, 6, c2_data);
 
@@ -821,36 +875,54 @@ namespace SFEngine.SFMap
             }
             f.AddChunk(4, 0, true, 4, c4_data);
 
+            // preparing for chunks 42 and 56
+            List<SFCoord> flags_movement = new List<SFCoord>();
+            List<SFCoord> flags_vision = new List<SFCoord>();
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    SFCoord pos = new SFCoord(x, y);
+                    if (heightmap.IsFlagSet(pos, SFMapHeightMapFlag.FLAG_MOVEMENT))
+                    {
+                        flags_movement.Add(pos);
+                    }
+
+                    if (heightmap.IsFlagSet(pos, SFMapHeightMapFlag.FLAG_VISION))
+                    {
+                        flags_vision.Add(pos);
+                    }
+                }
+            }
+
             // chunk 42
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving map flags");
-            heightmap.chunk42_data.Sort();
-            byte[] c42_data = new byte[heightmap.chunk42_data.Count * 4];
-            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Movement flag count: " + heightmap.chunk42_data.Count.ToString());
+
+            byte[] c42_data = new byte[flags_movement.Count * 4];
+            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Movement flag count: " + flags_movement.Count.ToString());
 
             using (MemoryStream ms = new MemoryStream(c42_data))
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
-                    for (int i = 0; i < heightmap.chunk42_data.Count; i++)
+                    for (int i = 0; i < flags_movement.Count; i++)
                     {
-                        bw.Write((short)heightmap.chunk42_data[i].x);
-                        bw.Write((short)heightmap.chunk42_data[i].y);
+                        bw.Write((short)flags_movement[i].x);
+                        bw.Write((short)flags_movement[i].y);
                     }
                 }
             }
             f.AddChunk(42, 0, true, 1, c42_data);
 
-            // chunk 56
-            heightmap.chunk56_data.Sort();
-            byte[] c56_data = new byte[heightmap.chunk56_data.Count * 4];
+            byte[] c56_data = new byte[flags_vision.Count * 4];
             using (MemoryStream ms = new MemoryStream(c56_data))
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
-                    for (int i = 0; i < heightmap.chunk56_data.Count; i++)
+                    for (int i = 0; i < flags_vision.Count; i++)
                     {
-                        bw.Write((short)heightmap.chunk56_data[i].x);
-                        bw.Write((short)heightmap.chunk56_data[i].y);
+                        bw.Write((short)flags_vision[i].x);
+                        bw.Write((short)flags_vision[i].y);
                     }
                 }
             }
@@ -888,9 +960,14 @@ namespace SFEngine.SFMap
                     for (int i = 0; i < 255; i++)
                     {
                         for (int j = 0; j < 30; j++)
+                        {
                             bw.Write((short)decoration_manager.dec_groups[i].dec_id[j]);
+                        }
+
                         for (int j = 0; j < 30; j++)
+                        {
                             bw.Write((byte)decoration_manager.dec_groups[i].weight[j]);
+                        }
                     }
                 }
             }
@@ -900,18 +977,33 @@ namespace SFEngine.SFMap
             // FIX for flags eating objects
             HashSet<SFCoord> obj_positions = new HashSet<SFCoord>();
             for (int i = 0; i < object_manager.objects.Count; i++)
+            {
                 obj_positions.Add(object_manager.objects[i].grid_position);
+            }
+
             for (int i = 0; i < int_object_manager.int_objects.Count; i++)
+            {
                 obj_positions.Add(int_object_manager.int_objects[i].grid_position);
+            }
+
             for (int i = 0; i < unit_manager.units.Count; i++)
+            {
                 obj_positions.Add(unit_manager.units[i].grid_position);
+            }
+
             for (int i = 0; i < building_manager.buildings.Count; i++)
+            {
                 obj_positions.Add(building_manager.buildings[i].grid_position);
+            }
+
             for (int i = 0; i < portal_manager.portals.Count; i++)
+            {
                 obj_positions.Add(portal_manager.portals[i].grid_position);
+            }
 
             // FIX for maps being broken when opened in original editor: reintroduce flag objects
-            HashSet<SFCoord> merged_flags = new HashSet<SFCoord>(heightmap.chunk42_data.Intersect(heightmap.chunk56_data));
+            //HashSet<SFCoord> merged_flags = new HashSet<SFCoord>(heightmap.chunk42_data.Intersect(heightmap.chunk56_data));
+            HashSet<SFCoord> merged_flags = new HashSet<SFCoord>(flags_movement.Intersect(flags_vision));
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving objects");
             byte[] c29_data;// = new byte[object_manager.objects.Count * 16];
@@ -928,12 +1020,16 @@ namespace SFEngine.SFMap
                         bw.Write((short)object_manager.objects[i].npc_id);
                         bw.Write((short)object_manager.objects[i].unknown1);
                         if (object_manager.objects[i].game_id != 2541)
+                        {
                             bw.Write((int)0);
+                        }
                         else
                         {
                             SFMapCoopAISpawn coop_spawn = new SFMapCoopAISpawn();
                             if (!metadata.GetCoopAISpawnByObject(object_manager.objects[i], ref coop_spawn))
+                            {
                                 bw.Write((int)0);
+                            }
                             else
                             {
                                 bw.Write((short)coop_spawn.spawn_id);
@@ -942,11 +1038,15 @@ namespace SFEngine.SFMap
                         }
                     }
                     // flags type 65
-                    foreach (SFCoord p in heightmap.chunk42_data)
+                    foreach (SFCoord p in flags_movement)//heightmap.chunk42_data)
+                    {
                         if (!merged_flags.Contains(p))
                         {
                             if (obj_positions.Contains(p))
+                            {
                                 continue;
+                            }
+
                             bw.Write((short)p.x);
                             bw.Write((short)p.y);
                             bw.Write((short)65);
@@ -954,13 +1054,18 @@ namespace SFEngine.SFMap
                             bw.Write((short)0);
                             bw.Write((short)0);
                             bw.Write((int)0);
-                        }                    
+                        }
+                    }
                     // flags type 66
-                    foreach (SFCoord p in heightmap.chunk56_data)
+                    foreach (SFCoord p in flags_vision)//heightmap.chunk56_data)
+                    {
                         if (!merged_flags.Contains(p))
                         {
                             if (obj_positions.Contains(p))
+                            {
                                 continue;
+                            }
+
                             bw.Write((short)p.x);
                             bw.Write((short)p.y);
                             bw.Write((short)66);
@@ -969,11 +1074,15 @@ namespace SFEngine.SFMap
                             bw.Write((short)0);
                             bw.Write((int)0);
                         }
+                    }
                     // flags type 67
                     foreach (SFCoord p in merged_flags)
                     {
                         if (obj_positions.Contains(p))
+                        {
                             continue;
+                        }
+
                         bw.Write((short)p.x);
                         bw.Write((short)p.y);
                         bw.Write((short)67);
@@ -1030,7 +1139,7 @@ namespace SFEngine.SFMap
             //if (metadata.map_type == SFMapType.COOP)    // testing fix
             //    bld_chunk_type = 2;
 
-            byte[] c11_data = new byte[building_manager.buildings.Count * (bld_chunk_type == 2?10:11)];
+            byte[] c11_data = new byte[building_manager.buildings.Count * (bld_chunk_type == 2 ? 10 : 11)];
             using (MemoryStream ms = new MemoryStream(c11_data))
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
@@ -1043,8 +1152,10 @@ namespace SFEngine.SFMap
                         bw.Write((short)building_manager.buildings[i].npc_id);
                         bw.Write((byte)building_manager.buildings[i].game_id);
                         bw.Write((byte)building_manager.buildings[i].level);
-                        if(bld_chunk_type > 2)
+                        if (bld_chunk_type > 2)
+                        {
                             bw.Write((byte)building_manager.buildings[i].race_id);
+                        }
                     }
                 }
             }
@@ -1076,14 +1187,16 @@ namespace SFEngine.SFMap
             // chunk 44
             weather_manager.Normalize();
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Save(): Saving weather");
-            byte[] c44_data = new byte[weather_manager.weather.Length+1];
+            byte[] c44_data = new byte[weather_manager.weather.Length + 1];
             using (MemoryStream ms = new MemoryStream(c44_data))
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
                     bw.Write((byte)weather_manager.weather.Length);
                     for (int i = 0; i < weather_manager.weather.Length; i++)
+                    {
                         bw.Write(weather_manager.weather[i]);
+                    }
                 }
             }
             f.AddChunk(44, 0, true, 1, c44_data);
@@ -1093,7 +1206,10 @@ namespace SFEngine.SFMap
             byte[] c46_data = new byte[m_group + 2];
             c46_data[0] = (byte)(m_group + 1);
             for (byte i = 0; i <= m_group; i++)
+            {
                 c46_data[i + 1] = i;
+            }
+
             f.AddChunk(46, 0, true, 1, c46_data);
 
             // chunk 53
@@ -1120,7 +1236,7 @@ namespace SFEngine.SFMap
             if (chunk_type != 0)
             {
                 SFMapMinimap mmap = null;
-                switch(metadata.minimap_source)
+                switch (metadata.minimap_source)
                 {
                     case SFMapMinimapSource.ORIGINAL:
                         mmap = metadata.original_minimap;
@@ -1128,21 +1244,15 @@ namespace SFEngine.SFMap
                     case SFMapMinimapSource.EDITOR:
                         mmap = new SFMapMinimap();
                         mmap.FromBitmap(metadata.new_minimap.ToBitmap());
-                            /*
-                            MainForm.mapedittool.ui.minimap_tex.ToBitmap(
-                                new SF3D.SFTexture.SFTextureToBitmapArgs()
-                                {
-                                    ConversionType = SF3D.SFTexture.SFTextureToBitmapArgType.DIMENSION,
-                                    DimWidth = 128,
-                                    DimHeight = 128
-                                }));*/
                         break;
                     case SFMapMinimapSource.CUSTOM:
                         mmap = metadata.custom_minimap;
                         break;
                 }
                 if (mmap == null)
+                {
                     mmap = metadata.original_minimap;
+                }
 
                 byte[] c53_data = new byte[team_array.Length + 8 + (mmap.width * mmap.height * 3)];
                 using (MemoryStream ms = new MemoryStream(c53_data))
@@ -1178,21 +1288,7 @@ namespace SFEngine.SFMap
             f.AddChunk(55, 0, true, 1, c55_data);
 
             // chunk 60
-            byte[] c60_data = new byte[4 + 5 * heightmap.chunk60_data.Count];
-            using (MemoryStream ms = new MemoryStream(c60_data))
-            {
-                using (BinaryWriter bw = new BinaryWriter(ms))
-                {
-                    bw.Write(heightmap.chunk60_data.Count);
-                    for (int i = 0; i < heightmap.chunk60_data.Count; i++)
-                    {
-                        bw.Write((byte)heightmap.chunk60_data[i].unknown);
-                        bw.Write((short)heightmap.chunk60_data[i].pos.x);
-                        bw.Write((short)heightmap.chunk60_data[i].pos.y);
-                    }
-                }
-            }
-            f.AddChunk(60, 0, true, 1, c60_data);
+            // SKIPPED
 
             // chunk 8000 not used?
 
@@ -1228,7 +1324,10 @@ namespace SFEngine.SFMap
 
             byte[] tilearray = new byte[size * size];
             for (int i = 0; i < size * size; i++)
+            {
                 tilearray[i] = 0;
+            }
+
             width = size;
             height = size;
             heightmap = new SFMapHeightMap(width, height) { map = this };
@@ -1242,39 +1341,60 @@ namespace SFEngine.SFMap
 
             byte[] tile_data = new byte[255 * 14];
             tile_data.Initialize();
-            for(byte i = 0; i < 255; i++)
+            for (byte i = 0; i < 255; i++)
             {
                 // byte 0
                 if (i == 0)
+                {
                     tile_data[i * 14 + 0] = 1;
+                }
+
                 if ((i >= 1) && (i <= 31))
+                {
                     tile_data[i * 14 + 0] = i;
+                }
+
                 if (i >= 224)
+                {
                     tile_data[i * 14 + 0] = (byte)(i - 192);
+                }
                 // byte 3
                 if ((i <= 31) || (i >= 224))
+                {
                     tile_data[i * 14 + 3] = 255;
+                }
                 // byte 6
                 tile_data[i * 14 + 6] = i;
                 if ((i >= 1) && (i <= 31))
+                {
                     tile_data[i * 14 + 6] = (byte)(i + 223);
+                }
                 // byte 7
                 tile_data[i * 14 + 7] = i;
-                if(i >= 224)
-                    tile_data[i*14+7] = (byte)(i-223);
+                if (i >= 224)
+                {
+                    tile_data[i * 14 + 7] = (byte)(i - 223);
+                }
                 // bytes 8-9
                 tile_data[i * 14 + 8] = 255;
                 tile_data[i * 14 + 9] = 128;
                 // byte 10
                 if (((i >= 1) && (i <= 120)) || (i >= 224))
+                {
                     tile_data[i * 14 + 10] = 10;
+                }
                 // byte 11
                 tile_data[i * 14 + 11] = 255;
                 // byte 12: movement flag, byte 13: vision flag - both set later
-                if((i >= 1)&&(i <= 31))
-                    tile_data[i * 14 + 12] = moveflags[i-1];
+                if ((i >= 1) && (i <= 31))
+                {
+                    tile_data[i * 14 + 12] = moveflags[i - 1];
+                }
+
                 if (i >= 224)
+                {
                     tile_data[i * 14 + 12] = moveflags[i - 224];
+                }
             }
 
 
@@ -1294,7 +1414,7 @@ namespace SFEngine.SFMap
                 heightmap.texture_manager.texture_tiledata[i].blocks_vision = ((b_v % 2) == 1 ? true : false);
             }
 
-            
+
             byte[] texture_ids = new byte[63];
             texture_ids[0] = 0;
             texture_ids[1] = 69; texture_ids[2] = 66; texture_ids[3] = 67; texture_ids[4] = 70;
@@ -1306,24 +1426,30 @@ namespace SFEngine.SFMap
             texture_ids[25] = 64; texture_ids[26] = 26; texture_ids[27] = 80; texture_ids[28] = 74;
             texture_ids[29] = 30; texture_ids[30] = 83; texture_ids[31] = 32;
             for (int i = 1; i < 32; i++)
+            {
                 texture_ids[i + 31] = (byte)(texture_ids[i] + SFMapTerrainTextureManager.TEXTURES_AVAILABLE);
-            
+            }
+
             heightmap.texture_manager.SetTextureIDsRaw(texture_ids);
 
             // generate texture data
             heightmap.texture_manager.Init();
 
             // load heightmap
-            if(generator != null)
+            if (generator != null)
+            {
                 heightmap.height_data = generator.ProduceHeightmap();
+            }
             else
+            {
                 for (int i = 0; i < size * size; i++)
+                {
                     heightmap.height_data[i] = 0;
+                }
+            }
 
             // generate heightmap models and reindex textures
             heightmap.Generate();
-
-            //npc_manager = new SFMapNPCManager() { map = this };
 
             // load buildings
             building_manager = new SFMapBuildingManager() { map = this };
@@ -1343,9 +1469,12 @@ namespace SFEngine.SFMap
             dec_data.Initialize();
             decoration_manager = new SFMapDecorationManager() { map = this };
             decoration_manager.dec_assignment = dec_data;
-            
+
             for (int i = 0; i < 255; i++)
+            {
                 decoration_manager.dec_groups[i] = new SFMapDecorationGroup();
+            }
+
             decoration_manager.GenerateDecorations();
 
             // load portals
@@ -1367,32 +1496,17 @@ namespace SFEngine.SFMap
 
             byte[] image_data = new byte[128 * 128 * 3];
             for (int i = 0; i < 128 * 128 * 3; i++)
+            {
                 image_data[i] = (byte)((i * 1024) / 3);
+            }
+
             metadata.original_minimap = new SFMapMinimap();
             metadata.original_minimap.width = 128;
             metadata.original_minimap.height = 128;
             metadata.original_minimap.data = image_data;
 
             // flag overlay
-            for (int i = 0; i < width; i++)
-            {
-                for (int j = 0; j < height; j++)
-                {
-                    if (heightmap.texture_manager.texture_tiledata[heightmap.tile_data[j * width + i]].blocks_movement)
-                        heightmap.overlay_data_flags[j * width + i] = 9;
-                    else
-                        heightmap.overlay_data_flags[j * width + i] = 0;
-                }
-            }
-            foreach (SFCoord p in heightmap.chunk42_data)
-                heightmap.overlay_data_flags[p.y * width + p.x] = 2;
-            foreach (SFCoord p in heightmap.chunk56_data)
-            {
-                if (heightmap.overlay_data_flags[p.y * width + p.x] == 0)
-                    heightmap.overlay_data_flags[p.y * width + p.x] = 5;
-                else
-                    heightmap.overlay_data_flags[p.y * width + p.x] = 7;
-            }
+            heightmap.RebuildTerrainTexture(new SFCoord(0, 0), new SFCoord(width - 1, height - 1));
 
             // selection helper stuff
             selection_helper.AssignToMap(this);
@@ -1410,16 +1524,36 @@ namespace SFEngine.SFMap
         public void Unload()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Unload() called");
-            if(heightmap!=null)
+            if (heightmap != null)
+            {
                 heightmap.Unload();
-            if(metadata!=null)
+            }
+
+            if (metadata != null)
+            {
                 metadata.Unload();             // minimap texture
-            if(selection_helper!=null)
+            }
+
+            if (selection_helper != null)
+            {
                 selection_helper.Dispose();    // selection 3d mesh
+            }
+
             if (ocean != null)
+            {
                 ocean.Dispose();
+            }
+
             if (lake_manager != null)
+            {
                 lake_manager.Dispose();
+            }
+
+            if (building_manager != null)
+            {
+                building_manager.Dispose();
+            }
+
             building_manager = null;
             unit_manager = null;
             object_manager = null;
@@ -1434,30 +1568,90 @@ namespace SFEngine.SFMap
             //npc_manager = null;
         }
 
-        public void AddDecoration(int game_id, SFCoord pos)
+        // helper function for decals
+        // center corresponds to world coordinate for the center (SFCOORD of the object)
+        public void UpdateNodeDecal(SF3D.SceneSynchro.SceneNode node, OpenTK.Vector2 center, OpenTK.Vector2 offset, int angle)
         {
-            SFMapDecoration dec = decoration_manager.AddDecoration(game_id, pos);
-            
-            float z = heightmap.GetZ(pos) / 100.0f;
-            SF3D.SceneSynchro.SceneNode _obj = dec.node;
-            _obj.SetPosition(heightmap.GetFixedPosition(pos));
-            _obj.Rotation = OpenTK.Quaternion.FromAxisAngle(new OpenTK.Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-            _obj.Scale = new OpenTK.Vector3(100 / 128f);
+            if (heightmap == null)
+            {
+                return;
+            }
+            // assumption: a node can only have one subnode that is a decal
+            foreach (SF3D.SceneSynchro.SceneNodeSimple n in node.Children)
+            {
+                if (n.IsDecal)
+                {
+                    SF3D.SFModel3D m_old = n.Mesh;
+                    if (m_old == null)
+                    {
+                        return;
+                    }
+
+                    OpenTK.Vector2 bb_topleft = m_old.aabb.a.Xy;
+                    OpenTK.Vector2 bb_bottomright = m_old.aabb.b.Xy;
+
+                    SF3D.SFModel3D m_new = new SF3D.SFModel3D();
+                    SF3D.SFSubModel3D sbm_new = new SF3D.SFSubModel3D();
+                    SF3D.SFMaterial sfm_new = m_old.submodels[0].material;
+
+                    OpenTK.Vector3[] vertices;
+                    OpenTK.Vector3[] normals;
+                    OpenTK.Vector2[] uvs;
+                    byte[] colors;
+                    uint[] indices;
+
+                    SFCoord map_bb_topleft;
+                    SFCoord map_bb_bottomright;
+
+                    heightmap.GenerateDecalGeometry(bb_topleft, bb_bottomright, center, offset, (float)(angle * Math.PI / 180),
+                        out vertices, out normals, out uvs, out indices, out map_bb_topleft, out map_bb_bottomright);
+                    colors = new byte[vertices.Length * 4];
+                    for (int i = 0; i < colors.Length; i += 4)
+                    {
+                        colors[i + 0] = 255;
+                        colors[i + 1] = 255;
+                        colors[i + 2] = 255;
+                        colors[i + 3] = 255;
+                    }
+
+                    sbm_new.CreateRaw(vertices, uvs, colors, normals, indices, sfm_new);
+                    m_new.aabb = m_old.aabb;
+                    m_new.CreateRaw(new SF3D.SFSubModel3D[] { sbm_new }, true);
+
+                    n.Mesh = null;
+                    SFResources.SFResourceManager.Models.Dispose(m_old.Name);
+                    SFResources.SFResourceManager.Models.AddManually(m_new, "_DECAL_" + node.Name + "_" + n.Name);
+                    n.Mesh = m_new;
+                    n.Rotation = node.Rotation.Inverted();
+                    n.Scale = new OpenTK.Vector3(1.28f);
+
+                    SF3D.SceneSynchro.SFDecalInfo decal_info = SFRenderEngine.scene.decal_info.elements[n.DecalIndex];
+                    decal_info.topleft = map_bb_topleft;
+                    decal_info.bottomright = map_bb_bottomright;
+                    decal_info.center = center;
+                    decal_info.offset = offset;
+                    decal_info.angle = angle;
+
+                    return;
+                }
+            }
         }
 
         public void AddObject(int game_id, SFCoord pos, int angle, int npc_id, int unk1, int index = -1)
         {
             SFMapObject obj = object_manager.AddObject(game_id, pos, angle, unk1, index);
+            heightmap.SetFlag(pos, SFMapHeightMapFlag.ENTITY_OBJECT, true);
+            object_manager.ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, true);
+
             obj.npc_id = npc_id;
-            /*if (npc_id != 0)
-                npc_manager.AddNPCRef(npc_id, obj);*/
-            
+
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.SceneSynchro.SceneNode _obj = obj.node;
             _obj.SetPosition(heightmap.GetFixedPosition(pos));
-            _obj.Scale = new OpenTK.Vector3(100 / 128f);
+            _obj.Scale = new OpenTK.Vector3(100 / 128.0f);
             _obj.SetAnglePlane(angle);
-            
+            UpdateNodeDecal(_obj, new OpenTK.Vector2(pos.x, pos.y), OpenTK.Vector2.Zero, angle);
+
             heightmap.GetChunk(pos).AddObject(obj);
         }
 
@@ -1472,6 +1666,8 @@ namespace SFEngine.SFMap
             obj = object_manager.objects[object_map_index];
 
             object_manager.RemoveObject(obj);
+            heightmap.SetFlag(obj.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, false);
+            object_manager.ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, false);
 
             return 0;
         }
@@ -1488,17 +1684,25 @@ namespace SFEngine.SFMap
 
 
             if (obj.node != null)
+            {
                 SFRenderEngine.scene.RemoveSceneNode(obj.node);
-            obj.node = SFRenderEngine.scene.AddSceneObject(new_object_id, obj.GetName(), true, true, true);
+            }
+
+            obj.node = SFRenderEngine.scene.AddSceneObject(new_object_id, obj.GetName(), true, true);
             obj.node.SetParent(heightmap.GetChunkNode(obj.grid_position));
 
+            object_manager.AddObjectCollisionBoundary(new_object_id);
+
+            object_manager.ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, false);
             obj.game_id = new_object_id;
+            object_manager.ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, true);
 
             // object transform
             float z = heightmap.GetZ(obj.grid_position) / 100.0f;
             obj.node.SetPosition(heightmap.GetFixedPosition(obj.grid_position));
             obj.node.Scale = new OpenTK.Vector3(100 / 128f);
             obj.node.SetAnglePlane(obj.angle);
+            UpdateNodeDecal(obj.node, new OpenTK.Vector2(obj.grid_position.x, obj.grid_position.y), OpenTK.Vector2.Zero, obj.angle);
 
             return 0;
         }
@@ -1514,7 +1718,12 @@ namespace SFEngine.SFMap
             }
             obj = object_manager.objects[object_map_index];
 
+            object_manager.ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, false);
+            obj.angle = angle;
+            object_manager.ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, true);
+
             obj.node.SetAnglePlane(angle);
+            UpdateNodeDecal(obj.node, new OpenTK.Vector2(obj.grid_position.x, obj.grid_position.y), OpenTK.Vector2.Zero, obj.angle);
 
             return 0;
         }
@@ -1528,21 +1737,21 @@ namespace SFEngine.SFMap
                 return -1;
             }
             obj = object_manager.objects[object_map_index];
-            /*if (!heightmap.CanMoveToPosition(new_pos))
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MoveObject(): Can't move object to position " + new_pos.ToString());
-                return -2;
-            }*/
 
             // move unit and set chunk dependency
             heightmap.GetChunkNode(obj.grid_position).MapChunk.objects.Remove(obj);
+            heightmap.SetFlag(obj.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, false);
+            object_manager.ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, false);
             obj.grid_position = new_pos;
+            object_manager.ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, true);
+            heightmap.SetFlag(obj.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, true);
             heightmap.GetChunkNode(obj.grid_position).MapChunk.objects.Add(obj);
             obj.node.SetParent(heightmap.GetChunkNode(obj.grid_position));
 
             // change visual transform
             float z = heightmap.GetZ(new_pos) / 100.0f;
             obj.node.SetPosition(heightmap.GetFixedPosition(new_pos));
+            UpdateNodeDecal(obj.node, new OpenTK.Vector2(obj.grid_position.x, obj.grid_position.y), OpenTK.Vector2.Zero, obj.angle);
 
             return 0;
         }
@@ -1550,6 +1759,8 @@ namespace SFEngine.SFMap
         public void AddInteractiveObject(int game_id, SFCoord pos, int angle, int unk_byte, int index = -1)
         {
             SFMapInteractiveObject obj = int_object_manager.AddInteractiveObject(game_id, pos, angle, unk_byte, index);
+            heightmap.SetFlag(obj.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, true);
+            object_manager.ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, true);
 
             float z = heightmap.GetZ(pos) / 100.0f;
 
@@ -1557,7 +1768,8 @@ namespace SFEngine.SFMap
             _obj.SetPosition(heightmap.GetFixedPosition(pos));
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(angle);
-            
+            UpdateNodeDecal(_obj, new OpenTK.Vector2(pos.x, pos.y), OpenTK.Vector2.Zero, angle);
+
             heightmap.GetChunk(pos).AddInteractiveObject(obj);
         }
 
@@ -1570,16 +1782,15 @@ namespace SFEngine.SFMap
                 return -1;
             }
             int_obj = int_object_manager.int_objects[int_object_map_index];
-            /*if (!heightmap.CanMoveToPosition(new_pos))
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MoveInteractiveObject(): Can't move interactive object to position " + new_pos.ToString());
-                return -2;
-            }*/
 
             // move unit and set chunk dependency
             heightmap.GetChunkNode(int_obj.grid_position).MapChunk.int_objects.Remove(int_obj);
 
+            object_manager.ApplyObjectBlockFlags(int_obj.grid_position, int_obj.angle, (ushort)int_obj.game_id, false);
+            heightmap.SetFlag(int_obj.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, false);
             int_obj.grid_position = new_pos;
+            heightmap.SetFlag(int_obj.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, true);
+            object_manager.ApplyObjectBlockFlags(int_obj.grid_position, int_obj.angle, (ushort)int_obj.game_id, true);
 
             heightmap.GetChunkNode(int_obj.grid_position).MapChunk.int_objects.Add(int_obj);
             int_obj.node.SetParent(heightmap.GetChunkNode(int_obj.grid_position));
@@ -1587,6 +1798,7 @@ namespace SFEngine.SFMap
             // change visual transform
             float z = heightmap.GetZ(new_pos) / 100.0f;
             int_obj.node.SetPosition(heightmap.GetFixedPosition(new_pos));
+            UpdateNodeDecal(int_obj.node, new OpenTK.Vector2(int_obj.grid_position.x, int_obj.grid_position.y), OpenTK.Vector2.Zero, int_obj.angle);
 
             return 0;
         }
@@ -1602,6 +1814,8 @@ namespace SFEngine.SFMap
             int_obj = int_object_manager.int_objects[int_object_map_index];
 
             int_object_manager.RemoveInteractiveObject(int_obj);
+            heightmap.SetFlag(int_obj.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, false);
+            object_manager.ApplyObjectBlockFlags(int_obj.grid_position, int_obj.angle, (ushort)int_obj.game_id, true);
 
             return 0;
         }
@@ -1617,8 +1831,13 @@ namespace SFEngine.SFMap
             }
             int_obj = int_object_manager.int_objects[int_object_map_index];
 
+            object_manager.ApplyObjectBlockFlags(int_obj.grid_position, int_obj.angle, (ushort)int_obj.game_id, false);
+            int_obj.angle = angle;
+            object_manager.ApplyObjectBlockFlags(int_obj.grid_position, int_obj.angle, (ushort)int_obj.game_id, true);
+
             SF3D.SceneSynchro.SceneNode _obj = int_obj.node;
             _obj.SetAnglePlane(angle);
+            UpdateNodeDecal(int_obj.node, new OpenTK.Vector2(int_obj.grid_position.x, int_obj.grid_position.y), OpenTK.Vector2.Zero, int_obj.angle);
 
             return 0;
         }
@@ -1640,16 +1859,22 @@ namespace SFEngine.SFMap
             SFMapInteractiveObject io = int_object_manager.int_objects[int_object_manager.monuments_index[monument_index]];
 
             if (io.node != null)
+            {
                 SFRenderEngine.scene.RemoveSceneNode(io.node);
-            io.node = SFRenderEngine.scene.AddSceneObject(new_monument_type+771, io.GetName(), true, true, true);
+            }
+
+            io.node = SFRenderEngine.scene.AddSceneObject(new_monument_type + 771, io.GetName(), true, true);
             io.node.SetParent(heightmap.GetChunkNode(io.grid_position));
 
+            object_manager.ApplyObjectBlockFlags(io.grid_position, io.angle, (ushort)io.game_id, false);
             io.game_id = new_monument_type + 771;
+            object_manager.ApplyObjectBlockFlags(io.grid_position, io.angle, (ushort)io.game_id, true);
 
             float z = heightmap.GetZ(io.grid_position) / 100.0f;
             io.node.SetPosition(heightmap.GetFixedPosition(io.grid_position));
             io.node.Scale = new OpenTK.Vector3(100 / 128f);
             io.node.SetAnglePlane(io.angle);
+            UpdateNodeDecal(io.node, new OpenTK.Vector2(io.grid_position.x, io.grid_position.y), OpenTK.Vector2.Zero, io.angle);
 
             return 0;
         }
@@ -1657,10 +1882,10 @@ namespace SFEngine.SFMap
         public void AddBuilding(int game_id, SFCoord pos, int angle, int npc_id, int lvl, int race_id, int index = -1)
         {
             SFMapBuilding bld = building_manager.AddBuilding(game_id, pos, angle, npc_id, lvl, race_id, index);
-            /*if (npc_id != 0)
-                npc_manager.AddNPCRef(npc_id, bld);*/
+            heightmap.SetFlag(bld.grid_position, SFMapHeightMapFlag.ENTITY_BUILDING, true);
+            building_manager.ApplyBuildingBlockFlags(bld, true);
 
-            OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)bld.game_id].collision_mesh.origin;
+            OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)bld.game_id].origin;
             float angle_rad = (float)(angle * Math.PI / 180);
             OpenTK.Vector2 b_offset_rotated = new OpenTK.Vector2(b_offset.X, b_offset.Y);
             b_offset_rotated.X = (float)((Math.Cos(angle_rad) * b_offset.X) - (Math.Sin(angle_rad) * b_offset.Y));
@@ -1669,6 +1894,7 @@ namespace SFEngine.SFMap
             bld.node.SetPosition(heightmap.GetFixedPosition(pos) + new OpenTK.Vector3(-b_offset_rotated.X, 0, b_offset_rotated.Y));
             bld.node.Scale = new OpenTK.Vector3(100 / 128f);
             bld.node.SetAnglePlane(angle);
+            UpdateNodeDecal(bld.node, new OpenTK.Vector2(pos.x, pos.y), b_offset, angle);
 
             heightmap.GetChunk(pos).AddBuilding(bld);
         }
@@ -1684,9 +1910,8 @@ namespace SFEngine.SFMap
             building = building_manager.buildings[building_map_index];
 
             building_manager.RemoveBuilding(building);
-
-            /*if (building.npc_id != 0)
-                npc_manager.RemoveNPCRef(building.npc_id);*/
+            heightmap.SetFlag(building.grid_position, SFMapHeightMapFlag.ENTITY_BUILDING, false);
+            building_manager.ApplyBuildingBlockFlags(building, false);
 
             return 0;
         }
@@ -1701,18 +1926,23 @@ namespace SFEngine.SFMap
             }
             building = building_manager.buildings[building_map_index];
 
+            building_manager.ApplyBuildingBlockFlags(building, false);
             if (building.node != null)
+            {
                 SFRenderEngine.scene.RemoveSceneNode(building.node);
+            }
+
             building_manager.AddBuildingCollisionBoundary(new_building_id);
             building.node = SFRenderEngine.scene.AddSceneBuilding(new_building_id, building.GetName());
             building.node.SetParent(heightmap.GetChunkNode(building.grid_position));
 
             building.game_id = new_building_id;
-            
+            building_manager.ApplyBuildingBlockFlags(building, true);
+
             SFCoord pos = building.grid_position;
             float z = heightmap.GetZ(pos) / 100.0f;
 
-            OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)building.game_id].collision_mesh.origin;
+            OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)building.game_id].origin;
             float angle_rad = (float)(building.angle * Math.PI / 180);
             OpenTK.Vector2 b_offset_rotated = new OpenTK.Vector2(b_offset.X, b_offset.Y);
             b_offset_rotated.X = (float)((Math.Cos(angle_rad) * b_offset.X) - (Math.Sin(angle_rad) * b_offset.Y));
@@ -1721,6 +1951,7 @@ namespace SFEngine.SFMap
             building.node.SetPosition(heightmap.GetFixedPosition(pos) + new OpenTK.Vector3(b_offset_rotated.X, 0, +b_offset_rotated.Y));
             building.node.Scale = new OpenTK.Vector3(100 / 128f);
             building.node.SetAnglePlane(building.angle);
+            UpdateNodeDecal(building.node, new OpenTK.Vector2(building.grid_position.x, building.grid_position.y), b_offset, building.angle);
 
             return 0;
         }
@@ -1734,16 +1965,23 @@ namespace SFEngine.SFMap
                 return -1;
             }
             building = building_manager.buildings[building_map_index];
-            
-            OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)building.game_id].collision_mesh.origin;
+
+            building_manager.ApplyBuildingBlockFlags(building, false);
+            building.angle = angle;
+            building_manager.ApplyBuildingBlockFlags(building, true);
+
+            OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)building.game_id].origin;
             float angle_rad = (float)(building.angle * Math.PI / 180);
             OpenTK.Vector2 b_offset_rotated = new OpenTK.Vector2(b_offset.X, b_offset.Y);
             b_offset_rotated.X = (float)((Math.Cos(angle_rad) * b_offset.X) - (Math.Sin(angle_rad) * b_offset.Y));
             b_offset_rotated.Y = (float)((Math.Sin(angle_rad) * b_offset.X) + (Math.Cos(angle_rad) * b_offset.Y));
 
+
+
             building.node.SetPosition(heightmap.GetFixedPosition(building.grid_position) + new OpenTK.Vector3(-b_offset_rotated.X, 0, +b_offset_rotated.Y));
             building.node.Scale = new OpenTK.Vector3(100 / 128f);
             building.node.SetAnglePlane(building.angle);
+            UpdateNodeDecal(building.node, new OpenTK.Vector2(building.grid_position.x, building.grid_position.y), b_offset, building.angle);
 
             return 0;
         }
@@ -1757,22 +1995,21 @@ namespace SFEngine.SFMap
                 return -1;
             }
             building = building_manager.buildings[building_map_index];
-            /*if (!heightmap.CanMoveToPosition(new_pos))
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MoveBuilding(): Can't move building to position " + new_pos.ToString());
-                return -2;
-            }*/
 
             // move unit and set chunk dependency
             heightmap.GetChunkNode(building.grid_position).MapChunk.buildings.Remove(building);
+            building_manager.ApplyBuildingBlockFlags(building, false);
+            heightmap.SetFlag(building.grid_position, SFMapHeightMapFlag.ENTITY_BUILDING, false);
             building.grid_position = new_pos;
+            heightmap.SetFlag(building.grid_position, SFMapHeightMapFlag.ENTITY_BUILDING, true);
+            building_manager.ApplyBuildingBlockFlags(building, true);
             heightmap.GetChunkNode(building.grid_position).MapChunk.buildings.Add(building);
             building.node.SetParent(heightmap.GetChunkNode(building.grid_position));
 
             // change visual transform
             float z = heightmap.GetZ(new_pos) / 100.0f;
 
-            OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)building.game_id].collision_mesh.origin;
+            OpenTK.Vector2 b_offset = building_manager.building_collision[(ushort)building.game_id].origin;
             float angle_rad = (float)(building.angle * Math.PI / 180);
             OpenTK.Vector2 b_offset_rotated = new OpenTK.Vector2(b_offset.X, b_offset.Y);
             b_offset_rotated.X = (float)((Math.Cos(angle_rad) * b_offset.X) - (Math.Sin(angle_rad) * b_offset.Y));
@@ -1781,6 +2018,7 @@ namespace SFEngine.SFMap
             building.node.SetPosition(heightmap.GetFixedPosition(new_pos) + new OpenTK.Vector3(-b_offset_rotated.X, 0, +b_offset_rotated.Y));
             building.node.Scale = new OpenTK.Vector3(100 / 128f);
             building.node.SetAnglePlane(building.angle);
+            UpdateNodeDecal(building.node, new OpenTK.Vector2(building.grid_position.x, building.grid_position.y), b_offset, building.angle);
 
             return 0;
         }
@@ -1788,10 +2026,13 @@ namespace SFEngine.SFMap
         public void AddPortal(int game_id, SFCoord pos, int angle, int index = -1)
         {
             SFMapPortal ptl = portal_manager.AddPortal(game_id, pos, angle, index);
+            heightmap.SetFlag(ptl.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, true);
+            object_manager.ApplyObjectBlockFlags(ptl.grid_position, ptl.angle, 778, true);
 
             ptl.node.SetPosition(heightmap.GetFixedPosition(pos));
             ptl.node.Scale = new OpenTK.Vector3(100 / 128f);
             ptl.node.SetAnglePlane(angle);
+            UpdateNodeDecal(ptl.node, new OpenTK.Vector2(pos.x, pos.y), OpenTK.Vector2.Zero, angle);
 
             heightmap.GetChunk(pos).AddPortal(ptl);
         }
@@ -1807,6 +2048,8 @@ namespace SFEngine.SFMap
             portal = portal_manager.portals[portal_map_index];
 
             portal_manager.RemovePortal(portal);
+            heightmap.SetFlag(portal.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, false);
+            object_manager.ApplyObjectBlockFlags(portal.grid_position, portal.angle, 778, false);
 
             return 0;
         }
@@ -1820,20 +2063,20 @@ namespace SFEngine.SFMap
                 return -1;
             }
             portal = portal_manager.portals[portal_map_index];
-            /*if (!heightmap.CanMoveToPosition(new_pos))
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MovePortal(): Can't move portal to position " + new_pos.ToString());
-                return -2;
-            }*/
 
             // move unit and set chunk dependency
             heightmap.GetChunkNode(portal.grid_position).MapChunk.portals.Remove(portal);
+            object_manager.ApplyObjectBlockFlags(portal.grid_position, portal.angle, 778, false);
+            heightmap.SetFlag(portal.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, false);
             portal.grid_position = new_pos;
+            heightmap.SetFlag(portal.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, true);
+            object_manager.ApplyObjectBlockFlags(portal.grid_position, portal.angle, 778, true);
             heightmap.GetChunkNode(portal.grid_position).MapChunk.portals.Add(portal);
             portal.node.SetParent(heightmap.GetChunkNode(portal.grid_position));
 
             // change visual transform
             portal.node.SetPosition(heightmap.GetFixedPosition(new_pos));
+            UpdateNodeDecal(portal.node, new OpenTK.Vector2(portal.grid_position.x, portal.grid_position.y), OpenTK.Vector2.Zero, portal.angle);
 
             return 0;
         }
@@ -1849,7 +2092,12 @@ namespace SFEngine.SFMap
             }
             portal = portal_manager.portals[portal_map_index];
 
+            object_manager.ApplyObjectBlockFlags(portal.grid_position, portal.angle, 778, false);
+            portal.angle = angle;
+            object_manager.ApplyObjectBlockFlags(portal.grid_position, portal.angle, 778, true);
+
             portal.node.SetAnglePlane(angle);
+            UpdateNodeDecal(portal.node, new OpenTK.Vector2(portal.grid_position.x, portal.grid_position.y), OpenTK.Vector2.Zero, portal.angle);
 
             return 0;
         }
@@ -1858,19 +2106,18 @@ namespace SFEngine.SFMap
         {
             // 1. add new unit in unit manager
             SFMapUnit unit = unit_manager.AddUnit(game_id, pos, flags, index);
+            heightmap.SetFlag(unit.grid_position, SFMapHeightMapFlag.ENTITY_UNIT, true);
             unit.npc_id = npc_id;
             unit.unknown = unknown;
             unit.group = group;
             unit.unknown2 = unknown2;
-            /*if (npc_id != 0)
-                npc_manager.AddNPCRef(npc_id, unit);*/
 
             // 2. modify object transform and appearance
 
             unit.node.SetPosition(heightmap.GetFixedPosition(pos));
             unit.node.SetAnglePlane(0);
             // find unit scale
-            if(SFCFF.SFCategoryManager.gamedata[2024] == null)
+            if (SFCFF.SFCategoryManager.gamedata[2024] == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): There is no unit data block in gamedata!");
                 throw new InvalidDataException("SFMap.AddUnit(): Malformed gamedata!");
@@ -1878,7 +2125,7 @@ namespace SFEngine.SFMap
             int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(game_id);
             if (unit_index == -1)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit with given id does not exist! Unit id = "+game_id.ToString());
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Unit with given id does not exist! Unit id = " + game_id.ToString());
                 throw new InvalidDataException("SFMap.AddUnit(): Invalid unit ID!");
             }
             float unit_size = 1f;
@@ -1886,7 +2133,9 @@ namespace SFEngine.SFMap
             SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
             unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
             if (SFCFF.SFCategoryManager.gamedata[2024] == null)
+            {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): There is no unit stats block in gamedata, setting unit scale to 100%");
+            }
             else
             {
                 if (unit_index != -1)
@@ -1895,11 +2144,13 @@ namespace SFEngine.SFMap
                     unit_size = Math.Min((ushort)200, Math.Max((ushort)unit_data[18], (ushort)50)) / 100.0f;
                 }
                 else
+                {
                     LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + game_id.ToString() + "), setting unit scale to 100%");
+                }
             }
-            unit.node.Scale = new OpenTK.Vector3(unit_size*100/128);
+            unit.node.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
 
-            if(Settings.DynamicMap)
+            if (Settings.DynamicMap)
             {
                 unit_manager.RestartAnimation(unit);
             }
@@ -1916,13 +2167,15 @@ namespace SFEngine.SFMap
             unit = unit_manager.units[unit_map_index];
             if (!heightmap.CanMoveToPosition(new_pos))
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MoveUnit(): Can't move unit to position "+new_pos.ToString());
+                LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMap.MoveUnit(): Can't move unit to position " + new_pos.ToString());
                 return -2;
             }
 
             // move unit and set chunk dependency
             heightmap.GetChunkNode(unit.grid_position).MapChunk.units.Remove(unit);
+            heightmap.SetFlag(unit.grid_position, SFMapHeightMapFlag.ENTITY_UNIT, false);
             unit.grid_position = new_pos;
+            heightmap.SetFlag(unit.grid_position, SFMapHeightMapFlag.ENTITY_UNIT, true);
             heightmap.GetChunkNode(unit.grid_position).MapChunk.units.Add(unit);
             unit.node.SetParent(heightmap.GetChunkNode(unit.grid_position));
 
@@ -1958,6 +2211,7 @@ namespace SFEngine.SFMap
             unit = unit_manager.units[unit_map_index];
 
             unit_manager.RemoveUnit(unit);
+            heightmap.SetFlag(unit.grid_position, SFMapHeightMapFlag.ENTITY_UNIT, false);
 
             return 0;
         }
@@ -1973,7 +2227,10 @@ namespace SFEngine.SFMap
             unit = unit_manager.units[unit_map_index];
 
             if (unit.node != null)
+            {
                 SFRenderEngine.scene.RemoveSceneNode(unit.node);
+            }
+
             unit.node = SFRenderEngine.scene.AddSceneUnit(new_unit_id, unit.GetName());
             unit.node.SetParent(heightmap.GetChunkNode(unit.grid_position));
 
@@ -2000,7 +2257,9 @@ namespace SFEngine.SFMap
             SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
             unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
             if (SFCFF.SFCategoryManager.gamedata[2024] == null)
+            {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): There is no unit stats block in gamedata, setting unit scale to 100%");
+            }
             else
             {
                 if (unit_index != -1)
@@ -2009,7 +2268,9 @@ namespace SFEngine.SFMap
                     unit_size = Math.Min((ushort)200, Math.Max((ushort)unit_data[18], (ushort)50)) / 100.0f;
                 }
                 else
+                {
                     LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Could not find unit stats data (unit id = " + unit.game_id.ToString() + "), setting unit scale to 100%");
+                }
             }
             unit.node.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
 
@@ -2026,21 +2287,27 @@ namespace SFEngine.SFMap
             PlatformID = 6666;
 
             if (!SFCFF.SFCategoryManager.ready)
+            {
                 return;
+            }
 
             int li = fname.LastIndexOf("map\\");
             if (li < 0)
+            {
                 return;
+            }
 
             fname = fname.Substring(li + 4, fname.Length - li - 8);
             fname = fname.ToUpper();
 
             if (SFCFF.SFCategoryManager.gamedata[2052] == null)
-                return;
-
-            foreach(SFCFF.SFCategoryElement e in SFCFF.SFCategoryManager.gamedata[2052].elements)
             {
-                if(e[2].ToString().ToUpper() == fname)
+                return;
+            }
+
+            foreach (SFCFF.SFCategoryElement e in SFCFF.SFCategoryManager.gamedata[2052].elements)
+            {
+                if (e[2].ToString().ToUpper() == fname)
                 {
                     PlatformID = (uint)e[0];
                     break;
@@ -2050,6 +2317,11 @@ namespace SFEngine.SFMap
 
         public SFMapUnit FindUnit(SFCoord pos)
         {
+            if (!heightmap.IsFlagSet(pos, SFMapHeightMapFlag.ENTITY_UNIT))
+            {
+                return null;
+            }
+
             SFMapUnit unit = null;
             SFMapHeightMapChunk chunk = heightmap.GetChunk(pos);
             foreach (SFMapUnit u in chunk.units)
@@ -2071,9 +2343,11 @@ namespace SFEngine.SFMap
                 float sel_scale = 0.0f;
                 SFLua.lua_sql.SFLuaSQLBuildingData bld_data = SFLua.SFLuaEnvironment.buildings[b.game_id];
                 if (bld_data != null)
+                {
                     sel_scale = (float)(bld_data.SelectionScaling / 2);
+                }
 
-                OpenTK.Vector2 off = building_manager.building_collision[(ushort)b.game_id].collision_mesh.origin;
+                OpenTK.Vector2 off = building_manager.building_collision[(ushort)b.game_id].origin;
                 float angle = (float)(b.angle * Math.PI / 180);
                 OpenTK.Vector2 r_off = new OpenTK.Vector2(off.X, off.Y);
                 r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
@@ -2081,7 +2355,9 @@ namespace SFEngine.SFMap
                 SFCoord offset_pos = new SFCoord((int)r_off.X, (int)r_off.Y);
 
                 if (SFCoord.Distance(b.grid_position - offset_pos, pos) <= sel_scale)
+                {
                     return b;
+                }
             }
 
             return null;
@@ -2089,35 +2365,65 @@ namespace SFEngine.SFMap
 
         public SFMapObject FindObjectApprox(SFCoord pos)
         {
+            SFMapObject ob = null;
+            float least_distance = float.MaxValue;
+
             foreach (SFMapObject o in object_manager.objects)
             {
-                float sel_scale = 0.0f;
+                float sel_scale = 3.0f;
                 SFLua.lua_sql.SFLuaSQLObjectData obj_data = SFLua.SFLuaEnvironment.objects[o.game_id];
                 if (obj_data != null)
-                    sel_scale = (float)(obj_data.SelectionScaling / 2);
+                {
+                    if (obj_data.SelectionScaling != 0.0f)
+                    {
+                        sel_scale = (float)(obj_data.SelectionScaling / 2);
+                    }
+                }
 
-                if (SFCoord.Distance(o.grid_position, pos) <= sel_scale)
-                    return o;
+                float result_distance = SFCoord.Distance(o.grid_position, pos);
+                if (result_distance <= sel_scale)
+                {
+                    if (result_distance < least_distance)
+                    {
+                        least_distance = result_distance;
+                        ob = o;
+                    }
+                }
             }
 
-            return null;
-
+            return ob;
         }
 
         public SFMapEntity FindNPCEntity(int npc_id)
         {
             if (npc_id <= 0)
+            {
                 return null;
+            }
 
             foreach (SFMapUnit u in unit_manager.units)
+            {
                 if (u.npc_id == npc_id)
+                {
                     return u;
+                }
+            }
+
             foreach (SFMapObject o in object_manager.objects)
+            {
                 if (o.npc_id == npc_id)
+                {
                     return o;
+                }
+            }
+
             foreach (SFMapBuilding b in building_manager.buildings)
+            {
                 if (b.npc_id == npc_id)
+                {
                     return b;
+                }
+            }
 
             return null;
         }

@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
@@ -59,8 +53,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
                 string txt = "<MISSING!>";
                 if ((clan_id >= 1) && (clan_id <= (Byte)clan_names.Length))
-                    txt = clan_names[clan_id-1];
-                
+                {
+                    txt = clan_names[clan_id - 1];
+                }
+
                 RelationGrid.Rows.Add();
                 RelationGrid.Rows[i].Cells[0].Value = txt;
                 ((DataGridViewComboBoxCell)RelationGrid.Rows[i].Cells[1]).Value = relations[relation];
@@ -77,14 +73,21 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (RelationGrid.CurrentCell == null)
+            {
                 return;
+            }
+
             if (!(RelationGrid.CurrentCell is DataGridViewComboBoxCell))
+            {
                 return;
+            }
 
             DataGridViewComboBoxCell cell = (DataGridViewComboBoxCell)RelationGrid.CurrentCell;
 
             if (cell == null)
+            {
                 return;
+            }
 
             int i = cell.RowIndex;
             Byte relation = inv_relations[(string)cell.Value];
@@ -94,8 +97,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
+            MainForm.data.op_queue.OpenCluster();
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            {
                 set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt8(textBox1.Text));
+            }
+
+            MainForm.data.op_queue.CloseCluster();
         }
 
         public override string get_element_string(int index)
@@ -106,14 +114,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void on_update_subelement(int subelem_index)
         {
-            base.on_update_subelement(subelem_index);
-
             Byte clan_id = (Byte)(category[current_element, subelem_index][1]);
             Byte relation = (Byte)(category[current_element, subelem_index][2]);
 
             string txt = "<MISSING!>";
             if ((clan_id >= 1) && (clan_id <= (Byte)clan_names.Length))
+            {
                 txt = clan_names[clan_id - 1];
+            }
 
             RelationGrid.Rows[subelem_index].Cells[0].Value = txt;
             ((DataGridViewComboBoxCell)RelationGrid.Rows[subelem_index].Cells[1]).Value = relations[relation];

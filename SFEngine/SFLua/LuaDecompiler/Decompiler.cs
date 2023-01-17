@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.SFLua.LuaDecompiler
 {
-    public enum ChunkType { IF, ELSEIF, ELSE, WHILE, FOR, FOREACH, REPEAT, AND, OR, BREAK, CONTINUE}
+    public enum ChunkType { IF, ELSEIF, ELSE, WHILE, FOR, FOREACH, REPEAT, AND, OR, BREAK, CONTINUE }
 
     public class ChunkInterval
     {
@@ -16,7 +13,7 @@ namespace SFEngine.SFLua.LuaDecompiler
 
         public ChunkInterval(int s, int e, ChunkType t)
         {
-            if(s<e)
+            if (s < e)
             {
                 start = s;
                 end = e;
@@ -46,7 +43,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         public void Push(IRValue val)
         {
             stack.Add(val);
-            locals.UpdateLocal(stack.Count - 1, instr_ids[instr_ids.Count-1]);
+            locals.UpdateLocal(stack.Count - 1, instr_ids[instr_ids.Count - 1]);
         }
 
         public IRValue Pop()
@@ -81,7 +78,10 @@ namespace SFEngine.SFLua.LuaDecompiler
                     case LuaOpCode.OP_JMPT:
                     case LuaOpCode.OP_JMPF:
                         if (instr.ArgS < 0)
+                        {
                             interval = new ChunkInterval(i, i + instr.ArgS, ChunkType.REPEAT);
+                        }
+
                         break;
                     case LuaOpCode.OP_FORLOOP:
                         interval = new ChunkInterval(i, i + instr.ArgS, ChunkType.FOR);
@@ -98,7 +98,10 @@ namespace SFEngine.SFLua.LuaDecompiler
                         pos = j;
                         ChunkInterval ci = chunks[j];
                         if (ci.start > interval.start)
+                        {
                             break;
+                        }
+
                         pos = chunks.Count;
                     }
                     chunks.Insert(pos, interval);
@@ -120,26 +123,36 @@ namespace SFEngine.SFLua.LuaDecompiler
                             // break instruction
                             if ((fnc.Instructions[i + instr.ArgS].OpCode == LuaOpCode.OP_JMP)
                                 && (fnc.Instructions[i + instr.ArgS].ArgS < 0))
+                            {
                                 interval = new ChunkInterval(i, i, ChunkType.BREAK);
+                            }
                             else if ((fnc.Instructions[i + instr.ArgS].OpCode == LuaOpCode.OP_LFORLOOP)
                                 || (fnc.Instructions[i + instr.ArgS].OpCode == LuaOpCode.OP_FORLOOP))
                             {
                                 bool is_valid = false;
                                 // look for IF that ends at ELSE start (which right now is i)
                                 for (int k = 0; k < chunks.Count; k++)
+                                {
                                     if ((chunks[k].end == i) && (chunks[k].ctype == ChunkType.IF))
                                     {
                                         is_valid = true;
                                         break;
                                     }
+                                }
 
                                 if (!is_valid)
+                                {
                                     interval = new ChunkInterval(i, i, ChunkType.BREAK);
+                                }
                                 else
+                                {
                                     interval = new ChunkInterval(i, i + instr.ArgS, ChunkType.ELSE);
+                                }
                             }
                             else
+                            {
                                 interval = new ChunkInterval(i, i + instr.ArgS, ChunkType.ELSE);
+                            }
                         }
                         break;
                     case LuaOpCode.OP_JMPEQ:
@@ -164,7 +177,10 @@ namespace SFEngine.SFLua.LuaDecompiler
                         pos = j;
                         ChunkInterval ci = chunks[j];
                         if (ci.start > interval.start)
+                        {
                             break;
+                        }
+
                         pos = chunks.Count;
                     }
                     chunks.Insert(pos, interval);
@@ -197,47 +213,63 @@ namespace SFEngine.SFLua.LuaDecompiler
                                 // find a chunk on stack which points to this
                                 bool found_chunk = false;
                                 for (int k = 0; k < chunk_stack.Count; k++)
+                                {
                                     if ((chunk_stack[k].ctype == ChunkType.IF)
                                         && (chunk_stack[k].end == i)
-                                        && (chunk_stack[k].start > i+instr.ArgS))
+                                        && (chunk_stack[k].start > i + instr.ArgS))
                                     {
                                         chunk_stack[k].ctype = ChunkType.WHILE;
                                         found_chunk = true;
                                         break;
                                     }
-                                if(!found_chunk)
+                                }
+
+                                if (!found_chunk)
+                                {
                                     interval = new ChunkInterval(i, i + instr.ArgS + 1, ChunkType.WHILE);
+                                }
                             }
 
                             // change else to if, in case if is not found
-                            if((instr.ArgS >= 0)&&(chunk_stack[chunk_stack.Count-1].ctype == ChunkType.ELSE))
+                            if ((instr.ArgS >= 0) && (chunk_stack[chunk_stack.Count - 1].ctype == ChunkType.ELSE))
                             {
                                 bool is_valid = false;
                                 // look for IF that ends at ELSE start (which right now is i)
-                                for(int k = chunks.IndexOf(chunk_stack[chunk_stack.Count-1])-1; k>=0; k--)
-                                    if((chunks[k].end == i)&&(chunks[k].ctype == ChunkType.IF))
+                                for (int k = chunks.IndexOf(chunk_stack[chunk_stack.Count - 1]) - 1; k >= 0; k--)
+                                {
+                                    if ((chunks[k].end == i) && (chunks[k].ctype == ChunkType.IF))
                                     {
                                         is_valid = true;
                                         break;
                                     }
+                                }
 
-                                if(!is_valid)
+                                if (!is_valid)
+                                {
                                     chunk_stack[chunk_stack.Count - 1].ctype = ChunkType.IF;
+                                }
                             }
                             break;
                     }
 
-                    for(int k = 0; k < chunk_stack.Count; k++)
+                    for (int k = 0; k < chunk_stack.Count; k++)
+                    {
                         if (chunk_stack[k].end == i)
+                        {
                             chunk_stack.RemoveAt(k);
+                        }
+                    }
                 }
                 else
                 {
-                    switch(instr.OpCode)
+                    switch (instr.OpCode)
                     {
                         case LuaOpCode.OP_JMP:
-                            if(instr.ArgS < 0)
+                            if (instr.ArgS < 0)
+                            {
                                 interval = new ChunkInterval(i, i + instr.ArgS + 1, ChunkType.WHILE);
+                            }
+
                             break;
                     }
                 }
@@ -250,7 +282,10 @@ namespace SFEngine.SFLua.LuaDecompiler
                         pos = j;
                         ChunkInterval ci = chunks[j];
                         if (ci.start > interval.start)
+                        {
                             break;
+                        }
+
                         pos = chunks.Count;
                     }
                     chunks.Insert(pos, interval);
@@ -268,22 +303,26 @@ namespace SFEngine.SFLua.LuaDecompiler
         public Chunk Decompile(LuaBinaryFunction fnc, Closure cl = null, List<string> upvalues = null)
         {
             if (fnc.Instructions.Count == 0)
+            {
                 throw new Exception("tmp exception");
+            }
             //return null;
             if (fnc.Instructions[fnc.Instructions.Count - 1].OpCode != LuaOpCode.OP_END)
+            {
                 throw new Exception("tmp exception");
+            }
             //return null;
 
             // set up function arguments if any
-            for(int i=0;i!=fnc.NumParams;i++)
+            for (int i = 0; i != fnc.NumParams; i++)
             {
                 // in case of function x(arg0): return function(arg1): do stuff end end (which is possible)
                 // need to offset arg names
-                Push(new Str() { value = "_arg" + (i+total_arg_count).ToString() });
+                Push(new Str() { value = "_arg" + (i + total_arg_count).ToString() });
                 locals.RegisterLocal(stack.Count - 1, "_arg" + (i + total_arg_count).ToString());
             }
             total_arg_count += fnc.NumParams;
-            if(fnc.IsVarArg)
+            if (fnc.IsVarArg)
             {
                 Push(new Str() { value = "..." });
                 locals.RegisterLocal(stack.Count - 1, "arg");
@@ -297,7 +336,7 @@ namespace SFEngine.SFLua.LuaDecompiler
             List<OperatorBinaryLogic> andor_stack = new List<OperatorBinaryLogic>();
             List<int> andor_pos_stack = new List<int>();
 
-            for(instr_ids[instr_ids.Count-1] = 0; instr_ids[instr_ids.Count - 1] < fnc.Instructions.Count; instr_ids[instr_ids.Count - 1]++)
+            for (instr_ids[instr_ids.Count - 1] = 0; instr_ids[instr_ids.Count - 1] < fnc.Instructions.Count; instr_ids[instr_ids.Count - 1]++)
             {
                 LuaInstruction instr = fnc.Instructions[instr_ids[instr_ids.Count - 1]];
                 /*System.Diagnostics.Debug.WriteLine("STACK COUNT: "+stack.Count
@@ -305,20 +344,23 @@ namespace SFEngine.SFLua.LuaDecompiler
                     +" | "+instr.ToString());*/
 
                 // check instruction type for action
-                switch(instr.OpCode)
+                switch (instr.OpCode)
                 {
-                    case LuaOpCode.OP_END:   
+                    case LuaOpCode.OP_END:
                         break;
 
                     case LuaOpCode.OP_RETURN:
                         Return return_ret = new Return() { InstructionID = instr_ids[instr_ids.Count - 1], parent = root };
                         for (int k = 0; stack.Count > start_pos + 1 + instr.ArgU; k++)
+                        {
                             return_ret.Items.Insert(0, Pop());
+                        }
+
                         root.Items.Add(return_ret);
                         break;
 
                     case LuaOpCode.OP_CALL:
-                        if(instr.ArgB==0)
+                        if (instr.ArgB == 0)
                         {
                             Table call_proc_table = new Table();
                             Procedure call_proc = new Procedure()
@@ -328,7 +370,10 @@ namespace SFEngine.SFLua.LuaDecompiler
                                 parent = root
                             };
                             for (int k = 0; stack.Count > start_pos + instr.ArgA + 1 + 1; k++)
+                            {
                                 call_proc_table.Items.Insert(0, new TableAssignment() { index = new Nil(), value = Pop() });
+                            }
+
                             if ((call_proc_table.Items.Count == 1) && (call_proc_table.Items[0].value is Table))
                             {
                                 call_proc.Arguments = (Table)call_proc_table.Items[0].value;
@@ -338,9 +383,13 @@ namespace SFEngine.SFLua.LuaDecompiler
                             if (call_proc.Name is SelfIdentifier)        // special case...
                             {
                                 if (call_proc.Arguments.Items[0].value is Nil)
+                                {
                                     call_proc.Arguments.Items.RemoveAt(0);   // this will be nil
+                                }
                                 else
+                                {
                                     throw new Exception("Invalid argument type for function");
+                                }
                             }
 
                             root.Items.Add(call_proc);
@@ -350,7 +399,10 @@ namespace SFEngine.SFLua.LuaDecompiler
                             Table call_func_table = new Table();
                             Function call_func = new Function() { Arguments = call_func_table };
                             for (int k = 0; stack.Count > start_pos + instr.ArgA + 1 + 1; k++)
+                            {
                                 call_func_table.Items.Insert(0, new TableAssignment() { index = new Nil(), value = Pop() });
+                            }
+
                             if ((call_func_table.Items.Count == 1) && (call_func_table.Items[0].value is Table))
                             {
                                 call_func.Arguments = (Table)call_func_table.Items[0].value;
@@ -358,14 +410,21 @@ namespace SFEngine.SFLua.LuaDecompiler
                             }
                             call_func.Name = (ILValue)Pop();
                             if (call_func.Name is SelfIdentifier)
+                            {
                                 call_func.Arguments.Items.RemoveAt(0);   // this will be nil
-
+                            }
 
                             if (instr.ArgB == 255)
+                            {
                                 Push(call_func);
+                            }
                             else
+                            {
                                 for (int k = 0; k < instr.ArgB; k++)
+                                {
                                     Push(call_func);    // will get cleaned up in later phases
+                                }
+                            }
                         }
                         break;
 
@@ -373,31 +432,51 @@ namespace SFEngine.SFLua.LuaDecompiler
                         Table tailcall_func_table = new Table();
                         Function tailcall_func = new Function() { Arguments = tailcall_func_table };
                         for (int k = 0; stack.Count > start_pos + instr.ArgA + 1 + 1; k++)
+                        {
                             tailcall_func_table.Items.Insert(0, new TableAssignment() { index = new Nil(), value = Pop() });
+                        }
+
                         if ((tailcall_func_table.Items.Count == 1) && (tailcall_func_table.Items[0].value is Table))
+                        {
                             tailcall_func.Arguments = (Table)tailcall_func_table.Items[0].value;
+                        }
+
                         tailcall_func.Name = (ILValue)Pop();
                         if (tailcall_func.Name is SelfIdentifier)
+                        {
                             tailcall_func.Arguments.Items.RemoveAt(0);   // this will be nil
+                        }
+
                         Push(tailcall_func);
 
                         Return tailcall_ret = new Return() { InstructionID = instr_ids[instr_ids.Count - 1], parent = root };
                         for (int k = 0; stack.Count > start_pos + 1 + instr.ArgB; k++)
+                        {
                             tailcall_ret.Items.Insert(0, Pop());
+                        }
+
                         root.Items.Add(tailcall_ret);
                         break;
 
                     case LuaOpCode.OP_PUSHNIL:
                         // special case for loop break inside some specific variants
-                        if(instr_ids[instr_ids.Count-1]!=0)
+                        if (instr_ids[instr_ids.Count - 1] != 0)
+                        {
                             if (fnc.Instructions[instr_ids[instr_ids.Count - 1] - 1].OpCode == LuaOpCode.OP_JMP)
                             {
                                 if ((fnc.Instructions[instr_ids[instr_ids.Count - 1] - 2].OpCode == LuaOpCode.OP_POP)
                                 && (fnc.Instructions[instr_ids[instr_ids.Count - 1] - 2].ArgU == instr.ArgU))
+                                {
                                     break;
+                                }
                             }
+                        }
+
                         for (int k = 0; k < instr.ArgU; k++)
+                        {
                             Push(new Nil());
+                        }
+
                         break;
 
                     case LuaOpCode.OP_PUSHINT:
@@ -435,7 +514,7 @@ namespace SFEngine.SFLua.LuaDecompiler
 
                     case LuaOpCode.OP_GETLOCAL:
                         // where can this be moved instead...
-                        if(!locals.IsLocalRegistered(instr.ArgU+start_pos+1))
+                        if (!locals.IsLocalRegistered(instr.ArgU + start_pos + 1))
                         {
                             int last_updated = locals.GetLastUpdated(instr.ArgU + start_pos + 1);
                             locals.RegisterLocal(instr.ArgU + start_pos + 1, "_loc" + (instr.ArgU + start_pos + 1).ToString());
@@ -448,7 +527,7 @@ namespace SFEngine.SFLua.LuaDecompiler
                             Chunk parent_chunk = root;
                             int loc_pos = root.Items.Count - 1;
                             bool found = false;
-                            while(true)
+                            while (true)
                             {
                                 if ((parent_chunk.Items.Count != 0)
                                     && (parent_chunk.Items[loc_pos].InstructionID <= last_updated))
@@ -459,7 +538,9 @@ namespace SFEngine.SFLua.LuaDecompiler
 
                                 loc_pos -= 1;
                                 if (loc_pos >= 0)
+                                {
                                     continue;
+                                }
 
                                 loc_pos = Utility.NO_INDEX;
 
@@ -484,10 +565,12 @@ namespace SFEngine.SFLua.LuaDecompiler
                             {
                                 loc_a.InstructionID = last_updated;
                                 loc_a.parent = parent_chunk;
-                                parent_chunk.Items.Insert(loc_pos+1, loc_a);
+                                parent_chunk.Items.Insert(loc_pos + 1, loc_a);
                             }
                             else
+                            {
                                 throw new Exception("tmp exception");
+                            }
                             //return null;
                         }
 
@@ -527,7 +610,9 @@ namespace SFEngine.SFLua.LuaDecompiler
 
                                 loc_pos -= 1;
                                 if (loc_pos >= 0)
+                                {
                                     continue;
+                                }
 
                                 loc_pos = Utility.NO_INDEX;
 
@@ -555,7 +640,9 @@ namespace SFEngine.SFLua.LuaDecompiler
                                 parent_chunk.Items.Insert(loc_pos + 1, loc_a);
                             }
                             else
+                            {
                                 throw new Exception("tmp exception");
+                            }
                             //return null;
                         }
 
@@ -614,7 +701,9 @@ namespace SFEngine.SFLua.LuaDecompiler
 
                                 loc_pos -= 1;
                                 if (loc_pos >= 0)
+                                {
                                     continue;
+                                }
 
                                 loc_pos = Utility.NO_INDEX;
 
@@ -642,10 +731,12 @@ namespace SFEngine.SFLua.LuaDecompiler
                                 parent_chunk.Items.Insert(loc_pos + 1, loc_a);
                             }
                             else
+                            {
                                 throw new Exception("tmp exception");
+                            }
                             //return null;
                         }
-                        
+
                         root.Items.Add(new Assignment()
                         {
                             Left = new Identifier() { name = locals.GetLocal(instr.ArgU + start_pos + 1) },
@@ -668,30 +759,39 @@ namespace SFEngine.SFLua.LuaDecompiler
                             parent = root
                         });
                         for (int k = 3; k < instr.ArgB; k++)
+                        {
                             Pop();
+                        }
+
                         break;
 
                     case LuaOpCode.OP_SETMAP:
                         Table setmap_table = (Table)stack[stack.Count - 2 * instr.ArgU - 1];
                         int setmap_table_c = setmap_table.Items.Count;
                         setmap_table.IsList = false;
-                        for(int setmap_elems = instr.ArgU; setmap_elems > 0; setmap_elems--)
+                        for (int setmap_elems = instr.ArgU; setmap_elems > 0; setmap_elems--)
+                        {
                             setmap_table.Items.Insert(setmap_table_c, new TableAssignment()
                             {
                                 value = Pop(),
                                 index = (Primitive)Pop()
                             });
+                        }
+
                         break;
 
                     case LuaOpCode.OP_SETLIST:
                         Table setlist_table = (Table)stack[stack.Count - instr.ArgB - 1];
                         int setlist_table_c = setlist_table.Items.Count;
                         for (int setlist_elems = instr.ArgB; setlist_elems > 0; setlist_elems--)
+                        {
                             setlist_table.Items.Insert(setlist_table_c, new TableAssignment()
                             {
                                 value = Pop(),
                                 index = new Nil()
                             });
+                        }
+
                         break;
 
                     case LuaOpCode.OP_ADD:
@@ -704,7 +804,7 @@ namespace SFEngine.SFLua.LuaDecompiler
                     case LuaOpCode.OP_ADDI:
                         bool is_positive = instr.ArgS >= 0;
                         OperatorBinaryArithmetic addi_op = new OperatorBinaryArithmetic()
-                            { op_type = (is_positive? OperatorType.ADD: OperatorType.SUB) };
+                        { op_type = (is_positive ? OperatorType.ADD : OperatorType.SUB) };
                         addi_op.Values.Insert(0, new Num() { value = (is_positive ? instr.ArgS : -instr.ArgS) });
                         addi_op.Values.Insert(0, Pop());
                         Push(addi_op);
@@ -741,20 +841,28 @@ namespace SFEngine.SFLua.LuaDecompiler
                     case LuaOpCode.OP_CONCAT:
                         OperatorBinaryArithmetic concat_op = new OperatorBinaryArithmetic() { op_type = OperatorType.CONCAT };
                         for (int k = 0; k < instr.ArgU; k++)
+                        {
                             concat_op.Values.Insert(0, Pop());
+                        }
+
                         Push(concat_op);
                         break;
 
                     case LuaOpCode.OP_POP:
                         // special case for loop break inside some specific variants
-                        if(fnc.Instructions[instr_ids[instr_ids.Count-1]+1].OpCode == LuaOpCode.OP_JMP)
+                        if (fnc.Instructions[instr_ids[instr_ids.Count - 1] + 1].OpCode == LuaOpCode.OP_JMP)
                         {
                             if ((fnc.Instructions[instr_ids[instr_ids.Count - 1] + 2].OpCode == LuaOpCode.OP_PUSHNIL)
                             && (fnc.Instructions[instr_ids[instr_ids.Count - 1] + 2].ArgU == instr.ArgU))
+                            {
                                 break;
+                            }
                         }
-                        for(int k=0;k<instr.ArgU;k++)
+                        for (int k = 0; k < instr.ArgU; k++)
+                        {
                             Pop();
+                        }
+
                         break;
 
                     case LuaOpCode.OP_MINUS:
@@ -871,7 +979,9 @@ namespace SFEngine.SFLua.LuaDecompiler
                         {
                             _upvalues = new List<string>();
                             for (int k = 0; k < instr.ArgB; k++)
+                            {
                                 _upvalues.Add(((Identifier)Pop()).name);
+                            }
                         }
 
                         Closure closure_cl = new Closure();
@@ -891,7 +1001,7 @@ namespace SFEngine.SFLua.LuaDecompiler
                 }
 
                 // check andor stack form and/or operator to push into main stacl
-                while(andor_stack.Count > 0)
+                while (andor_stack.Count > 0)
                 {
                     if (andor_pos_stack[andor_pos_stack.Count - 1] == instr_ids[instr_ids.Count - 1])
                     {
@@ -901,17 +1011,19 @@ namespace SFEngine.SFLua.LuaDecompiler
                         andor_pos_stack.RemoveAt(andor_pos_stack.Count - 1);
                     }
                     else
+                    {
                         break;
+                    }
                 }
 
                 // check chunk list for possible new statement
-                if(chunks.Count > 0)
+                if (chunks.Count > 0)
                 {
-                    if((next_chunk < chunks.Count)&&(chunks[next_chunk].start == instr_ids[instr_ids.Count - 1]))
+                    if ((next_chunk < chunks.Count) && (chunks[next_chunk].start == instr_ids[instr_ids.Count - 1]))
                     {
                         chunk_stack.Add(chunks[next_chunk]);
 
-                        switch(chunks[next_chunk].ctype)
+                        switch (chunks[next_chunk].ctype)
                         {
                             case ChunkType.BREAK:
                                 root.Items.Add(new Break());
@@ -950,14 +1062,14 @@ namespace SFEngine.SFLua.LuaDecompiler
 
                             case ChunkType.IF:    // get condition
                                 // check if it qualifies for AND/OR condition
-                                if(root.parent != null)
+                                if (root.parent != null)
                                 {
-                                    if(root.parent is Fork)
+                                    if (root.parent is Fork)
                                     {
-                                        if(root.Items.Count == 0)
+                                        if (root.Items.Count == 0)
                                         {
                                             // check if this chunk and previous chunk end at the same spot and are both IFS
-                                            if(chunks[next_chunk-1].ctype == ChunkType.IF)
+                                            if (chunks[next_chunk - 1].ctype == ChunkType.IF)
                                             {
                                                 // fit AND here
                                                 if (chunks[next_chunk].end == chunks[next_chunk - 1].end)
@@ -969,9 +1081,14 @@ namespace SFEngine.SFLua.LuaDecompiler
                                                     };
                                                     and_cond.Values.Add((IRValue)cur_fork.IfCondition);
                                                     if (stack[stack.Count - 1] is IOperatorLogic)
+                                                    {
                                                         and_cond.Values.Add(Pop());
+                                                    }
                                                     else
+                                                    {
                                                         throw new Exception("Unexpected item on stack");
+                                                    }
+
                                                     cur_fork.IfCondition = and_cond;
 
                                                     chunks.RemoveAt(next_chunk);
@@ -991,9 +1108,14 @@ namespace SFEngine.SFLua.LuaDecompiler
                                                     cur_fork.IfCondition.ReverseOperator();
                                                     or_cond.Values.Add((IRValue)cur_fork.IfCondition);
                                                     if (stack[stack.Count - 1] is IOperatorLogic)
+                                                    {
                                                         or_cond.Values.Add(Pop());
+                                                    }
                                                     else
+                                                    {
                                                         throw new Exception("Unexpected item on stack");
+                                                    }
+
                                                     cur_fork.IfCondition = or_cond;
 
                                                     chunks[next_chunk - 1].end = chunks[next_chunk].end;
@@ -1014,26 +1136,34 @@ namespace SFEngine.SFLua.LuaDecompiler
                                     InstructionID = instr_ids[instr_ids.Count - 1],
                                     parent = root
                                 };
-                                if (stack[stack.Count-1] is IOperatorLogic)
+                                if (stack[stack.Count - 1] is IOperatorLogic)
+                                {
                                     if_fork.IfCondition = (IOperatorLogic)Pop();
+                                }
                                 else
+                                {
                                     if_fork.IfCondition = new OperatorUnaryLogic()
                                     {
                                         Value = new Nil(),
                                         op_type = OperatorType.TRUE
                                     };
+                                }
+
                                 root.Items.Add(if_fork);
                                 root = if_fork.IfChunk;
                                 break;
 
                             case ChunkType.ELSE:
-                                for(int j = 0; j < chunk_stack.Count-1; j++)
-                                    if((chunk_stack[j].end == instr_ids[instr_ids.Count-1])
-                                        &&(chunk_stack[j].ctype == ChunkType.IF))
+                                for (int j = 0; j < chunk_stack.Count - 1; j++)
+                                {
+                                    if ((chunk_stack[j].end == instr_ids[instr_ids.Count - 1])
+                                        && (chunk_stack[j].ctype == ChunkType.IF))
                                     {
                                         chunk_stack.RemoveAt(j);
                                         break;
                                     }
+                                }
+
                                 Fork else_fork = (Fork)root.parent;
                                 root = else_fork.ElseChunk;
                                 break;
@@ -1045,13 +1175,18 @@ namespace SFEngine.SFLua.LuaDecompiler
                                     parent = root
                                 };
                                 if (stack[stack.Count - 1] is IOperatorLogic)
+                                {
                                     whileloop.Condition = (IOperatorLogic)Pop();
+                                }
                                 else
+                                {
                                     whileloop.Condition = new OperatorUnaryLogic()
                                     {
                                         Value = new Num() { value = 1 },
                                         op_type = OperatorType.TRUE
                                     };
+                                }
+
                                 root.Items.Add(whileloop);
                                 root = whileloop.LoopChunk;
                                 break;
@@ -1065,7 +1200,7 @@ namespace SFEngine.SFLua.LuaDecompiler
                                 root.Items.Add(repeatloop);
                                 root = repeatloop.LoopChunk;
                                 break;
-                            
+
                             default:
                                 throw new Exception("tmp exception");
                                 //return null;
@@ -1074,12 +1209,12 @@ namespace SFEngine.SFLua.LuaDecompiler
                         next_chunk += 1;
                     }
 
-                    if(chunk_stack.Count != 0)
+                    if (chunk_stack.Count != 0)
                     {
-                        while(chunk_stack[chunk_stack.Count-1].end == instr_ids[instr_ids.Count - 1])
+                        while (chunk_stack[chunk_stack.Count - 1].end == instr_ids[instr_ids.Count - 1])
                         {
                             bool jump_parent = true;
-                            switch(chunk_stack[chunk_stack.Count-1].ctype)
+                            switch (chunk_stack[chunk_stack.Count - 1].ctype)
                             {
                                 case ChunkType.REPEAT:
                                     ((Repeat)root.parent).Condition = (IOperatorLogic)Pop();
@@ -1095,12 +1230,16 @@ namespace SFEngine.SFLua.LuaDecompiler
                                     break;
                             }
 
-                            if(jump_parent)
+                            if (jump_parent)
+                            {
                                 root = (Chunk)root.parent.parent;     // it's certain that such parent exists
+                            }
 
                             chunk_stack.RemoveAt(chunk_stack.Count - 1);
                             if (chunk_stack.Count == 0)
+                            {
                                 break;
+                            }
                         }
                     }
                 }
@@ -1110,15 +1249,24 @@ namespace SFEngine.SFLua.LuaDecompiler
             Simplify(root);
 
             total_arg_count -= fnc.NumParams;
-            if(cl != null)
+            if (cl != null)
             {
                 cl.ClosureChunk = root;
                 while (stack.Count > start_pos + 1 + fnc.NumParams + (fnc.IsVarArg ? 1 : 0))
+                {
                     Pop();
+                }
+
                 if (fnc.IsVarArg)
+                {
                     cl.Arguments.Add(new Identifier() { name = ((Str)Pop()).value });
+                }
+
                 for (int i = 0; i != fnc.NumParams; i++)
+                {
                     cl.Arguments.Add(new Identifier() { name = ((Str)Pop()).value });
+                }
+
                 cl.Arguments.Reverse();   // account for insertion order
                 return null;         // chunk taken over by closure
             }
@@ -1134,27 +1282,33 @@ namespace SFEngine.SFLua.LuaDecompiler
             //    + " | INSTR ID: "+(node.parent != null?((IStatement)node.parent).InstructionID:-1).ToString());
             // simplfy IF ELSE IF ELSE IF ELSE END END END into IF ELSEIF ELSEIF ELSE END
             // O(n^2), n - elseif branches
-            if((node.parent != null)&&(node.parent is Fork))
+            if ((node.parent != null) && (node.parent is Fork))
             {
                 Fork secfork = (Fork)node.parent;
 
-                if((secfork.parent.parent != null)&&(secfork.parent.parent is Fork))
+                if ((secfork.parent.parent != null) && (secfork.parent.parent is Fork))
                 {
                     Fork mainfork = (Fork)secfork.parent.parent;
 
                     if (secfork.parent == mainfork.ElseChunk)
                     {
-                        if(mainfork.ElseChunk.Items.Count == 1)
+                        if (mainfork.ElseChunk.Items.Count == 1)
                         {
                             // recursive folding
                             if ((secfork.ElseChunk.Items.Count == 1) && (secfork.ElseChunk.Items[0] is Fork))
                             {
                                 Simplify(((Fork)secfork.ElseChunk.Items[0]).ElseChunk);
                                 foreach (IOperatorLogic io in secfork.ElseifConditions)
+                                {
                                     mainfork.ElseifConditions.Add(io);
+                                }
+
                                 secfork.ElseifConditions.Clear();
                                 foreach (Chunk c in secfork.ElseifChunks)
+                                {
                                     mainfork.ElseifChunks.Add(c);
+                                }
+
                                 secfork.ElseifChunks.Clear();
                             }
                             mainfork.ElseifConditions.Insert(0, secfork.IfCondition);
@@ -1169,10 +1323,12 @@ namespace SFEngine.SFLua.LuaDecompiler
 
             int npos = 0;
             // assignment pass
-            while(true)
+            while (true)
             {
-                if(node.Items.Count <= npos)
+                if (node.Items.Count <= npos)
+                {
                     break;
+                }
 
                 IStatement current_statement = node.Items[npos];
 
@@ -1182,7 +1338,9 @@ namespace SFEngine.SFLua.LuaDecompiler
                     Assignment n1 = (Assignment)current_statement;
 
                     if (n1.Right is Closure)
+                    {
                         Simplify(((Closure)n1.Right).ClosureChunk);
+                    }
 
                     if (npos + 1 < node.Items.Count)
                     {
@@ -1206,7 +1364,9 @@ namespace SFEngine.SFLua.LuaDecompiler
 
                     // local X = nil -> local X
                     if ((n1.Left is LocalIdentifier) && (n1.Right is Nil))
+                    {
                         n1.Right = null;
+                    }
                 }
                 else if (current_statement is MultiAssignment)
                 {
@@ -1231,36 +1391,46 @@ namespace SFEngine.SFLua.LuaDecompiler
                     Fork cf = (Fork)current_statement;
                     Simplify(cf.IfChunk);
                     for (int i = 0; i < cf.ElseifChunks.Count; i++)
+                    {
                         Simplify(cf.ElseifChunks[i]);
+                    }
+
                     Simplify(cf.ElseChunk);
                 }
                 else if (current_statement is Loop)
+                {
                     Simplify(((Loop)current_statement).LoopChunk);
+                }
+
                 npos += 1;
             }
 
             // if multiassignment has multiple local identifiers, it's required to only have the first identifier be local
             npos = 0;
-            while(true)
+            while (true)
             {
                 if (node.Items.Count <= npos)
+                {
                     break;
+                }
 
                 IStatement current_statement = node.Items[npos];
-                if(current_statement is MultiAssignment)
+                if (current_statement is MultiAssignment)
                 {
                     MultiAssignment mas = (MultiAssignment)current_statement;
-                    if(mas.Left[0] is LocalIdentifier)
+                    if (mas.Left[0] is LocalIdentifier)
                     {
-                        for(int i=1; i < mas.Left.Count; i++)
+                        for (int i = 1; i < mas.Left.Count; i++)
                         {
                             ILValue lvalue = mas.Left[i];
                             if (lvalue is LocalIdentifier)
+                            {
                                 mas.Left[i] = new Identifier()
                                 {
                                     name = ((LocalIdentifier)lvalue).name,
                                     parent = ((LocalIdentifier)lvalue).parent
                                 };
+                            }
                         }
                     }
                 }

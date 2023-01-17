@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace SFEngine.SFLua.lua_sql
 {
-    public class SFLuaSQLBuildingData: ILuaParsable
+    public class SFLuaSQLBuildingData : ILuaParsable
     {
         public List<string> Mesh;
         public double SelectionScaling;
@@ -19,13 +16,19 @@ namespace SFEngine.SFLua.lua_sql
             {
                 LuaParser.LuaTable mesh_table = (LuaParser.LuaTable)table["mesh"];
                 for (int k = 1; k <= mesh_table.entries.Count; k++)
+                {
                     Mesh.Add((string)mesh_table[(double)k]);
+                }
             }
 
             if (table.entries.ContainsKey("selectionscaling"))
+            {
                 SelectionScaling = (double)table["selectionscaling"];
+            }
             else
+            {
                 SelectionScaling = 0;
+            }
         }
 
         public string ParseToString()
@@ -33,14 +36,17 @@ namespace SFEngine.SFLua.lua_sql
             string ret = "";
             ret += "mesh = \r\n{";
             foreach (string s in Mesh)
+            {
                 ret += "\r\n\t\"" + s + "\",";
+            }
+
             ret += "\r\n},";
             ret += "\r\nselectionscaling = " + SelectionScaling.ToString(Utility.ci) + ",";
             return ret;
         }
     }
 
-    public class SFLuaSQLBuilding: ILuaSQL
+    public class SFLuaSQLBuilding : ILuaSQL
     {
         public Dictionary<int, SFLuaSQLBuildingData> buildings { get; private set; } = null;
 
@@ -49,15 +55,22 @@ namespace SFEngine.SFLua.lua_sql
             get
             {
                 if (buildings.ContainsKey(index))
+                {
                     return buildings[index];
+                }
+
                 return null;
             }
             set
             {
                 if (buildings.ContainsKey(index))
+                {
                     buildings[index] = value;
+                }
                 else
+                {
                     buildings.Add(index, value);
+                }
             }
         }
 
@@ -83,7 +96,9 @@ namespace SFEngine.SFLua.lua_sql
             }
 
             if (buildings == null)
+            {
                 buildings = new Dictionary<int, SFLuaSQLBuildingData>();
+            }
 
             int log_current_item = 0;
             try
@@ -93,7 +108,9 @@ namespace SFEngine.SFLua.lua_sql
                 LuaParser.LuaTable table = (LuaParser.LuaTable)ret[0];
                 List<double> indices = new List<double>();
                 foreach (var key in table.entries.Keys)
+                {
                     indices.Add((double)key);
+                }
 
                 indices.Sort();
                 // iterate over the rts coop spawn table

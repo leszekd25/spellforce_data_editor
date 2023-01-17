@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using SFEngine.SFMap;
-using SFEngine.SFCFF;
+﻿using SFEngine.SFCFF;
 using SFEngine.SFLua;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFLua.lua_sql_forms
 {
@@ -28,7 +22,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             if (SFLuaEnvironment.items.Load() != 0)
             {
                 MessageBox.Show("Could not load script/sql_item.lua");
-                this.Close();
+                Close();
                 return;
             }
 
@@ -45,7 +39,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             index_to_key.Sort();
 
             foreach (int i in index_to_key)
-                ListItems.Items.Add(i.ToString()+". "+GetItemString(i));
+            {
+                ListItems.Items.Add(i.ToString() + ". " + GetItemString(i));
+            }
 
             ListItems.ResumeLayout();
         }
@@ -53,7 +49,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private string GetItemString(int id)
         {
             if (!SFCategoryManager.ready)
+            {
                 return "";
+            }
+
             return SFCategoryManager.GetItemName((ushort)id);
         }
 
@@ -81,7 +80,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
             var items = SFLuaEnvironment.items.items;
             if (!items.ContainsKey(item_id))
+            {
                 return;
+            }
 
             MMC.Text = items[item_id].MeshMaleCold;
             MFC.Text = items[item_id].MeshFemaleCold;
@@ -99,49 +100,67 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void MMC_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFLuaEnvironment.items.items[selected_id].MeshMaleCold = MMC.Text.ToString();
-            if(MMC.Text.ToString()=="")
+            if (MMC.Text.ToString() == "")
+            {
                 SFLuaEnvironment.items.items[selected_id].MeshMaleCold = "<undefined>";
+            }
         }
 
         private void MFC_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFLuaEnvironment.items.items[selected_id].MeshFemaleCold = MFC.Text.ToString();
             if (MFC.Text.ToString() == "")
+            {
                 SFLuaEnvironment.items.items[selected_id].MeshFemaleCold = "<undefined>";
+            }
         }
 
         private void MMW_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFLuaEnvironment.items.items[selected_id].MeshMaleWarm = MMW.Text.ToString();
             if (MMW.Text.ToString() == "")
+            {
                 SFLuaEnvironment.items.items[selected_id].MeshMaleWarm = "<undefined>";
+            }
         }
 
         private void MFW_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFLuaEnvironment.items.items[selected_id].MeshFemaleWarm = MFW.Text.ToString();
             if (MFW.Text.ToString() == "")
+            {
                 SFLuaEnvironment.items.items[selected_id].MeshFemaleWarm = "<undefined>";
+            }
         }
 
         private void ShadowRNG_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
-            SFLuaEnvironment.items.items[selected_id].ShadowRNG = 
+            SFLuaEnvironment.items.items[selected_id].ShadowRNG =
                 SFEngine.Utility.TryParseDouble(ShadowRNG.Text,
                                        SFLuaEnvironment.items.items[selected_id].ShadowRNG);
         }
@@ -149,7 +168,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void SelectionSize_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFLuaEnvironment.items.items[selected_id].SelectionSize =
                 SFEngine.Utility.TryParseDouble(SelectionSize.Text,
@@ -159,7 +180,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void AnimSet_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFLuaEnvironment.items.items[selected_id].AnimSet = AnimSet.Text.ToString();
         }
@@ -167,7 +190,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void Race_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFLuaEnvironment.items.items[selected_id].Race =
                 (int)SFEngine.Utility.TryParseUInt32(Race.Text,
@@ -177,7 +202,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void Cat_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFLuaEnvironment.items.items[selected_id].Category =
                 (int)SFEngine.Utility.TryParseUInt32(Cat.Text,
@@ -187,7 +214,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void SubCat_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFLuaEnvironment.items.items[selected_id].SubCategory =
                 (int)SFEngine.Utility.TryParseUInt32(SubCat.Text,
@@ -197,14 +226,18 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void ItemID_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int previous_id = selected_id;
             int previous_index = ListItems.SelectedIndex;
             SFEngine.SFLua.lua_sql.SFLuaSQLItemData item = SFLuaEnvironment.items.items[previous_id];
             int new_id = (int)SFEngine.Utility.TryParseUInt32(ItemID.Text, (uint)previous_id);
             if (new_id == previous_id)
+            {
                 return;
+            }
 
             SFLuaEnvironment.items.items.Remove(selected_id);
             index_to_key.RemoveAt(previous_index);
@@ -260,7 +293,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void ButtonRemove_Click(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int ind = ListItems.SelectedIndex;
             SFLuaEnvironment.items.items.Remove(selected_id);
@@ -268,14 +303,16 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             ListItems.Items.RemoveAt(ListItems.SelectedIndex);
 
             if (ind == index_to_key.Count)
+            {
                 ind -= 1;
+            }
 
             ListItems.SelectedIndex = ind;
         }
 
         private void ButtonCancelChanges_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void ButtonSaveChanges_Click(object sender, EventArgs e)
@@ -284,7 +321,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             {
                 MessageBox.Show("Error while saving sql_item.lua");
             }
-            this.Close();
+            Close();
         }
     }
 }

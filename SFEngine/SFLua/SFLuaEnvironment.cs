@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SFEngine.SFLua
@@ -17,7 +15,7 @@ namespace SFEngine.SFLua
         public static lua_sql.SFLuaSQLBuilding buildings { get; private set; } = new lua_sql.SFLuaSQLBuilding();
         public static lua_sql.SFLuaSQLHead heads { get; private set; } = new lua_sql.SFLuaSQLHead();
 
-        public static string ParseDictToString<T>(Dictionary<int, T> dict) where T: ILuaParsable
+        public static string ParseDictToString<T>(Dictionary<int, T> dict) where T : ILuaParsable
         {
             StringWriter sw = new StringWriter();
             sw.Write("{");
@@ -44,7 +42,7 @@ namespace SFEngine.SFLua
                 return null;
             }
 
-            if (File.Exists(SFUnPak.SFUnPak.game_directory_name+"\\"+fname))
+            if (File.Exists(SFUnPak.SFUnPak.game_directory_name + "\\" + fname))
             {
                 // check if the script is compiled
                 FileStream fs = new FileStream(SFUnPak.SFUnPak.game_directory_name + "\\" + fname, FileMode.Open, FileAccess.Read);
@@ -52,7 +50,7 @@ namespace SFEngine.SFLua
                 LuaDecompiler.LuaBinaryScript bscr = new LuaDecompiler.LuaBinaryScript(br);
                 br.Close();
 
-                if(bscr.func == null)            //script is NOT compiled, attempt to read as text script
+                if (bscr.func == null)            //script is NOT compiled, attempt to read as text script
                 {
                     LuaParser.LuaTable test = new LuaParser.LuaTable();
                     LuaParser.LuaScript scr = new LuaParser.LuaScript(
@@ -60,7 +58,9 @@ namespace SFEngine.SFLua
 
                     scr.position = scr.code.IndexOf('{');       // temporary
                     if (!test.Parse(scr))
+                    {
                         return null;
+                    }
 
                     return new object[] { test };
                 }
@@ -95,7 +95,7 @@ namespace SFEngine.SFLua
             MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", fname);
             if (ms == null)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaEnvironment.GetDecompiledString(): Could not find file "+fname+" in game paks!");
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaEnvironment.GetDecompiledString(): Could not find file " + fname + " in game paks!");
                 return -2;
             }
             else
@@ -103,9 +103,9 @@ namespace SFEngine.SFLua
                 BinaryReader br = new BinaryReader(ms);
 
                 LuaDecompiler.LuaBinaryScript scr = new LuaDecompiler.LuaBinaryScript(br);
-                if(scr.func == null)
+                if (scr.func == null)
                 {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaEnvironment.GetDecompiledString(): Could not load binary script from file "+fname);
+                    LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaEnvironment.GetDecompiledString(): Could not load binary script from file " + fname);
                     return -3;
                 }
 
@@ -166,7 +166,9 @@ namespace SFEngine.SFLua
                         File.Create("@" + SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
                     }
                     else
+                    {
                         return -2;
+                    }
                 }
                 else if (result == 0)
                 {
@@ -175,7 +177,9 @@ namespace SFEngine.SFLua
                     File.WriteAllText(SFUnPak.SFUnPak.game_directory_name + "\\" + fname, ret);
                 }
                 else
+                {
                     return -3;
+                }
             }
 
             System.Diagnostics.Process.Start(SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
@@ -203,22 +207,34 @@ namespace SFEngine.SFLua
                     if (MessageBox.Show("Script does not exist. Create a new script?", "Script not found", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
                         if (!Directory.Exists(SFUnPak.SFUnPak.game_directory_name + "\\script"))
+                        {
                             Directory.CreateDirectory(SFUnPak.SFUnPak.game_directory_name + "\\script");
+                        }
+
                         if (!Directory.Exists(SFUnPak.SFUnPak.game_directory_name + "\\script\\p" + platform_id.ToString()))
+                        {
                             Directory.CreateDirectory(SFUnPak.SFUnPak.game_directory_name + "\\script\\p" + platform_id.ToString());
+                        }
 
                         var f = File.Create(SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
                         f.Close();
                     }
                     else
+                    {
                         return -2;
+                    }
                 }
                 else if (result == 0)
                 {
                     if (!Directory.Exists(SFUnPak.SFUnPak.game_directory_name + "\\script"))
+                    {
                         Directory.CreateDirectory(SFUnPak.SFUnPak.game_directory_name + "\\script");
+                    }
+
                     if (!Directory.Exists(SFUnPak.SFUnPak.game_directory_name + "\\script\\p" + platform_id.ToString()))
+                    {
                         Directory.CreateDirectory(SFUnPak.SFUnPak.game_directory_name + "\\script\\p" + platform_id.ToString());
+                    }
 
                     ret = ret.Replace("__arg0", "_Type");
                     ret = ret.Replace("__arg1", "_PlatformId");
@@ -229,11 +245,13 @@ namespace SFEngine.SFLua
                     File.WriteAllText(SFUnPak.SFUnPak.game_directory_name + "\\" + fname, ret);
                 }
                 else
+                {
                     return -3;
+                }
             }
 
             System.Diagnostics.Process.Start(SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
-            
+
             return 0;
         }
 
@@ -242,7 +260,9 @@ namespace SFEngine.SFLua
             LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaEnvironment.LoadSQL() called");
 
             if ((!force) && (data_loaded))
+            {
                 return;
+            }
 
             data_loaded = true;
             int result = coop_spawns.Load();
@@ -284,7 +304,10 @@ namespace SFEngine.SFLua
             LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaEnvironment.UnloadSQL() called");
 
             if (!data_loaded)
+            {
                 return;
+            }
+
             coop_spawns.Unload();
             items.Unload();
             objects.Unload();
@@ -296,7 +319,7 @@ namespace SFEngine.SFLua
         public static string GetItemMesh(int item_id, bool is_female)
         {
             lua_sql.SFLuaSQLItemData item_data = items[item_id];
-            if(item_data==null)
+            if (item_data == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaEnvironment.GetItemMesh(): Item does not exist (item id " + item_id.ToString() + ")");
                 return "";
@@ -305,25 +328,43 @@ namespace SFEngine.SFLua
             if (is_female)
             {
                 if (item_data.MeshFemaleCold != "<undefined>")
+                {
                     return item_data.MeshFemaleCold;
+                }
                 else if (item_data.MeshFemaleWarm != "<undefined>")
+                {
                     return item_data.MeshFemaleWarm;
+                }
                 else if (item_data.MeshMaleCold != "<undefined>")
+                {
                     return item_data.MeshMaleCold;
+                }
                 else if (item_data.MeshMaleWarm != "<undefined>")
+                {
                     return item_data.MeshMaleWarm;
+                }
+
                 return "";
             }
             else
             {
                 if (item_data.MeshMaleCold != "<undefined>")
+                {
                     return item_data.MeshMaleCold;
+                }
                 else if (item_data.MeshMaleWarm != "<undefined>")
+                {
                     return item_data.MeshMaleWarm;
+                }
                 else if (item_data.MeshFemaleCold != "<undefined>")
+                {
                     return item_data.MeshFemaleCold;
+                }
                 else if (item_data.MeshFemaleWarm != "<undefined>")
+                {
                     return item_data.MeshFemaleWarm;
+                }
+
                 return "";
             }
         }

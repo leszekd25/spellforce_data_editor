@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpellforceDataEditor.SFLua
 {
@@ -18,7 +14,9 @@ namespace SpellforceDataEditor.SFLua
         public static void ShowRtsCoopSpawnGroupsForm()
         {
             if (coop_spawns_form != null)
+            {
                 return;
+            }
 
             coop_spawns_form = new lua_sql_forms.SFLuaSQLRtsCoopSpawnForm();
             coop_spawns_form.ShowDialog();
@@ -29,7 +27,9 @@ namespace SpellforceDataEditor.SFLua
         public static void ShowSQLItemForm()
         {
             if (items_form != null)
+            {
                 return;
+            }
 
             items_form = new lua_sql_forms.SFLuaSQLItemForm();
             items_form.ShowDialog();
@@ -40,7 +40,9 @@ namespace SpellforceDataEditor.SFLua
         public static void ShowSQLObjectForm()
         {
             if (objects_form != null)
+            {
                 return;
+            }
 
             objects_form = new lua_sql_forms.SFLuaSQLObjectForm();
             objects_form.ShowDialog();
@@ -51,7 +53,9 @@ namespace SpellforceDataEditor.SFLua
         public static void ShowSQLBuildingForm()
         {
             if (buildings_form != null)
+            {
                 return;
+            }
 
             buildings_form = new lua_sql_forms.SFLuaSQLBuildingForm();
             buildings_form.ShowDialog();
@@ -62,7 +66,9 @@ namespace SpellforceDataEditor.SFLua
         public static void ShowSQLHeadForm()
         {
             if (heads_form != null)
+            {
                 return;
+            }
 
             heads_form = new lua_sql_forms.SFLuaSQLHeadForm();
             heads_form.ShowDialog();

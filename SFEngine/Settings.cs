@@ -1,20 +1,17 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace SFEngine
 {
     public static class Settings
     {
+        public enum ShadowMapTechnique { VSM, MSM };
+
         public static bool VSync { get; private set; } = false;
         public static int IgnoredMipMapsCount { get; private set; } = 0;
         public static int MaximumAllowedTextureSize { get; private set; } = 2048;
         public static bool EnableShadows { get; set; } = true;
-        public static bool EnableCascadeShadows { get; set; } = false;
-        public static int ShadowCascadeCount { get; private set; } = 3;
         public static int ShadowMapSize { get; private set; } = 2048;
         public static int ShadingQuality { get; set; } = 2;
         public static bool DecalShadows { get; set; } = true;
@@ -23,14 +20,18 @@ namespace SFEngine
         public static bool AnisotropicFiltering { get; private set; } = true;
         public static bool ToneMapping { get; private set; } = true;
         public static int MaxAnisotropy { get; set; } = 1;
+        public static ShadowMapTechnique ShadowType { get; set; } = ShadowMapTechnique.VSM;
+        public static bool SoftShadows { get; set; } = true;
         public static int RenderDistance { get; set; } = 1000;
         public static SFMap.SFMapHeightMapLOD TerrainLOD { get; private set; } = SFMap.SFMapHeightMapLOD.NONE;
-        public static bool TerrainTextureLOD { get; private set; } = false;
+        public static int TerrainTextureLOD { get; private set; } = 0;
+        public static bool ForceTerrainTextureLOD1 { get; set; } = false;
         public static bool DynamicMap { get; set; } = false;
         public static bool AmbientOcclusion { get; private set; } = false;
         public static int FogStart { get; set; } = 40;
         public static int FogEnd { get; set; } = 400;
 
+        public static bool EditorMode { get; set; } = true;
         public static bool UnitsVisible { get; set; } = true;
         public static bool BuildingsVisible { get; set; } = true;
         public static bool ObjectsVisible { get; set; } = true;
@@ -65,22 +66,32 @@ namespace SFEngine
             {
                 string[] settings = File.ReadAllLines("config.txt");
                 bool ignore_rest = false;
-                foreach(string s in settings)
+                foreach (string s in settings)
                 {
                     if (s.Length == 0)
+                    {
                         continue;
+                    }
+
                     if (s[0] == '#')
+                    {
                         continue;
+                    }
 
                     string[] words = s.Split(' ');
                     if (words.Length < 2)
+                    {
                         continue;
+                    }
 
-                    switch(words[0])
+                    switch (words[0])
                     {
                         case "!":
                             if (words[1] == "Ignore")
+                            {
                                 ignore_rest = true;
+                            }
+
                             break;
                         case "VSync":
                             VSync = (words[1] == "YES");
@@ -88,35 +99,59 @@ namespace SFEngine
                         case "IgnoredMipMapsCount":
                             IgnoredMipMapsCount = Utility.TryParseUInt8(words[1], (byte)IgnoredMipMapsCount);
                             if (IgnoredMipMapsCount > 2)
+                            {
                                 IgnoredMipMapsCount = 2;
+                            }
+
                             break;
                         case "MaximumAllowedTextureSize":
                             MaximumAllowedTextureSize = Utility.TryParseUInt16(words[1], (ushort)MaximumAllowedTextureSize);
                             if (MaximumAllowedTextureSize < 64)
+                            {
                                 MaximumAllowedTextureSize = 64;
+                            }
+
                             break;
                         case "ShadowMapSize":
                             ShadowMapSize = Utility.TryParseUInt16(words[1], (ushort)ShadowMapSize);
                             if (ShadowMapSize < 64)
+                            {
                                 ShadowMapSize = 64;
+                            }
+
                             break;
                         case "FramesPerSecond":
                             FramesPerSecond = Utility.TryParseUInt16(words[1], (ushort)FramesPerSecond);
                             if (FramesPerSecond < 5)
+                            {
                                 FramesPerSecond = 5;
+                            }
+
                             if (FramesPerSecond > 1000)
+                            {
                                 FramesPerSecond = 1000;
+                            }
+
                             break;
                         case "EnableShadows":
                             EnableShadows = (words[1] == "YES");
                             break;
                         case "ShadingQuality":
-                            ShadingQuality = (words[1] == "NONE"? 0: (words[1] == "LOW"? 1: (words[1] == "HIGH"? 2: 0)));
+                            ShadingQuality = (words[1] == "NONE" ? 0 : (words[1] == "LOW" ? 1 : (words[1] == "HIGH" ? 2 : 0)));
+                            break;
+                        case "ShadowType":
+                            ShadowType = (words[1] == "MSM" ? ShadowMapTechnique.MSM : ShadowMapTechnique.VSM);
+                            break;
+                        case "SoftShadows":
+                            SoftShadows = (words[1] != "NO");
                             break;
                         case "AntiAliasingSamples":
                             AntiAliasingSamples = Utility.TryParseUInt16(words[1], (ushort)AntiAliasingSamples);
                             if (AntiAliasingSamples > 4)
+                            {
                                 AntiAliasingSamples = 4;
+                            }
+
                             AntiAliasingSamples = (AntiAliasingSamples / 2) * 2;
                             break;
                         case "AnisotropicFiltering":
@@ -128,11 +163,14 @@ namespace SFEngine
                         case "TerrainLOD":
                             SFMap.SFMapHeightMapLOD tlod;
                             if (!Enum.TryParse(words[1], out tlod))
+                            {
                                 tlod = SFMap.SFMapHeightMapLOD.NONE;
+                            }
+
                             TerrainLOD = tlod;
                             break;
                         case "TerrainTextureLOD":
-                            TerrainTextureLOD = (words[1] == "YES");
+                            TerrainTextureLOD = (words[1] == "NO" ? 0 : (words[1] == "YES" ? 1 : (words[1] == "EXTREME" ? 2 : 1)));
                             break;
 
                         case "UnitsVisible":
@@ -177,7 +215,9 @@ namespace SFEngine
                                 ObjectFadeMin = Utility.TryParseUInt16(words[1], (ushort)ObjectFadeMin);
                                 ObjectFadeMax = Utility.TryParseUInt16(words[2], (ushort)ObjectFadeMax);
                                 if (ObjectFadeMax < ObjectFadeMin)
+                                {
                                     ObjectFadeMax = ObjectFadeMin;
+                                }
                             }
                             break;
                         case "UnitFadeDistance":
@@ -190,7 +230,10 @@ namespace SFEngine
                         case "ExtractDirectory":
                             string es2 = words[1];
                             for (int i = 2; i < words.Length; i++)
+                            {
                                 es2 += " " + words[i];
+                            }
+
                             ExtractDirectory = es2;
                             break;
                         case "ExtractAllInOne":
@@ -199,42 +242,62 @@ namespace SFEngine
                         case "GameDirectory":
                             string s2 = words[1];
                             for (int i = 2; i < words.Length; i++)
+                            {
                                 s2 += " " + words[i];
+                            }
+
                             GameDirectory = s2;
                             SFUnPak.SFUnPak.SpecifyGameDirectory(GameDirectory);
                             break;
                         case "LogInfo":
                             LogInfo = (words[1] == "YES");
                             if (LogInfo)
+                            {
                                 LogUtils.Log.SetOption(LogUtils.LogOption.INFO);
+                            }
+
                             break;
                         case "LogWarning":
                             LogWarning = (words[1] == "YES");
                             if (LogWarning)
+                            {
                                 LogUtils.Log.SetOption(LogUtils.LogOption.WARNING);
+                            }
+
                             break;
                         case "LogError":
                             LogError = (words[1] == "YES");
                             if (LogError)
+                            {
                                 LogUtils.Log.SetOption(LogUtils.LogOption.ERROR);
+                            }
+
                             break;
                         case "LanguageID":
                             LanguageID = Utility.TryParseUInt8(words[1], (byte)LanguageID);
                             if (LanguageID > 4)
+                            {
                                 LanguageID = 1;
+                            }
+
                             break;
                         case "GameRunArguments":
                             string s3 = words[1];
                             for (int i = 2; i < words.Length; i++)
+                            {
                                 s3 += " " + words[i];
+                            }
+
                             GameRunArguments = s3;
                             break;
                     }
                     if (ignore_rest)
+                    {
                         break;
+                    }
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.Main, "Settings.Load(): failed to load settings from config.txt");
                 return -1;
@@ -253,7 +316,7 @@ namespace SFEngine
                 List<string> new_settings = new List<string>();
                 foreach (string s in settings)
                 {
-                    if(s.Length == 0)
+                    if (s.Length == 0)
                     {
                         new_settings.Add("");
                         continue;
@@ -264,7 +327,7 @@ namespace SFEngine
                         new_settings.Add("");
                         continue;
                     }
-                    if((s[0] == '#')||(s[0] == '!'))
+                    if ((s[0] == '#') || (s[0] == '!'))
                     {
                         new_settings.Add(s);
                         continue;
@@ -294,6 +357,12 @@ namespace SFEngine
                         case "ShadingQuality":
                             words = new string[] { words[0], (ShadingQuality == 0 ? "NONE" : (ShadingQuality == 1 ? "LOW" : (ShadingQuality == 2 ? "HIGH" : "NONE"))) };
                             break;
+                        case "ShadowType":
+                            words = new string[] { words[0], (ShadowType == ShadowMapTechnique.MSM ? "MSM" : "VSM") };
+                            break;
+                        case "SoftShadows":
+                            words = new string[] { words[0], (SoftShadows ? "YES" : "NO") };
+                            break;
                         case "AntiAliasingSamples":
                             words = new string[] { words[0], AntiAliasingSamples.ToString() };
                             break;
@@ -307,7 +376,7 @@ namespace SFEngine
                             words = new string[] { words[0], TerrainLOD.ToString() };
                             break;
                         case "TerrainTextureLOD":
-                            words = new string[] { words[0], TerrainTextureLOD ? "YES" : "NO" };
+                            words = new string[] { words[0], (TerrainTextureLOD == 0 ? "NO" : (TerrainTextureLOD == 1 ? "YES" : (TerrainTextureLOD == 2 ? "EXTREME" : "YES"))) };
                             break;
 
                         case "UnitsVisible":
@@ -379,7 +448,10 @@ namespace SFEngine
                             break;
                     }
                     if (skipped_line)
+                    {
                         continue;
+                    }
+
                     string s2 = string.Join(" ", words);
                     new_settings.Add(s2);
                 }

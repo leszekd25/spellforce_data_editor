@@ -3,23 +3,18 @@
  * It also binds this info to a GPU buffer, and as such, it has to be disposed of manually
  * */
 
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
 using SFEngine.SFResources;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace SFEngine.SF3D
 {
-    public class SFSubModel3D: SFResource
+    public class SFSubModel3D// : SFResource
     {
         public static MeshCache Cache;
-
 
         public SFModel3D owner = null;
         public int submodel_id = Utility.NO_INDEX;
@@ -30,13 +25,11 @@ namespace SFEngine.SF3D
         uint[] face_indices = null;
         public int indices_size;
 
-        //public ArrayPool<Matrix4> instance_matrices = new ArrayPool<Matrix4>();
-        //public bool needs_matrix_reload = false;
-
         public SFMaterial material = null;
         public Physics.BoundingBox aabb;
-        /*public int vertex_array = Utility.NO_INDEX;
-        public int vertex_buffer, element_buffer;//, instance_matrix_buffer;*/
+
+        public int RAMSize { get; set; }
+        public int DeviceSize { get; set; }
 
         public void Init()
         {
@@ -45,11 +38,9 @@ namespace SFEngine.SF3D
             vertex_data = null;
             indices_size = face_indices.Length * 4;
             face_indices = null;
-        }
 
-        public int Load(MemoryStream ms, object custom_data)
-        {
-            return 0;
+            DeviceSize = vertex_size + indices_size;
+            RAMSize = 0;
         }
 
         public int Load(BinaryReader br)
@@ -58,7 +49,7 @@ namespace SFEngine.SF3D
             vcount = br.ReadInt32();
             fcount = br.ReadInt32();
 
-            if(vcount == 0)
+            if (vcount == 0)
             {
                 br.BaseStream.Position += 206;
                 return 1;
@@ -72,7 +63,10 @@ namespace SFEngine.SF3D
             for (int j = 0; j < fcount; j++)
             {
                 for (int k = 0; k < 3; k++)
+                {
                     face_indices[j * 3 + k] = br.ReadUInt16();
+                }
+
                 br.ReadUInt16();
             }
 
@@ -90,12 +84,17 @@ namespace SFEngine.SF3D
             material.texRenderMode = (RenderMode)br.ReadByte();
             material.texAlpha = br.ReadByte();
             material.matFlags = br.ReadByte();
-            material.matDepthBias = br.ReadByte();
+            material.matDepthBias = br.ReadByte() * -0.000003f;
             material.texTiling = br.ReadSingle();
             material.transparent_pass = ((material.matFlags & 4) == 0);
             material.additive_pass = (material.texRenderMode == RenderMode.ONE_ONE);
             if (material.additive_pass)
-                material.emission_strength = 1.0f;
+            {
+                if (Settings.ToneMapping)
+                {
+                    material.emission_strength = 1.0f;
+                }
+            }
             byte[] chars = br.ReadBytes(64);
             matname = enc.GetString(chars);
             matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
@@ -111,11 +110,9 @@ namespace SFEngine.SF3D
             else
             {
                 tex = SFResourceManager.Textures.Get(matname);
-                tex.FreeMemory();
             }
 
             material.texture = tex;
-            //System.Diagnostics.Debug.WriteLine(tex.ToString());
 
             // secondary material
             br.BaseStream.Position += 80;
@@ -124,6 +121,9 @@ namespace SFEngine.SF3D
             // other unneeded data (chunk bbox)
             br.BaseStream.Position += 32;
 
+            RAMSize = vertex_data.Length + face_indices.Length * 4;
+            DeviceSize = 0;
+
             return 0;
         }
 
@@ -131,14 +131,13 @@ namespace SFEngine.SF3D
         {
             // reset first
             Dispose();
-            //instance_matrices = new ArrayPool<Matrix4>();
 
             vertex_data = new byte[_vertices.Length * 40];
             using (MemoryStream ms = new MemoryStream(vertex_data))
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
-                    for(int i = 0; i < _vertices.Length; i++)
+                    for (int i = 0; i < _vertices.Length; i++)
                     {
                         bw.Write(_vertices[i].X);
                         bw.Write(_vertices[i].Y);
@@ -147,7 +146,10 @@ namespace SFEngine.SF3D
                         bw.Write(_normals[i].Y);
                         bw.Write(_normals[i].Z);
                         for (int j = 0; j < 4; j++)
+                        {
                             bw.Write(_colors[4 * i + j]);
+                        }
+
                         bw.Write(_uvs[i].X);
                         bw.Write(_uvs[i].Y);
                         bw.Write((int)0);
@@ -162,7 +164,12 @@ namespace SFEngine.SF3D
                 material.texture = SFRender.SFRenderEngine.opaque_tex;
             }
             else
+            {
                 material = _material;
+            }
+
+            RAMSize = vertex_data.Length + face_indices.Length * 4;
+            DeviceSize = 0;
 
             return 0;
         }
@@ -173,7 +180,7 @@ namespace SFEngine.SF3D
             {
                 using (BinaryReader br = new BinaryReader(ms))
                 {
-                    for (int i = 0; i < vertex_data.Length; i+= 40)
+                    for (int i = 0; i < vertex_data.Length; i += 40)
                     {
                         br.BaseStream.Position = i;
                         float x = br.ReadSingle();
@@ -185,45 +192,44 @@ namespace SFEngine.SF3D
             }
         }
 
-        public void SetName(string s)
+        public IEnumerable<Vector3> GetNormals()
         {
-
-        }
-
-        public string GetName()
-        {
-            return "SUBMODEL " + submodel_id.ToString();
-        }
-
-        public int GetSizeBytes()
-        {
-            return vertex_size + indices_size;
+            using (MemoryStream ms = new MemoryStream(vertex_data))
+            {
+                using (BinaryReader br = new BinaryReader(ms))
+                {
+                    for (int i = 0; i < vertex_data.Length; i += 40)
+                    {
+                        br.BaseStream.Position = i + 12;
+                        float x = br.ReadSingle();
+                        float y = br.ReadSingle();
+                        float z = br.ReadSingle();
+                        yield return new Vector3(x, y, z);
+                    }
+                }
+            }
         }
 
         public void Dispose()
         {
-            if(cache_index != Utility.NO_INDEX)
+            if (cache_index != Utility.NO_INDEX)
             {
                 Cache.RemoveMesh(cache_index);
                 cache_index = Utility.NO_INDEX;
+
+                RAMSize = 0;
+                DeviceSize = 0;
             }
-            //instance_matrices.Dispose();
-            /*if (vertex_array != Utility.NO_INDEX)
-            {
-                GL.DeleteBuffer(vertex_buffer);
-                GL.DeleteBuffer(element_buffer);
-                //GL.DeleteBuffer(instance_matrix_buffer);
-                GL.DeleteVertexArray(vertex_array);
-                vertex_array = Utility.NO_INDEX;
-            }*/
             if ((material != null) && (material.texture != null) && (material.texture != SFRender.SFRenderEngine.opaque_tex))
-                SFResourceManager.Textures.Dispose(material.texture.GetName());
+            {
+                SFResourceManager.Textures.Dispose(material.texture.Name);
+            }
 
             owner = null;
         }
     }
 
-    public class SFModel3D: SFResource
+    public class SFModel3D : SFResource
     {
         public SFSubModel3D[] submodels = null;
         public Physics.BoundingBox aabb;
@@ -233,32 +239,21 @@ namespace SFEngine.SF3D
         public int MatrixOffset = 0;             // offset into MeshCache.MatrixData array  
         public int MatrixCount = 0;              // number of matrices used; CurrentMatrixIndex stops here
 
-        string name = "";
-
-        public SFModel3D()
-        {
-
-        }
-
-        public SFModel3D(MemoryStream ms)
-        {
-            Load(ms, null);
-            Init();
-        }
-
-        public int Load(MemoryStream ms, object custom_data)
+        public override int Load(MemoryStream ms, object custom_data)
         {
             BinaryReader br = new BinaryReader(ms);
 
             ushort[] header = new ushort[4];
             for (int i = 0; i < 4; i++)
+            {
                 header[i] = br.ReadUInt16();
+            }
 
             int modelnum = (int)header[1];
 
             List<SFSubModel3D> tmp_submodels = new List<SFSubModel3D>();
             int failed_submodels = 0;
-            for(int i=0; i<modelnum; i++)
+            for (int i = 0; i < modelnum; i++)
             {
                 SFSubModel3D sbm = new SFSubModel3D();
                 int return_code = sbm.Load(br);
@@ -280,10 +275,15 @@ namespace SFEngine.SF3D
                 }
 
                 if (i != modelnum - 1)
+                {
                     br.BaseStream.Position += 2;
+                }
+
+                RAMSize += sbm.RAMSize;
+                DeviceSize += sbm.DeviceSize;
             }
             submodels = tmp_submodels.ToArray();
-            
+
             // bbox
             float x1, x2, y1, y2, z1, z2;
             x1 = br.ReadSingle();
@@ -297,7 +297,7 @@ namespace SFEngine.SF3D
             return 0;
         }
 
-        public int CreateRaw(SFSubModel3D[] _submodels)
+        public int CreateRaw(SFSubModel3D[] _submodels, bool skip_recalc_on_not_null = false)
         {
             // reset first
             Dispose();
@@ -310,19 +310,30 @@ namespace SFEngine.SF3D
             }
 
             // aabb
-            RecalculateBoundingBox();
+            RecalculateBoundingBox(skip_recalc_on_not_null);
 
             return 0;
         }
 
-        public void Init()
+        public override void Init()
         {
+            RAMSize = 0;
+            DeviceSize = 0;
             foreach (SFSubModel3D sbm in submodels)
+            {
                 sbm.Init();
+                RAMSize += sbm.RAMSize;
+                DeviceSize += sbm.DeviceSize;
+            }
         }
 
-        public void RecalculateBoundingBox()
+        public void RecalculateBoundingBox(bool skip_on_not_null = false)
         {
+            if ((skip_on_not_null) && (aabb != null))
+            {
+                return;
+            }
+
             float x1, x2, y1, y2, z1, z2;
             x1 = 10000;
             x2 = -10000;
@@ -345,36 +356,23 @@ namespace SFEngine.SF3D
             aabb = new Physics.BoundingBox(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2));
         }
 
-        public void SetName(string s)
+        public override void Dispose()
         {
-            name = s;
-        }
-
-        public string GetName()
-        {
-            return name;
-        }
-
-        public int GetSizeBytes()
-        {
-            if (submodels == null)
-                return 0;
-
-            int ret = 0;
-            for (int i = 0; i < submodels.Length; i++)
-                ret += submodels[i].GetSizeBytes();
-            return ret;
-        }
-
-        public void Dispose()
-        {
-            if(submodels != null)
+            if (submodels != null)
+            {
                 foreach (SFSubModel3D submodel in submodels)
+                {
                     submodel.Dispose();
+                }
+            }
+
             submodels = null;
+
+            RAMSize = 0;
+            DeviceSize = 0;
         }
 
-        new public string ToString()
+        public override string ToString()
         {
             return "SUBMODEL COUNT: " + (submodels.Length).ToString();
         }

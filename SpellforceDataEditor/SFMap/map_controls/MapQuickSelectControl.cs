@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using SFEngine.SFCFF;
 using SFEngine.SFMap;
-using SFEngine.SFCFF;
-using SFEngine.SFLua;
+using System;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -19,15 +11,20 @@ namespace SpellforceDataEditor.SFMap.map_controls
         public SFMapQuickSelectHelper QsRef
         {
             get
-            { 
+            {
                 return internal_qs_ref;
             }
             set
             {
                 if (value == null)
+                {
                     Visible = false;
+                }
                 else
+                {
                     Visible = true;
+                }
+
                 internal_qs_ref = value;
 
                 UpdateIDs();
@@ -41,7 +38,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         public void UpdateIDs()
         {
             if (QsRef == null)
+            {
                 return;
+            }
 
             textBox1.Text = QsRef.ID[0].ToString();
             textBox2.Text = QsRef.ID[1].ToString();
@@ -108,180 +107,240 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             int cat_id = MainForm.mapedittool.external_QuickSelect_DetermineCategory();
             if (cat_id == -1)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt16(textBox1.Text);
                 int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
+                {
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
+                }
             }
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             int cat_id = MainForm.mapedittool.external_QuickSelect_DetermineCategory();
             if (cat_id == -1)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt16(textBox2.Text);
                 int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
+                {
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
+                }
             }
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             int cat_id = MainForm.mapedittool.external_QuickSelect_DetermineCategory();
             if (cat_id == -1)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt16(textBox3.Text);
                 int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
+                {
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
+                }
             }
         }
 
         private void textBox4_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             int cat_id = MainForm.mapedittool.external_QuickSelect_DetermineCategory();
             if (cat_id == -1)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt16(textBox4.Text);
                 int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
+                {
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
+                }
             }
         }
 
         private void textBox5_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             int cat_id = MainForm.mapedittool.external_QuickSelect_DetermineCategory();
             if (cat_id == -1)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt16(textBox5.Text);
                 int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
+                {
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
+                }
             }
         }
 
         private void textBox6_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             int cat_id = MainForm.mapedittool.external_QuickSelect_DetermineCategory();
             if (cat_id == -1)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt16(textBox6.Text);
                 int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
+                {
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
+                }
             }
         }
 
         private void textBox7_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             int cat_id = MainForm.mapedittool.external_QuickSelect_DetermineCategory();
             if (cat_id == -1)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt16(textBox7.Text);
                 int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
+                {
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
+                }
             }
         }
 
         private void textBox8_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             int cat_id = MainForm.mapedittool.external_QuickSelect_DetermineCategory();
             if (cat_id == -1)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt16(textBox8.Text);
                 int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
+                {
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
+                }
             }
         }
 
         private void textBox9_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             int cat_id = MainForm.mapedittool.external_QuickSelect_DetermineCategory();
             if (cat_id == -1)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt16(textBox9.Text);
                 int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
+                {
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
+                }
             }
         }
 
         private void textBox10_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             int cat_id = MainForm.mapedittool.external_QuickSelect_DetermineCategory();
             if (cat_id == -1)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt16(textBox10.Text);
                 int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
+                {
                     MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
+                }
             }
         }
     }

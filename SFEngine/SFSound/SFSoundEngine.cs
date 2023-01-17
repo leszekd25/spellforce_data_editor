@@ -1,16 +1,10 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.IO;
-using NAudio.Wave;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SFEngine.SFResources;
-using NAudio;
 
 namespace SFEngine.SFSound
 {
-    public class SFSoundEngine: IDisposable
+    public class SFSoundEngine : IDisposable
     {
         private MemoryStream sound_data = null;
         private WaveOutEvent player = null;
@@ -20,7 +14,9 @@ namespace SFEngine.SFSound
         public int LoadSoundMP3(StreamResource sound)
         {
             if (loaded)
+            {
                 UnloadSound();
+            }
 
             sound_data = new MemoryStream(sound.sound_data);
             sound_data.Seek(0, SeekOrigin.Begin);
@@ -35,7 +31,9 @@ namespace SFEngine.SFSound
         public int LoadSoundWAV(StreamResource sound)
         {
             if (loaded)
+            {
                 UnloadSound();
+            }
 
             sound_data = new MemoryStream(sound.sound_data);
             sound_data.Seek(0, SeekOrigin.Begin);
@@ -50,7 +48,10 @@ namespace SFEngine.SFSound
         public int PlaySound()
         {
             if (!loaded)
+            {
                 return -1;
+            }
+
             player.Play();
             return 0;
         }
@@ -58,15 +59,21 @@ namespace SFEngine.SFSound
         public int PauseSound()
         {
             if (!loaded)
+            {
                 return -1;
+            }
+
             player.Pause();
             return 0;
         }
 
         public void SetSound(double miliseconds)
         {
-            if(!loaded)
+            if (!loaded)
+            {
                 return;
+            }
+
             miliseconds = Math.Min(sound_loader.TotalTime.TotalMilliseconds, Math.Max(0, miliseconds));
             sound_loader.CurrentTime = TimeSpan.FromMilliseconds(miliseconds);
         }
@@ -74,28 +81,39 @@ namespace SFEngine.SFSound
         public double GetSoundDuration()
         {
             if (!loaded)
+            {
                 return 10000000000;
+            }
+
             return sound_loader.TotalTime.TotalMilliseconds;
         }
 
         public double GetSoundPosition()
         {
             if (!loaded)
+            {
                 return 0;
+            }
+
             return sound_loader.CurrentTime.TotalMilliseconds;
         }
 
         public PlaybackState GetSoundStatus()
         {
             if (!loaded)
+            {
                 return PlaybackState.Stopped;
+            }
+
             return player.PlaybackState;
         }
 
         public int UnloadSound()
         {
             if (!loaded)
+            {
                 return -1;
+            }
 
             try
             {
@@ -107,7 +125,7 @@ namespace SFEngine.SFSound
                 sound_data.Dispose();
                 loaded = false;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return -2;
             }

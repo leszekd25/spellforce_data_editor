@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
-using System.IO;
-using System.Globalization;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor
@@ -24,21 +16,26 @@ namespace SpellforceDataEditor
         public static SolidBrush BrushTextDefault = new SolidBrush(Color.Black);
         public static SolidBrush BrushTextElemSelected = new SolidBrush(Color.White);
 
-       
+
         static public string GetString(string caption, string label, string default_str = "")
         {
             special_forms.utility_forms.GetStringForm form = new special_forms.utility_forms.GetStringForm();
             form.SetDescription(caption, label, default_str);
             form.ShowDialog();
             if (form.Result == DialogResult.Cancel)
+            {
                 return default_str;
+            }
+
             return form.ResultString;
         }
 
         public static void TreeShallowCopy(Dictionary<string, TreeNode> src, TreeNodeCollection dst)
         {
             foreach (string tn in src.Keys)
+            {
                 dst.Add(src[tn]);
+            }
         }
     }
 }

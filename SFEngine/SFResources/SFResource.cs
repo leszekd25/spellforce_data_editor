@@ -3,22 +3,19 @@
  * Resource must be possible to load, initialize, and to dispose of
  * Resources are meant to be unique across the application
  * * */
-using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.SFResources
 {
-    public interface SFResource
+    public class SFResource
     {
-        int Load(MemoryStream ms, object custom_data);
-        void Init();
-        void Dispose();
-        void SetName(string s);
-        int GetSizeBytes();
-        string GetName();
+        public int StorageSize { get; set; } = 0;
+        public int RAMSize { get; set; } = 0;
+        public int DeviceSize { get; set; } = 0;
+        public string Name { get; set; } = "";
+
+        public virtual int Load(MemoryStream ms, object custom_data) { return -1; }
+        public virtual void Init() { }
+        public virtual void Dispose() { }
     }
 }

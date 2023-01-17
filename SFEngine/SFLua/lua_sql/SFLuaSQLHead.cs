@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace SFEngine.SFLua.lua_sql
 {
-    public class SFLuaSQLHeadData: ILuaParsable
+    public class SFLuaSQLHeadData : ILuaParsable
     {
         public string MeshMale = "<undefined>";
         public string MeshFemale = "<undefined>";
@@ -15,10 +12,15 @@ namespace SFEngine.SFLua.lua_sql
         public void ParseLoad(LuaParser.LuaTable table)
         {
 
-            if(table.entries.ContainsKey("meshmale"))
+            if (table.entries.ContainsKey("meshmale"))
+            {
                 MeshMale = (string)table["meshmale"];
-            if(table.entries.ContainsKey("meshfemale"))
+            }
+
+            if (table.entries.ContainsKey("meshfemale"))
+            {
                 MeshFemale = (string)table["meshfemale"];
+            }
         }
 
         public string ParseToString()
@@ -30,7 +32,7 @@ namespace SFEngine.SFLua.lua_sql
         }
     }
 
-    public class SFLuaSQLHead: ILuaSQL
+    public class SFLuaSQLHead : ILuaSQL
     {
         public Dictionary<int, SFLuaSQLHeadData> heads { get; private set; } = null;
 
@@ -39,15 +41,22 @@ namespace SFEngine.SFLua.lua_sql
             get
             {
                 if (heads.ContainsKey(index))
+                {
                     return heads[index];
+                }
+
                 return null;
             }
             set
             {
                 if (heads.ContainsKey(index))
+                {
                     heads[index] = value;
+                }
                 else
+                {
                     heads.Add(index, value);
+                }
             }
         }
 
@@ -73,7 +82,9 @@ namespace SFEngine.SFLua.lua_sql
             }
 
             if (heads == null)
+            {
                 heads = new Dictionary<int, SFLuaSQLHeadData>();
+            }
 
             int log_current_item = 0;
             try
@@ -83,7 +94,9 @@ namespace SFEngine.SFLua.lua_sql
                 LuaParser.LuaTable table = (LuaParser.LuaTable)ret[0];
                 List<double> indices = new List<double>();
                 foreach (var key in table.entries.Keys)
+                {
                     indices.Add((double)key);
+                }
 
                 indices.Sort();
                 // iterate over the rts coop spawn table

@@ -76,6 +76,7 @@
             this.panelElemCopy = new System.Windows.Forms.Panel();
             this.ButtonElemClear = new System.Windows.Forms.Button();
             this.ButtonElemCopy = new System.Windows.Forms.Button();
+            this.operationHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupSearch.SuspendLayout();
@@ -142,26 +143,30 @@
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.undoCtrlZToolStripMenuItem,
-            this.redoCtrlYToolStripMenuItem});
+            this.redoCtrlYToolStripMenuItem,
+            this.operationHistoryToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
+            this.editToolStripMenuItem.DropDownOpened += new System.EventHandler(this.editToolStripMenuItem_DropDownOpened);
             // 
             // undoCtrlZToolStripMenuItem
             // 
             this.undoCtrlZToolStripMenuItem.Enabled = false;
             this.undoCtrlZToolStripMenuItem.Name = "undoCtrlZToolStripMenuItem";
             this.undoCtrlZToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.undoCtrlZToolStripMenuItem.Text = "Undo";
+            this.undoCtrlZToolStripMenuItem.Click += new System.EventHandler(this.undoCtrlZToolStripMenuItem_Click);
             // 
             // redoCtrlYToolStripMenuItem
             // 
             this.redoCtrlYToolStripMenuItem.Enabled = false;
             this.redoCtrlYToolStripMenuItem.Name = "redoCtrlYToolStripMenuItem";
             this.redoCtrlYToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.redoCtrlYToolStripMenuItem.Text = "Redo";
+            this.redoCtrlYToolStripMenuItem.Click += new System.EventHandler(this.redoCtrlYToolStripMenuItem_Click);
             // 
             // specialToolStripMenuItem
             // 
@@ -511,6 +516,13 @@
             this.ButtonElemCopy.UseVisualStyleBackColor = true;
             this.ButtonElemCopy.Click += new System.EventHandler(this.ButtonElemCopy_Click);
             // 
+            // operationHistoryToolStripMenuItem
+            // 
+            this.operationHistoryToolStripMenuItem.Name = "operationHistoryToolStripMenuItem";
+            this.operationHistoryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.operationHistoryToolStripMenuItem.Text = "Operation history...";
+            this.operationHistoryToolStripMenuItem.Click += new System.EventHandler(this.operationHistoryToolStripMenuItem_Click);
+            // 
             // SpelllforceCFFEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -596,5 +608,6 @@
         private System.Windows.Forms.ToolStripMenuItem extractLangDataToolStripMenuItem;
         private SFCFF.helper_forms.ListBoxNoFlicker ElementSelect;
         private System.Windows.Forms.ToolStripMenuItem clipboardTooldebugToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem operationHistoryToolStripMenuItem;
     }
 }

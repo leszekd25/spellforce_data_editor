@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.SFLua.LuaDecompiler
 {
@@ -19,7 +16,10 @@ namespace SFEngine.SFLua.LuaDecompiler
         public object Pop()
         {
             if (Pos == Utility.NO_INDEX)
+            {
                 throw new AccessViolationException("LuaStack.Pop(): Stack is empty!");
+            }
+
             object o = stack[Pos];
             stack.RemoveAt(Pos);
             return o;
@@ -28,7 +28,10 @@ namespace SFEngine.SFLua.LuaDecompiler
         public object Get(int reference_stack_pos)
         {
             if (reference_stack_pos >= stack.Count)
+            {
                 return null;
+            }
+
             return stack[Pos - reference_stack_pos];
         }
 
@@ -39,8 +42,8 @@ namespace SFEngine.SFLua.LuaDecompiler
 
         public object PopAt(int reference_stack_pos)
         {
-            object o = stack[Pos-reference_stack_pos];
-            stack.RemoveAt(Pos-reference_stack_pos);
+            object o = stack[Pos - reference_stack_pos];
+            stack.RemoveAt(Pos - reference_stack_pos);
             return o;
         }
     }

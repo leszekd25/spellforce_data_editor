@@ -2,14 +2,10 @@
  * UIQuadStorage holds all quad data which gets sent to GPU: vertices, uvs, colors
  * */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System;
+using System.Collections.Generic;
 
 namespace SFEngine.SF3D.UI
 {
@@ -140,9 +136,14 @@ namespace SFEngine.SF3D.UI
             Array.Copy(_uvs_start, 0, uvs_start, span.start, _uvs_start.Length);
             Array.Copy(_uvs_end, 0, uvs_end, span.start, _uvs_end.Length);
             for (int i = 0; i < _pxsizes.Length; i++)
+            {
                 depths[span.start + i] = depth;
+            }
+
             for (int i = 0; i < _pxsizes.Length; i++)
+            {
                 quad_cols[span.start + i] = Vector4.One;
+            }
 
             spans[span_index] = new UIQuadStorageSpan { start = span.start, reserved = span.reserved, used = _pxsizes.Length, position = span.position, visible = span.visible };
             InitSpan(span_index);
@@ -234,8 +235,10 @@ namespace SFEngine.SF3D.UI
 
         public void ForceUpdate()
         {
-            for(int s = 0; s < spans.Count; s++)
+            for (int s = 0; s < spans.Count; s++)
+            {
                 UpdateSpanQuads(s);
+            }
 
             updated = false;
         }
@@ -244,7 +247,9 @@ namespace SFEngine.SF3D.UI
         public void Update()
         {
             if (updated)
+            {
                 return;
+            }
 
             GL.BindVertexArray(vertex_array);
 

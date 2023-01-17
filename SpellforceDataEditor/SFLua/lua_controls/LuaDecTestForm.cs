@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using SFEngine.SFLua.LuaDecompiler;
+using System;
 using System.IO;
-using SFEngine.SFLua.LuaDecompiler;
+using System.Text;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFLua.lua_controls
 {
@@ -18,7 +12,7 @@ namespace SpellforceDataEditor.SFLua.lua_controls
         {
             InitializeComponent();
         }
-        
+
 
         // assumes all files exist
         private void DecompileFiles(string[] fnames)
@@ -63,7 +57,7 @@ namespace SpellforceDataEditor.SFLua.lua_controls
                 {
                     failed_scripts += 1;
                     SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFLua, "LuaDecompilerForm.DecompileFiles(): Failed to decompile script "
-                        +fo.Name+"!");
+                        + fo.Name + "!");
                 }
                 finally
                 {
@@ -87,7 +81,7 @@ namespace SpellforceDataEditor.SFLua.lua_controls
             ButtonOK.Enabled = true;
 
             SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFLua, "LuaDecompilerForm.DecompileFiles(): Decompiled files: "
-                +decompiled_scripts.ToString()+", failed to decompile: "+failed_scripts.ToString());
+                + decompiled_scripts.ToString() + ", failed to decompile: " + failed_scripts.ToString());
         }
 
         private void DecompileDirectory(string dname)
@@ -104,13 +98,17 @@ namespace SpellforceDataEditor.SFLua.lua_controls
         private void ButtonDecSingle_Click(object sender, EventArgs e)
         {
             if (DecFileDialog.ShowDialog() == DialogResult.OK)
+            {
                 DecompileFiles(DecFileDialog.FileNames);
+            }
         }
 
         private void ButtonDecDirectory_Click(object sender, EventArgs e)
         {
             if (DecDirectoryDialog.ShowDialog() == DialogResult.OK)
+            {
                 DecompileDirectory(DecDirectoryDialog.SelectedPath);
+            }
         }
     }
 }

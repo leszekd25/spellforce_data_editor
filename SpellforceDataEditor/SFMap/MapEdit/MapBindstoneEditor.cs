@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFMap;
 using System.Windows.Forms;
-using SFEngine.SFMap;
-using SFEngine.SFCFF;
-using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
-    public class MapBindstoneEditor: MapEditor
+    public class MapBindstoneEditor : MapEditor
     {
         bool first_click = false;
         public int selected_intobj { get; private set; } = -1;       // interactive object index
@@ -24,7 +17,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public override void Select(int index)
         {
             if (first_click)
+            {
                 return;
+            }
 
             selected_bindstone = index;
             selected_intobj = (selected_bindstone == SFEngine.Utility.NO_INDEX ? SFEngine.Utility.NO_INDEX : map.int_object_manager.bindstones_index[index]);
@@ -37,10 +32,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             int bindstone_index = -1;
             SFMapInteractiveObject int_obj = null;
 
-            for(int i = 0; i < map.int_object_manager.bindstones_index.Count; i++)
+            for (int i = 0; i < map.int_object_manager.bindstones_index.Count; i++)
             {
                 int j = map.int_object_manager.bindstones_index[i];
-                if(SFCoord.Distance(map.int_object_manager.int_objects[j].grid_position, pos) <= 2)
+                if (SFCoord.Distance(map.int_object_manager.int_objects[j].grid_position, pos) <= 2)
                 {
                     intobj_index = j;
                     bindstone_index = i;
@@ -50,12 +45,14 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             }
 
             // 2. if not clicked, create new bindstone
-            if(int_obj == null)
+            if (int_obj == null)
             {
                 if (b == MouseButtons.Left)
                 {
                     if (!map.heightmap.CanMoveToPosition(pos))
+                    {
                         return;
+                    }
 
                     // undo/redo
                     SFCoord previous_pos = new SFCoord(0, 0);
@@ -69,7 +66,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                         map.MoveInteractiveObject(selected_intobj, pos);
                         if (player != -1)
+                        {
                             map.metadata.spawns[player].pos = pos;
+                        }
                     }
                     else if (!first_click)
                     {
@@ -92,13 +91,15 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorBindstoneAddOrRemove()
                         {
                             bindstone_index = map.int_object_manager.bindstones_index.Count - 1,
-                            bindstone_pos = pos, 
-                            bindstone_textid = 0, 
-                            bindstone_unknown = 0, 
+                            bindstone_pos = pos,
+                            bindstone_textid = 0,
+                            bindstone_unknown = 0,
                             intobj_index = map.int_object_manager.int_objects.Count - 1,
                             player_index = map.metadata.spawns.Count - 1,
-                            is_adding = true 
+                            is_adding = true
                         });
+
+                        map.heightmap.RefreshOverlay();
                     }
 
                     // undo/redo
@@ -126,17 +127,21 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 if (b == MouseButtons.Left)
                 {
-                    if ((specials.Shift)&&(selected_intobj != -1))
+                    if ((specials.Shift) && (selected_intobj != -1))
                     {
                         if (!(map.heightmap.CanMoveToPosition(pos)))
+                        {
                             return;
+                        }
 
                         // selected_intobj out of bounds!
                         int player = map.metadata.FindPlayerByBindstoneIndex(selected_bindstone);
 
                         map.MoveInteractiveObject(selected_intobj, pos);
                         if (player != -1)
+                        {
                             map.metadata.spawns[player].pos = pos;
+                        }
                     }
                     else
                     {
@@ -149,7 +154,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 {
                     int player = map.metadata.FindPlayerByBindstoneIndex(bindstone_index);
 
-                    if(!map.metadata.IsPlayerActive(player))
+                    if (!map.metadata.IsPlayerActive(player))
                     {
                         if (selected_intobj == intobj_index)
                         {
@@ -184,10 +189,13 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if (op_change_pos != null)
                     {
                         op_change_pos.PostChangeProperty = map.int_object_manager.int_objects[selected_intobj].grid_position;
-                        if (!op_change_pos.PreChangeProperty.Equals(op_change_pos.PostChangeProperty))
+                        if ((SFCoord)op_change_pos.PreChangeProperty != (SFCoord)op_change_pos.PostChangeProperty)
                         {
                             op_change_pos.Finish(map);
                             MainForm.mapedittool.op_queue.Push(op_change_pos);
+
+                            map.heightmap.RefreshOverlay();
+                            MainForm.mapedittool.ui.RedrawMinimapIcons();
                         }
                     }
                     op_change_pos = null;

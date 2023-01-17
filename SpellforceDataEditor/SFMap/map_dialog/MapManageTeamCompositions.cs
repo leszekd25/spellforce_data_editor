@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using SFEngine.SFCFF;
 using SFEngine.SFMap;
-using SFEngine.SFCFF;
-using SFEngine.SFLua;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.map_dialog
 {
@@ -30,7 +23,9 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void ReloadMultiplayerTeamCompositionList()
         {
             if (map.metadata.multi_teams == null)
+            {
                 return;
+            }
 
             ListTeamComps.Items.Clear();
             ListTeams.Items.Clear();
@@ -38,8 +33,10 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             ListAvailablePlayers.Items.Clear();
 
             for (int i = 0; i < map.metadata.multi_teams.Count; i++)
+            {
                 ListTeamComps.Items.Add(map.metadata.multi_teams[i].team_count.ToString() + " team"
                     + (map.metadata.multi_teams[i].team_count == 1 ? "" : "s"));
+            }
         }
 
         // used by teamcomp operator
@@ -49,31 +46,46 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             ReloadMultiplayerTeamCompositionList();
 
             if (map == null)
+            {
                 return;
+            }
+
             if (map.metadata == null)
+            {
                 return;
+            }
 
             if (map.metadata.multi_teams.Count > 0)
+            {
                 ListTeamComps.SelectedIndex = map.metadata.multi_teams.Count - 1;
+            }
         }
 
         private void ListTeamComps_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ListTeamComps.SelectedIndex == -1)
+            {
                 return;
+            }
 
             ListTeams.Items.Clear();
             for (int i = 0; i < map.metadata.multi_teams[ListTeamComps.SelectedIndex].team_count; i++)
+            {
                 ListTeams.Items.Add("Team #" + (i + 1).ToString());
+            }
         }
 
         private void ListTeams_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ListTeamComps.SelectedIndex == -1)
+            {
                 return;
+            }
 
             if (ListTeams.SelectedIndex == -1)
+            {
                 return;
+            }
 
             ListTeamMembers.Items.Clear();
             FindAvailablePlayers();
@@ -88,7 +100,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 
         public void AddTeamMemberEntry(SFMapTeamPlayer player)
         {
-            ListTeamMembers.Items.Add("Player #" + (player.player_id+1).ToString()
+            ListTeamMembers.Items.Add("Player #" + (player.player_id + 1).ToString()
                 + " " + map.metadata.spawns[player.player_id].pos.ToString());
         }
 
@@ -102,13 +114,19 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         public List<int> FindAvailablePlayers(bool update_box = true)
         {
             if (ListTeamComps.SelectedIndex == -1)
+            {
                 return null;
+            }
 
             if (ListTeams.SelectedIndex == -1)
+            {
                 return null;
+            }
 
             if (update_box)
+            {
                 ListAvailablePlayers.Items.Clear();
+            }
 
             List<int> ret = new List<int>();
             SFMapMultiplayerTeamComposition comp = map.metadata.multi_teams[ListTeamComps.SelectedIndex];
@@ -126,12 +144,17 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                         }
                     }
                     if (found)
+                    {
                         break;
+                    }
                 }
                 if (!found)
                 {
                     if (update_box)
+                    {
                         ListAvailablePlayers.Items.Add("Player #" + (i + 1).ToString() + " " + map.metadata.spawns[i].pos.ToString());
+                    }
+
                     ret.Add(i);
                 }
             }
@@ -141,13 +164,19 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void TeamKickMember_Click(object sender, EventArgs e)
         {
             if (ListTeamComps.SelectedIndex == -1)
+            {
                 return;
+            }
 
             if (ListTeams.SelectedIndex == -1)
+            {
                 return;
+            }
 
             if (ListTeamMembers.SelectedIndex == -1)
+            {
                 return;
+            }
 
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorMultiplayerMovePlayer()
             {
@@ -169,17 +198,25 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void TeamMovePlayerToTeam_Click(object sender, EventArgs e)
         {
             if (ListTeamComps.SelectedIndex == -1)
+            {
                 return;
+            }
 
             if (ListTeams.SelectedIndex == -1)
+            {
                 return;
+            }
 
             if (ListAvailablePlayers.SelectedIndex == -1)
+            {
                 return;
+            }
 
             List<int> available_players = FindAvailablePlayers(false);
             if (available_players == null)
+            {
                 return;
+            }
 
             SFMapTeamPlayer player = new SFMapTeamPlayer(available_players[ListAvailablePlayers.SelectedIndex], (ushort)0);
 
@@ -203,13 +240,19 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void ListTeamMembers_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ListTeamComps.SelectedIndex == -1)
+            {
                 return;
+            }
 
             if (ListTeams.SelectedIndex == -1)
+            {
                 return;
+            }
 
             if (ListTeamMembers.SelectedIndex == -1)
+            {
                 return;
+            }
 
             SFMapTeamPlayer tp = map.metadata.multi_teams[ListTeamComps.SelectedIndex]
                 .players[ListTeams.SelectedIndex][ListTeamMembers.SelectedIndex];
@@ -218,9 +261,13 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             {
                 SFCategoryElement text_elem = SFCategoryManager.FindElementText(tp.text_id, SFEngine.Settings.LanguageID);
                 if (text_elem != null)
+                {
                     LabelSelectedPlayerText.Text = text_elem[4].ToString();
+                }
                 else
+                {
                     LabelSelectedPlayerText.Text = SFEngine.Utility.S_MISSING;
+                }
             }
             SelectedPlayerName.Text = tp.coop_map_type;
             SelectedPlayerLevelRange.Text = tp.coop_map_lvl;
@@ -238,9 +285,13 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             {
                 SFCategoryElement text_elem = SFCategoryManager.FindElementText(tp.text_id, SFEngine.Settings.LanguageID);
                 if (text_elem != null)
+                {
                     LabelSelectedPlayerText.Text = text_elem[4].ToString();
+                }
                 else
+                {
                     LabelSelectedPlayerText.Text = SFEngine.Utility.S_MISSING;
+                }
             }
 
             SelectedPlayerLevelRange.Text = tp.coop_map_lvl;
@@ -250,13 +301,19 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void SelectedPlayerTextID_Validated(object sender, EventArgs e)
         {
             if (ListTeamComps.SelectedIndex == -1)
+            {
                 return;
+            }
 
             if (ListTeams.SelectedIndex == -1)
+            {
                 return;
+            }
 
             if (ListTeamMembers.SelectedIndex == -1)
+            {
                 return;
+            }
 
             SFMapTeamPlayer tp = map.metadata.multi_teams[ListTeamComps.SelectedIndex]
                 .players[ListTeams.SelectedIndex][ListTeamMembers.SelectedIndex];
@@ -280,10 +337,14 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void TeamCompAdd_Click(object sender, EventArgs e)
         {
             if (map.metadata.map_type == SFMapType.CAMPAIGN)
+            {
                 return;
+            }
 
             if (map.metadata.multi_teams == null)
+            {
                 map.metadata.multi_teams = new List<SFMapMultiplayerTeamComposition>();
+            }
 
             int max_teamcomp_teams = 0;
 
@@ -293,11 +354,13 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             {
                 bool success = false;
                 foreach (SFMapMultiplayerTeamComposition t_comp in map.metadata.multi_teams)
+                {
                     if (t_comp.team_count == i)
                     {
                         success = true;
                         break;
                     }
+                }
 
                 if (!success)
                 {
@@ -307,15 +370,17 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             }
 
             if (max_teamcomp_teams == 0)
+            {
                 return;
-
+            }
 
             SFMapMultiplayerTeamComposition tc = new SFMapMultiplayerTeamComposition();
             tc.team_count = max_teamcomp_teams;
             tc.players = new List<List<SFMapTeamPlayer>>();
             for (int i = 0; i < max_teamcomp_teams; i++)
+            {
                 tc.players.Add(new List<SFMapTeamPlayer>());
-
+            }
 
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorMultiplayerAddOrRemoveTeamComp()
             { team_comp = tc, is_adding = true });
@@ -328,8 +393,9 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void TeamCompRemove_Click(object sender, EventArgs e)
         {
             if (ListTeamComps.SelectedIndex == -1)
+            {
                 return;
-
+            }
 
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorMultiplayerAddOrRemoveTeamComp()
             { team_comp = map.metadata.multi_teams[ListTeamComps.SelectedIndex], is_adding = false });
@@ -343,13 +409,19 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void SelectedPlayerName_Validated(object sender, EventArgs e)
         {
             if (ListTeamComps.SelectedIndex == -1)
+            {
                 return;
+            }
 
             if (ListTeams.SelectedIndex == -1)
+            {
                 return;
+            }
 
             if (ListTeamMembers.SelectedIndex == -1)
+            {
                 return;
+            }
 
             SFMapTeamPlayer tp = map.metadata.multi_teams[ListTeamComps.SelectedIndex]
                 .players[ListTeams.SelectedIndex][ListTeamMembers.SelectedIndex];
@@ -372,13 +444,19 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void SelectedPlayerLevelRange_Validated(object sender, EventArgs e)
         {
             if (ListTeamComps.SelectedIndex == -1)
+            {
                 return;
+            }
 
             if (ListTeams.SelectedIndex == -1)
+            {
                 return;
+            }
 
             if (ListTeamMembers.SelectedIndex == -1)
+            {
                 return;
+            }
 
             SFMapTeamPlayer tp = map.metadata.multi_teams[ListTeamComps.SelectedIndex]
                 .players[ListTeams.SelectedIndex][ListTeamMembers.SelectedIndex];
@@ -401,14 +479,18 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void SelectedPlayerTextID_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt16(SelectedPlayerTextID.Text);
                 int real_elem_id = SFCategoryManager.gamedata[2016].GetElementIndex(elem_id);
                 if (real_elem_id != -1)
+                {
                     MainForm.data.Tracer_StepForward(14, real_elem_id);
+                }
             }
         }
     }

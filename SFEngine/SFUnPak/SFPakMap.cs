@@ -5,17 +5,15 @@
  * */
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.SFUnPak
 {
     public class SFPakMap
     {
-        Dictionary<string, SFPakFileSystem> pak_map= new Dictionary<string, SFPakFileSystem>();
+        Dictionary<string, SFPakFileSystem> pak_map = new Dictionary<string, SFPakFileSystem>();
 
         public SFPakMap()
         {
@@ -27,7 +25,7 @@ namespace SFEngine.SFUnPak
         {
             if (!File.Exists(pak_fname))
             {
-                LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakMap.AddPak(): Pak file "+pak_fname+" does not exist!");
+                LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakMap.AddPak(): Pak file " + pak_fname + " does not exist!");
 
                 return -4;
             }
@@ -50,8 +48,11 @@ namespace SFEngine.SFUnPak
         public SFPakFileSystem GetPak(string pak_name)
         {
             if (pak_map.ContainsKey(pak_name))
+            {
                 return pak_map[pak_name];
-            LogUtils.Log.Warning(LogUtils.LogSource.SFUnPak, "SFPakMap.GetPak(): Could not find pak name "+pak_name);
+            }
+
+            LogUtils.Log.Warning(LogUtils.LogSource.SFUnPak, "SFPakMap.GetPak(): Could not find pak name " + pak_name);
 
             return null;
         }
@@ -80,15 +81,15 @@ namespace SFEngine.SFUnPak
             {
                 fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
             }
-            catch(Exception)
+            catch (Exception)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakMap.LoadData(): File "+fname+" does not exist!");
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakMap.LoadData(): File " + fname + " does not exist!");
                 return -2;
             }
             BinaryReader br = new BinaryReader(fs);
             pak_map.Clear();
             int num = br.ReadInt32();
-            for(int i = 0; i < num; i++)
+            for (int i = 0; i < num; i++)
             {
                 string key = br.ReadString();
                 SFPakFileSystem sys = new SFPakFileSystem();
@@ -105,7 +106,10 @@ namespace SFEngine.SFUnPak
         {
             List<String> names = new List<String>();
             if (pak_filter == null)
+            {
                 pak_filter = pak_map.Keys.ToArray();
+            }
+
             foreach (string pak in pak_filter)
             {
                 SFPakFileSystem fs = pak_map[pak];
@@ -120,7 +124,10 @@ namespace SFEngine.SFUnPak
         {
             List<String> names = new List<String>();
             if (pak_filter == null)
+            {
                 pak_filter = pak_map.Keys.ToArray();
+            }
+
             foreach (string pak in pak_filter)
             {
                 SFPakFileSystem fs = pak_map[pak];
@@ -133,7 +140,10 @@ namespace SFEngine.SFUnPak
         {
             List<String> names = new List<String>();
             if (pak_filter == null)
+            {
                 pak_filter = pak_map.Keys.ToArray();
+            }
+
             foreach (string pak in pak_filter)
             {
                 SFPakFileSystem fs = pak_map[pak];
@@ -142,10 +152,12 @@ namespace SFEngine.SFUnPak
             return names;
         }
 
-        public void  CloseAllPaks()
+        public void CloseAllPaks()
         {
             foreach (SFPakFileSystem sys in pak_map.Values)
+            {
                 sys.Close();
+            }
         }
 
 
@@ -155,7 +167,10 @@ namespace SFEngine.SFUnPak
             LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakMap.Clear() called");
 
             foreach (SFPakFileSystem sys in pak_map.Values)
+            {
                 sys.Dispose();
+            }
+
             pak_map.Clear();
         }
     }

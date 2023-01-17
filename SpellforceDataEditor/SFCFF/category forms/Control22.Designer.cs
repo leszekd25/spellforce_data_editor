@@ -84,7 +84,7 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(53, 20);
             this.textBox3.TabIndex = 30;
-            this.textBox3.Validated += new System.EventHandler(this.textBox3_TextChanged);
+            this.textBox3.Leave += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // textBox2
             // 
@@ -95,7 +95,7 @@
             this.textBox2.Size = new System.Drawing.Size(53, 20);
             this.textBox2.TabIndex = 29;
             this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
-            this.textBox2.Validated += new System.EventHandler(this.textBox2_TextChanged);
+            this.textBox2.Leave += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // textBox1
             // 
@@ -105,7 +105,7 @@
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 28;
             this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
-            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label4
             // 
@@ -132,7 +132,7 @@
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(53, 20);
             this.textBox4.TabIndex = 35;
-            this.textBox4.Validated += new System.EventHandler(this.textBox4_TextChanged);
+            this.textBox4.Leave += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // textBox5
             // 
@@ -143,7 +143,7 @@
             this.textBox5.Size = new System.Drawing.Size(53, 20);
             this.textBox5.TabIndex = 34;
             this.textBox5.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox5_MouseDown);
-            this.textBox5.Validated += new System.EventHandler(this.textBox5_TextChanged);
+            this.textBox5.Leave += new System.EventHandler(this.textBox5_TextChanged);
             // 
             // label7
             // 
@@ -163,7 +163,7 @@
             this.textBox7.Size = new System.Drawing.Size(53, 20);
             this.textBox7.TabIndex = 38;
             this.textBox7.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox7_MouseDown);
-            this.textBox7.Validated += new System.EventHandler(this.textBox7_TextChanged);
+            this.textBox7.Leave += new System.EventHandler(this.textBox7_TextChanged);
             // 
             // ListSlots
             // 

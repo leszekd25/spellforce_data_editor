@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using SFEngine.SFCFF;
 using SFEngine.SFMap;
-using SFEngine.SFCFF;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
-    public class MapUnitEditor: MapEditor
+    public class MapUnitEditor : MapEditor
     {
         bool first_click = false;
         public int selected_unit { get; private set; } = -1;    // unit index
@@ -23,7 +18,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public override void Select(int index)
         {
             if (first_click)
+            {
                 return;
+            }
 
             selected_unit = index;
         }
@@ -31,7 +28,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public override void OnMousePress(SFCoord pos, MouseButtons b, ref special_forms.SpecialKeysPressed specials)
         {
             if (map == null)
+            {
                 return;
+            }
 
             // get unit under position
             SFMapUnit unit = map.FindUnit(pos);
@@ -42,7 +41,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 if (b == MouseButtons.Left)
                 {
                     if (!(map.heightmap.CanMoveToPosition(pos)))
+                    {
                         return;
+                    }
 
                     // undo/redo
                     SFCoord previous_pos = new SFCoord(0, 0);
@@ -58,7 +59,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     {
                         ushort new_unit_id = (ushort)placement_unit;
                         if (SFCategoryManager.gamedata[2024].GetElementIndex(new_unit_id) == SFEngine.Utility.NO_INDEX)
+                        {
                             return;
+                        }
                         // create new unit and drag it until mouse released
                         map.AddUnit(new_unit_id, pos, 0, 0, 0, 0, 0);
                         // undo/redo
@@ -68,15 +71,16 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         Select(map.unit_manager.units.Count - 1);
                         MainForm.mapedittool.InspectorSelect(map.unit_manager.units[map.unit_manager.units.Count - 1]);
 
+                        map.heightmap.RefreshOverlay();
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
 
                         // undo/redo
                         MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorUnitAddOrRemove
-                        { unit = map.unit_manager.units[map.unit_manager.units.Count-1], index = map.unit_manager.units.Count - 1, is_adding = true });
+                        { unit = map.unit_manager.units[map.unit_manager.units.Count - 1], index = map.unit_manager.units.Count - 1, is_adding = true });
                     }
 
                     // undo/redo
-                    if((selected_unit != SFEngine.Utility.NO_INDEX)&&(!first_click))
+                    if ((selected_unit != SFEngine.Utility.NO_INDEX) && (!first_click))
                     {
                         op_change_pos = new map_operators.MapOperatorEntityChangeProperty()
                         {
@@ -99,7 +103,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 int unit_map_index = map.unit_manager.units.IndexOf(unit);
                 if (unit_map_index == -1)
+                {
                     return;
+                }
 
                 if (b == MouseButtons.Left)
                 {
@@ -107,7 +113,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if ((specials.Shift) && (selected_unit != -1))
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
+                        {
                             map.MoveUnit(selected_unit, pos);
+                        }
                     }
                     else
                     {
@@ -131,6 +139,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     map.DeleteUnit(unit_map_index);
                     ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).RemoveUnit(unit_map_index);
 
+                    map.heightmap.RefreshOverlay();
                     MainForm.mapedittool.ui.RedrawMinimapIcons();
                 }
             }
@@ -141,16 +150,19 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             if (b == MouseButtons.Left)
             {
                 first_click = false;
-                if (selected_unit != -1)
+                if (selected_unit != SFEngine.Utility.NO_INDEX)
                 {
                     // undo/redo
-                    if(op_change_pos != null)
+                    if (op_change_pos != null)
                     {
                         op_change_pos.PostChangeProperty = map.unit_manager.units[selected_unit].grid_position;
-                        if (!op_change_pos.PreChangeProperty.Equals(op_change_pos.PostChangeProperty))
+                        if ((SFCoord)op_change_pos.PreChangeProperty != (SFCoord)op_change_pos.PostChangeProperty)
                         {
                             op_change_pos.Finish(map);
                             MainForm.mapedittool.op_queue.Push(op_change_pos);
+
+                            map.heightmap.RefreshOverlay();
+                            MainForm.mapedittool.ui.RedrawMinimapIcons();
                         }
                     }
                     op_change_pos = null;

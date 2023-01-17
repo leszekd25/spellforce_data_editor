@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SFEngine.SFMap
 {
-    public class SFMapPortal: SFMapEntity
+    public class SFMapPortal : SFMapEntity
     {
         static int max_id = 0;
 
@@ -29,18 +25,23 @@ namespace SFEngine.SFMap
 
         public SFMapPortal AddPortal(int id, SFCoord position, int angle, int index)
         {
+            map.object_manager.AddObjectCollisionBoundary(778);
+
             SFMapPortal ptl = new SFMapPortal();
             ptl.grid_position = position;
             ptl.game_id = id;
             ptl.angle = angle;
 
             if (index == -1)
+            {
                 index = portals.Count;
+            }
+
             portals.Insert(index, ptl);
 
             string ptl_name = ptl.GetName();
 
-            ptl.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(778, ptl_name, true, true, true);
+            ptl.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(778, ptl_name, true, true);
             ptl.node.SetParent(map.heightmap.GetChunkNode(position));
             return ptl;
         }
@@ -48,9 +49,12 @@ namespace SFEngine.SFMap
         public void RemovePortal(SFMapPortal portal)
         {
             portals.Remove(portal);
-            
+
             if (portal.node != null)
+            {
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(portal.node);
+            }
+
             portal.node = null;
 
             map.heightmap.GetChunk(portal.grid_position).RemovePortal(portal);

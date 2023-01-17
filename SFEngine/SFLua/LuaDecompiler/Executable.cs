@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.SFLua.LuaDecompiler
 {
@@ -18,11 +14,13 @@ namespace SFEngine.SFLua.LuaDecompiler
             if (Arguments.IsList)
             {
                 sw.Write("(");
-                for(int i = 0; i < Arguments.Items.Count; i++)
+                for (int i = 0; i < Arguments.Items.Count; i++)
                 {
                     Arguments.Items[i].WriteLuaString(sw);
                     if (i != Arguments.Items.Count - 1)
+                    {
                         sw.Write(", ");
+                    }
                 }
                 sw.Write(")");
             }
@@ -33,7 +31,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         }
     }
 
-    public class Procedure: Executable, IStatement
+    public class Procedure : Executable, IStatement
     {
         public int InstructionID { get; set; }
 
@@ -43,7 +41,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         }
     }
 
-    public class Function: Executable, ILValue, IRValue
+    public class Function : Executable, ILValue, IRValue
     {
         public override string ToString()
         {
@@ -51,7 +49,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         }
     }
 
-    public class Closure: Node, IRValue
+    public class Closure : Node, IRValue
     {
         public List<Identifier> Arguments = new List<Identifier>();
         public Chunk ClosureChunk;
@@ -63,7 +61,9 @@ namespace SFEngine.SFLua.LuaDecompiler
             {
                 Arguments[i].WriteLuaString(sw);
                 if (i != Arguments.Count - 1)
+                {
                     sw.Write(", ");
+                }
             }
             sw.WriteLine(")");
             Depth += 1;

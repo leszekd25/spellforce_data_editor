@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor.special_forms
@@ -22,7 +15,7 @@ namespace SpellforceDataEditor.special_forms
 
             link_wiki = new LinkLabel();
             link_wiki.Text = "SpellForce Editor manual";
-            link_wiki.LinkClicked += new LinkLabelLinkClickedEventHandler(this.link_wiki_Clicked);
+            link_wiki.LinkClicked += new LinkLabelLinkClickedEventHandler(link_wiki_Clicked);
             LinkLabel.Link data = new LinkLabel.Link();
             data.LinkData = "https://drive.google.com/file/d/1GO6NQdl-1x7wgddGORdIAhZj86SWGmum/view?usp=sharing";
             link_wiki.Links.Add(data);
@@ -31,7 +24,7 @@ namespace SpellforceDataEditor.special_forms
 
             link_discord = new LinkLabel();
             link_discord.Text = "SpellForce Community Discord";
-            link_discord.LinkClicked += new LinkLabelLinkClickedEventHandler(this.link_discord_Clicked);
+            link_discord.LinkClicked += new LinkLabelLinkClickedEventHandler(link_discord_Clicked);
             data = new LinkLabel.Link();
             data.LinkData = "https://discordapp.com/invite/spellforce";
             link_discord.Links.Add(data);
@@ -39,7 +32,7 @@ namespace SpellforceDataEditor.special_forms
 
             link_nexus = new LinkLabel();
             link_nexus.Text = "my profile";
-            link_nexus.LinkClicked += new LinkLabelLinkClickedEventHandler(this.link_nexus_Clicked);
+            link_nexus.LinkClicked += new LinkLabelLinkClickedEventHandler(link_nexus_Clicked);
             data = new LinkLabel.Link();
             data.LinkData = "https://forums.nexusmods.com/index.php?/user/53072901-leszekd25/";
             link_nexus.Links.Add(data);
@@ -50,10 +43,10 @@ namespace SpellforceDataEditor.special_forms
             TextBoxAbout.SelectionAlignment = HorizontalAlignment.Left;
             TextBoxAbout.SelectionFont = new Font("Arial", 12, FontStyle.Bold);
             TextBoxAbout.AppendText("Spellforce Editor");
-            
+
             TextBoxAbout.SelectionAlignment = HorizontalAlignment.Left;
             TextBoxAbout.SelectionFont = new Font("Arial", 8, FontStyle.Regular);
-            TextBoxAbout.AppendText("\r\n\r\n...is a set of tools which allow you to modify SpellForce to your liking. It includes gamedata editor, map editor, and much more.\r\n"+
+            TextBoxAbout.AppendText("\r\n\r\n...is a set of tools which allow you to modify SpellForce to your liking. It includes gamedata editor, map editor, and much more.\r\n" +
                                     "Originally created by Insigar from spellforcefanforum, completely redone and currently maintained by me, creator of this tool.");
 
             TextBoxContactInfo.SelectionAlignment = HorizontalAlignment.Left;
@@ -82,9 +75,9 @@ namespace SpellforceDataEditor.special_forms
 
         private void AboutForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            link_wiki.LinkClicked -= new LinkLabelLinkClickedEventHandler(this.link_wiki_Clicked);
-            link_discord.LinkClicked -= new LinkLabelLinkClickedEventHandler(this.link_discord_Clicked);
-            link_nexus.LinkClicked -= new LinkLabelLinkClickedEventHandler(this.link_nexus_Clicked);
+            link_wiki.LinkClicked -= new LinkLabelLinkClickedEventHandler(link_wiki_Clicked);
+            link_discord.LinkClicked -= new LinkLabelLinkClickedEventHandler(link_discord_Clicked);
+            link_nexus.LinkClicked -= new LinkLabelLinkClickedEventHandler(link_nexus_Clicked);
         }
 
         private void link_wiki_Clicked(object sender, LinkLabelLinkClickedEventArgs e)

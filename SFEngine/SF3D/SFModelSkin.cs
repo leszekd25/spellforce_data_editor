@@ -6,24 +6,17 @@
  * SFModelSkin is a resource which in reality is just a list of managed SFModelSkinChunk objects
  */
 
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
 using SFEngine.SFResources;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace SFEngine.SF3D
 {
-    public class SFModelSkinChunk: SFResource
+    public class SFModelSkinChunk// : SFResource
     {
         public static MeshCache Cache;
-
-
 
         public int chunk_id = Utility.NO_INDEX;
         public int cache_index = Utility.NO_INDEX;
@@ -35,7 +28,9 @@ namespace SFEngine.SF3D
         public int indices_size;
 
         public SFMaterial material = null;
-        public string bsi_name = ""+Utility.S_NONAME;
+        public string bsi_name = "" + Utility.S_NONAME;
+        public int RAMSize { get; set; }
+        public int DeviceSize { get; set; }
 
         public SFModelSkinChunk()
         {
@@ -49,6 +44,9 @@ namespace SFEngine.SF3D
             vertex_data = null;
             indices_size = face_indices.Length * 4;
             face_indices = null;
+
+            DeviceSize = vertex_size + indices_size;
+            RAMSize = 0;
         }
 
         public int Load(MemoryStream ms, object custom_data)
@@ -62,15 +60,13 @@ namespace SFEngine.SF3D
             vertex_data = br.ReadBytes(vcount * 40);
 
             face_indices = new uint[fcount * 3];
-            for(int i = 0; i < fcount; i++)
+            for (int i = 0; i < fcount; i++)
             {
                 face_indices[i * 3] = (uint)br.ReadUInt16();
                 face_indices[i * 3 + 1] = (uint)br.ReadUInt16();
                 face_indices[i * 3 + 2] = (uint)br.ReadUInt16();
                 br.ReadUInt16();
             }
-            
-            SetName(SFResourceManager.current_resource);
 
             //load material
             br.ReadInt16();
@@ -86,8 +82,16 @@ namespace SFEngine.SF3D
             material.texRenderMode = (RenderMode)br.ReadByte();
             material.texAlpha = br.ReadByte();
             material.matFlags = br.ReadByte();
-            material.matDepthBias = br.ReadByte();
+            material.matDepthBias = br.ReadByte() * -0.000003f;
             material.texTiling = br.ReadSingle();
+            material.additive_pass = ((material.texRenderMode == RenderMode.ONE_ONE)||(material.texRenderMode == RenderMode.DESTCOLOR_ONE));
+            if (material.additive_pass)
+            {
+                if (Settings.ToneMapping)
+                {
+                    material.emission_strength = 0.1f;
+                }
+            }
             byte[] chars = br.ReadBytes(64);
             matname = enc.GetString(chars);
             matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
@@ -103,28 +107,15 @@ namespace SFEngine.SF3D
             else
             {
                 tex = SFResourceManager.Textures.Get(matname);
-                tex.FreeMemory();
             }
             material.texture = tex;
 
             br.BaseStream.Position += 126;
 
+            RAMSize = vertex_data.Length + face_indices.Length * 4;
+            DeviceSize = 0;
+
             return 0;
-        }
-
-        public void SetName(string s)
-        {
-            bsi_name = s;
-        }
-
-        public string GetName()
-        {
-            return bsi_name;
-        }
-
-        public int GetSizeBytes()
-        {
-            return vertex_size + indices_size;
         }
 
         public void Dispose()
@@ -133,24 +124,35 @@ namespace SFEngine.SF3D
             {
                 Cache.RemoveMesh(cache_index);
                 cache_index = Utility.NO_INDEX;
+
+                RAMSize = 0;
+                DeviceSize = 0;
             }
             if ((material != null) && (material.texture != null) && (material.texture != SFRender.SFRenderEngine.opaque_tex))
-                SFResourceManager.Textures.Dispose(material.texture.GetName());
+            {
+                SFResourceManager.Textures.Dispose(material.texture.Name);
+            }
         }
     }
 
-    public class SFModelSkin: SFResource
+    public class SFModelSkin : SFResource
     {
         public SFModelSkinChunk[] submodels { get; private set; } = null;
-        string name = "";
 
-        public void Init()
+        public override void Init()
         {
-            foreach(SFModelSkinChunk msc in submodels)
+            RAMSize = 0;
+            DeviceSize = 0;
+
+            foreach (SFModelSkinChunk msc in submodels)
+            {
                 msc.Init();
+                RAMSize += msc.RAMSize;
+                DeviceSize += msc.DeviceSize;
+            }
         }
 
-        public int Load(MemoryStream ms, object custom_data)
+        public override int Load(MemoryStream ms, object custom_data)
         {
             // load BSI
 
@@ -172,7 +174,7 @@ namespace SFEngine.SF3D
 
             submodels = new SFModelSkinChunk[modelnum];
 
-            for(int i = 0; i < modelnum; i++)
+            for (int i = 0; i < modelnum; i++)
             {
                 SFModelSkinChunk chunk = new SFModelSkinChunk();
                 submodels[i] = chunk;
@@ -189,14 +191,21 @@ namespace SFEngine.SF3D
             {
                 Merge(bsi);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkin.Load(): Invalid skin data!");
                 SFResourceManager.BSIs.Dispose(SFResourceManager.current_resource);
-                return -1;
+                Dispose();
+                return -2;
             }
 
             SFResourceManager.BSIs.Dispose(SFResourceManager.current_resource);
+
+            foreach(SFModelSkinChunk msc in submodels)
+            {
+                RAMSize += msc.RAMSize;
+                DeviceSize += msc.DeviceSize;
+            }
 
             return 0;
         }
@@ -204,7 +213,7 @@ namespace SFEngine.SF3D
         public void Merge(SFBoneIndex bsi)
         {
             // remap bones using BSI
-            for(int i = 0; i < submodels.Length; i++)
+            for (int i = 0; i < submodels.Length; i++)
             {
                 var msc = submodels[i];
                 for (int j = 0; j < msc.vertex_data.Length; j += 40)
@@ -224,7 +233,7 @@ namespace SFEngine.SF3D
 
             List<SFTexture> tex_list = new List<SFTexture>();
             List<List<int>> tex_chunks_list = new List<List<int>>();
-            foreach(var msc in submodels)
+            foreach (var msc in submodels)
             {
                 if (!tex_list.Contains(msc.material.texture))
                 {
@@ -239,7 +248,7 @@ namespace SFEngine.SF3D
             merged_chunks = new SFModelSkinChunk[tex_list.Count];
 
             // merge chunks sharing the same material
-            for(int i = 0; i < tex_list.Count; i++)
+            for (int i = 0; i < tex_list.Count; i++)
             {
                 SFModelSkinChunk msc = new SFModelSkinChunk();
                 merged_chunks[i] = msc;
@@ -248,7 +257,7 @@ namespace SFEngine.SF3D
                 // get total vertex data size and total element data size
                 int vlen = 0;
                 int elen = 0;
-                foreach(var k in tex_chunks_list[i])
+                foreach (var k in tex_chunks_list[i])
                 {
                     vlen += submodels[k].vertex_data.Length;
                     elen += submodels[k].face_indices.Length;
@@ -259,11 +268,13 @@ namespace SFEngine.SF3D
 
                 uint vcount = 0;
                 uint fcount = 0;
-                for(int j = 0; j < tex_chunks_list[i].Count; j++)
+                for (int j = 0; j < tex_chunks_list[i].Count; j++)
                 {
                     var msc2 = submodels[tex_chunks_list[i][j]];
                     for (int l = 0; l < msc2.face_indices.Length; l++)
+                    {
                         msc2.face_indices[l] += vcount;
+                    }
 
                     Array.Copy(msc2.vertex_data, 0, msc.vertex_data, vcount * 40, msc2.vertex_data.Length);
                     Array.Copy(msc2.face_indices, 0, msc.face_indices, fcount, msc2.face_indices.Length);
@@ -273,33 +284,30 @@ namespace SFEngine.SF3D
                 }
 
                 msc.material = submodels[tex_chunks_list[i][0]].material;
+                SFResourceManager.Textures.Load(msc.material.texture.Name);    // to increase ref counter
             }
 
+            foreach(var msc in submodels)
+            {
+                SFResourceManager.Textures.Dispose(msc.material.texture.Name);  // to decrease ref counter
+            }
             submodels = merged_chunks;
         }
 
-        public void SetName(string s)
+        public override void Dispose()
         {
-            name = s;
-        }
+            if (submodels != null)
+            {
+                foreach (var msc in submodels)
+                {
+                    msc.Dispose();
+                }
+            }
 
-        public string GetName()
-        {
-            return name;
-        }
+            submodels = null;
 
-        public int GetSizeBytes()
-        {
-            int size = 0;
-            for (int i = 0; i < submodels.Length; i++)
-                size += submodels[i].GetSizeBytes();
-            return size;
-        }
-
-        public void Dispose()
-        {
-            foreach (var msc in submodels)
-                msc.Dispose();
+            RAMSize = 0;
+            DeviceSize = 0;
         }
     }
 }

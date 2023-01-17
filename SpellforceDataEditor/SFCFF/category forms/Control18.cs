@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -115,13 +108,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox3, 2005);
+            }
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox2, 2016);
+            }
         }
 
         private void button_Trace_Click(object sender, EventArgs e)
@@ -162,7 +159,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private int calculate_total_xp(UInt32 xp_gain, UInt16 xp_falloff)
         {
             if ((xp_gain == 0) || (xp_falloff == 0))
+            {
                 return 0;
+            }
+
             int max_units = 500;
             int s = 0;
             for (int i = 0; i < max_units; i++)

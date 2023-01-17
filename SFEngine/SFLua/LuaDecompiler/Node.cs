@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System.IO;
 
 namespace SFEngine.SFLua.LuaDecompiler
 {
@@ -12,17 +7,17 @@ namespace SFEngine.SFLua.LuaDecompiler
         void WriteLuaString(StringWriter sw);
     }
 
-    public interface IRValue: INode
+    public interface IRValue : INode
     {
 
     }
 
-    public interface IStatement: INode
+    public interface IStatement : INode
     {
         int InstructionID { get; set; }
     }
 
-    public class Node: INode
+    public class Node : INode
     {
         public static int Depth = 0;
 

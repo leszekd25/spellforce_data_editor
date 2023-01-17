@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -23,8 +16,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
+            MainForm.data.op_queue.OpenCluster();
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            {
                 set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox3.Text));
+            }
+
+            MainForm.data.op_queue.CloseCluster();
         }
 
         public override void set_element(int index)
@@ -50,13 +48,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox1, 2016);
+            }
         }
 
         private void ListSkills_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ListSkills.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             textBox1.Text = variant_repr(ListSkills.SelectedIndex, 2);
         }
@@ -71,30 +73,41 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             SFCategoryElement elem = category[current_element, 0];
             int index = ListSkills.Items.Count;
 
-            category.element_lists[current_element].Elements.Insert(index, category.GetEmptyElement());
-            category[current_element, index][0] = (Byte)elem[0];
-            category[current_element, index][1] = (Byte)index;
+            SFCategoryElement new_elem = category.GetEmptyElement();
+            new_elem[0] = (Byte)(category[current_element, 0][0]);
+            new_elem[1] = (Byte)index;
 
-            object[] paste_data = new object[3];
-            paste_data[0] = (Byte)elem[0];
-            paste_data[1] = (Byte)index;
-            paste_data[2] = (UInt16)0;
+            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
+            {
+                CategoryIndex = category.category_id,
+                ElementIndex = current_element,
+                SubElementIndex = index,
+                Element = new_elem,
+                IsSubElement = true,
+            });
 
-            ListSkills.Items.Add(SFCategoryManager.GetTextFromElement(category[current_element, index], 2));
             ListSkills.SelectedIndex = index;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             if (category.element_lists[current_element].Elements.Count == 1)
+            {
                 return;
+            }
 
+            int index = ListSkills.Items.Count - 1;
 
-            int index = ListSkills.Items.Count -1;
-            category.element_lists[current_element].Elements.RemoveAt(index);
-            ListSkills.Items.RemoveAt(index);
+            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
+            {
+                CategoryIndex = category.category_id,
+                ElementIndex = current_element,
+                SubElementIndex = index,
+                IsRemoving = true,
+                IsSubElement = true,
+            });
 
-            ListSkills.SelectedIndex = Math.Min(index, ListSkills.Items.Count-1);
+            ListSkills.SelectedIndex = Math.Min(index, ListSkills.Items.Count - 1);
         }
 
 
@@ -102,6 +115,26 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             string txt = SFCategoryManager.GetTextFromElement(category[index, 0], 2);
             return category[index, 0][0].ToString() + " " + txt;
+        }
+
+        public override void on_add_subelement(int subelem_index)
+        {
+            ListSkills.Items.Add(SFCategoryManager.GetTextFromElement(category[current_element, subelem_index], 2));
+        }
+
+        public override void on_remove_subelement(int subelem_index)
+        {
+            ListSkills.Items.RemoveAt(subelem_index);
+        }
+
+        public override void on_update_subelement(int subelem_index)
+        {
+            if (ListSkills.SelectedIndex != subelem_index)
+            {
+                return;
+            }
+
+            textBox1.Text = variant_repr(subelem_index, 2);
         }
     }
 }

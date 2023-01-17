@@ -3,13 +3,8 @@
  * Operations for retrieving triangle area and checking is a point lies inside of the triangle are provided
  * */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using OpenTK;
+using System;
 
 namespace SFEngine.SF3D.Physics
 {
@@ -35,7 +30,9 @@ namespace SFEngine.SF3D.Physics
             normal = cross.Normalized();
             area2 = cross.LengthSquared / 4;
             if (normal == Vector3.Zero)
+            {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "Triangle(): Malformed triangle, normal is zero length!");
+            }
         }
 
         public float GetArea()

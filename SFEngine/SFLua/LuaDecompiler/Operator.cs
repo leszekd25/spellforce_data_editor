@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.SFLua.LuaDecompiler
 {
@@ -45,22 +42,24 @@ namespace SFEngine.SFLua.LuaDecompiler
         }
     }
 
-    public class OperatorBinaryArithmetic: Operator, IOperatorBinary, IOperatorArithmetic
+    public class OperatorBinaryArithmetic : Operator, IOperatorBinary, IOperatorArithmetic
     {
         public List<IRValue> Values = new List<IRValue>();
 
         public override void WriteLuaString(StringWriter sw)
         {
             if (HasBraces)
+            {
                 sw.Write("(");
+            }
 
-            for(int i=0; i< Values.Count; i++)
+            for (int i = 0; i < Values.Count; i++)
             {
                 Values[i].WriteLuaString(sw);
-                if(i != Values.Count-1)
+                if (i != Values.Count - 1)
                 {
                     sw.Write(" ");
-                    switch(op_type)
+                    switch (op_type)
                     {
                         case OperatorType.ADD:
                             sw.Write("+");
@@ -88,19 +87,23 @@ namespace SFEngine.SFLua.LuaDecompiler
             }
 
             if (HasBraces)
+            {
                 sw.Write(")");
+            }
         }
     }
 
-    public class OperatorUnaryArithmetic: Operator, IOperatorUnary, IOperatorArithmetic
+    public class OperatorUnaryArithmetic : Operator, IOperatorUnary, IOperatorArithmetic
     {
         public IRValue Value;
 
         public override void WriteLuaString(StringWriter sw)
         {
             if (HasBraces)
+            {
                 sw.Write("(");
-            
+            }
+
             switch (op_type)
             {
                 case OperatorType.MINUS:
@@ -110,20 +113,24 @@ namespace SFEngine.SFLua.LuaDecompiler
                     throw new Exception("OperatorUnaryArithmetic.WriteLuaString(): invalid operator type");
             }
             Value.WriteLuaString(sw);
-            
+
             if (HasBraces)
+            {
                 sw.Write(")");
+            }
         }
     }
 
-    public class OperatorBinaryLogic: Operator, IOperatorBinary, IOperatorLogic
+    public class OperatorBinaryLogic : Operator, IOperatorBinary, IOperatorLogic
     {
         public List<IRValue> Values = new List<IRValue>();
 
         public override void WriteLuaString(StringWriter sw)
         {
             if (HasBraces)
+            {
                 sw.Write("(");
+            }
 
             for (int i = 0; i < Values.Count; i++)
             {
@@ -165,7 +172,9 @@ namespace SFEngine.SFLua.LuaDecompiler
             }
 
             if (HasBraces)
+            {
                 sw.Write(")");
+            }
         }
 
         public void ReverseOperator()
@@ -200,20 +209,26 @@ namespace SFEngine.SFLua.LuaDecompiler
                     throw new Exception("OperatorBinaryLogic.ReverseOperator(): Invalid operator type!");
             }
             foreach (IRValue v in Values)
+            {
                 if (v is IOperatorLogic)
+                {
                     ((IOperatorLogic)v).ReverseOperator();
+                }
+            }
         }
     }
 
-    public class OperatorUnaryLogic: Operator, IOperatorUnary, IOperatorLogic
+    public class OperatorUnaryLogic : Operator, IOperatorUnary, IOperatorLogic
     {
         public IRValue Value;
 
         public override void WriteLuaString(StringWriter sw)
         {
             if (HasBraces)
+            {
                 sw.Write("(");
-            
+            }
+
             switch (op_type)
             {
                 case OperatorType.TRUE:
@@ -228,7 +243,9 @@ namespace SFEngine.SFLua.LuaDecompiler
             Value.WriteLuaString(sw);
 
             if (HasBraces)
+            {
                 sw.Write(")");
+            }
         }
 
         public void ReverseOperator()
@@ -246,7 +263,9 @@ namespace SFEngine.SFLua.LuaDecompiler
             }
 
             if (Value is IOperatorLogic)
+            {
                 ((IOperatorLogic)Value).ReverseOperator();
+            }
         }
     }
 }

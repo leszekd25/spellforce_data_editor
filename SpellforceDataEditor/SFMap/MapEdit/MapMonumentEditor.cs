@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFMap;
 using System.Windows.Forms;
-using SFEngine.SFMap;
-using SFEngine.SFCFF;
-using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
     public enum MonumentType { HUMAN = 0, DWARF, ELF, DARKELF, ORC, TROLL, HERO }
 
-    public class MapMonumentEditor: MapEditor
+    public class MapMonumentEditor : MapEditor
     {
         bool first_click = false;
         public MonumentType selected_type = MonumentType.HERO;
@@ -25,7 +18,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public override void Select(int index)
         {
             if (first_click)
+            {
                 return;
+            }
 
             selected_monument = index;
             selected_intobj = (selected_monument == SFEngine.Utility.NO_INDEX ? SFEngine.Utility.NO_INDEX : map.int_object_manager.monuments_index[index]);
@@ -51,14 +46,14 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             }
 
             // 2. if not clicked, create new bindstone
-            if(int_obj == null)
+            if (int_obj == null)
             {
-                if(b == MouseButtons.Left)
+                if (b == MouseButtons.Left)
                 {
                     // undo/redo
                     SFCoord previous_pos = new SFCoord(0, 0);
 
-                    if ((specials.Shift)&&(selected_intobj != SFEngine.Utility.NO_INDEX))
+                    if ((specials.Shift) && (selected_intobj != SFEngine.Utility.NO_INDEX))
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
                         {
@@ -68,14 +63,16 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             map.MoveInteractiveObject(selected_intobj, pos);
                         }
                     }
-                    else if(!first_click)
+                    else if (!first_click)
                     {
                         int new_object_id = 771 + (int)selected_type;
 
                         // slot count?
                         byte unk_byte = 1;
                         if (new_object_id == 777)
+                        {
                             unk_byte = 5;
+                        }
 
                         map.AddInteractiveObject(new_object_id, pos, 0, unk_byte);
                         // undo/redo
@@ -109,8 +106,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             PreChangeProperty = previous_pos
                         };
                     }
+
+                    first_click = true;
                 }
-                else if(b == MouseButtons.Right)
+                else if (b == MouseButtons.Right)
                 {
                     Select(SFEngine.Utility.NO_INDEX);
                     MainForm.mapedittool.InspectorSelect(null);
@@ -123,7 +122,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if ((specials.Shift) && (selected_intobj != -1))
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
+                        {
                             map.MoveInteractiveObject(selected_intobj, pos);
+                        }
                     }
                     else
                     {
@@ -159,7 +160,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
         public override void OnMouseUp(MouseButtons b)
         {
-            if (b == MouseButtons.Left)                                                                                
+            if (b == MouseButtons.Left)
             {
                 first_click = false;
                 if (selected_monument != -1)
@@ -168,10 +169,13 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if (op_change_pos != null)
                     {
                         op_change_pos.PostChangeProperty = map.int_object_manager.int_objects[selected_intobj].grid_position;
-                        if (!op_change_pos.PreChangeProperty.Equals(op_change_pos.PostChangeProperty))
+                        if ((SFCoord)op_change_pos.PreChangeProperty != (SFCoord)op_change_pos.PostChangeProperty)
                         {
                             op_change_pos.Finish(map);
                             MainForm.mapedittool.op_queue.Push(op_change_pos);
+
+                            map.heightmap.RefreshOverlay();
+                            MainForm.mapedittool.ui.RedrawMinimapIcons();
                         }
                     }
                     op_change_pos = null;

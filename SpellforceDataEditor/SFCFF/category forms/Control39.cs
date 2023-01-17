@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -67,13 +60,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox1, 2052);
+            }
         }
 
         private void tb_req4_1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(tb_req4_1, 2016);
+            }
         }
 
 
@@ -90,14 +87,20 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             UInt32 map_id = (UInt32)category[index][1];
 
             if (SFCategoryManager.gamedata[2052] == null)
+            {
                 map_handle = SFEngine.Utility.S_UNKNOWN;
+            }
             else
             {
                 SFCategoryElement map_elem = SFCategoryManager.gamedata[2052].FindElementBinary<UInt32>(0, map_id);
                 if (map_elem == null)
+                {
                     map_handle = SFEngine.Utility.S_NONAME;
+                }
                 else
+                {
                     map_handle = map_elem[2].ToString();
+                }
             }
 
             return "Map handle: " + map_handle;

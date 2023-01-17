@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+﻿using SFEngine.SFCFF;
 using SFEngine.SFMap;
-using SFEngine.SFCFF;
-using SFEngine.SFLua;
+using System;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -33,7 +27,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void ReloadList()
         {
             for (int i = 0; i < map.portal_manager.portals.Count; i++)
+            {
                 LoadNextPortal(i);
+            }
         }
 
         private string GetPortalString(SFMapPortal portal)
@@ -56,7 +52,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void ShowList()
         {
             if (ButtonResizeList.Text == "-")
+            {
                 return;
+            }
 
             ResizeList();
 
@@ -65,14 +63,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ResizeList()
         {
-            PanelPortalList.Height = this.Height - PanelPortalList.Location.Y - 3;
+            PanelPortalList.Height = Height - PanelPortalList.Location.Y - 3;
             ListPortals.Height = PanelPortalList.Height - 75;
         }
 
         public void RemovePortal(int index)
         {
             if (ListPortals.SelectedIndex == index)
+            {
                 PanelProperties.Enabled = false;
+            }
+
             ListPortals.Items.RemoveAt(index);
         }
 
@@ -86,7 +87,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void HideList()
         {
             if (ButtonResizeList.Text == "+")
+            {
                 return;
+            }
 
             PanelPortalList.Height = 30;
 
@@ -104,13 +107,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PanelProperties.Enabled = false;
             }
             else
+            {
                 ListPortals.SelectedIndex = map.portal_manager.portals.IndexOf((SFMapPortal)o);
+            }
         }
 
         private void ListPortals_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ListPortals.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             PanelProperties.Enabled = true;
             SFMapPortal portal = map.portal_manager.portals[ListPortals.SelectedIndex];
@@ -121,7 +128,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             map.selection_helper.SelectPortal(portal);
             if ((move_camera_on_select) || (portal_selected_from_list))
+            {
                 MainForm.mapedittool.SetCameraViewPoint(portal.grid_position);
+            }
+
             move_camera_on_select = false;
             portal_selected_from_list = true;
         }
@@ -129,7 +139,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void PortalID_Validated(object sender, EventArgs e)
         {
             if (ListPortals.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
@@ -137,17 +149,20 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 type = map_operators.MapOperatorEntityType.PORTAL,
                 index = ListPortals.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.ID,
-                PreChangeProperty = map.portal_manager.portals[ListPortals.SelectedIndex].game_id,
+                PreChangeProperty = (ushort)map.portal_manager.portals[ListPortals.SelectedIndex].game_id,
                 PostChangeProperty = SFEngine.Utility.TryParseUInt16(PortalID.Text)
             });
 
             map.portal_manager.portals[ListPortals.SelectedIndex].game_id = SFEngine.Utility.TryParseUInt16(PortalID.Text);
+            ListPortals.Items[ListPortals.SelectedIndex] = GetPortalString(map.portal_manager.portals[ListPortals.SelectedIndex]);
         }
 
         private void Angle_Validated(object sender, EventArgs e)
         {
             if (ListPortals.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapPortal portal = map.portal_manager.portals[ListPortals.SelectedIndex];
 
@@ -170,11 +185,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
         {
             if (ListPortals.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapPortal portal = map.portal_manager.portals[ListPortals.SelectedIndex];
             Angle.Text = AngleTrackbar.Value.ToString();
-            portal.angle = AngleTrackbar.Value;
             map.RotatePortal(ListPortals.SelectedIndex, AngleTrackbar.Value);
 
             MainForm.mapedittool.update_render = true;
@@ -184,7 +200,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
         {
             if (ListPortals.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             trackbar_clicked = true;
 
@@ -198,7 +216,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void AngleTrackbar_MouseUp(object sender, MouseEventArgs e)
         {
             if (!trackbar_clicked)
+            {
                 return;
+            }
 
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
@@ -216,22 +236,30 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void ButtonResizeList_Click(object sender, EventArgs e)
         {
             if (ButtonResizeList.Text == "-")
+            {
                 HideList();
+            }
             else
+            {
                 ShowList();
+            }
         }
 
         private void PortalID_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt16(PortalID.Text);
                 int real_elem_id = SFCategoryManager.gamedata[2053].GetElementIndex(elem_id);
                 if (real_elem_id != SFEngine.Utility.NO_INDEX)
+                {
                     MainForm.data.Tracer_StepForward(38, real_elem_id);
+                }
             }
         }
     }

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using SFEngine.SFMap;
-using SFEngine.SFCFF;
+﻿using SFEngine.SFCFF;
 using SFEngine.SFLua;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
 
 
 namespace SpellforceDataEditor.SFLua.lua_sql_forms
@@ -29,7 +23,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             if (SFLuaEnvironment.buildings.Load() != 0)
             {
                 MessageBox.Show("Could not load script/sql_building.lua");
-                this.Close();
+                Close();
                 return;
             }
 
@@ -46,7 +40,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             index_to_key.Sort();
 
             foreach (int i in index_to_key)
+            {
                 ListBuildings.Items.Add(i.ToString() + ". " + GetBuildingString(i));
+            }
 
             ListBuildings.ResumeLayout();
         }
@@ -54,7 +50,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private string GetBuildingString(int id)
         {
             if (!SFCategoryManager.ready)
+            {
                 return "";
+            }
+
             return SFCategoryManager.GetBuildingName((ushort)id);
         }
 
@@ -73,11 +72,15 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
             var buildings = SFLuaEnvironment.buildings.buildings;
             if (!buildings.ContainsKey(building_id))
+            {
                 return;
+            }
 
             Mesh.Items.Clear();
             for (int i = 0; i < buildings[building_id].Mesh.Count; i++)
+            {
                 Mesh.Items.Add(buildings[building_id].Mesh[i]);
+            }
 
             SelectedMesh.Text = "";
             SelectionSize.Text = buildings[building_id].SelectionScaling.ToString();
@@ -87,20 +90,28 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void Mesh_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             var buildings = SFLuaEnvironment.buildings.buildings;
 
             if (Mesh.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 SelectedMesh.Text = "";
+            }
             else
+            {
                 SelectedMesh.Text = buildings[selected_id].Mesh[Mesh.SelectedIndex];
+            }
         }
 
         private void ButtonAddMesh_Click(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             var buildings = SFLuaEnvironment.buildings.buildings;
 
@@ -113,9 +124,14 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void ButtonRemoveMesh_Click(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
+
             if (Mesh.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             var buildings = SFLuaEnvironment.buildings.buildings;
             int cur_index = Mesh.SelectedIndex;
@@ -124,16 +140,24 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             Mesh.Items.RemoveAt(Mesh.SelectedIndex);
 
             if (cur_index == Mesh.Items.Count)
+            {
                 cur_index -= 1;
+            }
+
             Mesh.SelectedIndex = cur_index;
         }
 
         private void SelectedMesh_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
+
             if (Mesh.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             var buildings = SFLuaEnvironment.buildings.buildings;
 
@@ -144,7 +168,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void SelectionSize_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
+
             SFLuaEnvironment.buildings.buildings[selected_id].SelectionScaling =
                 SFEngine.Utility.TryParseDouble(SelectionSize.Text,
                                        SFLuaEnvironment.buildings.buildings[selected_id].SelectionScaling);
@@ -153,14 +180,18 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void BuildingID_Validated(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int previous_id = selected_id;
             int previous_index = ListBuildings.SelectedIndex;
             SFEngine.SFLua.lua_sql.SFLuaSQLBuildingData building = SFLuaEnvironment.buildings.buildings[previous_id];
             int new_id = (int)SFEngine.Utility.TryParseUInt32(BuildingID.Text, (uint)previous_id);
             if (new_id == previous_id)
+            {
                 return;
+            }
 
             SFLuaEnvironment.buildings.buildings.Remove(selected_id);
             index_to_key.RemoveAt(previous_index);
@@ -206,7 +237,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void ButtonRemove_Click(object sender, EventArgs e)
         {
             if (selected_id == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int ind = ListBuildings.SelectedIndex;
             SFLuaEnvironment.buildings.buildings.Remove(selected_id);
@@ -214,14 +247,16 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             ListBuildings.Items.RemoveAt(ListBuildings.SelectedIndex);
 
             if (ind == index_to_key.Count)
+            {
                 ind -= 1;
+            }
 
             ListBuildings.SelectedIndex = ind;
         }
 
         private void ButtonCancelChanges_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void ButtonSaveChanges_Click(object sender, EventArgs e)
@@ -230,7 +265,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             {
                 MessageBox.Show("Error while saving sql_building.lua");
             }
-            this.Close();
+            Close();
         }
     }
 }

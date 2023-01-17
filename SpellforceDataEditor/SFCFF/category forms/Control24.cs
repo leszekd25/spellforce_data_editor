@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -44,7 +37,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, (Byte)(checkBox1.Checked?1:0));
+            set_element_variant(current_element, 2, (Byte)(checkBox1.Checked ? 1 : 0));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -126,25 +119,33 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox2, 2022);
+            }
         }
 
         private void textBox5_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox5, 2016);
+            }
         }
 
         private void textBox11_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox11, 2029);
+            }
         }
 
         private void textBox12_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox12, 2059);
+            }
         }
 
         private void ButtonGoto25_Click(object sender, EventArgs e)

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace SFEngine.SFLua.lua_sql
 {
-    public class SFLuaSQLItemData: ILuaParsable
+    public class SFLuaSQLItemData : ILuaParsable
     {
         public string MeshMaleCold = "<undefined>";
         public string MeshFemaleCold = "<undefined>";
@@ -22,26 +19,55 @@ namespace SFEngine.SFLua.lua_sql
 
         public void ParseLoad(LuaParser.LuaTable table)
         {
-            if(table.entries.ContainsKey("meshmalecold"))
+            if (table.entries.ContainsKey("meshmalecold"))
+            {
                 MeshMaleCold = (string)table["meshmalecold"];
+            }
+
             if (table.entries.ContainsKey("meshfemalecold"))
+            {
                 MeshFemaleCold = (string)table["meshfemalecold"];
+            }
+
             if (table.entries.ContainsKey("meshmalewarm"))
+            {
                 MeshMaleWarm = (string)table["meshmalewarm"];
+            }
+
             if (table.entries.ContainsKey("meshfemalewarm"))
+            {
                 MeshFemaleWarm = (string)table["meshfemalewarm"];
+            }
+
             if (table.entries.ContainsKey("shadowrng"))
+            {
                 ShadowRNG = (double)table["shadowrng"];
+            }
+
             if (table.entries.ContainsKey("selectionsize"))
+            {
                 SelectionSize = (double)table["selectionsize"];
+            }
+
             if (table.entries.ContainsKey("animset"))
+            {
                 AnimSet = (string)table["animset"];
+            }
+
             if (table.entries.ContainsKey("race"))
+            {
                 Race = (int)(double)table["race"];
+            }
+
             if (table.entries.ContainsKey("cat"))
+            {
                 Category = (int)(double)table["cat"];
+            }
+
             if (table.entries.ContainsKey("subcat"))
+            {
                 SubCategory = (int)(double)table["subcat"];
+            }
         }
 
         public string ParseToString()
@@ -61,7 +87,7 @@ namespace SFEngine.SFLua.lua_sql
         }
     }
 
-    public class SFLuaSQLItem: ILuaSQL
+    public class SFLuaSQLItem : ILuaSQL
     {
         public Dictionary<int, SFLuaSQLItemData> items { get; private set; } = null;
 
@@ -70,15 +96,22 @@ namespace SFEngine.SFLua.lua_sql
             get
             {
                 if (items.ContainsKey(index))
+                {
                     return items[index];
+                }
+
                 return null;
             }
             set
             {
                 if (items.ContainsKey(index))
+                {
                     items[index] = value;
+                }
                 else
+                {
                     items.Add(index, value);
+                }
             }
         }
 
@@ -104,7 +137,9 @@ namespace SFEngine.SFLua.lua_sql
             }
 
             if (items == null)
+            {
                 items = new Dictionary<int, SFLuaSQLItemData>();
+            }
 
             int log_current_item = 0;
             try
@@ -114,7 +149,9 @@ namespace SFEngine.SFLua.lua_sql
                 LuaParser.LuaTable table = (LuaParser.LuaTable)ret[0];
                 List<double> indices = new List<double>();
                 foreach (var key in table.entries.Keys)
+                {
                     indices.Add((double)key);
+                }
 
                 indices.Sort();
                 // iterate over the rts coop spawn table

@@ -62,45 +62,32 @@ namespace SFEngine.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to in vec3 fragmentPosition;
-        ///in vec3 fragmentNormal;
-        ///in vec2 UV;
+        ///in vec2 fragmentUV;
         ///in vec4 fragmentColor;
-        ///#ifdef SHADING
         ///#ifdef SHADOWS
-        ///#ifdef CASCADED_SHADOWS
-        ///in vec4 fragmentPositionLightSpace1;
-        ///in vec4 fragmentPositionLightSpace2;
-        ///in vec4 fragmentPositionLightSpace3;
-        ///#endif //CASCADED_SHADOWS
-        ///#ifndef CASCADED_SHADOWS
         ///in vec4 fragmentPositionLightSpace;
-        ///#endif //CASCADED_SHADOWS
         ///#endif //SHADOWS
+        ///#ifdef SHADING
         ///#ifdef QUALITY_SHADING
-        ///in mat4 M;
         ///in vec3 fragmentNormalTangentSpace;
         ///in vec4 fragmentGroundAmbientColor;
-        ///#endif  [rest of string was truncated]&quot;;.
+        ///#endif //QUALITY_SHADING
+        ///#ifndef QUALITY_SHADING
+        ///in float vBrightness;
+        ///#endif //QUALITY_SHADING
+        ///#endif //SHADING
+        ///
+        ///out vec4 color;
+        ///
+        ///uniform vec4 SunColor;
+        ///uniform float DepthBias;
+        ///uniform float AlphaCutout;
+        ///#ifdef SHADING
+        ///uniform vec4 FogColor; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader {
             get {
                 return ResourceManager.GetString("fshader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to in vec2 UV;
-        ///uniform sampler2D DiffuseTexture;
-        ///
-        ///void main(){
-        ///  vec4 temp_c = texture(DiffuseTexture, UV);
-        ///  if(temp_c.a &lt; 0.9)
-        ///    discard;
-        ///}.
-        /// </summary>
-        internal static string fshader_depth_prepass {
-            get {
-                return ResourceManager.GetString("fshader_depth_prepass", resourceCulture);
             }
         }
         
@@ -110,25 +97,11 @@ namespace SFEngine.Properties {
         ///in vec2 TexCoords;
         ///
         ///uniform sampler2D screenTexture;
-        /////uniform int renderShadowMap;
-        /////uniform float ZNear;
-        /////uniform float ZFar;
-        ///
-        /////float LinearizeDepth(float z)
-        /////{
-        /////  return (2.0 * ZNear) / (ZFar + ZNear - z * (ZFar- ZNear));	
-        /////}
         ///
         ///void main()
         ///{
-        ///    // this is for shadowmap
-        ///   /* if(renderShadowMap == 1)
-        ///    {
-        ///        float color = LinearizeDepth(texture(screenTexture, TexCoords).r);
-        ///        FragColor = vec4(color, color, color, 1.0);
-        ///    }*/
-        ///   // else
-        /// //   [rest of string was truncated]&quot;;.
+        ///        FragColor = texture(screenTexture, TexCoords);
+        ///}.
         /// </summary>
         internal static string fshader_framebuffer_simple {
             get {
@@ -139,26 +112,27 @@ namespace SFEngine.Properties {
         /// <summary>
         ///   Looks up a localized string similar to in vec3 fragmentPosition;
         ///in vec2 UV;
-        ///in vec3 fragmentNormal;
+        ///#if defined NO_TEXTURE || defined TEXTURE_LOD
+        ///in vec3 fragmentColor;
+        ///#endif //defined NO_TEXTURE || defined TEXTURE_LOD
+        ///#ifdef SHADOWS
         ///in vec4 fragmentPositionLightSpace;
-        ///in vec3 vpos_orig;
+        ///#endif //SHADOWS
+        ///#ifdef SHADING
         ///in float vBrightness;
+        ///#endif //SHADING
         ///
         ///out vec4 color;
         ///
         ///uniform int GridSize;
-        ///uniform vec4 GridColor;
-        ///uniform float SunStrength;
-        ///uniform vec3 SunDirection;
         ///uniform vec4 SunColor;
-        ///uniform float AmbientStrength;
-        ///uniform vec4 AmbientColor;
+        ///#ifdef EDITOR_MODE
+        ///uniform vec4 GridColor;
+        ///uniform int CurrentFlags;
+        ///#endif //EDITOR_MODE
+        ///#ifdef SHADING
         ///uniform vec4 FogColor;
-        ///uniform float FogStrength;
-        ///uniform float FogStart;
-        ///uniform float FogEnd;
-        ///uniform float FogExponent;
-        ///uniform float ShadowFadeStart; [rest of string was truncated]&quot;;.
+        ///uniform float FogSt [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_hmap {
             get {
@@ -169,8 +143,6 @@ namespace SFEngine.Properties {
         /// <summary>
         ///   Looks up a localized string similar to 
         ///void main(){
-        ///  // depth bias, ugly hack to circumvent tesselation issues on nvidia with pre-pass
-        ///  //gl_FragDepth = gl_FragCoord.z + 0.0002;
         ///}.
         /// </summary>
         internal static string fshader_hmap_depth_prepass {
@@ -180,17 +152,55 @@ namespace SFEngine.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to in vec4 fragmentColor;
+        ///   Looks up a localized string similar to in vec2 TexCoords;
+        ///
+        ///out vec4 OutMoments;
+        ///
+        ///uniform sampler2DMS ShadowMap;
+        ///uniform int TextureSize;
+        ///
+        ///void main()
+        ///{
+        ///	const mat4 quantization_transform = mat4(
+        ///		1.5, 0.0, -2.0, 0.0,
+        ///		0.0, 4.0, 0.0, -4.0,
+        ///		sqrt(3)/2.0, 0.0, -sqrt(12)/9.0, 0.0,
+        ///		0.0, 0.5, 0.0, 0.5
+        ///		);
+        ///	const vec4 quantization_shift = vec4(0.5, 0.0, 0.5, 0.0);
+        ///
+        ///	vec4 result = vec4(0.0);
+        ///	for(int i = 0; i &lt; 4; i++)
+        ///	{
+        ///		float z = texelFetch(ShadowMap, ivec2(TexCoords * TextureSize), i).r;
+        ///		vec4 depth_vector = vec4(z, z*z, [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string fshader_msm_resolve {
+            get {
+                return ResourceManager.GetString("fshader_msm_resolve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to in vec2 UV;
         ///
         ///out vec4 color;
         ///
+        ///uniform sampler2D DiffuseTex;
+        ///uniform float Time;
+        ///uniform vec4 Color;
+        ///
         ///void main(){
-        ///  color = fragmentColor;
+        ///  vec4 temp_c = texture(DiffuseTex, UV);
+        ///  if(temp_c.a == 0.0)
+        ///    discard;
+        ///
+        ///  color = mix(vec4(0.0), Color, clamp((sin(Time)+1.0)*0.6, 0.0, 1.0));
         ///}.
         /// </summary>
-        internal static string fshader_overlay {
+        internal static string fshader_selection {
             get {
-                return ResourceManager.GetString("fshader_overlay", resourceCulture);
+                return ResourceManager.GetString("fshader_selection", resourceCulture);
             }
         }
         
@@ -198,13 +208,18 @@ namespace SFEngine.Properties {
         ///   Looks up a localized string similar to in vec2 UV;
         ///uniform sampler2D DiffuseTexture;
         ///
+        ///#ifdef VSM
         ///out vec2 col;
+        ///#endif // VSM
+        ///#ifdef MSM
+        ///#endif // MSM
         ///
         ///void main()
         ///{
         ///    if(texture(DiffuseTexture, UV).a &lt; 0.5)
         ///        discard;
         ///
+        ///	#ifdef VSM
         ///    float depth = gl_FragCoord.z;
         ///
         ///    float dx = dFdx(depth);
@@ -212,6 +227,7 @@ namespace SFEngine.Properties {
         ///    float moment2 = depth * depth + 0.25 * (dx * dx + dy * dy);
         ///    
         ///    col = vec2(depth, moment2);
+        ///	#endif // VSM
         ///}.
         /// </summary>
         internal static string fshader_shadowmap {
@@ -221,18 +237,23 @@ namespace SFEngine.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to out vec2 FragColor;
+        ///   Looks up a localized string similar to #ifdef VSM
+        ///#define TEX_TYPE vec2
+        ///#endif // VSM
+        ///#ifdef MSM
+        ///#define TEX_TYPE vec4
+        ///#endif // MSM
+        ///
+        ///out TEX_TYPE FragColor;
         ///
         ///in vec2 TexCoords;
         ///
         ///uniform sampler2D image;
-        ///
         ///uniform int horizontal;
-        ///uniform float weight[3] = float[] (0.250301, 0.221461, 0.153388);
         ///
-        ///vec2 GaussianBlur( sampler2D tex0, vec2 centreUV, vec2 pixelOffset )
+        ///TEX_TYPE GaussianBlur( sampler2D tex0, vec2 centreUV, vec2 pixelOffset )
         ///{
-        ///    vec2 colOut = vec2( 0.0, 0.0 );
+        ///    TEX_TYPE colOut = TEX_TYPE( 0.0 );
         ///    const int stepCount = 2;
         ///    //
         ///    const float gWeights[stepCount] ={
@@ -241,45 +262,11 @@ namespace SFEngine.Properties {
         ///    };
         ///    const float gOffsets[stepCount] ={
         ///       0.53805,
-        ///       2.06278
-        ///    };
-        ///
-        ///    for( int i = 0; i &lt; stepCount [rest of string was truncated]&quot;;.
+        ///       2.06278        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_shadowmap_blur {
             get {
                 return ResourceManager.GetString("fshader_shadowmap_blur", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to in vec3 fragmentPosition;
-        ///in vec2 UV;
-        ///in vec3 fragmentNormal;
-        ///#ifdef SHADING
-        ///#ifdef SHADOWS
-        ///in vec4 fragmentPositionLightSpace;
-        ///#endif //SHADOWS
-        ///#ifndef QUALITY_SHADING
-        ///in float vBrightness;
-        ///#endif //QUALITY_SHADING
-        ///#ifdef QUALITY_SHADING
-        ///in vec3 fragmentNormalTangentSpace;
-        ///in vec4 fragmentGroundAmbientColor;
-        ///#endif //QUALITY_SHADING
-        ///#endif //SHADING
-        ///
-        ///out vec4 color;
-        ///
-        ///uniform mat4 M;
-        ///uniform float SunStrength;
-        ///uniform vec3 SunDirection;
-        ///uniform vec4 SunColor;
-        ///uniform float AmbientStren [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string fshader_skel {
-            get {
-                return ResourceManager.GetString("fshader_skel", resourceCulture);
             }
         }
         
@@ -290,10 +277,8 @@ namespace SFEngine.Properties {
         ///
         ///uniform mat4 V;
         ///uniform float AspectRatio;
-        ///uniform float AmbientStrength;
         ///uniform vec4 AmbientColor;
         ///uniform vec4 FogColor;
-        ///uniform float FogStrength;
         ///
         ///vec3 CalcLookat(mat4 view, vec2 uv)
         ///{
@@ -303,7 +288,9 @@ namespace SFEngine.Properties {
         ///void main()
         ///{
         ///    vec3 raydir = CalcLookat(V, TexCoords);
-        ///    float horizon_closeness = clamp(1.0 - dot(normalize(raydir), vec3(0.0, 1.0, 0.0)), 0.0, 1.0);    // 0% - p [rest of string was truncated]&quot;;.
+        ///    float horizon_closeness = clamp(1.0 - dot(normalize(raydir), vec3(0.0, 1.0, 0.0)), 0.0, 1.0);    // 0% - pole, 100% - horizon
+        ///
+        ///    vec3 skycol = vec3(mix(AmbientCol [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_sky {
             get {
@@ -347,38 +334,6 @@ namespace SFEngine.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to in vec3 fragmentPosition;
-        ///in vec3 fragmentNormal;
-        ///in vec2 UV;
-        ///in vec4 fragmentColor;
-        ///#ifdef SHADING
-        ///#ifdef SHADOWS
-        ///in vec4 fragmentPositionLightSpace;
-        ///#endif //SHADOWS
-        ///#ifdef QUALITY_SHADING
-        ///in mat4 M;
-        ///in vec3 fragmentNormalTangentSpace;
-        ///in vec4 fragmentGroundAmbientColor;
-        ///#endif //QUALITY_SHADING
-        ///#ifndef QUALITY_SHADING
-        ///in float vBrightness;
-        ///#endif //QUALITY_SHADING
-        ///#endif //SHADING
-        ///
-        ///out vec4 color;
-        ///
-        /////uniform mat4 M;
-        ///uniform float SunStrength;
-        ///uniform vec3 SunDirection;
-        ///uniform vec4 [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string fshader_transparent {
-            get {
-                return ResourceManager.GetString("fshader_transparent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to in vec2 UV;
         ///in vec4 color;
         ///
@@ -398,6 +353,37 @@ namespace SFEngine.Properties {
         internal static string fshader_ui {
             get {
                 return ResourceManager.GetString("fshader_ui", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to in vec2 TexCoords;
+        ///
+        ///out vec2 OutMoments;
+        ///
+        ///uniform sampler2DMS ShadowMap;
+        ///uniform int TextureSize;
+        ///
+        ///void main()
+        ///{
+        ///	vec2 result = vec2(0.0);
+        ///	for(int i = 0; i &lt; 4; i++)
+        ///	{
+        ///		float z = texelFetch(ShadowMap, ivec2(TexCoords * TextureSize), i).r;
+        ///
+        ///		float dx = dFdx(z);
+        ///		float dy = dFdy(z);
+        ///		float moment2 = z * z + 0.25 * (dx * dx + dy * dy);
+        ///		
+        ///		result += vec2(z, moment2);
+        ///	}
+        ///	
+        ///	OutMoments = result/4.0;
+        ///}.
+        /// </summary>
+        internal static string fshader_vsm_resolve {
+            get {
+                return ResourceManager.GetString("fshader_vsm_resolve", resourceCulture);
             }
         }
         
@@ -465,23 +451,28 @@ namespace SFEngine.Properties {
         ///
         ///out vec3 fragmentPosition;
         ///out vec2 UV;
-        ///out vec3 fragmentNormal;
+        ///
+        ///#if defined NO_TEXTURE || defined TEXTURE_LOD
+        ///out vec3 fragmentColor;
+        ///#endif //defined NO_TEXTURE || defined TEXTURE_LOD
+        ///
+        ///#ifdef SHADOWS
         ///out vec4 fragmentPositionLightSpace;
-        ///out vec3 vpos_orig;
+        ///#endif //SHADOWS
+        ///
+        ///#ifdef SHADING
         ///out float vBrightness;
+        ///#endif //SHADING
         ///
         ///// Values that stay constant for the whole mesh.
         ///
         ///uniform int GridSize;
         ///uniform sampler2D HeightMap;
         ///uniform mat4 VP;
-        ///uniform mat4 LSM;
-        ///uniform vec3 SunDirection;
         ///
-        ///vec4 GetTesselatedVertex(in vec4 v0, in vec4 v1, in vec4 v2, in vec4 v3)
-        ///{
-        ///    vec4 a = mix(v0, v1, gl_TessCoord.x);
-        ///    vec4 b = mix(v2, [rest of string was truncated]&quot;;.
+        ///#ifdef SHADOWS
+        ///uniform mat4 LSM;
+        ///# [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string tesshader_hmap_tesselated {
             get {
@@ -527,42 +518,19 @@ namespace SFEngine.Properties {
         ///layout(location = 4) in mat4 instanceMatrix;
         ///
         ///out vec3 fragmentPosition;
-        ///out vec3 fragmentNormal;
         ///out vec4 fragmentColor;
-        ///out vec2 UV;
-        ///#ifdef SHADING
+        ///out vec2 fragmentUV;
         ///#ifdef SHADOWS
-        ///#ifdef CASCADED_SHADOWS
-        ///out vec4 fragmentPositionLightSpace1;
-        ///out vec4 fragmentPositi [rest of string was truncated]&quot;;.
+        ///out vec4 fragmentPositionLightSpace;
+        ///#endif //SHADOWS
+        ///
+        ///#ifdef SHADING
+        ///#ifdef QUALITY_SHADING
+        ///out vec3 fragmentNormal [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader {
             get {
                 return ResourceManager.GetString("vshader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
-        ///layout(location = 0) in vec3 vertexPosition_modelspace;
-        ///layout(location = 3) in vec2 vertexUV;
-        ///layout(location = 4) in mat4 instanceMatrix;
-        ///
-        ///out vec3 fragmentPosition;
-        ///out vec2 UV;
-        ///
-        ///// Values that stay constant for the whole mesh.
-        ///uniform mat4 VP;
-        ///  
-        ///void main(){
-        ///  // Output position of the vertex, in clip space : MVP * position
-        ///  gl_Position = VP * instanceMatrix * vec4(vertexPosition_modelspace,1);
-        ///  UV = vertexUV;
-        ///}.
-        /// </summary>
-        internal static string vshader_depth_prepass {
-            get {
-                return ResourceManager.GetString("vshader_depth_prepass", resourceCulture);
             }
         }
         
@@ -587,21 +555,26 @@ namespace SFEngine.Properties {
         /// <summary>
         ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
-        /////layout(location = 1) in vec3 vertexNormal;
-        /////layout(location = 2) in vec3 texID;
-        /////layout(location = 3) in vec3 texWeight;
         ///
         ///invariant gl_Position;
         ///
         ///out vec3 fragmentPosition;
         ///out vec2 UV;
-        ///out vec3 fragmentNormal;
+        ///#if defined NO_TEXTURE || defined TEXTURE_LOD
+        ///out vec3 fragmentColor;
+        ///#endif //defined NO_TEXTURE || defined TEXTURE_LOD
+        ///
         ///#ifdef SHADOWS
-        ///#ifdef CASCADED_SHADOWS
-        ///out vec4 fragmentPositionLightSpace1;
-        ///out vec4 fragmentPositionLightSpace2;
-        ///out vec4 fragmentPositionLightSpace3;
-        ///#endi [rest of string was truncated]&quot;;.
+        ///out vec4 fragmentPositionLightSpace;
+        ///#endif //SHADOWS
+        ///
+        ///#ifdef SHADING
+        ///out float vBrightness;
+        ///#endif //SHADING
+        ///
+        ///// Values that stay constant for the whole mesh.
+        ///
+        ///unifo [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_hmap {
             get {
@@ -654,40 +627,16 @@ namespace SFEngine.Properties {
         /// <summary>
         ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
-        ///
-        ///out vec4 fragmentColor;
-        ///
-        ///// Values that stay constant for the whole mesh.
-        ///uniform mat4 MVP;
-        ///uniform vec4 Color;
-        ///  
-        ///void main(){
-        ///  // Output position of the vertex, in clip space : MVP * position
-        ///  gl_Position = MVP * vec4(vertexPosition_modelspace,1);
-        ///  fragmentColor = Color;
-        ///}.
-        /// </summary>
-        internal static string vshader_overlay {
-            get {
-                return ResourceManager.GetString("vshader_overlay", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
-        ///layout(location = 0) in vec3 vertexPosition_modelspace;
-        ///layout(location = 1) in vec3 vertexNormal;
-        ///layout(location = 2) in vec4 vertexColor;
         ///layout(location = 3) in vec2 vertexUV;
         ///layout(location = 4) in mat4 instanceMatrix;
         ///
         ///out vec2 UV;
         ///
-        ///uniform mat4 LSM;  // light space matrix
+        ///uniform mat4 VP;  // light space matrix
         ///
         ///void main()
         ///{
-        ///    gl_Position = LSM * instanceMatrix * vec4(vertexPosition_modelspace, 1.0);
+        ///    gl_Position = VP * instanceMatrix * vec4(vertexPosition_modelspace, 1.0);
         ///    UV = vertexUV;
         ///}.
         /// </summary>
@@ -700,7 +649,6 @@ namespace SFEngine.Properties {
         /// <summary>
         ///   Looks up a localized string similar to // Input vertex data, different for all executions of this shader.
         ///layout(location = 0) in vec3 vertexPosition_modelspace;
-        ///layout(location = 1) in vec3 vertexNormal;
         ///layout(location = 2) in vec4 vertexBoneWeight;
         ///layout(location = 3) in vec2 vertexUV;
         ///layout(location = 4) in vec4 vertexBoneIndex;
@@ -708,7 +656,8 @@ namespace SFEngine.Properties {
         ///out vec2 UV;
         ///
         ///// Values that stay constant for the whole mesh.
-        ///uniform mat4 LSM;
+        ///uniform mat4 P;
+        ///uniform mat4 V;
         ///uniform mat4 M;
         ///uniform mat4 boneTransforms[224];
         ///  
@@ -717,7 +666,7 @@ namespace SFEngine.Properties {
         ///  vec4 newVertex;
         ///  int index;
         ///
-        /// [rest of string was truncated]&quot;;.
+        ///  Vertex = vec4(vertexPositio [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_shadowmap_animated {
             get {
@@ -734,7 +683,7 @@ namespace SFEngine.Properties {
         ///// Values that stay constant for the whole mesh.
         ///uniform int GridSize;
         ///uniform sampler2D HeightMap;
-        ///uniform mat4 LSM;
+        ///uniform mat4 VP;
         ///  
         ///vec3 GetVertexPos(vec2 grid_pos)
         ///{
@@ -743,7 +692,7 @@ namespace SFEngine.Properties {
         ///
         ///void main(){
         ///  vec3 vpos = GetVertexPos(vertexPosition_modelspace.xz);
-        ///  [rest of string was truncated]&quot;;.
+        ///   [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_shadowmap_heightmap {
             get {
@@ -760,14 +709,15 @@ namespace SFEngine.Properties {
         ///layout(location = 4) in vec4 vertexBoneIndex;
         ///
         ///out vec3 fragmentPosition;
-        ///out vec2 UV;
-        ///out vec3 fragmentNormal;
-        ///#ifdef SHADING
+        ///out vec2 fragmentUV;
+        ///out vec4 fragmentColor;
         ///#ifdef SHADOWS
-        ///#ifdef CASCADED_SHADOWS
-        ///out vec4 fragmentPositionLightSpace1;
-        ///out vec4 fragmentPositionLightSpace2;
-        ///out [rest of string was truncated]&quot;;.
+        ///out vec4 fragmentPositionLightSpace;
+        ///#endif //SHADOWS
+        ///
+        ///#ifdef SHADING
+        ///#ifdef QUALITY_SHADING
+        ///out vec3 fragment [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_skel {
             get {

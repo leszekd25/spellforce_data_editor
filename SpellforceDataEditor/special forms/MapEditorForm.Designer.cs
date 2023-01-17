@@ -43,7 +43,6 @@
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.slopebasedPaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.visibilitySettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenMap = new System.Windows.Forms.OpenFileDialog();
             this.DialogSaveMap = new System.Windows.Forms.SaveFileDialog();
@@ -58,7 +57,6 @@
             this.label14 = new System.Windows.Forms.Label();
             this.PanelDecalGroups = new System.Windows.Forms.Panel();
             this.TabPageEntities = new System.Windows.Forms.TabPage();
-            this.QuickSelect = new SpellforceDataEditor.SFMap.map_controls.MapQuickSelectControl();
             this.EntityHidePreview = new System.Windows.Forms.CheckBox();
             this.PanelMonumentType = new System.Windows.Forms.Panel();
             this.MonumentHero = new System.Windows.Forms.RadioButton();
@@ -89,14 +87,16 @@
             this.RadioEntityModeObject = new System.Windows.Forms.RadioButton();
             this.RadioModePortals = new System.Windows.Forms.RadioButton();
             this.TabPageTextures = new System.Windows.Forms.TabPage();
-            this.ButtonSlopePaint = new System.Windows.Forms.Button();
-            this.TTexMatchMovementFlags = new System.Windows.Forms.CheckBox();
             this.ButtonModifyTextureSet = new System.Windows.Forms.Button();
             this.PanelTileType = new System.Windows.Forms.Panel();
             this.RadioTileTypeCustom = new System.Windows.Forms.RadioButton();
             this.RadioTileTypeBase = new System.Windows.Forms.RadioButton();
             this.label9 = new System.Windows.Forms.Label();
             this.TabPageTerrain = new System.Windows.Forms.TabPage();
+            this.PanelLakeMode = new System.Windows.Forms.Panel();
+            this.RadioLakeSelect = new System.Windows.Forms.RadioButton();
+            this.RadioLakePaint = new System.Windows.Forms.RadioButton();
+            this.label38 = new System.Windows.Forms.Label();
             this.PanelAtmoPreview = new System.Windows.Forms.Panel();
             this.label37 = new System.Windows.Forms.Label();
             this.SunAltitudeVal = new System.Windows.Forms.TextBox();
@@ -190,6 +190,36 @@
             this.MapTypeCampaign = new System.Windows.Forms.RadioButton();
             this.MapTypeCoop = new System.Windows.Forms.RadioButton();
             this.MapTypeMultiplayer = new System.Windows.Forms.RadioButton();
+            this.TabPageMask = new System.Windows.Forms.TabPage();
+            this.ButtonMaskClear = new System.Windows.Forms.Button();
+            this.ButtonMaskInvert = new System.Windows.Forms.Button();
+            this.PanelMaskFeature = new System.Windows.Forms.Panel();
+            this.ComboMaskFeature = new System.Windows.Forms.ComboBox();
+            this.label45 = new System.Windows.Forms.Label();
+            this.PanelMaskRandom = new System.Windows.Forms.Panel();
+            this.MaskRandomValue = new System.Windows.Forms.TextBox();
+            this.ButtonMaskRandomSeed = new System.Windows.Forms.Button();
+            this.LabelMaskRandom = new System.Windows.Forms.Label();
+            this.PanelMaskBorderType = new System.Windows.Forms.Panel();
+            this.RadioMaskBorderInner = new System.Windows.Forms.RadioButton();
+            this.RadioMaskBorderOuter = new System.Windows.Forms.RadioButton();
+            this.label44 = new System.Windows.Forms.Label();
+            this.PanelMaskAttribute = new System.Windows.Forms.Panel();
+            this.ComboMaskAttribute = new System.Windows.Forms.ComboBox();
+            this.label43 = new System.Windows.Forms.Label();
+            this.PanelMaskComparisonMode = new System.Windows.Forms.Panel();
+            this.ComboMaskSourceComparison = new System.Windows.Forms.ComboBox();
+            this.label42 = new System.Windows.Forms.Label();
+            this.PanelMaskSourceValue = new System.Windows.Forms.Panel();
+            this.MaskSourceValue = new System.Windows.Forms.TextBox();
+            this.LabelMaskSourceType = new System.Windows.Forms.Label();
+            this.ButtonSelectionApply = new System.Windows.Forms.Button();
+            this.label41 = new System.Windows.Forms.Label();
+            this.ComboSelectionOperation = new System.Windows.Forms.ComboBox();
+            this.ComboSelectionSource = new System.Windows.Forms.ComboBox();
+            this.label40 = new System.Windows.Forms.Label();
+            this.label39 = new System.Windows.Forms.Label();
+            this.ComboSelectionFilter = new System.Windows.Forms.ComboBox();
             this.PanelUtility = new System.Windows.Forms.Panel();
             this.TrackbarCameraSpeed = new System.Windows.Forms.TrackBar();
             this.label25 = new System.Windows.Forms.Label();
@@ -199,6 +229,7 @@
             this.TreeEntities = new System.Windows.Forms.TreeView();
             this.TimerTreeEntityFilter = new System.Windows.Forms.Timer(this.components);
             this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
+            this.QuickSelect = new SpellforceDataEditor.SFMap.map_controls.MapQuickSelectControl();
             this.menuStrip1.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.TabPageDecorations.SuspendLayout();
@@ -211,6 +242,7 @@
             this.TabPageTextures.SuspendLayout();
             this.PanelTileType.SuspendLayout();
             this.TabPageTerrain.SuspendLayout();
+            this.PanelLakeMode.SuspendLayout();
             this.PanelAtmoPreview.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SunAltitudeTrackbar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SunAzimuthTrackbar)).BeginInit();
@@ -229,6 +261,13 @@
             this.TabPageMetadata.SuspendLayout();
             this.PanelCoopParams.SuspendLayout();
             this.panel6.SuspendLayout();
+            this.TabPageMask.SuspendLayout();
+            this.PanelMaskFeature.SuspendLayout();
+            this.PanelMaskRandom.SuspendLayout();
+            this.PanelMaskBorderType.SuspendLayout();
+            this.PanelMaskAttribute.SuspendLayout();
+            this.PanelMaskComparisonMode.SuspendLayout();
+            this.PanelMaskSourceValue.SuspendLayout();
             this.PanelUtility.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TrackbarCameraSpeed)).BeginInit();
             this.PanelObjectSelector.SuspendLayout();
@@ -331,7 +370,6 @@
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.importHeightmapToolStripMenuItem,
             this.exportHeightmapToolStripMenuItem,
-            this.slopebasedPaintToolStripMenuItem,
             this.visibilitySettingsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
@@ -350,13 +388,6 @@
             this.exportHeightmapToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.exportHeightmapToolStripMenuItem.Text = "Export heightmap";
             this.exportHeightmapToolStripMenuItem.Click += new System.EventHandler(this.exportHeightmapToolStripMenuItem_Click);
-            // 
-            // slopebasedPaintToolStripMenuItem
-            // 
-            this.slopebasedPaintToolStripMenuItem.Name = "slopebasedPaintToolStripMenuItem";
-            this.slopebasedPaintToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-            this.slopebasedPaintToolStripMenuItem.Text = "Slope-based paint";
-            this.slopebasedPaintToolStripMenuItem.Click += new System.EventHandler(this.slopebasedPaintToolStripMenuItem_Click);
             // 
             // visibilitySettingsToolStripMenuItem
             // 
@@ -467,16 +498,6 @@
             this.TabPageEntities.TabIndex = 2;
             this.TabPageEntities.Text = "Entities";
             this.TabPageEntities.UseVisualStyleBackColor = true;
-            // 
-            // QuickSelect
-            // 
-            this.QuickSelect.Location = new System.Drawing.Point(731, 4);
-            this.QuickSelect.Margin = new System.Windows.Forms.Padding(2);
-            this.QuickSelect.Name = "QuickSelect";
-            this.QuickSelect.QsRef = null;
-            this.QuickSelect.Size = new System.Drawing.Size(480, 84);
-            this.QuickSelect.TabIndex = 15;
-            this.QuickSelect.Visible = false;
             // 
             // EntityHidePreview
             // 
@@ -625,8 +646,8 @@
             this.EntityID.Name = "EntityID";
             this.EntityID.Size = new System.Drawing.Size(71, 20);
             this.EntityID.TabIndex = 16;
+            this.EntityID.Leave += new System.EventHandler(this.EntityID_Validated);
             this.EntityID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.EntityID_MouseDown);
-            this.EntityID.Validated += new System.EventHandler(this.EntityID_Validated);
             // 
             // label11
             // 
@@ -807,8 +828,6 @@
             // 
             // TabPageTextures
             // 
-            this.TabPageTextures.Controls.Add(this.ButtonSlopePaint);
-            this.TabPageTextures.Controls.Add(this.TTexMatchMovementFlags);
             this.TabPageTextures.Controls.Add(this.ButtonModifyTextureSet);
             this.TabPageTextures.Controls.Add(this.PanelTileType);
             this.TabPageTextures.Location = new System.Drawing.Point(4, 25);
@@ -818,27 +837,6 @@
             this.TabPageTextures.TabIndex = 1;
             this.TabPageTextures.Text = "Textures";
             this.TabPageTextures.UseVisualStyleBackColor = true;
-            // 
-            // ButtonSlopePaint
-            // 
-            this.ButtonSlopePaint.Location = new System.Drawing.Point(444, 6);
-            this.ButtonSlopePaint.Name = "ButtonSlopePaint";
-            this.ButtonSlopePaint.Size = new System.Drawing.Size(90, 102);
-            this.ButtonSlopePaint.TabIndex = 20;
-            this.ButtonSlopePaint.Text = "Slope-based paint...";
-            this.ButtonSlopePaint.UseVisualStyleBackColor = true;
-            this.ButtonSlopePaint.Click += new System.EventHandler(this.ButtonSlopePaint_Click);
-            // 
-            // TTexMatchMovementFlags
-            // 
-            this.TTexMatchMovementFlags.AutoSize = true;
-            this.TTexMatchMovementFlags.Location = new System.Drawing.Point(102, 91);
-            this.TTexMatchMovementFlags.Name = "TTexMatchMovementFlags";
-            this.TTexMatchMovementFlags.Size = new System.Drawing.Size(133, 17);
-            this.TTexMatchMovementFlags.TabIndex = 18;
-            this.TTexMatchMovementFlags.Text = "Match movement flags";
-            this.TTexMatchMovementFlags.UseVisualStyleBackColor = true;
-            this.TTexMatchMovementFlags.CheckedChanged += new System.EventHandler(this.TTexMatchMovementFlags_CheckedChanged);
             // 
             // ButtonModifyTextureSet
             // 
@@ -896,6 +894,7 @@
             // 
             // TabPageTerrain
             // 
+            this.TabPageTerrain.Controls.Add(this.PanelLakeMode);
             this.TabPageTerrain.Controls.Add(this.PanelAtmoPreview);
             this.TabPageTerrain.Controls.Add(this.PanelWeather);
             this.TabPageTerrain.Controls.Add(this.PanelFlags);
@@ -911,6 +910,50 @@
             this.TabPageTerrain.Text = "Terrain";
             this.TabPageTerrain.UseVisualStyleBackColor = true;
             // 
+            // PanelLakeMode
+            // 
+            this.PanelLakeMode.Controls.Add(this.RadioLakeSelect);
+            this.PanelLakeMode.Controls.Add(this.RadioLakePaint);
+            this.PanelLakeMode.Controls.Add(this.label38);
+            this.PanelLakeMode.Location = new System.Drawing.Point(758, 34);
+            this.PanelLakeMode.Name = "PanelLakeMode";
+            this.PanelLakeMode.Size = new System.Drawing.Size(207, 73);
+            this.PanelLakeMode.TabIndex = 11;
+            this.PanelLakeMode.Visible = false;
+            // 
+            // RadioLakeSelect
+            // 
+            this.RadioLakeSelect.AutoSize = true;
+            this.RadioLakeSelect.Location = new System.Drawing.Point(149, 16);
+            this.RadioLakeSelect.Name = "RadioLakeSelect";
+            this.RadioLakeSelect.Size = new System.Drawing.Size(55, 17);
+            this.RadioLakeSelect.TabIndex = 2;
+            this.RadioLakeSelect.Text = "Select";
+            this.RadioLakeSelect.UseVisualStyleBackColor = true;
+            this.RadioLakeSelect.CheckedChanged += new System.EventHandler(this.RadioLakeSelect_CheckedChanged);
+            // 
+            // RadioLakePaint
+            // 
+            this.RadioLakePaint.AutoSize = true;
+            this.RadioLakePaint.Checked = true;
+            this.RadioLakePaint.Location = new System.Drawing.Point(93, 16);
+            this.RadioLakePaint.Name = "RadioLakePaint";
+            this.RadioLakePaint.Size = new System.Drawing.Size(49, 17);
+            this.RadioLakePaint.TabIndex = 1;
+            this.RadioLakePaint.TabStop = true;
+            this.RadioLakePaint.Text = "Paint";
+            this.RadioLakePaint.UseVisualStyleBackColor = true;
+            this.RadioLakePaint.CheckedChanged += new System.EventHandler(this.RadioLakePaint_CheckedChanged);
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(3, 18);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(54, 13);
+            this.label38.TabIndex = 0;
+            this.label38.Text = "Edit mode";
+            // 
             // PanelAtmoPreview
             // 
             this.PanelAtmoPreview.Controls.Add(this.label37);
@@ -920,7 +963,7 @@
             this.PanelAtmoPreview.Controls.Add(this.SunAzimuthVal);
             this.PanelAtmoPreview.Controls.Add(this.label12);
             this.PanelAtmoPreview.Controls.Add(this.SunAzimuthTrackbar);
-            this.PanelAtmoPreview.Location = new System.Drawing.Point(675, 82);
+            this.PanelAtmoPreview.Location = new System.Drawing.Point(761, 82);
             this.PanelAtmoPreview.Name = "PanelAtmoPreview";
             this.PanelAtmoPreview.Size = new System.Drawing.Size(265, 100);
             this.PanelAtmoPreview.TabIndex = 18;
@@ -1016,7 +1059,7 @@
             this.PanelWeather.Controls.Add(this.WClear);
             this.PanelWeather.Controls.Add(this.label27);
             this.PanelWeather.Controls.Add(this.label26);
-            this.PanelWeather.Location = new System.Drawing.Point(888, 3);
+            this.PanelWeather.Location = new System.Drawing.Point(974, 3);
             this.PanelWeather.Name = "PanelWeather";
             this.PanelWeather.Size = new System.Drawing.Size(629, 108);
             this.PanelWeather.TabIndex = 10;
@@ -1181,7 +1224,7 @@
             this.PanelFlags.Controls.Add(this.RadioFlagVision);
             this.PanelFlags.Controls.Add(this.RadioFlagMovement);
             this.PanelFlags.Controls.Add(this.label8);
-            this.PanelFlags.Location = new System.Drawing.Point(675, 3);
+            this.PanelFlags.Location = new System.Drawing.Point(761, 3);
             this.PanelFlags.Name = "PanelFlags";
             this.PanelFlags.Size = new System.Drawing.Size(207, 73);
             this.PanelFlags.TabIndex = 8;
@@ -1228,7 +1271,7 @@
             this.PanelBrushShape.Controls.Add(this.label4);
             this.PanelBrushShape.Controls.Add(this.label2);
             this.PanelBrushShape.Controls.Add(this.BrushSizeTrackbar);
-            this.PanelBrushShape.Location = new System.Drawing.Point(102, 3);
+            this.PanelBrushShape.Location = new System.Drawing.Point(188, 3);
             this.PanelBrushShape.Name = "PanelBrushShape";
             this.PanelBrushShape.Size = new System.Drawing.Size(261, 73);
             this.PanelBrushShape.TabIndex = 8;
@@ -1333,7 +1376,7 @@
             this.PanelTerrainSettings.Controls.Add(this.panel3);
             this.PanelTerrainSettings.Controls.Add(this.panel4);
             this.PanelTerrainSettings.Controls.Add(this.label7);
-            this.PanelTerrainSettings.Location = new System.Drawing.Point(366, 3);
+            this.PanelTerrainSettings.Location = new System.Drawing.Point(452, 3);
             this.PanelTerrainSettings.Name = "PanelTerrainSettings";
             this.PanelTerrainSettings.Size = new System.Drawing.Size(303, 108);
             this.PanelTerrainSettings.TabIndex = 8;
@@ -1463,7 +1506,7 @@
             this.PanelStrength.Controls.Add(this.TerrainValueLabel);
             this.PanelStrength.Controls.Add(this.TerrainValue);
             this.PanelStrength.Controls.Add(this.TerrainTrackbar);
-            this.PanelStrength.Location = new System.Drawing.Point(102, 79);
+            this.PanelStrength.Location = new System.Drawing.Point(188, 79);
             this.PanelStrength.Name = "PanelStrength";
             this.PanelStrength.Size = new System.Drawing.Size(261, 29);
             this.PanelStrength.TabIndex = 17;
@@ -1508,13 +1551,13 @@
             this.panel1.Controls.Add(this.RadioLakes);
             this.panel1.Location = new System.Drawing.Point(6, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(93, 108);
+            this.panel1.Size = new System.Drawing.Size(176, 108);
             this.panel1.TabIndex = 8;
             // 
             // RadioWeather
             // 
             this.RadioWeather.AutoSize = true;
-            this.RadioWeather.Location = new System.Drawing.Point(3, 85);
+            this.RadioWeather.Location = new System.Drawing.Point(107, 39);
             this.RadioWeather.Name = "RadioWeather";
             this.RadioWeather.Size = new System.Drawing.Size(66, 17);
             this.RadioWeather.TabIndex = 12;
@@ -1525,7 +1568,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(16, 0);
+            this.label1.Location = new System.Drawing.Point(47, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(63, 13);
             this.label1.TabIndex = 11;
@@ -1558,7 +1601,7 @@
             // RadioLakes
             // 
             this.RadioLakes.AutoSize = true;
-            this.RadioLakes.Location = new System.Drawing.Point(3, 62);
+            this.RadioLakes.Location = new System.Drawing.Point(107, 16);
             this.RadioLakes.Name = "RadioLakes";
             this.RadioLakes.Size = new System.Drawing.Size(49, 17);
             this.RadioLakes.TabIndex = 10;
@@ -1574,8 +1617,9 @@
             this.TabEditorModes.Controls.Add(this.TabPageEntities);
             this.TabEditorModes.Controls.Add(this.TabPageDecorations);
             this.TabEditorModes.Controls.Add(this.TabPageMetadata);
+            this.TabEditorModes.Controls.Add(this.TabPageMask);
             this.TabEditorModes.Enabled = false;
-            this.TabEditorModes.ItemSize = new System.Drawing.Size(190, 21);
+            this.TabEditorModes.ItemSize = new System.Drawing.Size(160, 21);
             this.TabEditorModes.Location = new System.Drawing.Point(0, 27);
             this.TabEditorModes.Name = "TabEditorModes";
             this.TabEditorModes.Padding = new System.Drawing.Point(3, 3);
@@ -1866,6 +1910,353 @@
             this.MapTypeMultiplayer.UseVisualStyleBackColor = true;
             this.MapTypeMultiplayer.Click += new System.EventHandler(this.MapTypeMultiplayer_Click);
             // 
+            // TabPageMask
+            // 
+            this.TabPageMask.Controls.Add(this.ButtonMaskClear);
+            this.TabPageMask.Controls.Add(this.ButtonMaskInvert);
+            this.TabPageMask.Controls.Add(this.PanelMaskFeature);
+            this.TabPageMask.Controls.Add(this.PanelMaskRandom);
+            this.TabPageMask.Controls.Add(this.PanelMaskBorderType);
+            this.TabPageMask.Controls.Add(this.PanelMaskAttribute);
+            this.TabPageMask.Controls.Add(this.PanelMaskComparisonMode);
+            this.TabPageMask.Controls.Add(this.PanelMaskSourceValue);
+            this.TabPageMask.Controls.Add(this.ButtonSelectionApply);
+            this.TabPageMask.Controls.Add(this.label41);
+            this.TabPageMask.Controls.Add(this.ComboSelectionOperation);
+            this.TabPageMask.Controls.Add(this.ComboSelectionSource);
+            this.TabPageMask.Controls.Add(this.label40);
+            this.TabPageMask.Controls.Add(this.label39);
+            this.TabPageMask.Controls.Add(this.ComboSelectionFilter);
+            this.TabPageMask.Location = new System.Drawing.Point(4, 25);
+            this.TabPageMask.Name = "TabPageMask";
+            this.TabPageMask.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPageMask.Size = new System.Drawing.Size(1092, 114);
+            this.TabPageMask.TabIndex = 7;
+            this.TabPageMask.Text = "Mask/selection";
+            this.TabPageMask.UseVisualStyleBackColor = true;
+            // 
+            // ButtonMaskClear
+            // 
+            this.ButtonMaskClear.Location = new System.Drawing.Point(6, 59);
+            this.ButtonMaskClear.Name = "ButtonMaskClear";
+            this.ButtonMaskClear.Size = new System.Drawing.Size(70, 23);
+            this.ButtonMaskClear.TabIndex = 30;
+            this.ButtonMaskClear.Text = "Clear mask";
+            this.ButtonMaskClear.UseVisualStyleBackColor = true;
+            this.ButtonMaskClear.Click += new System.EventHandler(this.ButtonMaskClear_Click);
+            // 
+            // ButtonMaskInvert
+            // 
+            this.ButtonMaskInvert.Location = new System.Drawing.Point(6, 85);
+            this.ButtonMaskInvert.Name = "ButtonMaskInvert";
+            this.ButtonMaskInvert.Size = new System.Drawing.Size(70, 23);
+            this.ButtonMaskInvert.TabIndex = 29;
+            this.ButtonMaskInvert.Text = "Invert mask";
+            this.ButtonMaskInvert.UseVisualStyleBackColor = true;
+            this.ButtonMaskInvert.Click += new System.EventHandler(this.ButtonMaskInvert_Click);
+            // 
+            // PanelMaskFeature
+            // 
+            this.PanelMaskFeature.Controls.Add(this.ComboMaskFeature);
+            this.PanelMaskFeature.Controls.Add(this.label45);
+            this.PanelMaskFeature.Location = new System.Drawing.Point(823, 38);
+            this.PanelMaskFeature.Name = "PanelMaskFeature";
+            this.PanelMaskFeature.Size = new System.Drawing.Size(244, 30);
+            this.PanelMaskFeature.TabIndex = 28;
+            this.PanelMaskFeature.Visible = false;
+            // 
+            // ComboMaskFeature
+            // 
+            this.ComboMaskFeature.FormattingEnabled = true;
+            this.ComboMaskFeature.Items.AddRange(new object[] {
+            "Building",
+            "Object",
+            "Lake",
+            "Walkable"});
+            this.ComboMaskFeature.Location = new System.Drawing.Point(120, 3);
+            this.ComboMaskFeature.Name = "ComboMaskFeature";
+            this.ComboMaskFeature.Size = new System.Drawing.Size(121, 21);
+            this.ComboMaskFeature.TabIndex = 27;
+            this.ComboMaskFeature.Text = "Object";
+            this.ComboMaskFeature.SelectedIndexChanged += new System.EventHandler(this.ComboMaskFeature_SelectedIndexChanged);
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(3, 6);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(66, 13);
+            this.label45.TabIndex = 26;
+            this.label45.Text = "Feature type";
+            // 
+            // PanelMaskRandom
+            // 
+            this.PanelMaskRandom.Controls.Add(this.MaskRandomValue);
+            this.PanelMaskRandom.Controls.Add(this.ButtonMaskRandomSeed);
+            this.PanelMaskRandom.Controls.Add(this.LabelMaskRandom);
+            this.PanelMaskRandom.Location = new System.Drawing.Point(572, 38);
+            this.PanelMaskRandom.Name = "PanelMaskRandom";
+            this.PanelMaskRandom.Size = new System.Drawing.Size(244, 30);
+            this.PanelMaskRandom.TabIndex = 25;
+            this.PanelMaskRandom.Visible = false;
+            // 
+            // MaskRandomValue
+            // 
+            this.MaskRandomValue.Location = new System.Drawing.Point(89, 3);
+            this.MaskRandomValue.Name = "MaskRandomValue";
+            this.MaskRandomValue.Size = new System.Drawing.Size(73, 20);
+            this.MaskRandomValue.TabIndex = 24;
+            this.MaskRandomValue.Leave += new System.EventHandler(this.MaskRandomValue_Leave);
+            // 
+            // ButtonMaskRandomSeed
+            // 
+            this.ButtonMaskRandomSeed.Location = new System.Drawing.Point(168, 1);
+            this.ButtonMaskRandomSeed.Name = "ButtonMaskRandomSeed";
+            this.ButtonMaskRandomSeed.Size = new System.Drawing.Size(73, 23);
+            this.ButtonMaskRandomSeed.TabIndex = 3;
+            this.ButtonMaskRandomSeed.Text = "Randomize";
+            this.ButtonMaskRandomSeed.UseVisualStyleBackColor = true;
+            this.ButtonMaskRandomSeed.Click += new System.EventHandler(this.ButtonMaskRandomSeed_Click);
+            // 
+            // LabelMaskRandom
+            // 
+            this.LabelMaskRandom.AutoSize = true;
+            this.LabelMaskRandom.Location = new System.Drawing.Point(3, 8);
+            this.LabelMaskRandom.Name = "LabelMaskRandom";
+            this.LabelMaskRandom.Size = new System.Drawing.Size(62, 13);
+            this.LabelMaskRandom.TabIndex = 22;
+            this.LabelMaskRandom.Text = "Percentage";
+            // 
+            // PanelMaskBorderType
+            // 
+            this.PanelMaskBorderType.Controls.Add(this.RadioMaskBorderInner);
+            this.PanelMaskBorderType.Controls.Add(this.RadioMaskBorderOuter);
+            this.PanelMaskBorderType.Controls.Add(this.label44);
+            this.PanelMaskBorderType.Location = new System.Drawing.Point(322, 38);
+            this.PanelMaskBorderType.Name = "PanelMaskBorderType";
+            this.PanelMaskBorderType.Size = new System.Drawing.Size(244, 30);
+            this.PanelMaskBorderType.TabIndex = 27;
+            this.PanelMaskBorderType.Visible = false;
+            // 
+            // RadioMaskBorderInner
+            // 
+            this.RadioMaskBorderInner.AutoSize = true;
+            this.RadioMaskBorderInner.Location = new System.Drawing.Point(189, 6);
+            this.RadioMaskBorderInner.Name = "RadioMaskBorderInner";
+            this.RadioMaskBorderInner.Size = new System.Drawing.Size(49, 17);
+            this.RadioMaskBorderInner.TabIndex = 2;
+            this.RadioMaskBorderInner.Text = "Inner";
+            this.RadioMaskBorderInner.UseVisualStyleBackColor = true;
+            this.RadioMaskBorderInner.CheckedChanged += new System.EventHandler(this.RadioMaskBorderInner_CheckedChanged);
+            // 
+            // RadioMaskBorderOuter
+            // 
+            this.RadioMaskBorderOuter.AutoSize = true;
+            this.RadioMaskBorderOuter.Checked = true;
+            this.RadioMaskBorderOuter.Location = new System.Drawing.Point(117, 6);
+            this.RadioMaskBorderOuter.Name = "RadioMaskBorderOuter";
+            this.RadioMaskBorderOuter.Size = new System.Drawing.Size(51, 17);
+            this.RadioMaskBorderOuter.TabIndex = 1;
+            this.RadioMaskBorderOuter.TabStop = true;
+            this.RadioMaskBorderOuter.Text = "Outer";
+            this.RadioMaskBorderOuter.UseVisualStyleBackColor = true;
+            this.RadioMaskBorderOuter.CheckedChanged += new System.EventHandler(this.RadioMaskBorderOuter_CheckedChanged);
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(3, 8);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(61, 13);
+            this.label44.TabIndex = 0;
+            this.label44.Text = "Border type";
+            // 
+            // PanelMaskAttribute
+            // 
+            this.PanelMaskAttribute.Controls.Add(this.ComboMaskAttribute);
+            this.PanelMaskAttribute.Controls.Add(this.label43);
+            this.PanelMaskAttribute.Location = new System.Drawing.Point(572, 3);
+            this.PanelMaskAttribute.Name = "PanelMaskAttribute";
+            this.PanelMaskAttribute.Size = new System.Drawing.Size(244, 30);
+            this.PanelMaskAttribute.TabIndex = 26;
+            this.PanelMaskAttribute.Visible = false;
+            // 
+            // ComboMaskAttribute
+            // 
+            this.ComboMaskAttribute.FormattingEnabled = true;
+            this.ComboMaskAttribute.Items.AddRange(new object[] {
+            "Terrain block",
+            "Object block",
+            "Building block",
+            "Manual block",
+            "Lake",
+            "Shore"});
+            this.ComboMaskAttribute.Location = new System.Drawing.Point(120, 3);
+            this.ComboMaskAttribute.Name = "ComboMaskAttribute";
+            this.ComboMaskAttribute.Size = new System.Drawing.Size(121, 21);
+            this.ComboMaskAttribute.TabIndex = 28;
+            this.ComboMaskAttribute.Text = "Terrain block";
+            this.ComboMaskAttribute.SelectedIndexChanged += new System.EventHandler(this.ComboMaskAttribute_SelectedIndexChanged);
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(3, 8);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(46, 13);
+            this.label43.TabIndex = 0;
+            this.label43.Text = "Attribute";
+            // 
+            // PanelMaskComparisonMode
+            // 
+            this.PanelMaskComparisonMode.Controls.Add(this.ComboMaskSourceComparison);
+            this.PanelMaskComparisonMode.Controls.Add(this.label42);
+            this.PanelMaskComparisonMode.Location = new System.Drawing.Point(823, 3);
+            this.PanelMaskComparisonMode.Name = "PanelMaskComparisonMode";
+            this.PanelMaskComparisonMode.Size = new System.Drawing.Size(244, 30);
+            this.PanelMaskComparisonMode.TabIndex = 25;
+            this.PanelMaskComparisonMode.Visible = false;
+            // 
+            // ComboMaskSourceComparison
+            // 
+            this.ComboMaskSourceComparison.FormattingEnabled = true;
+            this.ComboMaskSourceComparison.Items.AddRange(new object[] {
+            "Equal",
+            "Greater or equal",
+            "Greater than",
+            "Not equal",
+            "Less than",
+            "Less or equal"});
+            this.ComboMaskSourceComparison.Location = new System.Drawing.Point(117, 3);
+            this.ComboMaskSourceComparison.Name = "ComboMaskSourceComparison";
+            this.ComboMaskSourceComparison.Size = new System.Drawing.Size(121, 21);
+            this.ComboMaskSourceComparison.TabIndex = 27;
+            this.ComboMaskSourceComparison.Text = "Equal";
+            this.ComboMaskSourceComparison.SelectedIndexChanged += new System.EventHandler(this.ComboMaskSourceComparison_SelectedIndexChanged);
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(3, 6);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(91, 13);
+            this.label42.TabIndex = 26;
+            this.label42.Text = "Comparison mode";
+            // 
+            // PanelMaskSourceValue
+            // 
+            this.PanelMaskSourceValue.Controls.Add(this.MaskSourceValue);
+            this.PanelMaskSourceValue.Controls.Add(this.LabelMaskSourceType);
+            this.PanelMaskSourceValue.Location = new System.Drawing.Point(322, 3);
+            this.PanelMaskSourceValue.Name = "PanelMaskSourceValue";
+            this.PanelMaskSourceValue.Size = new System.Drawing.Size(244, 30);
+            this.PanelMaskSourceValue.TabIndex = 23;
+            this.PanelMaskSourceValue.Visible = false;
+            // 
+            // MaskSourceValue
+            // 
+            this.MaskSourceValue.Location = new System.Drawing.Point(165, 5);
+            this.MaskSourceValue.Name = "MaskSourceValue";
+            this.MaskSourceValue.Size = new System.Drawing.Size(73, 20);
+            this.MaskSourceValue.TabIndex = 24;
+            this.MaskSourceValue.Leave += new System.EventHandler(this.MaskSourceValue_Leave);
+            // 
+            // LabelMaskSourceType
+            // 
+            this.LabelMaskSourceType.AutoSize = true;
+            this.LabelMaskSourceType.Location = new System.Drawing.Point(3, 8);
+            this.LabelMaskSourceType.Name = "LabelMaskSourceType";
+            this.LabelMaskSourceType.Size = new System.Drawing.Size(16, 13);
+            this.LabelMaskSourceType.TabIndex = 22;
+            this.LabelMaskSourceType.Text = "...";
+            // 
+            // ButtonSelectionApply
+            // 
+            this.ButtonSelectionApply.Location = new System.Drawing.Point(82, 85);
+            this.ButtonSelectionApply.Name = "ButtonSelectionApply";
+            this.ButtonSelectionApply.Size = new System.Drawing.Size(234, 23);
+            this.ButtonSelectionApply.TabIndex = 21;
+            this.ButtonSelectionApply.Text = "Apply to mask";
+            this.ButtonSelectionApply.UseVisualStyleBackColor = true;
+            this.ButtonSelectionApply.Click += new System.EventHandler(this.ButtonSelectionApply_Click);
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(81, 64);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(53, 13);
+            this.label41.TabIndex = 20;
+            this.label41.Text = "Operation";
+            // 
+            // ComboSelectionOperation
+            // 
+            this.ComboSelectionOperation.FormattingEnabled = true;
+            this.ComboSelectionOperation.Items.AddRange(new object[] {
+            "Do nothing",
+            "Set mask",
+            "Intersect with mask",
+            "Join with mask",
+            "Either-or with mask",
+            "Exclude from mask"});
+            this.ComboSelectionOperation.Location = new System.Drawing.Point(140, 61);
+            this.ComboSelectionOperation.Name = "ComboSelectionOperation";
+            this.ComboSelectionOperation.Size = new System.Drawing.Size(176, 21);
+            this.ComboSelectionOperation.TabIndex = 19;
+            this.ComboSelectionOperation.Text = "Set mask";
+            this.ComboSelectionOperation.SelectedIndexChanged += new System.EventHandler(this.ComboSelectionOperation_SelectedIndexChanged);
+            // 
+            // ComboSelectionSource
+            // 
+            this.ComboSelectionSource.FormattingEnabled = true;
+            this.ComboSelectionSource.Items.AddRange(new object[] {
+            "All",
+            "Paint",
+            "Mask",
+            "Terrain texture",
+            "Terrain height",
+            "Terrain slope",
+            "Terrain attribute",
+            "Feature"});
+            this.ComboSelectionSource.Location = new System.Drawing.Point(140, 8);
+            this.ComboSelectionSource.Name = "ComboSelectionSource";
+            this.ComboSelectionSource.Size = new System.Drawing.Size(176, 21);
+            this.ComboSelectionSource.TabIndex = 18;
+            this.ComboSelectionSource.Text = "Paint";
+            this.ComboSelectionSource.SelectedIndexChanged += new System.EventHandler(this.ComboSelectionSource_SelectedIndexChanged);
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Location = new System.Drawing.Point(93, 11);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(41, 13);
+            this.label40.TabIndex = 0;
+            this.label40.Text = "Source";
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(105, 38);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(29, 13);
+            this.label39.TabIndex = 13;
+            this.label39.Text = "Filter";
+            // 
+            // ComboSelectionFilter
+            // 
+            this.ComboSelectionFilter.FormattingEnabled = true;
+            this.ComboSelectionFilter.Items.AddRange(new object[] {
+            "None",
+            "Border",
+            "Random"});
+            this.ComboSelectionFilter.Location = new System.Drawing.Point(140, 35);
+            this.ComboSelectionFilter.Name = "ComboSelectionFilter";
+            this.ComboSelectionFilter.Size = new System.Drawing.Size(176, 21);
+            this.ComboSelectionFilter.TabIndex = 12;
+            this.ComboSelectionFilter.Text = "None";
+            this.ComboSelectionFilter.SelectedIndexChanged += new System.EventHandler(this.ComboSelectionFilter_SelectedIndexChanged);
+            // 
             // PanelUtility
             // 
             this.PanelUtility.Controls.Add(this.TrackbarCameraSpeed);
@@ -1937,6 +2328,16 @@
             // 
             this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
             // 
+            // QuickSelect
+            // 
+            this.QuickSelect.Location = new System.Drawing.Point(731, 4);
+            this.QuickSelect.Margin = new System.Windows.Forms.Padding(2);
+            this.QuickSelect.Name = "QuickSelect";
+            this.QuickSelect.QsRef = null;
+            this.QuickSelect.Size = new System.Drawing.Size(480, 84);
+            this.QuickSelect.TabIndex = 15;
+            this.QuickSelect.Visible = false;
+            // 
             // MapEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1976,10 +2377,11 @@
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
             this.TabPageTextures.ResumeLayout(false);
-            this.TabPageTextures.PerformLayout();
             this.PanelTileType.ResumeLayout(false);
             this.PanelTileType.PerformLayout();
             this.TabPageTerrain.ResumeLayout(false);
+            this.PanelLakeMode.ResumeLayout(false);
+            this.PanelLakeMode.PerformLayout();
             this.PanelAtmoPreview.ResumeLayout(false);
             this.PanelAtmoPreview.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SunAltitudeTrackbar)).EndInit();
@@ -2010,6 +2412,20 @@
             this.PanelCoopParams.PerformLayout();
             this.panel6.ResumeLayout(false);
             this.panel6.PerformLayout();
+            this.TabPageMask.ResumeLayout(false);
+            this.TabPageMask.PerformLayout();
+            this.PanelMaskFeature.ResumeLayout(false);
+            this.PanelMaskFeature.PerformLayout();
+            this.PanelMaskRandom.ResumeLayout(false);
+            this.PanelMaskRandom.PerformLayout();
+            this.PanelMaskBorderType.ResumeLayout(false);
+            this.PanelMaskBorderType.PerformLayout();
+            this.PanelMaskAttribute.ResumeLayout(false);
+            this.PanelMaskAttribute.PerformLayout();
+            this.PanelMaskComparisonMode.ResumeLayout(false);
+            this.PanelMaskComparisonMode.PerformLayout();
+            this.PanelMaskSourceValue.ResumeLayout(false);
+            this.PanelMaskSourceValue.PerformLayout();
             this.PanelUtility.ResumeLayout(false);
             this.PanelUtility.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TrackbarCameraSpeed)).EndInit();
@@ -2036,7 +2452,6 @@
         private System.Windows.Forms.ToolStripLabel SpecificText;
         private System.Windows.Forms.ToolStripMenuItem createNewMapToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem slopebasedPaintToolStripMenuItem;
         private System.Windows.Forms.Panel PanelInspector;
         private System.Windows.Forms.TabPage TabPageDecorations;
         private System.Windows.Forms.TabPage TabPageEntities;
@@ -2050,8 +2465,6 @@
         private System.Windows.Forms.RadioButton RadioEntityModeBuilding;
         private System.Windows.Forms.RadioButton RadioEntityModeObject;
         private System.Windows.Forms.TabPage TabPageTextures;
-        private System.Windows.Forms.Button ButtonSlopePaint;
-        private System.Windows.Forms.CheckBox TTexMatchMovementFlags;
         private System.Windows.Forms.Button ButtonModifyTextureSet;
         private System.Windows.Forms.Panel PanelTileType;
         private System.Windows.Forms.RadioButton RadioTileTypeCustom;
@@ -2192,5 +2605,39 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TrackBar SunAzimuthTrackbar;
         private System.Windows.Forms.Button ButtonMinimap;
+        private System.Windows.Forms.Panel PanelLakeMode;
+        private System.Windows.Forms.RadioButton RadioLakeSelect;
+        private System.Windows.Forms.RadioButton RadioLakePaint;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.TabPage TabPageMask;
+        private System.Windows.Forms.Label label39;
+        private System.Windows.Forms.ComboBox ComboSelectionFilter;
+        private System.Windows.Forms.Button ButtonSelectionApply;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.ComboBox ComboSelectionOperation;
+        private System.Windows.Forms.ComboBox ComboSelectionSource;
+        private System.Windows.Forms.Label label40;
+        private System.Windows.Forms.Button ButtonMaskRandomSeed;
+        private System.Windows.Forms.Panel PanelMaskBorderType;
+        private System.Windows.Forms.RadioButton RadioMaskBorderInner;
+        private System.Windows.Forms.RadioButton RadioMaskBorderOuter;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.Panel PanelMaskAttribute;
+        private System.Windows.Forms.ComboBox ComboMaskAttribute;
+        private System.Windows.Forms.Label label43;
+        private System.Windows.Forms.Panel PanelMaskComparisonMode;
+        private System.Windows.Forms.ComboBox ComboMaskSourceComparison;
+        private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.Panel PanelMaskSourceValue;
+        private System.Windows.Forms.TextBox MaskSourceValue;
+        private System.Windows.Forms.Label LabelMaskSourceType;
+        private System.Windows.Forms.Panel PanelMaskRandom;
+        private System.Windows.Forms.TextBox MaskRandomValue;
+        private System.Windows.Forms.Label LabelMaskRandom;
+        private System.Windows.Forms.Panel PanelMaskFeature;
+        private System.Windows.Forms.ComboBox ComboMaskFeature;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.Button ButtonMaskInvert;
+        private System.Windows.Forms.Button ButtonMaskClear;
     }
 }

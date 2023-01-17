@@ -32,7 +32,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.bGDEditor = new System.Windows.Forms.Button();
             this.bAssets = new System.Windows.Forms.Button();
-            this.bMods = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.labelVersion = new System.Windows.Forms.Label();
             this.linkEditor = new System.Windows.Forms.LinkLabel();
@@ -76,17 +75,6 @@
             this.bAssets.UseVisualStyleBackColor = true;
             this.bAssets.Click += new System.EventHandler(this.bAssets_Click);
             // 
-            // bMods
-            // 
-            this.bMods.ForeColor = System.Drawing.Color.Crimson;
-            this.bMods.Location = new System.Drawing.Point(252, 67);
-            this.bMods.Name = "bMods";
-            this.bMods.Size = new System.Drawing.Size(115, 23);
-            this.bMods.TabIndex = 4;
-            this.bMods.Text = "Mod Manager";
-            this.bMods.UseVisualStyleBackColor = true;
-            this.bMods.Click += new System.EventHandler(this.bMods_Click);
-            // 
             // label2
             // 
             this.label2.AutoEllipsis = true;
@@ -105,7 +93,7 @@
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(70, 13);
             this.labelVersion.TabIndex = 6;
-            this.labelVersion.Text = "14.03.2021.1";
+            this.labelVersion.Text = "17.01.2023.1";
             // 
             // linkEditor
             // 
@@ -174,7 +162,7 @@
             // 
             this.bSQLEdit.BackColor = System.Drawing.SystemColors.ControlLight;
             this.bSQLEdit.ForeColor = System.Drawing.Color.Crimson;
-            this.bSQLEdit.Location = new System.Drawing.Point(131, 96);
+            this.bSQLEdit.Location = new System.Drawing.Point(252, 67);
             this.bSQLEdit.Name = "bSQLEdit";
             this.bSQLEdit.Size = new System.Drawing.Size(115, 23);
             this.bSQLEdit.TabIndex = 13;
@@ -213,7 +201,6 @@
             this.Controls.Add(this.linkEditor);
             this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.bMods);
             this.Controls.Add(this.bAssets);
             this.Controls.Add(this.bGDEditor);
             this.Controls.Add(this.label1);
@@ -231,7 +218,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button bGDEditor;
         private System.Windows.Forms.Button bAssets;
-        private System.Windows.Forms.Button bMods;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label labelVersion;
         private System.Windows.Forms.LinkLabel linkEditor;

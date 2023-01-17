@@ -3,11 +3,7 @@
  * SFDataTracer uses these blocks to communicate with the SpelllforceCFFEditor, allowing back and forth gamedata element change
  */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpellforceDataEditor.SFCFF
 {

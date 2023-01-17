@@ -1,13 +1,7 @@
 ﻿//todo: modernize loading/saving data (chunk-based instead of sequential)
 
 using System;
-using System.IO;
-using System.Reflection;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.SFCFF
 {
@@ -17,7 +11,7 @@ namespace SFEngine.SFCFF
         static public string[] get(UInt16 spell_id)
         {
             string[] p = { "", "", "", "", "", "", "", "", "", "", "0000000000" };  //p[10] is for data tracing
-            switch(spell_id)
+            switch (spell_id)
             {
                 case 1:   //fireburst
                 case 147: //fireball (effect)
@@ -688,7 +682,9 @@ namespace SFEngine.SFCFF
         public static void manual_SetGamedata()
         {
             if (ready)
+            {
                 return;
+            }
 
             SFGameData.CalculateStatus(null, null, ref gamedata);
 
@@ -734,36 +730,47 @@ namespace SFEngine.SFCFF
         public static SFCategoryElement FindElementText(int t_index, int t_lang)
         {
             if (gamedata[2016] == null)
+            {
                 return null;
+            }
 
             int index = gamedata[2016].FindMultipleElementIndexBinary<UInt16>(0, (UInt16)t_index);
             if (index == Utility.NO_INDEX)
+            {
                 return null;
+            }
 
             int lang_index = Utility.NO_INDEX;
             int safe_index = Utility.NO_INDEX;
 
             SFCategoryElementList e_found = gamedata[2016].element_lists[index];
             if (e_found.Elements.Count != 0)
+            {
                 safe_index = 0;
+            }
 
             for (int i = 0; i < e_found.Elements.Count; i++)
             {
-                if((Byte)e_found[i][1] == (Byte)t_lang)
+                if ((Byte)e_found[i][1] == (Byte)t_lang)
                 {
                     lang_index = i;
                     break;
                 }
-                else if((Byte)e_found[i][1] == 0)
+                else if ((Byte)e_found[i][1] == 0)
                 {
                     safe_index = i;
                 }
             }
 
             if (lang_index == Utility.NO_INDEX)
+            {
                 lang_index = safe_index;
+            }
+
             if (lang_index == Utility.NO_INDEX)
+            {
                 return null;
+            }
 
             return e_found[lang_index];
         }
@@ -772,15 +779,21 @@ namespace SFEngine.SFCFF
         public static string GetTextFromElement(SFCategoryElement elem, int cat_index)
         {
             if (elem == null)
+            {
                 return Utility.S_NONAME;
+            }
             else
             {
                 int text_id = (int)(UInt16)elem.variants[cat_index];
                 SFCategoryElement txt_elem = FindElementText(text_id, Settings.LanguageID);
                 if (txt_elem != null)
+                {
                     return txt_elem.variants[4].ToString();
+                }
                 else
+                {
                     return Utility.S_MISSING;
+                }
             }
         }
 
@@ -789,20 +802,28 @@ namespace SFEngine.SFCFF
         public static string GetEffectName(UInt16 effect_id, bool effect_level = false)
         {
             if (gamedata[2002] == null)
+            {
                 return Utility.S_MISSING;
+            }
 
             SFCategoryElement effect_elem = gamedata[2002].FindElementBinary<UInt16>(0, effect_id);
             if (effect_elem == null)
+            {
                 return Utility.S_NONAME;
+            }
 
             if (gamedata[2054] == null)
+            {
                 return Utility.S_MISSING;
+            }
 
             UInt16 spell_type = (UInt16)effect_elem[1];
             SFCategoryElement spell_elem = gamedata[2054].FindElementBinary<UInt16>(0, spell_type);
             string txt = SFCategoryManager.GetTextFromElement(spell_elem, 1);
             if (effect_level)
+            {
                 txt += " level " + effect_elem[4].ToString();
+            }
 
             return txt;
         }
@@ -811,17 +832,22 @@ namespace SFEngine.SFCFF
         public static string GetUnitName(UInt16 unit_id, bool include_level = false)
         {
             if (gamedata[2024] == null)
+            {
                 return Utility.S_UNKNOWN;
+            }
 
             SFCategoryElement unit_elem = gamedata[2024].FindElementBinary<UInt16>(0, unit_id);
-            if (unit_elem==null)
+            if (unit_elem == null)
+            {
                 return Utility.S_NONAME;
+            }
+
             string txt = SFCategoryManager.GetTextFromElement(unit_elem, 1);
 
-            if(include_level)
+            if (include_level)
             {
                 ushort stats_id = (ushort)unit_elem[2];
-                if(gamedata[2005] == null)
+                if (gamedata[2005] == null)
                 {
                     txt += " (<NO_LVL_DATA>)";
                     return txt;
@@ -842,24 +868,34 @@ namespace SFEngine.SFCFF
         public static UInt16 GetUnitItem(UInt16 unit_id, byte slot_id)
         {
             if (gamedata[2024] == null)
+            {
                 return 0;
+            }
 
             SFCategoryElement unit_elem = gamedata[2024].FindElementBinary<UInt16>(0, unit_id);
             if (unit_elem == null)
+            {
                 return 0;
+            }
 
             if (gamedata[2025] == null)
+            {
                 return 0;
+            }
 
             int unit_eq_index = gamedata[2025].FindMultipleElementIndexBinary(0, (UInt16)unit_id);
             if (unit_eq_index == -1)
+            {
                 return 0;
+            }
 
             SFCategoryElementList unit_eq = gamedata[2025].element_lists[unit_eq_index];
-            for(int i = 0; i < unit_eq.Elements.Count; i++)
+            for (int i = 0; i < unit_eq.Elements.Count; i++)
             {
                 if ((Byte)unit_eq[i][1] == slot_id)
+                {
                     return (UInt16)unit_eq[i][2];
+                }
             }
             return 0;
         }
@@ -899,7 +935,9 @@ namespace SFEngine.SFCFF
             string txt_minor = "";
 
             if (gamedata[2039] == null)
+            {
                 return Utility.S_UNKNOWN;
+            }
 
             txt_major = SFCategoryManager.GetTextFromElement(gamedata[2039][skill_major, 0], 2);
 
@@ -914,7 +952,7 @@ namespace SFEngine.SFCFF
                 {
                     txt_minor = SFCategoryManager.GetTextFromElement(gamedata[2039][skill_major, skill_minor], 2);
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     return Utility.S_UNKNOWN;
                 }
@@ -927,7 +965,9 @@ namespace SFEngine.SFCFF
         public static string GetRaceName(Byte race_id)
         {
             if (gamedata[2022] == null)
+            {
                 return Utility.S_UNKNOWN;
+            }
 
             SFCategoryElement race_elem = gamedata[2022].FindElementBinary<Byte>(0, race_id);
             return SFCategoryManager.GetTextFromElement(race_elem, 7);
@@ -937,7 +977,9 @@ namespace SFEngine.SFCFF
         public static string GetItemName(UInt16 item_id)
         {
             if (gamedata[2003] == null)
+            {
                 return Utility.S_UNKNOWN;
+            }
 
             SFCategoryElement item_elem = gamedata[2003].FindElementBinary<UInt16>(0, item_id);
             return SFCategoryManager.GetTextFromElement(item_elem, 3);
@@ -947,7 +989,9 @@ namespace SFEngine.SFCFF
         public static string GetBuildingName(UInt16 building_id)
         {
             if (gamedata[2029] == null)
+            {
                 return Utility.S_UNKNOWN;
+            }
 
             SFCategoryElement building_elem = gamedata[2029].FindElementBinary<UInt16>(0, building_id);
             return SFCategoryManager.GetTextFromElement(building_elem, 5);
@@ -957,11 +1001,15 @@ namespace SFEngine.SFCFF
         public static string GetMerchantName(UInt16 merchant_id)
         {
             if (gamedata[2041] == null)
+            {
                 return Utility.S_UNKNOWN;
+            }
 
             SFCategoryElement merchant_elem = gamedata[2041].FindElementBinary<UInt16>(0, merchant_id);
             if (merchant_elem == null)
+            {
                 return Utility.S_NONAME;
+            }
 
             return GetUnitName((UInt16)merchant_elem[1]);
         }
@@ -970,7 +1018,9 @@ namespace SFEngine.SFCFF
         public static string GetObjectName(UInt16 object_id)
         {
             if (gamedata[2050] == null)
+            {
                 return Utility.S_UNKNOWN;
+            }
 
             SFCategoryElement object_elem = gamedata[2050].FindElementBinary<UInt16>(0, object_id);
             return SFCategoryManager.GetTextFromElement(object_elem, 1);
@@ -980,7 +1030,9 @@ namespace SFEngine.SFCFF
         public static string GetDescriptionName(UInt16 desc_id)
         {
             if (gamedata[2058] == null)
+            {
                 return Utility.S_UNKNOWN;
+            }
 
             SFCategoryElement desc_elem = gamedata[2058].FindElementBinary<UInt16>(0, desc_id);
             return SFCategoryManager.GetTextFromElement(desc_elem, 1);
@@ -992,7 +1044,10 @@ namespace SFEngine.SFCFF
         {
             SFCategoryElement hero_elem = hero_cache.FindElementBinary<UInt16>(0, stats_id);
             if (hero_elem == null)
+            {
                 return Utility.S_MISSING;
+            }
+
             return GetItemName((ushort)(hero_elem[1]));
         }
 
@@ -1000,11 +1055,16 @@ namespace SFEngine.SFCFF
         public static int GetMinUnitLevel(int level)
         {
             if (gamedata[2048] == null)
+            {
                 return 0;
+            }
 
             SFCategoryElement lvl_elem = gamedata[2048].FindElement<byte>(5, (byte)level);
             if (lvl_elem == null)
+            {
                 return 0;
+            }
+
             return (byte)lvl_elem[0];
         }
 
@@ -1012,11 +1072,16 @@ namespace SFEngine.SFCFF
         public static int GetMaxSkillLevel(int level)
         {
             if (gamedata[2048] == null)
+            {
                 return 0;
+            }
 
             SFCategoryElement lvl_elem = gamedata[2048].FindElementBinary<byte>(0, (byte)level);
             if (lvl_elem == null)
+            {
                 return 0;
+            }
+
             return (byte)lvl_elem[5];
         }
 
@@ -1047,7 +1112,9 @@ namespace SFEngine.SFCFF
 
             SFCategory item_category = gamedata[2003];
             if (item_category == null)
+            {
                 return;
+            }
 
             Dictionary<ushort, ushort> item_id_set = new Dictionary<ushort, ushort>();
             List<ushort> item_id_list = new List<ushort>();

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using OpenTK;
+using System;
 using System.Threading.Tasks;
-using OpenTK;
 
 namespace SFEngine.SFMap.MapGen
 {
@@ -15,7 +12,7 @@ namespace SFEngine.SFMap.MapGen
         public int Height { get; private set; }
         public float[] map { get; private set; } = null;
 
-        public GradientMap(int  w,  int  h)
+        public GradientMap(int w, int h)
         {
             Width = w;
             Height = h;
@@ -32,18 +29,24 @@ namespace SFEngine.SFMap.MapGen
         }
 
         // respects boundaries
-        public float Get(int x, int  y)
+        public float Get(int x, int y)
         {
             if ((x < 0) || (x >= Width) || (y < 0) || (y >= Height))
+            {
                 return 0;
+            }
+
             return map[y * Width + x];
         }
 
         // respects boundaries now...
-        public void Set(int x, int  y,  float  f)
+        public void Set(int x, int y, float f)
         {
             if ((x < 0) || (x >= Width) || (y < 0) || (y >= Height))
+            {
                 return;
+            }
+
             map[y * Width + x] = f;
         }
 
@@ -58,7 +61,7 @@ namespace SFEngine.SFMap.MapGen
             int _y = (int)y;
             Vector2 d = new Vector2(x - _x, y - _y);
 
-            Matrix2 bilinear_matrix = new Matrix2(new Vector2(Get(_x, _y),     Get(_x + 1, _y)),
+            Matrix2 bilinear_matrix = new Matrix2(new Vector2(Get(_x, _y), Get(_x + 1, _y)),
                                                   new Vector2(Get(_x, _y + 1), Get(_x + 1, _y + 1)));
 
             return MathUtils.Bilinear(bilinear_matrix, d);
@@ -71,7 +74,7 @@ namespace SFEngine.SFMap.MapGen
             Vector2 d = new Vector2(x - _x, y - _y);
 
             Matrix4 bicubic_matrix = new Matrix4(new Vector4(Get(_x - 1, _y - 1), Get(_x, _y - 1), Get(_x + 1, _y - 1), Get(_x + 2, _y - 1)),
-                                                 new Vector4(Get(_x - 1, _y),     Get(_x, _y),     Get(_x + 1, _y),     Get(_x + 2, _y)),
+                                                 new Vector4(Get(_x - 1, _y), Get(_x, _y), Get(_x + 1, _y), Get(_x + 2, _y)),
                                                  new Vector4(Get(_x - 1, _y + 1), Get(_x, _y + 1), Get(_x + 1, _y + 1), Get(_x + 2, _y + 1)),
                                                  new Vector4(Get(_x - 1, _y + 2), Get(_x, _y + 2), Get(_x + 1, _y + 2), Get(_x + 2, _y + 2)));
 
@@ -81,9 +84,15 @@ namespace SFEngine.SFMap.MapGen
         public float GetFiltered(float x, float y, FilteringType f_type)
         {
             if (f_type == FilteringType.BICUBIC)
+            {
                 return GetBicubic(x, y);
+            }
+
             if (f_type == FilteringType.BILINEAR)
+            {
                 return GetBilinear(x, y);
+            }
+
             return GetNearest(x, y);
         }
 
@@ -96,10 +105,10 @@ namespace SFEngine.SFMap.MapGen
             {
                 int end = cells_per_task * (i + 1);
                 for (int j = cells_per_task * i; j < end; j++)
+                {
                     map[j] = f;
+                }
             });
-            //for (int i = 0; i < map.Length; i++)
-            //    map[i] = f;
         }
 
         public void AddAll(float f)
@@ -111,10 +120,10 @@ namespace SFEngine.SFMap.MapGen
             {
                 int end = cells_per_task * (i + 1);
                 for (int j = cells_per_task * i; j < end; j++)
+                {
                     map[j] += f;
+                }
             });
-            //for (int i = 0; i < map.Length; i++)
-            //    map[i] += f;
         }
 
         public void MultiplyAll(float f)
@@ -126,10 +135,10 @@ namespace SFEngine.SFMap.MapGen
             {
                 int end = cells_per_task * (i + 1);
                 for (int j = cells_per_task * i; j < end; j++)
+                {
                     map[j] *= f;
+                }
             });
-            //for (int i = 0; i < map.Length; i++)
-            //    map[i] *= f;
         }
 
         public void ClampAll(float min, float max)
@@ -141,10 +150,10 @@ namespace SFEngine.SFMap.MapGen
             {
                 int end = cells_per_task * (i + 1);
                 for (int j = cells_per_task * i; j < end; j++)
+                {
                     map[j] = Math.Max(Math.Min(max, map[j]), min);
+                }
             });
-            //for (int i = 0; i < map.Length; i++)
-            //    map[i] = Math.Max(Math.Min(max, map[i]), min);
         }
 
         // not multithreaded
@@ -152,18 +161,28 @@ namespace SFEngine.SFMap.MapGen
         {
             float min = map[0];
             float max = map[0];
-            for(int i=1;i<map.Length;i++)
+            for (int i = 1; i < map.Length; i++)
             {
                 if (map[i] < min)
+                {
                     min = map[i];
+                }
+
                 if (map[i] > max)
+                {
                     max = map[i];
+                }
             }
             float d = max - min;
             if (d == 0)
+            {
                 return;
+            }
+
             for (int i = 0; i < map.Length; i++)
+            {
                 map[i] = (map[i] - min) / d;
+            }
         }
 
         public void ApplyFunction(Func<float, float> f)
@@ -175,10 +194,10 @@ namespace SFEngine.SFMap.MapGen
             {
                 int end = cells_per_task * (i + 1);
                 for (int j = cells_per_task * i; j < end; j++)
+                {
                     map[j] = f(map[j]);
+                }
             });
-            //for (int i = 0; i < map.Length; i++)
-                //map[i] = f(map[i]);
         }
 
         public void SetMap(GradientMap m, FilteringType f_type)
@@ -192,13 +211,13 @@ namespace SFEngine.SFMap.MapGen
             {
                 int end = height_per_task * (i + 1);
                 for (int y = height_per_task * i; y < end; y++)
+                {
                     for (int x = 0; x < Width; x++)
+                    {
                         Set(x, y, m.GetFiltered(x * rx, y * ry, f_type));
+                    }
+                }
             });
-
-            //for (int y = 0; y < Height; y++)
-            //    for (int x = 0; x < Width; x++)
-            //        Set(x, y, m.GetFiltered(x * rx, y * ry, f_type));
         }
 
         public void AddMap(GradientMap m, FilteringType f_type)
@@ -211,12 +230,13 @@ namespace SFEngine.SFMap.MapGen
             {
                 int end = height_per_task * (i + 1);
                 for (int y = height_per_task * i; y < end; y++)
+                {
                     for (int x = 0; x < Width; x++)
-                        Set(x, y, Get(x,y)+m.GetFiltered(x * rx, y * ry, f_type));
+                    {
+                        Set(x, y, Get(x, y) + m.GetFiltered(x * rx, y * ry, f_type));
+                    }
+                }
             });
-            //for (int y = 0; y < Height; y++)
-            //    for (int x = 0; x < Width; x++)
-            //        Set(x, y, Get(x,y)+m.GetFiltered(x * rx, y * ry, f_type));
         }
 
         public void MultiplyMap(GradientMap m, FilteringType f_type)
@@ -230,12 +250,13 @@ namespace SFEngine.SFMap.MapGen
             {
                 int end = height_per_task * (i + 1);
                 for (int y = height_per_task * i; y < end; y++)
+                {
                     for (int x = 0; x < Width; x++)
-                        Set(x, y, Get(x,y)*m.GetFiltered(x * rx, y * ry, f_type));
+                    {
+                        Set(x, y, Get(x, y) * m.GetFiltered(x * rx, y * ry, f_type));
+                    }
+                }
             });
-            //for (int y = 0; y < Height; y++)
-            //    for (int x = 0; x < Width; x++)
-            //        Set(x, y, Get(x,y)*m.GetFiltered(x * rx, y * ry, f_type));
         }
 
         public void ApplyKernel(LatticeKernel k)
@@ -248,12 +269,13 @@ namespace SFEngine.SFMap.MapGen
             {
                 int end = height_per_task * (i + 1);
                 for (int y = height_per_task * i; y < end; y++)
+                {
                     for (int x = 0; x < Width; x++)
+                    {
                         new_map[y * Width + x] = k.Get(this, x, y);
+                    }
+                }
             });
-            //for (int y = 0; y < Height; y++)
-            //    for (int x = 0; x < Width; x++)
-            //        new_map[y * Width + x] = k.Get(this, x, y);
             map = new_map;
         }
     }

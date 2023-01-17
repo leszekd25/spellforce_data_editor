@@ -5,18 +5,12 @@
  * Each node contains transform data which is updated only when needed
  * */
 
+using OpenTK;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using OpenTK;
 
 namespace SFEngine.SF3D.SceneSynchro
 {
-    [Flags]
-    public enum RenderFlags { NONE = 0, APPLY_SHADING = 1, CAST_SHADOW = 2, RECEIVE_SHADOW = 4, TRANSPARENT = 8, }
     // ultimately might become obsolete...
     public class SceneNode
     {
@@ -25,6 +19,8 @@ namespace SFEngine.SF3D.SceneSynchro
         public List<SceneNode> Children { get; protected set; } = new List<SceneNode>();
 
         // if true, on the  next  update  local transform will be  updated
+        protected Matrix4 local_transform = Matrix4.Identity;
+        public Matrix4 result_transform = Matrix4.Identity;
         protected bool needsanyupdate = true;
         public virtual bool NeedsAnyUpdate { get { return needsanyupdate; } protected set { needsanyupdate = value; } }
         public virtual bool NeedsUpdateLocalTransform { get; protected set; } = true;
@@ -34,10 +30,8 @@ namespace SFEngine.SF3D.SceneSynchro
         public Vector3 position = Vector3.Zero;
         protected Quaternion rotation = Quaternion.Identity;
         protected Vector3 scale = Vector3.One;
-        protected Matrix4 local_transform = Matrix4.Identity;
-        //protected Matrix4 result_transform = Matrix4.Identity;
         protected Physics.BoundingBox aabb = Physics.BoundingBox.Zero;
-        
+
         // todo: add a LocalVisible, so even when parent changes to visible while this is invisible, this is still invisible
         public virtual bool Visible
         {
@@ -51,18 +45,16 @@ namespace SFEngine.SF3D.SceneSynchro
                 {
                     visible = value;
                     foreach (SceneNode n in Children)
+                    {
                         n.Visible = value;
+                    }
                 }
             }
         }
         public Quaternion Rotation { get { return rotation; } set { rotation = value; TouchLocalTransform(); TouchParents(); } }
         public Vector3 Scale { get { return scale; } set { scale = value; TouchLocalTransform(); TouchParents(); } }
-        public Matrix4 LocalTransform { get { return local_transform; } protected set { local_transform = value; } }
-        public Matrix4 ResultTransform = Matrix4.Identity;
 
         public Physics.BoundingBox AABB { get; }
-
-        public RenderFlags render_flags;
 
         public SceneNode(string n)
         {
@@ -72,7 +64,7 @@ namespace SFEngine.SF3D.SceneSynchro
         // adds a given node as a child of this node
         public void AddNode(SceneNode node)
         {
-            if(node == null)
+            if (node == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SceneNode.AddNode(): Node to add is null!");
                 return;
@@ -85,7 +77,7 @@ namespace SFEngine.SF3D.SceneSynchro
         // removes a given node from the children of this node
         public void RemoveNode(SceneNode node)
         {
-            if(node == null)
+            if (node == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SceneNode.RemoveNode(): Node to remove is null!");
                 return;
@@ -100,25 +92,34 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             SceneNode n = FindNode<SceneNode>(path);
             if (n != null)
+            {
                 n.Parent.RemoveNode(n);
+            }
         }
 
         // changes parent of this node from current parent to a given node
         public void SetParent(SceneNode node)
         {
             if (Parent != null)
+            {
                 Parent.RemoveNode(this);
+            }
+
             if (node != null)
+            {
                 node.AddNode(this);
+            }
             else
+            {
                 Visible = false;
+            }
         }
 
         // utility function which sets rotation of this node to a given angle (degrees) around the UP axis (0, 1, 0)
         public void SetAnglePlane(int angle_deg)
         {
             Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2)
-                     * Quaternion.FromAxisAngle(new Vector3(0f, 0f, 1f), MathUtils.DegToRad(angle_deg));
+                     * Quaternion.FromAxisAngle(new Vector3(0f, 0f, 1f), (float)(angle_deg * Math.PI / 180.0f));
         }
 
         public void SetPosition(Vector3 pos)
@@ -133,7 +134,9 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             NeedsAnyUpdate = true;
             if ((Parent != null) && (Parent.NeedsAnyUpdate != true))
+            {
                 Parent.TouchParents();
+            }
         }
 
         // if one local transform changes, so must the result transform
@@ -149,7 +152,9 @@ namespace SFEngine.SF3D.SceneSynchro
             NeedsAnyUpdate = true;
             NeedsUpdateResultTransform = true;
             foreach (SceneNode node in Children)
+            {
                 node.TouchResultTransform();
+            }
         }
 
         // updates the node and all children nodes
@@ -160,12 +165,16 @@ namespace SFEngine.SF3D.SceneSynchro
                 UpdateTime(dt);
 
                 if (needsanyupdate)
+                {
                     UpdateTransform();
+                }
 
                 GatherSceneInstances();
 
                 foreach (SceneNode node in Children)
+                {
                     node.Update(dt);
+                }
 
                 needsanyupdate = false;
             }
@@ -176,7 +185,9 @@ namespace SFEngine.SF3D.SceneSynchro
             SetTimeInternal(t);
 
             foreach (SceneNode node in Children)
+            {
                 node.SetTime(t);
+            }
         }
 
         protected virtual void SetTimeInternal(float t)
@@ -197,12 +208,17 @@ namespace SFEngine.SF3D.SceneSynchro
                 NeedsUpdateLocalTransform = false;
             }
 
-            if(NeedsUpdateResultTransform)
+            if (NeedsUpdateResultTransform)
             {
                 if (Parent != null)
-                    ResultTransform = local_transform * Parent.ResultTransform;
+                {
+                    result_transform = local_transform * Parent.result_transform;
+                }
                 else
-                    ResultTransform = local_transform;
+                {
+                    result_transform = local_transform;
+                }
+
                 NeedsUpdateResultTransform = false;
             }
         }
@@ -220,25 +236,29 @@ namespace SFEngine.SF3D.SceneSynchro
         }
 
         // finds a node of a given type, given a path to node
-        public T FindNode<T>(string path) where T: SceneNode
+        public T FindNode<T>(string path) where T : SceneNode
         {
-            string[] names = (Name+'.'+path).Split('.');
+            string[] names = (Name + '.' + path).Split('.');
             return FindNode<T>(names, 0);
         }
 
-        private T FindNode<T>(string[] names, int current_index) where T: SceneNode
+        private T FindNode<T>(string[] names, int current_index) where T : SceneNode
         {
             if (names[current_index] == Name)
             {
-                if ((current_index == names.Length - 1)&&(this.GetType() == typeof(T)))
+                if ((current_index == names.Length - 1) && (GetType() == typeof(T)))
+                {
                     return (T)this;
+                }
 
                 T result = null;
                 foreach (SceneNode node in Children)
                 {
                     result = node.FindNode<T>(names, current_index + 1);
                     if (result != null)
+                    {
                         break;
+                    }
                 }
                 return result;
             }
@@ -249,8 +269,11 @@ namespace SFEngine.SF3D.SceneSynchro
         public string GetFullPath()
         {
             if (Parent == null)
-                return this.Name;
-            return Parent.GetFullPath() + '.' + this.Name;
+            {
+                return Name;
+            }
+
+            return Parent.GetFullPath() + '.' + Name;
         }
 
         // disposes node and all resources its using
@@ -258,13 +281,15 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             InternalDispose();
 
-            //System.Diagnostics.Debug.WriteLine("DISPOSING " + Name);
-
             foreach (SceneNode c in Children)
+            {
                 c.Dispose();
+            }
 
-            while(Children.Count != 0)
+            while (Children.Count != 0)
+            {
                 Children[0].SetParent(null);
+            }
         }
 
         protected virtual void InternalDispose()
@@ -274,7 +299,7 @@ namespace SFEngine.SF3D.SceneSynchro
 
         public override string ToString()
         {
-            return Name + " ("+Children.Count+" children)";
+            return Name + " (" + Children.Count + " children)";
         }
     }
 
@@ -297,32 +322,44 @@ namespace SFEngine.SF3D.SceneSynchro
             }
             set
             {
-                if(mesh != null)
+                if (mesh != null)
                 {
-                    if(value == null)
+                    if (value == null)
                     {
                         aabb = Physics.BoundingBox.Zero;
                         if (visible)
+                        {
                             ClearTexGeometry();
+                        }
+
                         mesh = null;
                     }
                     else
                     {
                         if (visible)
+                        {
                             ClearTexGeometry();
+                        }
+
                         mesh = value;
                         if (visible)
+                        {
                             AddTexGeometry();
+                        }
+
                         aabb = mesh.aabb;
                     }
                 }
                 else
                 {
-                    if(value != null)
+                    if (value != null)
                     {
                         mesh = value;
                         if (visible)
+                        {
                             AddTexGeometry();
+                        }
+
                         aabb = mesh.aabb;
                     }
                 }
@@ -349,16 +386,21 @@ namespace SFEngine.SF3D.SceneSynchro
                         }
                     }
                     foreach (SceneNode n in Children)
+                    {
                         n.Visible = value;
+                    }
                 }
             }
         }
 
         public bool Billboarded { get; set; } = false;
+        public bool IsDecal { get; set; } = false;
+        public int DecalIndex { get; set; } = Utility.NO_INDEX;
+        public int CurrentMatrixIndex = Utility.NO_INDEX;
 
         protected override void UpdateTransform()
         {
-            if(Billboarded)
+            if (Billboarded)
             {
                 SceneNodeCamera camera = SFRender.SFRenderEngine.scene.camera;
                 Rotation = Matrix4.LookAt(camera.position, position, new Vector3(0, 1, 0)).ExtractRotation();
@@ -370,9 +412,10 @@ namespace SFEngine.SF3D.SceneSynchro
 
         protected override void GatherSceneInstances()
         {
-            if((visible)&&(mesh != null))
+            if ((visible) && (mesh != null))
             {
-                SFSubModel3D.Cache.MatrixBufferData[mesh.MatrixOffset + mesh.CurrentMatrixIndex] = ResultTransform;
+                CurrentMatrixIndex = mesh.MatrixOffset + mesh.CurrentMatrixIndex;
+                SFSubModel3D.Cache.MatrixBufferData[CurrentMatrixIndex] = result_transform;
                 mesh.CurrentMatrixIndex += 1;
             }
         }
@@ -419,7 +462,7 @@ namespace SFEngine.SF3D.SceneSynchro
             {
                 SFRender.SFRenderEngine.scene.model_set_simple.Add(mesh);
 
-                foreach(var submodel in mesh.submodels)
+                foreach (var submodel in mesh.submodels)
                 {
                     if (submodel.material.transparent_pass)
                     {
@@ -446,8 +489,12 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             if (Mesh != null)
             {
-                SFResources.SFResourceManager.Models.Dispose(Mesh.GetName());
+                SFResources.SFResourceManager.Models.Dispose(Mesh.Name);
                 Mesh = null;
+            }
+            if (IsDecal)
+            {
+                SFRender.SFRenderEngine.scene.decal_info.RemoveAt(DecalIndex);
             }
         }
     }
@@ -475,9 +522,13 @@ namespace SFEngine.SF3D.SceneSynchro
             {
                 mesh = value;
                 if (mesh != null)
+                {
                     aabb = mesh.aabb;
+                }
                 else
+                {
                     aabb = new Physics.BoundingBox(Vector3.Zero, Vector3.Zero);
+                }
             }
         }
         public SFSkeleton Skeleton { get { return skeleton; } private set { skeleton = value; } }
@@ -491,9 +542,13 @@ namespace SFEngine.SF3D.SceneSynchro
             {
                 skin = value;
                 if (skin == null)
+                {
                     ClearTexGeometry();
-                else if(Visible)
+                }
+                else if (Visible)
+                {
                     AddTexGeometry();
+                }
             }
         }
 
@@ -516,13 +571,19 @@ namespace SFEngine.SF3D.SceneSynchro
                 if (Visible != value)
                 {
                     if (value == false)
+                    {
                         ClearTexGeometry();
+                    }
                     else
+                    {
                         AddTexGeometry();
+                    }
 
                     visible = value;
                     foreach (SceneNode n in Children)
+                    {
                         n.Visible = value;
+                    }
                 }
             }
         }
@@ -537,12 +598,16 @@ namespace SFEngine.SF3D.SceneSynchro
             {
                 BoneTransforms = new Matrix4[_skeleton.bone_count];
                 for (int i = 0; i < _skeleton.bone_count; i++)
+                {
                     BoneTransforms[i] = Matrix4.Identity;
+                }
 
                 TouchResultTransform();
             }
             else
+            {
                 BoneTransforms = null;
+            }
 
             Skeleton = _skeleton;
             Skin = _skin;
@@ -555,7 +620,7 @@ namespace SFEngine.SF3D.SceneSynchro
                 LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SceneNodeAnimated.SetAnimation(): Node is not primary; this call has no effect");
                 return;
             }
-            if(skeleton == null)
+            if (skeleton == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SceneNodeAnimated.SetAnimation(): Skeleton is missing!");
                 return;
@@ -564,7 +629,9 @@ namespace SFEngine.SF3D.SceneSynchro
             AnimCurrentTime = 0f;
             AnimPlaying = play;
             if (play == true)
+            {
                 UpdateBoneTransforms();
+            }
         }
 
         // calculates bone transforms for this node
@@ -576,11 +643,15 @@ namespace SFEngine.SF3D.SceneSynchro
                 Animation.bone_animations[i].GetMatrix4(AnimCurrentTime, ref BoneTransforms[i]);
 
                 if (Skeleton.bone_parents[i] != Utility.NO_INDEX)
+                {
                     BoneTransforms[i] = BoneTransforms[i] * BoneTransforms[Skeleton.bone_parents[i]];
+                }
             }
 
             for (int i = 0; i < BoneTransforms.Length; i++)
+            {
                 BoneTransforms[i] = skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
+            }
 
             TouchResultTransform();
         }
@@ -589,41 +660,57 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             // if this node has a primary animation node, early exit - primary always drives its children's animation
             if (Primary != null)
+            {
                 return;
+            }
 
             if (Animation == null)
+            {
                 return;
+            }
 
             AnimCurrentTime = t;
             if (AnimCurrentTime > Animation.max_time)
+            {
                 AnimCurrentTime -= (int)(AnimCurrentTime / Animation.max_time) * Animation.max_time;
+            }
 
             if ((BoneTransforms != null) && (AnimPlaying))
             {
                 // determine if should update, based on scene camera distance and on bounding box
-                float dist = (SFRender.SFRenderEngine.scene.camera.position - ResultTransform.Row3.Xyz).Length;
+                float dist = (SFRender.SFRenderEngine.scene.camera.position - result_transform.Row3.Xyz).Length;
                 float size = (aabb.a - aabb.center).Length;
                 if (size == 0)
+                {
                     return;
+                }
 
-                int skip_count = 1 + (int)((dist/size) * 0.1f);
+                int skip_count = 1 + (int)((dist / size) * 0.1f);
                 if (skip_count == 1)
+                {
                     UpdateBoneTransforms();
+                }
                 else if ((SFRender.SFRenderEngine.scene.frame_counter % skip_count) == 0)
+                {
                     UpdateBoneTransforms();
+                }
             }
         }
 
         protected override void UpdateTime(float dt)
         {
-            if(dt != 0)
+            if (dt != 0)
+            {
                 SetAnimationCurrentTime(AnimCurrentTime + dt);
+            }
         }
 
         protected override void SetTimeInternal(float t)
         {
             if (Animation == null)
+            {
                 return;
+            }
 
             SetAnimationCurrentTime(t);
         }
@@ -647,12 +734,12 @@ namespace SFEngine.SF3D.SceneSynchro
             Primary = null;
             if (Mesh != null)
             {
-                SFResources.SFResourceManager.Models.Dispose(Mesh.GetName());
+                SFResources.SFResourceManager.Models.Dispose(Mesh.Name);
                 Mesh = null;
             }
             if (Skeleton != null)
             {
-                SFResources.SFResourceManager.Skeletons.Dispose(Skeleton.GetName());
+                SFResources.SFResourceManager.Skeletons.Dispose(Skeleton.Name);
                 Skeleton = null;
 
                 if (Animation != null)
@@ -666,7 +753,7 @@ namespace SFEngine.SF3D.SceneSynchro
             }
             if (Skin != null)
             {
-                SFResources.SFResourceManager.Skins.Dispose(Skin.GetName());
+                SFResources.SFResourceManager.Skins.Dispose(Skin.Name);
                 Skin = null;
             }
         }
@@ -686,14 +773,20 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             if (Parent != null)
             {
-                if((Parent.GetType() == typeof(SceneNodeAnimated))&&(BoneIndex != Utility.NO_INDEX))
-                    ResultTransform = local_transform * ((SceneNodeAnimated)(Parent)).Skeleton.bone_reference_matrices[BoneIndex]
-                        * ((SceneNodeAnimated)(Parent)).BoneTransforms[BoneIndex] * Parent.ResultTransform;
+                if ((Parent.GetType() == typeof(SceneNodeAnimated)) && (BoneIndex != Utility.NO_INDEX))
+                {
+                    result_transform = local_transform * ((SceneNodeAnimated)(Parent)).Skeleton.bone_reference_matrices[BoneIndex]
+                        * ((SceneNodeAnimated)(Parent)).BoneTransforms[BoneIndex] * Parent.result_transform;
+                }
                 else
-                    ResultTransform = local_transform * Parent.ResultTransform;
+                {
+                    result_transform = local_transform * Parent.result_transform;
+                }
             }
             else
-                ResultTransform = local_transform;
+            {
+                result_transform = local_transform;
+            }
 
             TouchLocalTransform();
         }
@@ -703,9 +796,15 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             BoneIndex = Utility.NO_INDEX;
             if (Parent == null)
+            {
                 return;
+            }
+
             if (((SceneNodeAnimated)Parent).Skeleton == null)
+            {
                 return;
+            }
+
             for (int i = 0; i < ((SceneNodeAnimated)Parent).Skeleton.bone_count; i++)
             {
                 if (((SceneNodeAnimated)Parent).Skeleton.bone_names[i].Contains(name))
@@ -718,9 +817,9 @@ namespace SFEngine.SF3D.SceneSynchro
             LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SceneNodeBone.SetBone(): Bone does not exist (bone name: " + name + ")");
         }
     }
-    
+
     // this is mainly used as a convenience for certain operations
-    public class SceneNodeMapChunk: SceneNode
+    public class SceneNodeMapChunk : SceneNode
     {
         public SFMap.SFMapHeightMapChunk MapChunk;
         public float DistanceToCamera { get; set; } = 0f;
@@ -730,15 +829,16 @@ namespace SFEngine.SF3D.SceneSynchro
 
         protected override void InternalDispose()
         {
-            if(MapChunk != null)
+            if (MapChunk != null)
+            {
                 MapChunk.Unload();
+            }
         }
     }
 
     // camera node should not have any children or unexpected behavior might occur
-    public class SceneNodeCamera: SceneNode
+    public class SceneNodeCamera : SceneNode
     {
-        const float EPSILON = 0.0001f;
         const float MAX_DIR_Y = 1.5f;
 
         private Vector3 lookat = new Vector3(0f, 1f, 0f);
@@ -762,9 +862,9 @@ namespace SFEngine.SF3D.SceneSynchro
         public Physics.Frustum Frustum { get { return frustum; } }
 
         // 250.0f is a magic constant for now...
-        public SceneNodeCamera(string s): base(s)
+        public SceneNodeCamera(string s) : base(s)
         {
-            frustum = new Physics.Frustum(position, (lookat-position), SFRender.SFRenderEngine.min_render_distance, 1.136f * Settings.ObjectFadeMax, aspect_ratio);
+            frustum = new Physics.Frustum(position, (lookat - position), SFRender.SFRenderEngine.min_render_distance, 1.136f * Settings.ObjectFadeMax, aspect_ratio);
             UpdateTransform();
         }
 
@@ -773,9 +873,14 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             direction = dir;
             if (direction.Y < -MAX_DIR_Y)
+            {
                 direction.Y = -MAX_DIR_Y;
+            }
+
             if (direction.Y > MAX_DIR_Y)
+            {
                 direction.Y = MAX_DIR_Y;
+            }
 
             // modify lookat to match
             Vector3 lookat_dir = Vector3.UnitX * Matrix3.CreateFromQuaternion(Quaternion.FromAxisAngle(Vector3.UnitY, direction.X) * Quaternion.FromAxisAngle(Vector3.UnitZ, direction.Y));
@@ -794,17 +899,23 @@ namespace SFEngine.SF3D.SceneSynchro
 
             DirVector2.Y = 0;
             if (DirVector2.LengthSquared == 0)
+            {
                 direction.X = 0;
+            }
             else
             {
                 DirVector2.Normalize();
-                if(DirVector.Z < 0)
+                if (DirVector.Z < 0)
+                {
                     direction.X = (float)(Vector3.CalculateAngle(Vector3.UnitX, DirVector2));
+                }
                 else
+                {
                     direction.X = -(float)(Vector3.CalculateAngle(Vector3.UnitX, DirVector2));
+                }
             }
 
-            direction.Y = (float)(Math.PI/2) - (float)(Vector3.CalculateAngle(DirVector, Vector3.UnitY));
+            direction.Y = (float)(Math.PI / 2) - (float)(Vector3.CalculateAngle(DirVector, Vector3.UnitY));
 
             TouchLocalTransform(); TouchParents();
         }
@@ -859,7 +970,9 @@ namespace SFEngine.SF3D.SceneSynchro
             Vector4 clip_space_vec = new Vector4(pos, 1.0f) * viewproj_matrix;
 
             if (clip_space_vec.W == 0)
+            {
                 return Vector2.Zero;
+            }
 
             Vector3 NDC_space_vec = clip_space_vec.Xyz / clip_space_vec.W;
 

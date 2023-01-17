@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.SFLua.LuaDecompiler
 {
@@ -31,9 +27,9 @@ namespace SFEngine.SFLua.LuaDecompiler
             Depth += 1;
             IfChunk.WriteLuaString(sw);
             Depth -= 1;
-            if(ElseifChunks.Count != 0)
+            if (ElseifChunks.Count != 0)
             {
-                for(int i=0; i < ElseifChunks.Count; i++)
+                for (int i = 0; i < ElseifChunks.Count; i++)
                 {
                     sw.Write(Utility.TabulateString("elseif ", Depth));
                     ElseifConditions[i].WriteLuaString(sw);
@@ -43,7 +39,7 @@ namespace SFEngine.SFLua.LuaDecompiler
                     Depth -= 1;
                 }
             }
-            if(ElseChunk.Items.Count != 0)
+            if (ElseChunk.Items.Count != 0)
             {
                 sw.WriteLine(Utility.TabulateString("else", Depth));
                 Depth += 1;

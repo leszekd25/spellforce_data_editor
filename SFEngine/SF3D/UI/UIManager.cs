@@ -2,13 +2,8 @@
  * UIElementIndex is used as an identifier for individual ui elements
  * */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using OpenTK;
+using System.Collections.Generic;
 
 namespace SFEngine.SF3D.UI
 {
@@ -25,10 +20,10 @@ namespace SFEngine.SF3D.UI
         // creates new storage with X quads - can only have one storage per texture
         public void AddStorage(SFTexture tex, int quad_count)
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "UIManager.AddStorage() called, texture name: " + tex.GetName());
-            if(storages.ContainsKey(tex))
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "UIManager.AddStorage() called, texture name: " + tex.Name);
+            if (storages.ContainsKey(tex))
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "UIManager.AddStorage(): There already exists a storage for texture " + tex.GetName() + "!");
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "UIManager.AddStorage(): There already exists a storage for texture " + tex.Name + "!");
                 return;
             }
 
@@ -40,8 +35,7 @@ namespace SFEngine.SF3D.UI
         // deletes storage for given texture
         public void RemoveStorage(SFTexture tex)
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "UIManager.RemoveStorage() called, texture name: " + tex.GetName());
-            storages[tex].Dispose();
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "UIManager.RemoveStorage() called, texture name: " + tex.Name);
             storages.Remove(tex);
         }
 
@@ -105,6 +99,18 @@ namespace SFEngine.SF3D.UI
             storages[elem.tex].AllocateQuadsUV(elem.span_index, _pxsizes, _origins, _uvs_start, _uvs_end, 0.5f);
         }
 
+        public float GetTextWidth(UIFont font, string text)
+        {
+            float total_x = 0;
+            for (int i = 0; i < text.Length; i++)
+            {
+                int char_id = (int)text[i];
+                total_x += font.character_sizes[char_id].X + font.space_between_letters;
+            }
+
+            return total_x;
+        }
+
         public void ClearElementMulti(UIElementIndex elem)
         {
             storages[elem.tex].ResetSpan(elem.span_index);
@@ -146,19 +152,25 @@ namespace SFEngine.SF3D.UI
         public void Update()
         {
             foreach (UIQuadStorage qs in storages.Values)
+            {
                 qs.Update();
+            }
         }
 
         public void ForceUpdate()
         {
             foreach (UIQuadStorage qs in storages.Values)
+            {
                 qs.ForceUpdate();
+            }
         }
 
         public void Dispose()
         {
-            foreach(var kv in storages)
+            foreach (var kv in storages)
+            {
                 kv.Value.Dispose();
+            }
 
             storages.Clear();
         }

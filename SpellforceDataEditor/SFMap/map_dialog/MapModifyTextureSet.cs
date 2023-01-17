@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.map_dialog
@@ -63,15 +56,25 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 
         private void OnTextureAvailablePress(int ID)
         {
-            if (selected_base == -1)
+            if (selected_base == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (operator_modify_texture_set.PreOperatorTextureIDMap.ContainsKey(selected_base))
+            {
                 operator_modify_texture_set.PostOperatorTextureIDMap[selected_base] = ID;
+            }
             else
             {
                 operator_modify_texture_set.PreOperatorTextureIDMap.Add(selected_base, map.heightmap.texture_manager.texture_id[selected_base]);
                 operator_modify_texture_set.PostOperatorTextureIDMap.Add(selected_base, ID);
+            }
+
+            if(operator_modify_texture_set.PostOperatorTextureIDMap[selected_base] == operator_modify_texture_set.PreOperatorTextureIDMap[selected_base])
+            {
+                operator_modify_texture_set.PreOperatorTextureIDMap.Remove(selected_base);
+                operator_modify_texture_set.PostOperatorTextureIDMap.Remove(selected_base);
             }
 
             map.heightmap.texture_manager.SetBaseTexture(selected_base, ID);

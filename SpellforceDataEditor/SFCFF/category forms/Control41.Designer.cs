@@ -41,7 +41,7 @@
             this.tb_sd2.Name = "tb_sd2";
             this.tb_sd2.Size = new System.Drawing.Size(126, 20);
             this.tb_sd2.TabIndex = 39;
-            this.tb_sd2.Validated += new System.EventHandler(this.tb_sd2_TextChanged);
+            this.tb_sd2.Leave += new System.EventHandler(this.tb_sd2_TextChanged);
             this.tb_sd2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd2_MouseDown);
             // 
             // lb_sd2
@@ -59,7 +59,7 @@
             this.tb_sd1.Name = "tb_sd1";
             this.tb_sd1.Size = new System.Drawing.Size(126, 20);
             this.tb_sd1.TabIndex = 37;
-            this.tb_sd1.Validated += new System.EventHandler(this.tb_sd1_TextChanged);
+            this.tb_sd1.Leave += new System.EventHandler(this.tb_sd1_TextChanged);
             // 
             // lb_sd1
             // 

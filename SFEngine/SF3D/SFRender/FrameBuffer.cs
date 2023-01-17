@@ -5,28 +5,26 @@
  * FrameBuffer provides simple interface for creating and destroying framebuffers of various types
  * */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System;
+using System.Collections.Generic;
 
 namespace SFEngine.SF3D.SFRender
 {
-    public struct FrameBufferColorAttachmentInfo
+    public struct FramebufferAttachmentInfo
     {
+        public FramebufferAttachment attachment_type;
         public PixelInternalFormat internal_format;
         public PixelFormat format;
-        public PixelType pixeltype;
-    }
-
-    public struct FrameBufferDepthInfo
-    {
-        public bool use_depth;
-        public FrameBuffer parent_depth;
+        public PixelType pixel_type;
+        public int sample_count;
+        public int min_filter;
+        public int mag_filter;
+        public int wrap_s;
+        public int wrap_t;
+        public Vector4 wrap_border_col;
+        public int anisotropy;
     }
 
     public class FrameBuffer
@@ -46,18 +44,11 @@ namespace SFEngine.SF3D.SFRender
 
         public int width, height;
         public int fbo = Utility.NO_INDEX;
-        public FrameBufferColorAttachmentInfo[] attachments;
-        public int[] texture_colors = null;
+        public FramebufferAttachmentInfo[] attachments;
+        public SFTexture[] textures = null;
+        //public int[] textures = null;
 
-        // stored for resize
-        public bool use_depth_component;
-        public FrameBuffer parent_depth;
-
-        public int texture_depth = Utility.NO_INDEX;
-        public int rbo = Utility.NO_INDEX;
-        public int sample_count = 1;
-
-        public FrameBuffer(int w, int h, FrameBufferColorAttachmentInfo[] _attachments, int s_count, FrameBufferDepthInfo depth_info)
+        public FrameBuffer(int w, int h, FramebufferAttachmentInfo[] _attachments)
         {
             if (ref_count == 0)
             {
@@ -80,11 +71,7 @@ namespace SFEngine.SF3D.SFRender
             }
             ref_count += 1;
 
-            use_depth_component = depth_info.use_depth;
-            parent_depth = depth_info.parent_depth;
-
             attachments = _attachments;
-            sample_count = s_count;
 
             Resize(w, h);
         }
@@ -96,115 +83,135 @@ namespace SFEngine.SF3D.SFRender
 
             if (fbo != Utility.NO_INDEX)
             {
-                if (rbo != Utility.NO_INDEX)
-                    GL.DeleteRenderbuffer(rbo);
+                if (textures != null)
+                {
+                    for (int i = 0; i < textures.Length; i++)//foreach(int t in textures)
+                    {
+                        SFResources.SFResourceManager.Textures.Dispose("_FRAMEBUFFER_" + fbo.ToString() + "_ATTACHMENT_" + i.ToString());
+                    }
+                }
 
-                if (texture_colors != null)
-                    foreach (int tc in texture_colors)
-                        GL.DeleteTexture(tc);
-                texture_colors = null;
-
-                if (texture_depth != Utility.NO_INDEX)
-                    GL.DeleteTexture(texture_depth);
+                textures = null;
 
                 GL.DeleteFramebuffer(fbo);
             }
 
             if (attachments != null)
-                texture_colors = new int[attachments.Length];
+            {
+                textures = new SFTexture[attachments.Length];//new int[attachments.Length];
+            }
 
             fbo = GL.GenFramebuffer();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
 
+            List<DrawBuffersEnum> col_attachments = new List<DrawBuffersEnum>();
+
             if (attachments != null)
+            {
                 for (int i = 0; i < attachments.Length; i++)
                 {
-                    texture_colors[i] = GL.GenTexture();
-                    if (sample_count > 1)
+                    //textures[i] = GL.GenTexture();
+                    int mipcount = 1;
+                    if (attachments[i].min_filter == (int)All.LinearMipmapLinear)
                     {
-                        GL.BindTexture(TextureTarget.Texture2DMultisample, texture_colors[i]);
-                        GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, attachments[i].internal_format, width, height, true);
-                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, (FramebufferAttachment)((int)FramebufferAttachment.ColorAttachment0 + i), TextureTarget.Texture2DMultisample, texture_colors[i], 0);
+                        int cur_w = width / 2;
+                        int cur_h = width / 2;
+                        while ((cur_w != 0) && (cur_h != 0))
+                        {
+                            mipcount++;
+                            cur_w /= 2;
+                            cur_h /= 2;
+                        }
+                    }
+
+                    textures[i] = SFTexture.FrameBufferAttachment((ushort)width, (ushort)height, (uint)attachments[i].sample_count, 0, (uint)mipcount, 
+                        (InternalFormat)attachments[i].internal_format, attachments[i].format, attachments[i].pixel_type,
+                        attachments[i].min_filter, attachments[i].mag_filter, attachments[i].wrap_s, attachments[i].wrap_t, attachments[i].wrap_border_col, attachments[i].anisotropy);
+                    SFResources.SFResourceManager.Textures.AddManually(textures[i], "_FRAMEBUFFER_" + fbo.ToString() + "_ATTACHMENT_" + i.ToString());
+                    /*TextureTarget tex_target;
+                    if (attachments[i].sample_count > 1)
+                    {
+                        tex_target = TextureTarget.Texture2DMultisample;
+                        SFRenderEngine.SetTexture(0, tex_target, textures[i]);
+                        GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, attachments[i].sample_count, attachments[i].internal_format, width, height, true);
                     }
                     else
                     {
-                        GL.BindTexture(TextureTarget.Texture2D, texture_colors[i]);
-                        GL.TexImage2D(TextureTarget.Texture2D, 0, attachments[i].internal_format, width, height, 0, attachments[i].format, attachments[i].pixeltype, new IntPtr(0));
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
-                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, (FramebufferAttachment)((int)FramebufferAttachment.ColorAttachment0 + i), TextureTarget.Texture2D, texture_colors[i], 0);
+                        tex_target = TextureTarget.Texture2D;
+                        SFRenderEngine.SetTexture(0, tex_target, textures[i]);
+                        GL.TexImage2D(tex_target, 0, attachments[i].internal_format, width, height, 0, attachments[i].format, attachments[i].pixel_type, new IntPtr(0));
+                        if (attachments[i].min_filter == (int)All.LinearMipmapLinear)
+                        {
+                            int cur_w = width / 2;
+                            int cur_h = width / 2;
+                            int lvl = 1;
+                            while ((cur_w != 0) && (cur_h != 0))
+                            {
+                                GL.TexImage2D(tex_target, lvl, attachments[i].internal_format, cur_w, cur_h, 0, attachments[i].format, attachments[i].pixel_type, new IntPtr(0));
+                                lvl++;
+                                cur_w /= 2;
+                                cur_h /= 2;
+                            }
+                        }
+
+                        GL.TexParameter(tex_target, TextureParameterName.TextureMinFilter, attachments[i].min_filter);
+                        GL.TexParameter(tex_target, TextureParameterName.TextureMagFilter, attachments[i].mag_filter);
+                        GL.TexParameter(tex_target, TextureParameterName.TextureWrapS, attachments[i].wrap_s);
+                        GL.TexParameter(tex_target, TextureParameterName.TextureWrapT, attachments[i].wrap_t);
+                        if (attachments[i].wrap_s == (int)All.ClampToBorder)
+                        {
+                            float[] col = new float[] { attachments[i].wrap_border_col.X, attachments[i].wrap_border_col.Y, attachments[i].wrap_border_col.Z, attachments[i].wrap_border_col.W };
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, col);
+                        }
+                        if ((Settings.AnisotropicFiltering) && (attachments[i].anisotropy != 0))
+                        {
+                            GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)All.TextureMaxAnisotropy, (float)attachments[i].anisotropy);
+                        }
+                    }*/
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attachments[i].attachment_type, textures[i].texture_target, textures[i].tex_id, 0);
+                    //GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attachments[i].attachment_type, tex_target, textures[i], 0);
+
+
+                    if ((attachments[i].attachment_type >= FramebufferAttachment.ColorAttachment0) && (attachments[i].attachment_type <= FramebufferAttachment.ColorAttachment31))
+                    {
+                        col_attachments.Add((DrawBuffersEnum)attachments[i].attachment_type);
                     }
-                }
-
-            if (use_depth_component)
-            {
-                // if parent depth exists, use parent depth texture
-                int used_texture;
-                if (parent_depth != null)
-                {
-                    used_texture = parent_depth.texture_depth;
-                }
-                else
-                {
-                    texture_depth = GL.GenTexture();
-                    used_texture = texture_depth;
-                }
-
-                if (sample_count > 1)
-                {
-                    GL.BindTexture(TextureTarget.Texture2DMultisample, used_texture);
-                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sample_count, PixelInternalFormat.DepthComponent32, width, height, true);
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2DMultisample, used_texture, 0);
-                }
-                else
-                {
-                    GL.BindTexture(TextureTarget.Texture2D, used_texture);
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, new IntPtr(0));
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, used_texture, 0);
                 }
             }
 
-            SetUpDrawBuffers();
-
-            FramebufferErrorCode e = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
-            if (e != FramebufferErrorCode.FramebufferComplete)
-                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "Framebuffer.Resize(): Error generating framebuffer! Error type " + e.ToString());
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-        }
-
-        public void SetUpDrawBuffers()
-        {
-            if (attachments == null)
+            if (col_attachments.Count == 0)
             {
                 GL.DrawBuffer(DrawBufferMode.None);
                 GL.ReadBuffer(ReadBufferMode.None);
             }
             else
             {
-                DrawBuffersEnum[] atts = new DrawBuffersEnum[attachments.Length];
-                for (int i = 0; i < attachments.Length; i++)
-                    atts[i] = (DrawBuffersEnum)((int)DrawBuffersEnum.ColorAttachment0 + i);
-                GL.DrawBuffers(atts.Length, atts);
+                GL.DrawBuffers(col_attachments.Count, col_attachments.ToArray());
             }
+
+            FramebufferErrorCode e = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
+            if (e != FramebufferErrorCode.FramebufferComplete)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "Framebuffer.Resize(): Error generating framebuffer! Error type " + e.ToString());
+            }
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
         public void Dispose()
         {
             if (fbo != Utility.NO_INDEX)
             {
-                if (rbo != Utility.NO_INDEX)
-                    GL.DeleteRenderbuffer(rbo);
+                if (textures != null)
+                {
+                    for (int i = 0; i < textures.Length; i++)//foreach(int t in textures)
+                    {
+                        SFResources.SFResourceManager.Textures.Dispose("_FRAMEBUFFER_" + fbo.ToString() + "_ATTACHMENT_" + i.ToString());
+                    }
+                }
 
-                if(texture_depth != Utility.NO_INDEX)
-                    GL.DeleteTexture(texture_depth);
-                texture_depth = Utility.NO_INDEX;
+                textures = null;
 
-                if (texture_colors != null)
-                    foreach (int tc in texture_colors)
-                        GL.DeleteTexture(tc);
-
-                texture_colors = null;
                 GL.DeleteFramebuffer(fbo);
             }
 
@@ -215,7 +222,6 @@ namespace SFEngine.SF3D.SFRender
                 GL.DeleteBuffer(vertices_vbo);
                 GL.DeleteVertexArray(screen_vao);
             }
-            rbo = Utility.NO_INDEX;
             fbo = Utility.NO_INDEX;
         }
     }

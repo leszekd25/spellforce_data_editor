@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SFEngine
 {
@@ -34,14 +30,19 @@ namespace SFEngine
 
                 bool found = false;
                 for (int i = first_unused + 1; i < elements.Count; i++)
+                {
                     if (!elem_active[i])
                     {
                         first_unused = i;
                         found = true;
                         break;
                     }
+                }
+
                 if (!found)
+                {
                     first_unused = elements.Count;
+                }
             }
             used_count += 1;
             return elem_index;
@@ -54,16 +55,26 @@ namespace SFEngine
                 elem_active[index] = false;
                 used_count -= 1;
                 if (index < first_unused)
+                {
                     first_unused = index;
+                }
+
                 if (index == last_used)
+                {
                     for (int i = last_used - 1; i >= 0; i--)
+                    {
                         if (elem_active[index])
                         {
                             last_used = i;
                             break;
                         }
+                    }
+                }
+
                 if (used_count == 0)
+                {
                     last_used = -1;
+                }
             }
         }
 
@@ -71,7 +82,9 @@ namespace SFEngine
         {
             int index = elements.IndexOf(elem);
             if (index != Utility.NO_INDEX)
+            {
                 RemoveAt(index);
+            }
         }
 
         public void Clear()

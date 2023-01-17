@@ -45,7 +45,7 @@
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 0;
             this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
-            this.textBox1.Validated += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label1
             // 
@@ -62,7 +62,7 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(57, 20);
             this.textBox3.TabIndex = 6;
-            this.textBox3.Validated += new System.EventHandler(this.textBox3_TextChanged);
+            this.textBox3.Leave += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // label2
             // 

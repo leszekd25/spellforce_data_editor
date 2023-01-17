@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 using OpenTK;
 
 namespace SFEngine.SF3D
@@ -16,7 +11,7 @@ namespace SFEngine.SF3D
             byte r = (byte)((col >> 11) << 3);
             byte g = (byte)((col >> 5) << 2);
             byte b = (byte)(col << 3);
-            return new Vector4(r, g, b, 255)/255;
+            return new Vector4(r, g, b, 255) / 255;
         }
 
         static public ushort ConvertColorV32To16(Vector4 color)

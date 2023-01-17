@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.SFLua.LuaDecompiler
 {
-    public class TableAssignment: Node
+    public class TableAssignment : Node
     {
         public Primitive index;
         public IRValue value;
 
         public override void WriteLuaString(StringWriter sw)
         {
-            if(index is Num)
+            if (index is Num)
             {
                 sw.Write("[");
                 index.WriteLuaString(sw);
                 sw.Write("] = ");
             }
-            else if(index is Str)
+            else if (index is Str)
             {
                 sw.Write(((Str)index).value.ToString() + " = ");
             }
@@ -46,16 +42,20 @@ namespace SFEngine.SFLua.LuaDecompiler
 
 
             Depth += 1;
-            for(int i=0; i < Items.Count; i++)
+            for (int i = 0; i < Items.Count; i++)
             {
                 sw.Write(Utility.TabulateString("", Depth));
                 Items[i].WriteLuaString(sw);
-                if(i != Items.Count-1)
+                if (i != Items.Count - 1)
                 {
                     if ((Items[i].index is Nil) ^ (Items[i + 1].index is Nil))
+                    {
                         sw.WriteLine(";");
+                    }
                     else
+                    {
                         sw.WriteLine(",");
+                    }
                 }
             }
             Depth -= 1;

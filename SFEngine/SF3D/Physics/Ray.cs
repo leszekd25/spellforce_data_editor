@@ -4,13 +4,8 @@
  * Ray has maximum length provided, if the intersection happens further than the length, it will not be registered
  * */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using OpenTK;
+using System;
 
 namespace SFEngine.SF3D.Physics
 {
@@ -22,15 +17,17 @@ namespace SFEngine.SF3D.Physics
         public Vector3 nvector;    // vector but normalized
         public Vector3 nvector_inverted;     // inverted normal
 
+        float length;
         float length2;
-        public float Length { get { return (float)Math.Sqrt(length2); } set { length2 = value * value; } }
+        public float Length { get { return length; } set { length = value; length2 = value * value; } }
 
         public Ray(Vector3 s, Vector3 v)
         {
             start = s;
             vector = v;
+            Length = v.Length;
             length2 = v.LengthSquared;
-            nvector = v.Normalized();
+            nvector = v / length;
         }
 
 
@@ -45,7 +42,10 @@ namespace SFEngine.SF3D.Physics
                 float ray_d = Vector3.Dot(pl.point - start, pl.normal) / ln_prod;
                 point = new Vector3(ray_d * vector + start);
                 if ((point - start).LengthSquared > length2)
+                {
                     return false;
+                }
+
                 return true;
             }
             else
@@ -66,7 +66,9 @@ namespace SFEngine.SF3D.Physics
                 float ray_d = Vector3.Dot(Vector3.Subtract(tr.v1, start), tr.normal) / ln_prod;
                 point = Vector3.Add(ray_d * vector, start);
                 if (Vector3.Subtract(point, start).LengthSquared > length2)
+                {
                     return false;
+                }
                 // check if point is in triangle using barycentric coordinates
                 return tr.ContainsPoint(point);
             }
@@ -93,11 +95,18 @@ namespace SFEngine.SF3D.Physics
                 current_point = start + nvector * current_center;
                 dist = ab.DistanceIsotropic(current_point);
                 if (dist <= min_dist)
+                {
                     return true;
+                }
+
                 if (ab.DistanceIsotropic(start + nvector * current_start) < ab.DistanceIsotropic(start + nvector * current_end))
+                {
                     current_end = current_center;
+                }
                 else
+                {
                     current_start = current_center;
+                }
             }
             return false;
         }
@@ -152,39 +161,50 @@ namespace SFEngine.SF3D.Physics
         {
             point = Vector3.Zero;
             if (mesh == null)
+            {
                 return false;
+            }
 
             if (!IntersectNoPoint(mesh.aabb))
+            {
                 return false;
+            }
 
             Ray r = this - mesh.offset;
 
             for (int i = 0; i < mesh.triangles.Length; i++)
             {
                 if (r.Intersect(mesh.triangles[i], out point))
+                {
                     return true;
+                }
             }
 
             return false;
         }
 
         // version of Intersect(Triangle) for use in IntersectGeomPool() to avoid GC allocation in the form of new Triangle()
+        // optimized compared to the version above
         public bool Intersect(Vector3 v1, Vector3 v2, Vector3 v3, out Vector3 point)
         {
             Vector3 v12 = Vector3.Subtract(v2, v1);
             Vector3 v13 = Vector3.Subtract(v3, v1);
-            Vector3 normal = Vector3.Cross(v12, v13).Normalized();
+            Vector3 normal = Vector3.Cross(v12, v13);
 
-            float ln_prod = Vector3.Dot(vector, normal);
-            if (ln_prod > 0)
+            float ln_prod = Vector3.Dot(nvector, normal);
+            if (ln_prod > 0)         // ray is aiming at the triangle
             {
                 // intersection of ray and plane the triangle belongs to
-                float ray_d = Vector3.Dot(Vector3.Subtract(v1, start), normal) / ln_prod;
-                point = Vector3.Add(ray_d * vector, start);
-                if (Vector3.Subtract(point, start).LengthSquared > length2)
+                Vector3 h1 = Vector3.Subtract(v1, start);
+                float ray_d = Vector3.Dot(h1, normal) / ln_prod;
+                Vector3 h2 = Vector3.Multiply(nvector, ray_d);
+                point = Vector3.Add(h2, start);
+                if (ray_d > length)
+                {
                     return false;
+                }
                 // check if point is in triangle using barycentric coordinates
-                Vector3 v = Vector3.Subtract(point, v1); 
+                Vector3 v = Vector3.Subtract(h2, h1);
                 float d00 = Vector3.Dot(v12, v12);
                 float d01 = Vector3.Dot(v12, v13);
                 float d11 = Vector3.Dot(v13, v13);
@@ -194,7 +214,9 @@ namespace SFEngine.SF3D.Physics
                 float d21 = Vector3.Dot(v, v13);
                 float alpha = (d11 * d20 - d01 * d21) * denom;
                 if (alpha < 0)
+                {
                     return false;
+                }
 
                 float beta = (d00 * d21 - d01 * d20) * denom;
                 return ((beta >= 0) && (alpha + beta <= 1));
@@ -204,6 +226,39 @@ namespace SFEngine.SF3D.Physics
                 point = Vector3.Zero;
                 return false;
             }
+        }
+
+        // version of Intersect(Triangle) for use in IntersectGeomPool() to avoid GC allocation in the form of new Triangle()
+        // https://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/raytri_tam.pdf (culling version)
+        public bool IntersectMollerTrumbore(Vector3 v1, Vector3 v2, Vector3 v3, out Vector3 point)
+        {
+            Vector3 e1 = Vector3.Subtract(v3, v1);
+            Vector3 e2 = Vector3.Subtract(v2, v1);
+            Vector3 pvec = Vector3.Cross(nvector, e2);
+            float determinant = Vector3.Dot(e1, pvec);
+            if(determinant < 0.0000001f)
+            {
+                point = Vector3.Zero;
+                return false;
+            }
+            Vector3 tvec = Vector3.Subtract(start, v1);
+            float u = Vector3.Dot(tvec, pvec);
+            if((u < 0.0f)||(u > determinant))
+            {
+                point = Vector3.Zero;
+                return false;
+            }
+            Vector3 qvec = Vector3.Cross(tvec, e1);
+            float v = Vector3.Dot(nvector, qvec);
+            if((v < 0.0f)||(u+v > determinant))
+            {
+                point = Vector3.Zero;
+                return false;
+            }
+            float inv_determinant = 1.0f / determinant;
+            float t = inv_determinant * Vector3.Dot(e2, qvec);
+            point = Vector3.Add(Vector3.Multiply(nvector, t), start);
+            return true;
         }
 
         // calculates point of intersection between a heightmap and the ray
@@ -219,7 +274,9 @@ namespace SFEngine.SF3D.Physics
             Vector2 ray_xz = new Vector2(start.X, start.Z);
             Vector2 ray_grad_xz = new Vector2(nvector.X, nvector.Z);
             if (ray_grad_xz.Length == 0)
+            {
                 return false;
+            }
 
             float projection_coefficient = 1 / ray_grad_xz.Length;
             ray_grad_xz = ray_grad_xz.Normalized();
@@ -251,31 +308,46 @@ namespace SFEngine.SF3D.Physics
                         int cur_tile_y = (int)(ray_xz.Y);
 
                         if (horizontal_boundary)
+                        {
                             if (ray_grad_xz.X < 0)
+                            {
                                 cur_tile_x -= 1;
+                            }
+                        }
+
                         if (vertical_boundary)
+                        {
                             if (ray_grad_xz.Y < 0)
+                            {
                                 cur_tile_y -= 1;
+                            }
+                        }
 
                         Vector3 v1, v2, v3;
                         while (true)
                         {
-                            if (!((cur_tile_x >= xoffset) && (cur_tile_x < xoffset + chunk_size) && (cur_tile_y >= yoffset) && (cur_tile_y < yoffset + chunk_size)))
+                            if (!((cur_tile_x >= xoffset) && (cur_tile_x <= xoffset + chunk_size) && (cur_tile_y >= yoffset) && (cur_tile_y <= yoffset + chunk_size)))
+                            {
                                 break;
+                            }
 
                             int fixed_tile_y = hmap.height - cur_tile_y;
                             // check intersection with tile geometry (2 triangles)
                             v1 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 1)) / 100.0f, cur_tile_y);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x];
                             v2 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + 1];
                             v3 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + - map_w1];
-                            if (Intersect(v1, v2, v3, out point))
+                            if (IntersectMollerTrumbore(v1, v2, v3, out point))
+                            {
                                 return true;
+                            }
 
                             v1 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + 1];
                             v2 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + - map_w1 + 1];
                             v3 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1); //hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + - map_w1];
-                            if (Intersect(v1, v2, v3, out point))
+                            if (IntersectMollerTrumbore(v1, v2, v3, out point))
+                            {
                                 return true;
+                            }
 
                             // move ray to the next tile
                             int new_tile_x = (ray_grad_xz.X > 0 ? cur_tile_x + 1 : cur_tile_x - 1);
@@ -284,13 +356,21 @@ namespace SFEngine.SF3D.Physics
                             float new_tile_y_dist_coeff = (Math.Abs(ray_xz.Y - ((new_tile_y + 0.5f) + 0.5f * (ray_grad_xz.Y < 0 ? 1 : -1)))) / ray_grad_abs_xz.Y;
 
                             if (ray_grad_abs_xz.X == 0)
+                            {
                                 cur_tile_y = new_tile_y;
+                            }
                             else if (ray_grad_abs_xz.Y == 0)
+                            {
                                 cur_tile_x = new_tile_x;
+                            }
                             else if (new_tile_x_dist_coeff < new_tile_y_dist_coeff)
+                            {
                                 cur_tile_x = new_tile_x;
+                            }
                             else
+                            {
                                 cur_tile_y = new_tile_y;
+                            }
 
                             // calculate collision of ray with the tile xz (we know that it collides)
                             tmin = Math.Min(new_tile_x_dist_coeff, new_tile_y_dist_coeff);
@@ -307,9 +387,13 @@ namespace SFEngine.SF3D.Physics
                 float new_chunk_y_dist_coeff = (Math.Abs(ray_xz.Y - ((new_chunk_y * chunk_size + chunk_size / 2) + (chunk_size / 2) * (ray_grad_xz.Y < 0 ? 1 : -1)))) / ray_grad_abs_xz.Y;
 
                 if (ray_grad_abs_xz.X == 0)
+                {
                     cur_chunk_y = new_chunk_y;
+                }
                 else if (ray_grad_abs_xz.Y == 0)
+                {
                     cur_chunk_x = new_chunk_x;
+                }
                 else if (new_chunk_x_dist_coeff < new_chunk_y_dist_coeff)
                 {
                     horizontal_boundary = true;
@@ -329,7 +413,9 @@ namespace SFEngine.SF3D.Physics
                 ray_xz = ray_xz + ray_grad_xz * (float)tmin;
 
                 if ((ray_xz - ray_start_xz).Length * projection_coefficient > Length)
+                {
                     break;
+                }
             }
 
             return false;

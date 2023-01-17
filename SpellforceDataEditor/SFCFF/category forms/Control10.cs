@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -81,19 +74,25 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox1, 2003);
+            }
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox2, 2063);
+            }
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox3, 2064);
+            }
         }
 
 
@@ -120,7 +119,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             string material_name;
 
             if (SFCategoryManager.gamedata[2063] == null)
+            {
                 type_name = SFEngine.Utility.S_UNKNOWN;
+            }
             else
             {
                 SFCategoryElement type_elem = SFCategoryManager.gamedata[2063].FindElementBinary<UInt16>(0, type_id);
@@ -128,7 +129,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             if (SFCategoryManager.gamedata[2064] == null)
+            {
                 material_name = SFEngine.Utility.S_UNKNOWN;
+            }
             else
             {
                 SFCategoryElement material_elem = SFCategoryManager.gamedata[2064].FindElementBinary<UInt16>(0, material_id);

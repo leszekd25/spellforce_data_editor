@@ -5,12 +5,6 @@
  * are provided
  * */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using OpenTK;
 
 namespace SFEngine.SF3D.Physics
@@ -28,7 +22,9 @@ namespace SFEngine.SF3D.Physics
             normal = n.Normalized();
             d = -normal.X * point.X - normal.Y * point.Y - normal.Z * point.Z;
             if (normal == Vector3.Zero)
-                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "Plane(): Normal is zero length (point: "+p.ToString()+")");
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "Plane(): Normal is zero length (point: " + p.ToString() + ")");
+            }
         }
 
         // creates a plane to which a given triangle belongs
@@ -40,14 +36,16 @@ namespace SFEngine.SF3D.Physics
         }
 
         // creates a plane  to which given  3  points  belong
-        public Plane(Vector3 p1, Vector3 p2, Vector3  p3)
+        public Plane(Vector3 p1, Vector3 p2, Vector3 p3)
         {
             point = p1;
             normal = Vector3.Cross(p3 - p1, p2 - p1).Normalized();
             d = -normal.X * point.X - normal.Y * point.Y - normal.Z * point.Z;
 
             if (normal == Vector3.Zero)
+            {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "Plane(): Malformed plane, normal is zero length!");
+            }
         }
 
         // returns distance from a given point to the plane
@@ -60,7 +58,7 @@ namespace SFEngine.SF3D.Physics
         // returns true if a point lies on positive side of the plane, false otherwise
         public bool SideOf(Vector3 v)
         {
-            return (normal.X * v.X + normal.Y * v.Y  + normal.Z * v.Z + d) > 0;
+            return (normal.X * v.X + normal.Y * v.Y + normal.Z * v.Z + d) > 0;
         }
     }
 }

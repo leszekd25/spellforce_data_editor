@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SFEngine.SF3D
 {
@@ -46,9 +44,14 @@ namespace SFEngine.SF3D
 
             MeshCacheRange val = new MeshCacheRange() { Start = first_val, Count = count };
             if (LastUsed < val.NextFree - 1)
+            {
                 LastUsed = val.NextFree - 1;
+            }
+
             if (FirstUnused == val.Start)
+            {
                 FirstUnused = val.NextFree;
+            }
 
             Ranges.Insert(index, val);
 
@@ -58,9 +61,14 @@ namespace SFEngine.SF3D
         public void RemoveAt(int index)
         {
             if (LastUsed == Ranges[index].NextFree - 1)
+            {
                 LastUsed = Ranges[index].Start;
+            }
+
             if (FirstUnused > Ranges[index].Start)
+            {
                 FirstUnused = Ranges[index].Start;
+            }
 
             Ranges.RemoveAt(index);
         }
@@ -71,7 +79,9 @@ namespace SFEngine.SF3D
         {
             range_index = 0;
             if (Ranges.Count == 0)
+            {
                 return 0;
+            }
 
             // invariant: FirstUnused and LastUsed
 
@@ -97,7 +107,9 @@ namespace SFEngine.SF3D
 
             int cur_vertex = 0;
             if (cur_range != -1)
+            {
                 cur_vertex = Ranges[cur_range].NextFree;
+            }
 
             for (; cur_range < Ranges.Count - 1; cur_range++)
             {
@@ -164,11 +176,7 @@ namespace SFEngine.SF3D
         public MeshCacheRangeCollection VertexRanges { get; private set; } = new MeshCacheRangeCollection();
         public MeshCacheRangeCollection ElementRanges { get; private set; } = new MeshCacheRangeCollection();
 
-        // meshes are not sorted, they're just pointers to vertex and element ranges (which are themselves sorted)
-        public List<MeshCacheElement> Meshes { get; private set; } = new List<MeshCacheElement>();
-
-        // this table can only grow; all elements in MeshesIndex point to a certain mesh
-        public List<int> MeshesIndex { get; private set; } = new List<int>();
+        public LinearPool<MeshCacheElement> Meshes { get; private set; } = new LinearPool<MeshCacheElement>();
 
         public byte[] VertexBufferObjectData;
         public uint[] ElementBufferObjectData;
@@ -281,7 +289,9 @@ namespace SFEngine.SF3D
             ElementBufferObjectID = GL.GenBuffer();
             EnableInstancing = enable_instancing;
             if (EnableInstancing)
+            {
                 MatrixBufferID = GL.GenBuffer();
+            }
         }
 
         // adds a vertex attribute
@@ -352,7 +362,7 @@ namespace SFEngine.SF3D
             VertexRanges.Clear();
             ElementRanges.Clear();
             Meshes.Clear();
-            MeshesIndex.Clear();
+            //MeshesIndex.Clear();
         }
 
         // uploads all vertices to the buffer
@@ -366,7 +376,7 @@ namespace SFEngine.SF3D
         public void VertexUpload(int vertex_range_index)
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObjectID);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, 
+            GL.BufferSubData(BufferTarget.ArrayBuffer,
                 new IntPtr(VertexRanges[vertex_range_index].Start * BytesPerVertex),
                 VertexRanges[vertex_range_index].Count * BytesPerVertex,
                 ref VertexBufferObjectData[VertexRanges[vertex_range_index].Start * BytesPerVertex]);
@@ -379,7 +389,7 @@ namespace SFEngine.SF3D
             GL.BufferData(BufferTarget.ElementArrayBuffer, ElementBufferObjectData.Length * 4, ElementBufferObjectData, BufferUsageHint.StaticDraw);
         }
 
-        // updates vertices in the buffer
+        // updates elements in the buffer
         public void ElementUpload(int element_range_indexx)
         {
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObjectID);
@@ -392,7 +402,9 @@ namespace SFEngine.SF3D
         public void MatrixUpload()
         {
             if (!EnableInstancing)
+            {
                 return;
+            }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, MatrixBufferID);
             GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(0), 64 * CurrentMatrix, MatrixBufferData);
@@ -401,12 +413,14 @@ namespace SFEngine.SF3D
         public void ResizeInstanceMatrixBuffer(int m_count)
         {
             if (m_count <= MatrixBufferData.Length)
+            {
                 return;
+            }
 
             int current_mbo_size = MatrixBufferData.Length;
 
             MatrixBufferData = new Matrix4[current_mbo_size * 2];
-            
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, MatrixBufferID);
             GL.BufferData(BufferTarget.ArrayBuffer, MatrixBufferData.Length * 64, MatrixBufferData, BufferUsageHint.DynamicDraw);
         }
@@ -423,19 +437,28 @@ namespace SFEngine.SF3D
             int vertex_range_index = VertexRanges.Add(vertex_count, out vertex_offset);
             int element_range_index = ElementRanges.Add(element_data.Length, out element_offset);
 
-            for(int i = 0; i < Meshes.Count; i++)
+            for (int i = 0; i < Meshes.elements.Count; i++)
             {
-                if (Meshes[i].VertexRangeIndex >= vertex_range_index)
-                    Meshes[i] = new MeshCacheElement(Meshes[i].VertexRangeIndex + 1, Meshes[i].ElementRangeIndex);
-                if (Meshes[i].ElementRangeIndex >= element_range_index)
-                    Meshes[i] = new MeshCacheElement(Meshes[i].VertexRangeIndex, Meshes[i].ElementRangeIndex + 1);
+                if (!Meshes.elem_active[i])
+                {
+                    continue;
+                }
+
+                MeshCacheElement em = Meshes.elements[i];
+                if (em.VertexRangeIndex >= vertex_range_index)
+                {
+                    em.VertexRangeIndex++;
+                }
+
+                if (em.ElementRangeIndex >= element_range_index)
+                {
+                    em.ElementRangeIndex++;
+                }
+
+                Meshes.elements[i] = em;
             }
 
-            Meshes.Add(new MeshCacheElement() { VertexRangeIndex = vertex_range_index, ElementRangeIndex = element_range_index });
-            int mesh_index = Meshes.Count - 1;
-
-            MeshesIndex.Add(mesh_index);
-            int mesh_index_index = MeshesIndex.Count - 1;
+            int mesh_index = Meshes.Add(new MeshCacheElement() { VertexRangeIndex = vertex_range_index, ElementRangeIndex = element_range_index });
 
             bool do_full_vertex_reload = false;
             bool do_full_element_reload = false;
@@ -443,7 +466,9 @@ namespace SFEngine.SF3D
             while (true)
             {
                 if ((vertex_offset + vertex_count) * BytesPerVertex <= VertexBufferObjectData.Length)
+                {
                     break;
+                }
 
                 VertexBufferResizeDouble();
                 do_full_vertex_reload = true;
@@ -452,7 +477,9 @@ namespace SFEngine.SF3D
             while (true)
             {
                 if (element_offset + element_data.Length <= ElementBufferObjectData.Length)
+                {
                     break;
+                }
 
                 ElementBufferResizeDouble();
                 do_full_element_reload = true;
@@ -462,8 +489,8 @@ namespace SFEngine.SF3D
             Array.Copy(element_data, 0, ElementBufferObjectData, element_offset, element_data.Length);
 
             // defragment if need be
-            if(   (VertexRanges.LastUsed - VertexRanges.FirstUnused > VertexRanges.FirstUnused/2)
-                ||(ElementRanges.LastUsed - ElementRanges.FirstUnused > ElementRanges.FirstUnused / 2))
+            if ((VertexRanges.LastUsed - VertexRanges.FirstUnused > VertexRanges.FirstUnused / 2)
+                || (ElementRanges.LastUsed - ElementRanges.FirstUnused > ElementRanges.FirstUnused / 2))
             {
                 Defragment();
                 do_full_vertex_reload = true;
@@ -471,57 +498,79 @@ namespace SFEngine.SF3D
             }
 
             if (do_full_vertex_reload)
+            {
                 FullVertexUpload();
+            }
             else
-                VertexUpload(mesh_index);
+            {
+                VertexUpload(vertex_range_index);
+            }
 
             if (do_full_element_reload)
+            {
                 FullElementUpload();
+            }
             else
-                ElementUpload(mesh_index);
+            {
+                ElementUpload(element_range_index);
+            }
 
-            return mesh_index_index;
+            //return mesh_index_index;
+            return mesh_index;
         }
 
         // removes mesh from the cache
         // with correct usage, meshes that were deleted with this function will not be further referenced with this index
-        public void RemoveMesh(int mesh_index_index)
+        public void RemoveMesh(int mesh_index)//_index)
         {
-            if (mesh_index_index >= MeshesIndex.Count)
+            if (mesh_index >= Meshes.elements.Count)
+            {
                 return;
+            }
 
-            int mesh_index = MeshesIndex[mesh_index_index];
-            if (mesh_index >= Meshes.Count)
+            if (!Meshes.elem_active[mesh_index])
+            {
                 return;
+            }
 
-            int vertex_range_index = Meshes[mesh_index].VertexRangeIndex;
+            int vertex_range_index = Meshes.elements[mesh_index].VertexRangeIndex;
             if (vertex_range_index >= VertexRanges.Count)
+            {
                 return;
+            }
 
-            int element_range_index = Meshes[mesh_index].ElementRangeIndex;
+            int element_range_index = Meshes.elements[mesh_index].ElementRangeIndex;
             if (element_range_index >= ElementRanges.Count)
+            {
                 return;
+            }
 
             // 1. delete vertex and element ranges
-            VertexRanges.RemoveAt(Meshes[mesh_index].VertexRangeIndex);
-            ElementRanges.RemoveAt(Meshes[mesh_index].ElementRangeIndex);
+            VertexRanges.RemoveAt(vertex_range_index);
+            ElementRanges.RemoveAt(element_range_index);
 
-            for(int  i = 0; i < Meshes.Count; i++)
+            for (int i = 0; i < Meshes.elements.Count; i++)
             {
-                if (Meshes[i].VertexRangeIndex > vertex_range_index)
-                    Meshes[i] = new MeshCacheElement(Meshes[i].VertexRangeIndex - 1, Meshes[i].ElementRangeIndex);
+                if (!Meshes.elem_active[i])
+                {
+                    continue;
+                }
 
-                if (Meshes[i].ElementRangeIndex > element_range_index)
-                    Meshes[i] = new MeshCacheElement(Meshes[i].VertexRangeIndex, Meshes[i].ElementRangeIndex - 1);
+                MeshCacheElement em = Meshes.elements[i];
+                if (em.VertexRangeIndex > vertex_range_index)
+                {
+                    em.VertexRangeIndex--;
+                }
+
+                if (em.ElementRangeIndex > element_range_index)
+                {
+                    em.ElementRangeIndex--;
+                }
+
+                Meshes.elements[i] = em;
             }
             // 2. delete mesh from the mesh list
             Meshes.RemoveAt(mesh_index);
-
-            for(int i = 0; i < MeshesIndex.Count; i++)
-            {
-                if (MeshesIndex[i] > mesh_index)
-                    MeshesIndex[i] -= 1;
-            }
         }
 
         public void Dispose()
@@ -542,6 +591,25 @@ namespace SFEngine.SF3D
                 VertexBufferObjectData = null;
                 ElementBufferObjectData = null;
             }
+        }
+
+        public void LogMemoryUsage()
+        {
+            StringBuilder log_msg = new StringBuilder();
+
+            log_msg.Append("Cache memory usage (bytes, RAM): ");
+            log_msg.Append("VERTEX BUFFER " + (VertexBufferObjectData != null? VertexBufferObjectData.Length: 0).ToString());
+            log_msg.Append(", INDEX BUFFER " + (ElementBufferObjectData != null ? ElementBufferObjectData.Length * 4 : 0).ToString());
+            log_msg.Append(", INSTANCE BUFFER " + ((EnableInstancing && MatrixBufferData != null) ? (MatrixBufferData.Length * 64) : (0)).ToString());
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, log_msg.ToString());
+            log_msg.Clear();
+
+            log_msg.Append("Cache memory usage (bytes, device): ");
+            log_msg.Append("VERTEX BUFFER " + (VertexBufferObjectData != null ? VertexBufferObjectData.Length : 0).ToString());
+            log_msg.Append(", INDEX BUFFER " + (ElementBufferObjectData != null ? ElementBufferObjectData.Length * 4 : 0).ToString());
+            log_msg.Append(", INSTANCE BUFFER " + ((EnableInstancing && MatrixBufferData != null) ? (MatrixBufferData.Length * 64) : (0)).ToString());
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, log_msg.ToString());
+            log_msg.Clear();
         }
 
         /* usage:

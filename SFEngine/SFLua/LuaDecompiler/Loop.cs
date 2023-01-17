@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace SFEngine.SFLua.LuaDecompiler
 {
@@ -19,7 +14,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         }
     }
 
-    public class For: Loop
+    public class For : Loop
     {
         public Identifier name;
         public IRValue from;
@@ -34,7 +29,7 @@ namespace SFEngine.SFLua.LuaDecompiler
             from.WriteLuaString(sw);
             sw.Write(", ");
             to.WriteLuaString(sw);
-            if((!(step is Num))||((Num)step).value != 1)
+            if ((!(step is Num)) || ((Num)step).value != 1)
             {
                 sw.Write(", ");
                 step.WriteLuaString(sw);
@@ -52,7 +47,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         }
     }
 
-    public class Foreach: Loop
+    public class Foreach : Loop
     {
         public Identifier index;
         public Identifier value;
@@ -79,7 +74,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         }
     }
 
-    public class While: Loop
+    public class While : Loop
     {
         public IOperatorLogic Condition;
 
@@ -100,7 +95,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         }
     }
 
-    public class Repeat: Loop
+    public class Repeat : Loop
     {
         public IOperatorLogic Condition;
 
@@ -120,7 +115,7 @@ namespace SFEngine.SFLua.LuaDecompiler
             return "REPEAT";
         }
     }
-    
+
     public class Continue : Node, IStatement
     {
         public int InstructionID { get; set; }

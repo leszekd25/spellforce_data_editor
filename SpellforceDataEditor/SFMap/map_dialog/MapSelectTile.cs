@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.map_dialog
@@ -28,9 +21,11 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             map = m;
             SelectionType = t;
             InitializeComponent();
-            
+
             if (SelectionType == MapTileSelectType.BASE)
+            {
                 GenerateTilesBase();
+            }
         }
 
         public void OnTileSelectBase(int ID)

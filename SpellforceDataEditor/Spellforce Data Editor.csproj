@@ -15,6 +15,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
     <PublishUrl>C:\Users\Betty\Desktop\SF Editor\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -29,7 +30,6 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -51,8 +51,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
+    <Prefer32Bit>true</Prefer32Bit>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>382940043477778432.ico</ApplicationIcon>
@@ -409,6 +411,12 @@
     <Compile Include="SFCFF\helper_forms\CategorySelectForm.Designer.cs">
       <DependentUpon>CategorySelectForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SFCFF\helper_forms\CFFOperatorHistory.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFCFF\helper_forms\CFFOperatorHistory.Designer.cs">
+      <DependentUpon>CFFOperatorHistory.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFCFF\helper_forms\ListBoxNoFlicker.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -473,6 +481,7 @@
     <Compile Include="SFMap\MapEdit\MapMonumentEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapBrush.cs" />
     <Compile Include="SFMap\MapEdit\MapBindstoneEditor.cs" />
+    <Compile Include="SFMap\MapEdit\MapPaintMaskEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapPortalEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapCoopCampEditor.cs" />
     <Compile Include="SFMap\MapEdit\MapDecorationEditor.cs" />
@@ -562,12 +571,6 @@
     <Compile Include="SFMap\map_controls\MapUnitInspector.Designer.cs">
       <DependentUpon>MapUnitInspector.cs</DependentUpon>
     </Compile>
-    <Compile Include="SFMap\map_dialog\MapAutoTextureDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapAutoTextureDialog.Designer.cs">
-      <DependentUpon>MapAutoTextureDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="SFMap\map_dialog\MapExportHeightmapDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -629,17 +632,6 @@
       <DependentUpon>MapVisibilitySettings.cs</DependentUpon>
     </Compile>
     <Compile Include="SFMap\map_operators\MapOperator.cs" />
-    <Compile Include="SFMod\mod_controls\ModInfoForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFMod\mod_controls\ModInfoForm.Designer.cs">
-      <DependentUpon>ModInfoForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMod\SFMod.cs" />
-    <Compile Include="SFMod\SFModAssetManager.cs" />
-    <Compile Include="SFMod\SFModCFFChanges.cs" />
-    <Compile Include="SFMod\SFModInfo.cs" />
-    <Compile Include="SFMod\SFModTemplate.cs" />
     <Compile Include="special forms\AboutForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -670,18 +662,6 @@
     <Compile Include="special forms\MapEditorForm.Designer.cs">
       <DependentUpon>MapEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="special forms\ModCreatorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\ModCreatorForm.Designer.cs">
-      <DependentUpon>ModCreatorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="special forms\ModManagerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\ModManagerForm.Designer.cs">
-      <DependentUpon>ModManagerForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="special forms\SaveDataEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -702,12 +682,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="special forms\ChangeDataLangForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\ChangeDataLangForm.Designer.cs">
-      <DependentUpon>ChangeDataLangForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="special forms\ReferencesForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -905,6 +879,9 @@
     <EmbeddedResource Include="SFCFF\helper_forms\CategorySelectForm.resx">
       <DependentUpon>CategorySelectForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SFCFF\helper_forms\CFFOperatorHistory.resx">
+      <DependentUpon>CFFOperatorHistory.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SFCFF\helper_forms\SaveGamedataForm.resx">
       <DependentUpon>SaveGamedataForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -968,9 +945,6 @@
     <EmbeddedResource Include="SFMap\map_controls\MapUnitInspector.resx">
       <DependentUpon>MapUnitInspector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_dialog\MapAutoTextureDialog.resx">
-      <DependentUpon>MapAutoTextureDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="SFMap\map_dialog\MapExportHeightmapDialog.resx">
       <DependentUpon>MapExportHeightmapDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -1001,9 +975,6 @@
     <EmbeddedResource Include="SFMap\map_dialog\MapVisibilitySettings.resx">
       <DependentUpon>MapVisibilitySettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SFMod\mod_controls\ModInfoForm.resx">
-      <DependentUpon>ModInfoForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="special forms\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -1019,12 +990,6 @@
     <EmbeddedResource Include="special forms\MapEditorForm.resx">
       <DependentUpon>MapEditorForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="special forms\ModCreatorForm.resx">
-      <DependentUpon>ModCreatorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\ModManagerForm.resx">
-      <DependentUpon>ModManagerForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="special forms\SaveDataEditorForm.resx">
       <DependentUpon>SaveDataEditorForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -1033,9 +998,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\utility_forms\ShowCodeForm.resx">
       <DependentUpon>ShowCodeForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\ChangeDataLangForm.resx">
-      <DependentUpon>ChangeDataLangForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\ReferencesForm.resx">
       <DependentUpon>ReferencesForm.cs</DependentUpon>
@@ -1079,16 +1041,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="382940043477778432.ico" />
-    <Content Include="building_icon.png" />
-    <Content Include="decoration_icon.png" />
-    <Content Include="enemycamp_icon.png" />
-    <Content Include="flag_icon.png" />
-    <Content Include="hmap_icon.png" />
-    <Content Include="lake_icon.png" />
-    <Content Include="metadata_icon.png" />
-    <None Include="monument_icon.png" />
-    <Content Include="npc_icon.png" />
-    <Content Include="object_icon.png" />
     <None Include="Resources\unit_icon.png" />
     <None Include="Resources\metadata_icon.png" />
     <None Include="Resources\monument_icon.png" />
@@ -1100,8 +1052,6 @@
     <None Include="Resources\hmap_icon.png" />
     <None Include="Resources\lake_icon.png" />
     <None Include="Resources\texture_icon.png" />
-    <Content Include="texture_icon.png" />
-    <Content Include="unit_icon.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SFLua\lua_dialog_controls\" />

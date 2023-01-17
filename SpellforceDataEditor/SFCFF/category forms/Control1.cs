@@ -1,13 +1,8 @@
-﻿using System;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -19,7 +14,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             InitializeComponent();
             tracetable = new int[10];
             for (int i = 0; i < 10; i++)
+            {
                 tracetable[i] = 0;
+            }
+
             column_dict.Add("Spell effect ID", new int[1] { 0 });
             column_dict.Add("Spell type ID", new int[1] { 1 });
             column_dict.Add("Requirement 1 1", new int[1] { 2 }); column_dict.Add("Requirement 1 2", new int[1] { 3 }); column_dict.Add("Requirement 1 3", new int[1] { 4 });
@@ -224,9 +222,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             lb_sd8.Text = p[7];
             lb_sd9.Text = p[8];
             lb_sd10.Text = p[9];
-            for(int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
-                TextBox t = this.Controls.Find("tb_sd" + (i+1).ToString(), true)[0] as TextBox;
+                TextBox t = Controls.Find("tb_sd" + (i + 1).ToString(), true)[0] as TextBox;
                 char c = p[10][i];
                 if (c == '0')
                 {
@@ -237,9 +235,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 {
                     t.BackColor = Color.DarkOrange;
                     if (c == '1')
+                    {
                         tracetable[i] = 2002;
+                    }
                     else
+                    {
                         tracetable[i] = 2024;
+                    }
                 }
             }
         }
@@ -285,66 +287,88 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void tb_typeID_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(tb_typeID, 2054);
+            }
         }
 
         private void tb_sd1_MouseDown(object sender, MouseEventArgs e)
         {
             if ((e.Button == MouseButtons.Right) && (tracetable[0] != SFEngine.Utility.NO_INDEX))
+            {
                 step_into(tb_sd1, tracetable[0]);
+            }
         }
 
         private void tb_sd2_MouseDown(object sender, MouseEventArgs e)
         {
             if ((e.Button == MouseButtons.Right) && (tracetable[1] != SFEngine.Utility.NO_INDEX))
+            {
                 step_into(tb_sd2, tracetable[1]);
+            }
         }
 
         private void tb_sd3_MouseDown(object sender, MouseEventArgs e)
         {
             if ((e.Button == MouseButtons.Right) && (tracetable[2] != SFEngine.Utility.NO_INDEX))
+            {
                 step_into(tb_sd3, tracetable[2]);
+            }
         }
 
         private void tb_sd4_MouseDown(object sender, MouseEventArgs e)
         {
             if ((e.Button == MouseButtons.Right) && (tracetable[3] != SFEngine.Utility.NO_INDEX))
+            {
                 step_into(tb_sd4, tracetable[3]);
+            }
         }
 
         private void tb_sd5_MouseDown(object sender, MouseEventArgs e)
         {
             if ((e.Button == MouseButtons.Right) && (tracetable[4] != SFEngine.Utility.NO_INDEX))
+            {
                 step_into(tb_sd5, tracetable[4]);
+            }
         }
 
         private void tb_sd6_MouseDown(object sender, MouseEventArgs e)
         {
             if ((e.Button == MouseButtons.Right) && (tracetable[5] != SFEngine.Utility.NO_INDEX))
+            {
                 step_into(tb_sd6, tracetable[5]);
+            }
         }
 
         private void tb_sd7_MouseDown(object sender, MouseEventArgs e)
         {
             if ((e.Button == MouseButtons.Right) && (tracetable[6] != SFEngine.Utility.NO_INDEX))
+            {
                 step_into(tb_sd7, tracetable[6]);
+            }
         }
 
         private void tb_sd8_MouseDown(object sender, MouseEventArgs e)
         {
             if ((e.Button == MouseButtons.Right) && (tracetable[7] != SFEngine.Utility.NO_INDEX))
+            {
                 step_into(tb_sd8, tracetable[7]);
+            }
         }
 
         private void tb_sd9_MouseDown(object sender, MouseEventArgs e)
         {
             if ((e.Button == MouseButtons.Right) && (tracetable[8] != SFEngine.Utility.NO_INDEX))
+            {
                 step_into(tb_sd9, tracetable[8]);
+            }
         }
         private void tb_sd10_MouseDown(object sender, MouseEventArgs e)
         {
             if ((e.Button == MouseButtons.Right) && (tracetable[9] != SFEngine.Utility.NO_INDEX))
+            {
                 step_into(tb_sd10, tracetable[9]);
+            }
         }
 
 
@@ -388,7 +412,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             string stype_txt;
             if (SFCategoryManager.gamedata[2054] == null)
+            {
                 stype_txt = SFEngine.Utility.S_UNKNOWN;
+            }
             else
             {
                 SFCategoryElement stype_elem = SFCategoryManager.gamedata[2054].FindElementBinary<UInt16>(0, type_id);
@@ -408,7 +434,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 Byte skill_minor = (Byte)category[index][3 + i * 3];
                 Byte skill_level = (Byte)category[index][4 + i * 3];
                 if (skill_major == 0)
+                {
                     break;
+                }
+
                 reqs.Add(SFCategoryManager.GetSkillName(skill_major, skill_minor, skill_level));
             }
             string req_str = "";

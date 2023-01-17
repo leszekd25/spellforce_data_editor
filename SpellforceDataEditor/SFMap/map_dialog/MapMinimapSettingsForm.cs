@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using SFEngine.SFMap;
+using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SFEngine.SFMap;
-using SFEngine.SFCFF;
-using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.map_dialog
 {
@@ -32,7 +24,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         {
             new_source = mms;
 
-            switch(mms)
+            switch (mms)
             {
                 case SFMapMinimapSource.ORIGINAL:
                     UseOriginalMap.Checked = true;
@@ -51,11 +43,12 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                     new_minimap = new SFMapMinimap();
                     new_minimap.FromBitmap(
                         MainForm.mapedittool.ui.minimap_tex.ToBitmap(
-                            new SFEngine.SF3D.SFTexture.SFTextureToBitmapArgs() 
-                            { 
-                                ConversionType = SFEngine.SF3D.SFTexture.SFTextureToBitmapArgType.DIMENSION, 
-                                DimWidth = 128, 
-                                DimHeight = 128 }));
+                            new SFEngine.SF3D.SFTexture.SFTextureToBitmapArgs()
+                            {
+                                ConversionType = SFEngine.SF3D.SFTexture.SFTextureToBitmapArgType.DIMENSION,
+                                DimWidth = 128,
+                                DimHeight = 128
+                            }));
                     break;
                 case SFMapMinimapSource.CUSTOM:
                     UseCustomMap.Checked = true;
@@ -72,7 +65,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 
         private void ShowMinimap()
         {
-            if(new_minimap == null)
+            if (new_minimap == null)
             {
                 MinimapPicture.Image = MinimapPicture.InitialImage;
                 return;
@@ -99,7 +92,9 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         private void ButtonImportCustomMinimap_Click(object sender, EventArgs e)
         {
             if (ImportMinimapDialog.ShowDialog() != DialogResult.OK)
+            {
                 return;
+            }
 
             System.Drawing.Bitmap bmp = null;
             try
@@ -107,13 +102,15 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                 bmp = new Bitmap(ImportMinimapDialog.FileName);
                 bmp = new Bitmap(bmp, new Size(128, 128));
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return;
             }
 
             if (bmp == null)
+            {
                 return;
+            }
 
             new_minimap = new SFMapMinimap();
             new_minimap.FromBitmap(bmp);

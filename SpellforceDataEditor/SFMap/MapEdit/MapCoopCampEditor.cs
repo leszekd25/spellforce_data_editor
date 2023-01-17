@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using SFEngine.SFCFF;
 using SFEngine.SFMap;
-using SFEngine.SFCFF;
-using SFEngine.SFLua;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
-    public class MapCoopCampEditor: MapEditor
+    public class MapCoopCampEditor : MapEditor
     {
         bool first_click = false;
         public int selected_spawn { get; private set; } = -1;    // spawn index
@@ -21,7 +15,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public override void Select(int index)
         {
             if (first_click)
+            {
                 return;
+            }
 
             selected_spawn = index;
         }
@@ -47,7 +43,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 if (b == MouseButtons.Left)
                 {
                     if (!map.heightmap.CanMoveToPosition(pos))
+                    {
                         return;
+                    }
 
                     // undo/redo
                     SFCoord previous_pos = new SFCoord(0, 0);
@@ -63,7 +61,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     {
                         ushort new_object_id = 2541;
                         if (SFCategoryManager.gamedata[2050].GetElementIndex(new_object_id) == SFEngine.Utility.NO_INDEX)
+                        {
                             return;
+                        }
                         // create new spawn and drag it until mouse released
                         map.AddObject(new_object_id, pos, 0, 0, 0);
                         // undo/redo
@@ -109,7 +109,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                     first_click = true;
                 }
-                else if(b == MouseButtons.Right)
+                else if (b == MouseButtons.Right)
                 {
                     Select(SFEngine.Utility.NO_INDEX);
                     MainForm.mapedittool.InspectorSelect(null);
@@ -122,13 +122,17 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     // find selected coop camp index
                     int spawn_map_index = map.metadata.coop_spawns.IndexOf(spawn);
                     if (spawn_map_index == -1)
+                    {
                         return;
+                    }
 
                     // if dragging unit, just move selected unit, dont create a new one
                     if ((specials.Shift) && (selected_spawn != -1))
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
+                        {
                             map.MoveObject(map.object_manager.objects.IndexOf(obj), pos);
+                        }
                     }
                     else
                     {
@@ -141,13 +145,15 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 {
                     int object_map_index = map.object_manager.objects.IndexOf(obj);
                     if (object_map_index == -1)
+                    {
                         return;
+                    }
 
                     if (map.metadata.coop_spawns.IndexOf(spawn) == selected_spawn)
                     {
                         Select(SFEngine.Utility.NO_INDEX);
                         MainForm.mapedittool.InspectorSelect(null);
-                    }    
+                    }
 
                     // undo/redo
                     MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorCoopCampAddOrRemove()
@@ -179,7 +185,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if (op_change_pos != null)
                     {
                         op_change_pos.PostChangeProperty = map.metadata.coop_spawns[selected_spawn].spawn_obj.grid_position;
-                        if (!op_change_pos.PreChangeProperty.Equals(op_change_pos.PostChangeProperty))
+                        if ((SFCoord)op_change_pos.PreChangeProperty != (SFCoord)op_change_pos.PostChangeProperty)
                         {
                             op_change_pos.Finish(map);
                             MainForm.mapedittool.op_queue.Push(op_change_pos);

@@ -5,13 +5,8 @@
  * assumes upvector = (0, 0, 1)
  * */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using OpenTK;
+using System;
 
 namespace SFEngine.SF3D.Physics
 {
@@ -66,7 +61,7 @@ namespace SFEngine.SF3D.Physics
             return new BoundingBox(ab.a - c, ab.b - c);
         }
 
-        public static BoundingBox operator+(BoundingBox ab1, BoundingBox ab2)
+        public static BoundingBox operator +(BoundingBox ab1, BoundingBox ab2)
         {
             return new BoundingBox(
                 new Vector3(
@@ -101,13 +96,13 @@ namespace SFEngine.SF3D.Physics
             bool side_changed = is_outside;
             bool is_intersecting = false;
 
-            is_outside = pl.SideOf(new Vector3(b.X, a.Y, a.Z));  is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(b.X, b.Y, a.Z));  is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(b.X, a.Y, b.Z));  is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(b.X, b.Y, b.Z));  is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(a.X, b.Y, a.Z));  is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(a.X, a.Y, b.Z));  is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(a.X, b.Y, b.Z));  is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(b.X, a.Y, a.Z)); is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(b.X, b.Y, a.Z)); is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(b.X, a.Y, b.Z)); is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(b.X, b.Y, b.Z)); is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(a.X, b.Y, a.Z)); is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(a.X, a.Y, b.Z)); is_intersecting |= is_outside ^ side_changed;
+            is_outside = pl.SideOf(new Vector3(a.X, b.Y, b.Z)); is_intersecting |= is_outside ^ side_changed;
 
             return is_intersecting ? 0 : (is_outside ? 1 : -1);
         }
@@ -118,17 +113,22 @@ namespace SFEngine.SF3D.Physics
         {
             byte outside = 0;
 
-            foreach(Plane pl in planes)
+            foreach (Plane pl in planes)
             {
                 for (int i = 0; i < 8; i++)
                 {
                     byte vertex_test_result = (byte)((pl.SideOf(vertices[i]) ? 1 : 0) << i);
                     if (vertex_test_result == 0)
+                    {
                         break;
+                    }
+
                     outside |= vertex_test_result;
                 }
                 if (outside == 255)       // equivalent to "each vertex is outside of at least one plane of the convex hull"
+                {
                     return true;
+                }
             }
             return false;
         }
@@ -143,17 +143,34 @@ namespace SFEngine.SF3D.Physics
             for (int i = 0; i < vs.Length; i++)
             {
                 if (xmin > vs[i].X)
+                {
                     xmin = vs[i].X;
+                }
+
                 if (xmax < vs[i].X)
+                {
                     xmax = vs[i].X;
+                }
+
                 if (ymin > vs[i].Y)
+                {
                     ymin = vs[i].Y;
+                }
+
                 if (ymax < vs[i].Y)
+                {
                     ymax = vs[i].Y;
+                }
+
                 if (zmin > vs[i].Z)
+                {
                     zmin = vs[i].Z;
+                }
+
                 if (zmax < vs[i].Z)
+                {
                     zmax = vs[i].Z;
+                }
             }
 
             return new BoundingBox(new Vector3(xmin, ymin, zmin), new Vector3(xmax, ymax, zmax));
@@ -167,12 +184,14 @@ namespace SFEngine.SF3D.Physics
             // rotate all 8 points along the respective XY planes by azimuth, and create new bounding box from min and max of those points
             Vector3[] vs = new Vector3[8];
             for (int i = 0; i < 8; i++)
+            {
                 vs[i] = vertices[i];
+            }
 
             MathUtils.RotateVec3Array(vs, center, azimuth, altitude);
 
             BoundingBox bb = BoundingBox.FromPoints(vs);
-            return this.Union(bb);
+            return Union(bb);
         }
 
         public BoundingBox Intersection(BoundingBox _aabb)

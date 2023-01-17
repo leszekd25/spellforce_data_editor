@@ -106,7 +106,7 @@
             this.tb_effID.Name = "tb_effID";
             this.tb_effID.Size = new System.Drawing.Size(126, 20);
             this.tb_effID.TabIndex = 1;
-            this.tb_effID.Validated += new System.EventHandler(this.tb_effID_TextChanged);
+            this.tb_effID.Leave += new System.EventHandler(this.tb_effID_TextChanged);
             // 
             // tb_typeID
             // 
@@ -116,7 +116,7 @@
             this.tb_typeID.Size = new System.Drawing.Size(126, 20);
             this.tb_typeID.TabIndex = 3;
             this.tb_typeID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_typeID_MouseClick);
-            this.tb_typeID.Validated += new System.EventHandler(this.tb_typeID_TextChanged);
+            this.tb_typeID.Leave += new System.EventHandler(this.tb_typeID_TextChanged);
             // 
             // lb_typeID
             // 
@@ -175,7 +175,7 @@
             this.tb_ctm.Name = "tb_ctm";
             this.tb_ctm.Size = new System.Drawing.Size(126, 20);
             this.tb_ctm.TabIndex = 9;
-            this.tb_ctm.Validated += new System.EventHandler(this.tb_ctm_TextChanged);
+            this.tb_ctm.Leave += new System.EventHandler(this.tb_ctm_TextChanged);
             // 
             // tb_mnc
             // 
@@ -184,7 +184,7 @@
             this.tb_mnc.Name = "tb_mnc";
             this.tb_mnc.Size = new System.Drawing.Size(126, 20);
             this.tb_mnc.TabIndex = 8;
-            this.tb_mnc.Validated += new System.EventHandler(this.tb_mnc_TextChanged);
+            this.tb_mnc.Leave += new System.EventHandler(this.tb_mnc_TextChanged);
             // 
             // tb_rtm
             // 
@@ -192,7 +192,7 @@
             this.tb_rtm.Name = "tb_rtm";
             this.tb_rtm.Size = new System.Drawing.Size(126, 20);
             this.tb_rtm.TabIndex = 10;
-            this.tb_rtm.Validated += new System.EventHandler(this.tb_rtm_TextChanged);
+            this.tb_rtm.Leave += new System.EventHandler(this.tb_rtm_TextChanged);
             // 
             // tb_rng_min
             // 
@@ -200,7 +200,7 @@
             this.tb_rng_min.Name = "tb_rng_min";
             this.tb_rng_min.Size = new System.Drawing.Size(50, 20);
             this.tb_rng_min.TabIndex = 11;
-            this.tb_rng_min.Validated += new System.EventHandler(this.tb_rng_min_TextChanged);
+            this.tb_rng_min.Leave += new System.EventHandler(this.tb_rng_min_TextChanged);
             // 
             // tb_rng_max
             // 
@@ -208,7 +208,7 @@
             this.tb_rng_max.Name = "tb_rng_max";
             this.tb_rng_max.Size = new System.Drawing.Size(50, 20);
             this.tb_rng_max.TabIndex = 12;
-            this.tb_rng_max.Validated += new System.EventHandler(this.tb_rng_max_TextChanged);
+            this.tb_rng_max.Leave += new System.EventHandler(this.tb_rng_max_TextChanged);
             // 
             // label7
             // 
@@ -234,7 +234,7 @@
             this.tb_req1_1.Name = "tb_req1_1";
             this.tb_req1_1.Size = new System.Drawing.Size(38, 20);
             this.tb_req1_1.TabIndex = 15;
-            this.tb_req1_1.Validated += new System.EventHandler(this.tb_req1_1_TextChanged);
+            this.tb_req1_1.Leave += new System.EventHandler(this.tb_req1_1_TextChanged);
             // 
             // tb_req1_2
             // 
@@ -242,7 +242,7 @@
             this.tb_req1_2.Name = "tb_req1_2";
             this.tb_req1_2.Size = new System.Drawing.Size(38, 20);
             this.tb_req1_2.TabIndex = 16;
-            this.tb_req1_2.Validated += new System.EventHandler(this.tb_req1_2_TextChanged);
+            this.tb_req1_2.Leave += new System.EventHandler(this.tb_req1_2_TextChanged);
             // 
             // tb_req1_3
             // 
@@ -250,7 +250,7 @@
             this.tb_req1_3.Name = "tb_req1_3";
             this.tb_req1_3.Size = new System.Drawing.Size(38, 20);
             this.tb_req1_3.TabIndex = 17;
-            this.tb_req1_3.Validated += new System.EventHandler(this.tb_req1_3_TextChanged);
+            this.tb_req1_3.Leave += new System.EventHandler(this.tb_req1_3_TextChanged);
             // 
             // tb_req2_3
             // 
@@ -258,7 +258,7 @@
             this.tb_req2_3.Name = "tb_req2_3";
             this.tb_req2_3.Size = new System.Drawing.Size(38, 20);
             this.tb_req2_3.TabIndex = 21;
-            this.tb_req2_3.Validated += new System.EventHandler(this.tb_req2_3_TextChanged);
+            this.tb_req2_3.Leave += new System.EventHandler(this.tb_req2_3_TextChanged);
             // 
             // tb_req2_2
             // 
@@ -266,7 +266,7 @@
             this.tb_req2_2.Name = "tb_req2_2";
             this.tb_req2_2.Size = new System.Drawing.Size(38, 20);
             this.tb_req2_2.TabIndex = 20;
-            this.tb_req2_2.Validated += new System.EventHandler(this.tb_req2_2_TextChanged);
+            this.tb_req2_2.Leave += new System.EventHandler(this.tb_req2_2_TextChanged);
             // 
             // tb_req2_1
             // 
@@ -274,7 +274,7 @@
             this.tb_req2_1.Name = "tb_req2_1";
             this.tb_req2_1.Size = new System.Drawing.Size(38, 20);
             this.tb_req2_1.TabIndex = 19;
-            this.tb_req2_1.Validated += new System.EventHandler(this.tb_req2_1_TextChanged);
+            this.tb_req2_1.Leave += new System.EventHandler(this.tb_req2_1_TextChanged);
             // 
             // lb_req2
             // 
@@ -291,7 +291,7 @@
             this.tb_req3_3.Name = "tb_req3_3";
             this.tb_req3_3.Size = new System.Drawing.Size(38, 20);
             this.tb_req3_3.TabIndex = 25;
-            this.tb_req3_3.Validated += new System.EventHandler(this.tb_req3_3_TextChanged);
+            this.tb_req3_3.Leave += new System.EventHandler(this.tb_req3_3_TextChanged);
             // 
             // tb_req3_2
             // 
@@ -299,7 +299,7 @@
             this.tb_req3_2.Name = "tb_req3_2";
             this.tb_req3_2.Size = new System.Drawing.Size(38, 20);
             this.tb_req3_2.TabIndex = 24;
-            this.tb_req3_2.Validated += new System.EventHandler(this.tb_req3_2_TextChanged);
+            this.tb_req3_2.Leave += new System.EventHandler(this.tb_req3_2_TextChanged);
             // 
             // tb_req3_1
             // 
@@ -307,7 +307,7 @@
             this.tb_req3_1.Name = "tb_req3_1";
             this.tb_req3_1.Size = new System.Drawing.Size(38, 20);
             this.tb_req3_1.TabIndex = 23;
-            this.tb_req3_1.Validated += new System.EventHandler(this.tb_req3_1_TextChanged);
+            this.tb_req3_1.Leave += new System.EventHandler(this.tb_req3_1_TextChanged);
             // 
             // lb_req3
             // 
@@ -324,7 +324,7 @@
             this.tb_req4_3.Name = "tb_req4_3";
             this.tb_req4_3.Size = new System.Drawing.Size(38, 20);
             this.tb_req4_3.TabIndex = 29;
-            this.tb_req4_3.Validated += new System.EventHandler(this.tb_req4_3_TextChanged);
+            this.tb_req4_3.Leave += new System.EventHandler(this.tb_req4_3_TextChanged);
             // 
             // tb_req4_2
             // 
@@ -332,7 +332,7 @@
             this.tb_req4_2.Name = "tb_req4_2";
             this.tb_req4_2.Size = new System.Drawing.Size(38, 20);
             this.tb_req4_2.TabIndex = 28;
-            this.tb_req4_2.Validated += new System.EventHandler(this.tb_req4_2_TextChanged);
+            this.tb_req4_2.Leave += new System.EventHandler(this.tb_req4_2_TextChanged);
             // 
             // tb_req4_1
             // 
@@ -340,7 +340,7 @@
             this.tb_req4_1.Name = "tb_req4_1";
             this.tb_req4_1.Size = new System.Drawing.Size(38, 20);
             this.tb_req4_1.TabIndex = 27;
-            this.tb_req4_1.Validated += new System.EventHandler(this.tb_req4_1_TextChanged);
+            this.tb_req4_1.Leave += new System.EventHandler(this.tb_req4_1_TextChanged);
             // 
             // lb_req4
             // 
@@ -368,7 +368,7 @@
             this.tb_sd1.Size = new System.Drawing.Size(126, 20);
             this.tb_sd1.TabIndex = 31;
             this.tb_sd1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd1_MouseDown);
-            this.tb_sd1.Validated += new System.EventHandler(this.tb_sd1_TextChanged);
+            this.tb_sd1.Leave += new System.EventHandler(this.tb_sd1_TextChanged);
             // 
             // tb_sd6
             // 
@@ -377,7 +377,7 @@
             this.tb_sd6.Size = new System.Drawing.Size(126, 20);
             this.tb_sd6.TabIndex = 33;
             this.tb_sd6.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd6_MouseDown);
-            this.tb_sd6.Validated += new System.EventHandler(this.tb_sd6_TextChanged);
+            this.tb_sd6.Leave += new System.EventHandler(this.tb_sd6_TextChanged);
             // 
             // lb_sd6
             // 
@@ -396,7 +396,7 @@
             this.tb_sd7.Size = new System.Drawing.Size(126, 20);
             this.tb_sd7.TabIndex = 37;
             this.tb_sd7.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd7_MouseDown);
-            this.tb_sd7.Validated += new System.EventHandler(this.tb_sd7_TextChanged);
+            this.tb_sd7.Leave += new System.EventHandler(this.tb_sd7_TextChanged);
             // 
             // lb_sd7
             // 
@@ -415,7 +415,7 @@
             this.tb_sd2.Size = new System.Drawing.Size(126, 20);
             this.tb_sd2.TabIndex = 35;
             this.tb_sd2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd2_MouseDown);
-            this.tb_sd2.Validated += new System.EventHandler(this.tb_sd2_TextChanged);
+            this.tb_sd2.Leave += new System.EventHandler(this.tb_sd2_TextChanged);
             // 
             // lb_sd2
             // 
@@ -434,7 +434,7 @@
             this.tb_sd8.Size = new System.Drawing.Size(126, 20);
             this.tb_sd8.TabIndex = 41;
             this.tb_sd8.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd8_MouseDown);
-            this.tb_sd8.Validated += new System.EventHandler(this.tb_sd8_TextChanged);
+            this.tb_sd8.Leave += new System.EventHandler(this.tb_sd8_TextChanged);
             // 
             // lb_sd8
             // 
@@ -453,7 +453,7 @@
             this.tb_sd3.Size = new System.Drawing.Size(126, 20);
             this.tb_sd3.TabIndex = 39;
             this.tb_sd3.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd3_MouseDown);
-            this.tb_sd3.Validated += new System.EventHandler(this.tb_sd3_TextChanged);
+            this.tb_sd3.Leave += new System.EventHandler(this.tb_sd3_TextChanged);
             // 
             // lb_sd3
             // 
@@ -472,7 +472,7 @@
             this.tb_sd9.Size = new System.Drawing.Size(126, 20);
             this.tb_sd9.TabIndex = 45;
             this.tb_sd9.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd9_MouseDown);
-            this.tb_sd9.Validated += new System.EventHandler(this.tb_sd9_TextChanged);
+            this.tb_sd9.Leave += new System.EventHandler(this.tb_sd9_TextChanged);
             // 
             // lb_sd9
             // 
@@ -491,7 +491,7 @@
             this.tb_sd4.Size = new System.Drawing.Size(126, 20);
             this.tb_sd4.TabIndex = 43;
             this.tb_sd4.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd4_MouseDown);
-            this.tb_sd4.Validated += new System.EventHandler(this.tb_sd4_TextChanged);
+            this.tb_sd4.Leave += new System.EventHandler(this.tb_sd4_TextChanged);
             // 
             // lb_sd4
             // 
@@ -510,7 +510,7 @@
             this.tb_sd10.Size = new System.Drawing.Size(126, 20);
             this.tb_sd10.TabIndex = 49;
             this.tb_sd10.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd10_MouseDown);
-            this.tb_sd10.Validated += new System.EventHandler(this.tb_sd10_TextChanged);
+            this.tb_sd10.Leave += new System.EventHandler(this.tb_sd10_TextChanged);
             // 
             // lb_sd10
             // 
@@ -529,7 +529,7 @@
             this.tb_sd5.Size = new System.Drawing.Size(126, 20);
             this.tb_sd5.TabIndex = 47;
             this.tb_sd5.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tb_sd5_MouseDown);
-            this.tb_sd5.Validated += new System.EventHandler(this.tb_sd5_TextChanged);
+            this.tb_sd5.Leave += new System.EventHandler(this.tb_sd5_TextChanged);
             // 
             // lb_sd5
             // 
@@ -547,7 +547,7 @@
             this.tb_effpow.Name = "tb_effpow";
             this.tb_effpow.Size = new System.Drawing.Size(126, 20);
             this.tb_effpow.TabIndex = 51;
-            this.tb_effpow.Validated += new System.EventHandler(this.tb_effpow_TextChanged);
+            this.tb_effpow.Leave += new System.EventHandler(this.tb_effpow_TextChanged);
             // 
             // lb_unk
             // 
@@ -564,7 +564,7 @@
             this.tb_ct2.Name = "tb_ct2";
             this.tb_ct2.Size = new System.Drawing.Size(50, 20);
             this.tb_ct2.TabIndex = 54;
-            this.tb_ct2.Validated += new System.EventHandler(this.tb_ct2_TextChanged);
+            this.tb_ct2.Leave += new System.EventHandler(this.tb_ct2_TextChanged);
             // 
             // tb_ct1
             // 
@@ -572,7 +572,7 @@
             this.tb_ct1.Name = "tb_ct1";
             this.tb_ct1.Size = new System.Drawing.Size(50, 20);
             this.tb_ct1.TabIndex = 53;
-            this.tb_ct1.Validated += new System.EventHandler(this.tb_ct1_TextChanged);
+            this.tb_ct1.Leave += new System.EventHandler(this.tb_ct1_TextChanged);
             // 
             // label2
             // 
@@ -590,7 +590,7 @@
             this.tb_effrng.Name = "tb_effrng";
             this.tb_effrng.Size = new System.Drawing.Size(126, 20);
             this.tb_effrng.TabIndex = 56;
-            this.tb_effrng.Validated += new System.EventHandler(this.tb_effrng_Validated);
+            this.tb_effrng.Leave += new System.EventHandler(this.tb_effrng_Validated);
             // 
             // label1
             // 

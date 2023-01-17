@@ -42,7 +42,7 @@
             this.tb_effID.Name = "tb_effID";
             this.tb_effID.Size = new System.Drawing.Size(126, 20);
             this.tb_effID.TabIndex = 15;
-            this.tb_effID.Validated += new System.EventHandler(this.tb_effID_TextChanged);
+            this.tb_effID.Leave += new System.EventHandler(this.tb_effID_TextChanged);
             // 
             // lb_effID
             // 
@@ -79,7 +79,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(126, 20);
             this.textBox2.TabIndex = 23;
-            this.textBox2.Validated += new System.EventHandler(this.textBox2_Validated);
+            this.textBox2.Leave += new System.EventHandler(this.textBox2_Validated);
             // 
             // label2
             // 

@@ -9,11 +9,9 @@
  * */
 
 using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.SFUnPak
 {
@@ -31,7 +29,7 @@ namespace SFEngine.SFUnPak
         public bool is_valid()
         {
             string s = new string(sentinel);
-            return ((version[0] == 4)||(version[0] == 5))&&(sentinel[0] == 'M');
+            return ((version[0] == 4) || (version[0] == 5)) && (sentinel[0] == 'M');
         }
 
         //from pak file
@@ -66,7 +64,7 @@ namespace SFEngine.SFUnPak
         public override string ToString()
         {
             string s = new string(sentinel);
-            return "VERSION " + version[0].ToString() + " SENTINEL " + s + " LENGTH "+sentinel.Length.ToString();
+            return "VERSION " + version[0].ToString() + " SENTINEL " + s + " LENGTH " + sentinel.Length.ToString();
         }
     }
 
@@ -92,7 +90,7 @@ namespace SFEngine.SFUnPak
             data_offset = br.ReadInt32();
             name_offset = br.ReadInt32();
             directory_name_offset = br.ReadInt32();
-            this.prepare();
+            prepare();
         }
 
         //to pak database
@@ -119,19 +117,19 @@ namespace SFEngine.SFUnPak
         public long offset;
         public long size;
 
-        public SFPakFileSpan(long o,  long  s)
+        public SFPakFileSpan(long o, long s)
         {
             offset = o;
             size = s;
         }
     }
 
-    public class SFPakFileSystem: IDisposable
+    public class SFPakFileSystem : IDisposable
     {
         string pak_fname;
         FileStream pak_file = null;
-        BinaryReader pak_stream  = null;
-        SFPakHeader pak_header= new SFPakHeader();
+        BinaryReader pak_stream = null;
+        SFPakHeader pak_header = new SFPakHeader();
         List<SFPakEntryHeader> file_headers = new List<SFPakEntryHeader>();
         Dictionary<string, Dictionary<string, SFPakFileSpan>> file_spans = new Dictionary<string, Dictionary<string, SFPakFileSpan>>();
         uint name_offset = 0;
@@ -146,7 +144,10 @@ namespace SFEngine.SFUnPak
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Dispose() called, filename: " + pak_fname);
             foreach (var dict in file_spans.Values)
+            {
                 dict.Clear();
+            }
+
             file_spans.Clear();
             file_headers.Clear();
             Close();
@@ -158,7 +159,10 @@ namespace SFEngine.SFUnPak
         {
             int index = path.LastIndexOf('\\');
             if (index == -1)
+            {
                 return "";
+            }
+
             return path.Substring(0, index);
         }
 
@@ -167,7 +171,10 @@ namespace SFEngine.SFUnPak
         {
             int index = path.LastIndexOf('\\');
             if (index == -1)
+            {
                 return "";
+            }
+
             return path.Substring(index + 1);
         }
 
@@ -177,7 +184,10 @@ namespace SFEngine.SFUnPak
         {
             int index = path.LastIndexOf('.');
             if (index == -1)
+            {
                 return "";
+            }
+
             return path.Substring(index);
         }
 
@@ -190,7 +200,7 @@ namespace SFEngine.SFUnPak
             {
                 fs = new FileStream(path, FileMode.Open, FileAccess.Read);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Init(): Could not open pak file" + path);
                 return -2;
@@ -203,7 +213,7 @@ namespace SFEngine.SFUnPak
             {
                 pak_header.get(pak_stream);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Init(): Error loading pak header)");
             }
@@ -214,8 +224,8 @@ namespace SFEngine.SFUnPak
                 return -3;
             }
             LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Init(): Pak header contents: "
-                + String.Format("File count {0}, pak size {1}, pak data offset {2}", 
-                    pak_header.n_entries.ToString(), 
+                + String.Format("File count {0}, pak size {1}, pak data offset {2}",
+                    pak_header.n_entries.ToString(),
                     pak_header.file_size.ToString(),
                     pak_header.data_start_offset.ToString()));
 
@@ -238,14 +248,17 @@ namespace SFEngine.SFUnPak
 
             pak_stream.BaseStream.Position = 0;
             //retrieve entry names!
-            
+
             for (int i = 0; i < file_headers.Count; i++)
             {
                 file_headers[i].name = GetFileName(i, false);
                 file_headers[i].dir_name = GetFileName(i, true);
 
                 if (!file_spans.ContainsKey(file_headers[i].dir_name))
+                {
                     file_spans.Add(file_headers[i].dir_name, new Dictionary<string, SFPakFileSpan>());
+                }
+
                 file_spans[file_headers[i].dir_name].Add(file_headers[i].name, new SFPakFileSpan(file_headers[i].data_offset,
                                                                                                     file_headers[i].size));
             }
@@ -278,14 +291,16 @@ namespace SFEngine.SFUnPak
         // opens pak file for reading
         public int Open()
         {
-            //LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Open() called, filename: " + pak_fname);
             if (pak_file != null)
+            {
                 return 0;
+            }
+
             try
             {
                 pak_file = new FileStream(pak_fname, FileMode.Open, FileAccess.Read);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Open(): Could not open pak file" + pak_fname);
                 return -2;
@@ -297,9 +312,11 @@ namespace SFEngine.SFUnPak
         // closes pak file
         public void Close()
         {
-            //LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Close() called, filename: " + pak_fname);
             if (pak_file == null)
+            {
                 return;
+            }
+
             pak_stream.Close();
             pak_file.Close();
             pak_stream = null;
@@ -326,7 +343,7 @@ namespace SFEngine.SFUnPak
         {
             if (Open() != 0)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.GetFileBuffer(): Could not open pak file "+pak_fname);
+                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.GetFileBuffer(): Could not open pak file " + pak_fname);
                 throw new FileLoadException("Could not open pak file " + pak_fname);
             }
             SFPakEntryHeader head = file_headers[file_index];
@@ -336,20 +353,26 @@ namespace SFEngine.SFUnPak
             pak_stream.BaseStream.Position = start;
             Byte[] mem_read = pak_stream.ReadBytes(length);
             MemoryStream ms = new MemoryStream(mem_read);
-            
+
             return ms;
         }
 
         // returns a stream of bytes which constitute for a file given file name
         public MemoryStream GetFileBuffer(string fname)
         {
-	        string dir_name = GetPathDirectory(fname);
+            string dir_name = GetPathDirectory(fname);
             string file_name = GetPathFilename(fname);
 
             if (!file_spans.ContainsKey(dir_name))
+            {
                 return null;
+            }
+
             if (!file_spans[dir_name].ContainsKey(file_name))
+            {
                 return null;
+            }
+
             return GetFileBuffer(file_spans[dir_name][file_name]);
         }
 
@@ -360,7 +383,10 @@ namespace SFEngine.SFUnPak
             bw.Write(pak_fname);
             pak_header.WriteToFile(bw);
             for (int i = 0; i < file_headers.Count; i++)
+            {
                 file_headers[i].WriteToFile(bw);
+            }
+
             bw.Write(name_offset);
             bw.Write(data_offset);
             return 0;
@@ -379,7 +405,10 @@ namespace SFEngine.SFUnPak
                 eh.ReadFromFile(br);
                 file_headers.Add(eh);
                 if (!file_spans.ContainsKey(eh.dir_name))
+                {
                     file_spans.Add(eh.dir_name, new Dictionary<string, SFPakFileSpan>());
+                }
+
                 file_spans[eh.dir_name].Add(eh.name, new SFPakFileSpan(eh.data_offset,
                                                                        eh.size));
             }
@@ -395,7 +424,9 @@ namespace SFEngine.SFUnPak
             if (path == "")
             {
                 foreach (SFPakEntryHeader eh in file_headers)
-                     names.Add(eh.dir_name + "\\" + eh.name);
+                {
+                    names.Add(eh.dir_name + "\\" + eh.name);
+                }
             }
             else
             {
@@ -404,9 +435,13 @@ namespace SFEngine.SFUnPak
                     if ((eh.dir_name.StartsWith(path)) && (GetPathExtension(eh.name) == extname))
                     {
                         if (path != eh.dir_name)
+                        {
                             names.Add(eh.dir_name.Substring(path.Length + 1, eh.dir_name.Length - path.Length - 1) + "\\" + eh.name);
+                        }
                         else
+                        {
                             names.Add(eh.name);
+                        }
                     }
                 }
             }
@@ -419,7 +454,9 @@ namespace SFEngine.SFUnPak
             foreach (SFPakEntryHeader eh in file_headers)
             {
                 if ((eh.dir_name == path) && (eh.name.Contains(substr)))
+                {
                     names.Add(eh.name);
+                }
             }
             return names;
         }
@@ -430,7 +467,9 @@ namespace SFEngine.SFUnPak
             foreach (SFPakEntryHeader eh in file_headers)
             {
                 if (eh.dir_name == dir)
+                {
                     names.Add(eh.name);
+                }
             }
             return names;
         }

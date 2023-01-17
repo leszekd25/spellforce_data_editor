@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.special_forms
 {
@@ -22,10 +16,10 @@ namespace SpellforceDataEditor.special_forms
         {
             // determine if text category exists in current gamedata
             SFCategory text_cat = SFCategoryManager.gamedata[2016];
-            if(text_cat == null)
+            if (text_cat == null)
             {
                 MessageBox.Show("Current gamedata does not contain text category! Aborting...");
-                this.Close();
+                Close();
                 return;
             }
 
@@ -34,7 +28,7 @@ namespace SpellforceDataEditor.special_forms
             if (lang_id == 255)
             {
                 MessageBox.Show("Incorrect language ID provided! Aborting...");
-                this.Close();
+                Close();
                 return;
             }
 
@@ -43,7 +37,7 @@ namespace SpellforceDataEditor.special_forms
             if (new_lang_id == 255)
             {
                 MessageBox.Show("Incorrect language ID provided! Aborting...");
-                this.Close();
+                Close();
                 return;
             }
 
@@ -54,13 +48,13 @@ namespace SpellforceDataEditor.special_forms
             SFCategory new_cat = new SFCategory(Tuple.Create<ushort, ushort>(2016, 3));
 
             // move text entries with given ID from main gd to new gd
-            for(int i = 0; i < text_cat.GetElementCount(); i++)
+            for (int i = 0; i < text_cat.GetElementCount(); i++)
             {
                 // find text entry with given lang ID
-                for(int j = 0; j < text_cat.element_lists[i].Elements.Count(); j++)
+                for (int j = 0; j < text_cat.element_lists[i].Elements.Count(); j++)
                 {
                     byte tmp_lang_id = (byte)text_cat[i, j][1];
-                    if(tmp_lang_id == lang_id)
+                    if (tmp_lang_id == lang_id)
                     {
                         // add the entry to new gamedata, with new lang ID
                         SFCategoryElementList new_list = new SFCategoryElementList();
@@ -76,7 +70,7 @@ namespace SpellforceDataEditor.special_forms
 
             // save gamedata
             int result = new_gd.Save("_OUTPUT.cff");
-            if(result != 0)
+            if (result != 0)
             {
                 MessageBox.Show("Failed to export text data!");
             }
@@ -84,7 +78,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 MessageBox.Show("Successfully exported text data.");
             }
-            this.Close();
+            Close();
         }
     }
 }

@@ -3,11 +3,6 @@
  * Operation for retrieving distance between a point and the line is provided
  * */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
 
 namespace SFEngine.SF3D.Physics

@@ -31,7 +31,6 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.RadioMergeGD = new System.Windows.Forms.RadioButton();
             this.RadioDiffGD = new System.Windows.Forms.RadioButton();
-            this.RadioDependencyGD = new System.Windows.Forms.RadioButton();
             this.RadioFullGD = new System.Windows.Forms.RadioButton();
             this.label1 = new System.Windows.Forms.Label();
             this.OpenGD = new System.Windows.Forms.OpenFileDialog();
@@ -53,7 +52,6 @@
             // 
             this.panel1.Controls.Add(this.RadioMergeGD);
             this.panel1.Controls.Add(this.RadioDiffGD);
-            this.panel1.Controls.Add(this.RadioDependencyGD);
             this.panel1.Controls.Add(this.RadioFullGD);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Location = new System.Drawing.Point(12, 12);
@@ -64,7 +62,7 @@
             // RadioMergeGD
             // 
             this.RadioMergeGD.AutoSize = true;
-            this.RadioMergeGD.Location = new System.Drawing.Point(294, 10);
+            this.RadioMergeGD.Location = new System.Drawing.Point(135, 10);
             this.RadioMergeGD.Name = "RadioMergeGD";
             this.RadioMergeGD.Size = new System.Drawing.Size(55, 17);
             this.RadioMergeGD.TabIndex = 4;
@@ -76,7 +74,7 @@
             // RadioDiffGD
             // 
             this.RadioDiffGD.AutoSize = true;
-            this.RadioDiffGD.Location = new System.Drawing.Point(214, 10);
+            this.RadioDiffGD.Location = new System.Drawing.Point(209, 10);
             this.RadioDiffGD.Name = "RadioDiffGD";
             this.RadioDiffGD.Size = new System.Drawing.Size(74, 17);
             this.RadioDiffGD.TabIndex = 3;
@@ -84,18 +82,6 @@
             this.RadioDiffGD.Text = "Difference";
             this.RadioDiffGD.UseVisualStyleBackColor = true;
             this.RadioDiffGD.CheckedChanged += new System.EventHandler(this.RadioDiffGD_CheckedChanged);
-            // 
-            // RadioDependencyGD
-            // 
-            this.RadioDependencyGD.AutoSize = true;
-            this.RadioDependencyGD.Location = new System.Drawing.Point(122, 10);
-            this.RadioDependencyGD.Name = "RadioDependencyGD";
-            this.RadioDependencyGD.Size = new System.Drawing.Size(86, 17);
-            this.RadioDependencyGD.TabIndex = 2;
-            this.RadioDependencyGD.TabStop = true;
-            this.RadioDependencyGD.Text = "Dependency";
-            this.RadioDependencyGD.UseVisualStyleBackColor = true;
-            this.RadioDependencyGD.CheckedChanged += new System.EventHandler(this.RadioDependencyGD_CheckedChanged);
             // 
             // RadioFullGD
             // 
@@ -271,7 +257,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.RadioButton RadioMergeGD;
         private System.Windows.Forms.RadioButton RadioDiffGD;
-        private System.Windows.Forms.RadioButton RadioDependencyGD;
         private System.Windows.Forms.RadioButton RadioFullGD;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.OpenFileDialog OpenGD;

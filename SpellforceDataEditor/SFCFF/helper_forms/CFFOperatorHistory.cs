@@ -2,15 +2,15 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace SpellforceDataEditor.SFMap.map_dialog
+namespace SpellforceDataEditor.SFCFF.helper_forms
 {
-    public partial class MapOperatorHistoryViewer : Form
+    public partial class CFFOperatorHistory : Form
     {
-        public MapOperatorHistoryViewer()
+        public CFFOperatorHistory()
         {
             InitializeComponent();
 
-            var queue = MainForm.mapedittool.op_queue;
+            var queue = MainForm.data.op_queue;
             if (queue == null)
             {
                 return;
@@ -20,19 +20,19 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             RecolorNodes();
         }
 
-        private void AddNode(TreeNodeCollection tnc, map_operators.IMapOperator op)
+        private void AddNode(TreeNodeCollection tnc, SFCFF.operators.ICFFOperator op)
         {
             TreeNode tn = new TreeNode(op.ToString());
 
-            if (op is map_operators.MapOperatorCluster)
+            if (op is SFCFF.operators.CFFOperatorCluster)
             {
-                PopulateTree(tn.Nodes, ((map_operators.MapOperatorCluster)op).SubOperators);
+                PopulateTree(tn.Nodes, ((SFCFF.operators.CFFOperatorCluster)op).SubOperators);
             }
 
             tnc.Add(tn);
         }
 
-        public void PopulateTree(TreeNodeCollection tnc, List<map_operators.IMapOperator> ops)
+        public void PopulateTree(TreeNodeCollection tnc, List<SFCFF.operators.ICFFOperator> ops)
         {
             foreach (var op in ops)
             {
@@ -43,7 +43,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         // redoable nodes are red
         public void RecolorNodes()
         {
-            var queue = MainForm.mapedittool.op_queue;
+            var queue = MainForm.data.op_queue;
             if (queue == null)
             {
                 return;
@@ -64,7 +64,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         public void OnAddOperator()
         {
             // get latest operator index
-            var queue = MainForm.mapedittool.op_queue;
+            var queue = MainForm.data.op_queue;
             if (queue == null)
             {
                 return;
@@ -79,7 +79,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             }
 
             // add newest operator
-            map_operators.IMapOperator op = queue.operators[queue.current_operator];
+            SFCFF.operators.ICFFOperator op = queue.operators[queue.current_operator];
 
             AddNode(TreeOperators.Nodes, op);
             RecolorNodes();
@@ -87,7 +87,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 
         public void OnRemoveOperator()
         {
-            var queue = MainForm.mapedittool.op_queue;
+            var queue = MainForm.data.op_queue;
             if (queue == null)
             {
                 return;

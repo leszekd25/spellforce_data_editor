@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -117,31 +110,41 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox2, 2016);
+            }
         }
 
         private void textBox9_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox9, 2072);
+            }
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox3, 2005);
+            }
         }
 
         private void textBox4_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox4, 2024);
+            }
         }
 
         private void textBox5_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox5, 2029);
+            }
         }
 
         private void ButtonGoto8_Click(object sender, EventArgs e)
@@ -203,9 +206,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             Byte set_type = (Byte)category[index][10];
 
             if ((item_type > 0) && (item_type < item_types.Length))
+            {
                 item_type_text += item_types[item_type];
-            /*switch (item_type)
-            { }*/
+            }
+
             switch (item_type)
             {
                 case 2:
@@ -232,7 +236,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 string bonus_type_text = String.Copy(SFEngine.Utility.S_UNKNOWN);
                 if ((bonus_type > 0) && (bonus_type < (Byte)equipment_types.Length))
+                {
                     bonus_type_text = equipment_types[(int)bonus_type];
+                }
+
                 item_type_text += " (" + bonus_type_text + ")";
             }
 
@@ -253,28 +260,52 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 {
                     SFCategoryElement set_elem = SFCategoryManager.gamedata[2072].FindElementBinary<Byte>(0, elem_id);
                     if (set_elem == null)
+                    {
                         txt = SFEngine.Utility.S_MISSING;
+                    }
                     else
+                    {
                         txt = SFCategoryManager.GetTextFromElement(set_elem, 1);
+                    }
                 }
                 else
+                {
                     txt = SFEngine.Utility.S_UNKNOWN;
+                }
 
                 total_text += "\r\nPart of set: " + txt;
             }
 
             if ((special & 1) == 1)
+            {
                 total_text += "\r\nStackable item";
+            }
+
             if ((special & 2) == 2)
+            {
                 total_text += "\r\nLore item";
+            }
+
             if ((special & 4) == 4)
+            {
                 total_text += "\r\nQuest item (can not be sold)";
+            }
+
             if ((special & 8) == 8)
+            {
                 total_text += "\r\nQuest item (can be sold)";
+            }
+
             if ((special & 16) == 16)
+            {
                 total_text += "\r\nYou need to meet all item requirements to use this item";
+            }
+
             if ((special & (0b11100000)) != 0)
+            {
                 total_text += "\r\nUnknown optional data";
+            }
+
             return total_text;
         }
     }

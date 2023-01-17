@@ -1,14 +1,9 @@
-﻿using System;
+﻿using SFEngine.SFChunk;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using SFEngine.SFChunk;
 using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.special_forms
 {
@@ -28,7 +23,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void UnpackToNode(TreeNode tn, SFChunkFile sfcf)
         {
-            foreach(var c in sfcf.GetAllChunks())
+            foreach (var c in sfcf.GetAllChunks())
             {
                 int i = tn.Nodes.Add(new TreeNode(GetFileChunkDescription(c)));
                 tn.Nodes[i].Tag = c;
@@ -38,7 +33,9 @@ namespace SpellforceDataEditor.special_forms
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (OpenSave.ShowDialog() != DialogResult.OK)
+            {
                 return;
+            }
 
             // clear
             TreeChunks.Nodes.Clear();
@@ -55,12 +52,19 @@ namespace SpellforceDataEditor.special_forms
         {
             TreeNode tn = e.Node;
             if (tn == null)
+            {
                 return;
+            }
 
             if (tn.Tag == null)
+            {
                 return;
+            }
+
             if (!(tn.Tag is SFChunkFileChunk))
+            {
                 return;
+            }
 
             SFChunkFileChunk sfcfc = (SFChunkFileChunk)(tn.Tag);
             LabelChunkData.Text = "Chunk ID: " + sfcfc.header.ChunkID.ToString()
@@ -74,19 +78,21 @@ namespace SpellforceDataEditor.special_forms
         private List<int> find_potential_chunkfile_pos(byte[] data)
         {
             List<int> ret = new List<int>();
-            using(MemoryStream ms = new MemoryStream(data))
+            using (MemoryStream ms = new MemoryStream(data))
             {
                 using (BinaryReader br = new BinaryReader(ms))
                 {
                     int i = 0;
-                    while(i<(br.BaseStream.Length-4))
+                    while (i < (br.BaseStream.Length - 4))
                     {
                         br.BaseStream.Position = i;
                         if (br.ReadByte() == 0x12)
                         {
                             br.BaseStream.Position = i;
                             if (br.ReadInt32() == -579674862)
+                            {
                                 ret.Add(i);
+                            }
                         }
                         i++;
                     }
@@ -100,12 +106,19 @@ namespace SpellforceDataEditor.special_forms
         {
             TreeNode tn = TreeChunks.SelectedNode;
             if (tn == null)
+            {
                 return;
+            }
 
             if (tn.Tag == null)
+            {
                 return;
+            }
+
             if (!(tn.Tag is SFChunkFileChunk))
+            {
                 return;
+            }
 
             SFChunkFileChunk sfcfc = (SFChunkFileChunk)(tn.Tag);
             SFChunkFile sfcf = null;
@@ -113,7 +126,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 byte[] dt = sfcfc.get_raw_data();
                 List<int> offset = find_potential_chunkfile_pos(dt);
-                foreach(var o in offset)
+                foreach (var o in offset)
                 {
                     byte[] dt2 = dt.Skip(o).ToArray();
 
@@ -125,18 +138,25 @@ namespace SpellforceDataEditor.special_forms
                         sfcf = null;
                     }
                     else
+                    {
                         break;
+                    }
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
-                if(sfcf != null)
+                if (sfcf != null)
+                {
                     sfcf.Close();
+                }
+
                 sfcf = null;
             }
 
             if (sfcf == null)
+            {
                 return;
+            }
 
             UnpackToNode(tn, sfcf);
             sfcf.Close();
@@ -146,17 +166,26 @@ namespace SpellforceDataEditor.special_forms
         {
             TreeNode tn = TreeChunks.SelectedNode;
             if (tn == null)
+            {
                 return;
+            }
 
             if (tn.Tag == null)
+            {
                 return;
+            }
+
             if (!(tn.Tag is SFChunkFileChunk))
+            {
                 return;
+            }
 
             SFChunkFileChunk sfcfc = (SFChunkFileChunk)(tn.Tag);
             byte[] dt = sfcfc.get_raw_data();
             if (dt == null)
+            {
                 return;
+            }
 
             FileStream fs = new FileStream("chunk_output", FileMode.Create, FileAccess.Write);
             fs.Write(dt, 0, dt.Length);

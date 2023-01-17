@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -91,7 +84,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox3, 2016);
+            }
         }
 
         private void ButtonGoto35_Click(object sender, EventArgs e)
@@ -122,15 +117,29 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             string txt = "";
 
             if ((flags & 0x1) == 0x1)
+            {
                 txt += "Blocks terrain at its position\r\n";
+            }
+
             if ((flags & 0x2) == 0x2)
+            {
                 txt += "Adjusts height\r\n";
+            }
+
             if ((flags & 0x4) == 0x4)
+            {
                 txt += "Can place in original editor\r\n";
+            }
+
             if ((flags & 0x80) == 0x80)
+            {
                 txt += "Contains loot\r\n";
-            if ((flags & (0xFF-0x87)) != 0)
+            }
+
+            if ((flags & (0xFF - 0x87)) != 0)
+            {
                 txt += "Unknown flags\r\n";
+            }
 
             return txt;
         }

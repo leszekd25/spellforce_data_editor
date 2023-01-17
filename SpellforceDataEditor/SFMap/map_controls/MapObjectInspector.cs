@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using SFEngine.SFMap;
-using SFEngine.SFCFF;
+﻿using SFEngine.SFCFF;
 using SFEngine.SFLua;
+using SFEngine.SFMap;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -34,13 +30,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             ListObjects.Items.Clear();
             for (int i = 0; i < map.object_manager.objects.Count; i++)
+            {
                 LoadNextObject(i);
+            }
         }
 
         private void ShowList()
         {
             if (ButtonResizeList.Text == "-")
+            {
                 return;
+            }
 
             ResizeList();
 
@@ -49,7 +49,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void ResizeList()
         {
-            PanelObjectList.Height = this.Height - PanelObjectList.Location.Y - 3;
+            PanelObjectList.Height = Height - PanelObjectList.Location.Y - 3;
             ListObjects.Height = PanelObjectList.Height - 125;
             SearchObjectText.Location = new Point(SearchObjectText.Location.X, ListObjects.Location.Y + ListObjects.Height + 8);
             SearchObjectNext.Location = new Point(SearchObjectNext.Location.X, SearchObjectText.Location.Y + 28);
@@ -59,7 +59,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void HideList()
         {
             if (ButtonResizeList.Text == "+")
+            {
                 return;
+            }
 
             PanelObjectList.Height = 30;
 
@@ -69,7 +71,10 @@ namespace SpellforceDataEditor.SFMap.map_controls
         public void RemoveObject(int index)
         {
             if (ListObjects.SelectedIndex == index)
+            {
                 PanelProperties.Enabled = false;
+            }
+
             ListObjects.Items.RemoveAt(index);
         }
 
@@ -83,7 +88,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void MapObjectInspector_Resize(object sender, EventArgs e)
         {
             if (ButtonResizeList.Text == "+")
+            {
                 return;
+            }
 
             ResizeList();
         }
@@ -99,21 +106,29 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PanelProperties.Enabled = false;
             }
             else
+            {
                 ListObjects.SelectedIndex = map.object_manager.objects.IndexOf((SFMapObject)o);
+            }
         }
 
         private void ButtonResizeList_Click(object sender, EventArgs e)
         {
             if (ButtonResizeList.Text == "-")
+            {
                 HideList();
+            }
             else
+            {
                 ShowList();
+            }
         }
 
         private void ListObjects_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ListObjects.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             PanelProperties.Enabled = true;
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
@@ -123,10 +138,13 @@ namespace SpellforceDataEditor.SFMap.map_controls
             PosY.Text = obj.grid_position.y.ToString();
             AngleTrackbar.Value = obj.angle;
             Unknown1.Text = obj.unknown1.ToString();
-            
+
             map.selection_helper.SelectObject(obj);
-            if ((move_camera_on_select)||(object_selected_from_list))
+            if ((move_camera_on_select) || (object_selected_from_list))
+            {
                 MainForm.mapedittool.SetCameraViewPoint(obj.grid_position);
+            }
+
             move_camera_on_select = false;
             object_selected_from_list = true;
         }
@@ -134,13 +152,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void ObjectID_Validated(object sender, EventArgs e)
         {
             if (ListObjects.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             ushort new_object_id = SFEngine.Utility.TryParseUInt16(ObjectID.Text);
 
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
             if (obj.game_id == new_object_id)
+            {
                 return;
+            }
 
             // check if its not a special object ID
             if (map.object_manager.ObjectIDIsReserved(new_object_id))
@@ -151,7 +173,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             // check if new object exists
             if (SFCategoryManager.gamedata[2050].GetElementIndex(new_object_id) == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
@@ -159,7 +183,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 type = map_operators.MapOperatorEntityType.OBJECT,
                 index = ListObjects.SelectedIndex,
                 property = map_operators.MapOperatorEntityProperty.ID,
-                PreChangeProperty = obj.game_id,
+                PreChangeProperty = (ushort)obj.game_id,
                 PostChangeProperty = new_object_id
             });
 
@@ -168,13 +192,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
             LabelObjectName.Text = SFCategoryManager.GetObjectName(new_object_id);
             ListObjects.Items[ListObjects.SelectedIndex] = LabelObjectName.Text + " "
                 + map.object_manager.objects[ListObjects.SelectedIndex].grid_position.ToString();
+
+            map.heightmap.RefreshOverlay();
             MainForm.mapedittool.update_render = true;
         }
 
         private void NPCID_Validated(object sender, EventArgs e)
         {
             if (ListObjects.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
 
@@ -204,21 +232,29 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void NPCScript_Click(object sender, EventArgs e)
         {
             if (ListObjects.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
             if (obj.npc_id == 0)
+            {
                 return;
+            }
 
             string fname = "script\\p" + map.PlatformID.ToString() + "\\n" + obj.npc_id.ToString() + ".lua";
             if (SFLuaEnvironment.OpenNPCScript((int)map.PlatformID, obj.npc_id) != 0)
+            {
                 MessageBox.Show("Could not open " + fname);
+            }
         }
 
         private void Angle_Validated(object sender, EventArgs e)
         {
             if (ListObjects.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
 
@@ -241,13 +277,15 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void AngleTrackbar_ValueChanged(object sender, EventArgs e)
         {
             if (ListObjects.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
             Angle.Text = AngleTrackbar.Value.ToString();
-            obj.angle = AngleTrackbar.Value;
-            map.RotateObject(ListObjects.SelectedIndex, obj.angle);
+            map.RotateObject(ListObjects.SelectedIndex, AngleTrackbar.Value);
 
+            map.heightmap.RefreshOverlay();
             MainForm.mapedittool.update_render = true;
         }
 
@@ -255,7 +293,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void AngleTrackbar_MouseDown(object sender, MouseEventArgs e)
         {
             if (ListObjects.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             trackbar_clicked = true;
 
@@ -269,7 +309,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void AngleTrackbar_MouseUp(object sender, MouseEventArgs e)
         {
             if (!trackbar_clicked)
+            {
                 return;
+            }
 
             // undo/redo
             MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorEntityChangeProperty()
@@ -289,7 +331,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private void Unknown1_Validated(object sender, EventArgs e)
         {
             if (ListObjects.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
 
@@ -310,66 +354,84 @@ namespace SpellforceDataEditor.SFMap.map_controls
         {
             string search_phrase = SearchObjectText.Text.Trim().ToLower();
             if (search_phrase == "")
+            {
                 return;
+            }
 
             int search_start = ListObjects.SelectedIndex;
 
             move_camera_on_select = true;
 
             for (int i = search_start + 1; i < map.object_manager.objects.Count; i++)
+            {
                 if (ListObjects.Items[i].ToString().ToLower().Contains(search_phrase))
                 {
                     ListObjects.SelectedIndex = i;
                     return;
                 }
+            }
 
             for (int i = 0; i <= search_start; i++)
+            {
                 if (ListObjects.Items[i].ToString().ToLower().Contains(search_phrase))
                 {
                     ListObjects.SelectedIndex = i;
                     return;
                 }
+            }
         }
 
         private void SearchObjectPrevious_Click(object sender, EventArgs e)
         {
             string search_phrase = SearchObjectText.Text.Trim().ToLower();
             if (search_phrase == "")
+            {
                 return;
+            }
 
             int search_start = ListObjects.SelectedIndex;
 
             move_camera_on_select = true;
 
             for (int i = search_start - 1; i >= 0; i--)
+            {
                 if (ListObjects.Items[i].ToString().ToLower().Contains(search_phrase))
                 {
                     ListObjects.SelectedIndex = i;
                     return;
                 }
+            }
 
             if (search_start == SFEngine.Utility.NO_INDEX)
+            {
                 search_start = 0;
+            }
 
             for (int i = map.object_manager.objects.Count - 1; i >= search_start; i--)
+            {
                 if (ListObjects.Items[i].ToString().ToLower().Contains(search_phrase))
                 {
                     ListObjects.SelectedIndex = i;
                     return;
                 }
+            }
         }
 
         private void ObjectID_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainForm.data == null)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
                 int elem_id = SFEngine.Utility.TryParseUInt16(ObjectID.Text);
                 int real_elem_id = SFCategoryManager.gamedata[2050].GetElementIndex(elem_id);
                 if (real_elem_id != SFEngine.Utility.NO_INDEX)
+                {
                     MainForm.data.Tracer_StepForward(33, real_elem_id);
+                }
             }
         }
     }

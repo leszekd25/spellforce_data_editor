@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFCFF.helper_forms
 {
     public partial class LoadGamedataForm : Form
     {
-        public enum GDMode { NONE = -1, FULL = 0, DEPENDENCY, DIFF, MERGE }
+        public enum GDMode { NONE = -1, FULL = 0, MERGE, DIFF }
 
         public string MainGDFileName = "";
         public string DiffGDFileName = "";
@@ -33,13 +27,10 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
 
         private void EvaluateResult()
         {
-            switch(Mode)
+            switch (Mode)
             {
                 case GDMode.FULL:
                     ButtonOK.Enabled = (MainGDFileName != "");
-                    break;
-                case GDMode.DEPENDENCY:
-                    ButtonOK.Enabled = (MainGDFileName != "") && (DependencyGDFileNames.Count != 0);
                     break;
                 case GDMode.DIFF:
                     ButtonOK.Enabled = (MainGDFileName != "") && (DiffGDFileName != "");
@@ -59,9 +50,6 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
             {
                 case GDMode.FULL:
                     HideFullGDMode();
-                    break;
-                case GDMode.DEPENDENCY:
-                    HideDependencyGDMode();
                     break;
                 case GDMode.DIFF:
                     HideDiffGDMode();
@@ -95,44 +83,6 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
             LabelGDMain.Visible = false;
         }
 
-        private void ShowDependencyGDMode()
-        {
-            HideCurrentMode();
-            Mode = GDMode.DEPENDENCY;
-
-            ButtonMainGD.Visible = true;
-            LabelGDMain.Visible = true;
-            LabelGDMain.Text = MainGDFileName;
-            ListboxDependencyGD.Visible = true;
-            ButtonAddDependencyGD.Visible = true;
-            ButtonAddDependencyGD.Text = "Add dependency";
-            ButtonRemoveDependencyGD.Visible = true;
-            ButtonRemoveDependencyGD.Text = "Remove dependency";
-            ButtonMoveUpDependencyGD.Visible = true;
-            ButtonMoveDownDependencyGD.Visible = true;
-
-            foreach (var s in DependencyGDFileNames)
-                ListboxDependencyGD.Items.Add(s);
-
-            EvaluateResult();
-        }
-
-        private void HideDependencyGDMode()
-        {
-            Mode = GDMode.NONE;
-
-            ListboxDependencyGD.Items.Clear();
-
-            ButtonMainGD.Visible = false;
-            LabelGDMain.Text = "";
-            LabelGDMain.Visible = false;
-            ListboxDependencyGD.Visible = false;
-            ButtonAddDependencyGD.Visible = false;
-            ButtonRemoveDependencyGD.Visible = false;
-            ButtonMoveUpDependencyGD.Visible = false;
-            ButtonMoveDownDependencyGD.Visible = false;
-        }
-
         private void ShowDiffGDMode()
         {
             HideCurrentMode();
@@ -155,7 +105,9 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
             ButtonMoveDownDependencyGD.Visible = true;
 
             foreach (var s in DependencyGDFileNames)
+            {
                 ListboxDependencyGD.Items.Add(s);
+            }
 
             EvaluateResult();
         }
@@ -193,7 +145,9 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
             ButtonMoveDownDependencyGD.Visible = true;
 
             foreach (var s in MergeGDFileNames)
+            {
                 ListboxDependencyGD.Items.Add(s);
+            }
 
             EvaluateResult();
         }
@@ -214,39 +168,42 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
         private void RadioFullGD_CheckedChanged(object sender, EventArgs e)
         {
             if (RadioFullGD.Checked)
+            {
                 ShowFullGDMode();
-        }
-
-        private void RadioDependencyGD_CheckedChanged(object sender, EventArgs e)
-        {
-            if (RadioDependencyGD.Checked)
-                ShowDependencyGDMode();
+            }
         }
 
         private void RadioDiffGD_CheckedChanged(object sender, EventArgs e)
         {
             if (RadioDiffGD.Checked)
+            {
                 ShowDiffGDMode();
+            }
         }
 
         private void RadioMergeGD_CheckedChanged(object sender, EventArgs e)
         {
             if (RadioMergeGD.Checked)
+            {
                 ShowMergeGDMode();
+            }
         }
 
         private void ButtonMainGD_Click(object sender, EventArgs e)
         {
-            switch(Mode)
+            switch (Mode)
             {
                 case GDMode.FULL:
-                case GDMode.DEPENDENCY:
                 case GDMode.DIFF:
                     if (OpenGD.ShowDialog() != DialogResult.OK)
+                    {
                         break;
+                    }
 
                     if (OpenGD.FileNames.Length != 1)
+                    {
                         break;
+                    }
 
                     MainGDFileName = OpenGD.FileNames[0];
                     LabelGDMain.Text = MainGDFileName;
@@ -265,10 +222,14 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
             {
                 case GDMode.DIFF:
                     if (OpenGD.ShowDialog() != DialogResult.OK)
+                    {
                         break;
+                    }
 
                     if (OpenGD.FileNames.Length != 1)
+                    {
                         break;
+                    }
 
                     DiffGDFileName = OpenGD.FileNames[0];
                     LabelGDDiff.Text = DiffGDFileName;
@@ -284,9 +245,8 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
         private void ButtonAddDependencyGD_Click(object sender, EventArgs e)
         {
             List<string> ref_list;
-            switch(Mode)
+            switch (Mode)
             {
-                case GDMode.DEPENDENCY:
                 case GDMode.DIFF:
                     ref_list = DependencyGDFileNames;
                     break;
@@ -298,12 +258,16 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
             }
 
             if (OpenGD.ShowDialog() != DialogResult.OK)
+            {
                 return;
+            }
 
             if (OpenGD.FileNames.Length < 1)
+            {
                 return;
+            }
 
-            foreach(var s in OpenGD.FileNames)
+            foreach (var s in OpenGD.FileNames)
             {
                 ref_list.Add(s);
                 ListboxDependencyGD.Items.Add(s);
@@ -317,7 +281,6 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
             List<string> ref_list;
             switch (Mode)
             {
-                case GDMode.DEPENDENCY:
                 case GDMode.DIFF:
                     ref_list = DependencyGDFileNames;
                     break;
@@ -331,12 +294,17 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
             int index = ListboxDependencyGD.SelectedIndex;
 
             if (index == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             ref_list.RemoveAt(index);
             ListboxDependencyGD.Items.RemoveAt(index);
             if (index == ListboxDependencyGD.Items.Count)
+            {
                 index -= 1;
+            }
+
             ListboxDependencyGD.SelectedIndex = index;
 
             EvaluateResult();
@@ -347,7 +315,6 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
             List<string> ref_list;
             switch (Mode)
             {
-                case GDMode.DEPENDENCY:
                 case GDMode.DIFF:
                     ref_list = DependencyGDFileNames;
                     break;
@@ -361,9 +328,14 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
             int index = ListboxDependencyGD.SelectedIndex;
 
             if (index == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
+
             if (index == 0)
+            {
                 return;
+            }
 
             string elem1 = ref_list[index];
             string elem2 = ref_list[index - 1];
@@ -374,7 +346,9 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
 
             ListboxDependencyGD.Items.Clear();
             foreach (var s in ref_list)
+            {
                 ListboxDependencyGD.Items.Add(s);
+            }
 
             ListboxDependencyGD.SelectedIndex = index - 1;
 
@@ -386,7 +360,6 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
             List<string> ref_list;
             switch (Mode)
             {
-                case GDMode.DEPENDENCY:
                 case GDMode.DIFF:
                     ref_list = DependencyGDFileNames;
                     break;
@@ -400,9 +373,14 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
             int index = ListboxDependencyGD.SelectedIndex;
 
             if (index == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
+
             if (index == ref_list.Count - 1)
+            {
                 return;
+            }
 
             string elem1 = ref_list[index];
             string elem2 = ref_list[index + 1];
@@ -413,7 +391,9 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
 
             ListboxDependencyGD.Items.Clear();
             foreach (var s in ref_list)
+            {
                 ListboxDependencyGD.Items.Add(s);
+            }
 
             ListboxDependencyGD.SelectedIndex = index + 1;
 

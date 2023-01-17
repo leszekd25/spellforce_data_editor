@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-using SFEngine.SFMap;
-using SFEngine.SFCFF;
+﻿using SFEngine.SFCFF;
 using SFEngine.SFLua;
 using SFEngine.SFLua.lua_sql;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFLua.lua_sql_forms
 {
@@ -22,8 +15,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             InitializeComponent();
 
             foreach (string s in Enum.GetNames(typeof(LuaEnumAiGoal)))
+            {
                 GroupGoal.Items.Add(s);
-                
+            }
         }
 
         private void SFLuaSQLRtsCoopSpawnForm_Load(object sender, EventArgs e)
@@ -31,7 +25,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             if (SFLuaEnvironment.coop_spawns.Load() != 0)
             {
                 MessageBox.Show("Could not load script/GdsRtsCoopSpawnGroups.lua");
-                this.Close();
+                Close();
                 return;
             }
 
@@ -46,14 +40,18 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             List<int> types = spawn_types.Keys.ToList();
             types.Sort();
 
-            foreach(int i in types)
+            foreach (int i in types)
+            {
                 ListSpawnTypes.Items.Add(i.ToString() + ". " + spawn_types[i].name);
+            }
         }
 
         private void ReloadSpawnDataList()
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             SpawnDataUnits.Items.Clear();
             GroupSpawnData.Items.Clear();
@@ -61,13 +59,17 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             var spawn_data = SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].data;
             if (spawn_data == null)
+            {
                 return;
+            }
 
             List<int> activation_keys = spawn_data.Keys.ToList();
             activation_keys.Sort();
 
             foreach (int i in activation_keys)
+            {
                 GroupSpawnData.Items.Add("Wave starting at " + i.ToString() + " minutes");
+            }
         }
 
         private void ListSpawnTypes_SelectedIndexChanged(object sender, EventArgs e)
@@ -87,7 +89,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
             var spawn_types = SFLuaEnvironment.coop_spawns.coop_spawn_types;
             if (!spawn_types.ContainsKey(group_id))
+            {
                 return;
+            }
 
             GroupName.Text = spawn_types[group_id].name;
             GroupLevelRange.Text = spawn_types[group_id].level_range;
@@ -100,9 +104,13 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 foreach (int i in spawn_types[group_id].start_units)
                 {
                     if (SFCategoryManager.ready)
+                    {
                         GroupStartUnits.Items.Add(i.ToString() + " - " + SFCategoryManager.GetUnitName((ushort)i, true));
+                    }
                     else
+                    {
                         GroupStartUnits.Items.Add(i.ToString());
+                    }
                 }
             }
 
@@ -113,7 +121,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void GroupSpawnData_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (GroupSpawnData.SelectedIndex == SFEngine.Utility.NO_INDEX)
             {
@@ -150,9 +160,13 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 foreach (int i in spawn_data[key].units)
                 {
                     if (SFCategoryManager.ready)
+                    {
                         SpawnDataUnits.Items.Add(i.ToString() + " - " + SFCategoryManager.GetUnitName((ushort)i, true));
+                    }
                     else
+                    {
                         SpawnDataUnits.Items.Add(i.ToString());
+                    }
                 }
             }
         }
@@ -163,18 +177,20 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             {
                 MessageBox.Show("Error while saving GdsRtsCoopSpawnGroups.lua");
             }
-            this.Close();
+            Close();
         }
 
         private void ButtonCancelChanges_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void GroupName_Validated(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].name = GroupName.Text;
@@ -183,7 +199,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void GroupLevelRange_Validated(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].level_range = GroupLevelRange.Text;
@@ -192,10 +210,14 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void GroupGoal_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (GroupGoal.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
 
@@ -208,7 +230,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void GroupClanSize_Validated(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].max_units = SFEngine.Utility.TryParseUInt16(GroupClanSize.Text);
@@ -217,37 +241,53 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void SelectedUnitID_Validated(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (GroupStartUnits.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
-            
+            }
+
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             ushort unit_id = SFEngine.Utility.TryParseUInt16(SelectedUnitID.Text);
             SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].start_units[GroupStartUnits.SelectedIndex] = (int)unit_id;
 
             if (SFCategoryManager.ready)
+            {
                 GroupStartUnits.Items[GroupStartUnits.SelectedIndex] = (unit_id.ToString() + " - " + SFCategoryManager.GetUnitName(unit_id, true));
+            }
             else
+            {
                 GroupStartUnits.Items[GroupStartUnits.SelectedIndex] = (unit_id.ToString());
+            }
         }
 
         private void SpawnDataActivation_Validated(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (GroupSpawnData.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int new_key = (int)SFEngine.Utility.TryParseUInt32(SpawnDataActivation.Text);
             if (new_key == 0)
+            {
                 return;
+            }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             var spawn_data = SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].data;
             if (spawn_data.ContainsKey(new_key))
+            {
                 return;
+            }
 
             List<int> activation_keys = spawn_data.Keys.ToList();
             activation_keys.Sort();
@@ -268,10 +308,14 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void SpawnDataHours_Validated(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (GroupSpawnData.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             var spawn_data = SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].data;
@@ -295,10 +339,14 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void SpawnDataMinutes_Validated(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (GroupSpawnData.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             var spawn_data = SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].data;
@@ -324,10 +372,14 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void SpawnDataSeconds_Validated(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (GroupSpawnData.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             var spawn_data = SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].data;
@@ -355,13 +407,19 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void SelectedSpawnDataUnitID_Validated(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (GroupSpawnData.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (SpawnDataUnits.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             var spawn_data = SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].data;
@@ -369,14 +427,18 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             List<int> activation_keys = spawn_data.Keys.ToList();
             activation_keys.Sort();
             int key = activation_keys[GroupSpawnData.SelectedIndex];
-            
+
             ushort unit_id = SFEngine.Utility.TryParseUInt16(SelectedSpawnDataUnitID.Text);
             SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].data[key].units[SpawnDataUnits.SelectedIndex] = (int)unit_id;
 
             if (SFCategoryManager.ready)
+            {
                 SpawnDataUnits.Items[SpawnDataUnits.SelectedIndex] = (unit_id.ToString() + " - " + SFCategoryManager.GetUnitName(unit_id, true));
+            }
             else
+            {
                 SpawnDataUnits.Items[SpawnDataUnits.SelectedIndex] = (unit_id.ToString());
+            }
         }
 
         private void SelectedUnitID_MouseDown(object sender, MouseEventArgs e)
@@ -384,16 +446,26 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             if (e.Button == MouseButtons.Right)
             {
                 if (MainForm.data == null)
+                {
                     return;
+                }
+
                 if (!SFCategoryManager.ready)
+                {
                     return;
+                }
+
                 if (SFCategoryManager.gamedata[2024] == null)
+                {
                     return;
+                }
 
                 ushort unit_id = SFEngine.Utility.TryParseUInt16(SelectedUnitID.Text);
                 int unit_index = SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
-                if(unit_index != -1)
+                if (unit_index != -1)
+                {
                     MainForm.data.Tracer_StepForward(17, unit_index, false);
+                }
             }
         }
 
@@ -402,16 +474,26 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             if (e.Button == MouseButtons.Right)
             {
                 if (MainForm.data == null)
+                {
                     return;
+                }
+
                 if (!SFCategoryManager.ready)
+                {
                     return;
+                }
+
                 if (SFCategoryManager.gamedata[2024] == null)
+                {
                     return;
+                }
 
                 ushort unit_id = SFEngine.Utility.TryParseUInt16(SelectedSpawnDataUnitID.Text);
                 int unit_index = SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
                 if (unit_index != -1)
+                {
                     MainForm.data.Tracer_StepForward(17, unit_index, false);
+                }
             }
         }
 
@@ -419,8 +501,12 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         {
             int max_type = 0;
             foreach (int key in SFLuaEnvironment.coop_spawns.coop_spawn_types.Keys)
+            {
                 if (key > max_type)
+                {
                     max_type = key;
+                }
+            }
 
             SFMapCoopSpawnTypeInfo new_type = new SFMapCoopSpawnTypeInfo();
             new_type.name = "New spawn type";
@@ -429,26 +515,35 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             new_type.max_units = 0;
             SFLuaEnvironment.coop_spawns.coop_spawn_types.Add(max_type + 1, new_type);
 
-            ListSpawnTypes.Items.Add((max_type+1).ToString() + ". " + new_type.name);
+            ListSpawnTypes.Items.Add((max_type + 1).ToString() + ". " + new_type.name);
             ListSpawnTypes.SelectedIndex = max_type;
         }
 
         private void GroupUnitAdd_Click(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int key = ListSpawnTypes.SelectedIndex + 1;
             var spawn_type = SFLuaEnvironment.coop_spawns.coop_spawn_types[key];
 
             if (spawn_type.start_units == null)
+            {
                 spawn_type.start_units = new List<int>();
+            }
+
             spawn_type.start_units.Add(0);
 
             if (SFCategoryManager.ready)
+            {
                 GroupStartUnits.Items.Add("0 - " + SFCategoryManager.GetUnitName((ushort)0, true));
+            }
             else
+            {
                 GroupStartUnits.Items.Add("0");
+            }
 
             GroupStartUnits.SelectedIndex = spawn_type.start_units.Count - 1;
         }
@@ -457,34 +552,48 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         {
             int index = GroupStartUnits.SelectedIndex;
             if (index == -1)
+            {
                 return;
+            }
 
             int key = ListSpawnTypes.SelectedIndex + 1;
             var spawn_type = SFLuaEnvironment.coop_spawns.coop_spawn_types[key];
 
             spawn_type.start_units.RemoveAt(index);
             if (spawn_type.start_units.Count == 0)
+            {
                 spawn_type.start_units = null;
+            }
+
             GroupStartUnits.Items.RemoveAt(index);
 
             if (index == GroupStartUnits.Items.Count)
+            {
                 index -= 1;
+            }
+
             GroupStartUnits.SelectedIndex = index;
         }
 
         private void SpawnDataAdd_Click(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
-            
+            }
+
             int key = ListSpawnTypes.SelectedIndex + 1;
             var spawn_type = SFLuaEnvironment.coop_spawns.coop_spawn_types[key];
 
             if (spawn_type.data == null)
+            {
                 spawn_type.data = new Dictionary<int, SFMapCoopSpawnTypeDataInfo>();
+            }
 
             if (spawn_type.data.ContainsKey(0))
+            {
                 return;
+            }
 
             SFMapCoopSpawnTypeDataInfo new_data = new SFMapCoopSpawnTypeDataInfo();
             new_data.seconds_per_tick = 60;
@@ -497,12 +606,16 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void SpawnDataRemove_Click(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int index = GroupSpawnData.SelectedIndex;
             if (index == SFEngine.Utility.NO_INDEX)
+            {
                 return;
-            
+            }
+
             int key = ListSpawnTypes.SelectedIndex + 1;
             var spawn_type = SFLuaEnvironment.coop_spawns.coop_spawn_types[key];
 
@@ -512,40 +625,59 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
             spawn_type.data.Remove(selected_key);
             if (spawn_type.data.Count == 0)
+            {
                 spawn_type.data = null;
+            }
+
             GroupSpawnData.Items.Remove(index);
 
             ReloadSpawnDataList();
             if (index == GroupSpawnData.Items.Count)
+            {
                 index -= 1;
+            }
+
             GroupSpawnData.SelectedIndex = index;
         }
 
         private void SpawnDataUnitAdd_Click(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (GroupSpawnData.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int key = ListSpawnTypes.SelectedIndex + 1;
             var spawn_type = SFLuaEnvironment.coop_spawns.coop_spawn_types[key];
             if (spawn_type.data == null)
+            {
                 return;
+            }
 
             List<int> activation_keys = spawn_type.data.Keys.ToList();
             activation_keys.Sort();
             int selected_key = activation_keys[GroupSpawnData.SelectedIndex];
 
             if (spawn_type.data[selected_key].units == null)
+            {
                 spawn_type.data[selected_key].units = new List<int>();
+            }
+
             spawn_type.data[selected_key].units.Add(0);
 
             if (SFCategoryManager.ready)
+            {
                 SpawnDataUnits.Items.Add("0 - " + SFCategoryManager.GetUnitName((ushort)0, true));
+            }
             else
+            {
                 SpawnDataUnits.Items.Add("0");
+            }
 
             SpawnDataUnits.SelectedIndex = spawn_type.data[selected_key].units.Count - 1;
         }
@@ -553,19 +685,27 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void SpawnDataUnitRemove_Click(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (GroupSpawnData.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int index = SpawnDataUnits.SelectedIndex;
             if (index == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int key = ListSpawnTypes.SelectedIndex + 1;
             var spawn_type = SFLuaEnvironment.coop_spawns.coop_spawn_types[key];
             if (spawn_type.data == null)
+            {
                 return;
+            }
 
             List<int> activation_keys = spawn_type.data.Keys.ToList();
             activation_keys.Sort();
@@ -573,21 +713,31 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
             spawn_type.data[selected_key].units.RemoveAt(index);
             if (spawn_type.data[selected_key].units.Count == 0)
+            {
                 spawn_type.data[selected_key].units = null;
+            }
+
             SpawnDataUnits.Items.RemoveAt(index);
 
             if (index == SpawnDataUnits.Items.Count)
+            {
                 index -= 1;
+            }
+
             SpawnDataUnits.SelectedIndex = index;
         }
 
         private void GroupStartUnits_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (GroupStartUnits.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             SelectedUnitID.Text = SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].start_units[GroupStartUnits.SelectedIndex].ToString();
@@ -596,13 +746,19 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void SpawnDataUnits_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ListSpawnTypes.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (GroupSpawnData.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             if (SpawnDataUnits.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             var spawn_data = SFLuaEnvironment.coop_spawns.coop_spawn_types[group_id].data;

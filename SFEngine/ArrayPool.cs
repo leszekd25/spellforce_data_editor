@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine
 {
@@ -24,7 +20,10 @@ namespace SFEngine
         public void AddElem(T elem)
         {
             if (Count == Data.Length)
+            {
                 ResizeDouble();
+            }
+
             Data[Count] = elem;
             Count += 1;
         }

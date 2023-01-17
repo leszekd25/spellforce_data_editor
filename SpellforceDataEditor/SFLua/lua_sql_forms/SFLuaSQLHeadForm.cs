@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFLua;
+using System;
 using System.Windows.Forms;
-using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFLua.lua_sql_forms
 {
@@ -23,7 +16,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             if (SFLuaEnvironment.heads.Load() != 0)
             {
                 MessageBox.Show("Could not load script/sql_head.lua");
-                this.Close();
+                Close();
                 return;
             }
 
@@ -35,8 +28,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             ListHeads.Items.Clear();
             ListHeads.SuspendLayout();
 
-            for(int i=0;i<SFLuaEnvironment.heads.heads.Count; i++)
-                ListHeads.Items.Add((i+1).ToString() + ". ");
+            for (int i = 0; i < SFLuaEnvironment.heads.heads.Count; i++)
+            {
+                ListHeads.Items.Add((i + 1).ToString() + ". ");
+            }
 
             ListHeads.ResumeLayout();
         }
@@ -61,17 +56,21 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void MM_Validated(object sender, EventArgs e)
         {
             if (ListHeads.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
-            SFLuaEnvironment.heads.heads[ListHeads.SelectedIndex+1].MeshMale = MM.Text.ToString();
+            SFLuaEnvironment.heads.heads[ListHeads.SelectedIndex + 1].MeshMale = MM.Text.ToString();
         }
 
         private void MF_Validated(object sender, EventArgs e)
         {
             if (ListHeads.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
-            SFLuaEnvironment.heads.heads[ListHeads.SelectedIndex+1].MeshFemale = MF.Text.ToString();
+            SFLuaEnvironment.heads.heads[ListHeads.SelectedIndex + 1].MeshFemale = MF.Text.ToString();
         }
 
         private void ButtonAdd_Click(object sender, EventArgs e)
@@ -82,7 +81,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
             int new_id = SFLuaEnvironment.heads.heads.Count + 1;
             SFLuaEnvironment.heads.heads.Add(new_id, head);
-            ListHeads.Items.Add(new_id.ToString()+". ");
+            ListHeads.Items.Add(new_id.ToString() + ". ");
 
             ListHeads.SelectedIndex = new_id - 1;
         }
@@ -90,21 +89,25 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void ButtonRemove_Click(object sender, EventArgs e)
         {
             if (ListHeads.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            {
                 return;
+            }
 
             int old_index = ListHeads.SelectedIndex;
-            SFLuaEnvironment.heads.heads.Remove(ListHeads.SelectedIndex+1);
+            SFLuaEnvironment.heads.heads.Remove(ListHeads.SelectedIndex + 1);
             ListHeads.Items.RemoveAt(ListHeads.SelectedIndex);
 
             if (old_index == SFLuaEnvironment.heads.heads.Count)
+            {
                 old_index -= 1;
+            }
 
             ListHeads.SelectedIndex = old_index;
         }
 
         private void ButtonCancelChanges_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void ButtonSaveChanges_Click(object sender, EventArgs e)
@@ -113,7 +116,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             {
                 MessageBox.Show("Error while saving sql_head.lua");
             }
-            this.Close();
+            Close();
         }
     }
 }

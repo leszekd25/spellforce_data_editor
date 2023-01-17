@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.SFMap
 {
@@ -20,8 +16,11 @@ namespace SFEngine.SFMap
         {
             int sum = 0;
             for (int i = 0; i < weather.Length; i++)
+            {
                 sum += weather[i];
-            if(sum == 0)
+            }
+
+            if (sum == 0)
             {
                 weather[0] = 100;
                 return;
@@ -32,14 +31,16 @@ namespace SFEngine.SFMap
 
             int cur_w = 0;
             float cur_sum = 0;
-            for(int i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
                 while (cur_sum >= weather[cur_w])
                 {
                     cur_sum -= weather[cur_w];
                     cur_w += 1;
                     if (cur_w == weather.Length)       // should never happen?
+                    {
                         throw new Exception("Invalid weather calculation...");
+                    }
                 }
 
                 new_weather[cur_w] += 1;

@@ -12,15 +12,21 @@ namespace SFEngine.SFCFF
         public override bool Equals(object obj)
         {
             if (!(obj is SFOutlineData))
+            {
                 return false;
+            }
 
             if (((SFOutlineData)obj).Data.Count != Data.Count)
+            {
                 return false;
+            }
 
-            for(int i = 0; i < Data.Count; i++)
+            for (int i = 0; i < Data.Count; i++)
             {
                 if (((SFOutlineData)obj).Data[i] != Data[i])
+                {
                     return false;
+                }
             }
 
             return true;
@@ -30,7 +36,10 @@ namespace SFEngine.SFCFF
         {
             int h = 1300813;
             for (int i = 0; i < Data.Count; i += 2)
+            {
                 h = h * 1300367 + ((Data[i] << 16) * (Data[i + 1])).GetHashCode();
+            }
+
             return h;
         }
 
@@ -51,13 +60,19 @@ namespace SFEngine.SFCFF
         public override bool Equals(object obj)
         {
             if (!(obj is SFString))
+            {
                 return false;
+            }
 
             if (((SFString)obj).LanguageID != LanguageID)
+            {
                 return false;
+            }
 
             if (!RawData.SequenceEqual(((SFString)obj).RawData))
+            {
                 return false;
+            }
 
             return true;
         }
@@ -67,7 +82,9 @@ namespace SFEngine.SFCFF
             int h = 1300813;
             h = h * 1300367 + LanguageID.GetHashCode();
             for (int i = 0; i < RawData.Length; i++)
+            {
                 h = (h * 31) ^ RawData[i];
+            }
 
             return h;
         }
@@ -118,8 +135,10 @@ namespace SFEngine.SFCFF
             }
 
             byte[] data = encoding.GetBytes(s);
-            if(char_count == 0)
+            if (char_count == 0)
+            {
                 str.RawData = data;
+            }
             else
             {
                 str.RawData = new byte[char_count];
@@ -167,26 +186,38 @@ namespace SFEngine.SFCFF
         public void AddVariants(Object[] objs)
         {
             foreach (Object obj in objs)
+            {
                 variants.Add(obj);
+            }
         }
 
         //returns size (in bytes) of an element, depending of variant types
         public int GetSize()
         {
             int s = 0;
-            foreach(object v in variants)
+            foreach (object v in variants)
             {
                 Type t = v.GetType();
                 if ((t == typeof(SByte)) || (t == typeof(Byte)))
+                {
                     s += 1;
+                }
                 else if ((t == typeof(Int16)) || (t == typeof(UInt16)))
+                {
                     s += 2;
+                }
                 else if ((t == typeof(Int32)) || (t == typeof(UInt32)))
+                {
                     s += 4;
+                }
                 else if (t == typeof(SFString))
+                {
                     s += ((SFString)v).RawData.Length;
+                }
                 else if (t == typeof(SFOutlineData))
-                    s += 1+((SFOutlineData)v).Data.Count * 2;
+                {
+                    s += 1 + ((SFOutlineData)v).Data.Count * 2;
+                }
             }
             return s;
         }
@@ -195,14 +226,20 @@ namespace SFEngine.SFCFF
         public bool SameAs(SFCategoryElement elem)
         {
             if (variants.Count != elem.variants.Count)
+            {
                 return false;
+            }
 
-            for(int i = 0; i < variants.Count; i++)
+            for (int i = 0; i < variants.Count; i++)
             {
                 if (variants[i].GetType() != elem.variants[i].GetType())
+                {
                     return false;
+                }
                 else if (!variants[i].Equals(elem.variants[i]))
+                {
                     return false;
+                }
             }
 
             return true;
@@ -211,15 +248,21 @@ namespace SFEngine.SFCFF
         // returns whether a given sequence of elements between two elements is identical
         public static bool Compare(SFCategoryElement e1, SFCategoryElement e2, int start1, int start2, int len)
         {
-            if ((e1.variants.Count < start1) || (e1.variants.Count < start1+len-1) || (e2.variants.Count < start2) || (e2.variants.Count < start2+len-1))
-                return false;
-
-            for(int i=0; i<len; i++)
+            if ((e1.variants.Count < start1) || (e1.variants.Count < start1 + len - 1) || (e2.variants.Count < start2) || (e2.variants.Count < start2 + len - 1))
             {
-                if (e1.variants[i+start1].GetType() != e2.variants[i+start2].GetType())
+                return false;
+            }
+
+            for (int i = 0; i < len; i++)
+            {
+                if (e1.variants[i + start1].GetType() != e2.variants[i + start2].GetType())
+                {
                     return false;
-                else if (!e1.variants[i+start1].Equals(e2.variants[i+start2]))
+                }
+                else if (!e1.variants[i + start1].Equals(e2.variants[i + start2]))
+                {
                     return false;
+                }
             }
 
             return true;
@@ -231,17 +274,35 @@ namespace SFEngine.SFCFF
         {
             Type t = variants[index].GetType();
             if (t == typeof(SByte))
+            {
                 return (int)(SByte)variants[index];
+            }
+
             if (t == typeof(Byte))
+            {
                 return (int)(Byte)variants[index];
+            }
+
             if (t == typeof(Int16))
+            {
                 return (int)(Int16)variants[index];
+            }
+
             if (t == typeof(UInt16))
+            {
                 return (int)(UInt16)variants[index];
+            }
+
             if (t == typeof(int))
+            {
                 return (int)variants[index];
+            }
+
             if (t == typeof(UInt32))
+            {
                 return (int)(UInt32)variants[index];
+            }
+
             LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, "SFVariant.to_int(): Type is not a number");
             return 0;
         }
@@ -255,21 +316,37 @@ namespace SFEngine.SFCFF
                 object v = variants[i + index_start];
                 Type t = v.GetType();
                 if (t == typeof(SFString))
+                {
                     res[i] = ((SFString)v).GetCopy();
+                }
                 else if (t == typeof(SByte))
+                {
                     res[i] = (SByte)v;
+                }
                 else if (t == typeof(Byte))
+                {
                     res[i] = (Byte)v;
+                }
                 else if (t == typeof(Int16))
+                {
                     res[i] = (Int16)v;
+                }
                 else if (t == typeof(UInt16))
+                {
                     res[i] = (UInt16)v;
+                }
                 else if (t == typeof(Int32))
+                {
                     res[i] = (Int32)v;
+                }
                 else if (t == typeof(UInt32))
+                {
                     res[i] = (UInt32)v;
+                }
                 else if (t == typeof(SFOutlineData))
+                {
                     res[i] = ((SFOutlineData)v).GetCopy();
+                }
             }
             return res;
         }
@@ -278,14 +355,18 @@ namespace SFEngine.SFCFF
         public void RemoveRaw(int index_start, int count)
         {
             for (int i = 0; i < count; i++)
+            {
                 variants.RemoveAt(index_start);
+            }
         }
 
         // inserts a range of objects as variants at specified position
         public void PasteRaw(object[] data, int index_start)
         {
             for (int i = 0; i < data.Length; i++)
+            {
                 variants.Insert(index_start + i, data[i]);
+            }
         }
 
         // creates a new element with identical contents as the original
@@ -301,7 +382,10 @@ namespace SFEngine.SFCFF
         {
             int h = 1300813;
             foreach (var e in variants)
+            {
                 h = h * 1300367 + e.GetHashCode();
+            }
+
             return h;
         }
     }
@@ -317,8 +401,12 @@ namespace SFEngine.SFCFF
         public SFCategoryElement GetElementByID(int id)
         {
             for (int i = 0; i < Elements.Count; i++)
+            {
                 if (Elements[i].ToInt(1) == id)
+                {
                     return Elements[i];
+                }
+            }
 
             return null;
         }
@@ -326,8 +414,12 @@ namespace SFEngine.SFCFF
         public int GetIndexByID(int id)
         {
             for (int i = 0; i < Elements.Count; i++)
+            {
                 if (Elements[i].ToInt(1) == id)
+                {
                     return i;
+                }
+            }
 
             return Utility.NO_INDEX;
         }
@@ -336,7 +428,9 @@ namespace SFEngine.SFCFF
         {
             SFCategoryElementList e = new SFCategoryElementList();
             foreach (var elem in Elements)
+            {
                 e.Elements.Add(elem.GetCopy());
+            }
 
             return e;
         }
@@ -344,15 +438,21 @@ namespace SFEngine.SFCFF
         public bool SameAs(SFCategoryElementList e)
         {
             if (e == null)
+            {
                 return false;
+            }
 
             if (e.Elements.Count != Elements.Count)
+            {
                 return false;
+            }
 
-            for(int i = 0; i < Elements.Count; i++)
+            for (int i = 0; i < Elements.Count; i++)
             {
                 if (!Elements[i].SameAs(e.Elements[i]))
+                {
                     return false;
+                }
             }
 
             return true;
@@ -362,7 +462,9 @@ namespace SFEngine.SFCFF
         {
             ElementStatus.Clear();
             for (int i = 0; i < Elements.Count; i++)
+            {
                 ElementStatus.Add(status);
+            }
         }
 
         public int GetID()
@@ -374,7 +476,10 @@ namespace SFEngine.SFCFF
         {
             int h = 1300813;
             foreach (var e in Elements)
+            {
                 h = h * 1300367 + e.GetHashCode();
+            }
+
             return h;
         }
     }

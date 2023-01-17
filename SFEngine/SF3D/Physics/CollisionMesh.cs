@@ -5,18 +5,14 @@
  * Currently unused...
  * */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
+using System;
 
 namespace SFEngine.SF3D.Physics
 {
     public class CollisionMesh
     {
-        public Triangle[] triangles;       
+        public Triangle[] triangles;
         public BoundingBox aabb;          // used to quickly check if ray can even hit any of the triangles
         public Vector3 offset;
 
@@ -32,9 +28,11 @@ namespace SFEngine.SF3D.Physics
                 triangles = new Triangle[triangle_count];
 
                 for (int i = 0; i < triangle_count; i++)
+                {
                     triangles[i] = new Triangle(vertices[i * 3 + 0],
                                                 vertices[i * 3 + 1],
                                                 vertices[i * 3 + 2]);
+                }
             }
             else
             {
@@ -43,9 +41,11 @@ namespace SFEngine.SF3D.Physics
                 triangles = new Triangle[triangle_count];
 
                 for (int i = 0; i < triangle_count; i++)
+                {
                     triangles[i] = new Triangle(vertices[indices[i * 3 + 0]],
                                                 vertices[indices[i * 3 + 1]],
                                                 vertices[indices[i * 3 + 2]]);
+                }
             }
 
             float x1, x2, y1, y2, z1, z2;
@@ -64,7 +64,7 @@ namespace SFEngine.SF3D.Physics
                 z1 = Math.Min(z1, v.Z);
                 z2 = Math.Max(z2, v.Z);
             }
-            aabb = new BoundingBox(new Vector3(x1, y1, z1)+offset, new Vector3(x2, y2, z2)+offset);
+            aabb = new BoundingBox(new Vector3(x1, y1, z1) + offset, new Vector3(x2, y2, z2) + offset);
         }
     }
 }

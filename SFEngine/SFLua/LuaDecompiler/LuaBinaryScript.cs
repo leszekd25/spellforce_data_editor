@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace SFEngine.SFLua.LuaDecompiler
@@ -54,8 +51,13 @@ namespace SFEngine.SFLua.LuaDecompiler
         static public bool LoadSignature(BinaryReader br)
         {
             for (int i = 0; i < 3; i++)
+            {
                 if (br.ReadChar() != Signature[i])
+                {
                     return false;
+                }
+            }
+
             return true;
         }
 
@@ -115,7 +117,7 @@ namespace SFEngine.SFLua.LuaDecompiler
             LoadLocals(br);
             LoadLines(br);
             LoadConstants(br);
-            if(!LoadCode(br))
+            if (!LoadCode(br))
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaBinaryFunction(): Invalid code chunk (last instruction != OP_END)");
                 throw new InvalidDataException();
@@ -126,10 +128,11 @@ namespace SFEngine.SFLua.LuaDecompiler
         {
             int size = br.ReadInt32();
             if (size == 0)
+            {
                 return "";
+            }
+
             string s = new String(br.ReadChars(size - 1));
-            /*for (int i = 0; i < size - 1; i++)
-                s += (char)br.ReadByte();*/
             br.ReadByte();
             return s;
         }
@@ -138,7 +141,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         {
             int n = br.ReadInt32();
             LocVars = new List<LuaLocVar>();
-            for(int i=0;i<n;i++)
+            for (int i = 0; i < n; i++)
             {
                 LuaLocVar v;
                 v.name = LoadString(br);
@@ -152,7 +155,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         {
             int n = br.ReadInt32();
             LinesInfo = new List<int>();
-            for(int i=0;i<n;i++)
+            for (int i = 0; i < n; i++)
             {
                 LinesInfo.Add(br.ReadInt32());
             }
@@ -171,12 +174,16 @@ namespace SFEngine.SFLua.LuaDecompiler
             n = br.ReadInt32();
             Numbers = new List<double>();
             for (int i = 0; i < n; i++)
+            {
                 Numbers.Add(br.ReadDouble());
+            }
 
             n = br.ReadInt32();
             Functions = new List<LuaBinaryFunction>();
             for (int i = 0; i < n; i++)
+            {
                 Functions.Add(new LuaBinaryFunction(br));
+            }
         }
 
         public bool LoadCode(BinaryReader br)
@@ -184,9 +191,14 @@ namespace SFEngine.SFLua.LuaDecompiler
             int n = br.ReadInt32();
             Instructions = new List<LuaInstruction>();
             for (int i = 0; i < n; i++)
+            {
                 Instructions.Add(new LuaInstruction(br.ReadUInt32()));
+            }
+
             if (Instructions[Instructions.Count - 1].OpCode != LuaOpCode.OP_END)
+            {
                 return false;
+            }
 
             return true;
         }
@@ -206,19 +218,30 @@ namespace SFEngine.SFLua.LuaDecompiler
         {
             sw.WriteLine("NUMBERS DUMP");
             for (int i = 0; i < Numbers.Count; i++)
+            {
                 sw.WriteLine("NUMBER #" + i.ToString() + ": " + Numbers[i].ToString());
+            }
+
             sw.WriteLine("");
             sw.WriteLine("STRINGS DUMP");
             for (int i = 0; i < Strings.Count; i++)
+            {
                 sw.WriteLine("STRING #" + i.ToString() + ": " + Strings[i].ToString());
+            }
+
             sw.WriteLine("");
             sw.WriteLine("INSTR   DUMP");
             for (int i = 0; i < Instructions.Count; i++)
+            {
                 sw.WriteLine("INSTR  #" + i.ToString() + ": " + Instructions[i].ToString());
+            }
+
             sw.WriteLine();
             sw.WriteLine();
             foreach (LuaBinaryFunction f in Functions)
+            {
                 f.Dump(sw);
+            }
         }
 
         // minimum required to run LUA scripts
@@ -234,7 +257,7 @@ namespace SFEngine.SFLua.LuaDecompiler
 
             foreach (LuaInstruction i in Instructions)
             {
-                switch(i.OpCode)
+                switch (i.OpCode)
                 {
                     case LuaOpCode.OP_END:
                         done = true;
@@ -242,8 +265,11 @@ namespace SFEngine.SFLua.LuaDecompiler
                     case LuaOpCode.OP_RETURN:                   // todo: rework
                         done = true;
                         int stack_return_count = i.ArgU;
-                        for(int k=0; k<=stack_return_count; k++)
+                        for (int k = 0; k <= stack_return_count; k++)
+                        {
                             ret.Add(stack.Pop());
+                        }
+
                         break;
                     case LuaOpCode.OP_PUSHNIL:
                         stack.Push(null);
@@ -266,13 +292,16 @@ namespace SFEngine.SFLua.LuaDecompiler
                     case LuaOpCode.OP_SETLIST:
                         list_elems = i.ArgB;
                         table = (LuaParser.LuaTable)stack.Get(list_elems);
-                        for(;list_elems!=0; list_elems-=1)
+                        for (; list_elems != 0; list_elems -= 1)
+                        {
                             table[(double)list_elems] = stack.Pop();
+                        }
+
                         break;
                     case LuaOpCode.OP_SETMAP:
                         list_elems = i.ArgU;
                         table = (LuaParser.LuaTable)stack.Get(list_elems * 2);
-                        for(;list_elems!=0;list_elems-=1)
+                        for (; list_elems != 0; list_elems -= 1)
                         {
                             object val = stack.Pop();
                             object key = stack.Pop();
@@ -284,10 +313,15 @@ namespace SFEngine.SFLua.LuaDecompiler
                         return null;
                 }
                 if (done)
+                {
                     break;
+                }
             }
             if (ret.Count == 0)
+            {
                 return null;
+            }
+
             return ret.ToArray();
         }
     }
@@ -303,7 +337,7 @@ namespace SFEngine.SFLua.LuaDecompiler
                 LuaBinaryHeader.Validate(br);
                 func = new LuaBinaryFunction(br);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFLua, "LuaBinaryScript(): Error reading script from memory");
                 func = null;

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace SFEngine.SFLua.LuaDecompiler
 {
@@ -12,7 +7,7 @@ namespace SFEngine.SFLua.LuaDecompiler
 
     }
 
-    public class Num: Primitive
+    public class Num : Primitive
     {
         public double value;
 
@@ -23,17 +18,17 @@ namespace SFEngine.SFLua.LuaDecompiler
 
         public override string ToString()
         {
-            return "NUM | "+value.ToString();
+            return "NUM | " + value.ToString();
         }
     }
 
-    public class Str: Primitive
+    public class Str : Primitive
     {
         public string value;
 
         public override void WriteLuaString(StringWriter sw)
         {
-            sw.Write('"'+value.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t").Replace("\"", "\\\"")+'"');
+            sw.Write('"' + value.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t").Replace("\"", "\\\"") + '"');
         }
 
         public override string ToString()
@@ -42,7 +37,7 @@ namespace SFEngine.SFLua.LuaDecompiler
         }
     }
 
-    public class Nil: Primitive
+    public class Nil : Primitive
     {
         public override void WriteLuaString(StringWriter sw)
         {

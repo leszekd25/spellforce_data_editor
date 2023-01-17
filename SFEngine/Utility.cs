@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
-using System.IO;
 using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace SFEngine
@@ -25,67 +20,97 @@ namespace SFEngine
         static public SByte TryParseInt8(string s, SByte def = 0)
         {
             if (SByte.TryParse(s, out sbyte val))
+            {
                 return val;
+            }
             else
+            {
                 return def;
+            }
         }
 
         static public Int16 TryParseInt16(string s, Int16 def = 0)
         {
             if (Int16.TryParse(s, out short val))
+            {
                 return val;
+            }
             else
+            {
                 return def;
+            }
         }
 
         static public Int32 TryParseInt32(string s, Int32 def = 0)
         {
             if (Int32.TryParse(s, out int val))
+            {
                 return val;
+            }
             else
+            {
                 return def;
+            }
         }
 
         static public Byte TryParseUInt8(string s, Byte def = 0)
         {
             if (Byte.TryParse(s, out byte val))
+            {
                 return val;
+            }
             else
+            {
                 return def;
+            }
         }
 
         static public UInt16 TryParseUInt16(string s, UInt16 def = 0)
         {
             if (UInt16.TryParse(s, out ushort val))
+            {
                 return val;
+            }
             else
+            {
                 return def;
+            }
         }
 
         static public UInt32 TryParseUInt32(string s, UInt32 def = 0)
         {
             if (UInt32.TryParse(s, out uint val))
+            {
                 return val;
+            }
             else
+            {
                 return def;
+            }
         }
 
         static public Single TryParseFloat(string s, Single def = 0)
         {
-            s = s.Replace('.', ',');
             if (Single.TryParse(s, out float val))
+            {
                 return val;
+            }
             else
+            {
                 return def;
+            }
         }
 
         static public Double TryParseDouble(string s, Double def = 0)
         {
-            s = s.Replace('.', ',');
             if (Double.TryParse(s, out double val))
+            {
                 return val;
+            }
             else
+            {
                 return def;
+            }
         }
 
         //for when you don't know what data actually does
@@ -93,18 +118,21 @@ namespace SFEngine
         static public Byte[] TryParseByteArray(string s, int def_length = 1)
         {
             string[] array = s.Split(' ');
-            if(array.Length != def_length)
+            if (array.Length != def_length)
             {
                 Byte[] errarray = new Byte[def_length];
                 for (int j = 0; j < def_length; j++)
+                {
                     errarray[j] = 0;
+                }
+
                 return errarray;
             }
 
             Byte[] bytearray = new Byte[def_length];
 
             int i = 0;
-            foreach(string hex in array)
+            foreach (string hex in array)
             {
                 bytearray[i] = Convert.ToByte(hex, 16);
                 i++;
@@ -112,35 +140,19 @@ namespace SFEngine
 
             return bytearray;
         }
-/*
-        //turns string into a char array of a given length
-        // pending fixing?
-        static public Byte[] FixedLengthString(string s, int length)
-        {
-            byte[] charray = new byte[length];
-            char[] text_array = s.ToCharArray();
-
-            for (int i = 0; i < length; i++)
-                if (i < text_array.Length)
-                    charray[i] = (byte)text_array[i];
-                else
-                    charray[i] = 0;
-
-            return charray;
-        }*/
 
         //used for header manipulation, inserts unsigned int into a given array at a given index
         //prone to endianess errors...
         static public void CopyUInt32ToByteArray(UInt32 elem, ref Byte[] bytearray, int index)
         {
             bytearray[index] = (byte)(elem % 256);
-            bytearray[index+1] = (byte)(elem >> 8);
-            bytearray[index+2] = (byte)(elem >> 16);
-            bytearray[index+3] = (byte)(elem >> 24);
+            bytearray[index + 1] = (byte)(elem >> 8);
+            bytearray[index + 2] = (byte)(elem >> 16);
+            bytearray[index + 3] = (byte)(elem >> 24);
         }
 
         //general purpose binary serach
-        static public int find_binary_index<T>(IList<T> list, T value) where T: IComparable
+        static public int find_binary_index<T>(IList<T> list, T value) where T : IComparable
         {
             int current_start = 0;
             int current_end = list.Count - 1;
@@ -151,11 +163,18 @@ namespace SFEngine
                 current_center = (current_start + current_end) / 2;    //care about overflow
                 val = list[current_center];
                 if (val.CompareTo(value) == 0)
+                {
                     return current_center;
+                }
+
                 if (val.CompareTo(value) < 0)
+                {
                     current_start = current_center + 1;
+                }
                 else
+                {
                     current_end = current_center - 1;
+                }
             }
             return NO_INDEX;
         }
@@ -164,10 +183,13 @@ namespace SFEngine
         static public bool DerivedFrom<T>(T obj, Type type)
         {
             Type derived = typeof(T);
-            while(derived != typeof(object))
+            while (derived != typeof(object))
             {
                 if (derived == type)
+                {
                     return true;
+                }
+
                 derived = derived.BaseType;
             }
             return false;
@@ -177,7 +199,7 @@ namespace SFEngine
         {
             string s = "";
             int size = br.ReadInt32();
-            for(int i = 0; i < size; i++)
+            for (int i = 0; i < size; i++)
             {
                 s += (char)br.ReadByte();
                 br.ReadByte();
@@ -198,7 +220,7 @@ namespace SFEngine
         static public uint CalculateAdler32Checksum(byte[] data)
         {
             uint a = 1, b = 0;
-            for(int i = 0; i < data.Length; i++)
+            for (int i = 0; i < data.Length; i++)
             {
                 a = (a + data[i]) % 65521;
                 b = (b + a) % 65521;
@@ -210,7 +232,10 @@ namespace SFEngine
         {
             string replacement = "";
             for (int i = 0; i < tabs; i++)
+            {
                 replacement += "\t";
+            }
+
             return replacement + s;
         }
 
@@ -218,8 +243,11 @@ namespace SFEngine
         {
             string replacement = "\r\n";
             for (int i = 0; i < tabs; i++)
+            {
                 replacement += "\t";
-            return replacement+s.Replace("\r\n", replacement);
+            }
+
+            return replacement + s.Replace("\r\n", replacement);
         }
 
         static public float BilinearInterpolation(float tl, float tr, float bl, float br, float t1, float t2)
@@ -230,7 +258,7 @@ namespace SFEngine
                  + (br * t1 * t2);
         }
 
-        static public byte[] ToByteArray<T>(T[] arr) where T: struct        // T: struct means you can copy the  contents
+        static public byte[] ToByteArray<T>(T[] arr) where T : struct        // T: struct means you can copy the contents
         {
             GCHandle handle = GCHandle.Alloc(arr, GCHandleType.Pinned);     // handle to an unmanaged object;
                                                                             // pinned  means address wont change
@@ -244,11 +272,13 @@ namespace SFEngine
             finally
             {
                 if (handle.IsAllocated)
+                {
                     handle.Free();                                          // must free the allocated unmanaged memory asap
+                }
             }
         }
 
-        static public T[] FromByteArray<T>(byte[]  arr) where T:  struct
+        static public T[] FromByteArray<T>(byte[] arr) where T : struct
         {
             T[] destination = new T[arr.Length / Marshal.SizeOf(typeof(T))];
             GCHandle handle = GCHandle.Alloc(destination, GCHandleType.Pinned);
@@ -261,7 +291,9 @@ namespace SFEngine
             finally
             {
                 if (handle.IsAllocated)
+                {
                     handle.Free();
+                }
             }
         }
 
@@ -280,11 +312,18 @@ namespace SFEngine
                 current_center = (current_start + current_end) / 2;    //care about overflow (though its not happening in this case)
                 val = list[current_center];
                 if (val.CompareTo(id) == 0)
+                {
                     return Utility.NO_INDEX;
+                }
+
                 if (val.CompareTo(id) < 0)
+                {
                     current_start = current_center + 1;
+                }
                 else
+                {
                     current_end = current_center - 1;
+                }
             }
             return current_start;
         }
@@ -294,7 +333,7 @@ namespace SFEngine
         {
             if (!File.Exists(src_file))
             {
-                LogUtils.Log.Error(LogUtils.LogSource.Main, "Utility.CopyFile(): "+src_file+" doesn't exist!");
+                LogUtils.Log.Error(LogUtils.LogSource.Main, "Utility.CopyFile(): " + src_file + " doesn't exist!");
                 return -1;
             }
 
@@ -302,14 +341,22 @@ namespace SFEngine
             {
                 FileInfo fo = new FileInfo(dst_file);
                 if (!fo.Directory.Exists)
+                {
                     fo.Directory.Create();
+                }
+
                 if (File.Exists(dst_file))
+                {
                     LogUtils.Log.Info(LogUtils.LogSource.Main, "Utility.CopyFile(): Overwriting file " + dst_file + " with " + src_file);
+                }
                 else
+                {
                     LogUtils.Log.Info(LogUtils.LogSource.Main, "Utility.CopyFile(): Copying file " + src_file + " to " + dst_file);
+                }
+
                 File.Copy(src_file, dst_file, true);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.Main, "Utility.CopyFile(): Can't copy file " + src_file + " to " + dst_file);
 
@@ -356,13 +403,13 @@ namespace SFEngine
 
                 string[] directories = Directory.GetDirectories(src_dir);
                 string d_rel;
-                foreach(string d in directories)
+                foreach (string d in directories)
                 {
                     GetRelativePath(src_dir, d, out d_rel);
                     CopyDirectory(d, dst_dir + d_rel);
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 LogUtils.Log.Info(LogUtils.LogSource.Main, "Utility.CopyDirectory: Can't copy " + src_dir + " to " + dst_dir);
                 return -2;

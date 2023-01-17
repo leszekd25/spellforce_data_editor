@@ -3,14 +3,10 @@
  * SFAnimation is a set of SFBoneAnimation objects corresponding to a supplied skeleton
  */
 
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
 using SFEngine.SFResources;
+using System;
+using System.IO;
 
 namespace SFEngine.SF3D
 {
@@ -26,8 +22,10 @@ namespace SFEngine.SF3D
             position.ResolveStatic();
             rotation.ResolveStatic();
             is_static = (position.is_static) && (rotation.is_static);
-            if(is_static)
+            if (is_static)
+            {
                 GetInterpolatedMatrix4(0, ref static_transform);
+            }
         }
 
         private void GetInterpolatedMatrix4(float t, ref Matrix4 mat)
@@ -39,9 +37,13 @@ namespace SFEngine.SF3D
         public void GetMatrix4(float t, ref Matrix4 mat)
         {
             if (is_static)
+            {
                 mat = static_transform;
+            }
             else
+            {
                 GetInterpolatedMatrix4(t, ref mat);
+            }
         }
 
         public int GetSizeBytes()
@@ -50,19 +52,13 @@ namespace SFEngine.SF3D
         }
     }
 
-    public class SFAnimation: SFResource
+    public class SFAnimation : SFResource
     {
         public SFBoneAnimation[] bone_animations;
 
         public float max_time { get; private set; } = 0f;
-        string name = "";
 
-        public void Init()
-        {
-            return;
-        }
-
-        public int Load(MemoryStream ms, object custom_data)
+        public override int Load(MemoryStream ms, object custom_data)
         {
             BinaryReader br = new BinaryReader(ms);
 
@@ -72,7 +68,7 @@ namespace SFEngine.SF3D
             int bone_count = br.ReadInt32();
             bone_animations = new SFBoneAnimation[bone_count];
 
-            for(int i = 0; i < bone_count; i++)
+            for (int i = 0; i < bone_count; i++)
             {
                 SFBoneAnimation ba = new SFBoneAnimation();
                 bone_animations[i] = ba;
@@ -87,7 +83,10 @@ namespace SFEngine.SF3D
                 {
                     float[] data = new float[5];
                     for (int k = 0; k < 5; k++)
+                    {
                         data[k] = br.ReadSingle();
+                    }
+
                     Quaternion q = new Quaternion(data[1], data[2], data[3], data[0]);
                     ba.rotation.Add(q, data[4]);
                 }
@@ -99,7 +98,10 @@ namespace SFEngine.SF3D
                 {
                     float[] data = new float[4];
                     for (int k = 0; k < 4; k++)
+                    {
                         data[k] = br.ReadSingle();
+                    }
+
                     Vector3 v = new Vector3(data[0], data[1], data[2]);
                     ba.position.Add(v, data[3]);
                 }
@@ -108,30 +110,13 @@ namespace SFEngine.SF3D
                 max_time = Math.Max(ba.position.GetMaxTime(), max_time);
             }
 
-            return 0;
-        }
-
-        public void SetName(string s)
-        {
-            name = s;
-        }
-
-        public string GetName()
-        {
-            return name;
-        }
-
-        public int GetSizeBytes()
-        {
-            int ret = 0;
+            RAMSize = 0;
             for (int i = 0; i < bone_animations.Length; i++)
-                ret += bone_animations[i].GetSizeBytes();
-            return ret;
-        }
+            {
+                RAMSize += bone_animations[i].GetSizeBytes();
+            }
 
-        public void Dispose()
-        {
-            return;
+            return 0;
         }
     }
 }

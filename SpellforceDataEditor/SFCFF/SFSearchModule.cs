@@ -1,17 +1,13 @@
-﻿using System;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using System.Text.RegularExpressions;
-using SFEngine.SFCFF;
 
 
 namespace SpellforceDataEditor.SFCFF
 {
     //search mode
-    public enum SearchType { TYPE_NUMBER = 0, TYPE_STRING = 1, TYPE_BITFIELD = 2};
+    public enum SearchType { TYPE_NUMBER = 0, TYPE_STRING = 1, TYPE_BITFIELD = 2 };
 
     //static class with a singular purpose of searching game data for elements matching query
     public static class SFSearchModule
@@ -31,9 +27,15 @@ namespace SpellforceDataEditor.SFCFF
                 for (int k = 0; k < _format.Length; k++)
                 {
                     if (_format[k] == 's')
+                    {
                         continue;
+                    }
+
                     if ((_column_index != SFEngine.Utility.NO_INDEX) && (_column_index != k))
+                    {
                         continue;
+                    }
+
                     int val = elem.ToInt(k);
                     if (val == _query_val)
                     {
@@ -50,7 +52,10 @@ namespace SpellforceDataEditor.SFCFF
                     if (_format[k] == 's')
                     {
                         if ((_column_index != SFEngine.Utility.NO_INDEX) && (_column_index != k))
+                        {
                             continue;
+                        }
+
                         string val = elem[k].ToString();
                         if (val.ToLower().Contains(_query))
                         {
@@ -66,9 +71,15 @@ namespace SpellforceDataEditor.SFCFF
                 for (int k = 0; k < _format.Length; k++)
                 {
                     if (_format[k] == 's')
+                    {
                         continue;
+                    }
+
                     if ((_column_index != SFEngine.Utility.NO_INDEX) && (_column_index != k))
+                    {
                         continue;
+                    }
+
                     UInt32 val = (UInt32)elem.ToInt(k);
                     if ((val & _query_val) == _query_val)
                     {
@@ -93,12 +104,16 @@ namespace SpellforceDataEditor.SFCFF
         public static List<int> Search(SFCategory category, List<int> source, string query, SearchType type, int column_i, System.Windows.Forms.ToolStripProgressBar pbar)
         {
 
-            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFCFF, "SFSearchModule.Search() called, query: '"+query+"'");
+            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFCFF, "SFSearchModule.Search() called, query: '" + query + "'");
             query = query.Trim();
             if (type == SearchType.TYPE_STRING)
+            {
                 query = query.ToLower();
+            }
             else
+            {
                 query = Regex.Replace(query, "[^0-9+-]", "");
+            }
 
             string format = category.GetElementFormat();
             int query_val = SFEngine.Utility.TryParseInt32(query);
@@ -106,11 +121,13 @@ namespace SpellforceDataEditor.SFCFF
 
             int counter = 0;
 
-            if(source == null)
+            if (source == null)
             {
                 source = new List<int>();
                 for (int i = 0; i < category.GetElementCount(); i++)
+                {
                     source.Add(i);
+                }
             }
 
             _query = query;
@@ -122,19 +139,21 @@ namespace SpellforceDataEditor.SFCFF
             foreach (int i in source)
             {
                 counter++;
-                if ((counter % 500 == 0)&&(pbar != null))
+                if ((counter % 500 == 0) && (pbar != null))
                 {
                     pbar.Value = ((pbar.Maximum * counter) / source.Count);
                     pbar.GetCurrentParent().Refresh();
                 }
 
                 if ((i < 0) || (i >= category.GetElementCount()))
+                {
                     continue;
+                }
 
                 bool success = false;
 
                 // first look through names in the list
-                if(type == SearchType.TYPE_STRING)
+                if (type == SearchType.TYPE_STRING)
                 {
                     if (MainForm.data.CachedElementDisplays[category.category_id].get_element_string(i).ToLower().Contains(query))
                     {
@@ -143,13 +162,15 @@ namespace SpellforceDataEditor.SFCFF
                     }
                 }
                 // if not found, look through elements
-                if(category.category_allow_multiple)
+                if (category.category_allow_multiple)
                 {
-                    for(int j = 0; j < category.element_lists[i].Elements.Count; j++)
+                    for (int j = 0; j < category.element_lists[i].Elements.Count; j++)
                     {
                         success = ElementMatch(category[i, j]);
                         if (success)
+                        {
                             break;
+                        }
                     }
                 }
                 else
@@ -158,7 +179,9 @@ namespace SpellforceDataEditor.SFCFF
                 }
 
                 if (success)
+                {
                     target.Add(i);
+                }
             }
 
             SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.SFCFF, "SFSearchModule.Search() concluded, found elements: " + target.Count.ToString());

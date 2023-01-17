@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 
 namespace SpellforceDataEditor.SFCFF.category_forms
@@ -44,12 +38,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (e.Button == MouseButtons.Right)
             {
                 if (SFCategoryManager.gamedata[2016] == null)
+                {
                     return;
+                }
 
                 int cur_id = SFEngine.Utility.TryParseInt32(tb_sd2.Text);
                 int ind = SFCategoryManager.gamedata[2016].GetElementIndex(cur_id);
 
-                if ((ind == SFEngine.Utility.NO_INDEX)||(ind == 0))
+                if ((ind == SFEngine.Utility.NO_INDEX) || (ind == 0))
                 {
                     int new_id;
                     int new_ind;
@@ -71,7 +67,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     tb_sd2.BackColor = Color.DarkOrange;
                 }
                 else
+                {
                     step_into(tb_sd2, 2016);
+                }
             }
         }
 

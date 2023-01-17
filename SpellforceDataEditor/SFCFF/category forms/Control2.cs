@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -90,7 +84,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox2, 2016);
+            }
         }
 
         private void textBox9_MouseDown(object sender, MouseEventArgs e)
@@ -98,21 +94,27 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (e.Button == MouseButtons.Right)
             {
                 if (SFCategoryManager.gamedata[2058] == null)
+                {
                     return;
+                }
 
                 int cur_id = SFEngine.Utility.TryParseInt32(textBox9.Text);
                 int ind = SFCategoryManager.gamedata[2058].GetElementIndex(cur_id);
 
-                if((ind == SFEngine.Utility.NO_INDEX)||(ind == 0))
+                if ((ind == SFEngine.Utility.NO_INDEX) || (ind == 0))
                 {
-                    if(ind == 0)
+                    if (ind == 0)
+                    {
                         cur_id = 2000;
+                    }
                     // create new description
                     int new_id;
                     int new_ind;
                     new_ind = SFCategoryManager.gamedata[2058].GetNextNewElementIndex(cur_id, out new_id);
                     if (new_id > 4000)
+                    {
                         return;
+                    }
 
                     SFCategoryElement new_elem = new SFCategoryElement();
                     new_elem.AddVariant((ushort)new_id);
@@ -123,7 +125,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     textBox9.BackColor = Color.DarkOrange;
                 }
                 else
+                {
                     step_into(textBox9, 2058);
+                }
             }
         }
 

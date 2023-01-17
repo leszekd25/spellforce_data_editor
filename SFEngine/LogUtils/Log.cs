@@ -6,9 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFEngine.LogUtils
 {
@@ -17,7 +14,7 @@ namespace SFEngine.LogUtils
     public enum LogOption { NONE = 0, ERROR = 1, WARNING = 2, INFO = 4, ALL = 7 }
 
     // sources of messages
-    public enum LogSource { SFCFF = 0, SF3D, SFChunkFile, SFLua, SFMap, SFMod, SFResources, SFSound, SFUnPak, Utility, Main, _UNK}
+    public enum LogSource { SFCFF = 0, SF3D, SFChunkFile, SFLua, SFMap, SFMod, SFResources, SFSound, SFUnPak, Utility, Main, _UNK }
 
     static public class Log
     {
@@ -60,6 +57,19 @@ namespace SFEngine.LogUtils
             log_list.Add(new LogData(LogOption.INFO, LogSource.Main, "TotalMemoryUsage(): \r\n    Current total memory used: "
                 + System.Diagnostics.Process.GetCurrentProcess().WorkingSet64.ToString() + " bytes \r\n    Current managed memory used: "
                 + GC.GetTotalMemory(true).ToString() + " bytes"));
+
+            Info(LogSource.Main, "TotalMemoryUsage(): Logging resource usage");
+            SFResources.SFResourceManager.LogMemoryUsage();
+            if (SF3D.SFSubModel3D.Cache != null)
+            {
+                Info(LogSource.Main, "TotalMemoryUsage(): Logging static mesh cache usage");
+                SF3D.SFSubModel3D.Cache.LogMemoryUsage();
+            }
+            if (SF3D.SFModelSkinChunk.Cache != null)
+            {
+                Info(LogSource.Main, "TotalMemoryUsage(): Logging animated mesh cache usage");
+                SF3D.SFModelSkinChunk.Cache.LogMemoryUsage();
+            }
         }
 
         // allows messages of selected type to show in log file
@@ -76,8 +86,10 @@ namespace SFEngine.LogUtils
             {
                 foreach (LogData ld in log_list)
                 {
-                    if((ld.option & option) != 0)
-                        sw.WriteLine("["+ld.option.ToString()+"] "+ld.source.ToString() + ": " + ld.data);
+                    if ((ld.option & option) != 0)
+                    {
+                        sw.WriteLine("[" + ld.option.ToString() + "] " + ld.source.ToString() + ": " + ld.data);
+                    }
                 }
             }
             fs.Close();

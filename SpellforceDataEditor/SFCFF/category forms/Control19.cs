@@ -1,13 +1,7 @@
-﻿using System;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -60,18 +54,24 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             SFCategoryElement elem = category[current_element];
             int elem_count = elem.variants.Count / 3;
 
+            MainForm.data.op_queue.OpenCluster();
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            {
                 set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
+            }
+
+            MainForm.data.op_queue.CloseCluster();
         }
 
 
         private void CheckItem_Click(object sender, EventArgs e)
         {
             if (!edit_ready)
+            {
                 return;
+            }
 
             CheckBox ch = (CheckBox)sender;
-
 
             int flag = (int)(ch.Tag);
 
@@ -105,7 +105,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 }
 
                 //remove unchecked element
-                category.element_lists[current_element].Elements.RemoveAt(flag);
+                MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
+                {
+                    CategoryIndex = category.category_id,
+                    ElementIndex = current_element,
+                    SubElementIndex = flag,
+                    IsRemoving = true,
+                    IsSubElement = true
+                });
             }
             else
             {
@@ -121,39 +128,52 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 }
 
                 //add checked element
-
-                //can be added at the end? need to test
                 int count = category.element_lists[current_element].Elements.Count;
-                category.element_lists[current_element].Elements.Add(category.GetEmptyElement());
-                category[current_element, count][0] = (UInt16)(category.element_lists[current_element].GetID());
-                category[current_element, count][1] = (Byte)flag;
-                category[current_element, count][2] = (UInt16)0;
-            }
+                SFCategoryElement new_elem = category.GetEmptyElement();
+                new_elem[0] = (UInt16)(category.element_lists[current_element].GetID());
+                new_elem[1] = (Byte)flag;
+                new_elem[2] = (UInt16)0;
 
-            set_element(current_element);
-        }
-
-        private void set_single_variant(TextBox item_id, Byte item_slot)
-        {
-            //find element by item slot and (if exists) modify its item id
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                if((Byte)(category[current_element, i][1]) == item_slot)
+                MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
                 {
-                    UInt16 id = SFEngine.Utility.TryParseUInt16(item_id.Text);
-                    category[current_element, i][2] = id;
-                    text_to_name[item_id].Text = SFCategoryManager.GetItemName(id);
-                    return;
-                }
+                    CategoryIndex = category.category_id,
+                    ElementIndex = current_element,
+                    SubElementIndex = count,
+                    Element = new_elem,
+                    IsSubElement = true
+                });
             }
         }
 
         private void TextBoxItem_Validated(object sender, EventArgs e)
         {
             if (!edit_ready)
+            {
                 return;
+            }
 
-            set_single_variant((TextBox)sender, (Byte)((int)(((TextBox)sender).Tag)));
+            TextBox item_id = (TextBox)sender;
+            Byte item_slot = (Byte)((int)(((TextBox)sender).Tag));
+
+            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            {
+                if ((Byte)(category[current_element, i][1]) == item_slot)
+                {
+                    UInt16 id = SFEngine.Utility.TryParseUInt16(item_id.Text);
+
+                    MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorModifyCategoryElement()
+                    {
+                        CategoryIndex = category.category_id,
+                        ElementIndex = current_element,
+                        SubElementIndex = i,
+                        VariantIndex = 2,
+                        NewVariant = id,
+                        IsSubElement = true
+                    });
+
+                    return;
+                }
+            }
         }
 
         public override void set_element(int index)
@@ -172,7 +192,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 tb.Text = "0";
             }
             foreach (Label lb in text_to_name.Values)
+            {
                 lb.Text = "<no name>";
+            }
 
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
             {
@@ -199,13 +221,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox1, 2024);
+            }
         }
 
         private void TextboxItem_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into((TextBox)sender, 2003);
+            }
         }
 
         public override string get_element_string(int index)
@@ -217,22 +243,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void on_add_subelement(int subelem_index)
         {
-            base.on_add_subelement(subelem_index);
-
             set_element(current_element);
         }
 
         public override void on_remove_subelement(int subelem_index)
         {
-            base.on_remove_subelement(subelem_index);
-
             set_element(current_element);
         }
 
         public override void on_update_subelement(int subelem_index)
         {
-            base.on_update_subelement(subelem_index);
-
             set_element(current_element);
         }
     }

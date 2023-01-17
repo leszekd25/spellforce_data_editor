@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using OpenTK;
 using System.Threading.Tasks;
-using OpenTK;
 
 namespace SFEngine.SFMap.MapGen
 {
@@ -28,7 +24,7 @@ namespace SFEngine.SFMap.MapGen
         private float ApplySigmoid(float m)
         {
             float k = (float)MathUtils.Sigmoid(m * 10);
-            return (k-0.5f)*2;
+            return (k - 0.5f) * 2;
         }
 
         public ushort[] ProduceHeightmap()
@@ -62,28 +58,46 @@ namespace SFEngine.SFMap.MapGen
 
             // generate erosion
 
-            for(int  y = 0;  y  <  gradient_map.Height;  y++)
+            for (int y = 0; y < gradient_map.Height; y++)
             {
                 Vector2 horizontal_erosion = MathUtils.GaussRand(GradientErosionMeanX, GradientErosionSigmaX);
                 SFCoord fixed_he = new SFCoord((int)horizontal_erosion.X, (int)horizontal_erosion.Y);
                 if (fixed_he.x > 0)
+                {
                     for (int x = 0; x < fixed_he.x; x++)
-                        gradient_map.Set(GradientOffsetX+x, y, 0);
+                    {
+                        gradient_map.Set(GradientOffsetX + x, y, 0);
+                    }
+                }
+
                 if (fixed_he.y > 0)
+                {
                     for (int x = 0; x < fixed_he.y; x++)
+                    {
                         gradient_map.Set(gradient_width - GradientOffsetX - x, y, 0);
+                    }
+                }
             }
 
-            for(int x=0;x<gradient_map.Width;x++)
+            for (int x = 0; x < gradient_map.Width; x++)
             {
                 Vector2 vertical_erosion = MathUtils.GaussRand(GradientErosionMeanY, GradientErosionSigmaY);
                 SFCoord fixed_ve = new SFCoord((int)vertical_erosion.X, (int)vertical_erosion.Y);
                 if (fixed_ve.x > 0)
+                {
                     for (int y = 0; y < fixed_ve.x; y++)
+                    {
                         gradient_map.Set(x, GradientOffsetY + y, 0);
+                    }
+                }
+
                 if (fixed_ve.y > 0)
+                {
                     for (int y = 0; y < fixed_ve.y; y++)
+                    {
                         gradient_map.Set(x, gradient_height - GradientOffsetY - y, 0);
+                    }
+                }
             }
 
             // blur gradient map  using  gaussian  kernel
@@ -94,9 +108,6 @@ namespace SFEngine.SFMap.MapGen
             base_map.MultiplyMap(gradient_map, FilteringType.BICUBIC);
 
             // clamp map
-            //base_map.AddAll(-0.5f);
-            //base_map.MultiplyAll(2);
-            //base_map.ClampAll(0, 1.5f);
             base_map.ClampAll(0, 1.5f);
             base_map.ApplyFunction(ApplySigmoid);
             base_map.AddAll(-0.5f);
@@ -113,12 +124,13 @@ namespace SFEngine.SFMap.MapGen
             {
                 int end = height_per_task * (i + 1);
                 for (int y = height_per_task * i; y < end; y++)
+                {
                     for (int x = 0; x < Width; x++)
+                    {
                         ret[y * Width + x] = (ushort)(BaseZ * base_map.Get(x, y));
+                    }
+                }
             });
-            //for (int y = 0; y < Height; y++)
-            //    for (int x = 0; x < Width; x++)
-            //        ret[y * Width + x] = (ushort)(BaseZ*base_map.Get(x, y));
 
             return ret;
         }

@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Windows.Forms;
-using SFEngine.SFCFF;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -177,13 +170,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox9_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox9, 2016);
+            }
         }
 
         private void textBox10_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
+            {
                 step_into(textBox10, 2023);
+            }
         }
 
 
@@ -206,7 +203,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 if (((flags >> i) & 0x1) == 0x1)
                 {
                     if (first_flag_set)
+                    {
                         flag_text += " | ";
+                    }
+
                     flag_text += race_flags[i];
                     first_flag_set = true;
                 }
@@ -219,7 +219,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 if (((ai_flags >> i) & 0x1) == 0x1)
                 {
                     if (first_flag_set)
+                    {
                         ai_flag_text += " | ";
+                    }
+
                     ai_flag_text += race_ai_flags[i];
                     first_flag_set = true;
                 }

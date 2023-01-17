@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFCFF.helper_forms
@@ -30,7 +23,7 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
 
         private void EvaluateResult()
         {
-            switch(Mode)
+            switch (Mode)
             {
                 case GDMode.FULL:
                     ButtonOK.Enabled = (MainGDFileName != "");
@@ -104,23 +97,29 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
         private void RadioFullGD_CheckedChanged(object sender, EventArgs e)
         {
             if (RadioFullGD.Checked)
+            {
                 ShowFullGDMode();
+            }
         }
 
         private void RadioDependencyGD_CheckedChanged(object sender, EventArgs e)
         {
             if (RadioDependencyGD.Checked)
+            {
                 ShowDependencyGDMode();
+            }
         }
 
         private void ButtonMainGD_Click(object sender, EventArgs e)
         {
-            switch(Mode)
+            switch (Mode)
             {
                 case GDMode.FULL:
                 case GDMode.DEPENDENCY:
                     if (SaveGD.ShowDialog() != DialogResult.OK)
+                    {
                         break;
+                    }
 
                     MainGDFileName = SaveGD.FileName;
                     LabelGDMain.Text = MainGDFileName;

@@ -1,12 +1,8 @@
 ﻿// https://stackoverflow.com/questions/24839105/high-resolution-timer-in-c-sharp
 // High resolution timer, a replacement to System.Timer
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 
 namespace SpellforceDataEditor
 {
@@ -42,11 +38,15 @@ namespace SpellforceDataEditor
                 CheckDisposed();
 
                 if (value < 0)
+                {
                     throw new ArgumentOutOfRangeException("value");
+                }
 
                 interval = value;
                 if (Resolution > Interval)
+                {
                     Resolution = value;
+                }
             }
         }
 
@@ -62,7 +62,9 @@ namespace SpellforceDataEditor
                 CheckDisposed();
 
                 if (value < 0)
+                {
                     throw new ArgumentOutOfRangeException("value");
+                }
 
                 resolution = value;
             }
@@ -78,7 +80,9 @@ namespace SpellforceDataEditor
             CheckDisposed();
 
             if (IsRunning)
+            {
                 throw new InvalidOperationException("Timer is already running");
+            }
 
             // Event type = 0, one off event
             // Event type = 1, periodic event
@@ -96,7 +100,9 @@ namespace SpellforceDataEditor
             CheckDisposed();
 
             if (!IsRunning)
+            {
                 throw new InvalidOperationException("Timer has not been started");
+            }
 
             StopInternal();
         }
@@ -122,13 +128,17 @@ namespace SpellforceDataEditor
         private void CheckDisposed()
         {
             if (disposed)
+            {
                 throw new ObjectDisposedException("MultimediaTimer");
+            }
         }
 
         private void Dispose(bool disposing)
         {
             if (disposed)
+            {
                 return;
+            }
 
             disposed = true;
             if (IsRunning)

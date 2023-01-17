@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using SFEngine.SF3D.SFRender;
+using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SFEngine.SF3D.SFRender;
 
 
 namespace SpellforceDataEditor.SFMap.map_dialog
@@ -32,9 +26,9 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             checkBox10.Checked = MainForm.mapedittool.ui.GetMinimapIconsVisible();
             checkBox11.Checked = SFEngine.Settings.DynamicMap;
 
-            button1.BackColor = Color.FromArgb(((byte)SFEngine.Settings.GridColor.X*255), 
-                                               ((byte)SFEngine.Settings.GridColor.Y*255), 
-                                               ((byte)SFEngine.Settings.GridColor.Z*255));
+            button1.BackColor = Color.FromArgb(((byte)SFEngine.Settings.GridColor.X * 255),
+                                               ((byte)SFEngine.Settings.GridColor.Y * 255),
+                                               ((byte)SFEngine.Settings.GridColor.Z * 255));
 
             ready = true;
         }
@@ -49,34 +43,46 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         {
             SFEngine.Settings.UnitsVisible = checkBox1.Checked;
             if (ready)
+            {
                 UpdateVisibility();
+            }
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
             SFEngine.Settings.BuildingsVisible = checkBox2.Checked;
             if (ready)
+            {
                 UpdateVisibility();
+            }
         }
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
         {
             SFEngine.Settings.ObjectsVisible = checkBox3.Checked;
             if (ready)
+            {
                 UpdateVisibility();
+            }
         }
 
         private void checkBox4_CheckedChanged(object sender, EventArgs e)
         {
             SFEngine.Settings.DecorationsVisible = checkBox4.Checked;
             if (ready)
+            {
                 UpdateVisibility();
+            }
         }
 
         private void checkBox5_CheckedChanged(object sender, EventArgs e)
         {
             SFEngine.Settings.LakesVisible = checkBox5.Checked;
-            MainForm.mapedittool.update_render = true;
+            if (ready)
+            {
+                map.lake_manager.SetVisibilitySettings();
+                MainForm.mapedittool.update_render = true;
+            }
         }
 
         private void checkBox6_CheckedChanged(object sender, EventArgs e)
@@ -114,7 +120,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if(GridColorPicker.ShowDialog() == DialogResult.OK)
+            if (GridColorPicker.ShowDialog() == DialogResult.OK)
             {
                 SFEngine.Settings.GridColor = new OpenTK.Vector4(
                     GridColorPicker.Color.R,
@@ -130,9 +136,14 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         {
             SFEngine.Settings.DynamicMap = checkBox11.Checked;
             if (SFEngine.Settings.DynamicMap)
+            {
                 MainForm.mapedittool.EnableAnimation(true);
+            }
             else
+            {
                 MainForm.mapedittool.DisableAnimation(true);
+            }
+
             MainForm.mapedittool.update_render = true;
         }
     }

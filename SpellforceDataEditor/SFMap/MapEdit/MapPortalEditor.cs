@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFEngine.SFMap;
 using System.Windows.Forms;
-using SFEngine.SFMap;
-using SFEngine.SFCFF;
-using SFEngine.SFLua;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
 {
-    public class MapPortalEditor: MapEditor
+    public class MapPortalEditor : MapEditor
     {
         bool first_click = false;
         public int selected_portal { get; private set; } = -1;    // spawn index
@@ -23,7 +16,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
         public override void Select(int index)
         {
             if (first_click)
+            {
                 return;
+            }
 
             selected_portal = index;
         }
@@ -47,7 +42,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 if (b == MouseButtons.Left)
                 {
                     if (!map.heightmap.CanMoveToPosition(pos))
+                    {
                         return;
+                    }
 
                     // undo/redo
                     SFCoord previous_pos = new SFCoord(0, 0);
@@ -66,9 +63,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         previous_pos = pos;
 
                         ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).LoadNextPortal(map.portal_manager.portals.Count - 1);
-                        Select(map.portal_manager.portals.Count - 1); 
+                        Select(map.portal_manager.portals.Count - 1);
                         MainForm.mapedittool.InspectorSelect(map.portal_manager.portals[selected_portal]);
 
+                        map.heightmap.RefreshOverlay();
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
 
                         // undo/redo
@@ -87,8 +85,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             PreChangeProperty = previous_pos
                         };
                     }
+
+                    first_click = true;
                 }
-                else if(b == MouseButtons.Right)
+                else if (b == MouseButtons.Right)
                 {
                     Select(SFEngine.Utility.NO_INDEX);
                     MainForm.mapedittool.InspectorSelect(null);
@@ -99,7 +99,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 // find selected coop camp index
                 int portal_map_index = map.portal_manager.portals.IndexOf(portal);
                 if (portal_map_index == -1)
+                {
                     return;
+                }
 
                 if (b == MouseButtons.Left)
                 {
@@ -107,7 +109,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     if ((specials.Shift) && (selected_portal != -1))
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
+                        {
                             map.MovePortal(selected_portal, pos);
+                        }
                     }
                     else
                     {
@@ -128,13 +132,14 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorPortalAddOrRemove()
                     {
                         portal = map.portal_manager.portals[portal_map_index],
-                        index  = portal_map_index,
+                        index = portal_map_index,
                         is_adding = false
                     });
 
                     map.DeletePortal(portal_map_index);
                     ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).RemovePortal(portal_map_index);
 
+                    map.heightmap.RefreshOverlay();
                     MainForm.mapedittool.ui.RedrawMinimapIcons();
                 }
             }
@@ -146,15 +151,18 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             {
                 first_click = false;
                 if (selected_portal != -1)
-                {   
+                {
                     // undo/redo
                     if (op_change_pos != null)
                     {
                         op_change_pos.PostChangeProperty = map.portal_manager.portals[selected_portal].grid_position;
-                        if (!op_change_pos.PreChangeProperty.Equals(op_change_pos.PostChangeProperty))
+                        if ((SFCoord)op_change_pos.PreChangeProperty != (SFCoord)op_change_pos.PostChangeProperty)
                         {
                             op_change_pos.Finish(map);
                             MainForm.mapedittool.op_queue.Push(op_change_pos);
+
+                            map.heightmap.RefreshOverlay();
+                            MainForm.mapedittool.ui.RedrawMinimapIcons();
                         }
                     }
                     op_change_pos = null;

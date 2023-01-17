@@ -3,15 +3,10 @@
     It consists of several SFResourceContainer objects, each of different resource type
  */
 
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SFEngine.SF3D;
 using SFEngine.SFSound;
-using SFEngine.SFUnPak;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SFEngine.SFResources
 {
@@ -40,11 +35,11 @@ namespace SFEngine.SFResources
         public static void FindAllMeshes()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes() called");
-            if(ready)
+            if (ready)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceManager.FindAllMeshes(): Already loaded");
                 return;
-            }    
+            }
 
             string[] filter_mesh = { "sf8.pak", "sf22.pak", "sf32.pak" };
             string[] filter_skel = { "sf4.pak", "sf22.pak", "sf32.pak" };
@@ -145,16 +140,49 @@ namespace SFEngine.SFResources
 
         public static void LogMemoryUsage()
         {
-            string log_string = "Memory usage (bytes): ";
-            log_string += "TEXTURES " + Textures.GetResourceSize().ToString()
-                       + ", 3D MODELS " + Models.GetResourceSize().ToString()
-                       + ", SKELETONS " + Skeletons.GetResourceSize().ToString()
-                       + ", SKINS " + Skins.GetResourceSize().ToString()
-                       + ", BSI" + BSIs.GetResourceSize().ToString()
-                       + ", ANIMATIONS " + Animations.GetResourceSize().ToString()
-                       + ", SOUNDS " + (Sounds.GetResourceSize() + Musics.GetResourceSize() + Messages.GetResourceSize()).ToString();
-            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceManager.LogMemoryUsage() called");
-            LogUtils.Log.Info(LogUtils.LogSource.SFResources, log_string);
+            StringBuilder log_msg = new StringBuilder();
+
+            log_msg.Append("Resource memory usage (bytes, RAM): ");
+            log_msg.Append("TEXTURES " + Textures.RAMSize.ToString());
+            log_msg.Append(", 3D MODELS " + Models.RAMSize.ToString());
+            log_msg.Append(", SKELETONS " + Skeletons.RAMSize.ToString());
+            log_msg.Append(", SKINS " + Skins.RAMSize.ToString());
+            log_msg.Append(", BSI" + BSIs.RAMSize.ToString());
+            log_msg.Append(", SOUNDS " + (Sounds.RAMSize + Musics.RAMSize + Messages.RAMSize).ToString());
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, log_msg.ToString());
+            log_msg.Clear();
+
+            log_msg.Append("Resource memory usage (bytes, device): ");
+            log_msg.Append("TEXTURES " + Textures.DeviceSize.ToString());
+            log_msg.Append(", 3D MODELS " + Models.DeviceSize.ToString());
+            log_msg.Append(", SKELETONS " + Skeletons.DeviceSize.ToString());
+            log_msg.Append(", SKINS " + Skins.DeviceSize.ToString());
+            log_msg.Append(", BSI" + BSIs.DeviceSize.ToString());
+            log_msg.Append(", SOUNDS " + (Sounds.DeviceSize + Musics.DeviceSize + Messages.DeviceSize).ToString());
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, log_msg.ToString());
+            log_msg.Clear();
+        }
+
+        public static void LogUndisposedResources()
+        {
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "Logging undisposed resources from texture container");
+            Textures.LogUndisposedResources();
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "Logging undisposed resources from model container");
+            Models.LogUndisposedResources();
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "Logging undisposed resources from animation container");
+            Animations.LogUndisposedResources();
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "Logging undisposed resources from BSI container");
+            BSIs.LogUndisposedResources();
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "Logging undisposed resources from skin container");
+            Skins.LogUndisposedResources();
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "Logging undisposed resources from skeleton container");
+            Skeletons.LogUndisposedResources();
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "Logging undisposed resources from music container");
+            Musics.LogUndisposedResources();
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "Logging undisposed resources from sound container");
+            Sounds.LogUndisposedResources();
+            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "Logging undisposed resources from message container");
+            Messages.LogUndisposedResources();
         }
     }
 }
