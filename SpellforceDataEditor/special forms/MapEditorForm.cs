@@ -89,7 +89,7 @@ namespace SpellforceDataEditor.special_forms
                 image_minimap_frame_top = SFRenderEngine.ui.AddElementImage(SFRenderEngine.opaque_tex, new Vector2(m_width, 3), new Vector2(0, 0), new Vector2(0, 0), false);
 
                 // minimap icons
-                int tex_code = SFResourceManager.Textures.Load("ui_oth1", new SFTexture.SFTextureLoadArgs() { IgnoreMipmapSettings = true });
+                int tex_code = SFResourceManager.Textures.Load("ui_oth1", FileSource.PAK, new SFTexture.SFTextureLoadArgs() { IgnoreMipmapSettings = true });
                 if ((tex_code != 0) && (tex_code != -1))
                 {
                     SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SF3D, "MapEditorUI.InitMinimap(): Could not load texture (texture name = ui_oth1)");

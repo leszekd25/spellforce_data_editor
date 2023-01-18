@@ -865,6 +865,7 @@ namespace SFEngine.SF3D
                 w1 = 85; w2 = 85; w3 = 85;
             }
 
+
             new_tex.width = tex1.width;
             new_tex.height = tex1.height;
             new_tex.mipMapStart = tex1.mipMapStart;

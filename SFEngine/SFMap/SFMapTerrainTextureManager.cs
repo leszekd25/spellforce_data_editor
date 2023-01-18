@@ -155,7 +155,7 @@ namespace SFEngine.SFMap
             string filename = GetTextureNameByID(tex_id);
 
             SFTexture tex = null;
-            int tex_code = SFResourceManager.Textures.Load(filename, new SFTexture.SFTextureLoadArgs() { FreeOnInit = false, IgnoreMipmapSettings = true });
+            int tex_code = SFResourceManager.Textures.Load(filename, SFUnPak.FileSource.PAK, new SFTexture.SFTextureLoadArgs() { FreeOnInit = false, IgnoreMipmapSettings = true });
             if ((tex_code != 0) && (tex_code != -1))
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFMapTerrainTextureManager.LoadTerrainTexture(): Could not load texture (texture name = " + filename + ")");

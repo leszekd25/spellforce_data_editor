@@ -803,7 +803,7 @@ namespace SFEngine.SFMap
             }
 
             // load bump map
-            int tex_code = SFResources.SFResourceManager.Textures.Load("landscape_island_worldd");
+            int tex_code = SFResources.SFResourceManager.Textures.Load("landscape_island_worldd", SFUnPak.FileSource.PAK);
             if ((tex_code != 0) && (tex_code != -1))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapHeightMap.Generate(): Could not load texture (texture name = landscape_island_worldd)");

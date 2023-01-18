@@ -11,6 +11,15 @@ using System.Linq;
 
 namespace SFEngine.SFUnPak
 {
+    [Flags]
+    public enum FileSource
+    {
+        NONE = 0x0,
+        FILESYSTEM = 0x1,
+        PAK = 0x2,
+        ANY = FILESYSTEM | PAK
+    };
+
     public static class SFUnPak
     {
         static public string game_directory_name { get; private set; } = "";
@@ -178,9 +187,9 @@ namespace SFEngine.SFUnPak
 
         // searches for a file in paks and extracts it if founs
         // returns if succeeded
-        static public int ExtractFileFind(string filename, string new_name)
+        static public int ExtractFileFind(string filename, string new_name, FileSource source)
         {
-            MemoryStream ms = LoadFileFind(filename);
+            MemoryStream ms = LoadFileFind(filename, source);
             if (ms == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.ExtractFileFind(): Could not find file " + filename);
@@ -224,31 +233,40 @@ namespace SFEngine.SFUnPak
 
         // searches for a file in paks and loads it to memory
         // returns stream of bytes which constitute for that file
-        static public MemoryStream LoadFileFind(string filename)
+        static public MemoryStream LoadFileFind(string filename, FileSource source)
         {
             MemoryStream ms = null;
-            string real_path = game_directory_name + "\\" + filename;
-            if (File.Exists(real_path))
+
+            if ((source & FileSource.FILESYSTEM) == FileSource.FILESYSTEM)
             {
-                FileStream fs = new FileStream(real_path, FileMode.Open, FileAccess.Read);
-                BinaryReader br = new BinaryReader(fs);
-                Byte[] data = br.ReadBytes((int)br.BaseStream.Length);
-                ms = new MemoryStream(data);
-                br.Close();
-                return ms;
+                string real_path = game_directory_name + "\\" + filename;
+                if (File.Exists(real_path))
+                {
+                    FileStream fs = new FileStream(real_path, FileMode.Open, FileAccess.Read);
+                    BinaryReader br = new BinaryReader(fs);
+                    Byte[] data = br.ReadBytes((int)br.BaseStream.Length);
+                    ms = new MemoryStream(data);
+                    br.Close();
+                }
             }
-            else
+            if (ms != null)
+                return ms;
+
+            if((source & FileSource.PAK) == FileSource.PAK)
             {
                 foreach (string pak in paks)
                 {
                     ms = LoadFileFrom(pak, filename);
                     if (ms != null)
                     {
-                        return ms;
+                        break;
                     }
                 }
-                return null;
             }
+            if (ms != null)
+                return ms;
+
+            return null;
         }
 
         static public List<String> ListAllWithExtension(string path, string extname, string[] pak_filter)

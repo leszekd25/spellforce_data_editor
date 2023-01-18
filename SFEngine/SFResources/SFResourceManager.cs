@@ -94,7 +94,7 @@ namespace SFEngine.SFResources
         {
             if (model_name != "")
             {
-                int result = Models.Load(model_name);
+                int result = Models.Load(model_name, SFUnPak.FileSource.ANY);
                 if ((result != 0) && (result != -1))
                 {
                     LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFResourceManager.LoadModel(): Model could not be loaded (model name: "
@@ -110,7 +110,7 @@ namespace SFEngine.SFResources
         {
             if (skeleton_name != "")
             {
-                int result = Skeletons.Load(skeleton_name);
+                int result = Skeletons.Load(skeleton_name, SFUnPak.FileSource.ANY);
                 if ((result != 0) && (result != -1))
                 {
                     LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFResourceManager.LoadSkeleton(): Skeleton could not be loaded (skeleton name: "
@@ -126,7 +126,7 @@ namespace SFEngine.SFResources
         {
             if (skin_name != "")
             {
-                int result = Skins.Load(skin_name);
+                int result = Skins.Load(skin_name, SFUnPak.FileSource.ANY);
                 if ((result != 0) && (result != -1))
                 {
                     LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFResourceManager.LoadSkin(): Skin could not be loaded (skin name: "

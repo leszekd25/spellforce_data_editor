@@ -200,7 +200,7 @@ namespace SpellforceDataEditor.special_forms
 
             string tex_name = "test_lake";
             SFTexture tex = null;
-            int tex_code = SFResourceManager.Textures.Load(tex_name);
+            int tex_code = SFResourceManager.Textures.Load(tex_name, SFEngine.SFUnPak.FileSource.ANY);
             if ((tex_code != 0) && (tex_code != -1))
             {
                 SFEngine.LogUtils.Log.Warning(SFEngine.LogUtils.LogSource.SF3D, "SFAssetManagerForm.SF3DManagerForm_Load(): Could not load texture (texture name = " + tex_name + ")");
@@ -410,7 +410,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string model_name = ListEntries.SelectedItem.ToString();
                     model_name = model_name.Substring(0, model_name.Length - 4);
-                    int result = SFResourceManager.Models.Load(model_name);
+                    int result = SFResourceManager.Models.Load(model_name, SFEngine.SFUnPak.FileSource.ANY);
                     if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load model " + model_name;
@@ -449,7 +449,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string skin_name = ListEntries.SelectedItem.ToString();
                     skin_name = skin_name.Substring(0, skin_name.Length - 4);
-                    int result = SFResourceManager.Skins.Load(skin_name);
+                    int result = SFResourceManager.Skins.Load(skin_name, SFEngine.SFUnPak.FileSource.ANY);
                     if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load skin " + skin_name + ", status code " + result.ToString();
@@ -462,7 +462,7 @@ namespace SpellforceDataEditor.special_forms
                     statusStrip1.Refresh();
 
                     string skel_name = skin_name;
-                    result = SFResourceManager.Skeletons.Load(skel_name);
+                    result = SFResourceManager.Skeletons.Load(skel_name, SFEngine.SFUnPak.FileSource.ANY);
                     if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load skeleton " + skel_name;
@@ -475,7 +475,7 @@ namespace SpellforceDataEditor.special_forms
 
                     string model_name = ListEntries.SelectedItem.ToString();
                     model_name = model_name.Substring(0, model_name.Length - 4);
-                    result = SFResourceManager.Models.Load(model_name);
+                    result = SFResourceManager.Models.Load(model_name, SFEngine.SFUnPak.FileSource.ANY);
                     if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load model " + model_name;
@@ -509,7 +509,7 @@ namespace SpellforceDataEditor.special_forms
                     string s_n = ListEntries.SelectedItem.ToString();
                     s_n = s_n.Substring(0, s_n.Length - 4);
 
-                    int result = SFResourceManager.Musics.Load(s_n);
+                    int result = SFResourceManager.Musics.Load(s_n, SFEngine.SFUnPak.FileSource.ANY);
                     if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load music " + s_n;
@@ -533,7 +533,7 @@ namespace SpellforceDataEditor.special_forms
                     string s_n = ListEntries.SelectedItem.ToString();
                     s_n = s_n.Substring(0, s_n.Length - 4);
 
-                    int result = SFResourceManager.Sounds.Load(s_n);
+                    int result = SFResourceManager.Sounds.Load(s_n, SFEngine.SFUnPak.FileSource.ANY);
                     if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load sound " + s_n;
@@ -558,7 +558,7 @@ namespace SpellforceDataEditor.special_forms
                     string type = s_n.Substring(s_n.Length - 4, 4);
                     s_n = s_n.Substring(0, s_n.Length - 4);
 
-                    int result = SFResourceManager.Messages.Load(s_n);
+                    int result = SFResourceManager.Messages.Load(s_n, SFEngine.SFUnPak.FileSource.ANY);
                     if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load message " + s_n;
@@ -658,7 +658,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string anim_name = ListAnimations.SelectedItem.ToString();
                     anim_name = anim_name.Substring(0, anim_name.Length - 4);
-                    int result = SFResourceManager.Animations.Load(anim_name);
+                    int result = SFResourceManager.Animations.Load(anim_name, SFEngine.SFUnPak.FileSource.ANY);
                     if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load animation " + anim_name + ", status code " + result.ToString();
@@ -691,7 +691,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string anim_name = ListAnimations.SelectedItem.ToString();
                     anim_name = anim_name.Substring(0, anim_name.Length - 4);
-                    int result = SFResourceManager.Animations.Load(anim_name);
+                    int result = SFResourceManager.Animations.Load(anim_name, SFEngine.SFUnPak.FileSource.ANY);
                     if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load animation " + anim_name + ", status code " + result.ToString();

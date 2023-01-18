@@ -3,10 +3,12 @@
  * Resource must be possible to load, initialize, and to dispose of
  * Resources are meant to be unique across the application
  * * */
+using System;
 using System.IO;
 
 namespace SFEngine.SFResources
 {
+
     public class SFResource
     {
         public int StorageSize { get; set; } = 0;

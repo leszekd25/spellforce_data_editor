@@ -46,7 +46,7 @@ namespace SFEngine.SFMap
 
             string tex_name = "test_ocean_relief_4_l8";
             SF3D.SFTexture tex = null;
-            int tex_code = SFResources.SFResourceManager.Textures.Load(tex_name);
+            int tex_code = SFResources.SFResourceManager.Textures.Load(tex_name, SFUnPak.FileSource.ANY);
             if ((tex_code != 0) && (tex_code != -1))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapOcean(): Could not load texture (texture name = " + tex_name + ")");

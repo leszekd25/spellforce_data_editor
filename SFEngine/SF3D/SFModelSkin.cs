@@ -98,7 +98,7 @@ namespace SFEngine.SF3D
             matname = matname.ToLower();
 
             SFTexture tex = null;
-            int tex_code = SFResourceManager.Textures.Load(matname);
+            int tex_code = SFResourceManager.Textures.Load(matname, SFUnPak.FileSource.ANY);
             if ((tex_code != 0) && (tex_code != -1))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModelSkin.Load(): Could not load texture (texture name = " + matname + ")");
@@ -157,7 +157,7 @@ namespace SFEngine.SF3D
             // load BSI
 
             SFBoneIndex bsi = null;
-            int bsi_code = SFResourceManager.BSIs.Load(SFResourceManager.current_resource);
+            int bsi_code = SFResourceManager.BSIs.Load(SFResourceManager.current_resource, SFUnPak.FileSource.ANY);
             if ((bsi_code != 0) && (bsi_code != -1))
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkinChunk.Load(): Could not load bone skin index file (BSI name = " + SFResourceManager.current_resource + ")");
@@ -284,7 +284,7 @@ namespace SFEngine.SF3D
                 }
 
                 msc.material = submodels[tex_chunks_list[i][0]].material;
-                SFResourceManager.Textures.Load(msc.material.texture.Name);    // to increase ref counter
+                SFResourceManager.Textures.Load(msc.material.texture.Name, SFUnPak.FileSource.ANY);    // to increase ref counter
             }
 
             foreach(var msc in submodels)

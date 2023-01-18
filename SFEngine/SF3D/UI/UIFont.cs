@@ -23,7 +23,7 @@ namespace SFEngine.SF3D.UI
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "UIFont.Load() called, font texture name: " + fname);
             // 1. load font texture
             string tex_name = fname;
-            int tex_code = SFResourceManager.Textures.Load(tex_name, new SFTexture.SFTextureLoadArgs() { FreeOnInit = false });
+            int tex_code = SFResourceManager.Textures.Load(tex_name, SFUnPak.FileSource.ANY, new SFTexture.SFTextureLoadArgs() { FreeOnInit = false });
             if ((tex_code != 0) && (tex_code != -1))
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "UIFont.Load(): Could not load texture (texture name = " + tex_name + ")");

@@ -59,7 +59,7 @@ namespace SFEngine.SFResources
         }
 
         // name of the resource in the pak files
-        public int Load(string rname, object custom_data = null)
+        public int Load(string rname, SFUnPak.FileSource source, object custom_data = null)
         {
             // if resource is already loaded, increase reference count to that resource and return -1
             if (cont.ContainsKey(rname))
@@ -79,7 +79,7 @@ namespace SFEngine.SFResources
                     res_to_load += ext;
                 }
 
-                ms = SFUnPak.SFUnPak.LoadFileFind(prefix_path + "\\" + res_to_load);
+                ms = SFUnPak.SFUnPak.LoadFileFind(prefix_path + "\\" + res_to_load, source);
                 if (ms != null)
                 {
                     break;
@@ -245,7 +245,7 @@ namespace SFEngine.SFResources
                 }
 
                 extract_fname += rname + ext;
-                if (SFUnPak.SFUnPak.ExtractFileFind(prefix_path + "\\" + rname + ext, extract_fname) == 0)
+                if (SFUnPak.SFUnPak.ExtractFileFind(prefix_path + "\\" + rname + ext, extract_fname, SFUnPak.FileSource.ANY) == 0)
                 {
                     return 0;
                 }

@@ -192,7 +192,7 @@ namespace SFEngine.SFMap
             if (anim_name != "")
             {
                 SFAnimation anim = null;
-                int tex_code = SFResources.SFResourceManager.Animations.Load(anim_name);
+                int tex_code = SFResources.SFResourceManager.Animations.Load(anim_name, SFUnPak.FileSource.ANY);
                 if ((tex_code != 0) && (tex_code != -1))
                 {
                     LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapUnitManager.RestartAnimation(): Could not load animation (animation name = " + anim_name + ")");

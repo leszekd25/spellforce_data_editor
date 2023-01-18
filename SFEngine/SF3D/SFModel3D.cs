@@ -101,7 +101,7 @@ namespace SFEngine.SF3D
             matname = matname.ToLower();
 
             SFTexture tex = null;
-            int tex_code = SFResourceManager.Textures.Load(matname);
+            int tex_code = SFResourceManager.Textures.Load(matname, SFUnPak.FileSource.ANY);
             if ((tex_code != 0) && (tex_code != -1))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModel3D.Load(): Could not load texture (texture name = " + matname + ")");
