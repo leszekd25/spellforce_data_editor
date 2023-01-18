@@ -742,15 +742,26 @@ namespace SFEngine.SFMap
 
         public void SetTilesRaw(byte[] _tiles)
         {
-            // set base
-            for(int y = 0; y < height; y++)
+            // fast path
+            for (int y = 1; y < height - 1; y++)
             {
-                for(int x = 0; x < width; x++)
+                for (int x = 1; x < width - 1; x++)
                 {
-                    SetTile(new SFCoord(x, y), _tiles[y * width + x]);
+                    SetTileFast(x, y, _tiles[y * width + x]);
                 }
             }
-            //tile_data = _tiles;
+
+            // slow path
+            for (int x = 0; x < width; x++)
+            {
+                SetTile(new SFCoord(x, 0), _tiles[x]);
+                SetTile(new SFCoord(x, height-1), _tiles[(height - 1) * width + x]);
+            }
+            for (int y = 0; y < height; y++)
+            {
+                SetTile(new SFCoord(0, y), _tiles[y * width]);
+                SetTile(new SFCoord(width-1, y), _tiles[y * width + width - 1]);
+            }
         }
 
         public void Generate()
@@ -992,6 +1003,14 @@ namespace SFEngine.SFMap
             //byte b = tile_data[pos.y * width + pos.x];
             byte b = GetTile(pos);
             return (b > 223 ? (byte)(b - 223) : b);
+        }
+
+        public void SetTileFast(int x, int y, byte b)
+        {
+            tile_data[y * width + x - 1] = (uint)((tile_data[y * width + x - 1] & 0x00FFFFFF) | (uint)(b << 24));
+            tile_data[y * width + x] = (uint)((tile_data[y * width + x] & 0xFF00FFFF) | (uint)(b << 16));
+            tile_data[(y + 1) * width + x - 1] = (uint)((tile_data[(y + 1) * width + x - 1] & 0xFFFF00FF) | (uint)(b << 8));
+            tile_data[(y + 1) * width + x] = (uint)((tile_data[(y + 1) * width + x] & 0xFFFFFF00) | (uint)(b << 0));
         }
 
         public void SetTile(SFCoord pos, byte b)

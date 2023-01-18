@@ -103,13 +103,24 @@ namespace SFEngine.SFMap
         {
             while (anim_lib != "")
             {
+                string cur_name = "";
+                int cur_len = 99999;
                 foreach (string anim_name in SFResources.SFResourceManager.animation_names)
                 {
                     if ((anim_name.StartsWith(anim_lib)) && (anim_name.Contains("idle")))
                     {
-                        return anim_name;
+                        if(anim_name.Length < cur_len)
+                        {
+                            cur_name = anim_name;
+                            cur_len = anim_name.Length;
+                        }
                     }
                 }
+                if(cur_name != "")
+                {
+                    return cur_name;
+                }
+
                 int last_index = anim_lib.LastIndexOf('_');
                 if (last_index < 0)
                 {

@@ -398,6 +398,11 @@ namespace SFEngine.SF3D.SceneSynchro
             SceneNode unit_node = AddSceneNodeEmpty(null, object_name);    // parent to be assigned later, likely some of the cached mapchunk nodes
 
             //find unit data element (cat 18)
+            if(SFCategoryManager.gamedata[2024] == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): There is no unit data block in gamedata!");
+                return unit_node;
+            }
             SFCategoryElement unit_data = SFCategoryManager.gamedata[2024].FindElementBinary<UInt16>(0, (UInt16)unit_id);
             if (unit_data == null)
             {
@@ -407,7 +412,16 @@ namespace SFEngine.SF3D.SceneSynchro
             }
 
             //get unit gender
-            SFCategoryElement unit_stats = SFCategoryManager.gamedata[2005].FindElementBinary<UInt16>(0, (UInt16)unit_data[2]);
+            SFCategoryElement unit_stats;
+            if (SFCategoryManager.gamedata[2005] == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): There is no unit stats data block in gamedata, setting gender to male");
+                unit_stats = null;
+            }
+            else
+            {
+                unit_stats = SFCategoryManager.gamedata[2005].FindElementBinary<UInt16>(0, (UInt16)unit_data[2]);
+            }
             bool is_female = false;
             if (unit_stats != null)
             {

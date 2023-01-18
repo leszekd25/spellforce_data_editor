@@ -2132,7 +2132,7 @@ namespace SFEngine.SFMap
 
             SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
             unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
-            if (SFCFF.SFCategoryManager.gamedata[2024] == null)
+            if (SFCFF.SFCategoryManager.gamedata[2005] == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): There is no unit stats block in gamedata, setting unit scale to 100%");
             }
@@ -2256,7 +2256,7 @@ namespace SFEngine.SFMap
 
             SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
             unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
-            if (SFCFF.SFCategoryManager.gamedata[2024] == null)
+            if (SFCFF.SFCategoryManager.gamedata[2005] == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): There is no unit stats block in gamedata, setting unit scale to 100%");
             }

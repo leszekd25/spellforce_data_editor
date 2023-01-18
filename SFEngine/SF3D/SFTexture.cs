@@ -273,6 +273,8 @@ namespace SFEngine.SF3D
             uint blockSize;
             uint mipMapC = header[6];
             uint fourCC = header[20];
+            if (mipMapC == 0)
+                mipMapC = 1;
             CalculateMipmapLevel(width, height, mipMapC);
             min_filter = (int)All.LinearMipmapLinear;
             mag_filter = (int)All.Linear;

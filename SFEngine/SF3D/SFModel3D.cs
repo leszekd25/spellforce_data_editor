@@ -133,26 +133,20 @@ namespace SFEngine.SF3D
             Dispose();
 
             vertex_data = new byte[_vertices.Length * 40];
-            using (MemoryStream ms = new MemoryStream(vertex_data))
+            unsafe
             {
-                using (BinaryWriter bw = new BinaryWriter(ms))
+                fixed (byte* vertex_data_pt = vertex_data)
                 {
-                    for (int i = 0; i < _vertices.Length; i++)
+                    fixed (byte* colors_pt = _colors)
                     {
-                        bw.Write(_vertices[i].X);
-                        bw.Write(_vertices[i].Y);
-                        bw.Write(_vertices[i].Z);
-                        bw.Write(_normals[i].X);
-                        bw.Write(_normals[i].Y);
-                        bw.Write(_normals[i].Z);
-                        for (int j = 0; j < 4; j++)
+                        for (int i = 0; i < _vertices.Length; i++)
                         {
-                            bw.Write(_colors[4 * i + j]);
+                            *(Vector3*)(vertex_data_pt + (i * 40 + 0)) = _vertices[i];
+                            *(Vector3*)(vertex_data_pt + (i * 40 + 12)) = _normals[i];
+                            *(uint*)(vertex_data_pt + (i * 40 + 24)) = *(uint*)(colors_pt + (4 * i));
+                            *(Vector2*)(vertex_data_pt + (i * 40 + 28)) = _uvs[i];
+                            *(uint*)(vertex_data_pt + (i * 40 + 36)) = 0;
                         }
-
-                        bw.Write(_uvs[i].X);
-                        bw.Write(_uvs[i].Y);
-                        bw.Write((int)0);
                     }
                 }
             }
