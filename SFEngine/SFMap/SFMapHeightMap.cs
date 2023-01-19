@@ -571,7 +571,6 @@ namespace SFEngine.SFMap
         //public byte[] tile_data;
         public uint[] tile_data;    // r, g, b, a for a single texture fetch; r offset (0, -1), g offset (1, -1), b offset (0, 0), a offset (1, 0)
         public ushort[] flag_data;
-        public int overlay_texture_flags = -1;
         public SFMapHeightMapFlag overlay_flags = 0;
         public byte overlay_decal_group = 0;    // 0 - no group
         public bool[] temporary_mask;   // for calculating islands by height
@@ -579,17 +578,14 @@ namespace SFEngine.SFMap
         public SF3D.SceneSynchro.SceneNodeMapChunk[] chunk_nodes;
         public List<SF3D.SceneSynchro.SceneNodeMapChunk> visible_chunks = new List<SF3D.SceneSynchro.SceneNodeMapChunk>();
 
-        // height data translates directly to a texture
-        public int height_data_texture = -1;
-
-        // tile_data translates directly to a texture
-        public int tile_data_texture = -1;
-
         // UBO for overlay data to the shader
         int uniformOverlays_buffer;
         Vector4[] uniformOverlays = new Vector4[16];     // 16 available colors
 
         public SFTexture terrain_texture_lod_bump = null;
+        public SFTexture overlay_texture = null;
+        public SFTexture height_data_texture = null;
+        public SFTexture tile_data_texture = null;
 
         public SFMapHeightMap(int w, int h)
         {
@@ -601,25 +597,13 @@ namespace SFEngine.SFMap
             flag_data = new ushort[w * h]; flag_data.Initialize();
             temporary_mask = new bool[w * h];
 
-            tile_data_texture = GL.GenTexture();
-            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2D, tile_data_texture);
-            //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R8, width, height, 0,
-            //    PixelFormat.Red, PixelType.UnsignedByte, tile_data);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, width, height, 0,
-                PixelFormat.Rgba, PixelType.UnsignedByte, tile_data);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
+            tile_data_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2D, InternalFormat.Rgba8ui, PixelFormat.RgbaInteger, PixelType.UnsignedByte, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToBorder, (int)All.ClampToBorder, Vector4.Zero, 0, false, false);
+            SFResources.SFResourceManager.Textures.AddManually(tile_data_texture, "_TILES_TEXTURE_");
+            tile_data_texture.UpdateImage(tile_data, 0, 0, 0);
 
-            height_data_texture = GL.GenTexture();
-            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2D, height_data_texture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R16, width, height, 0,
-                PixelFormat.Red, PixelType.UnsignedShort, height_data);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
+            height_data_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2D, InternalFormat.R16, PixelFormat.Red, PixelType.UnsignedShort, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToBorder, (int)All.ClampToBorder, Vector4.Zero, 0, false, false);
+            SFResources.SFResourceManager.Textures.AddManually(height_data_texture, "_HEIGHTMAP_TEXTURE_");
+            height_data_texture.UpdateImage(height_data, 0, 0, 0);
 
 
             // overlay data
@@ -633,29 +617,22 @@ namespace SFEngine.SFMap
                 GL.BindBufferRange(BufferRangeTarget.UniformBuffer, 1, uniformOverlays_buffer, new IntPtr(0), 16 * 4 * 4);
                 SetOverlayColors();
 
-                overlay_texture_flags = GL.GenTexture();
-
-                SF3D.SFRender.SFRenderEngine.SetTexture(3, TextureTarget.Texture2D, overlay_texture_flags);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R16ui, width, height, 0,
-                    PixelFormat.RedInteger, PixelType.UnsignedShort, flag_data);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
+                overlay_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2D, InternalFormat.R16ui, PixelFormat.RedInteger, PixelType.UnsignedShort, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToEdge, (int)All.ClampToEdge, Vector4.Zero, 0, false, false);
+                SFResources.SFResourceManager.Textures.AddManually(overlay_texture, "_OVERLAY_TEXTURE_"); 
+                overlay_texture.UpdateImage(flag_data, 0, 0, 0);
             }
         }
 
         public void UpdateTileMap()
         {
-            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2D, tile_data_texture);
-            //GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.Red, PixelType.UnsignedByte, tile_data);
-            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, tile_data);
+            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2D, tile_data_texture.tex_id);
+            tile_data_texture.UpdateImage(tile_data, 0, 0, 0);
         }
 
         public void UpdateHeightMap()
         {
-            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2D, height_data_texture);
-            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.Red, PixelType.UnsignedShort, height_data);
+            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2D, height_data_texture.tex_id);
+            height_data_texture.UpdateImage(height_data, 0, 0, 0);
         }
 
         public SFMapHeightMapFlag GetFlag(SFCoord pos)
@@ -701,8 +678,9 @@ namespace SFEngine.SFMap
             }
 
             SF3D.SFRender.SFRenderEngine.SetTexture(3, TextureTarget.Texture2D, 0);
-            SF3D.SFRender.SFRenderEngine.SetTexture(3, TextureTarget.Texture2D, overlay_texture_flags);
-            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.RedInteger, PixelType.UnsignedShort, flag_data);
+            SF3D.SFRender.SFRenderEngine.SetTexture(3, TextureTarget.Texture2D, overlay_texture.tex_id);
+            overlay_texture.UpdateImage(flag_data, 0, 0, 0);
+            //GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.RedInteger, PixelType.UnsignedShort, flag_data);
         }
 
         public SFMapHeightMapChunk GetChunk(SFCoord pos)
@@ -1593,21 +1571,21 @@ namespace SFEngine.SFMap
                 return;
             }
 
-            if (height_data_texture != -1)
+            if (height_data_texture != null)
             {
-                GL.DeleteTexture(height_data_texture);
-                height_data_texture = -1;
+                SFResources.SFResourceManager.Textures.Dispose(height_data_texture.Name);
+                height_data_texture = null;
             }
-            if (tile_data_texture != -1)
+            if (tile_data_texture != null)
             {
-                GL.DeleteTexture(tile_data_texture);
-                tile_data_texture = -1;
+                SFResources.SFResourceManager.Textures.Dispose(tile_data_texture.Name);
+                tile_data_texture = null;
             }
 
-            if (overlay_texture_flags != -1)
+            if (overlay_texture != null)
             {
-                GL.DeleteTexture(overlay_texture_flags);
-                overlay_texture_flags = -1;
+                SFResources.SFResourceManager.Textures.Dispose(overlay_texture.Name);
+                overlay_texture = null;
             }
 
             if (terrain_texture_lod_bump != null)

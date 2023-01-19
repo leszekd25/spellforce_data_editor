@@ -177,6 +177,7 @@ namespace SFEngine.SFMap
             for(int i = 0; i < 31; i++)
             {
                 tile_texture_bank[i] = base_texture_bank[i];
+                GenerateAverageTileColor(i, base_texture_bank[i]);
             }
             for(int i = 32; i < 224; i++)
             {
@@ -188,11 +189,13 @@ namespace SFEngine.SFMap
                     base_texture_bank[texture_tiledata[i].ind2], texture_tiledata[i].weight2,
                     base_texture_bank[texture_tiledata[i].ind3], texture_tiledata[i].weight3,
                     ref tile_texture_bank[i]);
+                    GenerateAverageTileColor(i, tile_texture_bank[i]);
                 }
             }
             for(int i = 1; i < 31; i++)
             {
                 tile_texture_bank[223 + i] = base_texture_bank[i];
+                tile_average_color[223 + i] = tile_average_color[i];
             }
         }
 
@@ -328,16 +331,14 @@ namespace SFEngine.SFMap
             // insert texture data to the atlas
             RefreshBaseTexture(base_index);
             RefreshTilePreview(base_index);
-            UpdateUniformTileColor(base_index, base_index);
-            UpdateUniformTileColor(base_index + 223, base_index + 223);
             for (int i = 32; i < 224; i++)
             {
                 if ((tile_defined[i]) && ((texture_tiledata[i].ind1 == base_index) || (texture_tiledata[i].ind2 == base_index) || (texture_tiledata[i].ind3 == base_index))) 
                 {
                     RefreshTilePreview(i);
-                    UpdateUniformTileColor(i, i);
                 }
             }
+            UpdateUniformTileColor(0, MAX_TILES - 1);
 
             return true;
         }
@@ -360,6 +361,11 @@ namespace SFEngine.SFMap
         // generates previews for all existing terrain textures in game
         public void GenerateBaseImages()
         {
+            if(!Settings.EditorMode)
+            {
+                return;
+            }
+
             if (base_images_loaded)
             {
                 return;
@@ -409,6 +415,7 @@ namespace SFEngine.SFMap
             SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2DArray, terrain_texture);
 
             tile_texture_bank[base_index] = base_texture_bank[base_index];
+            GenerateAverageTileColor(base_index, base_texture_bank[base_index]);
             GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, base_index, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[base_index].data);
 
             for (int i = 32; i < 224; i++)
@@ -422,13 +429,14 @@ namespace SFEngine.SFMap
                         base_texture_bank[texture_tiledata[i].ind2], texture_tiledata[i].weight2,
                         base_texture_bank[texture_tiledata[i].ind3], texture_tiledata[i].weight3,
                         ref tile_texture_bank[i]);
-
+                        GenerateAverageTileColor(i, tile_texture_bank[i]);
                         GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, i, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[i].data);
                     }
                 }
             }
 
             tile_texture_bank[223 + base_index] = tile_texture_bank[base_index];
+            tile_average_color[223 + base_index] = tile_average_color[base_index];
             GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, 223 + base_index, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[223 + base_index].data);
 
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
@@ -436,7 +444,7 @@ namespace SFEngine.SFMap
 
         public void RefreshTileTexture(int tile_id)
         {
-            if(tile_id < 32)
+            if (tile_id < 32)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFMap, "SFMapTerrainTextureManager.RefreshTileTexture: Invalid tile ID " + tile_id.ToString());
                 throw new Exception("SFMapTerrainTextureManager.RefreshTileTexture: Invalid tile ID " + tile_id.ToString());
@@ -450,14 +458,20 @@ namespace SFEngine.SFMap
                 base_texture_bank[texture_tiledata[tile_id].ind2], texture_tiledata[tile_id].weight2,
                 base_texture_bank[texture_tiledata[tile_id].ind3], texture_tiledata[tile_id].weight3,
                 ref tile_texture_bank[tile_id]);
-
+                GenerateAverageTileColor(tile_id, tile_texture_bank[tile_id]);
                 GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, tile_id, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[tile_id].data);
             }
+
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
         }
 
         public void RefreshTilePreview(int tile_id)
         {
+            if (!Settings.EditorMode)
+            {
+                return;
+            }
+
             if (tile_id < 0)
             {
                 return;
@@ -466,14 +480,10 @@ namespace SFEngine.SFMap
             if (tile_id < 32)
             {
                 texture_tile_image[tile_id] = CreateBitmapFromTexture(base_texture_bank[tile_id]);
-
-                GenerateAverageTileColor(tile_id, base_texture_bank[tile_id]);
             }
             else if (tile_defined[tile_id])
             {
                 texture_tile_image[tile_id] = CreateBitmapFromTexture(tile_texture_bank[tile_id]);
-
-                GenerateAverageTileColor(tile_id, tile_texture_bank[tile_id]);
             }
         }
 

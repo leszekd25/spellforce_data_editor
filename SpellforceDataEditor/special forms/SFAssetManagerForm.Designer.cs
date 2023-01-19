@@ -33,9 +33,11 @@
             this.ListEntries = new System.Windows.Forms.ListBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetCameraPosiitonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadCurrentSceneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.textureRepairToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.GameDirDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusText = new System.Windows.Forms.ToolStripStatusLabel();
@@ -86,7 +88,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.optionsToolStripMenuItem});
+            this.optionsToolStripMenuItem,
+            this.toolsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(771, 24);
@@ -102,6 +105,14 @@
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.textureRepairToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
             // 
             // resetCameraPosiitonToolStripMenuItem
             // 
@@ -123,6 +134,13 @@
             this.exportSettingsToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.exportSettingsToolStripMenuItem.Text = "Extraction settings...";
             this.exportSettingsToolStripMenuItem.Click += new System.EventHandler(this.exportSettingsToolStripMenuItem_Click);
+            // 
+            // textureRepairSettingsToolStripMenuItem
+            // 
+            this.textureRepairToolStripMenuItem.Name = "textureRepairToolStripMenuItem";
+            this.textureRepairToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.textureRepairToolStripMenuItem.Text = "Texture repair...";
+            this.textureRepairToolStripMenuItem.Click += new System.EventHandler(this.textureRepairToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -330,6 +348,8 @@
         private System.Windows.Forms.Button button2Extract;
         private System.Windows.Forms.ComboBox comboMessages;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem textureRepairToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetCameraPosiitonToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reloadCurrentSceneToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportSettingsToolStripMenuItem;

@@ -269,6 +269,7 @@ namespace MapViewerNetNative
             {
                 throw new Exception("FAILED TO LOAD GAME DIRECTORY");
             }
+            SFResourceManager.ListAllFilesystemResources();
 
             // load SQL stuff
             SFLuaEnvironment.LoadSQL(false);
@@ -279,10 +280,7 @@ namespace MapViewerNetNative
             SFCategoryManager.manual_SetGamedata();
 
             // find all resources
-            if (!SFResourceManager.ready)
-            {
-                SFResourceManager.FindAllMeshes();
-            }
+            SFResourceManager.ListAllPakResources();
 
 
             // create scene and initialize rendering engine

@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using OpenTK.Graphics.OpenGL;
 
 namespace SpellforceDataEditor.special_forms
 {
@@ -76,10 +77,8 @@ namespace SpellforceDataEditor.special_forms
 
             public void InitMinimap(int m_width, int m_height)
             {
-                minimap_tex = SFTexture.RGBAImage((ushort)m_width, (ushort)m_height);
-                minimap_tex.generate_mipmap = true;
-                minimap_tex.Init();
-                minimap_tex.Name = "minimap";
+                minimap_tex = SFTexture.DynamicTexture((ushort)m_width, (ushort)m_height, 1, TextureTarget.Texture2D, InternalFormat.Rgba, PixelFormat.Rgba, PixelType.UnsignedByte, (int)All.LinearMipmapLinear, (int)All.Linear, (int)All.ClampToEdge, (int)All.ClampToEdge, Vector4.One, Settings.MaxAnisotropy, true, true);
+                SFResourceManager.Textures.AddManually(minimap_tex, "minimap");
 
                 SFRenderEngine.ui.AddStorage(minimap_tex, 1);
                 SFRenderEngine.ui.AddStorage(SFRenderEngine.opaque_tex, 2);
@@ -170,7 +169,7 @@ namespace SpellforceDataEditor.special_forms
                     }
                 }
 
-                minimap_tex.UpdateImage();
+                minimap_tex.UpdateImage(minimap_tex.data, 0, 0, 0);
             }
 
             // redraws given area with chosen tile color
@@ -241,7 +240,7 @@ namespace SpellforceDataEditor.special_forms
                     }
                 }
 
-                minimap_tex.UpdateImage();
+                minimap_tex.UpdateImage(minimap_tex.data, 0, 0, 0);
             }
 
             // only redraws selected pixels, according to the contents of the map
@@ -313,7 +312,7 @@ namespace SpellforceDataEditor.special_forms
                     }
                 }
 
-                minimap_tex.UpdateImage();
+                minimap_tex.UpdateImage(minimap_tex.data, 0, 0, 0);
             }
 
             // only redraws selected pixels, paint them on specified color
@@ -334,7 +333,7 @@ namespace SpellforceDataEditor.special_forms
                     minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 3] = 255;
                 }
 
-                minimap_tex.UpdateImage();
+                minimap_tex.UpdateImage(minimap_tex.data, 0, 0, 0);
             }
 
             public void ClearMinimapIcons()
@@ -1181,12 +1180,11 @@ namespace SpellforceDataEditor.special_forms
                     SFCategoryManager.manual_SetGamedata();
                 }
             }
-
             // load resource names
-            if (!SFResourceManager.ready)
+            if (!SFResourceManager.pak_animations_listed)
             {
                 ForceSetStatusText("Loading resource names...", Color.Purple);
-                SFResourceManager.FindAllMeshes();
+                SFResourceManager.ListAllPakAnimations();
             }
 
             SFRenderEngine.ResetTextures();
@@ -1323,10 +1321,10 @@ namespace SpellforceDataEditor.special_forms
                 }
 
                 // load resource names
-                if (!SFResourceManager.ready)
+                if (!SFResourceManager.pak_animations_listed)
                 {
                     ForceSetStatusText("Loading resource names...", Color.Purple);
-                    SFResourceManager.FindAllMeshes();
+                    SFResourceManager.ListAllPakAnimations();
                 }
 
                 SFRenderEngine.ResetTextures();

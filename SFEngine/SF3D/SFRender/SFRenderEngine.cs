@@ -79,7 +79,7 @@ namespace SFEngine.SF3D.SFRender
         public static bool is_debug = false;
 
         public static bool is_rendering = false;
-        static bool initialized = false;
+        public static bool initialized = false;
 
 #if DEBUG
         public static int[] queries;
@@ -139,7 +139,7 @@ namespace SFEngine.SF3D.SFRender
             SFSubModel3D.Cache.AddVertexAttribute(4, VertexAttribPointerType.UnsignedByte, true);   // colors
             SFSubModel3D.Cache.AddVertexAttribute(2, VertexAttribPointerType.Float, false);   // UVs
             SFSubModel3D.Cache.SetVertexSize(40);                                             // extra 4 bytes are unused, but still pushed to gpu
-            SFSubModel3D.Cache.Init(2 << 14, 2 << 14);
+            SFSubModel3D.Cache.Init(1 << 19, 1 << 19);
 
             // initialize animated (skin) model cache
             if (SFModelSkinChunk.Cache != null)
@@ -154,7 +154,7 @@ namespace SFEngine.SF3D.SFRender
             SFModelSkinChunk.Cache.AddVertexAttribute(2, VertexAttribPointerType.Float, false);   // uvs
             SFModelSkinChunk.Cache.AddVertexAttribute(4, VertexAttribPointerType.UnsignedByte, false);  // bone indices
             SFModelSkinChunk.Cache.SetVertexSize(40);
-            SFModelSkinChunk.Cache.Init(2 << 6, 2 << 6);
+            SFModelSkinChunk.Cache.Init(1 << 15, 1 << 15);
 
             // opaque texture is a 1x1 white pixel that's used for blending operations on models that would otherwise have no texture assigned
             if (opaque_tex != null)
@@ -237,6 +237,7 @@ namespace SFEngine.SF3D.SFRender
             shader_heightmap.SetDefine("DISPLAY_GRID", Settings.DisplayGrid);
             shader_heightmap.SetDefine("VISUALIZE_HEIGHT", Settings.VisualizeHeight);
             shader_heightmap.SetDefine("SHADING", (Settings.ShadingQuality > 0));
+            shader_heightmap.SetDefine("QUALITY_SHADING", (Settings.ShadingQuality > 1));
             shader_heightmap.SetDefine("SHADOWS", (Settings.EnableShadows));
             shader_heightmap.SetDefine("TONEMAPPING", (Settings.ToneMapping));
             shader_heightmap.SetDefine("TEXTURE_LOD", ((Settings.TerrainTextureLOD == 1) || ((Settings.TerrainTextureLOD == 2) && (Settings.ForceTerrainTextureLOD1))));
@@ -436,6 +437,10 @@ namespace SFEngine.SF3D.SFRender
                 shader_heightmap.AddParameter("FogStart");
                 shader_heightmap.AddParameter("FogEnd");
                 shader_heightmap.AddParameter("FogExponent");
+                if(Settings.ShadingQuality >= 2)
+                {
+                    shader_heightmap.AddParameter("ViewPos");
+                }
             }
 
 
@@ -1453,7 +1458,7 @@ namespace SFEngine.SF3D.SFRender
                 GL.Uniform3(active_shader["cameraPos"], scene.camera.position);
             }
 
-            SetTexture(4, TextureTarget.Texture2D, heightmap.height_data_texture);
+            SetTexture(4, TextureTarget.Texture2D, heightmap.height_data_texture.tex_id);
 
             Matrix4 vp_mat = scene.camera.ViewProjMatrix;
             GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
@@ -1487,17 +1492,17 @@ namespace SFEngine.SF3D.SFRender
                 GL.Uniform3(active_shader["cameraPos"], scene.camera.position);
             }
 
-            SetTexture(4, TextureTarget.Texture2D, heightmap.height_data_texture);
+            SetTexture(4, TextureTarget.Texture2D, heightmap.height_data_texture.tex_id);
 
             if (current_pass == RenderPass.SCENE)
             {
                 if (Settings.EditorMode)
                 {
-                    SetTexture(3, TextureTarget.Texture2D, (heightmap.overlay_texture_flags == Utility.NO_INDEX ? opaque_tex.tex_id : heightmap.overlay_texture_flags));
+                    SetTexture(3, TextureTarget.Texture2D, (heightmap.overlay_texture == null ? opaque_tex.tex_id : heightmap.overlay_texture.tex_id));
                 }
 
                 SetTexture(5, TextureTarget.Texture2D, heightmap.terrain_texture_lod_bump.tex_id);
-                SetTexture(2, TextureTarget.Texture2D, heightmap.tile_data_texture);
+                SetTexture(2, TextureTarget.Texture2D, heightmap.tile_data_texture.tex_id);
                 SetTexture(0, TextureTarget.Texture2DArray, heightmap.texture_manager.terrain_texture);
                 Matrix4 vp_mat = scene.camera.ViewProjMatrix;
                 if (Settings.EnableShadows)
@@ -1510,6 +1515,10 @@ namespace SFEngine.SF3D.SFRender
                 {
                     GL.Uniform4(active_shader["GridColor"], Settings.GridColor);
                     GL.Uniform1(active_shader["CurrentFlags"], (Settings.OverlaysVisible ? (ushort)heightmap.overlay_flags : 0));
+                }
+                if (Settings.ShadingQuality >= 2)
+                {
+                    GL.Uniform3(active_shader["ViewPos"], scene.camera.position);
                 }
             }
             else if (current_pass == RenderPass.SHADOWMAP)
@@ -1612,7 +1621,7 @@ namespace SFEngine.SF3D.SFRender
             {
                 GL.Uniform1(active_shader["GridSize"], scene.map.heightmap.width);
                 GL.Uniform3(active_shader["ViewPos"], scene.camera.position);
-                SetTexture(3, TextureTarget.Texture2D, scene.map.heightmap.tile_data_texture);
+                SetTexture(3, TextureTarget.Texture2D, scene.map.heightmap.tile_data_texture.tex_id);
             }
             GL.Uniform1(active_shader["AlphaCutout"], alpha_cutout);
 
@@ -1662,7 +1671,7 @@ namespace SFEngine.SF3D.SFRender
                 if (Settings.ShadingQuality >= 2)
                 {
                     GL.Uniform1(active_shader["GridSize"], scene.map.heightmap.width);
-                    SetTexture(2, TextureTarget.Texture2D, scene.map.heightmap.tile_data_texture);
+                    SetTexture(2, TextureTarget.Texture2D, scene.map.heightmap.tile_data_texture.tex_id);
                     GL.Uniform3(active_shader["ViewPos"], scene.camera.position);
                 }
                 GL.Uniform1(active_shader["AlphaCutout"], 0.01f);

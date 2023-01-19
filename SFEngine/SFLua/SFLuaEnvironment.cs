@@ -73,7 +73,8 @@ namespace SFEngine.SFLua
             }
             else
             {
-                MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", fname);
+                byte[] data = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", fname);
+                MemoryStream ms = new MemoryStream(data);
                 BinaryReader br = new BinaryReader(ms, Encoding.GetEncoding(1252));
                 LuaDecompiler.LuaBinaryScript scr = new LuaDecompiler.LuaBinaryScript(br);
                 br.Close();
@@ -92,14 +93,15 @@ namespace SFEngine.SFLua
                 return -1;
             }
 
-            MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", fname);
-            if (ms == null)
+            byte[] data = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", fname);
+            if (data == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaEnvironment.GetDecompiledString(): Could not find file " + fname + " in game paks!");
                 return -2;
             }
             else
             {
+                MemoryStream ms = new MemoryStream(data);
                 BinaryReader br = new BinaryReader(ms);
 
                 LuaDecompiler.LuaBinaryScript scr = new LuaDecompiler.LuaBinaryScript(br);

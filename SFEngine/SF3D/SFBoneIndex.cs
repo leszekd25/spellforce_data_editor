@@ -19,8 +19,9 @@ namespace SFEngine.SF3D
         public int[] material_per_segment { get; private set; } = null;
         public int[][] bone_index_remap { get; private set; } = null;
 
-        public override int Load(MemoryStream ms, object custom_data)
+        public override int Load(byte[] data, int offset, object custom_data)
         {
+            MemoryStream ms = new MemoryStream(data, offset, data.Length - offset);
             BinaryReader br = new BinaryReader(ms);
             modelnum = br.ReadInt32();
             bone_count = new int[modelnum];

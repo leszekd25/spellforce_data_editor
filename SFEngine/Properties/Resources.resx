@@ -448,6 +448,9 @@ in vec4 fragmentPositionLightSpace;
 #endif //SHADOWS
 #ifdef SHADING
 in float vBrightness;
+#ifdef QUALITY_SHADING
+in vec3 fragmentNormalTangentSpace;
+#endif //QUALITY_SHADING
 #endif //SHADING
 
 out vec4 color;
@@ -467,6 +470,9 @@ uniform float FogExponent;
 uniform float ShadowFadeStart;
 uniform float ShadowFadeEnd;
 #endif //SHADOWS
+#ifdef QUALITY_SHADING
+uniform vec3 ViewPos;
+#endif //QUALITY_SHADING
 #endif //SHADING
 #if defined SHADING || defined SHADOWS
 uniform vec4 AmbientColor;
@@ -474,7 +480,7 @@ uniform vec4 AmbientColor;
 
 #ifndef NO_TEXTURE
 uniform sampler2DArray myTextureSampler;
-uniform sampler2D TileMap;
+uniform usampler2D TileMap;
 #endif //NO_TEXTURE
 #ifdef SHADOWS
 uniform sampler2D ShadowMap;
@@ -570,8 +576,8 @@ float MSM_computeShadowIntensity(float proj_depth, vec4 moments)
 }
 #endif // MSM
 
-float CalculateShadow(vec4 FPLS, float b){
-    vec3 ProjectionCoordinates = FPLS.xyz / FPLS.w;
+float CalculateShadow(){
+    vec3 ProjectionCoordinates = fragmentPositionLightSpace.xyz / fragmentPositionLightSpace.w;
     if(ProjectionCoordinates.z &gt; 1.0)
         return 1.0;
 
@@ -607,147 +613,174 @@ float CalculateGridIntensity(float x, float y, float d)
 }
 #endif //EDITOR_MODE
 
-#ifdef TEXTURE_LOD
-float min_tex_blend = 50;
-float max_tex_blend = 60;
-#endif //TEXTURE_LOD
+// Depth() tells the object depth at this fragment (from ZNear to ZFar)
+float Depth()
+{
+  return gl_FragCoord.z / gl_FragCoord.w;
+}
 
-void main(){
-  #ifdef EDITOR_MODE
-  float gridintensity = 0;
-  #ifdef DISPLAY_GRID
-    float depth = gl_FragCoord.z / gl_FragCoord.w;
-    for(int i = 0; i &lt; 4; i++)
-    {
-    float gx = fragmentPosition.x+gridDisk[i].x/1000*depth;
-    float gy = fragmentPosition.z+gridDisk[i].y/1000*depth;
-    gridintensity += CalculateGridIntensity(gx, gy, depth);
-    }
-    gridintensity += CalculateGridIntensity(fragmentPosition.x, fragmentPosition.z, depth)*2;
-    gridintensity /= 6;
-  #endif // DISPLAY_GRID
+// ShadowShadeFactor() tells how much the shadow should be faded away (0 - no fade, 1 - max fade)
+float ShadowFadeFactor()
+{
+  #if defined SHADOWS &amp;&amp; defined SHADING
+  return clamp((Depth() - ShadowFadeStart)/(ShadowFadeEnd-ShadowFadeStart), 0.0, 1.0);
+  #else
+  return 0.0;
+  #endif // defined SHADOWS &amp;&amp; defined SHADING
+}
 
-  #ifdef VISUALIZE_HEIGHT
-    float height = fragmentPosition.y;
-    float c = ((height/2)-floor(height/2))*0.3;
-    highp int col_index = int(mod(height/2, 3));
-    color = clamp(hmap_visualization_colors[col_index]+vec4(c, c, c, 1.0), 0.0, 1.0);
-    color = mix(color, vec4(1, 1, 1, 1), gridintensity);
-    return;
-  #endif // VISUALIZE_HEIGHT
-  #endif //EDITOR_MODE
-  
-  #if defined SHADING || defined SHADOWS || defined TEXTURE_LOD
-  float dist = gl_FragCoord.z / gl_FragCoord.w;
-  #endif //defined SHADING || defined SHADOWS || defined TEXTURE_LOD
-  
-  #ifdef SHADING
+// Shade() is responsible for telling the shader how much sunlight this fragment should receive
+float Shade()
+{
+  #ifndef SHADING
+  float brightness = 1.0;
+  #else
   float brightness = vBrightness;
   #endif //SHADING
-  
-  #ifndef SHADING
   #ifdef SHADOWS
-  float brightness = 1.0;
-  #endif //SHADOWS
-  #endif //SHADING
-  
-  #ifdef SHADOWS
-  if(brightness &gt; 0)
+  if(brightness &gt; 0.0)
   {
-    // calculate shadow
-    float calc_shadow = CalculateShadow(fragmentPositionLightSpace, brightness);
-	#ifdef SHADING
-    float shadow_fade_factor = pow(clamp((dist - ShadowFadeStart)/(ShadowFadeEnd-ShadowFadeStart), 0.0, 1.0), 2.0);
-    calc_shadow += shadow_fade_factor;
-    calc_shadow = clamp(calc_shadow, 0.0, 1.0);  
-	#endif //SHADING
-    brightness = min(brightness, calc_shadow);
+	float shade_factor = pow(ShadowFadeFactor(), 2.0);
+	float shadow = CalculateShadow();
+    brightness *= max(shade_factor, shadow);
   }
   #endif //SHADOWS
+  return brightness;
+}
 
+// Tint() tells the object tint color for this fragment
+// provided from vertex shader
+vec3 Tint()
+{
+  #if defined NO_TEXTURE || defined TEXTURE_LOD
+  return fragmentColor.rgb;
+  #else
+  return vec3(1.0);
+  #endif //defined NO_TEXTURE || defined TEXTURE_LOD
+}
+
+// Bump() tells the color of bump texture at given fragment
+vec3 Bump()
+{
+  return texture(BumpMap, 64.0*UV/GridSize).rgb;
+}
+
+// Detail() tells the color of detail texture at given fragment
+vec3 Detail()
+{
   #ifndef NO_TEXTURE
   vec2 map_uv = floor(UV*4);
+  vec2 vt = vec2((UV*4).x-map_uv.x, (UV*4).y-map_uv.y);
   vec2 fixed_uv = vec2(UV.x - 0.25, -UV.y - 0.5);
   map_uv.y = GridSize-map_uv.y-1;
+	
+  uvec4 t = texture(TileMap, map_uv/GridSize);
+  vec3 tex1 = texture(myTextureSampler, vec3(fixed_uv, t.x)).rgb;
+  vec3 tex2 = texture(myTextureSampler, vec3(fixed_uv, t.y)).rgb;
+  vec3 tex3 = texture(myTextureSampler, vec3(fixed_uv, t.z)).rgb;
+  vec3 tex4 = texture(myTextureSampler, vec3(fixed_uv, t.w)).rgb;
+	
+  // linear interpolation
+  vec3 col1 = mix(tex1, tex2, vt.x);
+  vec3 col2 = mix(tex3, tex4, vt.x);
+  vec3 detail = mix(col2, col1, vt.y);
   
-  vec4 tex1;
-  vec4 tex2;
-  vec4 tex3;
-  vec4 tex4;
-  vec4 temp_c = vec4(1.0);
+  return detail;
+  #else
+  return vec3(0.0);
+  #endif //NO_TEXTURE
+}
+
+// Diffuse() tells the object diffuse color for this fragment
+vec3 Diffuse()
+{
+  #ifndef NO_TEXTURE
+  vec3 diffuse = vec3(1.0);
   
   #ifdef TEXTURE_LOD
-  if(dist &gt; max_tex_blend)
+  const float min_tex_blend = 50.0;
+  const float max_tex_blend = 60.0;
+  if(Depth() &gt; max_tex_blend)
   {
-    temp_c = vec4(fragmentColor, 1.0) * texture(BumpMap, 64*UV/GridSize)*1.2;
+    diffuse = Tint() * Bump() * 1.2;
   }
   else
   {
-    vec4 t = texture(TileMap, map_uv/GridSize)*255.0;
-    tex1 = texture(myTextureSampler, vec3(fixed_uv, int(t.x)));
-    tex2 = texture(myTextureSampler, vec3(fixed_uv, int(t.y)));
-    tex3 = texture(myTextureSampler, vec3(fixed_uv, int(t.z)));
-    tex4 = texture(myTextureSampler, vec3(fixed_uv, int(t.w)));
-	
-    vec2 vt = vec2((UV*4).x-map_uv.x, (UV*4).y-(GridSize-map_uv.y-1));
-    // linear interpolation
-    vec4 col1 = tex2*vt.x+tex1*(1-vt.x);
-    vec4 col2 = tex4*vt.x+tex3*(1-vt.x);
-    vec4 col_res = col1*vt.y+col2*(1-vt.y);
-    if(dist &gt; min_tex_blend)
+    diffuse = Detail();
+    if(Depth() &lt; min_tex_blend)
     {
       float blend_t = (dist - min_tex_blend)/(max_tex_blend - min_tex_blend);
-      col_res = mix(col_res, vec4(fragmentColor, 1.0) * texture(BumpMap, 64*UV/GridSize)*1.2, blend_t);
+      diffuse = mix(diffuse, Tint() * Bump() * 1.2, blend_t);
     }
-    temp_c *= col_res;
   }
   #endif //TEXTURE_LOD
   
   #ifndef TEXTURE_LOD
-  vec4 t = texture(TileMap, map_uv/GridSize)*255.0;
-  tex1 = texture(myTextureSampler, vec3(fixed_uv, int(t.x)));
-  tex2 = texture(myTextureSampler, vec3(fixed_uv, int(t.y)));
-  tex3 = texture(myTextureSampler, vec3(fixed_uv, int(t.z)));
-  tex4 = texture(myTextureSampler, vec3(fixed_uv, int(t.w)));
-  
-  vec2 vt = vec2((UV*4).x-map_uv.x, (UV*4).y-(GridSize-map_uv.y-1));
-  // linear interpolation
-  vec4 col1 = tex2*vt.x+tex1*(1-vt.x);
-  vec4 col2 = tex4*vt.x+tex3*(1-vt.x);
-  vec4 col_res = col1*vt.y+col2*(1-vt.y);
-  temp_c *= col_res;
+  diffuse = Detail();
   #endif //TEXTURE_LOD
   #endif //NO_TEXTURE
   
   #ifdef NO_TEXTURE
-  vec4 temp_c = vec4(fragmentColor, 1.0) * texture(BumpMap, 64*UV/GridSize)*1.2;
+  vec3 diffuse = Tint() * Bump() * 1.2;
   #endif //NO_TEXTURE
-
-  temp_c = clamp(temp_c, 0.0, 1.0);
-
-  
-  #ifndef TONEMAPPING
-  #if defined SHADING || defined SHADOWS
-  color = (AmbientColor*(1-brightness))+(SunColor*brightness);
-  #else
-  color = SunColor;
-  #endif //defined SHADING || defined SHADOWS
-  
-  color = color*temp_c;
-  color = clamp(color, 0.0, 1.0);
-  #endif // TONEMAPPING
   
   #ifdef TONEMAPPING
-  #if defined SHADING || defined SHADOWS
-  color = AmbientColor + SunColor * brightness;
+  diffuse = pow(diffuse.rgb, vec3(2.2));
+  #endif //TONEMAPPING
+  
+  return diffuse;
+}
+
+// GridIntensity() tells the intensity of grid at the given fragment
+float GridIntensity()
+{
+  #if defined DISPLAY_GRID &amp;&amp; defined EDITOR_MODE
+  float gridintensity = 0.0;
+  for(int i = 0; i &lt; 4; i++)
+  {
+    float gx = fragmentPosition.x+gridDisk[i].x/1000.0*Depth();
+    float gy = fragmentPosition.z+gridDisk[i].y/1000.0*Depth();
+    gridintensity += CalculateGridIntensity(gx, gy, Depth());
+  }
+  gridintensity += CalculateGridIntensity(fragmentPosition.x, fragmentPosition.z, Depth())*2;
+  gridintensity /= 6.0;
+  return gridintensity;
   #else
-  color = SunColor;
-  #endif //defined SHADING || defined SHADOWS
+  return 0.0;
+  #endif // defined DISPLAY_GRID &amp;&amp; defined EDITOR_MODE
+}
+
+// GridColor() tells the color of grid at the given fragment
+vec3 GridCol()
+{
+  #if defined DISPLAY_GRID &amp;&amp; defined EDITOR_MODE
   
-  temp_c = vec4(pow(temp_c.rgb, vec3(2.2)), temp_c.a);
-  color = color * temp_c;
-  #endif  // TONEMAPPING
+  #ifdef TONEMAPPING
+  return GridColor.rgb * 2.0;
+  #else
+  return GridColor.rgb;
+  #endif //TONEMAPPING
   
+  #else
+  return vec3(1.0);
+  #endif //defined DISPLAY_GRID &amp;&amp; defined EDITOR_MODE
+}
+
+// HeightVis
+vec3 HeightVis()
+{
+  #if defined VISUALIZE_HEIGHT &amp;&amp; defined EDITOR_MODE
+  float height = fragmentPosition.y;
+  float c = ((height/2.0)-floor(height/2.0))*0.3;
+  highp int col_index = int(mod(height/2.0, 3.0));
+  return  clamp(hmap_visualization_colors[col_index].rgb+vec3(c), 0.0, 1.0);
+  #else
+  return vec3(0.5);
+  #endif // defined VISUALIZE_HEIGHT &amp;&amp; defined EDITOR_MODE
+}
+
+vec4 Overlay()
+{
   #ifdef EDITOR_MODE
   vec2 fixed_UV = (UV*4);
   fixed_UV.y = GridSize-fixed_UV.y;
@@ -757,7 +790,7 @@ void main(){
   flags &amp;= CurrentFlags;
   int cur_flag = 1;
   int flags_found = 0;
-  vec4 ov_col_final = vec4(0.0, 0.0, 0.0, 0.0);
+  vec4 ov_col_final = vec4(0.0);
   for(int i = 0; i &lt; 16; ++i)
   {
     if((flags &amp; cur_flag) != 0)
@@ -769,23 +802,99 @@ void main(){
   }
   ov_col_final.rgb = ov_col_final.rgb / sqrt(max(1.0, float(flags_found)));
   ov_col_final.a = ov_col_final.a / (1.0 + ov_col_final.a);
-  color = mix(color, vec4(ov_col_final.rgb, 1.0), ov_col_final.a);
-
-  // grid
-  #ifdef TONEMAPPING
-    color = mix(color, vec4((GridColor*2.0).xyz, GridColor.a), gridintensity);
-  #endif //TONEMAPPING
-  #ifndef TONEMAPPING
-    color = mix(color, GridColor, gridintensity);
-  #endif //TONEMAPPING
+  return ov_col_final;
+  #else
+  return vec4(0.0);
   #endif //EDITOR_MODE
-  
+}
+
+// FogFactor() tells how much this fragment should be obscured by fog color (0.0 - no fog, 1.0 - max fog)
+float FogFactor()
+{
   #ifdef SHADING
-  // fog calculation
-  float fog_factor = pow(clamp((dist - FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
-  color = mix(color, vec4(FogColor.rgb, 1.0), fog_factor);
+  return pow(clamp((Depth()-FogStart)/(FogEnd-FogStart), 0.0, 1.0), FogExponent);
+  #else
+  return 0.0;
   #endif //SHADING
-  color.a = 1.0;
+}
+
+// FogColor() tells the object fog color at this fragment
+vec3 Fog()
+{
+  #ifdef SHADING
+  return FogColor.rgb;
+  #else
+  return vec3(0.0, 0.0, 0.0);
+  #endif //SHADING
+}
+
+// Sky() tells the color of the sky for this fragment
+vec3 Sky()
+{
+  #if defined SHADING || defined SHADOWS
+  return AmbientColor.rgb;
+  #else
+  return vec3(0.0, 0.0, 0.0);
+  #endif //defined SHADING || defined SHADOWS
+}
+
+// Sunlight() tells the sun color for this fragment
+vec3 Sun()
+{
+  return SunColor.rgb;
+}
+
+// Specular() tells the object specular color for this fragment
+vec3 Specular()
+{
+  return vec3(0.0, 0.0, 0.0);
+}
+
+// RimFactor() tells how directed this fragment normal is to the camera view direction (0.0 - pointing at the camera, 1.0 - pointing to the sides)
+float RimFactor()
+{
+  #ifdef QUALITY_SHADING
+  vec3 viewDir = normalize(ViewPos - fragmentPosition);
+  return min(1.0 - dot(viewDir, normalize(fragmentNormalTangentSpace)), 1.0);
+  #else
+  return 0.0;
+  #endif //QUALITY_SHADING
+}
+
+// RimColor() tells the rim color at this fragment
+vec3 RimColor()
+{
+  #ifdef QUALITY_SHADING
+  #ifdef TONEMAPPING
+  return Fog() * 0.7;
+  #else
+  return Fog();
+  #endif //TONEMAPPING
+  #else
+  return vec3(0.0, 0.0, 0.0);
+  #endif //QUALITY_SHADING
+}
+
+void main()
+{
+  #if defined VISUALIZE_HEIGHT &amp;&amp; defined EDITOR_MODE
+  color = vec4(mix(HeightVis(), GridCol(), GridIntensity()), 1.0);
+  return;
+  #endif // defined VISUALIZE_HEIGHT &amp;&amp; defined EDITOR_MODE
+  
+  vec4 ov_col = Overlay();
+  #ifdef TONEMAPPING
+  vec3 out_color = Diffuse() * (Sky() + Sun() * Shade() + RimColor() * pow(RimFactor(), 3.0));
+  #else
+  vec3 out_color = Diffuse() * mix(mix(Sky(), Sun(), Shade()), RimColor(), pow(RimFactor(), 3.0));
+  out_color = clamp(out_color, 0.0, 1.0);
+  #endif //TONEMAPPING
+  
+  out_color = mix(out_color, ov_col.rgb, ov_col.a);
+  out_color = mix(out_color, GridCol(), GridIntensity());
+  out_color = mix(out_color, Fog(), FogFactor());
+  
+  color = vec4(out_color, 1.0);
 }</value>
   </data>
   <data name="fshader_hmap_depth_prepass" xml:space="preserve">
@@ -1155,6 +1264,9 @@ out vec4 fragmentPositionLightSpace;
 
 #ifdef SHADING
 out float vBrightness;
+#ifdef QUALITY_SHADING
+out vec3 fragmentNormalTangentSpace;
+#endif //QUALITY_SHADING
 #endif //SHADING
 
 // Values that stay constant for the whole mesh.
@@ -1186,7 +1298,7 @@ vec3 GetVertexNormal(vec2 grid_pos)
 #endif //SHADING
 
 #if defined NO_TEXTURE || defined TEXTURE_LOD
-uniform sampler2D TileMap;
+uniform usampler2D TileMap;
 layout(std140) uniform TileColors
 {
   vec4 tile_col[255];
@@ -1221,6 +1333,9 @@ void main()
   #ifdef SHADING
   vec3 vNormal = GetVertexNormal(vertexPosition_modelspace.xz);
   vBrightness = clamp(dot(vNormal, SunDirection), 0.0, 1.0);
+  #ifdef QUALITY_SHADING
+  fragmentNormalTangentSpace = vNormal;
+  #endif //QUALITY_SHADING
   #endif //SHADING
   
   UV = vertexPosition_modelspace.xz/4;
@@ -1229,7 +1344,7 @@ void main()
   vec2 map_uv = floor(UV*4);
 
   map_uv.y = GridSize-map_uv.y-1;
-  int t = int(texture(TileMap, map_uv/GridSize).b*255);
+  uint t = texture(TileMap, map_uv/GridSize).b;
   fragmentColor = tile_col[t].rgb;
   #endif //defined NO_TEXTURE || defined TEXTURE_LOD
 }</value>
@@ -1308,7 +1423,7 @@ uniform vec3 SunDirection;
 
 #ifdef QUALITY_SHADING
 uniform int GridSize;
-uniform sampler2D GroundMap;
+uniform usampler2D GroundMap;
 layout(std140) uniform TileColors
 {
   vec4 tile_col[255];
@@ -1328,7 +1443,7 @@ void main(){
   
   vec2 map_uv = floor(fragmentPositionGroundSpace);
   map_uv.y = GridSize-map_uv.y-1;
-  int t = int(texture(GroundMap, (map_uv+vec2(0, 0))/GridSize).b*255);
+  uint t = texture(GroundMap, (map_uv+vec2(0, 0))/GridSize).b;
   fragmentGroundAmbientColor = pow(tile_col[t], vec4(2.2));
   #endif //QUALITY_SHADING
   
@@ -1392,6 +1507,9 @@ out vec4 fragmentPositionLightSpace;
 
 #ifdef SHADING
 out float vBrightness;
+#ifdef QUALITY_SHADING
+out vec3 fragmentNormalTangentSpace;
+#endif //QUALITY_SHADING
 #endif //SHADING
 
 // Values that stay constant for the whole mesh.
@@ -1423,7 +1541,7 @@ vec3 GetVertexNormal(vec2 grid_pos)
 #endif //SHADING
 
 #if defined NO_TEXTURE || defined TEXTURE_LOD
-uniform sampler2D TileMap;
+uniform usampler2D TileMap;
 layout(std140) uniform TileColors
 {
   vec4 tile_col[255];
@@ -1447,6 +1565,9 @@ void main(){
   #ifdef SHADING
   vec3 vNormal = GetVertexNormal(vertexPosition_modelspace.xz);
   vBrightness = clamp(dot(vNormal, SunDirection), 0.0, 1.0);
+  #ifdef QUALITY_SHADING
+  fragmentNormalTangentSpace = vNormal;
+  #endif //QUALITY_SHADING
   #endif //SHADING
   
   UV = vertexPosition_modelspace.xz/4;
@@ -1454,7 +1575,7 @@ void main(){
   #if defined NO_TEXTURE || defined TEXTURE_LOD
   vec2 map_uv = floor(UV*4);
   map_uv.y = GridSize-map_uv.y-1;
-  int t = int(texture(TileMap, map_uv/GridSize).b*255);
+  uint t = texture(TileMap, map_uv/GridSize).b;
   fragmentColor = tile_col[t].rgb;
   #endif //defined NO_TEXTURE || defined TEXTURE_LOD
 }</value>
@@ -1621,7 +1742,7 @@ uniform vec3 SunDirection;
 
 #ifdef QUALITY_SHADING
 uniform int GridSize;
-uniform sampler2D GroundMap;
+uniform usampler2D GroundMap;
 layout(std140) uniform TileColors
 {
   vec4 tile_col[255];
@@ -1684,7 +1805,7 @@ void main(){
   
   vec2 map_uv = floor(fragmentPositionGroundSpace);
   map_uv.y = GridSize-map_uv.y-1;
-  int t = int(texture(GroundMap, (map_uv+vec2(0, 0))/GridSize).b*255);
+  uint t = texture(GroundMap, (map_uv+vec2(0, 0))/GridSize).b;
   fragmentGroundAmbientColor = pow(tile_col[t], vec4(2.2));
   #endif //QUALITY_SHADING
   

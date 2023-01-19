@@ -120,6 +120,9 @@ namespace SFEngine.Properties {
         ///#endif //SHADOWS
         ///#ifdef SHADING
         ///in float vBrightness;
+        ///#ifdef QUALITY_SHADING
+        ///in vec3 fragmentNormalTangentSpace;
+        ///#endif //QUALITY_SHADING
         ///#endif //SHADING
         ///
         ///out vec4 color;
@@ -128,11 +131,7 @@ namespace SFEngine.Properties {
         ///uniform vec4 SunColor;
         ///#ifdef EDITOR_MODE
         ///uniform vec4 GridColor;
-        ///uniform int CurrentFlags;
-        ///#endif //EDITOR_MODE
-        ///#ifdef SHADING
-        ///uniform vec4 FogColor;
-        ///uniform float FogSt [rest of string was truncated]&quot;;.
+        ///uniform int CurrentFl [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string fshader_hmap {
             get {
@@ -462,17 +461,14 @@ namespace SFEngine.Properties {
         ///
         ///#ifdef SHADING
         ///out float vBrightness;
+        ///#ifdef QUALITY_SHADING
+        ///out vec3 fragmentNormalTangentSpace;
+        ///#endif //QUALITY_SHADING
         ///#endif //SHADING
         ///
         ///// Values that stay constant for the whole mesh.
         ///
-        ///uniform int GridSize;
-        ///uniform sampler2D HeightMap;
-        ///uniform mat4 VP;
-        ///
-        ///#ifdef SHADOWS
-        ///uniform mat4 LSM;
-        ///# [rest of string was truncated]&quot;;.
+        ///uniform int GridSize; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string tesshader_hmap_tesselated {
             get {
@@ -570,11 +566,9 @@ namespace SFEngine.Properties {
         ///
         ///#ifdef SHADING
         ///out float vBrightness;
-        ///#endif //SHADING
-        ///
-        ///// Values that stay constant for the whole mesh.
-        ///
-        ///unifo [rest of string was truncated]&quot;;.
+        ///#ifdef QUALITY_SHADING
+        ///out vec3 fragmentNormalTangentSpace;
+        ///#endif //QUALIT [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string vshader_hmap {
             get {

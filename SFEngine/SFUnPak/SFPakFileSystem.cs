@@ -68,7 +68,7 @@ namespace SFEngine.SFUnPak
         }
     }
 
-    public class SFPakEntryHeader
+    public struct SFPakEntryHeader
     {
         public int size;
         public int data_offset;
@@ -126,12 +126,20 @@ namespace SFEngine.SFUnPak
 
     public class SFPakFileSystem : IDisposable
     {
-        string pak_fname;
-        FileStream pak_file = null;
-        BinaryReader pak_stream = null;
-        SFPakHeader pak_header = new SFPakHeader();
-        List<SFPakEntryHeader> file_headers = new List<SFPakEntryHeader>();
-        Dictionary<string, Dictionary<string, SFPakFileSpan>> file_spans = new Dictionary<string, Dictionary<string, SFPakFileSpan>>();
+        public string pak_fname;                  // filename of the current pakfile
+        FileStream pak_file = null;        // filestream for the current pakfile
+        BinaryReader pak_stream = null;    // reader for the current pakfile
+        SFPakHeader pak_header = new SFPakHeader();        // header containing info about the current pakfile
+        SFPakEntryHeader[] file_headers = null;        // list of all entries in the pakfile 
+
+        // file_spans: (string, folder); folder: (string, file)
+        // essentially, two level structure: first level is folders, second level is files in the folder
+        // this imposes certain constraints: pakfile can only contain files inside a folder
+        // however, folders themselves can be nested, example: "mesh" and "mesh\\mesh2" are on the same level, but "mesh" contains "mesh\\mesh2"
+        SFPakFileSpan[][] file_spans = null;
+        Dictionary<string, int> dir_name_to_folder = null;
+        List<Dictionary<string, int>> file_name_to_file = null;
+        
         uint name_offset = 0;
         uint data_offset = 0;
 
@@ -143,52 +151,12 @@ namespace SFEngine.SFUnPak
         public void Dispose()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Dispose() called, filename: " + pak_fname);
-            foreach (var dict in file_spans.Values)
-            {
-                dict.Clear();
-            }
 
-            file_spans.Clear();
-            file_headers.Clear();
+            file_spans = null;
+            dir_name_to_folder = null;
+            file_name_to_file = null;
+            file_headers = null;
             Close();
-        }
-
-        // returns oath directory, given path string
-        // no last backslash
-        string GetPathDirectory(string path)
-        {
-            int index = path.LastIndexOf('\\');
-            if (index == -1)
-            {
-                return "";
-            }
-
-            return path.Substring(0, index);
-        }
-
-        // returns path filename, given path string
-        string GetPathFilename(string path)
-        {
-            int index = path.LastIndexOf('\\');
-            if (index == -1)
-            {
-                return "";
-            }
-
-            return path.Substring(index + 1);
-        }
-
-        // returns path file extension, given path string
-        //with dot
-        string GetPathExtension(string path)
-        {
-            int index = path.LastIndexOf('.');
-            if (index == -1)
-            {
-                return "";
-            }
-
-            return path.Substring(index);
         }
 
         // initializes pak structure for use from memory
@@ -229,38 +197,60 @@ namespace SFEngine.SFUnPak
                     pak_header.file_size.ToString(),
                     pak_header.data_start_offset.ToString()));
 
+            file_headers = new SFPakEntryHeader[pak_header.n_entries];
             int ii = 0;
             try
             {
                 for (ii = 0; ii < pak_header.n_entries; ii++)
                 {
-                    file_headers.Add(new SFPakEntryHeader());
                     file_headers[ii].get(pak_stream);
                 }
             }
             catch (Exception)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFPakFileSystem.Init(): Error loading filenames (file index " + ii.ToString() + ")");
+                fs.Close();
+                file_headers = null;
+                return -4;
             }
 
             data_offset = (uint)pak_header.data_start_offset;
-            name_offset = (uint)(92 + 4 * sizeof(int) * file_headers.Count);   //why -4?
+            name_offset = (uint)(92 + 4 * sizeof(int) * file_headers.Length);
+
+            dir_name_to_folder = new Dictionary<string, int>();
+            file_name_to_file = new List<Dictionary<string, int>>();
 
             pak_stream.BaseStream.Position = 0;
-            //retrieve entry names!
 
-            for (int i = 0; i < file_headers.Count; i++)
+            // todo: check if the loops can be sped up based on how folder index and file index behave
+            for (int i = 0; i < file_headers.Length; i++)
             {
                 file_headers[i].name = GetFileName(i, false);
                 file_headers[i].dir_name = GetFileName(i, true);
 
-                if (!file_spans.ContainsKey(file_headers[i].dir_name))
+                if (!dir_name_to_folder.ContainsKey(file_headers[i].dir_name))
                 {
-                    file_spans.Add(file_headers[i].dir_name, new Dictionary<string, SFPakFileSpan>());
+                    file_name_to_file.Add(new Dictionary<string, int>());
+                    dir_name_to_folder.Add(file_headers[i].dir_name, dir_name_to_folder.Count);
                 }
 
-                file_spans[file_headers[i].dir_name].Add(file_headers[i].name, new SFPakFileSpan(file_headers[i].data_offset,
-                                                                                                    file_headers[i].size));
+                int folder_index = dir_name_to_folder[file_headers[i].dir_name];
+                int file_index = file_name_to_file[folder_index].Count;
+                file_name_to_file[folder_index].Add(file_headers[i].name, file_index);
+            }
+
+            file_spans = new SFPakFileSpan[dir_name_to_folder.Count][];
+            foreach(string folder in dir_name_to_folder.Keys)
+            {
+                int folder_index = dir_name_to_folder[folder];
+                file_spans[folder_index] = new SFPakFileSpan[file_name_to_file[folder_index].Count];
+            }
+
+            for(int i = 0; i < file_headers.Length; i++)
+            {
+                int folder_index = dir_name_to_folder[file_headers[i].dir_name];
+                int file_index = file_name_to_file[folder_index][file_headers[i].name];
+                file_spans[folder_index][file_index] = new SFPakFileSpan(file_headers[i].data_offset, file_headers[i].size);
             }
 
             Close();
@@ -323,7 +313,7 @@ namespace SFEngine.SFUnPak
             pak_file = null;
         }
 
-        MemoryStream GetFileBuffer(SFPakFileSpan fspan)
+        byte[] GetFileBuffer(SFPakFileSpan fspan)
         {
             if (Open() != 0)
             {
@@ -333,9 +323,8 @@ namespace SFEngine.SFUnPak
 
             pak_stream.BaseStream.Position = data_offset + fspan.offset;
             Byte[] mem_read = pak_stream.ReadBytes((int)fspan.size);
-            MemoryStream ms = new MemoryStream(mem_read);
 
-            return ms;
+            return mem_read;
         }
 
         // returns a stream of bytes which constitute for a file given file index
@@ -358,22 +347,24 @@ namespace SFEngine.SFUnPak
         }
 
         // returns a stream of bytes which constitute for a file given file name
-        public MemoryStream GetFileBuffer(string fname)
+        public byte[] GetFileBuffer(string fname)
         {
-            string dir_name = GetPathDirectory(fname);
-            string file_name = GetPathFilename(fname);
+            string dir_name = Path.GetDirectoryName(fname);
+            int folder_index;
 
-            if (!file_spans.ContainsKey(dir_name))
+            if (!dir_name_to_folder.TryGetValue(dir_name, out folder_index))
             {
                 return null;
             }
 
-            if (!file_spans[dir_name].ContainsKey(file_name))
+            string file_name = Path.GetFileName(fname);
+            int file_index;
+            if (!file_name_to_file[folder_index].TryGetValue(file_name, out file_index))
             {
                 return null;
             }
 
-            return GetFileBuffer(file_spans[dir_name][file_name]);
+            return GetFileBuffer(file_spans[folder_index][file_index]);
         }
 
         // writes all pak filedata to a file for later use
@@ -382,7 +373,7 @@ namespace SFEngine.SFUnPak
         {
             bw.Write(pak_fname);
             pak_header.WriteToFile(bw);
-            for (int i = 0; i < file_headers.Count; i++)
+            for (int i = 0; i < file_headers.Length; i++)
             {
                 file_headers[i].WriteToFile(bw);
             }
@@ -398,20 +389,41 @@ namespace SFEngine.SFUnPak
         {
             pak_fname = br.ReadString();
             pak_header.ReadFromFile(br);
-            file_headers.Clear();
-            for (int i = 0; i < pak_header.n_entries; i++)
+            file_headers = new SFPakEntryHeader[pak_header.n_entries];
+
+            dir_name_to_folder = new Dictionary<string, int>();
+            file_name_to_file = new List<Dictionary<string, int>>();
+
+            // todo: check if the loops can be sped up based on how folder index and file index behave
+            for (int i = 0; i < file_headers.Length; i++)
             {
-                SFPakEntryHeader eh = new SFPakEntryHeader();
-                eh.ReadFromFile(br);
-                file_headers.Add(eh);
-                if (!file_spans.ContainsKey(eh.dir_name))
+                file_headers[i].ReadFromFile(br);
+
+                if (!dir_name_to_folder.ContainsKey(file_headers[i].dir_name))
                 {
-                    file_spans.Add(eh.dir_name, new Dictionary<string, SFPakFileSpan>());
+                    file_name_to_file.Add(new Dictionary<string, int>());
+                    dir_name_to_folder.Add(file_headers[i].dir_name, dir_name_to_folder.Count);
                 }
 
-                file_spans[eh.dir_name].Add(eh.name, new SFPakFileSpan(eh.data_offset,
-                                                                       eh.size));
+                int folder_index = dir_name_to_folder[file_headers[i].dir_name];
+                int file_index = file_name_to_file[folder_index].Count;
+                file_name_to_file[folder_index].Add(file_headers[i].name, file_index);
             }
+
+            file_spans = new SFPakFileSpan[dir_name_to_folder.Count][];
+            foreach (string folder in dir_name_to_folder.Keys)
+            {
+                int folder_index = dir_name_to_folder[folder];
+                file_spans[folder_index] = new SFPakFileSpan[file_name_to_file[folder_index].Count];
+            }
+
+            for (int i = 0; i < file_headers.Length; i++)
+            {
+                int folder_index = dir_name_to_folder[file_headers[i].dir_name];
+                int file_index = file_name_to_file[folder_index][file_headers[i].name];
+                file_spans[folder_index][file_index] = new SFPakFileSpan(file_headers[i].data_offset, file_headers[i].size);
+            }
+
             name_offset = br.ReadUInt32();
             data_offset = br.ReadUInt32();
             return 0;
@@ -430,17 +442,24 @@ namespace SFEngine.SFUnPak
             }
             else
             {
-                foreach (SFPakEntryHeader eh in file_headers)
+                foreach(string folder in dir_name_to_folder.Keys)
                 {
-                    if ((eh.dir_name.StartsWith(path)) && (GetPathExtension(eh.name) == extname))
+                    if(folder.StartsWith(path))
                     {
-                        if (path != eh.dir_name)
+                        int folder_index = dir_name_to_folder[folder];
+                        foreach(string file in file_name_to_file[folder_index].Keys)
                         {
-                            names.Add(eh.dir_name.Substring(path.Length + 1, eh.dir_name.Length - path.Length - 1) + "\\" + eh.name);
-                        }
-                        else
-                        {
-                            names.Add(eh.name);
+                            if(Path.GetExtension(file) == extname)
+                            {
+                                if (path != folder)
+                                {
+                                    names.Add(folder.Substring(path.Length + 1, folder.Length - path.Length - 1) + "\\" + file);
+                                }
+                                else
+                                {
+                                    names.Add(file);
+                                }
+                            }
                         }
                     }
                 }
@@ -451,11 +470,18 @@ namespace SFEngine.SFUnPak
         public List<string> ListAllWithFilename(string path, string substr)
         {
             List<String> names = new List<string>();
-            foreach (SFPakEntryHeader eh in file_headers)
+            foreach (string folder in dir_name_to_folder.Keys)
             {
-                if ((eh.dir_name == path) && (eh.name.Contains(substr)))
+                if (folder == path)
                 {
-                    names.Add(eh.name);
+                    int folder_index = dir_name_to_folder[folder];
+                    foreach (string file in file_name_to_file[folder_index].Keys)
+                    {
+                        if (file.Contains(substr))
+                        {
+                            names.Add(file);
+                        }
+                    }
                 }
             }
             return names;
@@ -464,11 +490,16 @@ namespace SFEngine.SFUnPak
         public List<string> ListAllInDirectory(string dir)
         {
             List<String> names = new List<string>();
-            foreach (SFPakEntryHeader eh in file_headers)
+            foreach (string folder in dir_name_to_folder.Keys)
             {
-                if (eh.dir_name == dir)
+                if (folder == dir)
                 {
-                    names.Add(eh.name);
+                    int folder_index = dir_name_to_folder[folder];
+                    foreach (string file in file_name_to_file[folder_index].Keys)
+                    {
+                        names.Add(file);
+                    }
+                    break;
                 }
             }
             return names;

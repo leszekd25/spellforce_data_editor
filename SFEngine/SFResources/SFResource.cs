@@ -16,7 +16,7 @@ namespace SFEngine.SFResources
         public int DeviceSize { get; set; } = 0;
         public string Name { get; set; } = "";
 
-        public virtual int Load(MemoryStream ms, object custom_data) { return -1; }
+        public virtual int Load(byte[] data, int offset, object custom_data) { return -1; }
         public virtual void Init() { }
         public virtual void Dispose() { }
     }

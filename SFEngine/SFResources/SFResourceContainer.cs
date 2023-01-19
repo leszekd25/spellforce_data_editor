@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SFEngine.SFUnPak;
 
 namespace SFEngine.SFResources
 {
@@ -19,6 +20,8 @@ namespace SFEngine.SFResources
         Dictionary<string, bool> remove_when_unused = new Dictionary<string, bool>();
         string prefix_path = "";
         string[] suffix_extensions = null;
+        int[] paks_to_search = null;
+        HashSet<string> filesystem_resources = new HashSet<string>();
 
         public int RAMSize
         {
@@ -46,16 +49,46 @@ namespace SFEngine.SFResources
         {
         }
 
-        public SFResourceContainer(string p, string s)
+        public SFResourceContainer(string p, string s, IEnumerable<string> paks)
         {
             cont = new Dictionary<string, T>();
             prefix_path = p;
             suffix_extensions = s.Replace("|", " ").Split(' ');
+
+            List<int> pak_list = new List<int>();
+            foreach(string pf in paks)
+            {
+                int pak_index;
+                if (!SFUnPak.SFUnPak.pak_map.filename_to_pak.TryGetValue(pf, out pak_index))
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer(): Cound not find pak file " + pf);
+                    continue;
+                }
+                pak_list.Add(pak_index);
+            }
+            paks_to_search = pak_list.ToArray();
         }
 
         public void SetPrefixPath(string p)
         {
             prefix_path = p;
+        }
+
+        public int ListAllFilesystemResources()
+        {
+            filesystem_resources.Clear();
+            string dir = SFUnPak.SFUnPak.game_directory_name + "\\" + prefix_path;
+            if (Directory.Exists(dir))
+            {
+                foreach(string e in suffix_extensions)
+                {
+                    foreach (string s in Directory.EnumerateFiles(dir, "*"+e))
+                    {
+                        filesystem_resources.Add(s);
+                    }
+                }
+            }
+            return filesystem_resources.Count;
         }
 
         // name of the resource in the pak files
@@ -70,7 +103,8 @@ namespace SFEngine.SFResources
 
             // determine if resource exists in pak files, given the extension types
             string res_to_load = "";
-            MemoryStream ms = null;
+            string full_res_name = "";
+            byte[] data = null;
             foreach (string ext in suffix_extensions)
             {
                 res_to_load = rname;
@@ -78,16 +112,36 @@ namespace SFEngine.SFResources
                 {
                     res_to_load += ext;
                 }
+                full_res_name = prefix_path + "\\" + res_to_load;
 
-                ms = SFUnPak.SFUnPak.LoadFileFind(prefix_path + "\\" + res_to_load, source);
-                if (ms != null)
+                if((source & FileSource.FILESYSTEM) == FileSource.FILESYSTEM)
+                {
+                    string real_path = SFUnPak.SFUnPak.game_directory_name + "\\" + full_res_name;
+                    if (filesystem_resources.Contains(real_path))
+                    {
+                        FileStream fs = new FileStream(real_path, FileMode.Open, FileAccess.Read);
+                        BinaryReader br = new BinaryReader(fs);
+                        data = br.ReadBytes((int)br.BaseStream.Length);
+                        br.Close();
+                    }
+                }
+                if(data != null)
                 {
                     break;
                 }
 
-                LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Could not find resource " + prefix_path + "\\" + res_to_load);
+                if ((source & FileSource.PAK) == FileSource.PAK)
+                {
+                    data = SFUnPak.SFUnPak.LoadFileFind(full_res_name, paks_to_search);
+                }
+                if (data != null)
+                {
+                    break;
+                }
+
+                LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Could not find resource " + full_res_name);
             }
-            if (ms == null)
+            if (data == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): None of the suffix extensions matched the given resource");
                 return -2;
@@ -98,8 +152,8 @@ namespace SFEngine.SFResources
             string prev_res = SFResourceManager.current_resource;
             SFResourceManager.current_resource = rname;
             T resource = new T();
-            resource.StorageSize = (int)ms.Length;
-            int res_code = resource.Load(ms, custom_data);
+            resource.StorageSize = data.Length;
+            int res_code = resource.Load(data, 0, custom_data);
             SFResourceManager.current_resource = prev_res;
             //end of stack
 
@@ -115,42 +169,6 @@ namespace SFEngine.SFResources
             cont.Add(rname, resource);
             reference_count.Add(rname, 1);
             remove_when_unused.Add(rname, true);
-            ms.Close();
-            return 0;
-        }
-
-        // memorystream with data, name for the resource
-        public int LoadFromMemory(MemoryStream ms, string rname, object custom_data = null)
-        {
-            if (cont.ContainsKey(rname))
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): Resource " + rname + " already exists!");
-                throw new Exception("Can't load directly from memory: Resource already exists!");
-            }
-            LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): loading resource " + rname + " from memory");
-            if (ms == null)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): Datastream not specified!");
-                return -2;
-            }
-            //resource loading stack
-            string prev_res = SFResourceManager.current_resource;
-            SFResourceManager.current_resource = rname;
-            T resource = new T();
-            int res_code = resource.Load(ms, custom_data);
-            SFResourceManager.current_resource = prev_res;
-            //end of stack
-            if (res_code != 0)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.LoadFromMemory(): Could not load resource " + rname + " from memory!");
-                return res_code;
-            }
-
-            resource.Init();
-            resource.Name = rname;
-            cont.Add(rname, resource);
-            reference_count.Add(rname, 1);
-            ms.Close();
             return 0;
         }
 
@@ -245,7 +263,7 @@ namespace SFEngine.SFResources
                 }
 
                 extract_fname += rname + ext;
-                if (SFUnPak.SFUnPak.ExtractFileFind(prefix_path + "\\" + rname + ext, extract_fname, SFUnPak.FileSource.ANY) == 0)
+                if (SFUnPak.SFUnPak.ExtractFileFind(prefix_path + "\\" + rname + ext, extract_fname, paks_to_search) == 0)
                 {
                     return 0;
                 }

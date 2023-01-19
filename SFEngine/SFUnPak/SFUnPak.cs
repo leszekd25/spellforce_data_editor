@@ -24,18 +24,7 @@ namespace SFEngine.SFUnPak
     {
         static public string game_directory_name { get; private set; } = "";
         static public bool game_directory_specified { get; private set; } = false;
-        static List<string> paks = new List<string>();
-        static SFPakMap pak_map = new SFPakMap();
-
-        static public int PakMap_SaveData(string fname)
-        {
-            return pak_map.SaveData(fname);
-        }
-
-        static public int PakMap_LoadData(string fname)
-        {
-            return pak_map.LoadData(fname);
-        }
+        static public SFPakMap pak_map = new SFPakMap();
 
         // generates pak data given game directory to retrieve pak files from
         // returns 0 if succeeded
@@ -73,7 +62,7 @@ namespace SFEngine.SFUnPak
             game_directory_name = dname;
 
             pak_map.Clear();
-            paks.Clear();
+            List<string> paks = new List<string>();
 
             string[] files = Directory.GetFiles(dname + "\\pak", "*.pak");
             foreach (string file in files)
@@ -115,11 +104,7 @@ namespace SFEngine.SFUnPak
             {
                 LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Failed to load pak map, generating new one");
 
-                foreach (string file in files)
-                {
-                    pak_map.AddPak(file);
-                }
-
+                pak_map.AddPaks(files);
                 pak_map.SaveData("pakdata.dat");
             }
             game_directory_specified = true;
@@ -129,7 +114,7 @@ namespace SFEngine.SFUnPak
         // extract file from pak to a given path
         static public int ExtractFileFrom(string pak_name, string filename, string new_name)
         {
-            MemoryStream ms = LoadFileFrom(pak_name, filename);
+            byte[] ms = LoadFileFrom(pak_name, filename);
             if (ms == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.ExtractFileFrom(): Could not load file! pak_name: " + pak_name + ", filename: " + filename);
@@ -162,34 +147,38 @@ namespace SFEngine.SFUnPak
                 return -2;
             }
 
-            new_file.Write(ms.ToArray(), 0, (int)ms.Length);
-            ms.Close();
+            new_file.Write(ms, 0, ms.Length);
             new_file.Close();
 
             return 0;
         }
 
+        // loads file from pak to memory given its index
+        // returns stream of bytes which constitute for that file
+        static public byte[] LoadFileFrom(int pak_index, string filename)
+        {
+            return pak_map.pak_map[pak_index].GetFileBuffer(filename);
+        }
+
         // loads file from pak to memory given its name
         // returns stream of bytes which constitute for that file
-        static public MemoryStream LoadFileFrom(string pak_name, string filename)
+        static public byte[] LoadFileFrom(string pak_name, string filename)
         {
-            SFPakFileSystem fs = pak_map.GetPak(pak_name);
-
-            if (fs == null)
+            int pak_index;
+            if(!pak_map.filename_to_pak.TryGetValue(pak_name, out pak_index))
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.LoadFileFrom(): Could not find pak file " + pak_name);
-
+                LogUtils.Log.Warning(LogUtils.LogSource.SFUnPak, "SFUnPak.LoadFileFrom(): Could not find pak file " + pak_name);
                 return null;
             }
 
-            return fs.GetFileBuffer(filename);
+            return LoadFileFrom(pak_map.filename_to_pak[pak_name], filename);
         }
 
         // searches for a file in paks and extracts it if founs
         // returns if succeeded
-        static public int ExtractFileFind(string filename, string new_name, FileSource source)
+        static public int ExtractFileFind(string filename, string new_name, IEnumerable<int> pakfiles)
         {
-            MemoryStream ms = LoadFileFind(filename, source);
+            byte[] ms = LoadFileFind(filename, pakfiles);
             if (ms == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFUnPak, "SFUnPak.ExtractFileFind(): Could not find file " + filename);
@@ -224,8 +213,7 @@ namespace SFEngine.SFUnPak
                 return -2;
             }
 
-            new_file.Write(ms.ToArray(), 0, (int)ms.Length);
-            ms.Close();
+            new_file.Write(ms, 0, ms.Length);
             new_file.Close();
 
             return 0;
@@ -233,40 +221,39 @@ namespace SFEngine.SFUnPak
 
         // searches for a file in paks and loads it to memory
         // returns stream of bytes which constitute for that file
-        static public MemoryStream LoadFileFind(string filename, FileSource source)
+        static public byte[] LoadFileFind(string filename, IEnumerable<int> pakfiles)
         {
-            MemoryStream ms = null;
+            byte[] ret = null;
 
-            if ((source & FileSource.FILESYSTEM) == FileSource.FILESYSTEM)
+            foreach (int pf in pakfiles)
             {
-                string real_path = game_directory_name + "\\" + filename;
-                if (File.Exists(real_path))
+                ret = LoadFileFrom(pf, filename);
+                if (ret != null)
                 {
-                    FileStream fs = new FileStream(real_path, FileMode.Open, FileAccess.Read);
-                    BinaryReader br = new BinaryReader(fs);
-                    Byte[] data = br.ReadBytes((int)br.BaseStream.Length);
-                    ms = new MemoryStream(data);
-                    br.Close();
+                    break;
                 }
             }
-            if (ms != null)
-                return ms;
+            return ret;
+        }
 
-            if((source & FileSource.PAK) == FileSource.PAK)
+        // searches for a file in paks and loads it to memory
+        // returns stream of bytes which constitute for that file
+        static public byte[] LoadFileFind(string filename, IEnumerable<string> pakfiles)
+        {
+            List<int> pakfile_inds = null;
+            if (pakfiles != null)
             {
-                foreach (string pak in paks)
+                pakfile_inds = new List<int>();
+                foreach (string pf in pakfiles)
                 {
-                    ms = LoadFileFrom(pak, filename);
-                    if (ms != null)
+                    int pak_index;
+                    if (pak_map.filename_to_pak.TryGetValue(pf, out pak_index))
                     {
-                        break;
+                        pakfile_inds.Add(pak_index);
                     }
                 }
             }
-            if (ms != null)
-                return ms;
-
-            return null;
+            return LoadFileFind(filename, pakfile_inds);
         }
 
         static public List<String> ListAllWithExtension(string path, string extname, string[] pak_filter)

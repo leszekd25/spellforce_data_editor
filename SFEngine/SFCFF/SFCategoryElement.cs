@@ -153,7 +153,7 @@ namespace SFEngine.SFCFF
 
     //category element is a single entry from a category
     //this entry can hold different types of data depending on which category it belongs to
-    // supported  types:  byte, sbyte,  ushort, short,  uint,  int, string(byte[]), SFOutlineData
+    //supported  types:  byte, sbyte,  ushort, short,  uint,  int, string(byte[]), SFOutlineData
     public class SFCategoryElement
     {
         public List<object> variants = new List<object>();

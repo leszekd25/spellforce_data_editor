@@ -58,8 +58,9 @@ namespace SFEngine.SF3D
 
         public float max_time { get; private set; } = 0f;
 
-        public override int Load(MemoryStream ms, object custom_data)
+        public override int Load(byte[] data, int offset, object custom_data)
         {
+            MemoryStream ms = new MemoryStream(data, offset, data.Length - offset);
             BinaryReader br = new BinaryReader(ms);
 
             max_time = 0;
@@ -81,14 +82,14 @@ namespace SFEngine.SF3D
                 ba.rotation = new InterpolatedQuaternion(anim_count);
                 for (int j = 0; j < anim_count; j++)
                 {
-                    float[] data = new float[5];
+                    float[] q_data = new float[5];
                     for (int k = 0; k < 5; k++)
                     {
-                        data[k] = br.ReadSingle();
+                        q_data[k] = br.ReadSingle();
                     }
 
-                    Quaternion q = new Quaternion(data[1], data[2], data[3], data[0]);
-                    ba.rotation.Add(q, data[4]);
+                    Quaternion q = new Quaternion(q_data[1], q_data[2], q_data[3], q_data[0]);
+                    ba.rotation.Add(q, q_data[4]);
                 }
 
                 data1 = br.ReadInt32(); data2 = br.ReadSingle(); data3 = br.ReadSingle();
@@ -96,14 +97,14 @@ namespace SFEngine.SF3D
                 ba.position = new InterpolatedVector3(anim_count);
                 for (int j = 0; j < anim_count; j++)
                 {
-                    float[] data = new float[4];
+                    float[] p_data = new float[4];
                     for (int k = 0; k < 4; k++)
                     {
-                        data[k] = br.ReadSingle();
+                        p_data[k] = br.ReadSingle();
                     }
 
-                    Vector3 v = new Vector3(data[0], data[1], data[2]);
-                    ba.position.Add(v, data[3]);
+                    Vector3 v = new Vector3(p_data[0], p_data[1], p_data[2]);
+                    ba.position.Add(v, p_data[3]);
                 }
                 ba.ResolveStatic();
 

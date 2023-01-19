@@ -427,9 +427,9 @@ namespace SFEngine.SF3D
 
 
         // adds mesh to the cache, returns index to the mesh index table, and that index directs to mesh data
-        public int AddMesh(byte[] vertex_data, uint[] element_data)
+        public int AddMesh(byte[] vertex_data, int vertex_data_offset, int vertex_data_count, uint[] element_data)
         {
-            int vertex_count = vertex_data.Length / BytesPerVertex;
+            int vertex_count = vertex_data_count  / BytesPerVertex;
 
             int vertex_offset;
             int element_offset;
@@ -485,7 +485,7 @@ namespace SFEngine.SF3D
                 do_full_element_reload = true;
             }
 
-            Array.Copy(vertex_data, 0, VertexBufferObjectData, vertex_offset * BytesPerVertex, vertex_count * BytesPerVertex);
+            Array.Copy(vertex_data, vertex_data_offset, VertexBufferObjectData, vertex_offset * BytesPerVertex, vertex_data_count);
             Array.Copy(element_data, 0, ElementBufferObjectData, element_offset, element_data.Length);
 
             // defragment if need be

@@ -674,6 +674,12 @@
     <Compile Include="special forms\SQLModifierForm.Designer.cs">
       <DependentUpon>SQLModifierForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="special forms\TextureRepairForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="special forms\TextureRepairForm.Designer.cs">
+      <DependentUpon>TextureRepairForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="special forms\utility_forms\ShowCodeForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -995,6 +1001,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\SQLModifierForm.resx">
       <DependentUpon>SQLModifierForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="special forms\TextureRepairForm.resx">
+      <DependentUpon>TextureRepairForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="special forms\utility_forms\ShowCodeForm.resx">
       <DependentUpon>ShowCodeForm.cs</DependentUpon>

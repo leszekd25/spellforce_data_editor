@@ -18,7 +18,7 @@ namespace SFEngine.SFSound
                 UnloadSound();
             }
 
-            sound_data = new MemoryStream(sound.sound_data);
+            sound_data = new MemoryStream(sound.sound_data, sound.offset, sound.sound_data.Length - sound.offset);
             sound_data.Seek(0, SeekOrigin.Begin);
             sound_loader = new Mp3FileReader(sound_data);
             player = new WaveOutEvent();
@@ -35,7 +35,7 @@ namespace SFEngine.SFSound
                 UnloadSound();
             }
 
-            sound_data = new MemoryStream(sound.sound_data);
+            sound_data = new MemoryStream(sound.sound_data, sound.offset, sound.sound_data.Length - sound.offset);
             sound_data.Seek(0, SeekOrigin.Begin);
             sound_loader = new WaveFileReader(sound_data);
             player = new WaveOutEvent();

@@ -159,7 +159,11 @@ namespace SpellforceDataEditor.special_forms
         // assumes game directory is specified
         private void SF3DManagerForm_Load(object sender, EventArgs e)
         {
-            SFResourceManager.FindAllMeshes();
+            toolsToolStripMenuItem.Visible = false;
+#if DEBUG
+            toolsToolStripMenuItem.Visible = true;
+#endif
+            SFResourceManager.ListAllPakResources();
 
             SFLuaEnvironment.LoadSQL(false);
             if (!SFLuaEnvironment.data_loaded)
@@ -429,7 +433,7 @@ namespace SpellforceDataEditor.special_forms
                     int submodel_count = obj_s1.Mesh.submodels.Length;
                     foreach (var sbm in obj_s1.Mesh.submodels)
                     {
-                        vert_count += sbm.vertex_size / 40;
+                        vert_count += sbm.vertex_data_size / 40;
                         face_count += sbm.indices_size / 12;
                     }
                     ui.SetLabel1("Submodels: " + submodel_count.ToString() + ", vertices: " + vert_count.ToString() + ", faces: " + face_count.ToString());
@@ -1393,6 +1397,12 @@ namespace SpellforceDataEditor.special_forms
         {
             ExtractionSettingsForm esf = new ExtractionSettingsForm();
             esf.ShowDialog();
+        }
+
+        private void textureRepairToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TextureRepairForm trf = new TextureRepairForm();
+            trf.ShowDialog();
         }
 
         private void ButtonToggleFloor_Click(object sender, EventArgs e)

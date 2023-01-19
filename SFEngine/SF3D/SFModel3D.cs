@@ -21,7 +21,8 @@ namespace SFEngine.SF3D
         public int cache_index = Utility.NO_INDEX;
 
         byte[] vertex_data = null;     // 12+12+4+8+4 (empty) = 40 bytes per vertex
-        public int vertex_size;
+        public int vertex_data_offset;
+        public int vertex_data_size;
         uint[] face_indices = null;
         public int indices_size;
 
@@ -33,17 +34,15 @@ namespace SFEngine.SF3D
 
         public void Init()
         {
-            cache_index = Cache.AddMesh(vertex_data, face_indices);
-            vertex_size = vertex_data.Length;
+            cache_index = Cache.AddMesh(vertex_data, vertex_data_offset, vertex_data_size, face_indices);
             vertex_data = null;
-            indices_size = face_indices.Length * 4;
             face_indices = null;
 
-            DeviceSize = vertex_size + indices_size;
+            DeviceSize = vertex_data_size + indices_size;
             RAMSize = 0;
         }
 
-        public int Load(BinaryReader br)
+        public int Load(BinaryReader br, byte[] data, int offset)
         {
             int vcount, fcount;
             vcount = br.ReadInt32();
@@ -56,19 +55,28 @@ namespace SFEngine.SF3D
             }
 
             // vertex_data taken directly from file: vertices, normals, colors, uvs
-            vertex_data = br.ReadBytes(vcount * 40);
+            vertex_data = data;
+            vertex_data_size = vcount * 40;
+            vertex_data_offset = (int)(offset + br.BaseStream.Position);
+            br.BaseStream.Position += vertex_data_size;
 
             face_indices = new uint[fcount * 3];
-
-            for (int j = 0; j < fcount; j++)
+            unsafe
             {
-                for (int k = 0; k < 3; k++)
+                fixed(byte* pdata = data)
                 {
-                    face_indices[j * 3 + k] = br.ReadUInt16();
+                    int face_offset = vertex_data_offset + vertex_data_size;
+                    for (int j = 0; j < fcount; j++)
+                    {
+                        for (int k = 0; k < 3; k++)
+                        {
+                            face_indices[j * 3 + k] = (uint)(*(ushort*)(pdata + face_offset + (j * 4 + k) * 2));
+                        }
+                    }
                 }
-
-                br.ReadUInt16();
             }
+            indices_size = face_indices.Length * 4;
+            br.BaseStream.Position += fcount * 8;
 
             br.ReadUInt16();
 
@@ -150,6 +158,8 @@ namespace SFEngine.SF3D
                     }
                 }
             }
+            vertex_data_offset = 0;
+            vertex_data_size = vertex_data.Length;
 
             face_indices = _indices;
             if (_material == null)
@@ -233,8 +243,9 @@ namespace SFEngine.SF3D
         public int MatrixOffset = 0;             // offset into MeshCache.MatrixData array  
         public int MatrixCount = 0;              // number of matrices used; CurrentMatrixIndex stops here
 
-        public override int Load(MemoryStream ms, object custom_data)
+        public override int Load(byte[] data, int offset, object custom_data)
         {
+            MemoryStream ms = new MemoryStream(data, offset, data.Length - offset);
             BinaryReader br = new BinaryReader(ms);
 
             ushort[] header = new ushort[4];
@@ -250,7 +261,7 @@ namespace SFEngine.SF3D
             for (int i = 0; i < modelnum; i++)
             {
                 SFSubModel3D sbm = new SFSubModel3D();
-                int return_code = sbm.Load(br);
+                int return_code = sbm.Load(br, data, offset);
                 if (return_code == 1)
                 {
                     LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModel3D.Load(): Submodel ID " + i.ToString() + " was empty, skipping");

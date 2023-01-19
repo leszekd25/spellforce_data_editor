@@ -47,8 +47,9 @@ namespace SFEngine.SF3D
             return vec;
         }
 
-        public override int Load(MemoryStream ms, object custom_data)
+        public override int Load(byte[] data, int offset, object custom_data)
         {
+            MemoryStream ms = new MemoryStream(data, offset, data.Length - offset);
             StreamReader sr = new StreamReader(ms);
 
             Vector3[] bone_pos = null;

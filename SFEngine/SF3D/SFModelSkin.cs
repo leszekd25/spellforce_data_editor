@@ -39,7 +39,7 @@ namespace SFEngine.SF3D
 
         public void Init()
         {
-            cache_index = Cache.AddMesh(vertex_data, face_indices);
+            cache_index = Cache.AddMesh(vertex_data, 0, vertex_data.Length, face_indices);
             vertex_size = vertex_data.Length;
             vertex_data = null;
             indices_size = face_indices.Length * 4;
@@ -152,8 +152,9 @@ namespace SFEngine.SF3D
             }
         }
 
-        public override int Load(MemoryStream ms, object custom_data)
+        public override int Load(byte[] data, int offset, object custom_data)
         {
+            MemoryStream ms = new MemoryStream(data, offset, data.Length - offset);
             // load BSI
 
             SFBoneIndex bsi = null;

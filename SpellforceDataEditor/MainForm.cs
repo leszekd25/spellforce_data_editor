@@ -60,6 +60,7 @@ namespace SpellforceDataEditor
             // check if data loaded from settings
             if (SFUnPak.game_directory_specified)
             {
+                SFEngine.SFResources.SFResourceManager.ListAllFilesystemResources();
                 LabelIsSpecifiedGameDir.Text = "Game directory:\r\nSpecified";
             }
             else
@@ -132,6 +133,7 @@ namespace SpellforceDataEditor
                 int result = SFUnPak.SpecifyGameDirectory(GameDirDialog.SelectedPath);
                 if (result == 0)
                 {
+                    SFEngine.SFResources.SFResourceManager.ListAllFilesystemResources();
                     SFEngine.Settings.GameDirectory = GameDirDialog.SelectedPath;
                     LabelIsSpecifiedGameDir.Text = "Game directory:\r\nSpecified";
                     SFEngine.Settings.Save();
