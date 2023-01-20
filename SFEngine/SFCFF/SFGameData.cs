@@ -326,6 +326,10 @@ namespace SFEngine.SFCFF
                     for (int i = 0; i < cat.Value.GetElementCount(); i++)
                     {
                         cat.Value.element_status.Add(SFCategoryElementStatus.UNCHANGED);
+                        if(cat.Value.category_allow_multiple)
+                        {
+                            cat.Value.element_lists[i].SetStatusAll(SFCategoryElementStatus.UNCHANGED);
+                        }
                     }
                 }
 
@@ -346,6 +350,10 @@ namespace SFEngine.SFCFF
                     for (int i = 0; i < cat2.GetElementCount(); i++)
                     {
                         cat.Value.element_status.Add(SFCategoryElementStatus.ADDED);
+                        if (cat.Value.category_allow_multiple)
+                        {
+                            cat.Value.element_lists[i].SetStatusAll(SFCategoryElementStatus.ADDED);
+                        }
                     }
                 }
                 else if (cat2 == null)
@@ -353,6 +361,10 @@ namespace SFEngine.SFCFF
                     for (int i = 0; i < cat1.GetElementCount(); i++)
                     {
                         cat.Value.element_status.Add(SFCategoryElementStatus.REMOVED);
+                        if (cat.Value.category_allow_multiple)
+                        {
+                            cat.Value.element_lists[i].SetStatusAll(SFCategoryElementStatus.REMOVED);
+                        }
                     }
                 }
                 else
