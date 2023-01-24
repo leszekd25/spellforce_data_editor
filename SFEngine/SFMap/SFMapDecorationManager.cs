@@ -88,10 +88,10 @@ namespace SFEngine.SFMap
                 dec_node_i.SetParent(dec.node);
 
                 OpenTK.Vector2 offset = new OpenTK.Vector2(MathUtils.Randf(-0.4f, 0.4f), MathUtils.Randf(-0.4f, 0.4f));
-                dec_node_i.SetPosition(new OpenTK.Vector3(
+                dec_node_i.Position = new OpenTK.Vector3(
                 (position.x % SFMapHeightMapMesh.CHUNK_SIZE) + offset.X,
                 map.heightmap.GetRealZ(new OpenTK.Vector2(position.x + offset.X, map.height - position.y - 1 - offset.Y)),
-                ((map.height - position.y - 1) % SFMapHeightMapMesh.CHUNK_SIZE) - offset.Y));
+                ((map.height - position.y - 1) % SFMapHeightMapMesh.CHUNK_SIZE) - offset.Y);
 
                 dec_node_i.SetAnglePlane(MathUtils.Rand() % 360);
                 dec_node_i.Scale = new OpenTK.Vector3(100 / 128f);
@@ -151,10 +151,10 @@ namespace SFEngine.SFMap
                 dec_node_i.SetParent(d.node);
 
                 OpenTK.Vector2 offset = new OpenTK.Vector2(MathUtils.Randf(-0.4f, 0.4f), MathUtils.Randf(-0.4f, 0.4f));
-                dec_node_i.SetPosition(new OpenTK.Vector3(
+                dec_node_i.Position = new OpenTK.Vector3(
                 (d.grid_position.x % SFMapHeightMapMesh.CHUNK_SIZE) + offset.X,
                 map.heightmap.GetRealZ(new OpenTK.Vector2(d.grid_position.x + offset.X, map.height - d.grid_position.y - 1 - offset.Y)),
-                ((map.height - d.grid_position.y - 1) % SFMapHeightMapMesh.CHUNK_SIZE) - offset.Y));
+                ((map.height - d.grid_position.y - 1) % SFMapHeightMapMesh.CHUNK_SIZE) - offset.Y);
 
                 dec_node_i.SetAnglePlane(MathUtils.Rand() % 360);
                 dec_node_i.Scale = new OpenTK.Vector3(100 / 128f);

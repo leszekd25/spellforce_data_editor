@@ -81,7 +81,7 @@ namespace SFEngine.SFMap
         {
             float _x = ((int)(center_pos.X / 16)) * 16;
             float _z = ((int)(center_pos.Z / 16)) * 16;
-            ocean_obj.SetPosition(new Vector3(_x, 3, _z));
+            ocean_obj.Position = new Vector3(_x, 3, _z);
         }
 
         public void Dispose()

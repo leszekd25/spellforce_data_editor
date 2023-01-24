@@ -381,9 +381,9 @@ vec3 RimColor()
 {
   #ifdef QUALITY_SHADING
   #ifdef TONEMAPPING
-  return mix(Sun(), GroundLight()*GroundFactor() * Sky(), GroundFactor());
+  return max(Sun(), Fog()) * 0.7;
   #else
-  return mix(Sun(), GroundLight()*GroundFactor() * Fog(), GroundFactor());
+  return max(Sun(), Fog());
   #endif //TONEMAPPING
   #else
   return vec3(0.0, 0.0, 0.0);
@@ -707,9 +707,9 @@ vec3 Diffuse()
   else
   {
     diffuse = Detail();
-    if(Depth() &lt; min_tex_blend)
+    if(Depth() &gt; min_tex_blend)
     {
-      float blend_t = (dist - min_tex_blend)/(max_tex_blend - min_tex_blend);
+      float blend_t = max(0.0, (Depth() - min_tex_blend)/(max_tex_blend - min_tex_blend));
       diffuse = mix(diffuse, Tint() * Bump() * 1.2, blend_t);
     }
   }

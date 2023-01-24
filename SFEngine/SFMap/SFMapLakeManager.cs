@@ -75,7 +75,7 @@ namespace SFEngine.SFMap
             lake.type = type;
 
             lake.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(SF3D.SFRender.SFRenderEngine.scene.root, "_none_", lake.GetObjectName());
-            lake.node.SetPosition(new Vector3(0, 0, 0));
+            lake.node.Position = new Vector3(0, 0, 0);
 
             UpdateLake(lake, consumed_lakes, consumed_lakes_indices);
 

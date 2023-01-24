@@ -109,7 +109,7 @@ namespace SFEngine.SFMap
         public void SetSelectionPosition(SFCoord pos)
         {
             float z = map.heightmap.GetZ(pos) / 100.0f;
-            sel_obj.SetPosition(new OpenTK.Vector3((float)pos.x - offset.X, (float)z, (float)(map.height - pos.y - 1) + offset.Y));
+            sel_obj.Position = new OpenTK.Vector3((float)pos.x - offset.X, (float)z, (float)(map.height - pos.y - 1) + offset.Y);
         }
 
         public void SetSelectionVisibility(bool vis)
@@ -329,7 +329,7 @@ namespace SFEngine.SFMap
         public void SetPreviewEntityGridPosition(SFCoord pos)
         {
             float z = map.heightmap.GetZ(new SFCoord(pos.x, map.height - pos.y - 1)) / 100.0f;
-            preview_entity.SetPosition(new Vector3(pos.x - preview_entity_offset.X, z + 0.2f, pos.y + preview_entity_offset.Y));
+            preview_entity.Position = new Vector3(pos.x - preview_entity_offset.X, z + 0.2f, pos.y + preview_entity_offset.Y);
         }
 
         // returns if cursor position changed
@@ -339,7 +339,7 @@ namespace SFEngine.SFMap
             {
                 cursor_position = pos;
                 float z = map.heightmap.GetZ(new SFCoord(pos.x, map.height - pos.y - 1)) / 100.0f;
-                cur_obj.SetPosition(new Vector3(pos.x, z, pos.y));
+                cur_obj.Position = new Vector3(pos.x, z, pos.y);
 
                 if (preview_entity != null)
                 {

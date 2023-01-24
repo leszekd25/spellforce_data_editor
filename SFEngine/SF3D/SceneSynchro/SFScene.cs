@@ -62,14 +62,14 @@ namespace SFEngine.SF3D.SceneSynchro
 
         public Atmosphere atmosphere { get; private set; }
 
-        public HashSet<SFModel3D> model_set_simple { get; private set; } = new HashSet<SFModel3D>();
+        public HashSet<SFModel3D> model_set_simple = new HashSet<SFModel3D>();
 
         public HashSet<SFSubModel3D> opaque_pass_models = new HashSet<SFSubModel3D>();
         public HashSet<SFSubModel3D> transparent_pass_models = new HashSet<SFSubModel3D>();
         public HashSet<SFSubModel3D> water_pass_models = new HashSet<SFSubModel3D>();
         public HashSet<SFSubModel3D> additive_pass_models = new HashSet<SFSubModel3D>();
 
-        public HashSet<SceneNodeAnimated> an_nodes = new HashSet<SceneNodeAnimated>();
+        public HashSet<SceneNodeAnimated> an_primary_nodes = new HashSet<SceneNodeAnimated>();
 
         public LinearPool<SFDecalInfo> decal_info = new LinearPool<SFDecalInfo>();
 
@@ -356,9 +356,15 @@ namespace SFEngine.SF3D.SceneSynchro
             return new_node;
         }
 
-        public SceneNodeAnimated AddSceneNodeAnimated(SceneNode parent, string skin_name, string new_node_name)
+        public SceneNodeAnimated AddSceneNodeAnimated(SceneNode parent, string skin_name, string new_node_name, bool primary)
         {
             SceneNodeAnimated new_node = new SceneNodeAnimated(new_node_name);
+            if(primary)
+            {
+                new_node.Primary = true;
+                new_node.DrivenNodes = new List<SceneNodeAnimated>();
+                new_node.DrivenNodes.Add(new_node);
+            }
             new_node.SetParent(parent);
 
             bool loaded_skin = SFResourceManager.LoadSkeleton(skin_name);
@@ -369,7 +375,11 @@ namespace SFEngine.SF3D.SceneSynchro
 
             if (loaded_skin)
             {
-                new_node.SetSkeletonSkin(SFResourceManager.Skeletons.Get(skin_name), SFResourceManager.Skins.Get(skin_name));
+                if(primary)
+                {
+                    new_node.SetSkeleton(SFResourceManager.Skeletons.Get(skin_name));
+                }
+                new_node.SetSkin(SFResourceManager.Skins.Get(skin_name));
             }
 
             loaded_skin = SFResourceManager.LoadModel(skin_name);
@@ -459,7 +469,7 @@ namespace SFEngine.SF3D.SceneSynchro
             }
 
             //add anim model to scene
-            SceneNodeAnimated uo = AddSceneNodeAnimated(unit_node, chest_name, "Chest");
+            SceneNodeAnimated uo = AddSceneNodeAnimated(unit_node, chest_name, "Chest", true);
             SceneNodeAnimated uo2;
 
             //get legs item (5) (animated)
@@ -470,12 +480,8 @@ namespace SFEngine.SF3D.SceneSynchro
                 string legs_name = SFLuaEnvironment.GetItemMesh(legs_id, is_female);
                 if (legs_name != "")
                 {
-                    uo2 = AddSceneNodeAnimated(unit_node, legs_name, "Legs");
-                    uo2.Primary = uo;
-                    if (uo.Skin == null)
-                    {
-                        uo2.Primary = null;
-                    }
+                    uo2 = AddSceneNodeAnimated(null, legs_name, "Legs", false);
+                    uo.DrivenNodes.Add(uo2);
                 }
             }
             //special case: anim_name is of "figure_hero": need to also add human head (animated)
@@ -500,12 +506,8 @@ namespace SFEngine.SF3D.SceneSynchro
                         head_name = head_data.MeshMale;
                     }
 
-                    uo2 = AddSceneNodeAnimated(unit_node, head_name, "Head");
-                    uo2.Primary = uo;
-                    if (uo.Skin == null)
-                    {
-                        uo2.Primary = null;
-                    }
+                    uo2 = AddSceneNodeAnimated(null, head_name, "Head", false);
+                    uo.DrivenNodes.Add(uo2);
                 }
             }
 
@@ -727,7 +729,11 @@ namespace SFEngine.SF3D.SceneSynchro
             foreach (var mesh in model_set_simple)
             {
                 mesh.CurrentMatrixIndex = 0;
-                mesh.MatrixOffset = cur_offset;
+                if (mesh.MatrixOffset != cur_offset)
+                {
+                    mesh.MatrixOffset = cur_offset;
+                    mesh.ForceUpdateInstanceMatrices = true;
+                }
                 cur_offset += mesh.MatrixCount;
             }
 
@@ -744,8 +750,15 @@ namespace SFEngine.SF3D.SceneSynchro
                 }
             }
 
+            foreach (var mesh in model_set_simple)
+            {
+                mesh.ForceUpdateInstanceMatrices = false;
+            }
+
             SFSubModel3D.Cache.CurrentMatrix = cur_offset;
-            SFSubModel3D.Cache.MatrixUpload();
+            SFSubModel3D.Cache.MatrixUpload(0, SFSubModel3D.Cache.CurrentMatrix);
+
+            //System.Diagnostics.Debug.WriteLine("INSTANCE MATRIX COUNT: " + cur_offset.ToString());
         }
 
         public void Clear()
@@ -756,7 +769,7 @@ namespace SFEngine.SF3D.SceneSynchro
             water_pass_models.Clear();
             additive_pass_models.Clear();
             decal_info.Clear();
-            an_nodes.Clear();
+            an_primary_nodes.Clear();
 
             SFResourceManager.Models.Dispose("_MISSING_MESH_");
             missing_node_mesh = null;

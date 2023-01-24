@@ -115,6 +115,18 @@ namespace SFEngine.SFUnPak
 
             foreach (string pak in pak_filter)
             {
+                if(!filename_to_pak.ContainsKey(pak))
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFUnPak, "SFPakMap.ListAllWithExtension(): Missing pak " + pak);
+                    continue;
+                }
+
+                if(pak_map.Length <= filename_to_pak[pak])
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFUnPak, "SFPakMap.ListAllWithExtension(): Invalid pak index "+filename_to_pak[pak]);
+                    continue;
+                }
+
                 SFPakFileSystem fs = pak_map[filename_to_pak[pak]];
                 names = names.Union(fs.ListAllWithExtension(path, extname)).ToList();
             }

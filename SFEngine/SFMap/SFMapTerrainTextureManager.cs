@@ -174,7 +174,7 @@ namespace SFEngine.SFMap
 
         public void GenerateTileTextures()
         {
-            for(int i = 0; i < 31; i++)
+            for(int i = 0; i < 32; i++)
             {
                 tile_texture_bank[i] = base_texture_bank[i];
                 GenerateAverageTileColor(i, base_texture_bank[i]);
@@ -192,7 +192,7 @@ namespace SFEngine.SFMap
                     GenerateAverageTileColor(i, tile_texture_bank[i]);
                 }
             }
-            for(int i = 1; i < 31; i++)
+            for(int i = 1; i < 32; i++)
             {
                 tile_texture_bank[223 + i] = base_texture_bank[i];
                 tile_average_color[223 + i] = tile_average_color[i];

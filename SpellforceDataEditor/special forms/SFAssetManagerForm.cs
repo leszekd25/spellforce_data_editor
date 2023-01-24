@@ -162,6 +162,7 @@ namespace SpellforceDataEditor.special_forms
             toolsToolStripMenuItem.Visible = false;
 #if DEBUG
             toolsToolStripMenuItem.Visible = true;
+            ComboBrowseMode.Items.Add("[DEBUG] Particle viewer");
 #endif
             SFResourceManager.ListAllPakResources();
 
@@ -185,7 +186,7 @@ namespace SpellforceDataEditor.special_forms
             SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
             SFRenderEngine.SetObjectFadeRange(SFEngine.Settings.ObjectFadeMin, SFEngine.Settings.ObjectFadeMax);
 
-            SFRenderEngine.scene.camera.SetPosition(new Vector3(0, 2, 6));
+            SFRenderEngine.scene.camera.Position = new Vector3(0, 2, 6);
             SFRenderEngine.scene.camera.SetLookat(new Vector3(0, 0, 0));
             SFRenderEngine.scene.camera.Update(0);
 
@@ -222,7 +223,7 @@ namespace SpellforceDataEditor.special_forms
             SFResourceManager.Models.AddManually(grid_model, "_GRID_");
 
             grid_node = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "_GRID_", "_GRID_");
-            grid_node.SetPosition(new Vector3(0, -0.01f, 0));
+            grid_node.Position = new Vector3(0, -0.01f, 0);
             grid_node.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
             grid_node.Scale = new Vector3(8, 8, 8);
 
@@ -343,7 +344,7 @@ namespace SpellforceDataEditor.special_forms
                 ListAnimations.Show();
                 button2Extract.Show();
                 //generate scene
-                SceneNodeAnimated animated_node = SFRenderEngine.scene.AddSceneNodeAnimated(SFRenderEngine.scene.root, "", "dynamic_mesh");
+                SceneNodeAnimated animated_node = SFRenderEngine.scene.AddSceneNodeAnimated(SFRenderEngine.scene.root, "", "dynamic_mesh", true);
                 animated_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
 
 
@@ -391,6 +392,11 @@ namespace SpellforceDataEditor.special_forms
                 PanelSound.Show();
                 comboMessages.SelectedIndex = -1;
                 comboMessages.Show();
+            }
+
+            if(ComboBrowseMode.SelectedIndex == 6)
+            {
+                DebugExecuteParticleScript();
             }
 
             current_scene_info.Clear();
@@ -457,7 +463,8 @@ namespace SpellforceDataEditor.special_forms
                     if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load skin " + skin_name + ", status code " + result.ToString();
-                        obj_d1.SetSkeletonSkin(null, null);
+                        obj_d1.SetSkeleton(null);
+                        obj_d1.SetSkin(null);
                         obj_d1.Mesh = null;
                         return;
                     }
@@ -470,7 +477,8 @@ namespace SpellforceDataEditor.special_forms
                     if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load skeleton " + skel_name;
-                        obj_d1.SetSkeletonSkin(null, null);
+                        obj_d1.SetSkeleton(null);
+                        obj_d1.SetSkin(null);
                         obj_d1.Mesh = null;
                         return;
                     }
@@ -483,7 +491,8 @@ namespace SpellforceDataEditor.special_forms
                     if ((result != 0) && (result != -1))
                     {
                         StatusText.Text = "Failed to load model " + model_name;
-                        obj_d1.SetSkeletonSkin(null, null);
+                        obj_d1.SetSkeleton(null);
+                        obj_d1.SetSkin(null);
                         obj_d1.Mesh = null;
                         return;
                     }
@@ -497,7 +506,8 @@ namespace SpellforceDataEditor.special_forms
                     }
                 }
 
-                obj_d1.SetSkeletonSkin(skel, skin);
+                obj_d1.SetSkeleton(skel);
+                obj_d1.SetSkin(skin);
                 obj_d1.SetAnimation(null, false);
                 obj_d1.Mesh = mesh;
 
@@ -1324,7 +1334,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void ResetCamera()
         {
-            SFRenderEngine.scene.camera.SetPosition(new Vector3(0, 1, 6));
+            SFRenderEngine.scene.camera.Position = new Vector3(0, 1, 6);
             SFRenderEngine.scene.camera.SetLookat(new Vector3(0, 1, 0));
             zoom_level = 1.0f;
             update_render = true;
@@ -1383,6 +1393,22 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
+        private void DebugExecuteParticleScript()
+        {
+            int script_index = 0;
+
+            switch(script_index)
+            {
+                case 0:
+                    {
+
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
         private void resetCameraPosiitonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ResetCamera();
@@ -1409,7 +1435,7 @@ namespace SpellforceDataEditor.special_forms
         {
             if (grid_node != null)
             {
-                grid_node.Visible = !grid_node.Visible;
+                grid_node.Visible = !grid_node.visible;
             }
 
             update_render = true;

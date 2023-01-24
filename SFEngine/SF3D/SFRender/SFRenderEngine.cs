@@ -1375,8 +1375,7 @@ namespace SFEngine.SF3D.SFRender
 
                 cur_chunk_id = heightmap.visible_chunks[cur_list_id].MapChunk.id;
                 next_chunk_id = vis_chunks[next_list_id].MapChunk.id;
-                // if next id > cur id, keep increasing cur id, while simultaneously turning chunks invisible
-                // otherwise keep increasing next_id, while simultaneuosly turning chunks visible
+
                 if (next_chunk_id > cur_chunk_id)
                 {
                     while (next_chunk_id > cur_chunk_id)
@@ -1424,11 +1423,6 @@ namespace SFEngine.SF3D.SFRender
             {
                 chunk_node.MapChunk.UpdateDecorationVisible(chunk_node.DistanceToCamera, chunk_node.CameraHeightDifference);
                 chunk_node.MapChunk.UpdateUnitVisible(chunk_node.DistanceToCamera, chunk_node.CameraHeightDifference);
-            }
-
-            if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
-            {
-                heightmap.mesh_tesselated.Regenerate(heightmap, scene.camera.Frustum);
             }
         }
 
@@ -1575,10 +1569,6 @@ namespace SFEngine.SF3D.SFRender
                 }
 
                 int mii = submodel.cache_index;
-                if (mii == Utility.NO_INDEX)
-                {
-                    continue;
-                }
 
                 if ((mat.matFlags & 4) == 0)
                 {
@@ -1628,10 +1618,6 @@ namespace SFEngine.SF3D.SFRender
             foreach (SFSubModel3D submodel in models)
             {
                 int mii = submodel.cache_index;
-                if (mii == Utility.NO_INDEX)
-                {
-                    continue;
-                }
 
                 SFMaterial mat = submodel.material;
 
@@ -1683,61 +1669,50 @@ namespace SFEngine.SF3D.SFRender
                 GL.UniformMatrix4(active_shader["V"], false, ref lsm_mat);
             }
 
-            Matrix4[] cur_bone_transforms = null;
-            foreach (SceneNodeAnimated an in scene.an_nodes)
+            foreach (SceneNodeAnimated an in scene.an_primary_nodes)
             {
-                if (an.Skin == null)
-                {
-                    continue;
-                }
-
-                Matrix4[] bone_transforms;
-                if (an.Primary == null)
-                {
-                    bone_transforms = an.BoneTransforms;
-                }
-                else
-                {
-                    bone_transforms = an.Primary.BoneTransforms;
-                }
-
                 GL.UniformMatrix4(active_shader["M"], false, ref an.result_transform);
+                GL.UniformMatrix4(active_shader["boneTransforms"], an.BoneTransforms.Length, false, ref an.BoneTransforms[0].Row0.X);
 
-                if (bone_transforms != cur_bone_transforms)
+                // if an is in an_nodes, it must have skin
+                for (int n = 0; n < an.DrivenNodes.Count; n++)
                 {
-                    GL.UniformMatrix4(active_shader["boneTransforms"], bone_transforms.Length, false, ref bone_transforms[0].Row0.X);
-                    cur_bone_transforms = bone_transforms;
-                }
-
-                for (int i = 0; i < an.Skin.submodels.Length; i++)
-                {
-                    var msc = an.Skin.submodels[i];
-                    if (current_pass == RenderPass.SHADOWMAP)
+                    SFModelSkin skin = an.DrivenNodes[n].Skin;
+                    if(skin == null)
                     {
-                        if ((msc.material.matFlags & 4) == 0)
+                        continue;
+                    }
+
+                    for (int i = 0; i < skin.submodels.Length; i++)
+                    {
+                        var msc = skin.submodels[i];
+                        if (current_pass == RenderPass.SHADOWMAP)
                         {
-                            SetTexture(0, TextureTarget.Texture2D, msc.material.texture.tex_id);
+                            if ((msc.material.matFlags & 4) == 0)
+                            {
+                                SetTexture(0, TextureTarget.Texture2D, msc.material.texture.tex_id);
+                            }
+                            else
+                            {
+                                SetTexture(0, TextureTarget.Texture2D, opaque_tex.tex_id);
+                            }
                         }
                         else
                         {
-                            SetTexture(0, TextureTarget.Texture2D, opaque_tex.tex_id);
+                            ApplyMaterial(msc.material);
                         }
-                    }
-                    else
-                    {
-                        ApplyMaterial(msc.material);
-                    }
 
-                    int vri = SFModelSkinChunk.Cache.Meshes.elements[msc.cache_index].VertexRangeIndex;
-                    int eri = SFModelSkinChunk.Cache.Meshes.elements[msc.cache_index].ElementRangeIndex;
+                        int vri = SFModelSkinChunk.Cache.Meshes.elements[msc.cache_index].VertexRangeIndex;
+                        int eri = SFModelSkinChunk.Cache.Meshes.elements[msc.cache_index].ElementRangeIndex;
 
-                    StartQuery();
-                    GL.DrawElementsBaseVertex(PrimitiveType.Triangles,
-                        SFModelSkinChunk.Cache.ElementRanges[eri].Count,
-                        DrawElementsType.UnsignedInt,
-                        new IntPtr(SFModelSkinChunk.Cache.ElementRanges[eri].Start * 4),
-                        SFModelSkinChunk.Cache.VertexRanges[vri].Start);
-                    EndQuery();
+                        StartQuery();
+                        GL.DrawElementsBaseVertex(PrimitiveType.Triangles,
+                            SFModelSkinChunk.Cache.ElementRanges[eri].Count,
+                            DrawElementsType.UnsignedInt,
+                            new IntPtr(SFModelSkinChunk.Cache.ElementRanges[eri].Start * 4),
+                            SFModelSkinChunk.Cache.VertexRanges[vri].Start);
+                        EndQuery();
+                    }
                 }
             }
         }
@@ -1779,7 +1754,7 @@ namespace SFEngine.SF3D.SFRender
             if (node is SceneNodeSimple)
             {
                 SceneNodeSimple n = (SceneNodeSimple)node;
-                if ((n.Visible) && (n.Mesh != null))
+                if ((n.visible) && (n.Mesh != null))
                 {
                     GL.BindVertexArray(SFSubModel3D.Cache.VertexArrayObjectID);
                     UseShader(shader_selection);
@@ -1793,10 +1768,6 @@ namespace SFEngine.SF3D.SFRender
                     foreach (var submodel in n.Mesh.submodels)
                     {
                         int mii = submodel.cache_index;
-                        if (mii == Utility.NO_INDEX)
-                        {
-                            continue;
-                        }
 
                         SetTexture(0, TextureTarget.Texture2D, submodel.material.texture.tex_id);
 
@@ -1810,21 +1781,21 @@ namespace SFEngine.SF3D.SFRender
                             new IntPtr(SFSubModel3D.Cache.ElementRanges[eri].Start * 4),
                             1,
                             SFSubModel3D.Cache.VertexRanges[vri].Start,
-                            n.CurrentMatrixIndex);
+                            n.Mesh.MatrixOffset + n.CurrentMeshMatrixIndex);
                         EndQuery();
                     }
                 }
             }
             else if (node is SceneNodeAnimated)
             {
-                SceneNodeAnimated n = (SceneNodeAnimated)node;
+                SceneNodeAnimated an = (SceneNodeAnimated)node;
 
-                if ((n.Visible) && (n.Skin != null))
+                if ((an.visible) && (an.Skin != null))
                 {
                     GL.BindVertexArray(SFModelSkinChunk.Cache.VertexArrayObjectID);
                     UseShader(shader_selection_animated);
 
-                    GL.UniformMatrix4(active_shader["M"], false, ref n.result_transform);
+                    GL.UniformMatrix4(active_shader["M"], false, ref an.result_transform);
                     Matrix4 p_mat = scene.camera.ProjMatrix;
                     GL.UniformMatrix4(active_shader["P"], false, ref p_mat);
                     Matrix4 v_mat = scene.camera.ViewMatrix;
@@ -1833,33 +1804,34 @@ namespace SFEngine.SF3D.SFRender
                     GL.Uniform1(active_shader["Time"], scene.current_time * 2.0f);
                     GL.Uniform4(active_shader["Color"], new Vector4(0.1f, 0.1f, 0.1f, 0.8f));
 
-                    Matrix4[] bone_transforms;
-                    if (n.Primary == null)
+                    GL.UniformMatrix4(active_shader["M"], false, ref an.result_transform);
+                    GL.UniformMatrix4(active_shader["boneTransforms"], an.BoneTransforms.Length, false, ref an.BoneTransforms[0].Row0.X);
+
+                    // if an is in an_nodes, it must have skin
+                    for (int n = 0; n < an.DrivenNodes.Count; n++)
                     {
-                        bone_transforms = n.BoneTransforms;
-                    }
-                    else
-                    {
-                        bone_transforms = n.Primary.BoneTransforms;
-                    }
+                        SFModelSkin skin = an.DrivenNodes[n].Skin;
+                        if (skin == null)
+                        {
+                            continue;
+                        }
 
-                    GL.UniformMatrix4(active_shader["boneTransforms"], bone_transforms.Length, false, ref bone_transforms[0].Row0.X);
+                        for (int i = 0; i < skin.submodels.Length; i++)
+                        {
+                            var msc = skin.submodels[i];
+                            SetTexture(0, TextureTarget.Texture2D, msc.material.texture.tex_id);
 
-                    for (int i = 0; i < n.Skin.submodels.Length; i++)
-                    {
-                        var msc = n.Skin.submodels[i];
-                        SetTexture(0, TextureTarget.Texture2D, msc.material.texture.tex_id);
+                            int vri = SFModelSkinChunk.Cache.Meshes.elements[msc.cache_index].VertexRangeIndex;
+                            int eri = SFModelSkinChunk.Cache.Meshes.elements[msc.cache_index].ElementRangeIndex;
 
-                        int vri = SFModelSkinChunk.Cache.Meshes.elements[msc.cache_index].VertexRangeIndex;
-                        int eri = SFModelSkinChunk.Cache.Meshes.elements[msc.cache_index].ElementRangeIndex;
-
-                        StartQuery();
-                        GL.DrawElementsBaseVertex(PrimitiveType.Triangles,
-                            SFModelSkinChunk.Cache.ElementRanges[eri].Count,
-                            DrawElementsType.UnsignedInt,
-                            new IntPtr(SFModelSkinChunk.Cache.ElementRanges[eri].Start * 4),
-                            SFModelSkinChunk.Cache.VertexRanges[vri].Start);
-                        EndQuery();
+                            StartQuery();
+                            GL.DrawElementsBaseVertex(PrimitiveType.Triangles,
+                                SFModelSkinChunk.Cache.ElementRanges[eri].Count,
+                                DrawElementsType.UnsignedInt,
+                                new IntPtr(SFModelSkinChunk.Cache.ElementRanges[eri].Start * 4),
+                                SFModelSkinChunk.Cache.VertexRanges[vri].Start);
+                            EndQuery();
+                        }
                     }
                 }
             }

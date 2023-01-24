@@ -14,7 +14,6 @@ namespace SFEngine.SF3D.Physics
     {
         public Vector3 a;             // lesser of X, Y and Z coordinates are stored here
         public Vector3 b;             // greater of X, Y and Z coordinates are stored here
-        private Vector3[] vertices;
         public Vector3 center;
 
         // automatically sets a and b to fit the definition
@@ -41,12 +40,6 @@ namespace SFEngine.SF3D.Physics
                 a.Z = b.Z;
                 b.Z = tmp;
             }
-
-            vertices = new Vector3[8];
-            vertices[0] = new Vector3(a);
-            vertices[1] = new Vector3(a.X, a.Y, b.Z); vertices[2] = new Vector3(a.X, b.Y, a.Z); vertices[3] = new Vector3(a.X, b.Y, b.Z);
-            vertices[4] = new Vector3(b.X, a.Y, a.Z); vertices[5] = new Vector3(b.X, a.Y, b.Z); vertices[6] = new Vector3(b.X, b.Y, a.Z);
-            vertices[7] = new Vector3(b);
 
             center = (a + b) / 2;
         }
@@ -89,35 +82,42 @@ namespace SFEngine.SF3D.Physics
             return Math.Max(dx, Math.Max(dy, dz));
         }
 
-        // returns -1 if the box is outside of the plane, 1 if inside, 0 if plane intersects the box
-        public int IntersectPlane(Plane pl)
-        {
-            bool is_outside = pl.SideOf(a);
-            bool side_changed = is_outside;
-            bool is_intersecting = false;
-
-            is_outside = pl.SideOf(new Vector3(b.X, a.Y, a.Z)); is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(b.X, b.Y, a.Z)); is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(b.X, a.Y, b.Z)); is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(b.X, b.Y, b.Z)); is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(a.X, b.Y, a.Z)); is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(a.X, a.Y, b.Z)); is_intersecting |= is_outside ^ side_changed;
-            is_outside = pl.SideOf(new Vector3(a.X, b.Y, b.Z)); is_intersecting |= is_outside ^ side_changed;
-
-            return is_intersecting ? 0 : (is_outside ? 1 : -1);
-        }
-
         // returns true if the box is not contained within the convex hull described by a set of bounding planes
         // useful for checking if a bounding box is visible in camera frustum (which is just that, a convex hull)
         public bool IsOutsideOfConvexHull(Plane[] planes)
         {
+            foreach (Plane pl in planes)
+            {
+                // intersection
+                // dist < -interval_radius? whole box is outside
+                // otherwise, we're inside
+                Vector3 extent = b - center;
+                float interval_radius = Vector3.Dot(extent, new Vector3(Math.Abs(pl.normal[0]), Math.Abs(pl.normal[1]), Math.Abs(pl.normal[2])));
+                float dist = Vector3.Dot(pl.normal, center) - pl.d;
+                if(dist >= -interval_radius)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        // returns true if the box is not contained within the convex hull described by a set of bounding planes
+        // useful for checking if a bounding box is visible in camera frustum (which is just that, a convex hull)
+        public bool IsOutsideOfConvexHull2(Plane[] planes)
+        {
             byte outside = 0;
 
+            Vector3[] vs = new Vector3[8];
+            vs[0] = new Vector3(a);
+            vs[1] = new Vector3(a.X, a.Y, b.Z); vs[2] = new Vector3(a.X, b.Y, a.Z); vs[3] = new Vector3(a.X, b.Y, b.Z);
+            vs[4] = new Vector3(b.X, a.Y, a.Z); vs[5] = new Vector3(b.X, a.Y, b.Z); vs[6] = new Vector3(b.X, b.Y, a.Z);
+            vs[7] = new Vector3(b);
             foreach (Plane pl in planes)
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    byte vertex_test_result = (byte)((pl.SideOf(vertices[i]) ? 1 : 0) << i);
+                    byte vertex_test_result = (byte)((pl.SideOf(vs[i]) ? 1 : 0) << i);
                     if (vertex_test_result == 0)
                     {
                         break;
@@ -183,10 +183,10 @@ namespace SFEngine.SF3D.Physics
             altitude *= (float)(Math.PI / 180);
             // rotate all 8 points along the respective XY planes by azimuth, and create new bounding box from min and max of those points
             Vector3[] vs = new Vector3[8];
-            for (int i = 0; i < 8; i++)
-            {
-                vs[i] = vertices[i];
-            }
+            vs[0] = new Vector3(a);
+            vs[1] = new Vector3(a.X, a.Y, b.Z); vs[2] = new Vector3(a.X, b.Y, a.Z); vs[3] = new Vector3(a.X, b.Y, b.Z);
+            vs[4] = new Vector3(b.X, a.Y, a.Z); vs[5] = new Vector3(b.X, a.Y, b.Z); vs[6] = new Vector3(b.X, b.Y, a.Z);
+            vs[7] = new Vector3(b);
 
             MathUtils.RotateVec3Array(vs, center, azimuth, altitude);
 
@@ -229,10 +229,6 @@ namespace SFEngine.SF3D.Physics
         public void CropMinY(float minz)
         {
             a.Y = minz;
-            vertices[0] = new Vector3(a);
-            vertices[1] = new Vector3(a.X, a.Y, b.Z);
-            vertices[4] = new Vector3(b.X, a.Y, a.Z);
-            vertices[5] = new Vector3(b.X, a.Y, b.Z);
 
             center = (a + b) / 2;
         }

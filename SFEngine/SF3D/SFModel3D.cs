@@ -240,8 +240,10 @@ namespace SFEngine.SF3D
 
         // instance matrix data, from MeshCache
         public int CurrentMatrixIndex = 0;       // reset every frame
-        public int MatrixOffset = 0;             // offset into MeshCache.MatrixData array  
+        public int MatrixOffset = -1;             // offset into MeshCache.MatrixData array  
         public int MatrixCount = 0;              // number of matrices used; CurrentMatrixIndex stops here
+        public bool ForceUpdateInstanceMatrices = true;  // if true, each instance of this mesh will update its transform on next frame
+
 
         public override int Load(byte[] data, int offset, object custom_data)
         {

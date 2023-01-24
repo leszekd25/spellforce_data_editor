@@ -1715,7 +1715,8 @@ namespace SpellforceDataEditor.special_forms
                     foreach (SceneNodeAnimated anim_node in unit.node.Children)
                     {
                         anim_node.SetAnimation(null, false);
-                        anim_node.SetSkeletonSkin(anim_node.Skeleton, anim_node.Skin);
+                        anim_node.SetSkeleton(anim_node.Skeleton);
+                        //anim_node.SetSkeletonSkin(anim_node.Skeleton, anim_node.Skin);
                     }
                 }
             }
@@ -2025,12 +2026,10 @@ namespace SpellforceDataEditor.special_forms
             // preserve lookat
             Vector3 cur_lookat = SFRenderEngine.scene.camera.Lookat - SFRenderEngine.scene.camera.position;
 
-            SFRenderEngine.scene.camera.SetPosition(
-                new Vector3(
+            SFRenderEngine.scene.camera.Position = new Vector3(
                     SFRenderEngine.scene.camera.position.X,
                     h + map.heightmap.GetRealZ(SFRenderEngine.scene.camera.position.Xz),
-                    SFRenderEngine.scene.camera.position.Z)
-                );
+                    SFRenderEngine.scene.camera.position.Z);
 
             SFRenderEngine.scene.camera.SetLookat(SFRenderEngine.scene.camera.position + cur_lookat);
         }
@@ -2038,21 +2037,21 @@ namespace SpellforceDataEditor.special_forms
         // moves camera to given map coordinate, preserving camera elevation
         public void SetCameraMapPos(SFCoord pos)
         {
-            SFRenderEngine.scene.camera.SetPosition(new Vector3(pos.x, 0, map.height - 1 - pos.y));
+            SFRenderEngine.scene.camera.Position = new Vector3(pos.x, 0, map.height - 1 - pos.y);
             AdjustCameraZ();
         }
 
         // moves camera to an arbitrary point in the world
         public void SetCameraWorldPos(Vector3 pos)
         {
-            SFRenderEngine.scene.camera.SetPosition(pos);
+            SFRenderEngine.scene.camera.Position = pos;
         }
 
         // moves camera to a given point on the map, preserving camera elevation
         // not limited to grid points
         public void SetCameraWorldMapPos(Vector2 pos)
         {
-            SFRenderEngine.scene.camera.SetPosition(new Vector3(pos.X, 0, pos.Y));
+            SFRenderEngine.scene.camera.Position = new Vector3(pos.X, 0, pos.Y);
             AdjustCameraZ();
         }
 

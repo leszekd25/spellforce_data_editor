@@ -1622,7 +1622,7 @@ namespace SFEngine.SFMap
                     SFResources.SFResourceManager.Models.Dispose(m_old.Name);
                     SFResources.SFResourceManager.Models.AddManually(m_new, "_DECAL_" + node.Name + "_" + n.Name);
                     n.Mesh = m_new;
-                    n.Rotation = node.Rotation.Inverted();
+                    n.Rotation = node.rotation.Inverted();
                     n.Scale = new OpenTK.Vector3(1.28f);
 
                     SF3D.SceneSynchro.SFDecalInfo decal_info = SFRenderEngine.scene.decal_info.elements[n.DecalIndex];
@@ -1647,7 +1647,7 @@ namespace SFEngine.SFMap
 
             float z = heightmap.GetZ(pos) / 100.0f;
             SF3D.SceneSynchro.SceneNode _obj = obj.node;
-            _obj.SetPosition(heightmap.GetFixedPosition(pos));
+            _obj.Position = heightmap.GetFixedPosition(pos);
             _obj.Scale = new OpenTK.Vector3(100 / 128.0f);
             _obj.SetAnglePlane(angle);
             UpdateNodeDecal(_obj, new OpenTK.Vector2(pos.x, pos.y), OpenTK.Vector2.Zero, angle);
@@ -1699,7 +1699,7 @@ namespace SFEngine.SFMap
 
             // object transform
             float z = heightmap.GetZ(obj.grid_position) / 100.0f;
-            obj.node.SetPosition(heightmap.GetFixedPosition(obj.grid_position));
+            obj.node.Position = heightmap.GetFixedPosition(obj.grid_position);
             obj.node.Scale = new OpenTK.Vector3(100 / 128f);
             obj.node.SetAnglePlane(obj.angle);
             UpdateNodeDecal(obj.node, new OpenTK.Vector2(obj.grid_position.x, obj.grid_position.y), OpenTK.Vector2.Zero, obj.angle);
@@ -1750,7 +1750,7 @@ namespace SFEngine.SFMap
 
             // change visual transform
             float z = heightmap.GetZ(new_pos) / 100.0f;
-            obj.node.SetPosition(heightmap.GetFixedPosition(new_pos));
+            obj.node.Position = heightmap.GetFixedPosition(new_pos);
             UpdateNodeDecal(obj.node, new OpenTK.Vector2(obj.grid_position.x, obj.grid_position.y), OpenTK.Vector2.Zero, obj.angle);
 
             return 0;
@@ -1765,7 +1765,7 @@ namespace SFEngine.SFMap
             float z = heightmap.GetZ(pos) / 100.0f;
 
             SF3D.SceneSynchro.SceneNode _obj = obj.node;
-            _obj.SetPosition(heightmap.GetFixedPosition(pos));
+            _obj.Position = heightmap.GetFixedPosition(pos);
             _obj.Scale = new OpenTK.Vector3(100 / 128f);
             _obj.SetAnglePlane(angle);
             UpdateNodeDecal(_obj, new OpenTK.Vector2(pos.x, pos.y), OpenTK.Vector2.Zero, angle);
@@ -1797,7 +1797,7 @@ namespace SFEngine.SFMap
 
             // change visual transform
             float z = heightmap.GetZ(new_pos) / 100.0f;
-            int_obj.node.SetPosition(heightmap.GetFixedPosition(new_pos));
+            int_obj.node.Position = heightmap.GetFixedPosition(new_pos);
             UpdateNodeDecal(int_obj.node, new OpenTK.Vector2(int_obj.grid_position.x, int_obj.grid_position.y), OpenTK.Vector2.Zero, int_obj.angle);
 
             return 0;
@@ -1871,7 +1871,7 @@ namespace SFEngine.SFMap
             object_manager.ApplyObjectBlockFlags(io.grid_position, io.angle, (ushort)io.game_id, true);
 
             float z = heightmap.GetZ(io.grid_position) / 100.0f;
-            io.node.SetPosition(heightmap.GetFixedPosition(io.grid_position));
+            io.node.Position = heightmap.GetFixedPosition(io.grid_position);
             io.node.Scale = new OpenTK.Vector3(100 / 128f);
             io.node.SetAnglePlane(io.angle);
             UpdateNodeDecal(io.node, new OpenTK.Vector2(io.grid_position.x, io.grid_position.y), OpenTK.Vector2.Zero, io.angle);
@@ -1891,7 +1891,7 @@ namespace SFEngine.SFMap
             b_offset_rotated.X = (float)((Math.Cos(angle_rad) * b_offset.X) - (Math.Sin(angle_rad) * b_offset.Y));
             b_offset_rotated.Y = (float)((Math.Sin(angle_rad) * b_offset.X) + (Math.Cos(angle_rad) * b_offset.Y));
 
-            bld.node.SetPosition(heightmap.GetFixedPosition(pos) + new OpenTK.Vector3(-b_offset_rotated.X, 0, b_offset_rotated.Y));
+            bld.node.Position = heightmap.GetFixedPosition(pos) + new OpenTK.Vector3(-b_offset_rotated.X, 0, b_offset_rotated.Y);
             bld.node.Scale = new OpenTK.Vector3(100 / 128f);
             bld.node.SetAnglePlane(angle);
             UpdateNodeDecal(bld.node, new OpenTK.Vector2(pos.x, pos.y), b_offset, angle);
@@ -1948,7 +1948,7 @@ namespace SFEngine.SFMap
             b_offset_rotated.X = (float)((Math.Cos(angle_rad) * b_offset.X) - (Math.Sin(angle_rad) * b_offset.Y));
             b_offset_rotated.Y = (float)((Math.Sin(angle_rad) * b_offset.X) + (Math.Cos(angle_rad) * b_offset.Y));
 
-            building.node.SetPosition(heightmap.GetFixedPosition(pos) + new OpenTK.Vector3(b_offset_rotated.X, 0, +b_offset_rotated.Y));
+            building.node.Position = heightmap.GetFixedPosition(pos) + new OpenTK.Vector3(b_offset_rotated.X, 0, +b_offset_rotated.Y);
             building.node.Scale = new OpenTK.Vector3(100 / 128f);
             building.node.SetAnglePlane(building.angle);
             UpdateNodeDecal(building.node, new OpenTK.Vector2(building.grid_position.x, building.grid_position.y), b_offset, building.angle);
@@ -1976,9 +1976,7 @@ namespace SFEngine.SFMap
             b_offset_rotated.X = (float)((Math.Cos(angle_rad) * b_offset.X) - (Math.Sin(angle_rad) * b_offset.Y));
             b_offset_rotated.Y = (float)((Math.Sin(angle_rad) * b_offset.X) + (Math.Cos(angle_rad) * b_offset.Y));
 
-
-
-            building.node.SetPosition(heightmap.GetFixedPosition(building.grid_position) + new OpenTK.Vector3(-b_offset_rotated.X, 0, +b_offset_rotated.Y));
+            building.node.Position = heightmap.GetFixedPosition(building.grid_position) + new OpenTK.Vector3(-b_offset_rotated.X, 0, +b_offset_rotated.Y);
             building.node.Scale = new OpenTK.Vector3(100 / 128f);
             building.node.SetAnglePlane(building.angle);
             UpdateNodeDecal(building.node, new OpenTK.Vector2(building.grid_position.x, building.grid_position.y), b_offset, building.angle);
@@ -2015,7 +2013,7 @@ namespace SFEngine.SFMap
             b_offset_rotated.X = (float)((Math.Cos(angle_rad) * b_offset.X) - (Math.Sin(angle_rad) * b_offset.Y));
             b_offset_rotated.Y = (float)((Math.Sin(angle_rad) * b_offset.X) + (Math.Cos(angle_rad) * b_offset.Y));
 
-            building.node.SetPosition(heightmap.GetFixedPosition(new_pos) + new OpenTK.Vector3(-b_offset_rotated.X, 0, +b_offset_rotated.Y));
+            building.node.Position = heightmap.GetFixedPosition(new_pos) + new OpenTK.Vector3(-b_offset_rotated.X, 0, +b_offset_rotated.Y);
             building.node.Scale = new OpenTK.Vector3(100 / 128f);
             building.node.SetAnglePlane(building.angle);
             UpdateNodeDecal(building.node, new OpenTK.Vector2(building.grid_position.x, building.grid_position.y), b_offset, building.angle);
@@ -2029,7 +2027,7 @@ namespace SFEngine.SFMap
             heightmap.SetFlag(ptl.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, true);
             object_manager.ApplyObjectBlockFlags(ptl.grid_position, ptl.angle, 778, true);
 
-            ptl.node.SetPosition(heightmap.GetFixedPosition(pos));
+            ptl.node.Position = heightmap.GetFixedPosition(pos);
             ptl.node.Scale = new OpenTK.Vector3(100 / 128f);
             ptl.node.SetAnglePlane(angle);
             UpdateNodeDecal(ptl.node, new OpenTK.Vector2(pos.x, pos.y), OpenTK.Vector2.Zero, angle);
@@ -2075,7 +2073,7 @@ namespace SFEngine.SFMap
             portal.node.SetParent(heightmap.GetChunkNode(portal.grid_position));
 
             // change visual transform
-            portal.node.SetPosition(heightmap.GetFixedPosition(new_pos));
+            portal.node.Position = heightmap.GetFixedPosition(new_pos);
             UpdateNodeDecal(portal.node, new OpenTK.Vector2(portal.grid_position.x, portal.grid_position.y), OpenTK.Vector2.Zero, portal.angle);
 
             return 0;
@@ -2114,7 +2112,7 @@ namespace SFEngine.SFMap
 
             // 2. modify object transform and appearance
 
-            unit.node.SetPosition(heightmap.GetFixedPosition(pos));
+            unit.node.Position = heightmap.GetFixedPosition(pos);
             unit.node.SetAnglePlane(0);
             // find unit scale
             if (SFCFF.SFCategoryManager.gamedata[2024] == null)
@@ -2180,7 +2178,7 @@ namespace SFEngine.SFMap
             unit.node.SetParent(heightmap.GetChunkNode(unit.grid_position));
 
             // change visual transform
-            unit.node.SetPosition(heightmap.GetFixedPosition(new_pos));
+            unit.node.Position = heightmap.GetFixedPosition(new_pos);
 
             return 0;
         }
@@ -2238,7 +2236,7 @@ namespace SFEngine.SFMap
 
             // object transform
             float z = heightmap.GetZ(unit.grid_position) / 100.0f;
-            unit.node.SetPosition(heightmap.GetFixedPosition(unit.grid_position));
+            unit.node.Position = heightmap.GetFixedPosition(unit.grid_position);
             unit.node.SetAnglePlane(0);
             // find unit scale
             if (SFCFF.SFCategoryManager.gamedata[2024] == null)

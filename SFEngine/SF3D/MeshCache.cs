@@ -399,15 +399,20 @@ namespace SFEngine.SF3D
                 ref ElementBufferObjectData[ElementRanges[element_range_indexx].Start]);
         }
 
-        public void MatrixUpload()
+        public void MatrixUpload(int matrix_start, int matrix_count)
         {
             if (!EnableInstancing)
             {
                 return;
             }
 
+            if(matrix_count == 0)
+            {
+                return;
+            }    
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, MatrixBufferID);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(0), 64 * CurrentMatrix, MatrixBufferData);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(matrix_start * 64), 64 * matrix_count, MatrixBufferData);
         }
 
         public void ResizeInstanceMatrixBuffer(int m_count)

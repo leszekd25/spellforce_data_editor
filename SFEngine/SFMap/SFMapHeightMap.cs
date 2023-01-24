@@ -287,34 +287,34 @@ namespace SFEngine.SFMap
             // fix all object heights
             foreach (SFMapUnit u in units)
             {
-                u.node.SetPosition(hmap.GetFixedPosition(u.grid_position));
+                u.node.Position = hmap.GetFixedPosition(u.grid_position);
             }
 
             foreach (SFMapObject o in objects)
             {
-                o.node.SetPosition(hmap.GetFixedPosition(o.grid_position));
+                o.node.Position = hmap.GetFixedPosition(o.grid_position);
             }
 
             foreach (SFMapInteractiveObject io in int_objects)
             {
-                io.node.SetPosition(hmap.GetFixedPosition(io.grid_position));
+                io.node.Position = hmap.GetFixedPosition(io.grid_position);
             }
 
             foreach (SFMapDecoration d in decorations)
             {
                 foreach (SF3D.SceneSynchro.SceneNode n in d.node.Children)   // special case, offset information is preserved that way
                 {
-                    n.SetPosition(new Vector3(n.position.X, hmap.GetRealZ(new Vector2(owner.position.X + n.position.X, owner.position.Z + n.position.Z)), n.position.Z));
+                    n.Position = new Vector3(n.position.X, hmap.GetRealZ(new Vector2(owner.position.X + n.position.X, owner.position.Z + n.position.Z)), n.position.Z);
                 }
             }
             foreach (SFMapBuilding b in buildings)
             {
-                b.node.SetPosition(new Vector3(b.node.position.X, hmap.GetZ(b.grid_position) / 100.0f, b.node.position.Z));// special case, offset information is preserved this way
+                b.node.Position = new Vector3(b.node.position.X, hmap.GetZ(b.grid_position) / 100.0f, b.node.position.Z);// special case, offset information is preserved this way
             }
 
             foreach (SFMapPortal p in portals)
             {
-                p.node.SetPosition(hmap.GetFixedPosition(p.grid_position));
+                p.node.Position = hmap.GetFixedPosition(p.grid_position);
             }
         }
 
@@ -336,7 +336,7 @@ namespace SFEngine.SFMap
                     visible = true;
                     decoration_visible = true;
 
-                    owner.Update(0);                  // sets model matrix, needed for lake generation
+                    //owner.Update(0);                  // sets model matrix, needed for lake generation
 
                     Generate();
                 }
@@ -755,7 +755,7 @@ namespace SFEngine.SFMap
                 {
                     chunk_nodes[i * chunk_count_x + j] = new SF3D.SceneSynchro.SceneNodeMapChunk("hmap_" + j.ToString() + "_" + i.ToString());
                     SF3D.SceneSynchro.SceneNodeMapChunk chunk_node = chunk_nodes[i * chunk_count_x + j];
-                    chunk_node.SetPosition(new Vector3(j * SFMapHeightMapMesh.CHUNK_SIZE, 0, i * SFMapHeightMapMesh.CHUNK_SIZE));
+                    chunk_node.Position = new Vector3(j * SFMapHeightMapMesh.CHUNK_SIZE, 0, i * SFMapHeightMapMesh.CHUNK_SIZE);
                     chunk_node.Visible = false;
                     chunk_node.MapChunk = new SFMapHeightMapChunk();
                     chunk_node.MapChunk.hmap = this;
