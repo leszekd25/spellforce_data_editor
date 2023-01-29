@@ -769,8 +769,6 @@ namespace SFEngine.SF3D.SceneSynchro
         public void Clear()
         {
             effect_manager.Clear();
-            effect_manager = null;
-
             model_set_simple.Clear();
             opaque_pass_models.Clear();
             transparent_pass_models.Clear();

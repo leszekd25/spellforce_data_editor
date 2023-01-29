@@ -47,6 +47,7 @@ namespace SFEngine.SFUnPak
             {
                 LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Directory is up-to-date");
                 game_directory_specified = true;
+                SFResources.SFResourceManager.InitContainerPaks();
                 return 0;
             }
 
@@ -97,8 +98,6 @@ namespace SFEngine.SFUnPak
             if (pak_map.LoadData("pakdata.dat") == 0)
             {
                 LogUtils.Log.Info(LogUtils.LogSource.SFUnPak, "SFUnPak.SpecifyGameDirectory(): Pak map loaded");
-                game_directory_specified = true;
-                return 0;
             }
             else
             {
@@ -108,6 +107,7 @@ namespace SFEngine.SFUnPak
                 pak_map.SaveData("pakdata.dat");
             }
             game_directory_specified = true;
+            SFResources.SFResourceManager.InitContainerPaks();
             return 0;
         }
 

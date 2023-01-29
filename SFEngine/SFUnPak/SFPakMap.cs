@@ -67,7 +67,7 @@ namespace SFEngine.SFUnPak
             bw.Write(pak_map.Length);
             for(int i = 0; i < pak_map.Length; i++)
             {
-                bw.Write(pak_map[i].pak_fname);
+                bw.Write(Path.GetFileName(pak_map[i].pak_fname));
                 pak_map[i].WriteToFile(bw);
             }
             bw.Close();

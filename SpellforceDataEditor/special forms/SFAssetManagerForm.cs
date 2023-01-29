@@ -209,6 +209,7 @@ namespace SpellforceDataEditor.special_forms
             if ((tex_code != 0) && (tex_code != -1))
             {
                 SFEngine.LogUtils.Log.Warning(SFEngine.LogUtils.LogSource.SF3D, "SFAssetManagerForm.SF3DManagerForm_Load(): Could not load texture (texture name = " + tex_name + ")");
+                tex = SFRenderEngine.opaque_tex;
             }
             else
             {
@@ -867,7 +868,12 @@ namespace SpellforceDataEditor.special_forms
                         anims.Add(anim_name);
                     }
                 }
-                skel_name = skel_name.Substring(0, skel_name.LastIndexOf('_'));
+                int last_index = skel_name.LastIndexOf('_');
+                if(last_index <= 0)
+                {
+                    break;
+                }
+                skel_name = skel_name.Substring(0, last_index);
             }
 
             return anims;

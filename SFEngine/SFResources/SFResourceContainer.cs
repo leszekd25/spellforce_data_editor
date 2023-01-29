@@ -20,6 +20,7 @@ namespace SFEngine.SFResources
         Dictionary<string, bool> remove_when_unused = new Dictionary<string, bool>();
         string prefix_path = "";
         string[] suffix_extensions = null;
+        string[] paknames = null;
         int[] paks_to_search = null;
         HashSet<string> filesystem_resources = new HashSet<string>();
 
@@ -49,19 +50,29 @@ namespace SFEngine.SFResources
         {
         }
 
-        public SFResourceContainer(string p, string s, IEnumerable<string> paks)
+        public SFResourceContainer(string p, string s, string[] paks)
         {
             cont = new Dictionary<string, T>();
             prefix_path = p;
             suffix_extensions = s.Replace("|", " ").Split(' ');
+            paknames = paks;
+        }
+
+        public void FindResourcePaks()
+        {
+            if(paknames == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.FindResourcePaks(): Did not specify paks!");
+                return;
+            }
 
             List<int> pak_list = new List<int>();
-            foreach(string pf in paks)
+            foreach (string pf in paknames)
             {
                 int pak_index;
                 if (!SFUnPak.SFUnPak.pak_map.filename_to_pak.TryGetValue(pf, out pak_index))
                 {
-                    LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer(): Cound not find pak file " + pf);
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.FindResourcePaks(): Cound not find pak file " + pf);
                     continue;
                 }
                 pak_list.Add(pak_index);

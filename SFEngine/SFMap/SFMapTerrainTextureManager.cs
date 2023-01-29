@@ -159,7 +159,7 @@ namespace SFEngine.SFMap
             if ((tex_code != 0) && (tex_code != -1))
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFMapTerrainTextureManager.LoadTerrainTexture(): Could not load texture (texture name = " + filename + ")");
-                throw new Exception("SFMapTerrainTextureManager.Init(): Can't load texture!");
+                throw new Exception("SFMapTerrainTextureManager.Init(): Can't load texture (texture name = " + filename + ")");
             }
 
             tex = SFResourceManager.Textures.Get(filename);

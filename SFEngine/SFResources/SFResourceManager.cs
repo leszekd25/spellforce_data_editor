@@ -33,6 +33,19 @@ namespace SFEngine.SFResources
         public static bool pak_animations_listed { get; set; } = false;
         public static bool filesystem_resources_listed { get; set; } = false;
 
+        public static void InitContainerPaks()
+        {
+            Textures.FindResourcePaks();
+            Models.FindResourcePaks();
+            Animations.FindResourcePaks();
+            BSIs.FindResourcePaks();
+            Skins.FindResourcePaks();
+            Skeletons.FindResourcePaks();
+            Musics.FindResourcePaks();
+            Sounds.FindResourcePaks();
+            Messages.FindResourcePaks();
+        }
+
         // use this after game directory was specified
         public static void ListAllFilesystemResources()
         {
