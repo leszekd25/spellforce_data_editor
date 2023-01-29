@@ -89,7 +89,7 @@ namespace SFEngine.SF3D
             {
                 if (Settings.ToneMapping)
                 {
-                    material.emission_strength = 0.1f;
+                    material.emission_strength = 1.0f;
                 }
             }
             byte[] chars = br.ReadBytes(64);

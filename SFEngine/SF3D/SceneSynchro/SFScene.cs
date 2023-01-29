@@ -60,6 +60,8 @@ namespace SFEngine.SF3D.SceneSynchro
 
         public SceneNode selected_node;    // selected node is rendered differently
 
+        public SFEffectManager effect_manager;
+
         public Atmosphere atmosphere { get; private set; }
 
         public HashSet<SFModel3D> model_set_simple = new HashSet<SFModel3D>();
@@ -83,6 +85,9 @@ namespace SFEngine.SF3D.SceneSynchro
             camera = new SceneNodeCamera("Camera");
 
             atmosphere = new Atmosphere();
+
+            effect_manager = new SFEffectManager();
+            effect_manager.scene = this;
 
             // setup lighting
             if (atmosphere.altitude_ambient_color == null)
@@ -672,7 +677,7 @@ namespace SFEngine.SF3D.SceneSynchro
 
         // this removes the node, and if needed, disposes it
         // use this to remove nodes from the scene!
-        public void RemoveSceneNode(SceneNode node, bool dispose = true)
+        public void RemoveSceneNode(SceneNode node)
         {
             if (node == null)
             {
@@ -680,10 +685,7 @@ namespace SFEngine.SF3D.SceneSynchro
                 return;
             }
             node.SetParent(null);
-            if (dispose)
-            {
-                node.Dispose();
-            }
+            node.Dispose();
         }
 
         // sets scene time
@@ -724,6 +726,9 @@ namespace SFEngine.SF3D.SceneSynchro
         // updates root of the scene (and consequently, all children that need to be updated)
         public void Update(float dt)
         {
+            // effect manager has priority
+            effect_manager.Process(dt);
+
             // first, clear mesh matrices
             int cur_offset = 0;
             foreach (var mesh in model_set_simple)
@@ -763,6 +768,9 @@ namespace SFEngine.SF3D.SceneSynchro
 
         public void Clear()
         {
+            effect_manager.Clear();
+            effect_manager = null;
+
             model_set_simple.Clear();
             opaque_pass_models.Clear();
             transparent_pass_models.Clear();
@@ -771,8 +779,10 @@ namespace SFEngine.SF3D.SceneSynchro
             decal_info.Clear();
             an_primary_nodes.Clear();
 
+
             SFResourceManager.Models.Dispose("_MISSING_MESH_");
             missing_node_mesh = null;
+
         }
     }
 }

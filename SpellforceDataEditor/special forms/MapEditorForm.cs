@@ -1506,7 +1506,7 @@ namespace SpellforceDataEditor.special_forms
             PanelDecalGroups.Controls.Clear();
 
             SFRenderEngine.scene.map = null;
-            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
+            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root);
 
             SFRenderEngine.scene.Clear();
 
@@ -2165,10 +2165,6 @@ namespace SpellforceDataEditor.special_forms
                     return true;
                 case Keys.Delete:
                     AddCameraZoom(1);
-                    return true;
-                case Keys.D | Keys.Control:
-                    SFRenderEngine.is_debug = true;
-                    update_render = true;
                     return true;
                 case Keys.G | Keys.Control:
                     SFEngine.Settings.DisplayGrid = !SFEngine.Settings.DisplayGrid;

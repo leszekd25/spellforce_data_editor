@@ -1282,10 +1282,7 @@ namespace SFEngine.SF3D.SFRender
             int chunks_per_column = (heightmap.height / SFMapHeightMapMesh.CHUNK_SIZE);
 
             // approximation of the visible chunk area
-            // this one is veeeery big overestimation
-            // todo: cut the frustum by plane Y=0 before making bounding box out of it
-
-            Physics.BoundingBox aabb = Physics.BoundingBox.FromPoints(scene.camera.Frustum.frustum_vertices);
+            Physics.BoundingBox aabb = Physics.BoundingBox.FromPoints(scene.camera.Frustum.GetConvexHullCutByYZero().ToArray());//(scene.camera.Frustum.frustum_vertices);
             // get ix, iy of first and last chunk
             int ix1, ix2, iy1, iy2;
 
@@ -1315,12 +1312,13 @@ namespace SFEngine.SF3D.SFRender
                     xz = chunk_node.MapChunk.aabb.center.Xz - scene.camera.position.Xz;
                     chunk_node.DistanceToCamera = xz.Length;
                     chunk_node.CameraHeightDifference = scene.camera.position.Y - chunk_node.MapChunk.aabb.b.Y;
+
                     if (chunk_node.DistanceToCamera > max_dist)
                     {
                         continue;
                     }
 
-                    if (!chunk_node.MapChunk.aabb.IsOutsideOfConvexHull(scene.camera.Frustum.frustum_planes))
+                    if (!chunk_node.MapChunk.aabb.IsOutsideOfFrustum(scene.camera.Frustum))
                     {
                         vis_chunks.Add(chunk_node);
                     }

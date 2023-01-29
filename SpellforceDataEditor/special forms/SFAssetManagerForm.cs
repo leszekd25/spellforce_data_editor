@@ -21,7 +21,7 @@ namespace SpellforceDataEditor.special_forms
     {
         class SFAssetManagerSceneInfo          // used for hot reload
         {
-            public int scene_type = -1;  // 0 - mesh, 1 - anim, 2 - sync, 3 - music, 4 - sound, 5 - message
+            public int scene_type = -1;     // 0 - mesh, 1 - anim, 2 - sync, 3 - music, 4 - sound, 5 - message, 6 - particles
             public int element_index = -1;  // on the ListEntries
             public int anim_index = -1;     // for scene type 1 and 2
             public int message_type = -1;   // for scene type 5
@@ -242,7 +242,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void SF3DManagerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
+            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root);
             SFRenderEngine.scene.root = null;
             SFRenderEngine.scene.camera = null;
             SFRenderEngine.scene.atmosphere.Dispose();
@@ -308,7 +308,6 @@ namespace SpellforceDataEditor.special_forms
             sound_engine.UnloadSound();
             TimerSoundDuration.Stop();
             trackSoundDuration.Value = 0;
-            //SFResourceManager.DisposeAll();
             HideAllPanels();
             synchronized = false;
             ui.SetName(""); ui.SetLabel1(""); ui.SetLabel2(""); ui.SetLabel3("");
@@ -346,7 +345,6 @@ namespace SpellforceDataEditor.special_forms
                 //generate scene
                 SceneNodeAnimated animated_node = SFRenderEngine.scene.AddSceneNodeAnimated(SFRenderEngine.scene.root, "", "dynamic_mesh", true);
                 animated_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-
 
                 foreach (string skel_name in SFResourceManager.skeleton_names)
                 {
@@ -396,6 +394,7 @@ namespace SpellforceDataEditor.special_forms
 
             if(ComboBrowseMode.SelectedIndex == 6)
             {
+                dynamic_render = true;
                 DebugExecuteParticleScript();
             }
 
@@ -1326,8 +1325,9 @@ namespace SpellforceDataEditor.special_forms
         public void ResetScene()
         {
             grid_node.SetParent(null);
-            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root, true);
+            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root);
             SFRenderEngine.scene.root.Visible = true;
+            SFRenderEngine.scene.effect_manager.Clear();
             grid_node.SetParent(SFRenderEngine.scene.root);
             update_render = true;
         }
@@ -1401,7 +1401,14 @@ namespace SpellforceDataEditor.special_forms
             {
                 case 0:
                     {
-
+                        // spawn empty effect
+                        SFEffect effect = SFRenderEngine.scene.effect_manager.AddEffect();
+                        effect.Init(SFRenderEngine.scene.root);
+                    }
+                    break;
+                case 1:
+                    {
+                        // spawn lightning effect
                     }
                     break;
                 default:

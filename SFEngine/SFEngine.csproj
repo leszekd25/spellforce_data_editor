@@ -80,6 +80,7 @@
     <Compile Include="SF3D\Physics\Ray.cs" />
     <Compile Include="SF3D\Physics\Triangle.cs" />
     <Compile Include="SF3D\SceneSynchro\SceneNode.cs" />
+    <Compile Include="SF3D\SceneSynchro\SFEffectManager.cs" />
     <Compile Include="SF3D\SceneSynchro\SFScene.cs" />
     <Compile Include="SF3D\SFAnimation.cs" />
     <Compile Include="SF3D\SFBoneIndex.cs" />

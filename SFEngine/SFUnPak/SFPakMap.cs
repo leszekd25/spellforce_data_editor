@@ -140,12 +140,23 @@ namespace SFEngine.SFUnPak
             List<String> names = new List<String>();
             if (pak_filter == null)
             {
-                //pak_filter = pak_map.Keys.ToArray();
                 pak_filter = filename_to_pak.Keys.ToArray();
             }
 
             foreach (string pak in pak_filter)
             {
+                if (!filename_to_pak.ContainsKey(pak))
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFUnPak, "SFPakMap.ListAllWithFilename(): Missing pak " + pak);
+                    continue;
+                }
+
+                if (pak_map.Length <= filename_to_pak[pak])
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFUnPak, "SFPakMap.ListAllWithFilename(): Invalid pak index " + filename_to_pak[pak]);
+                    continue;
+                }
+
                 SFPakFileSystem fs = pak_map[filename_to_pak[pak]];
                 names = names.Union(fs.ListAllWithFilename(path, substr)).ToList();
             }
@@ -162,6 +173,18 @@ namespace SFEngine.SFUnPak
 
             foreach (string pak in pak_filter)
             {
+                if (!filename_to_pak.ContainsKey(pak))
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFUnPak, "SFPakMap.ListAllInDirectory(): Missing pak " + pak);
+                    continue;
+                }
+
+                if (pak_map.Length <= filename_to_pak[pak])
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFUnPak, "SFPakMap.ListAllInDirectory(): Invalid pak index " + filename_to_pak[pak]);
+                    continue;
+                }
+
                 SFPakFileSystem fs = pak_map[filename_to_pak[pak]];
                 names = names.Union(fs.ListAllInDirectory(path)).ToList();
             }

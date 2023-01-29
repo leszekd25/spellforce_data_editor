@@ -82,54 +82,35 @@ namespace SFEngine.SF3D.Physics
             return Math.Max(dx, Math.Max(dy, dz));
         }
 
-        // returns true if the box is not contained within the convex hull described by a set of bounding planes
-        // useful for checking if a bounding box is visible in camera frustum (which is just that, a convex hull)
-        public bool IsOutsideOfConvexHull(Plane[] planes)
+        public bool IsOutsideOfFrustum(Frustum frustum)
         {
-            foreach (Plane pl in planes)
+            for(int i = 0; i < 6; i++)
             {
-                // intersection
-                // dist < -interval_radius? whole box is outside
-                // otherwise, we're inside
-                Vector3 extent = b - center;
-                float interval_radius = Vector3.Dot(extent, new Vector3(Math.Abs(pl.normal[0]), Math.Abs(pl.normal[1]), Math.Abs(pl.normal[2])));
-                float dist = Vector3.Dot(pl.normal, center) - pl.d;
-                if(dist >= -interval_radius)
+                Plane pl = frustum.frustum_planes[i];
+                Vector3 v_near = a;
+
+                if (pl.normal.X < 0)
                 {
-                    return false;
+                    v_near.X = b.X;
                 }
-            }
 
-            return true;
-        }
-        // returns true if the box is not contained within the convex hull described by a set of bounding planes
-        // useful for checking if a bounding box is visible in camera frustum (which is just that, a convex hull)
-        public bool IsOutsideOfConvexHull2(Plane[] planes)
-        {
-            byte outside = 0;
-
-            Vector3[] vs = new Vector3[8];
-            vs[0] = new Vector3(a);
-            vs[1] = new Vector3(a.X, a.Y, b.Z); vs[2] = new Vector3(a.X, b.Y, a.Z); vs[3] = new Vector3(a.X, b.Y, b.Z);
-            vs[4] = new Vector3(b.X, a.Y, a.Z); vs[5] = new Vector3(b.X, a.Y, b.Z); vs[6] = new Vector3(b.X, b.Y, a.Z);
-            vs[7] = new Vector3(b);
-            foreach (Plane pl in planes)
-            {
-                for (int i = 0; i < 8; i++)
+                if (pl.normal.Y < 0)
                 {
-                    byte vertex_test_result = (byte)((pl.SideOf(vs[i]) ? 1 : 0) << i);
-                    if (vertex_test_result == 0)
-                    {
-                        break;
-                    }
-
-                    outside |= vertex_test_result;
+                    v_near.Y = b.Y;
                 }
-                if (outside == 255)       // equivalent to "each vertex is outside of at least one plane of the convex hull"
+
+                if (pl.normal.Z < 0)
+                {
+                    v_near.Z = b.Z;
+                }
+
+                // bounding box is outside this plane - it's outside of all frustum planes
+                if (pl.DistanceTo(v_near) > 0)
                 {
                     return true;
                 }
             }
+
             return false;
         }
 
