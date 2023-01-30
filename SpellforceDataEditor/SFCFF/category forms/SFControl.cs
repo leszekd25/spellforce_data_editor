@@ -333,6 +333,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 {
                     SFCategoryElementList new_elem_list = new SFCategoryElementList();
                     new_elem_list.Elements.Add(new_elem);
+                    new_elem_list.ElementStatus.Add(SFCategoryElementStatus.ADDED);
 
                     MainForm.data.op_queue.Push(new operators.CFFOperatorAddRemoveCategoryElement()
                     {

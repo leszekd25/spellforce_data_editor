@@ -76,8 +76,8 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 16;
-            this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
             this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
             // 
             // label4
             // 
@@ -86,10 +86,12 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(40, 13);
             this.label4.TabIndex = 22;
+            this.label4.Tag = "0";
             this.label4.Text = "Helmet";
             // 
             // CheckHelmet
             // 
+            this.CheckHelmet.AutoCheck = false;
             this.CheckHelmet.AutoSize = true;
             this.CheckHelmet.Location = new System.Drawing.Point(84, 48);
             this.CheckHelmet.Name = "CheckHelmet";
@@ -109,8 +111,8 @@
             this.HelmetID.TabIndex = 24;
             this.HelmetID.Tag = "0";
             this.HelmetID.Text = "0";
-            this.HelmetID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             this.HelmetID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
+            this.HelmetID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // HelmetName
             // 
@@ -119,6 +121,7 @@
             this.HelmetName.Name = "HelmetName";
             this.HelmetName.Size = new System.Drawing.Size(0, 13);
             this.HelmetName.TabIndex = 25;
+            this.HelmetName.Tag = "0";
             // 
             // RightHandName
             // 
@@ -127,6 +130,7 @@
             this.RightHandName.Name = "RightHandName";
             this.RightHandName.Size = new System.Drawing.Size(0, 13);
             this.RightHandName.TabIndex = 29;
+            this.RightHandName.Tag = "1";
             // 
             // RightHandID
             // 
@@ -138,11 +142,12 @@
             this.RightHandID.TabIndex = 28;
             this.RightHandID.Tag = "1";
             this.RightHandID.Text = "0";
-            this.RightHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             this.RightHandID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
+            this.RightHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // CheckRightHand
             // 
+            this.CheckRightHand.AutoCheck = false;
             this.CheckRightHand.AutoSize = true;
             this.CheckRightHand.Location = new System.Drawing.Point(84, 74);
             this.CheckRightHand.Name = "CheckRightHand";
@@ -159,6 +164,7 @@
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(59, 13);
             this.label7.TabIndex = 26;
+            this.label7.Tag = "1";
             this.label7.Text = "Right hand";
             // 
             // ChestName
@@ -168,6 +174,7 @@
             this.ChestName.Name = "ChestName";
             this.ChestName.Size = new System.Drawing.Size(0, 13);
             this.ChestName.TabIndex = 33;
+            this.ChestName.Tag = "2";
             // 
             // ChestID
             // 
@@ -179,11 +186,12 @@
             this.ChestID.TabIndex = 32;
             this.ChestID.Tag = "2";
             this.ChestID.Text = "0";
-            this.ChestID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             this.ChestID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
+            this.ChestID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // CheckChest
             // 
+            this.CheckChest.AutoCheck = false;
             this.CheckChest.AutoSize = true;
             this.CheckChest.Location = new System.Drawing.Point(84, 100);
             this.CheckChest.Name = "CheckChest";
@@ -200,6 +208,7 @@
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(34, 13);
             this.label9.TabIndex = 30;
+            this.label9.Tag = "2";
             this.label9.Text = "Chest";
             // 
             // LeftHandName
@@ -209,6 +218,7 @@
             this.LeftHandName.Name = "LeftHandName";
             this.LeftHandName.Size = new System.Drawing.Size(0, 13);
             this.LeftHandName.TabIndex = 37;
+            this.LeftHandName.Tag = "3";
             // 
             // LeftHandID
             // 
@@ -220,11 +230,12 @@
             this.LeftHandID.TabIndex = 36;
             this.LeftHandID.Tag = "3";
             this.LeftHandID.Text = "0";
-            this.LeftHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             this.LeftHandID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
+            this.LeftHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // CheckLeftHand
             // 
+            this.CheckLeftHand.AutoCheck = false;
             this.CheckLeftHand.AutoSize = true;
             this.CheckLeftHand.Location = new System.Drawing.Point(84, 126);
             this.CheckLeftHand.Name = "CheckLeftHand";
@@ -241,6 +252,7 @@
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(52, 13);
             this.label11.TabIndex = 34;
+            this.label11.Tag = "3";
             this.label11.Text = "Left hand";
             // 
             // RightRingName
@@ -250,6 +262,7 @@
             this.RightRingName.Name = "RightRingName";
             this.RightRingName.Size = new System.Drawing.Size(0, 13);
             this.RightRingName.TabIndex = 41;
+            this.RightRingName.Tag = "4";
             // 
             // RightRingID
             // 
@@ -261,11 +274,12 @@
             this.RightRingID.TabIndex = 40;
             this.RightRingID.Tag = "4";
             this.RightRingID.Text = "0";
-            this.RightRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             this.RightRingID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
+            this.RightRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // CheckRightRing
             // 
+            this.CheckRightRing.AutoCheck = false;
             this.CheckRightRing.AutoSize = true;
             this.CheckRightRing.Location = new System.Drawing.Point(84, 152);
             this.CheckRightRing.Name = "CheckRightRing";
@@ -282,6 +296,7 @@
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(52, 13);
             this.label13.TabIndex = 38;
+            this.label13.Tag = "4";
             this.label13.Text = "Right ring";
             // 
             // LegsName
@@ -291,6 +306,7 @@
             this.LegsName.Name = "LegsName";
             this.LegsName.Size = new System.Drawing.Size(0, 13);
             this.LegsName.TabIndex = 45;
+            this.LegsName.Tag = "5";
             // 
             // LegsID
             // 
@@ -302,11 +318,12 @@
             this.LegsID.TabIndex = 44;
             this.LegsID.Tag = "5";
             this.LegsID.Text = "0";
-            this.LegsID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             this.LegsID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
+            this.LegsID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // CheckLegs
             // 
+            this.CheckLegs.AutoCheck = false;
             this.CheckLegs.AutoSize = true;
             this.CheckLegs.Location = new System.Drawing.Point(84, 178);
             this.CheckLegs.Name = "CheckLegs";
@@ -323,6 +340,7 @@
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(30, 13);
             this.label15.TabIndex = 42;
+            this.label15.Tag = "5";
             this.label15.Text = "Legs";
             // 
             // LeftRingName
@@ -332,6 +350,7 @@
             this.LeftRingName.Name = "LeftRingName";
             this.LeftRingName.Size = new System.Drawing.Size(0, 13);
             this.LeftRingName.TabIndex = 49;
+            this.LeftRingName.Tag = "6";
             // 
             // LeftRingID
             // 
@@ -343,11 +362,12 @@
             this.LeftRingID.TabIndex = 48;
             this.LeftRingID.Tag = "6";
             this.LeftRingID.Text = "0";
-            this.LeftRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             this.LeftRingID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
+            this.LeftRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // CheckLeftRing
             // 
+            this.CheckLeftRing.AutoCheck = false;
             this.CheckLeftRing.AutoSize = true;
             this.CheckLeftRing.Location = new System.Drawing.Point(84, 204);
             this.CheckLeftRing.Name = "CheckLeftRing";
@@ -364,6 +384,7 @@
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(45, 13);
             this.label17.TabIndex = 46;
+            this.label17.Tag = "6";
             this.label17.Text = "Left ring";
             // 
             // Control19
