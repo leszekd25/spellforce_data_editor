@@ -73,9 +73,6 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category[current_element];
-            int elem_count = elem.variants.Count / 3;
-
             MainForm.data.op_queue.OpenCluster();
             for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
             {

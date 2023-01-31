@@ -33,7 +33,6 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
             }
-
             MainForm.data.op_queue.CloseCluster();
         }
 
