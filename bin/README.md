@@ -19,4 +19,4 @@ Most of the features are now complete (but might be buggy), including: creating/
 # How to use
 To use the application, simply unzip it wherever you feel like.
 
-Latest version: 05.02.0223.1
+Latest version: 05.02.2023.1
