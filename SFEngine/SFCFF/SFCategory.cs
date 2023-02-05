@@ -380,7 +380,7 @@ namespace SFEngine.SFCFF
                         elem.AddVariant(ReadVariantFromBuffer(sr, elem_format[i], string_size[current_string]));
                     }
 
-                    // sometimes gamedata is malformed; this attempts to fix issue here multiple sub-elements with the same sub-ID exist within one element
+                    // sometimes gamedata is malformed; this attempts to fix issue where multiple sub-elements with the same sub-ID exist within one element
                     if (category_allow_subelement_id)
                     {
                         int cur_subelem_id = elem.ToInt(1);

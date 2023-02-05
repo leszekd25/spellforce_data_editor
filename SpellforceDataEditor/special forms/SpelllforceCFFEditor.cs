@@ -1877,8 +1877,8 @@ namespace SpellforceDataEditor.special_forms
                         current_indices[i] = current_indices[i] - 1;
                         reverse_current_indices[current_indices[i]] = i;
                     }
-                    current_indices.RemoveAt(element_index);
                     reverse_current_indices.Remove(current_indices[element_index]);
+                    current_indices.RemoveAt(element_index);
                     ElementSelect.Items.RemoveAt(element_index);
                     loaded_count--;
                 }
