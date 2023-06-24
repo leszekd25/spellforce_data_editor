@@ -182,7 +182,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PostChangeProperty = new_building_id
             });
 
-            map.ReplaceBuilding(ListBuildings.SelectedIndex, new_building_id);
+            map.building_manager.ReplaceBuilding(ListBuildings.SelectedIndex, new_building_id);
 
             LabelBuildingName.Text = SFCategoryManager.GetBuildingName(new_building_id);
             ListBuildings.Items[ListBuildings.SelectedIndex] = LabelBuildingName.Text + " "
@@ -279,7 +279,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             SFMapBuilding building = map.building_manager.buildings[ListBuildings.SelectedIndex];
             Angle.Text = AngleTrackbar.Value.ToString();
-            map.RotateBuilding(ListBuildings.SelectedIndex, AngleTrackbar.Value);
+            map.building_manager.RotateBuilding(ListBuildings.SelectedIndex, AngleTrackbar.Value);
 
             map.heightmap.RefreshOverlay();
             MainForm.mapedittool.update_render = true;

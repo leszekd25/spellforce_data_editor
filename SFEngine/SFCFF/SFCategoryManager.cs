@@ -699,31 +699,6 @@ namespace SFEngine.SFCFF
             ready = true;
         }
 
-        //loads gamedata.cff file
-        public static int Load(string filename)
-        {
-            int result = gamedata.Load(filename);
-
-            if (result == 0)
-            {
-                ready = true;
-                ReloadHeroCache();
-            }
-
-            return result;
-        }
-
-        //saves gamedata.cff file
-        public static void Save(string filename)
-        {
-            gamedata.Save(filename);
-        }
-
-        public static void SaveDiff(string filename)
-        {
-            gamedata.SaveDiff(filename);
-        }
-
         //searches for a text with a given ID and in a given language
         //returns a sub-element in a given language which contains text data looked for (or null if it doesnt exist)
         //returns reference to an element from db! remember to drop it later

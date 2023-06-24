@@ -98,7 +98,7 @@ namespace SFEngine.SFMap
             }
 
             // 3. add new unit in respective chunk
-            map.heightmap.GetChunk(position).AddDecoration(dec);
+            map.heightmap.GetChunk(position).decorations.Add(dec);
 
             return dec;
         }
@@ -115,7 +115,7 @@ namespace SFEngine.SFMap
 
             d.node = null;
 
-            map.heightmap.GetChunk(d.grid_position).RemoveDecoration(d);
+            map.heightmap.GetChunk(d.grid_position).decorations.Remove(d);
         }
 
         public void ReplaceDecoration(SFMapDecoration d, byte new_id)

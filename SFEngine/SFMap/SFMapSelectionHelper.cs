@@ -293,10 +293,7 @@ namespace SFEngine.SFMap
                 if (selection_type == SelectionType.BUILDING)//same with interactive object and object, todo...
                 {
                     Vector2 off = map.building_manager.building_collision[(ushort)selected_entity.game_id].origin;
-                    float angle = (float)(selected_entity.angle * Math.PI / 180);
-                    Vector2 r_off = new Vector2(off.X, off.Y);
-                    r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
-                    r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
+                    Vector2 r_off = MathUtils.RotateVec2(off, (float)(selected_entity.angle * Math.PI / 180));
 
                     SetSelectionOffset(r_off);
                 }
@@ -404,7 +401,7 @@ namespace SFEngine.SFMap
                 unit_size = Math.Max((ushort)unit_data[18], (ushort)40) / 100.0f;
             }
 
-            preview_entity.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
+            preview_entity.Scale = new Vector3(unit_size * 100 / 128);
             SetPreviewEntityGridPosition(cursor_position);
 
             preview_unit_id = unit_id;
@@ -423,16 +420,13 @@ namespace SFEngine.SFMap
 
             // get building
             preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneBuilding(building_id, "_BUILDING_" + building_id.ToString()));
-            preview_entity.Scale = new OpenTK.Vector3(100 / 128f);
+            preview_entity.Scale = new Vector3(100 / 128f);
             map.building_manager.AddBuildingCollisionBoundary(building_id);
 
             preview_building_id = building_id;
 
             Vector2 off = map.building_manager.building_collision[building_id].origin;
-            float angle = 0;
-            Vector2 r_off = new Vector2(off.X, off.Y);
-            r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
-            r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
+            Vector2 r_off = MathUtils.RotateVec2(off, 0);
 
             preview_entity_offset = r_off;
             SetPreviewEntityGridPosition(cursor_position);
@@ -544,10 +538,7 @@ namespace SFEngine.SFMap
             if (sel_obj != null)
             {
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(sel_obj);
-                if (SFResources.SFResourceManager.Models.Get("_SELECTION_") != null)
-                {
-                    SFResources.SFResourceManager.Models.Dispose("_SELECTION_");
-                }
+                SFResources.SFResourceManager.Models.Dispose(selection_mesh);
             }
             new_selection.CreateRaw(new SF3D.SFSubModel3D[] { sbm1 });
             SFResources.SFResourceManager.Models.AddManually(new_selection, "_SELECTION_");
@@ -564,8 +555,8 @@ namespace SFEngine.SFMap
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapSelectionHelper.Dispose() called");
             SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(SF3D.SFRender.SFRenderEngine.scene.root.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("_SELECTION_"));
             SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(SF3D.SFRender.SFRenderEngine.scene.root.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("_CURSOR_"));
-            SFResources.SFResourceManager.Models.Dispose("_SELECTION_");
-            SFResources.SFResourceManager.Models.Dispose("_CURSOR_");
+            SFResources.SFResourceManager.Models.Dispose(selection_mesh);
+            SFResources.SFResourceManager.Models.Dispose(cursor_mesh);
             sel_obj = null;
             cur_obj = null;
             ClearPreview();

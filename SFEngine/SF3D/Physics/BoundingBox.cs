@@ -10,7 +10,7 @@ using System;
 
 namespace SFEngine.SF3D.Physics
 {
-    public class BoundingBox
+    public struct BoundingBox
     {
         public Vector3 a;             // lesser of X, Y and Z coordinates are stored here
         public Vector3 b;             // greater of X, Y and Z coordinates are stored here
@@ -207,17 +207,16 @@ namespace SFEngine.SF3D.Physics
             return new BoundingBox(new Vector3(dxmin, dymin, dzmin), new Vector3(dxmax, dymax, dzmax));
         }
 
-        public void CropMinY(float minz)
+        public static bool operator ==(BoundingBox b1, BoundingBox b2)
         {
-            a.Y = minz;
-
-            center = (a + b) / 2;
+            return (b1.a == b2.a) && (b1.b == b2.b);
         }
 
-        public double GetVolume()
+        public static bool operator !=(BoundingBox b1, BoundingBox b2)
         {
-            return (b.X - a.X) * (b.Y - a.Y) * (b.Z - a.Z);
+            return (b1.a != b2.a) || (b1.b != b2.b);
         }
+
 
         public static BoundingBox Zero = new BoundingBox(Vector3.Zero, Vector3.Zero);
     }

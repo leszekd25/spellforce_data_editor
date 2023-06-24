@@ -60,7 +60,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             // undo/redo
                             previous_pos = map.int_object_manager.int_objects[selected_intobj].grid_position;
 
-                            map.MoveInteractiveObject(selected_intobj, pos);
+                            map.int_object_manager.MoveInteractiveObject(selected_intobj, pos);
                         }
                     }
                     else if (!first_click)
@@ -74,14 +74,14 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             unk_byte = 5;
                         }
 
-                        map.AddInteractiveObject(new_object_id, pos, 0, unk_byte);
+                        int obj_index = map.int_object_manager.AddInteractiveObject(new_object_id, pos, 0, unk_byte);
                         // undo/redo
                         previous_pos = pos;
 
                         ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).LoadNextMonument(map.int_object_manager.monuments_index.Count - 1);
                         Select(map.int_object_manager.monuments_index.Count - 1);
                         MainForm.mapedittool.InspectorSelect(
-                            map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]);
+                            map.int_object_manager.int_objects[obj_index]);
 
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
 
@@ -89,7 +89,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorMonumentAddOrRemove()
                         {
                             intobj = map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1],
-                            intobj_index = map.int_object_manager.int_objects.Count - 1,
+                            intobj_index = obj_index,
                             monument_index = map.int_object_manager.monuments_index.Count - 1,
                             is_adding = true
                         });
@@ -123,7 +123,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
                         {
-                            map.MoveInteractiveObject(selected_intobj, pos);
+                            map.int_object_manager.MoveInteractiveObject(selected_intobj, pos);
                         }
                     }
                     else
@@ -150,7 +150,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         is_adding = false
                     });
 
-                    map.DeleteInteractiveObject(intobj_index);
+                    map.int_object_manager.RemoveInteractiveObject(intobj_index);
                     ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).RemoveMonument(monument_index);
 
                     MainForm.mapedittool.ui.RedrawMinimapIcons();

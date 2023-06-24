@@ -51,12 +51,16 @@ namespace SFEngine.SFMap
             idle_anim_dict.Add("figure_npc_zombie_normal_", "figure_npc_zombie_idle");
         }
 
-        public SFMapUnit AddUnit(int id, SFCoord position, int flags, int index)
+        public int AddUnit(int game_id, SFCoord position, int flags, int npc_id, int unknown, int group, int unknown2, int index = -1)
         {
             SFMapUnit unit = new SFMapUnit();
             unit.grid_position = position;
             unit.unknown_flags = flags;
-            unit.game_id = id;
+            unit.game_id = game_id;
+            unit.npc_id = npc_id;
+            unit.unknown = unknown;
+            unit.group = group;
+            unit.unknown2 = unknown2;
 
             if (index == -1)
             {
@@ -66,25 +70,132 @@ namespace SFEngine.SFMap
             units.Insert(index, unit);
 
             string obj_name = unit.GetName();
-            unit.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(id, obj_name);
+            unit.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(game_id, obj_name);
             unit.node.SetParent(map.heightmap.GetChunkNode(position));
 
-            // 3. add new unit in respective chunk
-            map.heightmap.GetChunk(position).AddUnit(unit);
+            map.heightmap.GetChunk(position).units.Add(unit);
 
-            return unit;
-        }
+            map.heightmap.SetFlag(unit.grid_position, SFMapHeightMapFlag.ENTITY_UNIT, true);
 
-        public void RemoveUnit(SFMapUnit u)
-        {
-            units.Remove(u);
+            // modify object transform and appearance
+            unit.node.Position = map.heightmap.GetFixedPosition(position);
+            unit.node.SetAnglePlane(0);
+            // find unit scale
+            int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(game_id);
+            float unit_size = 1f;
 
-            if (u.node != null)
+            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
+            unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
+            if (SFCFF.SFCategoryManager.gamedata[2005] == null)
             {
-                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(u.node);
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): There is no unit stats block in gamedata, setting unit scale to 100%");
+            }
+            else
+            {
+                if (unit_index != -1)
+                {
+                    unit_data = SFCFF.SFCategoryManager.gamedata[2005][unit_index];
+                    unit_size = Math.Min((ushort)200, Math.Max((ushort)unit_data[18], (ushort)50)) / 100.0f;
+                }
+                else
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + game_id.ToString() + "), setting unit scale to 100%");
+                }
+            }
+            unit.node.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
+
+            if (Settings.DynamicMap)
+            {
+                RestartAnimation(unit);
             }
 
-            map.heightmap.GetChunk(u.grid_position).RemoveUnit(u);
+            return index;
+        }
+
+        public void RotateUnit(int unit_map_index, int angle)
+        {
+            SFMapUnit unit = units[unit_map_index];
+
+            unit.node.SetAnglePlane(angle);
+        }
+
+        public void ReplaceUnit(int unit_map_index, ushort new_unit_id)
+        {
+            SFMapUnit unit = units[unit_map_index];
+
+            if (unit.node != null)
+            {
+                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(unit.node);
+            }
+
+            unit.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(new_unit_id, unit.GetName());
+            unit.node.SetParent(map.heightmap.GetChunkNode(unit.grid_position));
+
+            unit.game_id = new_unit_id;
+
+            // object transform
+            unit.node.Position = map.heightmap.GetFixedPosition(unit.grid_position);
+            unit.node.SetAnglePlane(0);
+            // find unit scale
+            int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(unit.game_id);
+            float unit_size = 1f;
+
+            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
+            unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
+            if (SFCFF.SFCategoryManager.gamedata[2005] == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): There is no unit stats block in gamedata, setting unit scale to 100%");
+            }
+            else
+            {
+                if (unit_index != -1)
+                {
+                    unit_data = SFCFF.SFCategoryManager.gamedata[2005][unit_index];
+                    unit_size = Math.Min((ushort)200, Math.Max((ushort)unit_data[18], (ushort)50)) / 100.0f;
+                }
+                else
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Could not find unit stats data (unit id = " + unit.game_id.ToString() + "), setting unit scale to 100%");
+                }
+            }
+            unit.node.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
+
+            if (Settings.DynamicMap)
+            {
+                RestartAnimation(unit);
+            }
+        }
+
+        public void RemoveUnit(int unit_index)
+        {
+            SFMapUnit unit = units[unit_index];
+
+            units.Remove(unit);
+            map.heightmap.SetFlag(unit.grid_position, SFMapHeightMapFlag.ENTITY_UNIT, false);
+
+            if (unit.node != null)
+            {
+                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(unit.node);
+            }
+
+            map.heightmap.GetChunk(unit.grid_position).units.Remove(unit);
+
+        }
+
+        public void MoveUnit(int unit_map_index, SFCoord new_pos)
+        {
+            SFMapUnit unit = units[unit_map_index];
+
+            // move unit and set chunk dependency
+            map.heightmap.GetChunkNode(unit.grid_position).MapChunk.units.Remove(unit);
+            map.heightmap.SetFlag(unit.grid_position, SFMapHeightMapFlag.ENTITY_UNIT, false);
+            unit.grid_position = new_pos;
+            map.heightmap.SetFlag(unit.grid_position, SFMapHeightMapFlag.ENTITY_UNIT, true);
+            map.heightmap.GetChunkNode(unit.grid_position).MapChunk.units.Add(unit);
+            unit.node.SetParent(map.heightmap.GetChunkNode(unit.grid_position));
+
+            // change visual transform
+            unit.node.Position = map.heightmap.GetFixedPosition(new_pos);
         }
 
         public int GetHighestGroup()
@@ -191,15 +302,12 @@ namespace SFEngine.SFMap
             string anim_name = GetIdleAnim(GetAnimLib(unit));
             if (anim_name != "")
             {
-                SFAnimation anim = null;
-                int tex_code = SFResources.SFResourceManager.Animations.Load(anim_name, SFUnPak.FileSource.ANY);
-                if ((tex_code != 0) && (tex_code != -1))
+                if(!SFResources.SFResourceManager.Animations.Load(anim_name, SFUnPak.FileSource.ANY, out SFAnimation anim, out int ec))
                 {
                     LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapUnitManager.RestartAnimation(): Could not load animation (animation name = " + anim_name + ")");
                 }
                 else
                 {
-                    anim = SFResources.SFResourceManager.Animations.Get(anim_name);
                     foreach (SF3D.SceneSynchro.SceneNodeAnimated anim_node in unit.node.Children)
                     {
                         anim_node.SetAnimation(anim);

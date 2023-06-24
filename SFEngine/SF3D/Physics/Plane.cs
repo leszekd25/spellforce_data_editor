@@ -27,14 +27,6 @@ namespace SFEngine.SF3D.Physics
             }
         }
 
-        // creates a plane to which a given triangle belongs
-        public Plane(Triangle t)
-        {
-            point = t.v1;
-            normal = t.normal;
-            d = -normal.X * point.X - normal.Y * point.Y - normal.Z * point.Z;
-        }
-
         // creates a plane  to which given  3  points  belong
         public Plane(Vector3 p1, Vector3 p2, Vector3 p3)
         {

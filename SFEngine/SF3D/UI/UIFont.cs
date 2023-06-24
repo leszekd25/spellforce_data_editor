@@ -10,7 +10,7 @@ namespace SFEngine.SF3D.UI
 {
     public class UIFont
     {
-        public SFTexture font_texture { get; set; } = null;
+        public SFTexture font_texture = null;
         public Vector2[] character_uvs_start { get; private set; }
         public Vector2[] character_uvs_end { get; private set; }
         public Vector2[] character_vertex_sizes { get; private set; }
@@ -22,14 +22,11 @@ namespace SFEngine.SF3D.UI
         {
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "UIFont.Load() called, font texture name: " + fname);
             // 1. load font texture
-            string tex_name = fname;
-            int tex_code = SFResourceManager.Textures.Load(tex_name, SFUnPak.FileSource.ANY, new SFTexture.SFTextureLoadArgs() { FreeOnInit = false });
-            if ((tex_code != 0) && (tex_code != -1))
+            if(!SFResourceManager.Textures.Load(fname, SFUnPak.FileSource.ANY, out font_texture, out int ec, new SFTexture.SFTextureLoadArgs() { FreeOnInit = false }))
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "UIFont.Load(): Could not load texture (texture name = " + tex_name + ")");
-                return tex_code;
+                LogUtils.Log.Error(LogUtils.LogSource.SF3D, "UIFont.Load(): Could not load texture (texture name = " + fname + ")");
+                return ec;
             }
-            font_texture = SFResourceManager.Textures.Get(tex_name);
 
             // 2. characters in the font go from ascii codes 32-255, but character_uvs contain all characters from 0 to 255
             character_uvs_start = new Vector2[256];
@@ -146,10 +143,9 @@ namespace SFEngine.SF3D.UI
         public void Dispose()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "UIFont.Dispose() called, font texture: " + font_texture == null ? Utility.S_MISSING : font_texture.Name);
-            if (font_texture != null)
-            {
-                SFResourceManager.Textures.Dispose(font_texture.Name);
-            }
+            
+            SFResourceManager.Textures.Dispose(font_texture);
+            font_texture = null;
         }
     }
 }

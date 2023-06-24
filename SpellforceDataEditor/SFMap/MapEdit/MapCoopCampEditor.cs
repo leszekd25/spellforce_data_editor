@@ -55,7 +55,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         // undo/redo
                         previous_pos = map.metadata.coop_spawns[selected_spawn].spawn_obj.grid_position;
 
-                        map.MoveObject(map.object_manager.objects.IndexOf(map.metadata.coop_spawns[selected_spawn].spawn_obj), pos);
+                        map.object_manager.MoveObject(map.object_manager.objects.IndexOf(map.metadata.coop_spawns[selected_spawn].spawn_obj), pos);
                     }
                     else if (!first_click)
                     {
@@ -65,15 +65,15 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             return;
                         }
                         // create new spawn and drag it until mouse released
-                        map.AddObject(new_object_id, pos, 0, 0, 0);
+                        int obj_index = map.object_manager.AddObject(new_object_id, pos, 0, 0, 0);
                         // undo/redo
                         previous_pos = pos;
 
                         map.metadata.coop_spawns.Add(
-                            new SFMapCoopAISpawn(map.object_manager.objects[map.object_manager.objects.Count - 1], 0, 0));
+                            new SFMapCoopAISpawn(map.object_manager.objects[obj_index], 0, 0));
 
                         // add mesh to the object
-                        SFEngine.SF3D.SceneSynchro.SceneNode obj_node = map.object_manager.objects[map.object_manager.objects.Count - 1].node;
+                        SFEngine.SF3D.SceneSynchro.SceneNode obj_node = map.object_manager.objects[obj_index].node;
 
                         string m = "editor_dummy_spawnpoint";
                         SFEngine.SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name + "_SPAWNCIRCLE");
@@ -88,7 +88,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             coopcamp_id = 0,
                             coopcamp_unknown = 0,
                             coopcamp_index = map.metadata.coop_spawns.Count - 1,
-                            obj_index = map.object_manager.objects.Count - 1,
+                            obj_index = obj_index,
                             position = pos,
                             is_adding = true
                         });
@@ -131,7 +131,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
                         {
-                            map.MoveObject(map.object_manager.objects.IndexOf(obj), pos);
+                            map.object_manager.MoveObject(map.object_manager.objects.IndexOf(obj), pos);
                         }
                     }
                     else
@@ -166,7 +166,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         is_adding = false
                     });
 
-                    map.DeleteObject(object_map_index);
+                    map.object_manager.RemoveObject(object_map_index);
                     ((map_controls.MapCoopCampInspector)MainForm.mapedittool.selected_inspector)
                         .RemoveCoopCamp(map.metadata.coop_spawns.IndexOf(spawn));
                     map.metadata.coop_spawns.Remove(spawn);

@@ -105,6 +105,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 VertexIndex = vertex_index,
                 NewX = new_x,
                 NewY = ((SFOutlineData)(category[current_element, ListPolygons.SelectedIndex][3])).Data[vertex_index * 2 + 1],
+                IsSubElement = true
             });
 
             listBox1.SelectedIndex = vertex_index;
@@ -132,6 +133,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 VertexIndex = vertex_index,
                 NewX = ((SFOutlineData)(category[current_element, ListPolygons.SelectedIndex][3])).Data[vertex_index * 2 + 0],
                 NewY = new_y,
+                IsSubElement = true
             });
 
             listBox1.SelectedIndex = vertex_index;

@@ -177,7 +177,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PostChangeProperty = new_unit_id
             });
 
-            map.ReplaceUnit(ListUnits.SelectedIndex, (ushort)new_unit_id);
+            map.unit_manager.ReplaceUnit(ListUnits.SelectedIndex, (ushort)new_unit_id);
 
             LabelUnitName.Text = SFCategoryManager.GetUnitName((ushort)new_unit_id, true);
             ListUnits.Items[ListUnits.SelectedIndex] = LabelUnitName.Text + " " +

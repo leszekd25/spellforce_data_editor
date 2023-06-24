@@ -53,7 +53,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         // undo/redo
                         previous_pos = map.unit_manager.units[selected_unit].grid_position;
 
-                        map.MoveUnit(selected_unit, pos);
+                        map.unit_manager.MoveUnit(selected_unit, pos);
                     }
                     else if (!first_click)
                     {
@@ -63,20 +63,20 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             return;
                         }
                         // create new unit and drag it until mouse released
-                        map.AddUnit(new_unit_id, pos, 0, 0, 0, 0, 0);
+                        int unit_index = map.unit_manager.AddUnit(new_unit_id, pos, 0, 0, 0, 0, 0);
                         // undo/redo
                         previous_pos = pos;
 
-                        ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).LoadNextUnit(map.unit_manager.units.Count - 1);
-                        Select(map.unit_manager.units.Count - 1);
-                        MainForm.mapedittool.InspectorSelect(map.unit_manager.units[map.unit_manager.units.Count - 1]);
+                        ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).LoadNextUnit(unit_index);
+                        Select(unit_index);
+                        MainForm.mapedittool.InspectorSelect(map.unit_manager.units[unit_index]);
 
                         map.heightmap.RefreshOverlay();
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
 
                         // undo/redo
                         MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorUnitAddOrRemove
-                        { unit = map.unit_manager.units[map.unit_manager.units.Count - 1], index = map.unit_manager.units.Count - 1, is_adding = true });
+                        { unit = map.unit_manager.units[unit_index], index = unit_index, is_adding = true });
                     }
 
                     // undo/redo
@@ -114,7 +114,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
                         {
-                            map.MoveUnit(selected_unit, pos);
+                            map.unit_manager.MoveUnit(selected_unit, pos);
                         }
                     }
                     else
@@ -136,7 +136,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorUnitAddOrRemove
                     { unit = map.unit_manager.units[unit_map_index], index = unit_map_index, is_adding = false });
 
-                    map.DeleteUnit(unit_map_index);
+                    map.unit_manager.RemoveUnit(unit_map_index);
                     ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).RemoveUnit(unit_map_index);
 
                     map.heightmap.RefreshOverlay();

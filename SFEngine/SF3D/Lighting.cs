@@ -33,67 +33,6 @@ namespace SFEngine.SF3D
 
         }
 
-        public void SetLightProjection(Physics.BoundingBox aabb, float znear, float zfar, ref Matrix4 lp, ref Matrix4 lm)
-        {
-            lp = Matrix4.CreateOrthographic(aabb.b.X - aabb.a.X, aabb.b.Z - aabb.a.Z, znear, zfar);
-
-            Vector3 camera_pos = aabb.center;
-            camera_pos += Direction * (zfar / 2);
-
-            lm = Matrix4.LookAt(camera_pos, camera_pos - Direction, new Vector3(0, 1, 0)) * lp;
-        }
-
-        public void SetupLightView(Vector3 camerapos)
-        {
-            SF3D.Physics.BoundingBox aabb = new Physics.BoundingBox(
-                new Vector3(camerapos.X - ShadowSize, 0, camerapos.Z - ShadowSize),
-                new Vector3(camerapos.X + ShadowSize, camerapos.Y + 100, camerapos.Z + ShadowSize));
-            SetupLightView(aabb);
-        }
-
-        public void SetLightDirection(Vector3 dir)
-        {
-            Direction = dir;
-            // calculate azimuth and altitude
-            Vector3 d2 = dir;
-            d2.Z = 0;
-            if (d2.LengthSquared == 0)
-            {
-                Azimuth = 0;
-            }
-            else
-            {
-                d2.Normalize();
-                Azimuth = (float)(Vector3.CalculateAngle(Vector3.UnitX, d2) * 180 / Math.PI);
-            }
-
-            d2 = dir;
-            d2.Y = 0;
-            if (d2.LengthSquared == 0)
-            {
-                if (dir.Z > 0)
-                {
-                    Altitude = 90;
-                }
-                else
-                {
-                    Altitude = -90;
-                }
-            }
-            else
-            {
-                d2.Normalize();
-                if (dir.X > 0)
-                {
-                    Altitude = (float)(Vector3.CalculateAngle(Vector3.UnitX, d2) * 180 / Math.PI);
-                }
-                else
-                {
-                    Altitude = (float)(Vector3.CalculateAngle(-Vector3.UnitX, d2) * 180 / Math.PI);
-                }
-            }
-        }
-
         public void SetAzimuthAltitude(float az, float al)
         {
             Azimuth = az;

@@ -187,7 +187,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 PostChangeProperty = new_object_id
             });
 
-            map.ReplaceObject(ListObjects.SelectedIndex, new_object_id);
+            map.object_manager.ReplaceObject(ListObjects.SelectedIndex, new_object_id);
 
             LabelObjectName.Text = SFCategoryManager.GetObjectName(new_object_id);
             ListObjects.Items[ListObjects.SelectedIndex] = LabelObjectName.Text + " "
@@ -283,7 +283,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
             Angle.Text = AngleTrackbar.Value.ToString();
-            map.RotateObject(ListObjects.SelectedIndex, AngleTrackbar.Value);
+            map.object_manager.RotateObject(ListObjects.SelectedIndex, AngleTrackbar.Value);
 
             map.heightmap.RefreshOverlay();
             MainForm.mapedittool.update_render = true;

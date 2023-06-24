@@ -492,7 +492,7 @@ namespace MapViewerNetNative
 
             if (movement_vector != new Vector2(0, 0))
             {
-                movement_vector = SFEngine.MathUtils.RotateVec2(movement_vector, SFRenderEngine.scene.camera.Direction.X + (float)(Math.PI / 2));
+                movement_vector = SFEngine.MathUtils.RotateVec2Mirrored(movement_vector, SFRenderEngine.scene.camera.Direction.X + (float)(Math.PI / 2));
                 movement_vector *= 60.0f * camera_speed_factor * (float)e.Time;
                 MoveCameraWorldMapPos(SFRenderEngine.scene.camera.position.Xz + movement_vector);
             }

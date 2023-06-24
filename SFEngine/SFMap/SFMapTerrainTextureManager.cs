@@ -154,19 +154,15 @@ namespace SFEngine.SFMap
         {
             string filename = GetTextureNameByID(tex_id);
 
-            SFTexture tex = null;
-            int tex_code = SFResourceManager.Textures.Load(filename, SFUnPak.FileSource.PAK, new SFTexture.SFTextureLoadArgs() { FreeOnInit = false, IgnoreMipmapSettings = true });
-            if ((tex_code != 0) && (tex_code != -1))
+            if(!SFResourceManager.Textures.Load(filename, SFUnPak.FileSource.PAK, out SFTexture tex, out int ec, new SFTexture.SFTextureLoadArgs() { FreeOnInit = false, IgnoreMipmapSettings = true }))
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFMapTerrainTextureManager.LoadTerrainTexture(): Could not load texture (texture name = " + filename + ")");
                 throw new Exception("SFMapTerrainTextureManager.Init(): Can't load texture (texture name = " + filename + ")");
             }
-
-            tex = SFResourceManager.Textures.Get(filename);
             tex.Uncompress();     // needed for this to work in texture atlas (?)
 
             byte[] data = tex.data;
-            SFResourceManager.Textures.Dispose(filename);
+            SFResourceManager.Textures.Dispose(tex);
             tex.data = data;
 
             return tex;

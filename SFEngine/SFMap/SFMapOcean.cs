@@ -45,19 +45,15 @@ namespace SFEngine.SFMap
             material.casts_shadow = false;
 
             string tex_name = "test_ocean_relief_4_l8";
-            SF3D.SFTexture tex = null;
-            int tex_code = SFResources.SFResourceManager.Textures.Load(tex_name, SFUnPak.FileSource.ANY);
-            if ((tex_code != 0) && (tex_code != -1))
+            if (!SFResources.SFResourceManager.Textures.Load(tex_name, SFUnPak.FileSource.ANY, out material.texture, out int ec))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapOcean(): Could not load texture (texture name = " + tex_name + ")");
-                tex = SF3D.SFRender.SFRenderEngine.opaque_tex;
+                material.texture = SF3D.SFRender.SFRenderEngine.opaque_tex;
             }
             else
             {
-                tex = SFResources.SFResourceManager.Textures.Get(tex_name);
-                tex.SetWrapMode((int)All.Repeat);
+                material.texture.SetWrapMode((int)OpenTK.Graphics.OpenGL.All.Repeat);
             }
-            material.texture = tex;
             material.casts_shadow = false;
             material.transparent_pass = false;
             material.water_pass = true;
@@ -88,7 +84,7 @@ namespace SFEngine.SFMap
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapOcean.Dispose() called");
             SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(SF3D.SFRender.SFRenderEngine.scene.root.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("_OCEAN_"));
-            SFResources.SFResourceManager.Models.Dispose("_OCEAN_");
+            SFResources.SFResourceManager.Models.Dispose(ocean_mesh);
             ocean_obj = null;
         }
     }

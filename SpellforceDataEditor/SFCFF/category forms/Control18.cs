@@ -75,7 +75,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox13_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 10, SFString.FromString(textBox13.Text, 0, 512));// SFEngine.Utility.FixedLengthString(textBox13.Text, 40));
+            set_element_variant(current_element, 10, SFString.FromString(textBox13.Text, 0, 40));// SFEngine.Utility.FixedLengthString(textBox13.Text, 40));
         }
 
         private void textBox10_TextChanged(object sender, EventArgs e)

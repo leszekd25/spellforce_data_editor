@@ -30,87 +30,6 @@ namespace SFEngine.SF3D.Physics
             nvector = v / length;
         }
 
-
-        // calculates point of intersection between the ray and a plane
-        // returns true if intersection happened, and writes point of intersection to a given out parameter
-        public bool Intersect(Plane pl, out Vector3 point)
-        {
-            float ln_prod = Vector3.Dot(vector, pl.normal);
-            if (ln_prod != 0)
-            {
-                // intersection of ray and plane
-                float ray_d = Vector3.Dot(pl.point - start, pl.normal) / ln_prod;
-                point = new Vector3(ray_d * vector + start);
-                if ((point - start).LengthSquared > length2)
-                {
-                    return false;
-                }
-
-                return true;
-            }
-            else
-            {
-                point = Vector3.Zero;
-                return false;
-            }
-        }
-
-        // calculates point of intersection between the ray and a triangle
-        // similar to plane intersection, but also must check if point lies inside of the given triangle
-        public bool Intersect(Triangle tr, out Vector3 point)
-        {
-            float ln_prod = Vector3.Dot(vector, tr.normal);
-            if (ln_prod > 0)
-            {
-                // intersection of ray and plane the triangle belongs to
-                float ray_d = Vector3.Dot(Vector3.Subtract(tr.v1, start), tr.normal) / ln_prod;
-                point = Vector3.Add(ray_d * vector, start);
-                if (Vector3.Subtract(point, start).LengthSquared > length2)
-                {
-                    return false;
-                }
-                // check if point is in triangle using barycentric coordinates
-                return tr.ContainsPoint(point);
-            }
-            else
-            {
-                point = Vector3.Zero;
-                return false;
-            }
-        }
-
-        // calculates whether the ray intersects a bounding  box, does NOT calculate the point of intersection
-        public bool IntersectNoPoint(BoundingBox ab)
-        {
-            float min_dist = 0.1f;
-            // binary sampling of distance to the box
-            float current_start = 0;
-            float current_end = (float)Math.Sqrt(length2);
-            float current_center;
-            Vector3 current_point;
-            float dist;
-            while (current_end - current_start >= min_dist)
-            {
-                current_center = (current_start + current_end) / 2;    //care about overflow
-                current_point = start + nvector * current_center;
-                dist = ab.DistanceIsotropic(current_point);
-                if (dist <= min_dist)
-                {
-                    return true;
-                }
-
-                if (ab.DistanceIsotropic(start + nvector * current_start) < ab.DistanceIsotropic(start + nvector * current_end))
-                {
-                    current_end = current_center;
-                }
-                else
-                {
-                    current_start = current_center;
-                }
-            }
-            return false;
-        }
-
         // https://tavianator.com/2015/ray_box_nan.html
         // fast ray-box intersection
         // plane contact counts as intersetcion
@@ -153,79 +72,6 @@ namespace SFEngine.SF3D.Physics
             point = start + nvector * (float)tmin;
 
             return (tmin < Length) & (tmax >= Math.Max(tmin, 0.0));
-        }
-
-        // calculates point of intersection between a collision mesh and the ray
-        // since the triangles are pre-cached, this is much faster than with the 3d model
-        public bool Intersect(CollisionMesh mesh, out Vector3 point)
-        {
-            point = Vector3.Zero;
-            if (mesh == null)
-            {
-                return false;
-            }
-
-            if (!IntersectNoPoint(mesh.aabb))
-            {
-                return false;
-            }
-
-            Ray r = this - mesh.offset;
-
-            for (int i = 0; i < mesh.triangles.Length; i++)
-            {
-                if (r.Intersect(mesh.triangles[i], out point))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        // version of Intersect(Triangle) for use in IntersectGeomPool() to avoid GC allocation in the form of new Triangle()
-        // optimized compared to the version above
-        public bool Intersect(Vector3 v1, Vector3 v2, Vector3 v3, out Vector3 point)
-        {
-            Vector3 v12 = Vector3.Subtract(v2, v1);
-            Vector3 v13 = Vector3.Subtract(v3, v1);
-            Vector3 normal = Vector3.Cross(v12, v13);
-
-            float ln_prod = Vector3.Dot(nvector, normal);
-            if (ln_prod > 0)         // ray is aiming at the triangle
-            {
-                // intersection of ray and plane the triangle belongs to
-                Vector3 h1 = Vector3.Subtract(v1, start);
-                float ray_d = Vector3.Dot(h1, normal) / ln_prod;
-                Vector3 h2 = Vector3.Multiply(nvector, ray_d);
-                point = Vector3.Add(h2, start);
-                if (ray_d > length)
-                {
-                    return false;
-                }
-                // check if point is in triangle using barycentric coordinates
-                Vector3 v = Vector3.Subtract(h2, h1);
-                float d00 = Vector3.Dot(v12, v12);
-                float d01 = Vector3.Dot(v12, v13);
-                float d11 = Vector3.Dot(v13, v13);
-                float denom = 1.0f / (d00 * d11 - d01 * d01);
-
-                float d20 = Vector3.Dot(v, v12);
-                float d21 = Vector3.Dot(v, v13);
-                float alpha = (d11 * d20 - d01 * d21) * denom;
-                if (alpha < 0)
-                {
-                    return false;
-                }
-
-                float beta = (d00 * d21 - d01 * d20) * denom;
-                return ((beta >= 0) && (alpha + beta <= 1));
-            }
-            else
-            {
-                point = Vector3.Zero;
-                return false;
-            }
         }
 
         // version of Intersect(Triangle) for use in IntersectGeomPool() to avoid GC allocation in the form of new Triangle()
@@ -419,16 +265,6 @@ namespace SFEngine.SF3D.Physics
             }
 
             return false;
-        }
-
-        public static Ray operator +(Ray r, Vector3 c)
-        {
-            return new Ray(r.start + c, r.vector);
-        }
-
-        public static Ray operator -(Ray r, Vector3 c)
-        {
-            return new Ray(r.start - c, r.vector);
         }
     }
 }

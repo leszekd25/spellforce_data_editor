@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using System.Collections.Generic;
+using System;
 
 namespace SFEngine.SFMap
 {
@@ -9,8 +10,6 @@ namespace SFEngine.SFMap
 
         public int level = 1;
         public int race_id = 0;
-        // debug only
-        public SF3D.SceneSynchro.SceneNodeSimple boundary_outline = null;
 
         public override string GetName()
         {
@@ -33,7 +32,6 @@ namespace SFEngine.SFMap
 
         public void AddBuildingCollisionBoundary(int id)
         {
-            // add new collision boundary (PENDING TESTS!!!!!!!!!!!)
             if (building_collision.ContainsKey((ushort)id))
             {
                 return;
@@ -78,17 +76,9 @@ namespace SFEngine.SFMap
         }
 
 
-        public SFMapBuilding AddBuilding(int id, SFCoord position, int angle, int npc_id, int level, int race_id, int index)
+        public int AddBuilding(int id, SFCoord position, int angle, int npc_id, int level, int race_id, int index = -1)
         {
             AddBuildingCollisionBoundary(id);
-            HashSet<SFCoord> pot_cells_taken = new HashSet<SFCoord>();
-
-            // todo: this is broken and MUST be fixed
-            //if(!BoundaryFits(id, position, angle, pot_cells_taken))
-            //{
-            //RemoveBuildingCollisionBoundary(id);
-            //return null;
-            //}
 
             SFMapBuilding bld = new SFMapBuilding();
             bld.grid_position = position;
@@ -115,22 +105,103 @@ namespace SFEngine.SFMap
             bld.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneBuilding(id, bld_name);
             bld.node.SetParent(map.heightmap.GetChunkNode(position));
 
-            //SF3D.SceneSynchro.SceneNodeSimple node = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(bld.node, building_collision[(ushort)id].b_outline.GetName(), "_OUTLINE_");
-            //node.Scale = new Vector3(1.4f / 1.28f);
+            map.heightmap.SetFlag(bld.grid_position, SFMapHeightMapFlag.ENTITY_BUILDING, true);
+            ApplyBuildingBlockFlags(bld, true);
 
-            return bld;
+            Vector2 b_offset = building_collision[(ushort)bld.game_id].origin;
+            Vector2 b_offset_rotated = MathUtils.RotateVec2(b_offset, (float)(angle * Math.PI / 180));
+
+            bld.node.Position = map.heightmap.GetFixedPosition(position) + new Vector3(-b_offset_rotated.X, 0, b_offset_rotated.Y);
+            bld.node.Scale = new Vector3(100 / 128f);
+            bld.node.SetAnglePlane(angle);
+            map.UpdateNodeDecal(bld.node, new Vector2(position.x, position.y), b_offset, angle);
+
+            map.heightmap.GetChunk(position).buildings.Add(bld);
+
+            return index;
         }
 
-        public void RemoveBuilding(SFMapBuilding b)
+        public void RemoveBuilding(int bld_index)
         {
-            buildings.Remove(b);
+            SFMapBuilding building = buildings[bld_index];
+            buildings.RemoveAt(bld_index);
 
-            if (b.node != null)
+            if (building.node != null)
             {
-                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(b.node);
+                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(building.node);
             }
 
-            map.heightmap.GetChunk(b.grid_position).RemoveBuilding(b);
+            map.heightmap.GetChunk(building.grid_position).buildings.Remove(building);
+
+            map.heightmap.SetFlag(building.grid_position, SFMapHeightMapFlag.ENTITY_BUILDING, false);
+            ApplyBuildingBlockFlags(building, false);
+        }
+
+        public void ReplaceBuilding(int building_map_index, ushort new_building_id)
+        {
+            SFMapBuilding building = buildings[building_map_index];
+
+            ApplyBuildingBlockFlags(building, false);
+            if (building.node != null)
+            {
+                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(building.node);
+            }
+
+            AddBuildingCollisionBoundary(new_building_id);
+            building.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneBuilding(new_building_id, building.GetName());
+            building.node.SetParent(map.heightmap.GetChunkNode(building.grid_position));
+
+            building.game_id = new_building_id;
+            ApplyBuildingBlockFlags(building, true);
+
+            Vector2 b_offset = map.building_manager.building_collision[(ushort)building.game_id].origin;
+            Vector2 b_offset_rotated = MathUtils.RotateVec2(b_offset, (float)(building.angle * Math.PI / 180));
+
+            building.node.Position = map.heightmap.GetFixedPosition(building.grid_position) + new Vector3(b_offset_rotated.X, 0, +b_offset_rotated.Y);
+            building.node.Scale = new Vector3(100 / 128f);
+            building.node.SetAnglePlane(building.angle);
+            map.UpdateNodeDecal(building.node, new Vector2(building.grid_position.x, building.grid_position.y), b_offset, building.angle);
+        }
+
+        public void RotateBuilding(int building_map_index, int angle)
+        {
+            SFMapBuilding building = buildings[building_map_index];
+
+            ApplyBuildingBlockFlags(building, false);
+            building.angle = angle;
+            ApplyBuildingBlockFlags(building, true);
+
+            Vector2 b_offset = building_collision[(ushort)building.game_id].origin;
+            Vector2 b_offset_rotated = MathUtils.RotateVec2(b_offset, (float)(angle * Math.PI / 180));
+
+            building.node.Position = map.heightmap.GetFixedPosition(building.grid_position) + new Vector3(-b_offset_rotated.X, 0, +b_offset_rotated.Y);
+            building.node.Scale = new Vector3(100 / 128f);
+            building.node.SetAnglePlane(building.angle);
+            map.UpdateNodeDecal(building.node, new Vector2(building.grid_position.x, building.grid_position.y), b_offset, building.angle);
+        }
+
+        public void MoveBuilding(int building_map_index, SFCoord new_pos)
+        {
+            SFMapBuilding building = buildings[building_map_index];
+
+            // move unit and set chunk dependency
+            map.heightmap.GetChunkNode(building.grid_position).MapChunk.buildings.Remove(building);
+            ApplyBuildingBlockFlags(building, false);
+            map.heightmap.SetFlag(building.grid_position, SFMapHeightMapFlag.ENTITY_BUILDING, false);
+            building.grid_position = new_pos;
+            map.heightmap.SetFlag(building.grid_position, SFMapHeightMapFlag.ENTITY_BUILDING, true);
+            ApplyBuildingBlockFlags(building, true);
+            map.heightmap.GetChunkNode(building.grid_position).MapChunk.buildings.Add(building);
+            building.node.SetParent(map.heightmap.GetChunkNode(building.grid_position));
+
+            // change visual transform
+            Vector2 b_offset = building_collision[(ushort)building.game_id].origin;
+            Vector2 b_offset_rotated = MathUtils.RotateVec2(b_offset, (float)(building.angle * Math.PI / 180));
+
+            building.node.Position = map.heightmap.GetFixedPosition(new_pos) + new Vector3(-b_offset_rotated.X, 0, +b_offset_rotated.Y);
+            building.node.Scale = new Vector3(100 / 128f);
+            building.node.SetAnglePlane(building.angle);
+            map.UpdateNodeDecal(building.node, new Vector2(building.grid_position.x, building.grid_position.y), b_offset, building.angle);
         }
 
         public void ApplyBuildingBlockFlags(SFMapBuilding b, bool set)
@@ -146,12 +217,6 @@ namespace SFEngine.SFMap
             {
                 map.heightmap.SetFlag(p, SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION, set);
             }
-        }
-
-        // get rid of collision meshes
-        public void Dispose()
-        {
-
         }
     }
 }

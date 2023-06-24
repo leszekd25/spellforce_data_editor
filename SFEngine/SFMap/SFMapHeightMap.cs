@@ -144,62 +144,6 @@ namespace SFEngine.SFMap
             GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
         }
 
-        public void Regenerate(SFMapHeightMap heightmap, SF3D.Physics.Frustum vis_frustum)
-        {
-            patch_count = 0;
-
-            Vector3 dir = vis_frustum.direction;
-            Vector3 start = vis_frustum.start;
-
-            foreach (var chunk in heightmap.chunk_nodes)
-            {
-                // 1.
-                Vector3 p = chunk.MapChunk.aabb.center; // A
-
-                // 2.
-                if (!vis_frustum.ContainsPointIgnoreZFar(p))
-                {
-                    // 3. 
-                    float bbox_radius = (chunk.MapChunk.aabb.center - chunk.MapChunk.aabb.a).Length;
-
-                    // 4.
-                    Vector3 v = p - start;
-                    Vector3 p_proj = start + (Vector3.Dot(v, dir) * dir); // P
-
-                    // 5.
-                    Vector3 n = (p_proj - p).Normalized();
-                    v = p + n * bbox_radius; // X
-
-                    // 6.
-                    if (!vis_frustum.ContainsPointIgnoreZFar(v))
-                    {
-                        // 7.
-                        if (Vector3.Dot(n, p_proj - v) > 0)
-                        {
-                            // 8.
-                            continue;
-                        }
-                    }
-                }
-
-                // build next patch
-                int ix = chunk.MapChunk.ix;
-                int iy = chunk.MapChunk.iy;
-                vertices[4 * patch_count + 0] = new Vector3(ix * SFMapHeightMapMesh.CHUNK_SIZE, 0, (iy + 1) * SFMapHeightMapMesh.CHUNK_SIZE);
-                vertices[4 * patch_count + 1] = new Vector3(ix * SFMapHeightMapMesh.CHUNK_SIZE, 0, iy * SFMapHeightMapMesh.CHUNK_SIZE);
-                vertices[4 * patch_count + 2] = new Vector3((ix + 1) * SFMapHeightMapMesh.CHUNK_SIZE, 0, iy * SFMapHeightMapMesh.CHUNK_SIZE);
-                vertices[4 * patch_count + 3] = new Vector3((ix + 1) * SFMapHeightMapMesh.CHUNK_SIZE, 0, (iy + 1) * SFMapHeightMapMesh.CHUNK_SIZE);
-
-                patch_count += 1;
-            }
-
-            if (patch_count > 0)
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
-                GL.BufferSubData<Vector3>(BufferTarget.ArrayBuffer, IntPtr.Zero, patch_count * 48, vertices);
-            }
-        }
-
         public void Unload()
         {
             if (vertex_array != 0)
@@ -258,15 +202,7 @@ namespace SFEngine.SFMap
                 for (int j = 0; j <= size; j++)
                 {
                     ushort h = hmap.GetHeightAt(ix * size + j, hmap.height - (iy * size + i) - 1);
-                    if (h > y2)
-                    {
-                        y2 = h;
-                    }
-
-                    if (h < y1)
-                    {
-                        y1 = h;
-                    }
+                    MathUtils.Expand(h, ref y1, ref y2);
                 }
             }
 
@@ -457,79 +393,6 @@ namespace SFEngine.SFMap
             hmap = null;
             owner = null;
         }
-
-        public void AddUnit(SFMapUnit u)
-        {
-            units.Add(u);
-        }
-
-        public void RemoveUnit(SFMapUnit u)
-        {
-            units.Remove(u);
-        }
-
-        public void AddObject(SFMapObject o)
-        {
-            objects.Add(o);
-        }
-
-        public void RemoveObject(SFMapObject o)
-        {
-            objects.Remove(o);
-        }
-
-        public void AddInteractiveObject(SFMapInteractiveObject io)
-        {
-            int_objects.Add(io);
-        }
-
-        public void RemoveInteractiveObject(SFMapInteractiveObject io)
-        {
-            int_objects.Remove(io);
-        }
-
-        public void AddDecoration(SFMapDecoration d)
-        {
-            decorations.Add(d);
-        }
-
-        public void RemoveDecoration(SFMapDecoration d)
-        {
-            decorations.Remove(d);
-        }
-
-        public void AddBuilding(SFMapBuilding b)
-        {
-            buildings.Add(b);
-        }
-
-        public void RemoveBuilding(SFMapBuilding b)
-        {
-            buildings.Remove(b);
-        }
-
-        public void AddPortal(SFMapPortal p)
-        {
-            portals.Add(p);
-        }
-
-        public void RemovePortal(SFMapPortal p)
-        {
-            portals.Remove(p);
-        }
-    }
-
-    // didnt know where to put it
-    public struct SFMapChunk60Data
-    {
-        public byte unknown;
-        public SFCoord pos;
-
-        public SFMapChunk60Data(byte u, SFCoord p)
-        {
-            unknown = u;
-            pos = p;
-        }
     }
 
     [Flags]
@@ -568,7 +431,6 @@ namespace SFEngine.SFMap
 
         public int width, height;
         public ushort[] height_data;
-        //public byte[] tile_data;
         public uint[] tile_data;    // r, g, b, a for a single texture fetch; r offset (0, -1), g offset (1, -1), b offset (0, 0), a offset (1, 0)
         public ushort[] flag_data;
         public SFMapHeightMapFlag overlay_flags = 0;
@@ -592,7 +454,6 @@ namespace SFEngine.SFMap
             width = w;
             height = h;
             height_data = new ushort[w * h];
-            //tile_data = new byte[w * h];
             tile_data = new uint[w * h];
             flag_data = new ushort[w * h]; flag_data.Initialize();
             temporary_mask = new bool[w * h];
@@ -781,16 +642,13 @@ namespace SFEngine.SFMap
             }
 
             // load bump map
-            int tex_code = SFResources.SFResourceManager.Textures.Load("landscape_island_worldd", SFUnPak.FileSource.PAK);
-            if ((tex_code != 0) && (tex_code != -1))
+            if(!SFResources.SFResourceManager.Textures.Load("landscape_island_worldd", SFUnPak.FileSource.PAK, out terrain_texture_lod_bump, out int ec))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapHeightMap.Generate(): Could not load texture (texture name = landscape_island_worldd)");
                 terrain_texture_lod_bump = SF3D.SFRender.SFRenderEngine.opaque_tex;
             }
             else
             {
-                terrain_texture_lod_bump = SFResources.SFResourceManager.Textures.Get("landscape_island_worldd");
-
                 SF3D.SFRender.SFRenderEngine.SetTexture(5, TextureTarget.Texture2D, terrain_texture_lod_bump.tex_id);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.Repeat);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.Repeat);
@@ -893,39 +751,17 @@ namespace SFEngine.SFMap
         // returns bounding box for given area
         public void GetBoxFromArea(IEnumerable<SFCoord> area, out SFCoord tl, out SFCoord br)
         {
-            int t, l, r, b;
             if (area.Count() == 0)
             {
-                tl = new SFCoord(0, 0); br = new SFCoord(0, 0); return;
+                tl = new SFCoord(0, 0); br = new SFCoord(0, 0);
+                return;
             }
-            t = area.First<SFCoord>().y; l = area.First<SFCoord>().x;
-            b = area.First<SFCoord>().y; r = area.First<SFCoord>().x;
 
+            tl = br = area.First();
             foreach (SFCoord p in area)
             {
-                if (p.x < l)
-                {
-                    l = p.x;
-                }
-
-                if (p.x > r)
-                {
-                    r = p.x;
-                }
-
-                if (p.y < t)
-                {
-                    t = p.y;
-                }
-
-                if (p.y > b)
-                {
-                    b = p.y;
-                }
+                MathUtils.Expand(p, ref tl, ref br);
             }
-
-            tl = new SFCoord(l, t);
-            br = new SFCoord(r, b);
         }
 
         // returns height for given grid position (as found in map file, 0 = lowest, 65535 - highest available)
@@ -1299,21 +1135,11 @@ namespace SFEngine.SFMap
         // rebuilds heightmap texturing within the given bounding box
         public void RebuildTerrainTexture(SFCoord topleft, SFCoord bottomright)
         {
-            int chunk_count_x = width / SFMapHeightMapMesh.CHUNK_SIZE;
-            int chunk_count_y = height / SFMapHeightMapMesh.CHUNK_SIZE;
-
-            int topchunkx = topleft.x / SFMapHeightMapMesh.CHUNK_SIZE;
-            int topchunky = topleft.y / SFMapHeightMapMesh.CHUNK_SIZE;
-            int botchunkx = bottomright.x / SFMapHeightMapMesh.CHUNK_SIZE;
-            int botchunky = bottomright.y / SFMapHeightMapMesh.CHUNK_SIZE;
-
             for (int y = topleft.y; y <= bottomright.y; y++)
             {
                 for (int x = topleft.x; x <= bottomright.x; x++)
                 {
                     SFCoord pos = new SFCoord(x, y);
-                    //SetFlag(pos, SFMapHeightMapFlag.TERRAIN_MOVEMENT, texture_manager.texture_tiledata[tile_data[y * width + x]].blocks_movement);
-                    //SetFlag(pos, SFMapHeightMapFlag.TERRAIN_VISION, texture_manager.texture_tiledata[tile_data[y * width + x]].blocks_vision);
                     SetFlag(pos, SFMapHeightMapFlag.TERRAIN_MOVEMENT, texture_manager.texture_tiledata[GetTile(pos)].blocks_movement);
                     SetFlag(pos, SFMapHeightMapFlag.TERRAIN_VISION, texture_manager.texture_tiledata[GetTile(pos)].blocks_vision);
                 }
@@ -1365,23 +1191,6 @@ namespace SFEngine.SFMap
             GL.BindBuffer(BufferTarget.UniformBuffer, uniformOverlays_buffer);
             GL.BufferSubData(BufferTarget.UniformBuffer, new IntPtr(0), 16 * 4 * 4, ref uniformOverlays[0]);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-        }
-
-        // returns all scene chunk nodes that contain any of the points
-        // it's pretty slow though...
-        public List<SF3D.SceneSynchro.SceneNodeMapChunk> GetAreaMapNodes(HashSet<SFCoord> points)
-        {
-            List<SF3D.SceneSynchro.SceneNodeMapChunk> list = new List<SF3D.SceneSynchro.SceneNodeMapChunk>();
-            foreach (SFCoord p in points)
-            {
-                SF3D.SceneSynchro.SceneNodeMapChunk node = GetChunkNode(p);
-                if (!list.Contains(node))
-                {
-                    list.Add(node);
-                }
-            }
-
-            return list;
         }
 
         public bool CanMoveToPosition(SFCoord pos)
@@ -1468,25 +1277,7 @@ namespace SFEngine.SFMap
             Vector2 wcs_bottomright = wcs_bottomright_prime;
             for (int i = 0; i < 4; i++)
             {
-                if (wcs_bbox_mesh[i].X < wcs_topleft.X)
-                {
-                    wcs_topleft.X = wcs_bbox_mesh[i].X;
-                }
-
-                if (wcs_bbox_mesh[i].X > wcs_bottomright.X)
-                {
-                    wcs_bottomright.X = wcs_bbox_mesh[i].X;
-                }
-
-                if (wcs_bbox_mesh[i].Y < wcs_topleft.Y)
-                {
-                    wcs_topleft.Y = wcs_bbox_mesh[i].Y;
-                }
-
-                if (wcs_bbox_mesh[i].Y > wcs_bottomright.Y)
-                {
-                    wcs_bottomright.Y = wcs_bbox_mesh[i].Y;
-                }
+                MathUtils.Expand(wcs_bbox_mesh[i], ref wcs_topleft, ref wcs_bottomright);
             }
 
             // 5. get map coordinates to gather the points from
@@ -1571,29 +1362,15 @@ namespace SFEngine.SFMap
                 return;
             }
 
-            if (height_data_texture != null)
+            SFResources.SFResourceManager.Textures.Dispose(height_data_texture);
+            height_data_texture = null;
+            SFResources.SFResourceManager.Textures.Dispose(tile_data_texture);
+            tile_data_texture = null;
+            SFResources.SFResourceManager.Textures.Dispose(overlay_texture);
+            overlay_texture = null;
+            if (terrain_texture_lod_bump != SF3D.SFRender.SFRenderEngine.opaque_tex)
             {
-                SFResources.SFResourceManager.Textures.Dispose(height_data_texture.Name);
-                height_data_texture = null;
-            }
-            if (tile_data_texture != null)
-            {
-                SFResources.SFResourceManager.Textures.Dispose(tile_data_texture.Name);
-                tile_data_texture = null;
-            }
-
-            if (overlay_texture != null)
-            {
-                SFResources.SFResourceManager.Textures.Dispose(overlay_texture.Name);
-                overlay_texture = null;
-            }
-
-            if (terrain_texture_lod_bump != null)
-            {
-                if (terrain_texture_lod_bump != SF3D.SFRender.SFRenderEngine.opaque_tex)
-                {
-                    SFResources.SFResourceManager.Textures.Dispose(terrain_texture_lod_bump.Name);
-                }
+                SFResources.SFResourceManager.Textures.Dispose(terrain_texture_lod_bump);
             }
             terrain_texture_lod_bump = null;
 

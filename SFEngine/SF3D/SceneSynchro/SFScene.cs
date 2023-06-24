@@ -72,6 +72,7 @@ namespace SFEngine.SF3D.SceneSynchro
         public HashSet<SFSubModel3D> additive_pass_models = new HashSet<SFSubModel3D>();
 
         public HashSet<SceneNodeAnimated> an_primary_nodes = new HashSet<SceneNodeAnimated>();
+        public LinearPool<SceneNodeBone> an_bone_nodes = new LinearPool<SceneNodeBone>();
 
         public LinearPool<SFDecalInfo> decal_info = new LinearPool<SFDecalInfo>();
 
@@ -347,17 +348,11 @@ namespace SFEngine.SF3D.SceneSynchro
             SceneNodeSimple new_node = new SceneNodeSimple(new_node_name);
             new_node.SetParent(parent);
 
-            bool loaded_model = SFResourceManager.LoadModel(model_name);
-            if (loaded_model)
+            if(!SFResourceManager.Models.Load(model_name, SFUnPak.FileSource.ANY, out SFModel3D mesh, out int ec))
             {
-                new_node.Mesh = SFResourceManager.Models.Get(model_name);
+                SFResourceManager.Models.Load("_MISSING_MESH_", SFUnPak.FileSource.ANY, out mesh, out ec);
             }
-
-            if (new_node.Mesh == null)
-            {
-                SFResourceManager.LoadModel("_MISSING_MESH_");
-                new_node.Mesh = SFResourceManager.Models.Get("_MISSING_MESH_");
-            }
+            new_node.Mesh = mesh;
             return new_node;
         }
 
@@ -372,26 +367,20 @@ namespace SFEngine.SF3D.SceneSynchro
             }
             new_node.SetParent(parent);
 
-            bool loaded_skin = SFResourceManager.LoadSkeleton(skin_name);
-            if (loaded_skin)
+            if(SFResourceManager.Skeletons.Load(skin_name, SFUnPak.FileSource.ANY, out SFSkeleton skel, out int ec))
             {
-                loaded_skin = SFResourceManager.LoadSkin(skin_name);
-            }
-
-            if (loaded_skin)
-            {
-                if(primary)
+                if(SFResourceManager.Skins.Load(skin_name, SFUnPak.FileSource.ANY, out SFModelSkin skin, out ec))
                 {
-                    new_node.SetSkeleton(SFResourceManager.Skeletons.Get(skin_name));
+                    if (primary)
+                    {
+                        new_node.SetSkeleton(skel);
+                    }
+                    new_node.SetSkin(skin);
                 }
-                new_node.SetSkin(SFResourceManager.Skins.Get(skin_name));
             }
 
-            loaded_skin = SFResourceManager.LoadModel(skin_name);
-            if (loaded_skin)
-            {
-                new_node.Mesh = SFResourceManager.Models.Get(skin_name);
-            }
+            SFResourceManager.Models.Load(skin_name, SFUnPak.FileSource.ANY, out SFModel3D mesh, out ec);
+            new_node.Mesh = mesh;
 
             return new_node;
         }
@@ -402,6 +391,8 @@ namespace SFEngine.SF3D.SceneSynchro
             new_node.SetParent(parent);
 
             new_node.SetBone(bone_name);
+
+            new_node.SceneIndex = an_bone_nodes.Add(new_node);
 
             return new_node;
         }
@@ -763,7 +754,17 @@ namespace SFEngine.SF3D.SceneSynchro
             SFSubModel3D.Cache.CurrentMatrix = cur_offset;
             SFSubModel3D.Cache.MatrixUpload(0, SFSubModel3D.Cache.CurrentMatrix);
 
-            //System.Diagnostics.Debug.WriteLine("INSTANCE MATRIX COUNT: " + cur_offset.ToString());
+            if (Settings.DynamicMap)
+            {
+                for(int i = 0; i < an_bone_nodes.elements.Count; i++)
+                {
+                    if(an_bone_nodes.elem_active[i])
+                    {
+                        an_bone_nodes.elements[i].TouchParents();
+                        an_bone_nodes.elements[i].TouchResultTransform();
+                    }
+                }
+            }
         }
 
         public void Clear()
@@ -774,13 +775,12 @@ namespace SFEngine.SF3D.SceneSynchro
             transparent_pass_models.Clear();
             water_pass_models.Clear();
             additive_pass_models.Clear();
-            decal_info.Clear();
             an_primary_nodes.Clear();
+            an_bone_nodes.Clear();
+            decal_info.Clear();
 
-
-            SFResourceManager.Models.Dispose("_MISSING_MESH_");
+            SFResourceManager.Models.Dispose(missing_node_mesh);
             missing_node_mesh = null;
-
         }
     }
 }

@@ -108,11 +108,8 @@ namespace SFEngine.SFMap
 
         private void DisposeLakeMesh(SFMapLake lake)
         {
-            if (lake.node.Mesh != null)
-            {
-                SFResources.SFResourceManager.Models.Dispose(lake.node.Mesh.Name);
-                lake.node.Mesh = null;
-            }
+            SFResources.SFResourceManager.Models.Dispose(lake.node.Mesh);
+            lake.node.Mesh = null;
         }
 
         public void RemoveLake(SFMapLake lake)
@@ -359,19 +356,15 @@ namespace SFEngine.SFMap
             SFMaterial material = new SFMaterial();
 
             string tex_name = GetLakeTextureName(lake.type);
-            SFTexture tex = null;
-            int tex_code = SFResources.SFResourceManager.Textures.Load(tex_name, SFUnPak.FileSource.ANY);
-            if ((tex_code != 0) && (tex_code != -1))
+            if(!SFResources.SFResourceManager.Textures.Load(tex_name, SFUnPak.FileSource.ANY, out material.texture, out int ec))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapLake.Generate(): Could not load texture (texture name = " + tex_name + ")");
-                tex = SF3D.SFRender.SFRenderEngine.opaque_tex;
+                material.texture = SF3D.SFRender.SFRenderEngine.opaque_tex;
             }
             else
             {
-                tex = SFResources.SFResourceManager.Textures.Get(tex_name);
-                tex.SetWrapMode((int)OpenTK.Graphics.OpenGL.All.Repeat);
+                material.texture.SetWrapMode((int)OpenTK.Graphics.OpenGL.All.Repeat);
             }
-            material.texture = tex;
             material.casts_shadow = false;
             material.transparent_pass = false;
             if ((lake.type == 0) || (lake.type == 1) || (lake.type == 3))   // water

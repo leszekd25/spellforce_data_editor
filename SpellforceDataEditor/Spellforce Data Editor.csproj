@@ -420,6 +420,12 @@
     <Compile Include="SFCFF\helper_forms\ListBoxNoFlicker.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="SFCFF\helper_forms\PatchGamedataForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SFCFF\helper_forms\PatchGamedataForm.Designer.cs">
+      <DependentUpon>PatchGamedataForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SFCFF\helper_forms\SaveGamedataForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -887,6 +893,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SFCFF\helper_forms\CFFOperatorHistory.resx">
       <DependentUpon>CFFOperatorHistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SFCFF\helper_forms\PatchGamedataForm.resx">
+      <DependentUpon>PatchGamedataForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SFCFF\helper_forms\SaveGamedataForm.resx">
       <DependentUpon>SaveGamedataForm.cs</DependentUpon>

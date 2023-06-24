@@ -97,18 +97,11 @@ namespace SFEngine.SF3D
             matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
             matname = matname.ToLower();
 
-            SFTexture tex = null;
-            int tex_code = SFResourceManager.Textures.Load(matname, SFUnPak.FileSource.ANY);
-            if ((tex_code != 0) && (tex_code != -1))
+            if (!SFResourceManager.Textures.Load(matname, SFUnPak.FileSource.ANY, out material.texture, out int ec))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModelSkin.Load(): Could not load texture (texture name = " + matname + ")");
-                tex = SFRender.SFRenderEngine.opaque_tex;
+                material.texture = SFRender.SFRenderEngine.opaque_tex;
             }
-            else
-            {
-                tex = SFResourceManager.Textures.Get(matname);
-            }
-            material.texture = tex;
 
             br.BaseStream.Position += 126;
 
@@ -128,9 +121,10 @@ namespace SFEngine.SF3D
                 RAMSize = 0;
                 DeviceSize = 0;
             }
-            if ((material != null) && (material.texture != null) && (material.texture != SFRender.SFRenderEngine.opaque_tex))
+            if ((material != null) && (material.texture != SFRender.SFRenderEngine.opaque_tex))
             {
-                SFResourceManager.Textures.Dispose(material.texture.Name);
+                SFResourceManager.Textures.Dispose(material.texture);
+                material = null;
             }
         }
     }
@@ -156,16 +150,11 @@ namespace SFEngine.SF3D
         {
             MemoryStream ms = new MemoryStream(data, offset, data.Length - offset);
             // load BSI
-
-            SFBoneIndex bsi = null;
-            int bsi_code = SFResourceManager.BSIs.Load(SFResourceManager.current_resource, SFUnPak.FileSource.ANY);
-            if ((bsi_code != 0) && (bsi_code != -1))
+            if(!SFResourceManager.BSIs.Load(SFResourceManager.current_resource, SFUnPak.FileSource.ANY, out SFBoneIndex bsi, out int ec))
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkinChunk.Load(): Could not load bone skin index file (BSI name = " + SFResourceManager.current_resource + ")");
-                return bsi_code;
+                return ec;
             }
-            bsi = SFResourceManager.BSIs.Get(SFResourceManager.current_resource);
-
 
             BinaryReader br = new BinaryReader(ms);
 
@@ -195,12 +184,12 @@ namespace SFEngine.SF3D
             catch (Exception)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkin.Load(): Invalid skin data!");
-                SFResourceManager.BSIs.Dispose(SFResourceManager.current_resource);
+                SFResourceManager.BSIs.Dispose(bsi);
                 Dispose();
                 return -2;
             }
 
-            SFResourceManager.BSIs.Dispose(SFResourceManager.current_resource);
+            SFResourceManager.BSIs.Dispose(bsi);
 
             foreach(SFModelSkinChunk msc in submodels)
             {
@@ -285,12 +274,18 @@ namespace SFEngine.SF3D
                 }
 
                 msc.material = submodels[tex_chunks_list[i][0]].material;
-                SFResourceManager.Textures.Load(msc.material.texture.Name, SFUnPak.FileSource.ANY);    // to increase ref counter
+                if (msc.material.texture != SFRender.SFRenderEngine.opaque_tex)
+                {
+                    SFResourceManager.Textures.Load(msc.material.texture.Name, SFUnPak.FileSource.ANY, out SFTexture tex, out int ec);    // to increase ref counter
+                }
             }
 
             foreach(var msc in submodels)
             {
-                SFResourceManager.Textures.Dispose(msc.material.texture.Name);  // to decrease ref counter
+                if (msc.material.texture != SFRender.SFRenderEngine.opaque_tex)
+                {
+                    SFResourceManager.Textures.Dispose(msc.material.texture);  // to decrease ref counter
+                }
             }
             submodels = merged_chunks;
         }

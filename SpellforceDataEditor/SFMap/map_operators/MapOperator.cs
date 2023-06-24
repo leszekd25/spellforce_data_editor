@@ -582,7 +582,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void Add(SFEngine.SFMap.SFMap map)
         {
-            map.AddUnit(unit.game_id, unit.grid_position, unit.unknown_flags, unit.npc_id, unit.unknown, unit.group, unit.unknown2, index);
+            map.unit_manager.AddUnit(unit.game_id, unit.grid_position, unit.unknown_flags, unit.npc_id, unit.unknown, unit.group, unit.unknown2, index);
 
             if (MainForm.mapedittool.selected_inspector is map_controls.MapUnitInspector)
             {
@@ -600,13 +600,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     MainForm.mapedittool.InspectorSelect(null);
                 }
 
-                map.DeleteUnit(index);
+                map.unit_manager.RemoveUnit(index);
 
                 ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).RemoveUnit(index);
             }
             else
             {
-                map.DeleteUnit(index);
+                map.unit_manager.RemoveUnit(index);
             }
         }
 
@@ -665,7 +665,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void Add(SFEngine.SFMap.SFMap map)
         {
-            map.AddBuilding(building.game_id, building.grid_position, building.angle, building.npc_id, building.level, building.race_id, index);
+            map.building_manager.AddBuilding(building.game_id, building.grid_position, building.angle, building.npc_id, building.level, building.race_id, index);
 
             if (MainForm.mapedittool.selected_inspector is map_controls.MapBuildingInspector)
             {
@@ -683,13 +683,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     MainForm.mapedittool.InspectorSelect(null);
                 }
 
-                map.DeleteBuilding(index);
+                map.building_manager.RemoveBuilding(index);
 
                 ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).RemoveBuilding(index);
             }
             else
             {
-                map.DeleteBuilding(index);
+                map.building_manager.RemoveBuilding(index);
             }
         }
 
@@ -747,7 +747,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void Add(SFEngine.SFMap.SFMap map)
         {
-            map.AddObject(obj.game_id, obj.grid_position, obj.angle, obj.npc_id, obj.unknown1, index);
+            map.object_manager.AddObject(obj.game_id, obj.grid_position, obj.angle, obj.npc_id, obj.unknown1, index);
 
             if (MainForm.mapedittool.selected_inspector is map_controls.MapObjectInspector)
             {
@@ -765,13 +765,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     MainForm.mapedittool.InspectorSelect(null);
                 }
 
-                map.DeleteObject(index);
+                map.object_manager.RemoveObject(index);
 
                 ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).RemoveObject(index);
             }
             else
             {
-                map.DeleteObject(index);
+                map.object_manager.RemoveObject(index);
             }
         }
 
@@ -832,7 +832,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void Add(SFEngine.SFMap.SFMap map)
         {
-            map.AddObject(2541, position, 0, 0, 0, obj_index);
+            map.object_manager.AddObject(2541, position, 0, 0, 0, obj_index);
             map.metadata.coop_spawns.Insert(coopcamp_index,
                 new SFMapCoopAISpawn(map.object_manager.objects[obj_index], coopcamp_id, coopcamp_unknown));
 
@@ -858,14 +858,14 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     MainForm.mapedittool.InspectorSelect(null);
                 }
 
-                map.DeleteObject(obj_index);
+                map.object_manager.RemoveObject(obj_index);
 
                 ((map_controls.MapCoopCampInspector)MainForm.mapedittool.selected_inspector).RemoveCoopCamp(coopcamp_index);
                 map.metadata.coop_spawns.Remove(map.metadata.coop_spawns[coopcamp_index]);
             }
             else
             {
-                map.DeleteObject(obj_index);
+                map.object_manager.RemoveObject(obj_index);
 
                 map.metadata.coop_spawns.Remove(map.metadata.coop_spawns[coopcamp_index]);
             }
@@ -935,7 +935,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
                 map.metadata.spawns[i].bindstone_index += (bindstone_index <= map.metadata.spawns[i].bindstone_index ? 1 : 0);
             }
 
-            map.AddInteractiveObject(769, bindstone_pos, 0, 1, intobj_index);
+            map.int_object_manager.AddInteractiveObject(769, bindstone_pos, 0, 1, intobj_index);
             map.metadata.spawns.Insert(player_index, new SFMapSpawn() { bindstone_index = bindstone_index, pos = bindstone_pos, text_id = bindstone_textid, unknown = bindstone_unknown });
 
 
@@ -955,7 +955,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     MainForm.mapedittool.InspectorSelect(null);
                 }
 
-                map.DeleteInteractiveObject(intobj_index);
+                map.int_object_manager.RemoveInteractiveObject(intobj_index);
 
                 ((map_controls.MapBindstoneInspector)MainForm.mapedittool.selected_inspector).RemoveBindstone(bindstone_index);
                 map.metadata.spawns.RemoveAt(player_index);
@@ -968,7 +968,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
             }
             else
             {
-                map.DeleteInteractiveObject(intobj_index);
+                map.int_object_manager.RemoveInteractiveObject(intobj_index);
 
                 map.metadata.spawns.RemoveAt(player_index);
             }
@@ -1028,7 +1028,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void Add(SFEngine.SFMap.SFMap map)
         {
-            map.AddPortal(portal.game_id, portal.grid_position, portal.angle, index);
+            map.portal_manager.AddPortal(portal.game_id, portal.grid_position, portal.angle, index);
 
             if (MainForm.mapedittool.selected_inspector is map_controls.MapPortalInspector)
             {
@@ -1046,13 +1046,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     MainForm.mapedittool.InspectorSelect(null);
                 }
 
-                map.DeletePortal(index);
+                map.portal_manager.RemovePortal(index);
 
                 ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).RemovePortal(index);
             }
             else
             {
-                map.DeletePortal(index);
+                map.portal_manager.RemovePortal(index);
             }
         }
 
@@ -1111,7 +1111,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         private void Add(SFEngine.SFMap.SFMap map)
         {
-            map.AddInteractiveObject(intobj.game_id, intobj.grid_position, intobj.angle, intobj.unk_byte, intobj_index);
+            map.int_object_manager.AddInteractiveObject(intobj.game_id, intobj.grid_position, intobj.angle, intobj.unk_byte, intobj_index);
             if (MainForm.mapedittool.selected_inspector is map_controls.MapMonumentInspector)
             {
                 ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).LoadNextMonument(monument_index);
@@ -1128,13 +1128,13 @@ namespace SpellforceDataEditor.SFMap.map_operators
                     MainForm.mapedittool.InspectorSelect(null);
                 }
 
-                map.DeleteInteractiveObject(intobj_index);
+                map.int_object_manager.RemoveInteractiveObject(intobj_index);
 
                 ((map_controls.MapMonumentInspector)MainForm.mapedittool.selected_inspector).RemoveMonument(monument_index);
             }
             else
             {
-                map.DeleteInteractiveObject(intobj_index);
+                map.int_object_manager.RemoveInteractiveObject(intobj_index);
             }
         }
 
@@ -1216,10 +1216,10 @@ namespace SpellforceDataEditor.SFMap.map_operators
                         switch (property)
                         {
                             case MapOperatorEntityProperty.ID:
-                                map.ReplaceUnit(index, (ushort)prop);
+                                map.unit_manager.ReplaceUnit(index, (ushort)prop);
                                 break;
                             case MapOperatorEntityProperty.POSITION:
-                                map.MoveUnit(index, (SFEngine.SFMap.SFCoord)prop);
+                                map.unit_manager.MoveUnit(index, (SFEngine.SFMap.SFCoord)prop);
                                 break;
                             case MapOperatorEntityProperty.NPCID:
                                 unit.npc_id = (int)prop;
@@ -1248,15 +1248,15 @@ namespace SpellforceDataEditor.SFMap.map_operators
                         switch (property)
                         {
                             case MapOperatorEntityProperty.ID:
-                                map.ReplaceBuilding(index, (ushort)prop);
+                                map.building_manager.ReplaceBuilding(index, (ushort)prop);
                                 MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION) == SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.POSITION:
-                                map.MoveBuilding(index, (SFEngine.SFMap.SFCoord)prop);
+                                map.building_manager.MoveBuilding(index, (SFEngine.SFMap.SFCoord)prop);
                                 MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION) == SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.ANGLE:
-                                map.RotateBuilding(index, (int)prop);
+                                map.building_manager.RotateBuilding(index, (int)prop);
                                 MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION) == SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.NPCID:
@@ -1280,15 +1280,15 @@ namespace SpellforceDataEditor.SFMap.map_operators
                         switch (property)
                         {
                             case MapOperatorEntityProperty.ID:
-                                map.ReplaceObject(index, (ushort)prop);
+                                map.object_manager.ReplaceObject(index, (ushort)prop);
                                 MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.POSITION:
-                                map.MoveObject(index, (SFEngine.SFMap.SFCoord)prop);
+                                map.object_manager.MoveObject(index, (SFEngine.SFMap.SFCoord)prop);
                                 MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.ANGLE:
-                                map.RotateObject(index, (int)prop);
+                                map.object_manager.RotateObject(index, (int)prop);
                                 MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.NPCID:
@@ -1313,7 +1313,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
                                 map.metadata.coop_spawns[index].spawn_id = (int)prop;
                                 break;
                             case MapOperatorEntityProperty.POSITION:
-                                map.MoveObject(obj_index, (SFEngine.SFMap.SFCoord)prop);
+                                map.object_manager.MoveObject(obj_index, (SFEngine.SFMap.SFCoord)prop);
                                 break;
                             case MapOperatorEntityProperty.COOPCAMPUNKNOWN:
                                 map.metadata.coop_spawns[index].spawn_certain = (int)prop;
@@ -1338,7 +1338,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
                             case MapOperatorEntityProperty.POSITION:
                                 if (int_obj_index != SFEngine.Utility.NO_INDEX)
                                 {
-                                    map.MoveInteractiveObject(int_obj_index, (SFEngine.SFMap.SFCoord)prop);
+                                    map.int_object_manager.MoveInteractiveObject(int_obj_index, (SFEngine.SFMap.SFCoord)prop);
                                     MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 }
                                 map.metadata.spawns[player].pos = (SFEngine.SFMap.SFCoord)prop;
@@ -1346,7 +1346,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
                             case MapOperatorEntityProperty.ANGLE:
                                 if (int_obj_index != SFEngine.Utility.NO_INDEX)
                                 {
-                                    map.RotateInteractiveObject(int_obj_index, (int)prop);
+                                    map.int_object_manager.RotateInteractiveObject(int_obj_index, (int)prop);
                                     MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 }
                                 break;
@@ -1368,11 +1368,11 @@ namespace SpellforceDataEditor.SFMap.map_operators
                                 portal.game_id = (int)((ushort)prop);
                                 break;
                             case MapOperatorEntityProperty.POSITION:
-                                map.MovePortal(index, (SFEngine.SFMap.SFCoord)prop);
+                                map.portal_manager.MovePortal(index, (SFEngine.SFMap.SFCoord)prop);
                                 MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.ANGLE:
-                                map.RotatePortal(index, (int)prop);
+                                map.portal_manager.RotatePortal(index, (int)prop);
                                 MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             default:
@@ -1389,11 +1389,11 @@ namespace SpellforceDataEditor.SFMap.map_operators
                         switch (property)
                         {
                             case MapOperatorEntityProperty.POSITION:
-                                map.MoveInteractiveObject(int_obj_index, (SFEngine.SFMap.SFCoord)prop);
+                                map.int_object_manager.MoveInteractiveObject(int_obj_index, (SFEngine.SFMap.SFCoord)prop);
                                 MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             case MapOperatorEntityProperty.ANGLE:
-                                map.RotateInteractiveObject(int_obj_index, (int)prop);
+                                map.int_object_manager.RotateInteractiveObject(int_obj_index, (int)prop);
                                 MainForm.mapedittool.op_queue.RefreshOverlay = (map.heightmap.overlay_flags & SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION) == SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION;
                                 break;
                             default:

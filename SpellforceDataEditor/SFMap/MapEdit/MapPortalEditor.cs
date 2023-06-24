@@ -54,16 +54,16 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         // undo/redo
                         previous_pos = map.portal_manager.portals[selected_portal].grid_position;
 
-                        map.MovePortal(selected_portal, pos);
+                        map.portal_manager.MovePortal(selected_portal, pos);
                     }
                     else if (!first_click)
                     {
-                        map.AddPortal(0, pos, 0);
+                        int ptl_index = map.portal_manager.AddPortal(0, pos, 0);
                         // undo/redo
                         previous_pos = pos;
 
-                        ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).LoadNextPortal(map.portal_manager.portals.Count - 1);
-                        Select(map.portal_manager.portals.Count - 1);
+                        ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).LoadNextPortal(ptl_index);
+                        Select(ptl_index);
                         MainForm.mapedittool.InspectorSelect(map.portal_manager.portals[selected_portal]);
 
                         map.heightmap.RefreshOverlay();
@@ -71,7 +71,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                         // undo/redo
                         MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorPortalAddOrRemove()
-                        { portal = map.portal_manager.portals[map.portal_manager.portals.Count - 1], index = map.portal_manager.portals.Count - 1, is_adding = true });
+                        { portal = map.portal_manager.portals[ptl_index], index = ptl_index, is_adding = true });
                     }
 
                     // undo/redo
@@ -110,7 +110,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
                         {
-                            map.MovePortal(selected_portal, pos);
+                            map.portal_manager.MovePortal(selected_portal, pos);
                         }
                     }
                     else
@@ -136,7 +136,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         is_adding = false
                     });
 
-                    map.DeletePortal(portal_map_index);
+                    map.portal_manager.RemovePortal(portal_map_index);
                     ((map_controls.MapPortalInspector)MainForm.mapedittool.selected_inspector).RemovePortal(portal_map_index);
 
                     map.heightmap.RefreshOverlay();

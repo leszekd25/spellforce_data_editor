@@ -108,19 +108,11 @@ namespace SFEngine.SF3D
             matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
             matname = matname.ToLower();
 
-            SFTexture tex = null;
-            int tex_code = SFResourceManager.Textures.Load(matname, SFUnPak.FileSource.ANY);
-            if ((tex_code != 0) && (tex_code != -1))
+            if(!SFResourceManager.Textures.Load(matname, SFUnPak.FileSource.ANY, out material.texture, out int ec))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModel3D.Load(): Could not load texture (texture name = " + matname + ")");
-                tex = SFRender.SFRenderEngine.opaque_tex;
+                material.texture = SFRender.SFRenderEngine.opaque_tex;
             }
-            else
-            {
-                tex = SFResourceManager.Textures.Get(matname);
-            }
-
-            material.texture = tex;
 
             // secondary material
             br.BaseStream.Position += 80;
@@ -224,9 +216,10 @@ namespace SFEngine.SF3D
                 RAMSize = 0;
                 DeviceSize = 0;
             }
-            if ((material != null) && (material.texture != null) && (material.texture != SFRender.SFRenderEngine.opaque_tex))
+            if ((material != null) && (material.texture != SFRender.SFRenderEngine.opaque_tex))
             {
-                SFResourceManager.Textures.Dispose(material.texture.Name);
+                SFResourceManager.Textures.Dispose(material.texture);
+                material = null;
             }
 
             owner = null;
@@ -336,7 +329,7 @@ namespace SFEngine.SF3D
 
         public void RecalculateBoundingBox(bool skip_on_not_null = false)
         {
-            if ((skip_on_not_null) && (aabb != null))
+            if ((skip_on_not_null) && (aabb != Physics.BoundingBox.Zero))
             {
                 return;
             }

@@ -64,7 +64,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                         int player = map.metadata.FindPlayerByBindstoneIndex(selected_bindstone);
 
-                        map.MoveInteractiveObject(selected_intobj, pos);
+                        map.int_object_manager.MoveInteractiveObject(selected_intobj, pos);
                         if (player != -1)
                         {
                             map.metadata.spawns[player].pos = pos;
@@ -72,7 +72,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     }
                     else if (!first_click)
                     {
-                        map.AddInteractiveObject(769, pos, 0, 1);
+                        int obj_index = map.int_object_manager.AddInteractiveObject(769, pos, 0, 1);
                         // undo/redo
                         previous_pos = pos;
 
@@ -83,7 +83,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         ((map_controls.MapBindstoneInspector)MainForm.mapedittool.selected_inspector).LoadNextBindstone(map.int_object_manager.bindstones_index.Count - 1);
                         Select(map.int_object_manager.bindstones_index.Count - 1);
                         MainForm.mapedittool.InspectorSelect(
-                            map.int_object_manager.int_objects[map.int_object_manager.int_objects.Count - 1]);
+                            map.int_object_manager.int_objects[obj_index]);
 
 
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
@@ -94,7 +94,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             bindstone_pos = pos,
                             bindstone_textid = 0,
                             bindstone_unknown = 0,
-                            intobj_index = map.int_object_manager.int_objects.Count - 1,
+                            intobj_index = obj_index,
                             player_index = map.metadata.spawns.Count - 1,
                             is_adding = true
                         });
@@ -137,7 +137,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         // selected_intobj out of bounds!
                         int player = map.metadata.FindPlayerByBindstoneIndex(selected_bindstone);
 
-                        map.MoveInteractiveObject(selected_intobj, pos);
+                        map.int_object_manager.MoveInteractiveObject(selected_intobj, pos);
                         if (player != -1)
                         {
                             map.metadata.spawns[player].pos = pos;

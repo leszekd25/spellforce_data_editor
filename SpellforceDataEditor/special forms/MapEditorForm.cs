@@ -61,8 +61,8 @@ namespace SpellforceDataEditor.special_forms
             bool icons_visible = true;
 
             // minimap texture
-            public SFTexture minimap_tex { get; private set; } = null;
-            public SFTexture minimap_icons_tex { get; private set; } = null;
+            public SFTexture minimap_tex = null;
+            public SFTexture minimap_icons_tex = null;
 
             SFEngine.SFMap.SFMap map = null;
             int minimap_size;
@@ -88,13 +88,11 @@ namespace SpellforceDataEditor.special_forms
                 image_minimap_frame_top = SFRenderEngine.ui.AddElementImage(SFRenderEngine.opaque_tex, new Vector2(m_width, 3), new Vector2(0, 0), new Vector2(0, 0), false);
 
                 // minimap icons
-                int tex_code = SFResourceManager.Textures.Load("ui_oth1", FileSource.PAK, new SFTexture.SFTextureLoadArgs() { IgnoreMipmapSettings = true });
-                if ((tex_code != 0) && (tex_code != -1))
+                if(!SFResourceManager.Textures.Load("ui_oth1", FileSource.PAK, out minimap_icons_tex, out int ec, new SFTexture.SFTextureLoadArgs() { IgnoreMipmapSettings = true }))
                 {
                     SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SF3D, "MapEditorUI.InitMinimap(): Could not load texture (texture name = ui_oth1)");
                     throw new Exception("MapEditorUI.InitMinimap(): Could not load texture ui_oth1");
                 }
-                minimap_icons_tex = SFResourceManager.Textures.Get("ui_oth1");
 
                 // 2000 units, 1000 buildings, 500 interactive objects, 100 portals
                 SFRenderEngine.ui.AddStorage(minimap_icons_tex, 7200);
@@ -647,15 +645,10 @@ namespace SpellforceDataEditor.special_forms
             public void Dispose()
             {
                 map = null;
-                if (minimap_tex != null)
-                {
-                    SFResourceManager.Textures.Dispose(minimap_tex.Name);
-                }
-
-                if (minimap_icons_tex != null)
-                {
-                    SFResourceManager.Textures.Dispose(minimap_icons_tex.Name);
-                }
+                SFResourceManager.Textures.Dispose(minimap_tex);
+                minimap_tex = null;
+                SFResourceManager.Textures.Dispose(minimap_icons_tex);
+                minimap_icons_tex = null;
             }
         }
 
@@ -1772,7 +1765,7 @@ namespace SpellforceDataEditor.special_forms
 
             if (movement_vector != new Vector2(0, 0))
             {
-                movement_vector = MathUtils.RotateVec2(movement_vector, SFRenderEngine.scene.camera.Direction.X + (float)(Math.PI / 2));
+                movement_vector = MathUtils.RotateVec2Mirrored(movement_vector, SFRenderEngine.scene.camera.Direction.X + (float)(Math.PI / 2));
                 movement_vector *= 60.0f * camera_speed_factor * SFRenderEngine.scene.DeltaTime;
                 MoveCameraWorldMapPos(SFRenderEngine.scene.camera.position.Xz + movement_vector);
                 update_render = true;

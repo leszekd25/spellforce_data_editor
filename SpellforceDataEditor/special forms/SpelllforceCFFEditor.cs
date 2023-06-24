@@ -563,7 +563,7 @@ namespace SpellforceDataEditor.special_forms
         {
             labelStatus.Text = "Saving...";
 
-            SFCategoryManager.Save(fname);
+            SFCategoryManager.gamedata.Save(fname);
 
             labelStatus.Text = "Saved";
 
@@ -576,7 +576,7 @@ namespace SpellforceDataEditor.special_forms
         {
             labelStatus.Text = "Saving...";
 
-            SFCategoryManager.SaveDiff(fname);
+            SFCategoryManager.gamedata.SaveDiff(fname);
 
             labelStatus.Text = "Saved";
 
@@ -1140,7 +1140,7 @@ namespace SpellforceDataEditor.special_forms
 
                 for (int i = 0; i < elem_list.Elements.Count; i++)
                 {
-                    SFCategoryElement elem = elem_list.Elements[i].GetCopy();
+                    SFCategoryElement elem = elem_list.Elements[i];
                     if (ctg.GetElementFormat()[0] == 'B')
                     {
                         elem[0] = (byte)(last_id + 1);
@@ -1716,6 +1716,13 @@ namespace SpellforceDataEditor.special_forms
             Clipboard.SetText(sb.ToString());
         }
 
+        private void patchGamedataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PatchGamedataForm form = new PatchGamedataForm();
+
+            form.ShowDialog();
+        }
+
         public void OperatorCategoryAdded(ushort category_id, ushort category_type)
         {
             // todo: sorting
@@ -1937,5 +1944,6 @@ namespace SpellforceDataEditor.special_forms
         {
             check_undo_redo();
         }
+
     }
 }

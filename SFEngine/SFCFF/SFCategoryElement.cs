@@ -430,6 +430,7 @@ namespace SFEngine.SFCFF
             foreach (var elem in Elements)
             {
                 e.Elements.Add(elem.GetCopy());
+                e.ElementStatus.Add(SFCategoryElementStatus.ADDED);
             }
 
             return e;

@@ -218,7 +218,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             SFMapInteractiveObject bindstone = map.int_object_manager.int_objects[map.int_object_manager.bindstones_index[ListBindstones.SelectedIndex]];
             Angle.Text = AngleTrackbar.Value.ToString();
-            map.RotateInteractiveObject(map.int_object_manager.bindstones_index[ListBindstones.SelectedIndex], AngleTrackbar.Value);
+            map.int_object_manager.RotateInteractiveObject(map.int_object_manager.bindstones_index[ListBindstones.SelectedIndex], AngleTrackbar.Value);
 
             MainForm.mapedittool.update_render = true;
         }

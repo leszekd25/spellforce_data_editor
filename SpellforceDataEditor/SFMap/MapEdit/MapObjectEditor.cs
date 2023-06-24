@@ -54,7 +54,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         // undo/redo
                         previous_pos = map.object_manager.objects[selected_object].grid_position;
 
-                        map.MoveObject(selected_object, pos);
+                        map.object_manager.MoveObject(selected_object, pos);
                     }
                     else if (!first_click)
                     {
@@ -65,12 +65,12 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         }
                         // create new unit and drag it until mouse released
 
-                        map.AddObject(new_object_id, pos, 0, 0, 0);
+                        int obj_index = map.object_manager.AddObject(new_object_id, pos, 0, 0, 0);
                         // undo/redo
                         previous_pos = pos;
 
-                        ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).LoadNextObject(map.object_manager.objects.Count - 1);
-                        Select(map.object_manager.objects.Count - 1);
+                        ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).LoadNextObject(obj_index);
+                        Select(obj_index);
 
                         special_forms.MapEditorForm.AngleInfo angle_info = MainForm.mapedittool.GetAngleInfo();
                         UInt16 angle = angle_info.angle;
@@ -79,7 +79,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             angle = (UInt16)(SFEngine.MathUtils.Rand() % 360);
                         }
 
-                        map.RotateObject(selected_object, angle);
+                        map.object_manager.RotateObject(selected_object, angle);
 
                         MainForm.mapedittool.InspectorSelect(map.object_manager.objects[selected_object]);
 
@@ -132,7 +132,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     {
                         if (!map.heightmap.IsFlagSet(pos, SFMapHeightMapFlag.ENTITY_OBJECT))
                         {
-                            map.MoveObject(selected_object, pos);
+                            map.object_manager.MoveObject(selected_object, pos);
                         }
                     }
                     else
@@ -158,7 +158,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         is_adding = false
                     });
 
-                    map.DeleteObject(object_map_index);
+                    map.object_manager.RemoveObject(object_map_index);
                     ((map_controls.MapObjectInspector)MainForm.mapedittool.selected_inspector).RemoveObject(object_map_index);
 
                     map.heightmap.RefreshOverlay();

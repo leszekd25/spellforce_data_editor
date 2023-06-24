@@ -160,54 +160,6 @@ namespace SFEngine.SFResources
             Messages.DisposeAll();
         }
 
-        public static bool LoadModel(string model_name)
-        {
-            if (model_name != "")
-            {
-                int result = Models.Load(model_name, SFUnPak.FileSource.ANY);
-                if ((result != 0) && (result != -1))
-                {
-                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFResourceManager.LoadModel(): Model could not be loaded (model name: "
-                    + model_name + ")");
-                    return false;
-                }
-                return true;
-            }
-            return false;
-        }
-
-        public static bool LoadSkeleton(string skeleton_name)
-        {
-            if (skeleton_name != "")
-            {
-                int result = Skeletons.Load(skeleton_name, SFUnPak.FileSource.ANY);
-                if ((result != 0) && (result != -1))
-                {
-                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFResourceManager.LoadSkeleton(): Skeleton could not be loaded (skeleton name: "
-                    + skeleton_name + ")");
-                    return false;
-                }
-                return true;
-            }
-            return false;
-        }
-
-        public static bool LoadSkin(string skin_name)
-        {
-            if (skin_name != "")
-            {
-                int result = Skins.Load(skin_name, SFUnPak.FileSource.ANY);
-                if ((result != 0) && (result != -1))
-                {
-                    LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFResourceManager.LoadSkin(): Skin could not be loaded (skin name: "
-                    + skin_name + ")");
-                    return false;
-                }
-                return true;
-            }
-            return false;
-        }
-
         public static void LogMemoryUsage()
         {
             StringBuilder log_msg = new StringBuilder();

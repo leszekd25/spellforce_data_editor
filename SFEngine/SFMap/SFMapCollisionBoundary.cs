@@ -42,29 +42,10 @@ namespace SFEngine.SFMap
             topleft = rotated_vertices[0]; bottomright = rotated_vertices[0];
             foreach (Vector2 v in rotated_vertices)
             {
-                if (v.X < topleft.X)
-                {
-                    topleft.X = v.X;
-                }
-
-                if (v.X > bottomright.X)
-                {
-                    bottomright.X = v.X;
-                }
-
-                if (v.Y < topleft.Y)
-                {
-                    topleft.Y = v.Y;
-                }
-
-                if (v.Y > bottomright.Y)
-                {
-                    bottomright.Y = v.Y;
-                }
+                MathUtils.Expand(v, ref topleft, ref bottomright);
             }
             rotated_bbox_topleft = new SFCoord((int)(topleft.X - 1), (int)(topleft.Y - 1));
             rotated_bbox_bottomright = new SFCoord((int)(bottomright.X + 1), (int)(bottomright.Y + 1));
-
         }
 
         // http://geomalgorithms.com/a03-_inclusion.html

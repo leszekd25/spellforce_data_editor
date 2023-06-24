@@ -46,9 +46,6 @@ namespace SFEngine.SFResources
             }
         }
 
-        public SFResourceContainer()
-        {
-        }
 
         public SFResourceContainer(string p, string s, string[] paks)
         {
@@ -103,13 +100,16 @@ namespace SFEngine.SFResources
         }
 
         // name of the resource in the pak files
-        public int Load(string rname, SFUnPak.FileSource source, object custom_data = null)
+        public bool Load(string rname, SFUnPak.FileSource source, out T res, out int err_code, object custom_data = null)
         {
+            res = null;
             // if resource is already loaded, increase reference count to that resource and return -1
             if (cont.ContainsKey(rname))
             {
                 reference_count[rname] += 1;
-                return -1;
+                res = cont[rname];
+                err_code = -1;
+                return true;
             }
 
             // determine if resource exists in pak files, given the extension types
@@ -155,7 +155,8 @@ namespace SFEngine.SFResources
             if (data == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): None of the suffix extensions matched the given resource");
-                return -2;
+                err_code = -2;
+                return false;
             }
             LogUtils.Log.Info(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Loading resource " + res_to_load);
 
@@ -172,7 +173,9 @@ namespace SFEngine.SFResources
             if (res_code != 0)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Could not load resource " + prefix_path + "\\" + res_to_load);
-                return res_code;
+
+                err_code = res_code;
+                return false;
             }
 
             resource.Init();
@@ -180,7 +183,9 @@ namespace SFEngine.SFResources
             cont.Add(rname, resource);
             reference_count.Add(rname, 1);
             remove_when_unused.Add(rname, true);
-            return 0;
+            res = resource;
+            err_code = 0;
+            return true;
         }
 
         // resource, name for the resource
@@ -199,6 +204,17 @@ namespace SFEngine.SFResources
             remove_when_unused.Add(rname, true);
 
             return 0;
+        }
+
+        public int Dispose(T res)
+        {
+            if(res == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Disposing null resource, skipped");
+                return -2;
+            }
+
+            return Dispose(res.Name);
         }
 
         // decrements reference counter, only removes resource when the counter reaches 0
@@ -246,16 +262,6 @@ namespace SFEngine.SFResources
                 reference_count[rname] = 1;
                 Dispose(rname);
             }
-        }
-
-        public T Get(string rname)
-        {
-            if (cont.ContainsKey(rname))
-            {
-                return cont[rname];
-            }
-
-            return default(T);   //should return null
         }
 
         public int Extract(string rname)

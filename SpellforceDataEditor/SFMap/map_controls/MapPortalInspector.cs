@@ -191,7 +191,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             SFMapPortal portal = map.portal_manager.portals[ListPortals.SelectedIndex];
             Angle.Text = AngleTrackbar.Value.ToString();
-            map.RotatePortal(ListPortals.SelectedIndex, AngleTrackbar.Value);
+            map.portal_manager.RotatePortal(ListPortals.SelectedIndex, AngleTrackbar.Value);
 
             MainForm.mapedittool.update_render = true;
         }

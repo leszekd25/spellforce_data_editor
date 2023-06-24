@@ -187,38 +187,6 @@ namespace SFEngine.SF3D
         public Matrix4[] MatrixBufferData;
         public int CurrentMatrix;
 
-        // resizes vertex buffer if necessary
-        // note that after this, the buffer has to be fully updated (taken care of in addmesh)
-        private void VertexBufferResizeDouble()
-        {
-            int current_vbo_size = VertexBufferObjectData.Length;
-
-            byte[] NewVBOData = new byte[current_vbo_size * 2];
-            Array.Copy(VertexBufferObjectData, NewVBOData, current_vbo_size);
-            VertexBufferObjectData = NewVBOData;
-        }
-
-        // resizes element buffer if necessary
-        // note that after this, the buffer has to be fully updated (taken care of in addmesh)
-        private void ElementBufferResizeDouble()
-        {
-            int current_ebo_size = ElementBufferObjectData.Length;
-
-            uint[] NewEBOData = new uint[current_ebo_size * 2];
-            Array.Copy(ElementBufferObjectData, NewEBOData, current_ebo_size);
-            ElementBufferObjectData = NewEBOData;
-        }
-
-        private void MatrixBufferResizeDouble()
-        {
-            int current_mb_size = MatrixBufferData.Length;
-
-            Matrix4[] NewMBData = new Matrix4[current_mb_size * 2];
-            Array.Copy(MatrixBufferData, NewMBData, current_mb_size);
-            MatrixBufferData = NewMBData;
-        }
-
-
         // this function moves all ranges and shifts data so that all holes are removed
         private void Defragment()
         {
@@ -475,7 +443,7 @@ namespace SFEngine.SF3D
                     break;
                 }
 
-                VertexBufferResizeDouble();
+                Utility.ResizeDouble(ref VertexBufferObjectData);
                 do_full_vertex_reload = true;
             }
 
@@ -486,7 +454,7 @@ namespace SFEngine.SF3D
                     break;
                 }
 
-                ElementBufferResizeDouble();
+                Utility.ResizeDouble(ref ElementBufferObjectData);
                 do_full_element_reload = true;
             }
 

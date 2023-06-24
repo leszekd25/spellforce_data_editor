@@ -54,7 +54,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         // undo/redo
                         previous_pos = map.building_manager.buildings[selected_building].grid_position;
 
-                        map.MoveBuilding(selected_building, pos);
+                        map.building_manager.MoveBuilding(selected_building, pos);
                     }
                     else if (!first_click)
                     {
@@ -64,13 +64,13 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             return;
                         }
                         // create new building and drag it until mouse released
-                        map.AddBuilding(new_building_id, pos, 0, 0, 1, -1);
+                        int bld_index = map.building_manager.AddBuilding(new_building_id, pos, 0, 0, 1, -1);
                         // undo/redo
                         previous_pos = pos;
 
-                        ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).LoadNextBuilding(map.building_manager.buildings.Count - 1);
-                        Select(map.building_manager.buildings.Count - 1);
-                        MainForm.mapedittool.InspectorSelect(map.building_manager.buildings[map.building_manager.buildings.Count - 1]);
+                        ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).LoadNextBuilding(bld_index);
+                        Select(bld_index);
+                        MainForm.mapedittool.InspectorSelect(map.building_manager.buildings[bld_index]);
 
                         first_click = true;
 
@@ -79,7 +79,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                         // undo/redo
                         MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorBuildingAddOrRemove()
-                        { building = map.building_manager.buildings[map.building_manager.buildings.Count - 1], index = map.building_manager.buildings.Count - 1, is_adding = true });
+                        { building = map.building_manager.buildings[bld_index], index = bld_index, is_adding = true });
                     }
 
                     // undo/redo
@@ -118,7 +118,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     {
                         if (map.heightmap.CanMoveToPosition(pos))
                         {
-                            map.MoveBuilding(selected_building, pos);
+                            map.building_manager.MoveBuilding(selected_building, pos);
                         }
                     }
                     else
@@ -143,7 +143,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         is_adding = false
                     });
 
-                    map.DeleteBuilding(building_map_index);
+                    map.building_manager.RemoveBuilding(building_map_index);
                     ((map_controls.MapBuildingInspector)MainForm.mapedittool.selected_inspector).RemoveBuilding(building_map_index);
 
                     map.heightmap.RefreshOverlay();

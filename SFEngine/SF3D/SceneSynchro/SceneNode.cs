@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 namespace SFEngine.SF3D.SceneSynchro
 {
-    // ultimately might become obsolete...
     public class SceneNode
     {
         public string Name { get; set; } = "";
@@ -47,11 +46,9 @@ namespace SFEngine.SF3D.SceneSynchro
                 }
             }
         }
-        public Vector3 Position { set { position = value; TouchLocalTransform(); TouchParents(); } }
-        public Quaternion Rotation { set { rotation = value; TouchLocalTransform(); TouchParents(); } }
-        public Vector3 Scale { set { scale = value; TouchLocalTransform(); TouchParents(); } }
-
-        public Physics.BoundingBox AABB { get; }
+        public Vector3 Position { set { position = value; TouchLocalTransform(); } }
+        public Quaternion Rotation { set { rotation = value; TouchLocalTransform(); } }
+        public Vector3 Scale { set { scale = value; TouchLocalTransform(); } }
 
         public SceneNode(string n)
         {
@@ -69,6 +66,10 @@ namespace SFEngine.SF3D.SceneSynchro
             Children.Add(node);
             node.Parent = this;
             node.Visible = visible;
+            if(node.visible)
+            {
+                node.TouchResultTransform();
+            }
         }
 
         // removes a given node from the children of this node
@@ -120,25 +121,38 @@ namespace SFEngine.SF3D.SceneSynchro
         }
 
         // if something requires updating, notify all parents about that, root including, so the engine knows to run update routine
-        protected void TouchParents()
+        public void TouchParents()
         {
-            needsanyupdate = true;
-            if ((Parent != null) && (!Parent.needsanyupdate))
+            if(needsanyupdate)
             {
-                Parent.TouchParents();
+                return;
             }
+
+            needsanyupdate = true;
+            Parent?.TouchParents();
         }
 
         // if one local transform changes, so must the result transform
-        protected void TouchLocalTransform()
+        public void TouchLocalTransform()
         {
+            if(needsupdatelocaltransform)
+            {
+                return;
+            }
+
             needsupdatelocaltransform = true;
+            TouchParents();
             TouchResultTransform();
         }
 
         // if one result transform changes, so must all subsequent result transforms
-        protected void TouchResultTransform()
+        public void TouchResultTransform()
         {
+            if(needsupdateresulttransform)
+            {
+                return;
+            }
+
             needsanyupdate = true;
             needsupdateresulttransform = true;
             for(int i = 0; i < Children.Count; i++)
@@ -298,13 +312,6 @@ namespace SFEngine.SF3D.SceneSynchro
         }
     }
 
-    // struct holds info on where in the scene cache an element of this mesh can be found
-    public struct TexGeometryLinkSimple
-    {
-        public SFTexture texture;
-        public int index;
-    }
-
     // use this for displaying non-animated 3d objects
     public class SceneNodeSimple : SceneNode
     {
@@ -317,70 +324,30 @@ namespace SFEngine.SF3D.SceneSynchro
             }
             set
             {
-                if (mesh != null)
+                if(value == mesh)
                 {
-                    if (value == null)
-                    {
-                        aabb = Physics.BoundingBox.Zero;
-                        if (visible)
-                        {
-                            ClearTexGeometry();
-                        }
-
-                        mesh = null;
-                    }
-                    else
-                    {
-                        if (visible)
-                        {
-                            ClearTexGeometry();
-                        }
-
-                        mesh = value;
-                        if (visible)
-                        {
-                            AddTexGeometry();
-                        }
-
-                        aabb = mesh.aabb;
-                    }
+                    return;
                 }
-                else
-                {
-                    if (value != null)
-                    {
-                        mesh = value;
-                        if (visible)
-                        {
-                            AddTexGeometry();
-                        }
 
-                        aabb = mesh.aabb;
-                    }
+                if (visible)
+                {
+                    ClearTexGeometry();
+                }
+                mesh = value;
+                if (visible)
+                {
+                    AddTexGeometry();
                 }
             }
         }
 
-        public bool Billboarded { get; set; } = false;
-        public bool IsDecal { get; set; } = false;
-        public int DecalIndex { get; set; } = Utility.NO_INDEX;
+        public bool IsDecal = false;
+        public int DecalIndex = Utility.NO_INDEX;
         public int CurrentMeshMatrixIndex = Utility.NO_INDEX;
-
-        protected override void UpdateTransform()
-        {
-            if (Billboarded)
-            {
-                SceneNodeCamera camera = SFRender.SFRenderEngine.scene.camera;
-                Rotation = Matrix4.LookAt(camera.position, position, new Vector3(0, 1, 0)).ExtractRotation();
-                rotation.Conjugate();
-            }
-
-            base.UpdateTransform();
-        }
 
         protected override void GatherSceneInstances()
         {
-            if ((visible) && (mesh != null))
+            if (mesh != null)
             {
                 CurrentMeshMatrixIndex = mesh.CurrentMatrixIndex;
                 if ((mesh.ForceUpdateInstanceMatrices)||(needsanyupdate))
@@ -397,6 +364,12 @@ namespace SFEngine.SF3D.SceneSynchro
         // assumes mesh exists
         private void ClearTexGeometry()
         {
+            if (mesh == null)
+            {
+                return;
+            }
+
+            aabb = Physics.BoundingBox.Zero;
             mesh.ForceUpdateInstanceMatrices = true;
             mesh.MatrixCount -= 1;
             if (mesh.MatrixCount == 0)
@@ -429,6 +402,12 @@ namespace SFEngine.SF3D.SceneSynchro
         // todo: work out transparency :)
         private void AddTexGeometry()
         {
+            if(mesh == null)
+            {
+                return;
+            }
+
+            aabb = mesh.aabb;
             mesh.ForceUpdateInstanceMatrices = true;
             mesh.MatrixCount += 1;
             if (mesh.MatrixCount == 1)
@@ -475,23 +454,14 @@ namespace SFEngine.SF3D.SceneSynchro
         // disposes mesh used by this node (reference counted, dw)
         protected override void InternalDispose()
         {
-            if (Mesh != null)
-            {
-                SFResources.SFResourceManager.Models.Dispose(Mesh.Name);
-                Mesh = null;
-            }
+            SFResources.SFResourceManager.Models.Dispose(Mesh);
+            Mesh = null;
+
             if (IsDecal)
             {
                 SFRender.SFRenderEngine.scene.decal_info.RemoveAt(DecalIndex);
             }
         }
-    }
-
-    // struct holds info on where in the scene cache an element of this mesh can be found
-    public struct TexGeometryLinkAnimated
-    {
-        public SFTexture texture;
-        public int index;
     }
 
     // use this for displaying animated 3d meshes
@@ -543,7 +513,7 @@ namespace SFEngine.SF3D.SceneSynchro
         public SFAnimation Animation { get; private set; } = null;
         public Matrix4[] BoneTransforms = null;
         public float AnimCurrentTime { get; private set; } = 0;
-        public bool AnimPlaying { get; set; } = false;
+        public bool AnimPlaying = false;
 
         // if this node is not primary, it inherits all skeleton calculations from its primary
         // primary node can't be a secondary of another
@@ -721,32 +691,20 @@ namespace SFEngine.SF3D.SceneSynchro
         // disposes skeleton and skin used by this node (reference counted)
         protected override void InternalDispose()
         {
-            if (Mesh != null)
-            {
-                SFResources.SFResourceManager.Models.Dispose(Mesh.Name);
-                Mesh = null;
-            }
-            if (Skin != null)
-            {
-                SFResources.SFResourceManager.Skins.Dispose(Skin.Name);
-                Skin = null;
-            }
+            SFResources.SFResourceManager.Models.Dispose(Mesh);
+            Mesh = null;
+            SFResources.SFResourceManager.Skins.Dispose(Skin);
+            Skin = null;
             if (Primary)
             {
-                if (Skeleton != null)
-                {
-                    SFResources.SFResourceManager.Skeletons.Dispose(Skeleton.Name);
-                    Skeleton = null;
+                SFResources.SFResourceManager.Skeletons.Dispose(Skeleton);
+                Skeleton = null;
 
-                    if (Animation != null)
-                    {
-                        Animation = null;
-                        AnimCurrentTime = 0f;
-                        AnimPlaying = false;
-                    }
+                Animation = null;
+                AnimCurrentTime = 0f;
+                AnimPlaying = false;
 
-                    BoneTransforms = null;
-                }
+                BoneTransforms = null;
 
                 for(int i = 1; i < DrivenNodes.Count; i++)
                 {
@@ -765,29 +723,23 @@ namespace SFEngine.SF3D.SceneSynchro
     {
         // parent must be SceneNodeAnimated
         private int BoneIndex = Utility.NO_INDEX;
+        public int SceneIndex = Utility.NO_INDEX;
 
         public SceneNodeBone(string n) : base(n) { }
 
         protected override void UpdateTransform()
         {
-            if (Parent != null)
+            if(!needsupdateresulttransform)
             {
-                if ((Parent.GetType() == typeof(SceneNodeAnimated)) && (BoneIndex != Utility.NO_INDEX))
-                {
-                    result_transform = local_transform * ((SceneNodeAnimated)(Parent)).Skeleton.bone_reference_matrices[BoneIndex]
-                        * ((SceneNodeAnimated)(Parent)).BoneTransforms[BoneIndex] * Parent.result_transform;
-                }
-                else
-                {
-                    result_transform = local_transform * Parent.result_transform;
-                }
-            }
-            else
-            {
-                result_transform = local_transform;
+                return;
             }
 
-            TouchLocalTransform();
+            SceneNodeAnimated pp = (SceneNodeAnimated)Parent;
+            if (BoneIndex != Utility.NO_INDEX)
+            {
+                result_transform = local_transform * pp.Skeleton.bone_reference_matrices[BoneIndex] * pp.BoneTransforms[BoneIndex] * Parent.result_transform;
+            }
+            needsupdateresulttransform = false;
         }
 
         // sets to which bone this node should be attached
@@ -814,6 +766,11 @@ namespace SFEngine.SF3D.SceneSynchro
             }
 
             LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SceneNodeBone.SetBone(): Bone does not exist (bone name: " + name + ")");
+        }
+
+        protected override void InternalDispose()
+        {
+            SFRender.SFRenderEngine.scene.an_bone_nodes.RemoveAt(SceneIndex);
         }
     }
 

@@ -64,7 +64,7 @@ namespace SFEngine.SFMap
             object_collision.Add((ushort)id, cb);
         }
 
-        public SFMapObject AddObject(int id, SFCoord position, int angle, int unk1, int index)
+        public int AddObject(int id, SFCoord position, int angle, int npc, int unk1, int index = -1)
         {
             AddObjectCollisionBoundary(id);
 
@@ -72,6 +72,7 @@ namespace SFEngine.SFMap
             obj.grid_position = position;
             obj.game_id = id;
             obj.angle = angle;
+            obj.npc_id = npc;
             obj.unknown1 = unk1;
 
             if (index == -1)
@@ -88,20 +89,95 @@ namespace SFEngine.SFMap
             ObjectSetResourceIfAvailable(id, obj.node);
 
             obj.node.SetParent(map.heightmap.GetChunkNode(position));
-            return obj;
+
+            map.heightmap.SetFlag(position, SFMapHeightMapFlag.ENTITY_OBJECT, true);
+            ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, true);
+
+            SF3D.SceneSynchro.SceneNode _obj = obj.node;
+            _obj.Position = map.heightmap.GetFixedPosition(position);
+            _obj.Scale = new Vector3(100 / 128.0f);
+            _obj.SetAnglePlane(angle);
+            map.UpdateNodeDecal(_obj, new Vector2(position.x, position.y), Vector2.Zero, angle);
+
+            map.heightmap.GetChunk(position).objects.Add(obj);
+
+            return index;
         }
 
-        public void RemoveObject(SFMapObject o)
+        public void RemoveObject(int object_index)
         {
-            objects.Remove(o);
+            SFMapObject obj = objects[object_index];
 
-            SF3D.SceneSynchro.SceneNode obj_node = o.node;
+            objects.RemoveAt(object_index);
+
+            SF3D.SceneSynchro.SceneNode obj_node = obj.node;
             if (obj_node != null)
             {
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(obj_node);
             }
 
-            map.heightmap.GetChunk(o.grid_position).RemoveObject(o);
+            map.heightmap.GetChunk(obj.grid_position).objects.Remove(obj);
+
+            map.heightmap.SetFlag(obj.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, false);
+            ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, false);
+        }
+
+        public void ReplaceObject(int object_index, ushort new_object_id)
+        {
+            SFMapObject obj = objects[object_index];
+
+            if (obj.node != null)
+            {
+                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(obj.node);
+            }
+
+            obj.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(new_object_id, obj.GetName(), true, true);
+            obj.node.SetParent(map.heightmap.GetChunkNode(obj.grid_position));
+
+            AddObjectCollisionBoundary(new_object_id);
+
+            ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, false);
+            obj.game_id = new_object_id;
+            ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, true);
+
+            // object transform
+            float z = map.heightmap.GetZ(obj.grid_position) / 100.0f;
+            obj.node.Position = map.heightmap.GetFixedPosition(obj.grid_position);
+            obj.node.Scale = new Vector3(100 / 128f);
+            obj.node.SetAnglePlane(obj.angle);
+            map.UpdateNodeDecal(obj.node, new Vector2(obj.grid_position.x, obj.grid_position.y), OpenTK.Vector2.Zero, obj.angle);
+        }
+
+        public void RotateObject(int object_map_index, int angle)
+        {
+            SFMapObject obj = objects[object_map_index];
+
+            ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, false);
+            obj.angle = angle;
+            ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, true);
+
+            obj.node.SetAnglePlane(angle);
+            map.UpdateNodeDecal(obj.node, new OpenTK.Vector2(obj.grid_position.x, obj.grid_position.y), OpenTK.Vector2.Zero, obj.angle);
+        }
+
+        public void MoveObject(int object_map_index, SFCoord new_pos)
+        {
+            SFMapObject obj = objects[object_map_index];
+
+            // move unit and set chunk dependency
+            map.heightmap.GetChunkNode(obj.grid_position).MapChunk.objects.Remove(obj);
+            map.heightmap.SetFlag(obj.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, false);
+            ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, false);
+            obj.grid_position = new_pos;
+            ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, true);
+            map.heightmap.SetFlag(obj.grid_position, SFMapHeightMapFlag.ENTITY_OBJECT, true);
+            map.heightmap.GetChunkNode(obj.grid_position).MapChunk.objects.Add(obj);
+            obj.node.SetParent(map.heightmap.GetChunkNode(obj.grid_position));
+
+            // change visual transform
+            float z = map.heightmap.GetZ(new_pos) / 100.0f;
+            obj.node.Position = map.heightmap.GetFixedPosition(new_pos);
+            map.UpdateNodeDecal(obj.node, new OpenTK.Vector2(obj.grid_position.x, obj.grid_position.y), OpenTK.Vector2.Zero, obj.angle);
         }
 
         public void ApplyObjectBlockFlags(SFCoord pos, int angle, ushort id, bool set)

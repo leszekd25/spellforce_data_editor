@@ -417,5 +417,14 @@ namespace SFEngine
 
             return 0;
         }
+
+        static public void ResizeDouble<T>(ref T[] arr)
+        {
+            int current_len = arr.Length;
+
+            T[] new_arr = new T[current_len * 2];
+            Array.Copy(arr, new_arr, current_len);
+            arr = new_arr;
+        }
     }
 }

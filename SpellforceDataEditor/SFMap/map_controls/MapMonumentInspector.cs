@@ -183,7 +183,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             SFMapInteractiveObject monument = map.int_object_manager.int_objects[map.int_object_manager.monuments_index[ListMonuments.SelectedIndex]];
             Angle.Text = AngleTrackbar.Value.ToString();
-            map.RotateInteractiveObject(map.int_object_manager.monuments_index[ListMonuments.SelectedIndex], AngleTrackbar.Value);
+            map.int_object_manager.RotateInteractiveObject(map.int_object_manager.monuments_index[ListMonuments.SelectedIndex], AngleTrackbar.Value);
 
             MainForm.mapedittool.update_render = true;
         }

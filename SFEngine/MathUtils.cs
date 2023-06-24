@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using System;
+using SFEngine.SFMap;
 
 namespace SFEngine
 {
@@ -37,6 +38,110 @@ namespace SFEngine
         public static double GaussianDensity(float x, float sigma)
         {
             return (1 / (sigma * Math.Sqrt(2 * Math.PI)) * Math.Exp(-(x * x) / (2 * sigma * sigma)));
+        }
+
+        public static void Clamp<T>(ref T t, T x1, T x2) where T : IComparable<T>, IEquatable<T>
+        {
+            if (t.CompareTo(x1) < 0)
+            {
+                t = x1;
+            }
+            else if (t.CompareTo(x2) > 0)
+            {
+                t = x2;
+            }
+        }
+
+        public static void Expand<T>(T t, ref T x1, ref T x2) where T : IComparable<T>, IEquatable<T>
+        {
+            if (t.CompareTo(x1) < 0)
+            {
+                x1 = t;
+            }
+            else if (t.CompareTo(x2) > 0)
+            {
+                x2 = t;
+            }
+        }
+
+        public static void Clamp(ref Vector2 t, Vector2 x1, Vector2 x2)
+        {
+            if (t.X < x1.X)
+            {
+                t.X = x1.X;
+            }
+            else if (t.X > x2.X)
+            {
+                t.X = x2.X;
+            }
+            if (t.Y < x1.Y)
+            {
+                t.Y = x1.Y;
+            }
+            else if (t.Y > x2.Y)
+            {
+                t.Y = x2.Y;
+            }
+        }
+
+        public static void Clamp(ref SFCoord t, SFCoord x1, SFCoord x2)
+        {
+            if (t.x < x1.x)
+            {
+                t.x = x1.x;
+            }
+            else if (t.x > x2.x)
+            {
+                t.x = x2.x;
+            }
+            if (t.y < x1.y)
+            {
+                t.y = x1.y;
+            }
+            else if (t.y > x2.y)
+            {
+                t.y = x2.y;
+            }
+        }
+
+        public static void Expand(Vector2 t, ref Vector2 x1, ref Vector2 x2)
+        {
+            if (t.X < x1.X)
+            {
+                x1.X = t.X;
+            }
+            else if (t.X > x2.X)
+            {
+                x2.X = t.X;
+            }
+            if (t.Y < x1.Y)
+            {
+                x1.Y = t.Y;
+            }
+            else if (t.Y > x2.Y)
+            {
+                x2.Y = t.Y;
+            }
+        }
+
+        public static void Expand(SFCoord t, ref SFCoord x1, ref SFCoord x2)
+        {
+            if (t.x < x1.x)
+            {
+                x1.x = t.x;
+            }
+            else if (t.x > x2.x)
+            {
+                x2.x = t.x;
+            }
+            if (t.y < x1.y)
+            {
+                x1.y = t.y;
+            }
+            else if (t.y > x2.y)
+            {
+                x2.y = t.y;
+            }
         }
 
         public static void RandSetSeed(int seed)
@@ -85,13 +190,21 @@ namespace SFEngine
             return 1 / (1 + Math.Pow(b, -t));
         }
 
-        // counterclockwise
+        // counterclockwise (the correct version)
         public static Vector2 RotateVec2(Vector2 v, float angle)
         {
             float s = (float)Math.Sin(angle);
             float c = (float)Math.Cos(angle);
-            return new Vector2(v.X * c - v.Y * s, -v.X * s - v.Y * c);
+            return new Vector2(v.X * c - v.Y * s, v.X * s + v.Y * c);
         }
+
+        // clockwise
+        public static Vector2 RotateVec2Mirrored(Vector2 v, float angle)
+        {
+            float s = (float)Math.Sin(angle);
+            float c = (float)Math.Cos(angle);
+            return new Vector2(v.X * c - v.Y * s, -v.X * s - v.Y * c);
+        } 
 
         public static Vector2 RotateVec2PivotSinCos(Vector2 v, Vector2 p, float s, float c)
         {

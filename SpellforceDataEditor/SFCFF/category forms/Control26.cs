@@ -167,6 +167,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     break;
                 }
             }
+            if(new_index == SFEngine.Utility.NO_INDEX)
+            {
+                new_index = 0;
+            }
 
             SFCategoryElement new_elem = elem.GetCopy();
             new_elem[1] = new_res;

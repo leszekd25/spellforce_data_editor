@@ -83,7 +83,7 @@ namespace SFEngine.SFCFF
             ChunkFormats.Add(Tuple.Create((ushort)2072, (ushort)1), new ChunkFormatInfo("BHB", "Item sets", false, false));
         }
 
-        public List<SFCategoryElement> elements { get; protected set; } = new List<SFCategoryElement>();     //list of all elements
+        public List<SFCategoryElement> elements = new List<SFCategoryElement>();                             //list of all elements
         public List<SFCategoryElementList> element_lists = new List<SFCategoryElementList>();                //list of all subelements; for any element in here, it will always have at least 1 subelement
         public List<SFCategoryElementStatus> element_status = new List<SFCategoryElementStatus>();           //list in which status of every element is kept
         public bool category_allow_multiple;                                                                 //if true, element_lists is used, if false, elements is used
@@ -205,9 +205,16 @@ namespace SFEngine.SFCFF
             // todo: move this somewhere else
             switch (category_id)
             {
-                case 2012:
-                case 2014:
-                case 2026:
+                case 2001:    // UnitBuildings
+                case 2012:    // ItemGfx2D
+                case 2014:    // ItemSpells
+                case 2017:    // ItemConditions
+                case 2026:    // UnitSpells
+                case 2030:    // BuildingPolygons
+                case 2040:    // UnitLoot
+                case 2057:    // ObjectPolygons
+                case 2065:    // ObjectLoot
+                case 2067:    // CreoSpells
                     {
                         elem[1] = (byte)1;
                     }
@@ -804,7 +811,6 @@ namespace SFEngine.SFCFF
             int val;
             while (current_start <= current_end)
             {
-
                 current_center = (current_start + current_end) / 2;    //care about overflow (though its not happening in this case)
                 val = GetElementID(current_center);
                 if (val.CompareTo(id) == 0)
@@ -1308,6 +1314,8 @@ namespace SFEngine.SFCFF
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFCategory.unload() called, category name: " + category_name);
             elements.Clear();
+            element_lists.Clear();
+            element_status.Clear();
         }
     }
 }
