@@ -57,7 +57,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayPool.cs" />
     <Compile Include="LinearPool.cs" />
     <Compile Include="LogUtils\Log.cs" />
     <Compile Include="MathUtils.cs" />
@@ -115,7 +114,6 @@
     <Compile Include="SFLua\LuaDecompiler\Primitive.cs" />
     <Compile Include="SFLua\LuaDecompiler\Return.cs" />
     <Compile Include="SFLua\LuaDecompiler\Table.cs" />
-    <Compile Include="SFLua\LuaDialogBuilderNode.cs" />
     <Compile Include="SFLua\LuaParser\LuaScript.cs" />
     <Compile Include="SFLua\LuaParser\LuaTable.cs" />
     <Compile Include="SFLua\lua_sql\ILuaSQL.cs" />
@@ -124,7 +122,6 @@
     <Compile Include="SFLua\lua_sql\SFLuaSQLItem.cs" />
     <Compile Include="SFLua\lua_sql\SFLuaSQLObject.cs" />
     <Compile Include="SFLua\lua_sql\SFLuaSQLRtsCoopSpawn.cs" />
-    <Compile Include="SFLua\SFLuaDialog.cs" />
     <Compile Include="SFLua\SFLuaEnvironment.cs" />
     <Compile Include="SFMap\MapGen\GradientMap.cs" />
     <Compile Include="SFMap\MapGen\LatticeKernel.cs" />

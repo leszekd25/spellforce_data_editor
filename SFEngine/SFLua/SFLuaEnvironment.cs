@@ -9,11 +9,11 @@ namespace SFEngine.SFLua
     public static class SFLuaEnvironment
     {
         public static bool data_loaded { get; private set; } = false;
-        public static lua_sql.SFLuaSQLRtsCoopSpawn coop_spawns { get; private set; } = new lua_sql.SFLuaSQLRtsCoopSpawn();
-        public static lua_sql.SFLuaSQLItem items { get; private set; } = new lua_sql.SFLuaSQLItem();
-        public static lua_sql.SFLuaSQLObject objects { get; private set; } = new lua_sql.SFLuaSQLObject();
-        public static lua_sql.SFLuaSQLBuilding buildings { get; private set; } = new lua_sql.SFLuaSQLBuilding();
-        public static lua_sql.SFLuaSQLHead heads { get; private set; } = new lua_sql.SFLuaSQLHead();
+        public static lua_sql.SFLuaSQL<lua_sql.SFMapCoopSpawnTypeInfo> coop_spawns { get; private set; } = new lua_sql.SFLuaSQL<lua_sql.SFMapCoopSpawnTypeInfo>() { script_name = "script\\gdsrtscoopspawngroups.lua" };
+        public static lua_sql.SFLuaSQL<lua_sql.SFLuaSQLItemData> items { get; private set; } = new lua_sql.SFLuaSQL<lua_sql.SFLuaSQLItemData>() { script_name = "script\\sql_item.lua" };
+        public static lua_sql.SFLuaSQL<lua_sql.SFLuaSQLObjectData> objects { get; private set; } = new lua_sql.SFLuaSQL<lua_sql.SFLuaSQLObjectData>() { script_name = "script\\sql_object.lua" };
+        public static lua_sql.SFLuaSQL<lua_sql.SFLuaSQLBuildingData> buildings { get; private set; } = new lua_sql.SFLuaSQL<lua_sql.SFLuaSQLBuildingData>() { script_name = "script\\sql_building.lua" };
+        public static lua_sql.SFLuaSQL<lua_sql.SFLuaSQLHeadData> heads { get; private set; } = new lua_sql.SFLuaSQL<lua_sql.SFLuaSQLHeadData>() { script_name = "script\\sql_head.lua" };
 
         public static string ParseDictToString<T>(Dictionary<int, T> dict) where T : ILuaParsable
         {

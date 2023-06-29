@@ -306,8 +306,8 @@ namespace SpellforceDataEditor
 
         private void svdata_FormClosed(object sender, FormClosedEventArgs e)
         {
-            applicationinfo.FormClosed -= new FormClosedEventHandler(svdata_FormClosed);
-            applicationinfo = null;
+            svdata.FormClosed -= new FormClosedEventHandler(svdata_FormClosed);
+            svdata = null;
             GC.Collect();
         }
 

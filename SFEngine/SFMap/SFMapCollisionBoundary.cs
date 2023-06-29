@@ -40,9 +40,10 @@ namespace SFEngine.SFMap
 
             Vector2 topleft, bottomright;
             topleft = rotated_vertices[0]; bottomright = rotated_vertices[0];
-            foreach (Vector2 v in rotated_vertices)
+            for(int i = 1; i < rotated_vertices.Length; i++)
             {
-                MathUtils.Expand(v, ref topleft, ref bottomright);
+                MathUtils.Expand(rotated_vertices[i].X, ref topleft.X, ref bottomright.X);
+                MathUtils.Expand(rotated_vertices[i].Y, ref topleft.Y, ref bottomright.Y);
             }
             rotated_bbox_topleft = new SFCoord((int)(topleft.X - 1), (int)(topleft.Y - 1));
             rotated_bbox_bottomright = new SFCoord((int)(bottomright.X + 1), (int)(bottomright.Y + 1));

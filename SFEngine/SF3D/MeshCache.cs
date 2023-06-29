@@ -278,7 +278,7 @@ namespace SFEngine.SF3D
         // initializes the cache, using given vertex attributes, and sets up the minimum vertices and elements in the batch
         public void Init(int vertex_count, int element_count)
         {
-            GL.BindVertexArray(VertexArrayObjectID);
+            SFRender.SFRenderEngine.SetVertexArrayObject(VertexArrayObjectID);
 
             // compute total bytes per vertex
             if (!UseCustomBytesPerVertex)

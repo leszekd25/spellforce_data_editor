@@ -57,7 +57,7 @@ namespace SFEngine.SF3D.UI
             uv_buffer = GL.GenBuffer();
             color_buffer = GL.GenBuffer();
 
-            GL.BindVertexArray(vertex_array);
+            SFRender.SFRenderEngine.SetVertexArrayObject(vertex_array);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
             GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
@@ -73,8 +73,6 @@ namespace SFEngine.SF3D.UI
             GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, colors.Length * 16, colors, BufferUsageHint.StaticDraw);
             GL.EnableVertexAttribArray(2);
             GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindVertexArray(0);
         }
 
         // creates a span which reserves a sequence of X quads from storage
@@ -251,7 +249,7 @@ namespace SFEngine.SF3D.UI
                 return;
             }
 
-            GL.BindVertexArray(vertex_array);
+            SFRender.SFRenderEngine.SetVertexArrayObject(vertex_array);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertex_buffer);
             GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(0), vertices.Length * 12, vertices);
@@ -261,8 +259,6 @@ namespace SFEngine.SF3D.UI
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, color_buffer);
             GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(0), colors.Length * 16, colors);
-
-            GL.BindVertexArray(0);
 
             updated = true;
         }

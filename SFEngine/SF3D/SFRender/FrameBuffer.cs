@@ -49,7 +49,7 @@ namespace SFEngine.SF3D.SFRender
             if (ref_count == 0)
             {
                 screen_vao = GL.GenVertexArray();
-                GL.BindVertexArray(screen_vao);
+                SFRenderEngine.SetVertexArrayObject(screen_vao);
 
                 vertices_vbo = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ArrayBuffer, vertices_vbo);
@@ -62,8 +62,6 @@ namespace SFEngine.SF3D.SFRender
                 GL.BufferData(BufferTarget.ArrayBuffer, uvs.Length * 4, uvs, BufferUsageHint.StaticDraw);
                 GL.EnableVertexAttribArray(1);
                 GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
-
-                GL.BindVertexArray(0);
             }
             ref_count += 1;
 

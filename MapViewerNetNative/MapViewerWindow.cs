@@ -529,7 +529,7 @@ namespace MapViewerNetNative
 
             // heavy tasks
             map.ocean.SetPosition(SFRenderEngine.scene.camera.position);
-            SFRenderEngine.UpdateVisibleChunks();
+            SFRenderEngine.scene.UpdateVisibleChunks(map.heightmap);
             map.selection_helper.Update();
 
             SFRenderEngine.scene.Update((float)e.Time);

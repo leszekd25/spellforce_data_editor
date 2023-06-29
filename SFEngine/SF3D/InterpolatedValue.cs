@@ -52,16 +52,6 @@ namespace SFEngine.SF3D
                 return value[0];
             }
 
-            if (t < 0)
-            {
-                t = 0;
-            }
-
-            if (t > max_time)
-            {
-                t = max_time;
-            }
-
             for (int i = 0; i < size; i++)
             {
                 if (time[i] >= t)
@@ -99,15 +89,20 @@ namespace SFEngine.SF3D
         int cur_index = 0;
         float max_time = -1;
 
-        public InterpolatedVector3(int capacity)
+        public void Reset(int capacity)
         {
-            value = new Vector3[capacity];
-            time = new float[capacity];
+            if ((value == null) || (value.Length < capacity))
+            {
+                value = new Vector3[capacity];
+                time = new float[capacity];
+            }
+            cur_index = 0;
+            max_time = 0;
         }
 
         public void ResolveStatic()
         {
-            is_static = (value.Length == 1) || ((value.Length == 2) && (value[0] == value[1]));
+            is_static = (cur_index == 1) || ((cur_index == 2) && (value[0] == value[1]));
         }
 
         public void Add(Vector3 v, float t)
@@ -133,21 +128,9 @@ namespace SFEngine.SF3D
                 return value[0];
             }
 
-            int size = value.Length;
-
-            if (t < 0)
+            if (cur_index < 10)
             {
-                t = 0;
-            }
-
-            if (t > max_time)
-            {
-                t = max_time;
-            }
-
-            if (size < 10)
-            {
-                for (int i = 0; i < size; i++)
+                for (int i = 0; i < cur_index; i++)
                 {
                     if (time[i] >= t)
                     {
@@ -163,12 +146,12 @@ namespace SFEngine.SF3D
             }
             else
             {
-                if (t == time[size - 1])
+                if (t == time[cur_index - 1])
                 {
-                    return value[size - 1];
+                    return value[cur_index - 1];
                 }
 
-                int min = 0; int max = size;
+                int min = 0; int max = cur_index;
                 while (true)
                 {
                     int mid_index = (min + max) / 2;
@@ -208,17 +191,22 @@ namespace SFEngine.SF3D
         float[] time;
         public bool is_static = false;
         int cur_index = 0;
-        float max_time = -1;
+        float max_time = 0;
 
-        public InterpolatedQuaternion(int capacity)
+        public void Reset(int capacity)
         {
-            value = new Quaternion[capacity];
-            time = new float[capacity];
+            if ((value == null) || (value.Length < capacity))
+            {
+                value = new Quaternion[capacity];
+                time = new float[capacity];
+            }
+            cur_index = 0;
+            max_time = 0;
         }
 
         public void ResolveStatic()
         {
-            is_static = (value.Length == 1) || ((value.Length == 2) && (value[0] == value[1]));
+            is_static = (cur_index == 1) || ((cur_index == 2) && (value[0] == value[1]));
         }
 
 
@@ -245,22 +233,10 @@ namespace SFEngine.SF3D
                 return value[0];
             }
 
-            int size = value.Length;
-
-            if (t < 0)
-            {
-                t = 0;
-            }
-
-            if (t > max_time)
-            {
-                t = max_time;
-            }
-
             // optimization: instead of reading data from start every time, read from last point it was read
-            if (size < 10)
+            if (cur_index < 10)
             {
-                for (int i = 0; i < size; i++)
+                for (int i = 0; i < cur_index; i++)
                 {
                     if (time[i] >= t)
                     {
@@ -276,12 +252,12 @@ namespace SFEngine.SF3D
             }
             else
             {
-                if (t == time[size - 1])
+                if (t == time[cur_index - 1])
                 {
-                    return value[size - 1];
+                    return value[cur_index - 1];
                 }
 
-                int min = 0; int max = size;
+                int min = 0; int max = cur_index;
                 while (true)
                 {
                     int mid_index = (min + max) / 2;
@@ -355,16 +331,6 @@ namespace SFEngine.SF3D
             if (size == 1)
             {
                 return value[0];
-            }
-
-            if (t < 0)
-            {
-                t = 0;
-            }
-
-            if (t > max_time)
-            {
-                t = max_time;
             }
 
             for (int i = 0; i < time.Length; i++)

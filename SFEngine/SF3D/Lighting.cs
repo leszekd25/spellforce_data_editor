@@ -71,7 +71,7 @@ namespace SFEngine.SF3D
 
     public class Atmosphere
     {
-        // vao used to render sky
+        /*// vao used to render sky
         static float[] vertices = new float[] {
             -1, -1,
             -1, 1,
@@ -92,7 +92,7 @@ namespace SFEngine.SF3D
         static int vertices_vbo = Utility.NO_INDEX;
         static int uvs_vbo = Utility.NO_INDEX;
 
-        static int ref_count = 0;
+        static int ref_count = 0;*/
 
 
         public Vector4 FogColor = new Vector4(100, 100, 100, 255) / 255f;
@@ -111,7 +111,7 @@ namespace SFEngine.SF3D
 
         public Atmosphere()
         {
-            if (ref_count == 0)
+            /*if (ref_count == 0)
             {
                 sky_vao = GL.GenVertexArray();
                 GL.BindVertexArray(sky_vao);
@@ -130,12 +130,14 @@ namespace SFEngine.SF3D
 
                 GL.BindVertexArray(0);
             }
-            ref_count += 1;
+            ref_count += 1;*/
         }
 
         // azimuth from 0 to 359, altitude from -90 to 90
         public void SetSunLocation(float azimuth, float altitude)
         {
+            MathUtils.Clamp(ref azimuth, 0, 359);
+            MathUtils.Clamp(ref altitude, -90, 90);
             sun_light.SetAzimuthAltitude(azimuth, altitude);
 
             sun_light.Color = altitude_sun_color.Get(altitude + 90f);
@@ -150,7 +152,7 @@ namespace SFEngine.SF3D
 
         public void Dispose()
         {
-            if (ref_count == 0)
+            /*if (ref_count == 0)
             {
                 return;
             }
@@ -161,7 +163,7 @@ namespace SFEngine.SF3D
                 GL.DeleteBuffer(uvs_vbo);
                 GL.DeleteBuffer(vertices_vbo);
                 GL.DeleteVertexArray(sky_vao);
-            }
+            }*/
         }
     }
 }

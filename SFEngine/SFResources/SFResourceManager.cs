@@ -154,7 +154,7 @@ namespace SFEngine.SFResources
             BSIs.DisposeAll();
             Skins.DisposeAll();
             Skeletons.DisposeAll();
-            Textures.DisposeAll();    // likely unneeded, but still called
+            Textures.DisposeAll();
             Musics.DisposeAll();
             Sounds.DisposeAll();
             Messages.DisposeAll();
@@ -168,6 +168,7 @@ namespace SFEngine.SFResources
             log_msg.Append("TEXTURES " + Textures.RAMSize.ToString());
             log_msg.Append(", 3D MODELS " + Models.RAMSize.ToString());
             log_msg.Append(", SKELETONS " + Skeletons.RAMSize.ToString());
+            log_msg.Append(", ANIMATIONS " + Animations.RAMSize.ToString());
             log_msg.Append(", SKINS " + Skins.RAMSize.ToString());
             log_msg.Append(", BSI" + BSIs.RAMSize.ToString());
             log_msg.Append(", SOUNDS " + (Sounds.RAMSize + Musics.RAMSize + Messages.RAMSize).ToString());
@@ -178,6 +179,7 @@ namespace SFEngine.SFResources
             log_msg.Append("TEXTURES " + Textures.DeviceSize.ToString());
             log_msg.Append(", 3D MODELS " + Models.DeviceSize.ToString());
             log_msg.Append(", SKELETONS " + Skeletons.DeviceSize.ToString());
+            log_msg.Append(", ANIMATIONS " + Animations.DeviceSize.ToString());
             log_msg.Append(", SKINS " + Skins.DeviceSize.ToString());
             log_msg.Append(", BSI" + BSIs.DeviceSize.ToString());
             log_msg.Append(", SOUNDS " + (Sounds.DeviceSize + Musics.DeviceSize + Messages.DeviceSize).ToString());

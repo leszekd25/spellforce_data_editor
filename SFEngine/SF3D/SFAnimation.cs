@@ -10,50 +10,35 @@ using System.IO;
 
 namespace SFEngine.SF3D
 {
+    public struct BoneAnimationState
+    {
+        public Vector3 position;
+        public Quaternion rotation;
+    }
+
     public class SFBoneAnimation
     {
-        public InterpolatedVector3 position;
-        public InterpolatedQuaternion rotation;
         public bool is_static = false;
         public Matrix4 static_transform;
-
-        public void ResolveStatic()
-        {
-            position.ResolveStatic();
-            rotation.ResolveStatic();
-            is_static = (position.is_static) && (rotation.is_static);
-            if (is_static)
-            {
-                GetInterpolatedMatrix4(0, ref static_transform);
-            }
-        }
-
-        private void GetInterpolatedMatrix4(float t, ref Matrix4 mat)
-        {
-            mat = Matrix4.CreateFromQuaternion(rotation.Get(t));
-            mat.Row3 = new Vector4(position.Get(t), 1);
-        }
-
-        public void GetMatrix4(float t, ref Matrix4 mat)
-        {
-            if (is_static)
-            {
-                mat = static_transform;
-            }
-            else
-            {
-                GetInterpolatedMatrix4(t, ref mat);
-            }
-        }
+        public BoneAnimationState[] state_quantized;
 
         public int GetSizeBytes()
         {
-            return position.GetSizeBytes() + rotation.GetSizeBytes();
+            if(is_static)
+            {
+                return 64;
+            }
+            else
+            {
+                return state_quantized.Length * 28;
+            }
         }
     }
 
     public class SFAnimation : SFResource
     {
+        public const float ANIMATION_FPS = 25.0f;
+
         public SFBoneAnimation[] bone_animations;
 
         public float max_time { get; private set; } = 0f;
@@ -64,6 +49,8 @@ namespace SFEngine.SF3D
             BinaryReader br = new BinaryReader(ms);
 
             max_time = 0;
+            InterpolatedVector3 position = new InterpolatedVector3();
+            InterpolatedQuaternion rotation = new InterpolatedQuaternion();
 
             br.ReadInt16();
             int bone_count = br.ReadInt32();
@@ -79,7 +66,7 @@ namespace SFEngine.SF3D
 
                 data1 = br.ReadInt32(); data2 = br.ReadSingle(); data3 = br.ReadSingle();
                 data4 = br.ReadInt32(); anim_count = br.ReadInt32();
-                ba.rotation = new InterpolatedQuaternion(anim_count);
+                rotation.Reset(anim_count);
                 for (int j = 0; j < anim_count; j++)
                 {
                     float[] q_data = new float[5];
@@ -89,12 +76,13 @@ namespace SFEngine.SF3D
                     }
 
                     Quaternion q = new Quaternion(q_data[1], q_data[2], q_data[3], q_data[0]);
-                    ba.rotation.Add(q, q_data[4]);
+                    rotation.Add(q, q_data[4]);
                 }
+                rotation.ResolveStatic();
 
                 data1 = br.ReadInt32(); data2 = br.ReadSingle(); data3 = br.ReadSingle();
                 data4 = br.ReadInt32(); anim_count = br.ReadInt32();
-                ba.position = new InterpolatedVector3(anim_count);
+                position.Reset(anim_count);
                 for (int j = 0; j < anim_count; j++)
                 {
                     float[] p_data = new float[4];
@@ -104,11 +92,29 @@ namespace SFEngine.SF3D
                     }
 
                     Vector3 v = new Vector3(p_data[0], p_data[1], p_data[2]);
-                    ba.position.Add(v, p_data[3]);
+                    position.Add(v, p_data[3]);
                 }
-                ba.ResolveStatic();
+                position.ResolveStatic();
 
-                max_time = Math.Max(ba.position.GetMaxTime(), max_time);
+                max_time = Math.Max(position.GetMaxTime(), max_time);
+
+                if ((position.is_static) && (rotation.is_static))
+                {
+                    ba.is_static = true;
+                    ba.static_transform = Matrix4.CreateFromQuaternion(rotation.Get(0));
+                    ba.static_transform.Row3 = new Vector4(position.Get(0), 1.0f);
+                }
+                else
+                {
+                    ba.is_static = false;
+                    ba.state_quantized = new BoneAnimationState[(int)Math.Ceiling(max_time * ANIMATION_FPS) + 1];    // 25 frames per second
+                    for (int k = 0; k < ba.state_quantized.Length - 1; k++)
+                    {
+                        float t = k / ANIMATION_FPS;
+                        ba.state_quantized[k] = new BoneAnimationState() { position = position.Get(t), rotation = rotation.Get(t) };
+                    }
+                    ba.state_quantized[ba.state_quantized.Length - 1] = new BoneAnimationState() { position = position.Get(max_time), rotation = rotation.Get(max_time) };
+                }
             }
 
             RAMSize = 0;

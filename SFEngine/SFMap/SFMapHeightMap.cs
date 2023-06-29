@@ -48,7 +48,7 @@ namespace SFEngine.SFMap
                 }
             }
 
-            GL.BindVertexArray(vertex_array);
+            SF3D.SFRender.SFRenderEngine.SetVertexArrayObject(vertex_array);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
             GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
@@ -58,7 +58,7 @@ namespace SFEngine.SFMap
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
             GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, indices.Length * 4, indices, BufferUsageHint.StaticDraw);
 
-            GL.BindVertexArray(0);
+            SF3D.SFRender.SFRenderEngine.SetVertexArrayObject(0);
 
             Update(hmap, new SFCoord(0, 0), new SFCoord(hmap.width, hmap.height));
         }
@@ -132,14 +132,14 @@ namespace SFEngine.SFMap
             patch_count *= patch_count;
 
 
-            GL.BindVertexArray(vertex_array);
+            SF3D.SFRender.SFRenderEngine.SetVertexArrayObject(vertex_array);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
             GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindVertexArray(0);
+            SF3D.SFRender.SFRenderEngine.SetVertexArrayObject(0);
 
             GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
         }
@@ -760,7 +760,8 @@ namespace SFEngine.SFMap
             tl = br = area.First();
             foreach (SFCoord p in area)
             {
-                MathUtils.Expand(p, ref tl, ref br);
+                MathUtils.Expand(p.x, ref tl.x, ref br.x);
+                MathUtils.Expand(p.y, ref tl.y, ref br.y);
             }
         }
 
@@ -1113,14 +1114,8 @@ namespace SFEngine.SFMap
             UpdateHeightMap();
 
             // update decals here
-            for (int i = 0; i < SF3D.SFRender.SFRenderEngine.scene.decal_info.last_used; i++)
+            foreach(SF3D.SceneSynchro.SFDecalInfo decal_info in SF3D.SFRender.SFRenderEngine.scene.decal_info.GetItems())
             {
-                if (!SF3D.SFRender.SFRenderEngine.scene.decal_info.elem_active[i])
-                {
-                    continue;
-                }
-
-                SF3D.SceneSynchro.SFDecalInfo decal_info = SF3D.SFRender.SFRenderEngine.scene.decal_info.elements[i];
                 // check bounding box
                 if (((topleft.x <= decal_info.bottomright.x) && (topleft.x >= decal_info.topleft.x)) || ((bottomright.x <= decal_info.bottomright.x) && (bottomright.x >= decal_info.topleft.x)))
                 {
@@ -1277,7 +1272,8 @@ namespace SFEngine.SFMap
             Vector2 wcs_bottomright = wcs_bottomright_prime;
             for (int i = 0; i < 4; i++)
             {
-                MathUtils.Expand(wcs_bbox_mesh[i], ref wcs_topleft, ref wcs_bottomright);
+                MathUtils.Expand(wcs_bbox_mesh[i].X, ref wcs_topleft.X, ref wcs_bottomright.X);
+                MathUtils.Expand(wcs_bbox_mesh[i].Y, ref wcs_topleft.Y, ref wcs_bottomright.Y);
             }
 
             // 5. get map coordinates to gather the points from

@@ -10,7 +10,7 @@ using OpenTK;
 namespace SFEngine.SF3D.Physics
 {
     // plane is described using a point belonging to it and a normal vector to the plane
-    public class Plane
+    public struct Plane
     {
         public Vector3 point;
         public Vector3 normal;

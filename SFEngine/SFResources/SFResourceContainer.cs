@@ -30,7 +30,9 @@ namespace SFEngine.SFResources
             {
                 int ret = 0;
                 foreach (T res in cont.Values)
+                {
                     ret += res.RAMSize;
+                }
                 return ret;
             }
         }
@@ -41,7 +43,9 @@ namespace SFEngine.SFResources
             {
                 int ret = 0;
                 foreach (T res in cont.Values)
+                {
                     ret += res.DeviceSize;
+                }
                 return ret;
             }
         }
@@ -165,16 +169,15 @@ namespace SFEngine.SFResources
             SFResourceManager.current_resource = rname;
             T resource = new T();
             resource.StorageSize = data.Length;
-            int res_code = resource.Load(data, 0, custom_data);
+            err_code = resource.Load(data, 0, custom_data);
             SFResourceManager.current_resource = prev_res;
             //end of stack
 
             // if failed to load resource, return error code
-            if (res_code != 0)
+            if (err_code != 0)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFResources, "SFResourceContainer.Load(): Could not load resource " + prefix_path + "\\" + res_to_load);
 
-                err_code = res_code;
                 return false;
             }
 
@@ -184,12 +187,11 @@ namespace SFEngine.SFResources
             reference_count.Add(rname, 1);
             remove_when_unused.Add(rname, true);
             res = resource;
-            err_code = 0;
             return true;
         }
 
         // resource, name for the resource
-        public int AddManually(T res, string rname)
+        public void AddManually(T res, string rname)
         {
             if (cont.ContainsKey(rname))
             {
@@ -202,28 +204,26 @@ namespace SFEngine.SFResources
             cont.Add(rname, res);
             reference_count.Add(rname, 1);
             remove_when_unused.Add(rname, true);
-
-            return 0;
         }
 
-        public int Dispose(T res)
+        public void Dispose(T res)
         {
             if(res == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Disposing null resource, skipped");
-                return -2;
+                return;
             }
 
-            return Dispose(res.Name);
+            Dispose(res.Name);
         }
 
         // decrements reference counter, only removes resource when the counter reaches 0
-        public int Dispose(string rname)
+        public void Dispose(string rname)
         {
             if (!cont.ContainsKey(rname))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFResources, "SFResourceContainer.Dispose(): Resource " + rname + " does not exist!");
-                return -1;
+                return;
             }
             reference_count[rname] -= 1;
 
@@ -242,10 +242,8 @@ namespace SFEngine.SFResources
                     cont.Remove(rname);
                     reference_count.Remove(rname);
                     remove_when_unused.Remove(rname);
-                    return 1;
                 }
             }
-            return 0;
         }
 
         // if a given resource has remove_when_unused set to true, it will be removed when reference count goes to 0
@@ -288,11 +286,6 @@ namespace SFEngine.SFResources
             return -1;
         }
 
-        public List<string> GetNames()
-        {
-            return cont.Keys.ToList();
-        }
-
         // removes all resources no matter the reference counters or if remove when unused is marked true
         public void DisposeAll()
         {
@@ -312,7 +305,9 @@ namespace SFEngine.SFResources
         public void LogUndisposedResources()
         {
             foreach (string res in cont.Keys)
+            {
                 LogUtils.Log.Info(LogUtils.LogSource.SFResources, res + ": dangling references " + reference_count[res] + (remove_when_unused[res] ? "" : " (marked as permanent)"));
+            }
         }
     }
 }

@@ -14,9 +14,9 @@ namespace SFEngine.SF3D
     public class SFSkeleton : SFResource
     {
         public const int MAX_BONE_PER_CHUNK = 20;
-        public int bone_count { get; private set; } = 0;
-        public Matrix4[] bone_reference_matrices { get; private set; } = null;
-        public Matrix4[] bone_inverted_matrices { get; private set; } = null;
+        public int bone_count = 0;
+        public Matrix4[] bone_reference_matrices = null;
+        public Matrix4[] bone_inverted_matrices = null;
         public int[] bone_parents = null;
         public string[] bone_names = null;
 
@@ -162,10 +162,8 @@ namespace SFEngine.SF3D
 
             for (int i = 0; i < bone_count; i++)
             {
-                Matrix4 temp_matrix = Matrix4.CreateFromQuaternion(bone_rot[i]);
-
-                temp_matrix.Row3 = new Vector4(bone_pos[i], 1);
-                bone_reference_matrices[i] = temp_matrix;
+                bone_reference_matrices[i] = Matrix4.CreateFromQuaternion(bone_rot[i]);
+                bone_reference_matrices[i].Row3 = new Vector4(bone_pos[i], 1);
 
                 if (bone_parents[i] != Utility.NO_INDEX)
                 {

@@ -28,7 +28,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             ListHeads.Items.Clear();
             ListHeads.SuspendLayout();
 
-            for (int i = 0; i < SFLuaEnvironment.heads.heads.Count; i++)
+            for (int i = 0; i < SFLuaEnvironment.heads.items.Count; i++)
             {
                 ListHeads.Items.Add((i + 1).ToString() + ". ");
             }
@@ -47,7 +47,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
             int head_id = ListHeads.SelectedIndex + 1;
 
-            var heads = SFLuaEnvironment.heads.heads;
+            var heads = SFLuaEnvironment.heads.items;
 
             MM.Text = heads[head_id].MeshMale;
             MF.Text = heads[head_id].MeshFemale;
@@ -60,7 +60,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
             }
 
-            SFLuaEnvironment.heads.heads[ListHeads.SelectedIndex + 1].MeshMale = MM.Text.ToString();
+            SFLuaEnvironment.heads.items[ListHeads.SelectedIndex + 1].MeshMale = MM.Text.ToString();
         }
 
         private void MF_Validated(object sender, EventArgs e)
@@ -70,7 +70,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
             }
 
-            SFLuaEnvironment.heads.heads[ListHeads.SelectedIndex + 1].MeshFemale = MF.Text.ToString();
+            SFLuaEnvironment.heads.items[ListHeads.SelectedIndex + 1].MeshFemale = MF.Text.ToString();
         }
 
         private void ButtonAdd_Click(object sender, EventArgs e)
@@ -79,8 +79,8 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             head.MeshMale = "";
             head.MeshFemale = "";
 
-            int new_id = SFLuaEnvironment.heads.heads.Count + 1;
-            SFLuaEnvironment.heads.heads.Add(new_id, head);
+            int new_id = SFLuaEnvironment.heads.items.Count + 1;
+            SFLuaEnvironment.heads.items.Add(new_id, head);
             ListHeads.Items.Add(new_id.ToString() + ". ");
 
             ListHeads.SelectedIndex = new_id - 1;
@@ -94,10 +94,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int old_index = ListHeads.SelectedIndex;
-            SFLuaEnvironment.heads.heads.Remove(ListHeads.SelectedIndex + 1);
+            SFLuaEnvironment.heads.items.Remove(ListHeads.SelectedIndex + 1);
             ListHeads.Items.RemoveAt(ListHeads.SelectedIndex);
 
-            if (old_index == SFLuaEnvironment.heads.heads.Count)
+            if (old_index == SFLuaEnvironment.heads.items.Count)
             {
                 old_index -= 1;
             }

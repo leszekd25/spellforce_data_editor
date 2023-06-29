@@ -8,6 +8,8 @@ using SFEngine.SFCFF;
 using SFEngine.SFLua;
 using SFEngine.SFLua.lua_sql;
 using SFEngine.SFResources;
+using SFEngine.SFMap;
+using SFEngine.SF3D.Physics;
 using System;
 using System.Collections.Generic;
 
@@ -73,6 +75,7 @@ namespace SFEngine.SF3D.SceneSynchro
 
         public HashSet<SceneNodeAnimated> an_primary_nodes = new HashSet<SceneNodeAnimated>();
         public LinearPool<SceneNodeBone> an_bone_nodes = new LinearPool<SceneNodeBone>();
+        public List<SceneNodeMapChunk> vis_chunks = new List<SceneNodeMapChunk>();
 
         public LinearPool<SFDecalInfo> decal_info = new LinearPool<SFDecalInfo>();
 
@@ -711,7 +714,165 @@ namespace SFEngine.SF3D.SceneSynchro
 
             time_flowing = true;
             delta_timer.Restart();
+        }
 
+
+
+
+
+        // turns heightmap nodes visible/invisible depending on if theyre in camera frustum
+        public void UpdateVisibleChunks(SFMapHeightMap heightmap)
+        {
+            // 1. find collection of visible chunks
+            vis_chunks.Clear();
+            int chunks_per_row = (heightmap.width / SFMapHeightMapMesh.CHUNK_SIZE);
+            int chunks_per_column = (heightmap.height / SFMapHeightMapMesh.CHUNK_SIZE);
+
+            // approximation of the visible chunk area
+            BoundingBox aabb = BoundingBox.FromPoints(camera.Frustum.GetConvexHullCutByYZero().ToArray());//(scene.camera.Frustum.frustum_vertices);
+            // get ix, iy of first and last chunk
+            int ix1, ix2, iy1, iy2;
+
+            SFMapHeightMapChunk chunk = null;
+            SFCoord point;
+            // get first chunk
+            point = new SFCoord(Math.Max((short)0, Math.Min((short)(heightmap.width - 1), (short)(aabb.a.X))), Math.Max((short)0, Math.Min((short)(heightmap.height - 1), (short)(aabb.a.Z))));
+
+            chunk = heightmap.GetChunk(point);
+            ix1 = chunk.ix;
+            iy1 = chunks_per_column - 1 - chunk.iy;
+
+            // get last chunk   
+            point = new SFCoord(Math.Max((short)0, Math.Min((short)(heightmap.width - 1), (short)(aabb.b.X))), Math.Max((short)0, Math.Min((short)(heightmap.height - 1), (short)(aabb.b.Z))));
+
+            chunk = heightmap.GetChunk(point);
+            ix2 = chunk.ix;
+            iy2 = chunks_per_column - 1 - chunk.iy;
+
+            float max_dist = 1.136f * Settings.ObjectFadeMax;
+            Vector2 xz;
+            for (int j = iy1; j <= iy2; j++)
+            {
+                for (int i = ix1; i <= ix2; i++)
+                {
+                    SceneNodeMapChunk chunk_node = heightmap.chunk_nodes[j * chunks_per_row + i];
+                    xz = chunk_node.MapChunk.aabb.center.Xz - camera.position.Xz;
+                    chunk_node.DistanceToCamera = xz.Length;
+                    chunk_node.CameraHeightDifference = camera.position.Y - chunk_node.MapChunk.aabb.b.Y;
+
+                    if (chunk_node.DistanceToCamera > max_dist)
+                    {
+                        continue;
+                    }
+
+                    if (!chunk_node.MapChunk.aabb.IsOutsideOfFrustum(camera.Frustum))
+                    {
+                        vis_chunks.Add(chunk_node);
+                    }
+                }
+            }
+
+            // NOTE: chunks are already sorted due to how lists operate
+            // 2. compare with existing collection of visible chunks: march two lists at once
+            // chunk ID is chunk.iy*map.width/16+chunk.ix
+            // any previously visible chunks which are now invisible turn off visibility of its objects
+            // vice versa
+            int next_list_id = 0, cur_list_id = 0;
+            int next_chunk_id, cur_chunk_id;
+            bool next_end = false, cur_end = false;
+            while (true)
+            {
+                if (cur_list_id == heightmap.visible_chunks.Count)
+                {
+                    cur_end = true;
+                }
+
+                if (next_list_id == vis_chunks.Count)
+                {
+                    next_end = true;
+                }
+
+                if (next_end && cur_end)
+                {
+                    break;
+                }
+
+                if (cur_end)
+                {
+                    for (int i = next_list_id; i < vis_chunks.Count; i++)
+                    {
+                        vis_chunks[i].SetParent(root);
+                        vis_chunks[i].MapChunk.UpdateVisible(true);
+                        // add visible to the next chunk
+                    }
+                    break;
+                }
+                if (next_end)
+                {
+                    for (int i = cur_list_id; i < heightmap.visible_chunks.Count; i++)
+                    {
+                        heightmap.visible_chunks[i].SetParent(null);
+                        heightmap.visible_chunks[i].MapChunk.UpdateVisible(false);
+                        // add invisible to the current chunk
+                    }
+                    break;
+                }
+
+                cur_chunk_id = heightmap.visible_chunks[cur_list_id].MapChunk.id;
+                next_chunk_id = vis_chunks[next_list_id].MapChunk.id;
+
+                if (next_chunk_id > cur_chunk_id)
+                {
+                    while (next_chunk_id > cur_chunk_id)
+                    {
+                        heightmap.visible_chunks[cur_list_id].SetParent(null);
+                        heightmap.visible_chunks[cur_list_id].MapChunk.UpdateVisible(false);
+                        // turn chunk invisible
+
+                        cur_list_id += 1;
+                        if (cur_list_id == heightmap.visible_chunks.Count)
+                        {
+                            break;
+                        }
+
+                        cur_chunk_id = heightmap.visible_chunks[cur_list_id].MapChunk.id;
+                    }
+                }
+                else if (next_chunk_id < cur_chunk_id)
+                {
+                    while (next_chunk_id < cur_chunk_id)
+                    {
+                        vis_chunks[next_list_id].SetParent(root);
+                        vis_chunks[next_list_id].MapChunk.UpdateVisible(true);
+                        // turn chunk visible
+
+                        next_list_id += 1;
+                        if (next_list_id == vis_chunks.Count)
+                        {
+                            break;
+                        }
+
+                        next_chunk_id = vis_chunks[next_list_id].MapChunk.id;
+                    }
+                }
+                else
+                {
+                    next_list_id += 1;
+                    cur_list_id += 1;
+                }
+            }
+            heightmap.visible_chunks.Clear();
+            for(int i = 0; i < vis_chunks.Count; i++)
+            {
+                heightmap.visible_chunks.Add(vis_chunks[i]);
+            }
+
+            // check decoration visibility
+            foreach (SceneNodeMapChunk chunk_node in vis_chunks)
+            {
+                chunk_node.MapChunk.UpdateDecorationVisible(chunk_node.DistanceToCamera, chunk_node.CameraHeightDifference);
+                chunk_node.MapChunk.UpdateUnitVisible(chunk_node.DistanceToCamera, chunk_node.CameraHeightDifference);
+            }
         }
 
         // updates root of the scene (and consequently, all children that need to be updated)
@@ -756,13 +917,10 @@ namespace SFEngine.SF3D.SceneSynchro
 
             if (Settings.DynamicMap)
             {
-                for(int i = 0; i < an_bone_nodes.elements.Count; i++)
+                foreach(SceneNodeBone an in an_bone_nodes.GetItems())
                 {
-                    if(an_bone_nodes.elem_active[i])
-                    {
-                        an_bone_nodes.elements[i].TouchParents();
-                        an_bone_nodes.elements[i].TouchResultTransform();
-                    }
+                    an.TouchParents();
+                    an.TouchResultTransform();
                 }
             }
         }

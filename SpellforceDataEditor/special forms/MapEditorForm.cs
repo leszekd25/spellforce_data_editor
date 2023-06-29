@@ -1822,8 +1822,7 @@ namespace SpellforceDataEditor.special_forms
                     r_end = (((r_end - r_start).Normalized()) * 400.0f) + r_start;    // 400 - ray length
                     Ray ray = new Ray(r_start, r_end - r_start);
 
-                    Vector3 result = new Vector3(0, 0, 0);
-                    bool ray_success = ray.Intersect(map.heightmap, out result);
+                    bool ray_success = ray.Intersect(map.heightmap, out Vector3 result);
 
                     if (ray_success)
                     {
@@ -1840,7 +1839,7 @@ namespace SpellforceDataEditor.special_forms
                         {
                             update_render = true;
                             StatusStrip.SuspendLayout();
-                            StatusText.Text = "Cursor position: " + inv_cursor_coord.ToString();
+                            StatusText.Text = $"Cursor position: {inv_cursor_coord}";
                             SetSpecificText(inv_cursor_coord);
                             StatusStrip.ResumeLayout();
                         }
@@ -1848,9 +1847,7 @@ namespace SpellforceDataEditor.special_forms
                         // on click action
                         if ((mouse_pressed) && (selected_editor != null))
                         {
-                            System.Diagnostics.Debug.WriteLine("IX " + map.heightmap.GetChunk(inv_cursor_coord).ix.ToString()
-                                + " | IY " + map.heightmap.GetChunk(inv_cursor_coord).iy.ToString()
-                                + " | PRESS");
+                            System.Diagnostics.Debug.WriteLine($"IX {map.heightmap.GetChunk(inv_cursor_coord).ix} | IY {map.heightmap.GetChunk(inv_cursor_coord).iy} | PRESS");
                             selected_editor.OnMousePress(inv_cursor_coord, mouse_last_pressed, ref special_pressed);
                             update_render = true;
                             update_ui = true;
@@ -1872,7 +1869,7 @@ namespace SpellforceDataEditor.special_forms
             if (update_render)
             {
                 map.ocean.SetPosition(SFRenderEngine.scene.camera.position);
-                SFRenderEngine.UpdateVisibleChunks();
+                SFRenderEngine.scene.UpdateVisibleChunks(map.heightmap);
                 map.selection_helper.Update();
 
                 SFRenderEngine.scene.delta_timer.Stop();

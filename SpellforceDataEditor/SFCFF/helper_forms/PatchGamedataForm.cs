@@ -23,6 +23,7 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
         {
             ListPatched.Items.Clear();
             int entries_fixed = 0;
+            MainForm.data.op_queue.OpenCluster();
             foreach (SFCategory cat in SFCategoryManager.gamedata.categories.Values)
             {
                 switch (cat.category_id)
@@ -76,6 +77,7 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
                         break;
                 }
             }
+            MainForm.data.op_queue.CloseCluster();
 
             return entries_fixed;
         }

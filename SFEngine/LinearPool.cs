@@ -9,7 +9,7 @@ namespace SFEngine
         public int last_used = Utility.NO_INDEX;
         public int used_count = 0;
         public List<T> elements { get; private set; } = new List<T>();
-        public List<bool> elem_active { get; set; } = new List<bool>();
+        public List<bool> elem_active { get; private set; } = new List<bool>();
 
         public int Add(T elem)
         {
@@ -84,6 +84,17 @@ namespace SFEngine
             if (index != Utility.NO_INDEX)
             {
                 RemoveAt(index);
+            }
+        }
+
+        public IEnumerable<T> GetItems()
+        {
+            for(int i = 0; i <= last_used; i++)
+            {
+                if(elem_active[i])
+                {
+                    yield return elements[i];
+                }
             }
         }
 

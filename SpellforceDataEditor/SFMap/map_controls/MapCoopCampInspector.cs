@@ -32,11 +32,11 @@ namespace SpellforceDataEditor.SFMap.map_controls
         private string GetCoopSpawnString(SFMapCoopAISpawn spawn)
         {
             string ret = "";
-            if (SFLuaEnvironment.coop_spawns.coop_spawn_types != null)
+            if (SFLuaEnvironment.coop_spawns.items != null)
             {
-                if (SFLuaEnvironment.coop_spawns.coop_spawn_types.ContainsKey(spawn.spawn_id))
+                if (SFLuaEnvironment.coop_spawns.items.ContainsKey(spawn.spawn_id))
                 {
-                    ret += SFLuaEnvironment.coop_spawns.coop_spawn_types[spawn.spawn_id].name + " ";
+                    ret += SFLuaEnvironment.coop_spawns.items[spawn.spawn_id].name + " ";
                 }
             }
 

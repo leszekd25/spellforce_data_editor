@@ -117,44 +117,17 @@ namespace SFEngine.SF3D.Physics
         // limit on point coordinates is (-100000, 100000)
         public static BoundingBox FromPoints(Vector3[] vs)
         {
-            float xmin, xmax, ymin, ymax, zmin, zmax;
-            xmin = ymin = zmin = 99999;
-            xmax = ymax = zmax = -99999;
+            Vector3 aa, bb;
+            aa = bb = vs[0];
 
-            for (int i = 0; i < vs.Length; i++)
+            for (int i = 1; i < vs.Length; i++)
             {
-                if (xmin > vs[i].X)
-                {
-                    xmin = vs[i].X;
-                }
-
-                if (xmax < vs[i].X)
-                {
-                    xmax = vs[i].X;
-                }
-
-                if (ymin > vs[i].Y)
-                {
-                    ymin = vs[i].Y;
-                }
-
-                if (ymax < vs[i].Y)
-                {
-                    ymax = vs[i].Y;
-                }
-
-                if (zmin > vs[i].Z)
-                {
-                    zmin = vs[i].Z;
-                }
-
-                if (zmax < vs[i].Z)
-                {
-                    zmax = vs[i].Z;
-                }
+                MathUtils.Expand(vs[i].X, ref aa.X, ref bb.X);
+                MathUtils.Expand(vs[i].Y, ref aa.Y, ref bb.Y);
+                MathUtils.Expand(vs[i].Z, ref aa.Z, ref bb.Z);
             }
 
-            return new BoundingBox(new Vector3(xmin, ymin, zmin), new Vector3(xmax, ymax, zmax));
+            return new BoundingBox(aa, bb);
         }
 
         // rotate bounding box along XY plane and return new rotated box

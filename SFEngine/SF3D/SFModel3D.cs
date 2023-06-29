@@ -334,6 +334,7 @@ namespace SFEngine.SF3D
                 return;
             }
 
+            // this homunculus here will have to stay for a while longer
             float x1, x2, y1, y2, z1, z2;
             x1 = 10000;
             x2 = -10000;
