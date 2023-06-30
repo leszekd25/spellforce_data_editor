@@ -596,26 +596,13 @@ namespace SFEngine.SF3D.SceneSynchro
 
             for (int i = 0; i < BoneTransforms.Length; i++)
             {
-                SFBoneAnimation ba = animation.bone_animations[i];
-                if (ba.is_static)
-                {
-                    BoneTransforms[i] = ba.static_transform;
-                }
-                else
-                {
-                    BoneTransforms[i] = Matrix4.CreateFromQuaternion(Quaternion.Slerp(ba.state_quantized[k].rotation, ba.state_quantized[k + 1].rotation, t));
-                    BoneTransforms[i].Row3 = new Vector4(Vector3.Lerp(ba.state_quantized[k].position, ba.state_quantized[k + 1].position, t), 1);
-                }
+                BoneAnimationState[] ba = animation.bone_animations[i];
 
-                if (skeleton.bone_parents[i] != Utility.NO_INDEX)
-                {
-                    BoneTransforms[i] = BoneTransforms[i] * BoneTransforms[skeleton.bone_parents[i]];
-                }
-            }
+                BoneAnimationState bas;
+                BoneAnimationState.FastLerp(ref ba[k], ref ba[k + 1], t, out bas);
 
-            for (int i = 0; i < BoneTransforms.Length; i++)
-            {
-                BoneTransforms[i] = skeleton.bone_inverted_matrices[i] * BoneTransforms[i];
+                BoneAnimationState.Multiply(ref skeleton.bone_inverted_state[i], ref bas, out bas);
+                bas.ToMatrix(out BoneTransforms[i]);
             }
         }
 
@@ -782,7 +769,9 @@ namespace SFEngine.SF3D.SceneSynchro
                 SceneNodeAnimated pp = (SceneNodeAnimated)Parent;
                 if (BoneIndex != Utility.NO_INDEX)
                 {
-                    result_transform = local_transform * pp.Skeleton.bone_reference_matrices[BoneIndex] * pp.BoneTransforms[BoneIndex] * Parent.result_transform;
+                    pp.Skeleton.bone_reference_state[BoneIndex].ToMatrix(out Matrix4 skel_ref);
+
+                    result_transform = local_transform * skel_ref * pp.BoneTransforms[BoneIndex] * Parent.result_transform;
                 }
 
                 needsupdateresulttransform = false;

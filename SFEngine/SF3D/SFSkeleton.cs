@@ -15,8 +15,10 @@ namespace SFEngine.SF3D
     {
         public const int MAX_BONE_PER_CHUNK = 20;
         public int bone_count = 0;
-        public Matrix4[] bone_reference_matrices = null;
-        public Matrix4[] bone_inverted_matrices = null;
+        //public Matrix4[] bone_reference_matrices = null;
+        //public Matrix4[] bone_inverted_matrices = null;
+        public BoneAnimationState[] bone_reference_state = null;
+        public BoneAnimationState[] bone_inverted_state = null;
         public int[] bone_parents = null;
         public string[] bone_names = null;
 
@@ -52,8 +54,8 @@ namespace SFEngine.SF3D
             MemoryStream ms = new MemoryStream(data, offset, data.Length - offset);
             StreamReader sr = new StreamReader(ms);
 
-            Vector3[] bone_pos = null;
-            Quaternion[] bone_rot = null;
+            //Vector3[] bone_pos = null;
+            //Quaternion[] bone_rot = null;
             int current_bone = Utility.NO_INDEX;
             string current_bone_name = "";
             int file_level = 0;
@@ -102,10 +104,12 @@ namespace SFEngine.SF3D
 
                             bone_count = bc;
                             bone_parents = new int[bc];
-                            bone_pos = new Vector3[bc];
-                            bone_rot = new Quaternion[bc];
-                            bone_reference_matrices = new Matrix4[bc];
-                            bone_inverted_matrices = new Matrix4[bc];
+                            //bone_pos = new Vector3[bc];
+                            //bone_rot = new Quaternion[bc];
+                            //bone_reference_matrices = new Matrix4[bc];
+                            //bone_inverted_matrices = new Matrix4[bc];
+                            bone_reference_state = new BoneAnimationState[bc];
+                            bone_inverted_state = new BoneAnimationState[bc];
                             bone_names = new string[bc];
                         }
                         break;
@@ -136,7 +140,8 @@ namespace SFEngine.SF3D
                     case 3:
                         if (line[0] == 'P')
                         {
-                            bone_pos[current_bone] = Load_GetVector3(line.Substring(4));
+                            //bone_pos[current_bone] = Load_GetVector3(line.Substring(4));
+                            bone_reference_state[current_bone].position = Load_GetVector3(line.Substring(4));
                         }
 
                         if (line.Substring(0, 3) == "Rre")
@@ -150,7 +155,8 @@ namespace SFEngine.SF3D
                         if (line.Substring(0, 3) == "Rim")
                         {
                             Rim = Load_GetVector3(line.Substring(6));
-                            bone_rot[current_bone] = new Quaternion(Rim, Rre);
+                            //bone_rot[current_bone] = new Quaternion(Rim, Rre);
+                            bone_reference_state[current_bone].rotation = new Quaternion(Rim, Rre);
                         }
                         break;
 
@@ -162,18 +168,14 @@ namespace SFEngine.SF3D
 
             for (int i = 0; i < bone_count; i++)
             {
-                bone_reference_matrices[i] = Matrix4.CreateFromQuaternion(bone_rot[i]);
-                bone_reference_matrices[i].Row3 = new Vector4(bone_pos[i], 1);
-
                 if (bone_parents[i] != Utility.NO_INDEX)
                 {
-                    bone_reference_matrices[i] = bone_reference_matrices[i] * bone_reference_matrices[bone_parents[i]];
+                    BoneAnimationState.Multiply(ref bone_reference_state[i], ref bone_reference_state[bone_parents[i]], out bone_reference_state[i]);
                 }
-
-                bone_inverted_matrices[i] = bone_reference_matrices[i].Inverted();
+                bone_inverted_state[i] = bone_reference_state[i].Inverse();
             }
 
-            RAMSize = 4 + 196 * bone_count;  // matrix4, matrix4, int, string[64]
+            RAMSize = 4 + 124 * bone_count;  // matrix4, matrix4, int, string[64] = 196
 
             return 0;
         }

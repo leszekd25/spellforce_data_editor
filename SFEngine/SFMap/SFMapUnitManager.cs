@@ -302,7 +302,8 @@ namespace SFEngine.SFMap
             string anim_name = GetIdleAnim(GetAnimLib(unit));
             if (anim_name != "")
             {
-                if(!SFResources.SFResourceManager.Animations.Load(anim_name, SFUnPak.FileSource.ANY, out SFAnimation anim, out int ec))
+                SFSkeleton skel = unit.node.FindNode<SF3D.SceneSynchro.SceneNodeAnimated>("Chest").Skeleton;
+                if(!SFResources.SFResourceManager.Animations.Load(anim_name, SFUnPak.FileSource.ANY, out SFAnimation anim, out int ec, skel))
                 {
                     LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFMapUnitManager.RestartAnimation(): Could not load animation (animation name = " + anim_name + ")");
                 }

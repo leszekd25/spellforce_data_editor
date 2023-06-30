@@ -645,7 +645,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string anim_name = ListAnimations.SelectedItem.ToString();
                     anim_name = anim_name.Substring(0, anim_name.Length - 4);
-                    if(!SFResourceManager.Animations.Load(anim_name, SFEngine.SFUnPak.FileSource.ANY, out SFAnimation anim, out int ec))
+                    if(!SFResourceManager.Animations.Load(anim_name, SFEngine.SFUnPak.FileSource.ANY, out SFAnimation anim, out int ec, obj_d1.Skeleton))
                     {
                         StatusText.Text = "Failed to load animation " + anim_name + ", status code " + ec.ToString();
                         dynamic_render = false;
@@ -673,11 +673,13 @@ namespace SpellforceDataEditor.special_forms
 
             if (ComboBrowseMode.SelectedIndex == 2)
             {
+                SceneNodeAnimated obj_d1 = scene.root.FindNode<SceneNodeAnimated>("dynamic_mesh");
+
                 if (ListAnimations.SelectedIndex != -1)
                 {
                     string anim_name = ListAnimations.SelectedItem.ToString();
                     anim_name = anim_name.Substring(0, anim_name.Length - 4);
-                    if (!SFResourceManager.Animations.Load(anim_name, SFEngine.SFUnPak.FileSource.ANY, out SFAnimation anim, out int ec))
+                    if (!SFResourceManager.Animations.Load(anim_name, SFEngine.SFUnPak.FileSource.ANY, out SFAnimation anim, out int ec, obj_d1.Skeleton))
                     {
                         StatusText.Text = "Failed to load animation " + anim_name + ", status code " + ec.ToString();
                         dynamic_render = false;
