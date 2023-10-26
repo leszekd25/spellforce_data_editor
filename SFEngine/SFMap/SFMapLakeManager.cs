@@ -108,8 +108,9 @@ namespace SFEngine.SFMap
 
         private void DisposeLakeMesh(SFMapLake lake)
         {
-            SFResources.SFResourceManager.Models.Dispose(lake.node.Mesh);
+            SFModel3D lake_model = lake.node.Mesh;
             lake.node.Mesh = null;
+            SFResources.SFResourceManager.Models.Dispose(lake_model);
         }
 
         public void RemoveLake(SFMapLake lake)
