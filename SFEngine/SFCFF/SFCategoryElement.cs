@@ -110,7 +110,7 @@ namespace SFEngine.SFCFF
                     encoding = Encoding.GetEncoding(1250);
                     break;
                 default:
-                    encoding = Encoding.Default;
+                    encoding = Encoding.GetEncoding(1252);
                     break;
             }
 
@@ -130,7 +130,7 @@ namespace SFEngine.SFCFF
                     encoding = Encoding.GetEncoding(1250);
                     break;
                 default:
-                    encoding = Encoding.Default;
+                    encoding = Encoding.GetEncoding(1252);
                     break;
             }
 

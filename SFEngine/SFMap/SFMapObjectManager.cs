@@ -1,4 +1,4 @@
-﻿using OpenTK;
+﻿using OpenTK.Mathematics;
 using System.Collections.Generic;
 
 namespace SFEngine.SFMap
@@ -145,7 +145,7 @@ namespace SFEngine.SFMap
             obj.node.Position = map.heightmap.GetFixedPosition(obj.grid_position);
             obj.node.Scale = new Vector3(100 / 128f);
             obj.node.SetAnglePlane(obj.angle);
-            map.UpdateNodeDecal(obj.node, new Vector2(obj.grid_position.x, obj.grid_position.y), OpenTK.Vector2.Zero, obj.angle);
+            map.UpdateNodeDecal(obj.node, new Vector2(obj.grid_position.x, obj.grid_position.y), Vector2.Zero, obj.angle);
         }
 
         public void RotateObject(int object_map_index, int angle)
@@ -157,7 +157,7 @@ namespace SFEngine.SFMap
             ApplyObjectBlockFlags(obj.grid_position, obj.angle, (ushort)obj.game_id, true);
 
             obj.node.SetAnglePlane(angle);
-            map.UpdateNodeDecal(obj.node, new OpenTK.Vector2(obj.grid_position.x, obj.grid_position.y), OpenTK.Vector2.Zero, obj.angle);
+            map.UpdateNodeDecal(obj.node, new Vector2(obj.grid_position.x, obj.grid_position.y), Vector2.Zero, obj.angle);
         }
 
         public void MoveObject(int object_map_index, SFCoord new_pos)
@@ -177,7 +177,7 @@ namespace SFEngine.SFMap
             // change visual transform
             float z = map.heightmap.GetZ(new_pos) / 100.0f;
             obj.node.Position = map.heightmap.GetFixedPosition(new_pos);
-            map.UpdateNodeDecal(obj.node, new OpenTK.Vector2(obj.grid_position.x, obj.grid_position.y), OpenTK.Vector2.Zero, obj.angle);
+            map.UpdateNodeDecal(obj.node, new Vector2(obj.grid_position.x, obj.grid_position.y), Vector2.Zero, obj.angle);
         }
 
         public void ApplyObjectBlockFlags(SFCoord pos, int angle, ushort id, bool set)
@@ -270,9 +270,9 @@ namespace SFEngine.SFMap
 
             if (mesh_obj_name != "")
             {
-                if (node.Children.Count == 1)
+                if (node.children.Count == 1)
                 {
-                    SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(node.Children[0]);         // remove missing mesh node
+                    SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(node.children[0]);         // remove missing mesh node
                 }
                 SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(node, mesh_obj_name, "0");
                 SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(node, mesh_decal_name, "0");

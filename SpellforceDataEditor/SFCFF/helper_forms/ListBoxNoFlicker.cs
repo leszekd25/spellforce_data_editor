@@ -15,6 +15,7 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
                 true);
             DrawMode = DrawMode.OwnerDrawFixed;
         }
+
         protected override void OnDrawItem(DrawItemEventArgs e)
         {
             if ((Items.Count > 0) && (e.Index != -1))
@@ -30,10 +31,9 @@ namespace SpellforceDataEditor.SFCFF.helper_forms
             e.Graphics.FillRegion(new SolidBrush(BackColor), iRegion);
             if (Items.Count > 0)
             {
-                System.Drawing.Rectangle rct = GetItemRectangle(0);
-                int first_pos = -(rct.Y / rct.Height);
-                int item_count = Height / rct.Height;
-                for (int i = first_pos; i < first_pos + item_count; ++i)
+                int item_index = IndexFromPoint(0, 0);
+                int item_count = Height / GetItemHeight(0);
+                for (int i = item_index; i < item_index + item_count; ++i)
                 {
                     if (i >= Items.Count)
                     {

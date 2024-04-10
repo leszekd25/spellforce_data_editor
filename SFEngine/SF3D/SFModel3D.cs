@@ -3,7 +3,7 @@
  * It also binds this info to a GPU buffer, and as such, it has to be disposed of manually
  * */
 
-using OpenTK;
+using OpenTK.Mathematics;
 using SFEngine.SFResources;
 using System;
 using System.Collections.Generic;
@@ -104,11 +104,10 @@ namespace SFEngine.SF3D
                 }
             }
             byte[] chars = br.ReadBytes(64);
-            matname = enc.GetString(chars);
-            matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
-            matname = matname.ToLower();
+            int len = StringUtils.ASCIIToLower(chars);
+            matname = enc.GetString(chars, 0, Math.Max(0, len));
 
-            if(!SFResourceManager.Textures.Load(matname, SFUnPak.FileSource.ANY, out material.texture, out int ec))
+            if (!SFResourceManager.Textures.Load(matname, SFUnPak.FileSource.ANY, out material.texture, out int ec))
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFModel3D.Load(): Could not load texture (texture name = " + matname + ")");
                 material.texture = SFRender.SFRenderEngine.opaque_tex;
@@ -118,8 +117,17 @@ namespace SFEngine.SF3D
             br.BaseStream.Position += 80;
             // colors
             br.BaseStream.Position += 12;
-            // other unneeded data (chunk bbox)
-            br.BaseStream.Position += 32;
+            // chunk bbox
+            Vector3 bbox_tl, bbox_br;
+            bbox_tl.X = br.ReadSingle();
+            bbox_tl.Y = br.ReadSingle();
+            bbox_tl.Z = br.ReadSingle();
+            bbox_br.X = br.ReadSingle();
+            bbox_br.Y = br.ReadSingle();
+            bbox_br.Z = br.ReadSingle();
+            aabb = new Physics.BoundingBox(bbox_tl, bbox_br);
+            // other unneeded data
+            br.BaseStream.Position += 8;
 
             RAMSize = vertex_data.Length + face_indices.Length * 4;
             DeviceSize = 0;
@@ -334,7 +342,6 @@ namespace SFEngine.SF3D
                 return;
             }
 
-            // this homunculus here will have to stay for a while longer
             float x1, x2, y1, y2, z1, z2;
             x1 = 10000;
             x2 = -10000;
@@ -344,14 +351,26 @@ namespace SFEngine.SF3D
             z2 = -10000;
             foreach (SFSubModel3D sbm in submodels)
             {
-                foreach (Vector3 v in sbm.GetVertices())
+                if (sbm.aabb != null)
                 {
-                    x1 = Math.Min(x1, v.X);
-                    x2 = Math.Max(x2, v.X);
-                    y1 = Math.Min(y1, v.Y);
-                    y2 = Math.Max(y2, v.Y);
-                    z1 = Math.Min(z1, v.Z);
-                    z2 = Math.Max(z2, v.Z);
+                    x1 = Math.Min(x1, aabb.a.X);
+                    x2 = Math.Max(x2, aabb.b.X);
+                    y1 = Math.Min(y1, aabb.a.Y);
+                    y2 = Math.Max(y2, aabb.b.X);
+                    z1 = Math.Min(z1, aabb.a.Z);
+                    z2 = Math.Max(z2, aabb.b.X);
+                }
+                else  // a brutal fallback
+                {
+                    foreach (Vector3 v in sbm.GetVertices())
+                    {
+                        x1 = Math.Min(x1, v.X);
+                        x2 = Math.Max(x2, v.X);
+                        y1 = Math.Min(y1, v.Y);
+                        y2 = Math.Max(y2, v.Y);
+                        z1 = Math.Min(z1, v.Z);
+                        z2 = Math.Max(z2, v.Z);
+                    }
                 }
             }
             aabb = new Physics.BoundingBox(new Vector3(x1, y1, z1), new Vector3(x2, y2, z2));

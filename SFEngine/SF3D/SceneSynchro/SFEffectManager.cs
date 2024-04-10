@@ -41,7 +41,7 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             for(int i = 0; i < Particles.Count; i++)
             {
-                if (Particles[i].Parent != null)
+                if (Particles[i].parent != null)
                 {
                     Particles[i].SetParent(null);
                     Particles[i].Dispose();

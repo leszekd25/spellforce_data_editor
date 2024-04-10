@@ -193,6 +193,11 @@ namespace SFEngine.SFUnPak
 
         public void CloseAllPaks()
         {
+            if(pak_map == null)
+            {
+                return;
+            }
+
             foreach (SFPakFileSystem sys in pak_map)//.Values)
             {
                 sys.Close();

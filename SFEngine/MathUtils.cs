@@ -1,6 +1,5 @@
-﻿using OpenTK;
+﻿using OpenTK.Mathematics;
 using System;
-using SFEngine.SFMap;
 
 namespace SFEngine
 {

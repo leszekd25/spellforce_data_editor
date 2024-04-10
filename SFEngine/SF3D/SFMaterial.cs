@@ -3,7 +3,7 @@
  * It also contains mesh vertex indices it affects
  * */
 
-using OpenTK;
+using OpenTK.Mathematics;
 
 //expand!
 namespace SFEngine.SF3D

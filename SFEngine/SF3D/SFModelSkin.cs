@@ -49,10 +49,8 @@ namespace SFEngine.SF3D
             RAMSize = 0;
         }
 
-        public int Load(MemoryStream ms, object custom_data)
+        public int Load(BinaryReader br, byte[] data, int offset)
         {
-            BinaryReader br = new BinaryReader(ms);
-
             int vcount, fcount;
             vcount = br.ReadInt32();
             fcount = br.ReadInt32();
@@ -60,13 +58,22 @@ namespace SFEngine.SF3D
             vertex_data = br.ReadBytes(vcount * 40);
 
             face_indices = new uint[fcount * 3];
-            for (int i = 0; i < fcount; i++)
+            unsafe
             {
-                face_indices[i * 3] = (uint)br.ReadUInt16();
-                face_indices[i * 3 + 1] = (uint)br.ReadUInt16();
-                face_indices[i * 3 + 2] = (uint)br.ReadUInt16();
-                br.ReadUInt16();
+                fixed (byte* pdata = data)
+                {
+                    int face_offset = offset + (int)br.BaseStream.Position;
+                    for (int j = 0; j < fcount; j++)
+                    {
+                        for (int k = 0; k < 3; k++)
+                        {
+                            face_indices[j * 3 + k] = (uint)(*(ushort*)(pdata + face_offset + (j * 4 + k) * 2));
+                        }
+                    }
+                }
             }
+            indices_size = face_indices.Length * 4;
+            br.BaseStream.Position += fcount * 8;
 
             //load material
             br.ReadInt16();
@@ -93,9 +100,8 @@ namespace SFEngine.SF3D
                 }
             }
             byte[] chars = br.ReadBytes(64);
-            matname = enc.GetString(chars);
-            matname = matname.Substring(0, Math.Max(0, matname.IndexOf('\0')));
-            matname = matname.ToLower();
+            int len = StringUtils.ASCIIToLower(chars);
+            matname = enc.GetString(chars, 0, Math.Max(0, len));
 
             if (!SFResourceManager.Textures.Load(matname, SFUnPak.FileSource.ANY, out material.texture, out int ec))
             {
@@ -148,19 +154,23 @@ namespace SFEngine.SF3D
 
         public override int Load(byte[] data, int offset, object custom_data)
         {
-            MemoryStream ms = new MemoryStream(data, offset, data.Length - offset);
             // load BSI
-            if(!SFResourceManager.BSIs.Load(SFResourceManager.current_resource, SFUnPak.FileSource.ANY, out SFBoneIndex bsi, out int ec))
+            if (!SFResourceManager.BSIs.Load(SFResourceManager.current_resource, SFUnPak.FileSource.ANY, out SFBoneIndex bsi, out int ec))
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkinChunk.Load(): Could not load bone skin index file (BSI name = " + SFResourceManager.current_resource + ")");
                 return ec;
             }
 
+            MemoryStream ms = new MemoryStream(data, offset, data.Length - offset);
             BinaryReader br = new BinaryReader(ms);
 
-            br.ReadInt16();
-            int modelnum = br.ReadInt16();
-            br.ReadInt32();
+            ushort[] header = new ushort[4];
+            for (int i = 0; i < 4; i++)
+            {
+                header[i] = br.ReadUInt16();
+            }
+
+            int modelnum = (int)header[1];
 
             submodels = new SFModelSkinChunk[modelnum];
 
@@ -169,7 +179,7 @@ namespace SFEngine.SF3D
                 SFModelSkinChunk chunk = new SFModelSkinChunk();
                 submodels[i] = chunk;
                 chunk.chunk_id = i;
-                int return_code = chunk.Load(ms, null);
+                int return_code = chunk.Load(br, data, offset);
                 if (return_code != 0)
                 {
                     LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFModelSkin.Load(): Could not load skin chunk (chunk ID = " + i.ToString() + ")");

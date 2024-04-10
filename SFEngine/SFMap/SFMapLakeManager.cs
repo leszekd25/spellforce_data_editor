@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using NAudio.Gui;
+using OpenTK.Mathematics;
 using SFEngine.SF3D;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,11 @@ namespace SFEngine.SFMap
                 }
             }
         }
+
+        public ushort GetWaterLevel(SFMapHeightMap hmap)
+        {
+            return (ushort)(hmap.GetZ(start) + z_diff);
+        }
     }
 
     public class SFMapLakeManager
@@ -53,12 +59,14 @@ namespace SFEngine.SFMap
         public List<bool> lake_visible { get; private set; } = new List<bool>();
 
         public SFMap map = null;
+        public uint[] index_helper;
+        public sbyte[] lake_type_helper;
 
         public const int LAKE_SHALLOW_DEPTH = 50;
 
         // ugly 4th parameter to make undo/redo work
         // uglier 5th and 6th parameters to make undo/redo work (assumed to not be null
-        public SFMapLake AddLake(SFCoord start, short z_diff, int type, int lake_index, List<SFMapLake> consumed_lakes, List<int> consumed_lakes_indices)
+        public SFMapLake AddLake(SFCoord start, short z_diff, int type, int lake_index, List<SFMapLake> consumed_lakes, List<int> consumed_lakes_indices, HashSet<SFCoord> opt_lake_cells = null, HashSet<SFCoord> opt_lake_shore = null)
         {
             if (lake_index == -1)
             {
@@ -77,7 +85,7 @@ namespace SFEngine.SFMap
             lake.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(SF3D.SFRender.SFRenderEngine.scene.root, "_none_", lake.GetObjectName());
             lake.node.Position = new Vector3(0, 0, 0);
 
-            UpdateLake(lake, consumed_lakes, consumed_lakes_indices);
+            UpdateLake(lake, consumed_lakes, consumed_lakes_indices, opt_lake_cells, opt_lake_shore);
 
             if (lake.cells.Count == 0)
             {
@@ -125,6 +133,7 @@ namespace SFEngine.SFMap
             foreach (SFCoord p in lake.cells)
             {
                 map.heightmap.SetFlag(p, SFMapHeightMapFlag.LAKE_DEEP | SFMapHeightMapFlag.LAKE_SHALLOW, false);
+                lake_type_helper[p.x + p.y * map.width] = -1;
             }
 
             foreach (SFCoord p in lake.shore)
@@ -193,7 +202,7 @@ namespace SFEngine.SFMap
         }
 
         // should be updated after lake_start or lake_depth was modified
-        public void UpdateLake(SFMapLake lake, List<SFMapLake> consumed_lakes, List<int> consumed_lakes_indices)
+        public void UpdateLake(SFMapLake lake, List<SFMapLake> consumed_lakes, List<int> consumed_lakes_indices, HashSet<SFCoord> lake_cells = null, HashSet<SFCoord> lake_shore = null)
         {
             int lake_index = lakes.IndexOf(lake);
             if (lake_index < 0)
@@ -206,16 +215,26 @@ namespace SFEngine.SFMap
             foreach (SFCoord p in lake.cells)
             {
                 map.heightmap.SetFlag(p, SFMapHeightMapFlag.LAKE_DEEP | SFMapHeightMapFlag.LAKE_SHALLOW, false);
+                lake_type_helper[p.x + p.y * map.width] = -1;
             }
             foreach (SFCoord p in lake.shore)
             {
                 map.heightmap.SetFlag(p, SFMapHeightMapFlag.LAKE_SHORE, false);
             }
 
-            ushort lake_level = (ushort)(map.heightmap.GetZ(lake.start) + lake.z_diff);
+            ushort lake_level = lake.GetWaterLevel(map.heightmap);
 
-            lake.cells = map.heightmap.GetIslandByHeight(lake.start, lake.z_diff, out lake.shore);
-            lake.CalculateDepth(map.heightmap, lake_level);
+            if(lake_cells != null)
+            {
+                lake.cells = lake_cells;
+                lake.shore = lake_shore;
+            }
+            else
+            {
+                lake.cells = map.heightmap.GetIslandByHeight(lake.start, lake.z_diff, out lake.shore);
+                lake.CalculateDepth(map.heightmap, lake_level);
+            }
+
 
             // check if lake collides with other lakes
             List<SFMapLake> lakes_to_remove = new List<SFMapLake>();
@@ -245,11 +264,12 @@ namespace SFEngine.SFMap
 
             lake_index = lakes.IndexOf(lake);
 
-            ushort lake_z = (ushort)(map.heightmap.GetZ(lake.start) + lake.z_diff);
+            ushort lake_z = lake.GetWaterLevel(map.heightmap);
             foreach (SFCoord p in lake.cells)
             {
                 short lake_cell_z_diff = (short)(lake_z - map.heightmap.GetZ(p));
                 map.heightmap.SetFlag(p, (lake_cell_z_diff < LAKE_SHALLOW_DEPTH ? SFMapHeightMapFlag.LAKE_SHALLOW : SFMapHeightMapFlag.LAKE_DEEP), true);
+                lake_type_helper[p.x + p.y * map.width] = (sbyte)lake.type;
             }
             // reload shore flags
             foreach (SFMapLake l in lakes)
@@ -272,9 +292,21 @@ namespace SFEngine.SFMap
                 return;
             }
 
+            // create list of all vertex coords, sorted by Y first, then X
+            HashSet<SFCoord> lake_extension = new HashSet<SFCoord>(lake.cells);
+            foreach(SFCoord p in lake.shore)
+            {
+                lake_extension.Add(p);
+                lake_extension.Add(p + new SFCoord(1, 0));
+                lake_extension.Add(p + new SFCoord(0, -1));
+                lake_extension.Add(p + new SFCoord(1, -1));
+            }
+
+            List<SFCoord> vertex_pos = new List<SFCoord>(lake_extension);
+
             // generate mesh
             SFSubModel3D submodel = new SFSubModel3D();
-            int v_count = (lake.cells.Count + lake.shore.Count) * 4;
+            int v_count = vertex_pos.Count;
             int i_count = (lake.cells.Count + lake.shore.Count) * 6;
 
             int k = 0;
@@ -284,8 +316,7 @@ namespace SFEngine.SFMap
             Vector3[] normals = new Vector3[v_count];
             uint[] indices = new uint[i_count];
 
-            ushort lake_z = (ushort)(map.heightmap.GetZ(lake.start) + lake.z_diff);
-            ushort[] lake_cell_z = new ushort[4];
+            ushort lake_z = lake.GetWaterLevel(map.heightmap);
             float lake_height = ((lake_z)) / 100.0f;
 
             byte deep_lake = 0xFE;
@@ -313,46 +344,45 @@ namespace SFEngine.SFMap
             {
                 colR = 240; colG = 240; colB = 230; colA = 250;
             }
+
+            SFCoord area_tl, area_br;
+            area_tl = area_br = vertex_pos[0];
             // generate geometry for each lake type
+            for(int i = 0; i < v_count; i++)
+            {
+                SFCoord pos = vertex_pos[i];
+                ushort lake_cell_z = map.heightmap.GetZ(pos);
+                short lake_cell_z_diff = (short)(lake_z - lake_cell_z);
+
+                vertices[i] = new Vector3(pos.x, lake_height, map.height - pos.y - 1);
+                uvs[i] = new Vector2(pos.x / 4.0f, pos.y / 4.0f);
+                colors[i * 4 + 0] = colR;
+                colors[i * 4 + 1] = colG;
+                colors[i * 4 + 2] = colB;
+                colors[i * 4 + 3] = (byte)((colA / 256.0f) * (lake_cell_z_diff < LAKE_SHALLOW_DEPTH ? shallow_lake : deep_lake));
+                normals[i] = Vector3.UnitY;
+
+                index_helper[pos.x + (pos.y + 1) * (map.width + 1)] = (uint)i;
+
+                MathUtils.Expand(pos.x, ref area_tl.x, ref area_br.x);
+                MathUtils.Expand(pos.y, ref area_tl.y, ref area_br.y);
+            }
+            int cur_i = 0;
             foreach (HashSet<SFCoord> set in new HashSet<SFCoord>[] { lake.cells, lake.shore })
             {
                 foreach (SFCoord pos in set)
                 {
-                    lake_cell_z[0] = map.heightmap.GetZ(pos);
-                    lake_cell_z[1] = map.heightmap.GetZ(pos + new SFCoord(1, 0));
-                    lake_cell_z[2] = map.heightmap.GetZ(pos + new SFCoord(0, -1));
-                    lake_cell_z[3] = map.heightmap.GetZ(pos + new SFCoord(1, -1));
+                    indices[cur_i * 6 + 0] = index_helper[pos.x + (pos.y + 1) * (map.width + 1)];
+                    indices[cur_i * 6 + 1] = index_helper[pos.x + pos.y * (map.width + 1)];
+                    indices[cur_i * 6 + 2] = index_helper[pos.x + 1 + (pos.y + 1) * (map.width + 1)];
+                    indices[cur_i * 6 + 3] = indices[cur_i * 6 + 2];
+                    indices[cur_i * 6 + 4] = indices[cur_i * 6 + 1];
+                    indices[cur_i * 6 + 5] = index_helper[pos.x + 1 + pos.y * (map.width + 1)];
 
-                    vertices[k * 4 + 0] = new Vector3((float)(pos.x), lake_height, (float)(map.height - pos.y - 1));
-                    vertices[k * 4 + 1] = new Vector3((float)(pos.x + 1), lake_height, (float)(map.height - pos.y - 1));
-                    vertices[k * 4 + 2] = new Vector3((float)(pos.x), lake_height, (float)(map.height - pos.y));
-                    vertices[k * 4 + 3] = new Vector3((float)(pos.x + 1), lake_height, (float)(map.height - pos.y));
-                    uvs[k * 4 + 0] = new Vector2(pos.x / 4.0f, pos.y / 4.0f);
-                    uvs[k * 4 + 1] = new Vector2((pos.x + 1) / 4.0f, pos.y / 4.0f);
-                    uvs[k * 4 + 2] = new Vector2(pos.x / 4.0f, (pos.y + 1) / 4.0f);
-                    uvs[k * 4 + 3] = new Vector2((pos.x + 1) / 4.0f, (pos.y + 1) / 4.0f);
-                    for (int i = 0; i < 16; i += 4)
-                    {
-                        short lake_cell_z_diff = (short)(lake_z - lake_cell_z[i / 4]);
-                        colors[k * 16 + i + 0] = colR;
-                        colors[k * 16 + i + 1] = colG;
-                        colors[k * 16 + i + 2] = colB;
-                        colors[k * 16 + i + 3] = (byte)((colA / 256.0f) * (lake_cell_z_diff < LAKE_SHALLOW_DEPTH ? shallow_lake : deep_lake));
-                    }
-                    normals[k * 4 + 0] = new Vector3(0, 1, 0);
-                    normals[k * 4 + 1] = new Vector3(0, 1, 0);
-                    normals[k * 4 + 2] = new Vector3(0, 1, 0);
-                    normals[k * 4 + 3] = new Vector3(0, 1, 0);
-                    indices[k * 6 + 0] = (uint)(k * 4 + 0);
-                    indices[k * 6 + 1] = (uint)(k * 4 + 2);
-                    indices[k * 6 + 2] = (uint)(k * 4 + 1);
-                    indices[k * 6 + 3] = (uint)(k * 4 + 1);
-                    indices[k * 6 + 4] = (uint)(k * 4 + 2);
-                    indices[k * 6 + 5] = (uint)(k * 4 + 3);
-
-                    k += 1;
+                    cur_i++;
                 }
             }
+
             // generate material for this geometry
             SFMaterial material = new SFMaterial();
 
@@ -391,6 +421,9 @@ namespace SFEngine.SFMap
             material.matFlags = 0;
 
             submodel.CreateRaw(vertices, uvs, colors, normals, indices, material);
+            submodel.aabb = new SF3D.Physics.BoundingBox(
+            new Vector3(area_tl.x, lake_height, map.height - area_tl.y - 1),
+            new Vector3(area_br.x, lake_height, map.height - area_br.y - 1));
 
             SFModel3D mesh = new SFModel3D();
             mesh.CreateRaw(new SFSubModel3D[] { submodel });
@@ -409,6 +442,8 @@ namespace SFEngine.SFMap
 
         public void Dispose()
         {
+            index_helper = null;
+            lake_type_helper = null;
             foreach (var lake in lakes)
             {
                 SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(lake.node);

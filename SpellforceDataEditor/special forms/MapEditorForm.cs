@@ -1,4 +1,6 @@
 ﻿using OpenTK;
+using OpenTK.WinForms;
+using OpenTK.Mathematics;
 using SFEngine;
 using SFEngine.SF3D;
 using SFEngine.SF3D.Physics;
@@ -17,6 +19,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Compute.OpenCL;
 
 namespace SpellforceDataEditor.special_forms
 {
@@ -101,7 +104,7 @@ namespace SpellforceDataEditor.special_forms
             }
 
             // full map redraw
-            public void RedrawMinimap()
+            public void RedrawMinimapFull()
             {
                 if (minimap_tex == null)
                 {
@@ -139,32 +142,7 @@ namespace SpellforceDataEditor.special_forms
 
                 foreach (SFMapLake lake in map.lake_manager.lakes)
                 {
-                    ushort lake_z = (ushort)(map.heightmap.GetZ(lake.start) + lake.z_diff);
-                    byte alpha_shallow = 0x7F;
-                    if ((lake.type == 2) || (lake.type == 3))
-                    {
-                        alpha_shallow = 0xFF;
-                    }
-
-                    col = map.lake_manager.GetLakeMinimapColor(lake.type);
-                    foreach (SFCoord p in lake.cells)
-                    {
-                        short lake_cell_z_diff = (short)(lake_z - map.heightmap.GetZ(p));
-                        if (lake_cell_z_diff >= SFMapLakeManager.LAKE_SHALLOW_DEPTH)
-                        {
-                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 0] = col.R;
-                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 1] = col.G;
-                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 2] = col.B;
-                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 3] = 255;
-                        }
-                        else
-                        {
-                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 0] = (byte)(((minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 0] * (0xFF - alpha_shallow)) + (col.R * alpha_shallow)) / 0xFF);
-                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 1] = (byte)(((minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 1] * (0xFF - alpha_shallow)) + (col.G * alpha_shallow)) / 0xFF);
-                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 2] = (byte)(((minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 2] * (0xFF - alpha_shallow)) + (col.B * alpha_shallow)) / 0xFF);
-                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 3] = 255;
-                        }
-                    }
+                    RedrawMinimapLake(lake, true, false);
                 }
 
                 minimap_tex.UpdateImage(minimap_tex.data, 0, 0, 0);
@@ -173,7 +151,7 @@ namespace SpellforceDataEditor.special_forms
             // redraws given area with chosen tile color
             // shades pixels if they're on terrain
             // draws lakes and water if the pixels are on water
-            public void RedrawMinimap(IEnumerable<SFCoord> pixels, byte tile_id)
+            public void RedrawMinimapTiles(IEnumerable<SFCoord> pixels, byte tile_id)
             {
                 if (minimap_tex == null)
                 {
@@ -206,16 +184,12 @@ namespace SpellforceDataEditor.special_forms
                         minimap_tex.data[(j * hmap.width + i) * 4 + 3] = 255;
                     }
 
-
-                    if (map.lake_manager.GetLakeIndexAt(p) != SFEngine.Utility.NO_INDEX)
+                    int lake_type = map.lake_manager.lake_type_helper[p.x + p.y * map.width];
+                    if (lake_type != Utility.NO_INDEX)
                     {
-                        SFMapLake lake = map.lake_manager.lakes[map.lake_manager.GetLakeIndexAt(p)];
-                        ushort lake_z = (ushort)(map.heightmap.GetZ(lake.start) + lake.z_diff);
-                        short lake_cell_z_diff = (short)(lake_z - map.heightmap.GetZ(p));
+                        Color col2 = map.lake_manager.GetLakeMinimapColor(lake_type);
 
-                        Color col2 = map.lake_manager.GetLakeMinimapColor(lake.type);
-
-                        if (lake_cell_z_diff >= SFMapLakeManager.LAKE_SHALLOW_DEPTH)
+                        if (hmap.IsFlagSet(p, SFMapHeightMapFlag.LAKE_DEEP))
                         {
                             minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 0] = col2.R;
                             minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 1] = col2.G;
@@ -225,7 +199,7 @@ namespace SpellforceDataEditor.special_forms
                         else
                         {
                             byte alpha_shallow = 0x7F;
-                            if ((lake.type == 2) || (lake.type == 3))
+                            if ((lake_type == 2) || (lake_type == 3))
                             {
                                 alpha_shallow = 0xFF;
                             }
@@ -241,8 +215,79 @@ namespace SpellforceDataEditor.special_forms
                 minimap_tex.UpdateImage(minimap_tex.data, 0, 0, 0);
             }
 
+            // Only redraws at lake
+            public void RedrawMinimapLake(SFMapLake lake, bool add, bool update)
+            {
+                if (minimap_tex == null)
+                {
+                    return;
+                }
+
+                SFMapHeightMap hmap = map.heightmap;
+
+
+                if (add)
+                {
+                    Color col = map.lake_manager.GetLakeMinimapColor(lake.type);
+                    byte alpha_shallow = 0x7F;
+                    if ((lake.type == 2) || (lake.type == 3))
+                    {
+                        alpha_shallow = 0xFF;
+                    }
+
+                    foreach (SFCoord p in lake.cells)
+                    {
+                        if (hmap.IsFlagSet(p, SFMapHeightMapFlag.LAKE_DEEP))
+                        {
+                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 0] = col.R;
+                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 1] = col.G;
+                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 2] = col.B;
+                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 3] = 255;
+                        }
+                        else
+                        {
+                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 0] = (byte)(((minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 0] * (0xFF - alpha_shallow)) + (col.R * alpha_shallow)) / 0xFF);
+                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 1] = (byte)(((minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 1] * (0xFF - alpha_shallow)) + (col.G * alpha_shallow)) / 0xFF);
+                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 2] = (byte)(((minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 2] * (0xFF - alpha_shallow)) + (col.B * alpha_shallow)) / 0xFF);
+                            minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 3] = 255;
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (SFCoord p in lake.cells)
+                    {
+                        Color col = hmap.texture_manager.tile_average_color[hmap.GetTileFixed(p)];
+                        int i = p.x;
+                        int j = p.y;
+                        if (hmap.GetZ(p) > 300)
+                        {
+                            Vector3 normal = hmap.GetVertexNormal(i, j);
+                            float col_str = (Vector3.Dot(normal, new Vector3(0, 1, 0)) / 2) + 0.5f;
+
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 0] = (byte)(col.R * col_str);
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 1] = (byte)(col.G * col_str);
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 2] = (byte)(col.B * col_str);
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 3] = 255;
+                        }
+                        else
+                        {
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 0] = hmap.texture_manager.tile_ocean_color.R;
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 1] = hmap.texture_manager.tile_ocean_color.G;
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 2] = hmap.texture_manager.tile_ocean_color.B;
+                            minimap_tex.data[(j * hmap.width + i) * 4 + 3] = 255;
+                        }
+                    }
+                }
+
+                if (update)
+                {
+                    minimap_tex.UpdateImage(minimap_tex.data, 0, 0, 0);
+                }
+            }
+
             // only redraws selected pixels, according to the contents of the map
-            public void RedrawMinimap(IEnumerable<SFCoord> pixels)
+            public void RedrawMinimapCells(IEnumerable<SFCoord> pixels)
             {
                 if (minimap_tex == null)
                 {
@@ -255,15 +300,13 @@ namespace SpellforceDataEditor.special_forms
                 {
                     int i = p.x;
                     int j = p.y;
-                    if (map.lake_manager.GetLakeIndexAt(p) != SFEngine.Utility.NO_INDEX)
+                    int lake_type = map.lake_manager.lake_type_helper[p.x + p.y * map.width];
+                    if (lake_type != Utility.NO_INDEX)
                     {
-                        SFMapLake lake = map.lake_manager.lakes[map.lake_manager.GetLakeIndexAt(p)];
-                        ushort lake_z = (ushort)(map.heightmap.GetZ(lake.start) + lake.z_diff);
-                        short lake_cell_z_diff = (short)(lake_z - map.heightmap.GetZ(p));
 
-                        Color col = map.lake_manager.GetLakeMinimapColor(lake.type);
+                        Color col = map.lake_manager.GetLakeMinimapColor(lake_type);
 
-                        if (lake_cell_z_diff >= SFMapLakeManager.LAKE_SHALLOW_DEPTH)
+                        if (hmap.IsFlagSet(p, SFMapHeightMapFlag.LAKE_DEEP))
                         {
                             minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 0] = col.R;
                             minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 1] = col.G;
@@ -273,7 +316,7 @@ namespace SpellforceDataEditor.special_forms
                         else
                         {
                             byte alpha_shallow = 0x7F;
-                            if ((lake.type == 2) || (lake.type == 3))
+                            if ((lake_type == 2) || (lake_type == 3))
                             {
                                 alpha_shallow = 0xFF;
                             }
@@ -308,27 +351,6 @@ namespace SpellforceDataEditor.special_forms
                             minimap_tex.data[(j * hmap.width + i) * 4 + 3] = 255;
                         }
                     }
-                }
-
-                minimap_tex.UpdateImage(minimap_tex.data, 0, 0, 0);
-            }
-
-            // only redraws selected pixels, paint them on specified color
-            public void RedrawMinimap(IEnumerable<SFCoord> pixels, Color c)
-            {
-                if (minimap_tex == null)
-                {
-                    return;
-                }
-
-                SFMapHeightMap hmap = map.heightmap;
-
-                foreach (SFCoord p in pixels)
-                {
-                    minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 0] = c.R;
-                    minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 1] = c.G;
-                    minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 2] = c.B;
-                    minimap_tex.data[(p.y * hmap.width + p.x) * 4 + 3] = 255;
                 }
 
                 minimap_tex.UpdateImage(minimap_tex.data, 0, 0, 0);
@@ -821,11 +843,11 @@ namespace SpellforceDataEditor.special_forms
                 {
                     if (RedrawMinimapAll)
                     {
-                        MainForm.mapedittool.ui.RedrawMinimap();
+                        MainForm.mapedittool.ui.RedrawMinimapFull();
                     }
                     else
                     {
-                        MainForm.mapedittool.ui.RedrawMinimap(RedrawMinimapCells);
+                        MainForm.mapedittool.ui.RedrawMinimapCells(RedrawMinimapCells);
                     }
                 }
 
@@ -918,6 +940,7 @@ namespace SpellforceDataEditor.special_forms
         };
 
         SFEngine.SFMap.SFMap map = null;
+        SFMap.SFMapSelectionHelper selection_helper = null;
         public bool ready = false;
 
         GLControl RenderWindow = null;
@@ -1190,17 +1213,19 @@ namespace SpellforceDataEditor.special_forms
             map.CreateDefault(map_size, generator);
 
             SFRenderEngine.scene.map = map;
+
+            selection_helper = new SFMap.SFMapSelectionHelper();
+            selection_helper.AssignToMap(map);
+            selection_helper.SetCursorPosition(new SFCoord(1, 1));
+            selection_helper.SetCursorVisibility(true);
+
             InitEditorMode();
-
-            map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
-            map.selection_helper.SetCursorVisibility(true);
-
             ResetCamera();
 
             ui = new MapEditorUI(map);
             ui.InitMinimap(map.width, map.height);
             ui.SetMinimapSize(256);
-            ui.RedrawMinimap();
+            ui.RedrawMinimapFull();
             ui.RedrawMinimapIcons();
 
             op_queue = new MapEditorOperatorQueue();
@@ -1209,6 +1234,7 @@ namespace SpellforceDataEditor.special_forms
             // finishing actions
             RenderWindow.Enabled = true;
             RenderWindow.Invalidate();
+            ResizeView();
 
             if (SFEngine.Settings.DynamicMap)
             {
@@ -1343,19 +1369,20 @@ namespace SpellforceDataEditor.special_forms
                     DestroyRenderWindow();
                     return -4;
                 }
-
                 SFRenderEngine.scene.map = map;
+
+                selection_helper = new SFMap.SFMapSelectionHelper();
+                selection_helper.AssignToMap(map);
+                selection_helper.SetCursorPosition(new SFCoord(1, 1));
+                selection_helper.SetCursorVisibility(true);
+
                 InitEditorMode();
-
-                map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
-                map.selection_helper.SetCursorVisibility(true);
-
                 ResetCamera();
 
                 ui = new MapEditorUI(map);
                 ui.InitMinimap(map.width, map.height);
                 ui.SetMinimapSize(256);
-                ui.RedrawMinimap();
+                ui.RedrawMinimapFull();
                 ui.RedrawMinimapIcons();
 
                 op_queue = new MapEditorOperatorQueue();
@@ -1363,6 +1390,7 @@ namespace SpellforceDataEditor.special_forms
 
                 RenderWindow.Enabled = true;
                 RenderWindow.Invalidate();
+                ResizeView();
 
                 if (SFEngine.Settings.DynamicMap)
                 {
@@ -1489,6 +1517,7 @@ namespace SpellforceDataEditor.special_forms
             obj_tree = null;
 
             map.Unload();
+            selection_helper.Dispose();
 
             DisableAnimation(false);
 
@@ -1541,7 +1570,7 @@ namespace SpellforceDataEditor.special_forms
                 return;
             }
 
-            RenderWindow = new GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(32), 24, 8), 4, 2, OpenTK.Graphics.GraphicsContextFlags.Default);
+            RenderWindow = new GLControl(new GLControlSettings() { BlueBits = 8, GreenBits = 8, RedBits = 8, AlphaBits = 8, DepthBits = 24, StencilBits = 8, API = OpenTK.Windowing.Common.ContextAPI.OpenGL, APIVersion = new Version(4, 2, 0, 0), Flags = OpenTK.Windowing.Common.ContextFlags.Default });
             Controls.Add(RenderWindow);
 
             int ystart = PanelObjectSelector.Location.Y;
@@ -1553,7 +1582,6 @@ namespace SpellforceDataEditor.special_forms
             RenderWindow.Location = new Point(xstart, ystart);
             RenderWindow.Size = new Size(w_width, w_height);
             RenderWindow.Enabled = false;
-            RenderWindow.VSync = SFEngine.Settings.VSync;
 
             RenderWindow.Paint += new System.Windows.Forms.PaintEventHandler(RenderWindow_Paint);
             RenderWindow.MouseDown += new System.Windows.Forms.MouseEventHandler(RenderWindow_MouseDown);
@@ -1614,6 +1642,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void RenderWindow_MouseDown(object sender, MouseEventArgs e)
         {
+            RenderWindow.Focus();
             if (e.Button == MouseButtons.Middle)
             {
                 scroll_mouse_start = new Vector2(Cursor.Position.X, Cursor.Position.Y);
@@ -1705,7 +1734,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 foreach (var unit in map.unit_manager.units)
                 {
-                    foreach (SceneNodeAnimated anim_node in unit.node.Children)
+                    foreach (SceneNodeAnimated anim_node in unit.node.children)
                     {
                         anim_node.SetAnimation(null, false);
                         anim_node.SetSkeleton(anim_node.Skeleton);
@@ -1835,7 +1864,7 @@ namespace SpellforceDataEditor.special_forms
                                     (Math.Round(result.Z), map.height - 1))));
                         SFCoord inv_cursor_coord = new SFCoord(cursor_coord.x, map.height - cursor_coord.y - 1);
 
-                        if (map.selection_helper.SetCursorPosition(cursor_coord))
+                        if (selection_helper.SetCursorPosition(cursor_coord))
                         {
                             update_render = true;
                             StatusStrip.SuspendLayout();
@@ -1870,7 +1899,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 map.ocean.SetPosition(SFRenderEngine.scene.camera.position);
                 SFRenderEngine.scene.UpdateVisibleChunks(map.heightmap);
-                map.selection_helper.Update();
+                selection_helper.Update();
 
                 SFRenderEngine.scene.delta_timer.Stop();
                 SFRenderEngine.scene.deltatime = SFRenderEngine.scene.delta_timer.ElapsedMilliseconds / (float)1000;
@@ -2111,14 +2140,22 @@ namespace SpellforceDataEditor.special_forms
             RenderWindow.Size = new Size(w_width, w_height);
             PanelInspector.Location = new Point(6 + RenderWindow.Width + (PanelObjectSelector.Visible ? PanelObjectSelector.Width : 0), ystart);
 
-            SFRenderEngine.ResizeView(new Vector2(w_width, w_height));
-            if (ui != null)
-            {
-                ui.OnResize();
-            }
+            ResizeView();
+        }
 
-            update_render = true;
-            RenderWindow.MakeCurrent();
+        private void ResizeView()
+        {
+            if (SFRenderEngine.initialized)
+            {
+                SFRenderEngine.ResizeView(new Vector2(RenderWindow.Size.Width, RenderWindow.Size.Height));
+                if (ui != null)
+                {
+                    ui.OnResize();
+                }
+
+                update_render = true;
+                RenderWindow.MakeCurrent();
+            }
         }
 
         // keyboard control of the 3d camera
@@ -2329,6 +2366,12 @@ namespace SpellforceDataEditor.special_forms
                     return true;
                 case Keys.ShiftKey | Keys.Shift:
                     special_pressed.Shift = true;
+
+                    if (selected_editor is MapLakesEditor)
+                    {
+                        selection_helper.SetFloodVisible(true);
+                        update_render = true;
+                    }
                     return true;
                 default:
                     return base.ProcessDialogKey(keyData);
@@ -2337,7 +2380,7 @@ namespace SpellforceDataEditor.special_forms
 
         protected override bool ProcessKeyPreview(ref Message msg)
         {
-            if (msg.Msg == 0x101)
+            if (msg.Msg == 0x101)    // KEYUP
             {
                 if ((int)msg.WParam == 0x25)      // left
                 {
@@ -2374,11 +2417,18 @@ namespace SpellforceDataEditor.special_forms
                 else if ((int)msg.WParam == 0x10) // shift
                 {
                     special_pressed.Shift = false;
+
+                    if (selected_editor is MapLakesEditor)
+                    {
+                        selection_helper.SetFloodVisible(false);
+                        update_render = true;
+                    }
                 }
                 else if ((int)msg.WParam == 0x11) // ctrl
                 {
                     special_pressed.Ctrl = false;
                 }
+
             }
             return base.ProcessKeyPreview(ref msg);
         }
@@ -2436,6 +2486,7 @@ namespace SpellforceDataEditor.special_forms
             if (inspector != null)
             {
                 inspector.map = map;
+                inspector.selection_helper = selection_helper;
                 selected_inspector = inspector;
                 PanelInspector.Controls.Add(inspector);
                 inspector.Location = new Point(0, 0);
@@ -2448,7 +2499,7 @@ namespace SpellforceDataEditor.special_forms
         {
             if (selected_inspector == null)
             {
-                map.selection_helper.CancelSelection();
+                selection_helper.CancelSelection();
                 return;
             }
             selected_inspector.OnSelect(o);
@@ -2487,6 +2538,7 @@ namespace SpellforceDataEditor.special_forms
             map.heightmap.overlay_flags = SFMapHeightMapFlag.NONE;
             update_render = true;
             PanelObjectSelector.Visible = false;
+            selection_helper.SetFloodVisible(false);
             external_DeselectMaskFeature();
 
             if (TabEditorModes.SelectedIndex == 0) // TERRAIN
@@ -2656,6 +2708,7 @@ namespace SpellforceDataEditor.special_forms
             PanelWeather.Visible = false;
             PanelAtmoPreview.Visible = false;
             PanelLakeMode.Visible = false;
+            selection_helper.SetFloodVisible(false);
 
             terrain_brush.size = (float)SFEngine.Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
@@ -2730,12 +2783,6 @@ namespace SpellforceDataEditor.special_forms
                 UpdateHeightmapModeValueCache();
                 ((MapHeightMapEditor)selected_editor).Value = v;
             }
-            else if (RadioLakes.Checked)
-            {
-                TerrainValue.Text = v.ToString();
-                ((MapLakesEditor)selected_editor).Depth = v;
-                lake_mode_value = v;
-            }
         }
 
         private void UpdateHeightmapModeValueCache()
@@ -2771,12 +2818,6 @@ namespace SpellforceDataEditor.special_forms
                 ((MapHeightMapEditor)selected_editor).Value = TerrainTrackbar.Value;
                 UpdateHeightmapModeValueCache();
             }
-            else if (RadioLakes.Checked)
-            {
-                TerrainValue.Text = TerrainTrackbar.Value.ToString();
-                ((MapLakesEditor)selected_editor).Depth = TerrainTrackbar.Value;
-                lake_mode_value = SFEngine.Utility.TryParseUInt16(TerrainValue.Text);
-            }
         }
 
         private void RadioIntConstant_CheckedChanged(object sender, EventArgs e)
@@ -2802,12 +2843,7 @@ namespace SpellforceDataEditor.special_forms
         private void UpdateValueLabel(string text, int val_index)
         {
             TerrainValueLabel.Text = text;
-            if (val_index == 3)
-            {
-                ((MapLakesEditor)selected_editor).Depth = lake_mode_value;
-                TerrainValue.Text = lake_mode_value.ToString();
-            }
-            else
+            if(selected_editor is MapHeightMapEditor)
             {
                 ((MapHeightMapEditor)selected_editor).EditMode = GetHeightMapEditMode();
                 ((MapHeightMapEditor)selected_editor).Value = heightmap_mode_values[val_index];
@@ -2874,6 +2910,7 @@ namespace SpellforceDataEditor.special_forms
             PanelWeather.Visible = false;
             PanelAtmoPreview.Visible = false;
             PanelLakeMode.Visible = false;
+            selection_helper.SetFloodVisible(false);
 
             terrain_brush.size = (float)SFEngine.Utility.TryParseUInt8(BrushSizeVal.Text);
             terrain_brush.shape = GetTerrainBrushShape();
@@ -2910,33 +2947,29 @@ namespace SpellforceDataEditor.special_forms
 
             selected_editor = new MapLakesEditor()
             {
-                Brush = terrain_brush,
-                Depth = SFEngine.Utility.TryParseUInt16(TerrainValue.Text),
                 map = map,
-                is_selecting = (RadioLakeSelect.Checked)
             };
 
             PanelFlags.Visible = false;
-            PanelBrushShape.Visible = true;
-            PanelStrength.Visible = true;
+            PanelBrushShape.Visible = false;
+            PanelStrength.Visible = false;
             PanelTerrainSettings.Visible = false;
             PanelWeather.Visible = false;
             PanelAtmoPreview.Visible = false;
             PanelLakeMode.Visible = true;
             PanelLakeMode.Location = PanelTerrainSettings.Location;
+            selection_helper.SetFloodVisible(false);
 
             InspectorSet(new SFMap.map_controls.MapLakeInspector());
-
-            UpdateValueLabel("Depth", 3);
             map.heightmap.overlay_flags = SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP | SFMapHeightMapFlag.LAKE_SHORE | SFMapHeightMapFlag.EDITOR_MASK;
             update_render = true;
         }
 
-        private void RadioLakePaint_CheckedChanged(object sender, EventArgs e)
+        private void RadioLakeFlood_CheckedChanged(object sender, EventArgs e)
         {
-            if ((TabEditorModes.SelectedIndex == 0) && (RadioLakes.Checked) && (RadioLakePaint.Checked))
+            if ((TabEditorModes.SelectedIndex == 0) && (RadioLakes.Checked) && (RadioLakeFlood.Checked))
             {
-                ((MapLakesEditor)selected_editor).is_selecting = false;
+                ((MapLakesEditor)selected_editor).edit_mode = MapLakesEditor.EditMode.FLOOD;
                 ((MapLakesEditor)selected_editor).SelectLake(null);
             }
         }
@@ -2945,19 +2978,8 @@ namespace SpellforceDataEditor.special_forms
         {
             if ((TabEditorModes.SelectedIndex == 0) && (RadioLakes.Checked) && (RadioLakeSelect.Checked))
             {
-                ((MapLakesEditor)selected_editor).is_selecting = true;
+                ((MapLakesEditor)selected_editor).edit_mode = MapLakesEditor.EditMode.SELECT;
             }
-        }
-
-        public void external_UpdateLakeDepth(short depth)
-        {
-            TerrainValue.Text = depth.ToString();
-            if ((TabEditorModes.SelectedIndex == 0) && (RadioLakes.Checked))
-            {
-                ((MapLakesEditor)selected_editor).Depth = depth;
-            }
-
-            lake_mode_value = depth;
         }
 
         // WEATHER
@@ -2987,6 +3009,7 @@ namespace SpellforceDataEditor.special_forms
             PanelLakeMode.Visible = false;
             PanelAtmoPreview.Visible = true;
             PanelAtmoPreview.Location = new Point(PanelWeather.Location.X + PanelWeather.Width + 3, PanelWeather.Location.Y);
+            selection_helper.SetFloodVisible(false);
 
             map.heightmap.overlay_flags = SFMapHeightMapFlag.NONE;
             update_render = true;
@@ -3538,11 +3561,11 @@ namespace SpellforceDataEditor.special_forms
 
         private void ConfirmPlacementEntity()
         {
-            map.selection_helper.SetPreviewAngle(0);
+            selection_helper.SetPreviewAngle(0);
 
             if (TabEditorModes.SelectedIndex != 2)
             {
-                map.selection_helper.ResetPreview();
+                selection_helper.ResetPreview();
                 return;
             }
             if (EntityHidePreview.Checked)
@@ -3553,37 +3576,37 @@ namespace SpellforceDataEditor.special_forms
             if (RadioEntityModeUnit.Checked)
             {
                 ((MapUnitEditor)selected_editor).placement_unit = SFEngine.Utility.TryParseUInt16(EntityID.Text);
-                map.selection_helper.SetPreviewUnit(SFEngine.Utility.TryParseUInt16(EntityID.Text));
+                selection_helper.SetPreviewUnit(SFEngine.Utility.TryParseUInt16(EntityID.Text));
             }
             if (RadioEntityModeBuilding.Checked)
             {
                 ((MapBuildingEditor)selected_editor).placement_building = SFEngine.Utility.TryParseUInt16(EntityID.Text);
-                map.selection_helper.SetPreviewBuilding(SFEngine.Utility.TryParseUInt16(EntityID.Text));
+                selection_helper.SetPreviewBuilding(SFEngine.Utility.TryParseUInt16(EntityID.Text));
             }
             if (RadioEntityModeObject.Checked)
             {
                 ((MapObjectEditor)selected_editor).placement_object = SFEngine.Utility.TryParseUInt16(EntityID.Text);
-                map.selection_helper.SetPreviewObject(SFEngine.Utility.TryParseUInt16(EntityID.Text));
-                map.selection_helper.SetPreviewAngle((ushort)AngleTrackbar.Value);
+                selection_helper.SetPreviewObject(SFEngine.Utility.TryParseUInt16(EntityID.Text));
+                selection_helper.SetPreviewAngle((ushort)AngleTrackbar.Value);
             }
             if (RadioModeCoopCamps.Checked)
             {
-                map.selection_helper.SetPreviewObject(2541);
+                selection_helper.SetPreviewObject(2541);
             }
 
             if (RadioModeBindstones.Checked)
             {
-                map.selection_helper.SetPreviewObject(769);
+                selection_helper.SetPreviewObject(769);
             }
 
             if (RadioModePortals.Checked)
             {
-                map.selection_helper.SetPreviewObject(778);
+                selection_helper.SetPreviewObject(778);
             }
 
             if (RadioModeMonuments.Checked)
             {
-                map.selection_helper.SetPreviewObject((ushort)(771 + (int)GetMonumentType()));
+                selection_helper.SetPreviewObject((ushort)(771 + (int)GetMonumentType()));
             }
         }
 
@@ -3635,7 +3658,7 @@ namespace SpellforceDataEditor.special_forms
         {
             if (EntityHidePreview.Checked)
             {
-                map.selection_helper.ClearPreview();
+                selection_helper.ClearPreview();
             }
             else
             {
@@ -4097,7 +4120,7 @@ namespace SpellforceDataEditor.special_forms
             Angle.Text = AngleTrackbar.Value.ToString();
             if (RadioEntityModeObject.Checked)
             {
-                map.selection_helper.SetPreviewAngle((ushort)AngleTrackbar.Value);
+                selection_helper.SetPreviewAngle((ushort)AngleTrackbar.Value);
             }
         }
 
@@ -4289,7 +4312,7 @@ namespace SpellforceDataEditor.special_forms
             if (MonumentHuman.Checked)
             {
                 ((MapMonumentEditor)selected_editor).selected_type = GetMonumentType();
-                map.selection_helper.SetPreviewObject((ushort)(771 + (int)GetMonumentType()));
+                selection_helper.SetPreviewObject((ushort)(771 + (int)GetMonumentType()));
             }
         }
 
@@ -4867,7 +4890,7 @@ namespace SpellforceDataEditor.special_forms
         public void external_DeselectMaskFeature()
         {
             mask_feature_object = null;
-            map.selection_helper.CancelSelection();
+            selection_helper.CancelSelection();
             EvaluateMask();
         }
 
@@ -4883,27 +4906,27 @@ namespace SpellforceDataEditor.special_forms
             mask_feature_object = o;
             if (o is SFMapBuilding)
             {
-                map.selection_helper.SelectBuilding((SFMapBuilding)o);
+                selection_helper.SelectBuilding((SFMapBuilding)o);
             }
             else if (o is SFMapObject)
             {
-                map.selection_helper.SelectObject((SFMapObject)o);
+                selection_helper.SelectObject((SFMapObject)o);
             }
             else if (o is SFMapInteractiveObject)
             {
-                map.selection_helper.SelectInteractiveObject((SFMapInteractiveObject)o);
+                selection_helper.SelectInteractiveObject((SFMapInteractiveObject)o);
             }
             else if (o is SFMapPortal)
             {
-                map.selection_helper.SelectPortal((SFMapPortal)o);
+                selection_helper.SelectPortal((SFMapPortal)o);
             }
             else if (o is SFMapLake)
             {
-                map.selection_helper.SelectLake((SFMapLake)o);
+                selection_helper.SelectLake((SFMapLake)o);
             }
             else if (o is SFCoord)
             {
-                map.selection_helper.CancelSelection();
+                selection_helper.CancelSelection();
             }
             else
             {

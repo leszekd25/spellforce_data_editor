@@ -1,5 +1,7 @@
-﻿using OpenTK;
-using OpenTK.Input;
+﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using SFEngine.SF3D.Physics;
 using SFEngine.SF3D.SceneSynchro;
 using SFEngine.SF3D.SFRender;
@@ -9,7 +11,6 @@ using SFEngine.SFMap;
 using SFEngine.SFResources;
 using SFEngine.SFUnPak;
 using System;
-using System.Windows.Forms;
 
 namespace MapViewerNetNative
 {
@@ -38,11 +39,12 @@ namespace MapViewerNetNative
         double cur_time = 0.0;
         int updates_this_second = 0;
 
-        public MapViewerWindow() : base(1024, 768, new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(32), 24, 8), "Map Viewer", GameWindowFlags.Default, DisplayDevice.Default, 4, 2, OpenTK.Graphics.GraphicsContextFlags.Default)
+        public MapViewerWindow() : base(
+            new GameWindowSettings() { UpdateFrequency = 0 },
+            new NativeWindowSettings() { ClientSize = (1024, 768), RedBits = 8, GreenBits = 8, BlueBits = 8, AlphaBits = 8, DepthBits = 24, StencilBits = 8, Title = "MapViewer", WindowState = OpenTK.Windowing.Common.WindowState.Normal, API = OpenTK.Windowing.Common.ContextAPI.OpenGL, APIVersion = new Version(4, 2), Flags = ContextFlags.Default })
+            //base(1024, 768, new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(32), 24, 8), "Map Viewer", GameWindowFlags.Default, DisplayDevice.Default, 4, 2, OpenTK.Graphics.GraphicsContextFlags.Default)
         {
-            Load += OnWindowLoad;
             UpdateFrame += OnWindowUpdate;
-            RenderFrame += OnWindowRender;
             MouseDown += OnWindowMouseDown;
             MouseMove += OnWindowMouseMove;
             MouseWheel += OnWindowMouseScroll;
@@ -52,9 +54,11 @@ namespace MapViewerNetNative
             Resize += OnWindowResize;
 
             VSync = (SFEngine.Settings.VSync ? VSyncMode.On : VSyncMode.Off);
+
+            OnWindowLoad();
         }
 
-        private void AddCameraZoom(int delta)
+        private void AddCameraZoom(float delta)
         {
             if (delta < 0)
             {
@@ -249,7 +253,7 @@ namespace MapViewerNetNative
             {
                 foreach (var unit in map.unit_manager.units)
                 {
-                    foreach (SceneNodeAnimated anim_node in unit.node.Children)
+                    foreach (SceneNodeAnimated anim_node in unit.node.children)
                     {
                         anim_node.SetAnimation(null, false);
                         // anim_node.SetSkeletonSkin(anim_node.Skeleton, anim_node.Skin);
@@ -258,7 +262,7 @@ namespace MapViewerNetNative
             }
         }
 
-        void OnWindowLoad(object sender, EventArgs e)
+        void OnWindowLoad()
         {
             // load settings and initialize file system
             SFEngine.Settings.Load();
@@ -295,11 +299,11 @@ namespace MapViewerNetNative
 
             // create and generate map
             string map_name = "";
-            OpenFileDialog ofd = new OpenFileDialog();
+            System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
             ofd.CheckFileExists = true;
             ofd.DefaultExt = ".map";
             ofd.Filter = "MAP files (*.map)|*.map";
-            if (ofd.ShowDialog() != DialogResult.OK)
+            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
                 throw new Exception("DID NOT SELECT MAP");
             }
@@ -315,9 +319,6 @@ namespace MapViewerNetNative
 
             SFRenderEngine.scene.map = map;
 
-            map.selection_helper.SetCursorPosition(new SFCoord(1, 1));
-            map.selection_helper.SetCursorVisibility(true);
-
             SetCameraWorldMapPos(new Vector2(map.width / 2, map.height / 2));
             SetCameraAzimuthAltitude((float)((90 * Math.PI) / 180.0f), (float)((-70 * Math.PI) / 180.0f));
             zoom_level = 1;
@@ -332,28 +333,28 @@ namespace MapViewerNetNative
             GC.Collect();
         }
 
-        void OnWindowResize(object sender, EventArgs e)
+        void OnWindowResize(ResizeEventArgs e)
         {
-            SFRenderEngine.ResizeView(new Vector2(Width, Height));
+            SFRenderEngine.ResizeView(e.Size);
             MakeCurrent();
         }
 
-        void OnWindowMouseDown(object sender, MouseButtonEventArgs e)
+        void OnWindowMouseDown(MouseButtonEventArgs e)
         {
             if (e.Button == MouseButton.Middle)
             {
-                scroll_mouse_start = new Vector2(e.X, e.Y);
+                scroll_mouse_start = MousePosition;
                 mouse_scroll = true;
                 return;
             }
         }
 
-        void OnWindowMouseMove(object sender, MouseMoveEventArgs e)
+        void OnWindowMouseMove(MouseMoveEventArgs e)
         {
             mouse_current_pos = new Vector2(e.X, e.Y);
         }
 
-        void OnWindowMouseUp(object sender, MouseButtonEventArgs e)
+        void OnWindowMouseUp(MouseButtonEventArgs e)
         {
             if (e.Button == MouseButton.Middle)
             {
@@ -363,43 +364,43 @@ namespace MapViewerNetNative
             }
         }
 
-        void OnWindowMouseScroll(object sender, MouseWheelEventArgs e)
+        void OnWindowMouseScroll(MouseWheelEventArgs e)
         {
-            AddCameraZoom(e.Delta);
+            AddCameraZoom(e.Offset.Y);
         }
 
-        void OnWindowKeyPress(object sender, KeyboardKeyEventArgs e)
+        void OnWindowKeyPress(KeyboardKeyEventArgs e)
         {
             switch (e.Key)
             {
-                case Key.Left:
+                case Keys.Left:
                     arrows_pressed[0] = true;
                     break;
-                case Key.Right:
+                case Keys.Right:
                     arrows_pressed[1] = true;
                     break;
-                case Key.Up:
+                case Keys.Up:
                     arrows_pressed[2] = true;
                     break;
-                case Key.Down:
+                case Keys.Down:
                     arrows_pressed[3] = true;
                     break;
-                case Key.Home:
+                case Keys.Home:
                     rotation_pressed[0] = true;
                     break;
-                case Key.End:
+                case Keys.End:
                     rotation_pressed[1] = true;
                     break;
-                case Key.PageUp:
+                case Keys.PageUp:
                     rotation_pressed[2] = true;
                     break;
-                case Key.PageDown:
+                case Keys.PageDown:
                     rotation_pressed[3] = true;
                     break;
-                case Key.Insert:
+                case Keys.Insert:
                     AddCameraZoom(-1);
                     break;
-                case Key.Delete:
+                case Keys.Delete:
                     AddCameraZoom(1);
                     break;
                 default:
@@ -407,32 +408,32 @@ namespace MapViewerNetNative
             }
         }
 
-        void OnWindowKeyRelease(object sender, KeyboardKeyEventArgs e)
+        void OnWindowKeyRelease(KeyboardKeyEventArgs e)
         {
             switch (e.Key)
             {
-                case Key.Left:
+                case Keys.Left:
                     arrows_pressed[0] = false;
                     break;
-                case Key.Right:
+                case Keys.Right:
                     arrows_pressed[1] = false;
                     break;
-                case Key.Up:
+                case Keys.Up:
                     arrows_pressed[2] = false;
                     break;
-                case Key.Down:
+                case Keys.Down:
                     arrows_pressed[3] = false;
                     break;
-                case Key.Home:
+                case Keys.Home:
                     rotation_pressed[0] = false;
                     break;
-                case Key.End:
+                case Keys.End:
                     rotation_pressed[1] = false;
                     break;
-                case Key.PageUp:
+                case Keys.PageUp:
                     rotation_pressed[2] = false;
                     break;
-                case Key.PageDown:
+                case Keys.PageDown:
                     rotation_pressed[3] = false;
                     break;
                 default:
@@ -441,10 +442,8 @@ namespace MapViewerNetNative
         }
 
 
-        void OnWindowUpdate(object sender, FrameEventArgs e)
+        void OnWindowUpdate(FrameEventArgs e)
         {
-            ProcessEvents(true);
-
             cur_time += e.Time;
             if (cur_time > 1.0)
             {
@@ -530,16 +529,13 @@ namespace MapViewerNetNative
             // heavy tasks
             map.ocean.SetPosition(SFRenderEngine.scene.camera.position);
             SFRenderEngine.scene.UpdateVisibleChunks(map.heightmap);
-            map.selection_helper.Update();
 
             SFRenderEngine.scene.Update((float)e.Time);
 
             SFRenderEngine.ui.Update();
             UpdateSunFrustum();
-        }
 
-        void OnWindowRender(object sender, FrameEventArgs e)
-        {
+            // pure render stuff
             SFRenderEngine.RenderScene();
             SwapBuffers();
 

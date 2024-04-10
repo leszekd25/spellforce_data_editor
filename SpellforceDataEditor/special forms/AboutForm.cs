@@ -56,7 +56,7 @@ namespace SpellforceDataEditor.special_forms
             link_wiki.Location =
                 TextBoxContactInfo.GetPositionFromCharIndex(TextBoxContactInfo.TextLength);
             TextBoxContactInfo.Controls.Add(link_wiki);
-            TextBoxContactInfo.AppendText(link_wiki.Text + "  , an up-to-date manual for most of this program's caapabilities\r\n");
+            TextBoxContactInfo.AppendText(link_wiki.Text + "  , an up-to-date manual for most of this program's capabilities\r\n");
             TextBoxContactInfo.SelectionStart = TextBoxContactInfo.TextLength;
 
             link_discord.Location =
@@ -65,7 +65,7 @@ namespace SpellforceDataEditor.special_forms
             TextBoxContactInfo.AppendText(link_discord.Text + "  , where you can find a SF1 modding community among other things\r\n");
             TextBoxContactInfo.SelectionStart = TextBoxContactInfo.TextLength;
 
-            TextBoxContactInfo.AppendText("\r\nIn case you find a bug or want some feature added/improved upon,\r\ncontact me:\r\non Discord: shovel_knight#7698\r\non NexusMods: ");
+            TextBoxContactInfo.AppendText("\r\nIn case you find a bug or want some feature added/improved upon,\r\ncontact me:\r\non Discord: shovelknight\r\non NexusMods: ");
             link_nexus.Location =
                 TextBoxContactInfo.GetPositionFromCharIndex(TextBoxContactInfo.TextLength);
             TextBoxContactInfo.Controls.Add(link_nexus);

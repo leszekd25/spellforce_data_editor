@@ -1,21 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DFF717D0-DD24-44E5-9EDB-3633E1A2438C}</ProjectGuid>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SpellforceDataEditor</RootNamespace>
     <AssemblyName>SpellforceDataEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
     <PublishUrl>C:\Users\Betty\Desktop\SF Editor\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -30,28 +19,14 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <Prefer32Bit>true</Prefer32Bit>
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <DocumentationFile>
     </DocumentationFile>
@@ -61,989 +36,205 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NAudio, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NAudio.1.9.0\lib\net35\NAudio.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK, Version=3.3.2.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.3.3.2\lib\net20\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.GLControl, Version=3.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.GLControl.3.1.0\lib\net20\OpenTK.GLControl.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="MultimediaTimer.cs" />
-    <Compile Include="SFCFF\calculator forms\CalcControl.cs">
+    <Compile Update="SFCFF\calculator forms\CalcControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\calculator forms\CalcControl.Designer.cs">
-      <DependentUpon>CalcControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\calculator forms\CalcHitChanceControl.cs">
+    <Compile Update="SFCFF\calculator forms\CalcHitChanceControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\calculator forms\CalcHitChanceControl.Designer.cs">
-      <DependentUpon>CalcHitChanceControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control1.cs">
+    <Compile Update="SFCFF\category forms\Control1.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control1.Designer.cs">
-      <DependentUpon>Control1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control10.cs">
+    <Compile Update="SFCFF\category forms\Control10.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control10.Designer.cs">
-      <DependentUpon>Control10.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control11.cs">
+    <Compile Update="SFCFF\category forms\Control11.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control11.Designer.cs">
-      <DependentUpon>Control11.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control12.cs">
+    <Compile Update="SFCFF\category forms\Control12.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control12.Designer.cs">
-      <DependentUpon>Control12.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control13.cs">
+    <Compile Update="SFCFF\category forms\Control13.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control13.Designer.cs">
-      <DependentUpon>Control13.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control14.cs">
+    <Compile Update="SFCFF\category forms\Control14.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control14.Designer.cs">
-      <DependentUpon>Control14.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control15.cs">
+    <Compile Update="SFCFF\category forms\Control15.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control15.Designer.cs">
-      <DependentUpon>Control15.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control16.cs">
+    <Compile Update="SFCFF\category forms\Control16.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control16.Designer.cs">
-      <DependentUpon>Control16.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control17.cs">
+    <Compile Update="SFCFF\category forms\Control17.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control17.Designer.cs">
-      <DependentUpon>Control17.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control18.cs">
+    <Compile Update="SFCFF\category forms\Control18.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control18.Designer.cs">
-      <DependentUpon>Control18.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control19.cs">
+    <Compile Update="SFCFF\category forms\Control19.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control19.Designer.cs">
-      <DependentUpon>Control19.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control2.cs">
+    <Compile Update="SFCFF\category forms\Control2.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control2.Designer.cs">
-      <DependentUpon>Control2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control20.cs">
+    <Compile Update="SFCFF\category forms\Control20.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control20.Designer.cs">
-      <DependentUpon>Control20.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control21.cs">
+    <Compile Update="SFCFF\category forms\Control21.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control21.Designer.cs">
-      <DependentUpon>Control21.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control22.cs">
+    <Compile Update="SFCFF\category forms\Control22.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control22.Designer.cs">
-      <DependentUpon>Control22.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control23.cs">
+    <Compile Update="SFCFF\category forms\Control23.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control23.Designer.cs">
-      <DependentUpon>Control23.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control24.cs">
+    <Compile Update="SFCFF\category forms\Control24.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control24.Designer.cs">
-      <DependentUpon>Control24.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control25.cs">
+    <Compile Update="SFCFF\category forms\Control25.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control25.Designer.cs">
-      <DependentUpon>Control25.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control26.cs">
+    <Compile Update="SFCFF\category forms\Control26.cs" />
+    <Compile Update="SFCFF\category forms\Control27.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control26.Designer.cs">
-      <DependentUpon>Control26.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control27.cs">
+    <Compile Update="SFCFF\category forms\Control28.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control27.Designer.cs">
-      <DependentUpon>Control27.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control28.cs">
+    <Compile Update="SFCFF\category forms\Control29.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control28.Designer.cs">
-      <DependentUpon>Control28.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control29.cs">
+    <Compile Update="SFCFF\category forms\Control3.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control29.Designer.cs">
-      <DependentUpon>Control29.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control3.cs">
+    <Compile Update="SFCFF\category forms\Control30.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control3.Designer.cs">
-      <DependentUpon>Control3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control30.cs">
+    <Compile Update="SFCFF\category forms\Control31.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control30.Designer.cs">
-      <DependentUpon>Control30.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control31.cs">
+    <Compile Update="SFCFF\category forms\Control32.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control31.Designer.cs">
-      <DependentUpon>Control31.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control32.cs">
+    <Compile Update="SFCFF\category forms\Control33.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control32.Designer.cs">
-      <DependentUpon>Control32.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control33.cs">
+    <Compile Update="SFCFF\category forms\Control34.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control33.Designer.cs">
-      <DependentUpon>Control33.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control34.cs">
+    <Compile Update="SFCFF\category forms\Control35.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control34.Designer.cs">
-      <DependentUpon>Control34.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control35.cs">
+    <Compile Update="SFCFF\category forms\Control36.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control35.Designer.cs">
-      <DependentUpon>Control35.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control36.cs">
+    <Compile Update="SFCFF\category forms\Control38.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control36.Designer.cs">
-      <DependentUpon>Control36.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control38.cs">
+    <Compile Update="SFCFF\category forms\Control39.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control38.Designer.cs">
-      <DependentUpon>Control38.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control39.cs">
+    <Compile Update="SFCFF\category forms\Control4.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control39.Designer.cs">
-      <DependentUpon>Control39.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control4.cs">
+    <Compile Update="SFCFF\category forms\Control40.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control4.Designer.cs">
-      <DependentUpon>Control4.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control40.cs">
+    <Compile Update="SFCFF\category forms\Control41.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control40.Designer.cs">
-      <DependentUpon>Control40.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control41.cs">
+    <Compile Update="SFCFF\category forms\Control42.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control41.Designer.cs">
-      <DependentUpon>Control41.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control42.cs">
+    <Compile Update="SFCFF\category forms\Control43.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control42.Designer.cs">
-      <DependentUpon>Control42.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control43.cs">
+    <Compile Update="SFCFF\category forms\Control44.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control43.Designer.cs">
-      <DependentUpon>Control43.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control44.cs">
+    <Compile Update="SFCFF\category forms\Control45.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control44.Designer.cs">
-      <DependentUpon>Control44.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control45.cs">
+    <Compile Update="SFCFF\category forms\Control46.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control45.Designer.cs">
-      <DependentUpon>Control45.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control46.cs">
+    <Compile Update="SFCFF\category forms\Control47.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control46.Designer.cs">
-      <DependentUpon>Control46.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control47.cs">
+    <Compile Update="SFCFF\category forms\Control48.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control47.Designer.cs">
-      <DependentUpon>Control47.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control48.cs">
+    <Compile Update="SFCFF\category forms\Control49.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control48.Designer.cs">
-      <DependentUpon>Control48.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control49.cs">
+    <Compile Update="SFCFF\category forms\Control5.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control49.Designer.cs">
-      <DependentUpon>Control49.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control5.cs">
+    <Compile Update="SFCFF\category forms\Control6.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control5.Designer.cs">
-      <DependentUpon>Control5.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control6.cs">
+    <Compile Update="SFCFF\category forms\Control7.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control6.Designer.cs">
-      <DependentUpon>Control6.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control7.cs">
+    <Compile Update="SFCFF\category forms\Control8.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control7.Designer.cs">
-      <DependentUpon>Control7.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control8.cs">
+    <Compile Update="SFCFF\category forms\Control9.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control8.Designer.cs">
-      <DependentUpon>Control8.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control9.cs">
+    <Compile Update="SFCFF\category forms\Control37.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control9.Designer.cs">
-      <DependentUpon>Control9.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\Control37.cs">
+    <Compile Update="SFCFF\category forms\SFControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFCFF\category forms\Control37.Designer.cs">
-      <DependentUpon>Control37.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\category forms\SFControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="SFCFF\category forms\SFControl.Designer.cs">
-      <DependentUpon>SFControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\CustomScript.cs" />
-    <Compile Include="SFCFF\helper_forms\CategorySelectForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFCFF\helper_forms\CategorySelectForm.Designer.cs">
-      <DependentUpon>CategorySelectForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\helper_forms\CFFOperatorHistory.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFCFF\helper_forms\CFFOperatorHistory.Designer.cs">
-      <DependentUpon>CFFOperatorHistory.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\helper_forms\ListBoxNoFlicker.cs">
+    <Compile Update="SFCFF\helper_forms\ListBoxNoFlicker.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="SFCFF\helper_forms\PatchGamedataForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFCFF\helper_forms\PatchGamedataForm.Designer.cs">
-      <DependentUpon>PatchGamedataForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\helper_forms\SaveGamedataForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFCFF\helper_forms\SaveGamedataForm.Designer.cs">
-      <DependentUpon>SaveGamedataForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\helper_forms\LoadGamedataForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFCFF\helper_forms\LoadGamedataForm.Designer.cs">
-      <DependentUpon>LoadGamedataForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFCFF\operators\CFFOperator.cs" />
-    <Compile Include="SFCFF\SFDataTracer.cs" />
-    <Compile Include="SFCFF\SFSearchModule.cs" />
-    <Compile Include="SFLua\lua_controls\LuaDecTestForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFLua\lua_controls\LuaDecTestForm.Designer.cs">
-      <DependentUpon>LuaDecTestForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFLua\lua_controls\LuaDialogBuilderForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFLua\lua_controls\LuaDialogBuilderForm.Designer.cs">
-      <DependentUpon>LuaDialogBuilderForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLBuildingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLBuildingForm.Designer.cs">
-      <DependentUpon>SFLuaSQLBuildingForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLHeadForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLHeadForm.Designer.cs">
-      <DependentUpon>SFLuaSQLHeadForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLItemForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLItemForm.Designer.cs">
-      <DependentUpon>SFLuaSQLItemForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLObjectForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLObjectForm.Designer.cs">
-      <DependentUpon>SFLuaSQLObjectForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLRtsCoopSpawnForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFLua\lua_sql_forms\SFLuaSQLRtsCoopSpawnForm.Designer.cs">
-      <DependentUpon>SFLuaSQLRtsCoopSpawnForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFLua\SFLuaWinformManager.cs" />
-    <Compile Include="SFMap\MapEdit\MapMonumentEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapBrush.cs" />
-    <Compile Include="SFMap\MapEdit\MapBindstoneEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapPaintMaskEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapPortalEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapCoopCampEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapDecorationEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapObjectEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapBuildingEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapUnitEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapHeightMapEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapLakesEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapTerrainFlagsEditor.cs" />
-    <Compile Include="SFMap\MapEdit\MapTerrainTextureEditor.cs" />
-    <Compile Include="SFMap\map_controls\MapBindstoneInspector.cs">
+    <Compile Update="SFMap\map_controls\MapBindstoneInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapBindstoneInspector.Designer.cs">
-      <DependentUpon>MapBindstoneInspector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapMonumentInspector.cs">
+    <Compile Update="SFMap\map_controls\MapMonumentInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapMonumentInspector.Designer.cs">
-      <DependentUpon>MapMonumentInspector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapPortalInspector.cs">
+    <Compile Update="SFMap\map_controls\MapPortalInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapPortalInspector.Designer.cs">
-      <DependentUpon>MapPortalInspector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapCoopCampInspector.cs">
+    <Compile Update="SFMap\map_controls\MapCoopCampInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapCoopCampInspector.Designer.cs">
-      <DependentUpon>MapCoopCampInspector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapDecorationInspector.cs">
+    <Compile Update="SFMap\map_controls\MapDecorationInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapDecorationInspector.Designer.cs">
-      <DependentUpon>MapDecorationInspector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapObjectInspector.cs">
+    <Compile Update="SFMap\map_controls\MapObjectInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapObjectInspector.Designer.cs">
-      <DependentUpon>MapObjectInspector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapInspector.cs">
+    <Compile Update="SFMap\map_controls\MapInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapInspector.Designer.cs">
-      <DependentUpon>MapInspector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapLakeInspector.cs">
+    <Compile Update="SFMap\map_controls\MapLakeInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapLakeInspector.Designer.cs">
-      <DependentUpon>MapLakeInspector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapQuickSelectControl.cs">
+    <Compile Update="SFMap\map_controls\MapQuickSelectControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapQuickSelectControl.Designer.cs">
-      <DependentUpon>MapQuickSelectControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapTerrainTextureControl.cs">
+    <Compile Update="SFMap\map_controls\MapTerrainTextureControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapTerrainTextureControl.Designer.cs">
-      <DependentUpon>MapTerrainTextureControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapTerrainTextureInspector.cs">
+    <Compile Update="SFMap\map_controls\MapTerrainTextureInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapTerrainTextureInspector.Designer.cs">
-      <DependentUpon>MapTerrainTextureInspector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapBuildingInspector.cs">
+    <Compile Update="SFMap\map_controls\MapBuildingInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapBuildingInspector.Designer.cs">
-      <DependentUpon>MapBuildingInspector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_controls\MapUnitInspector.cs">
+    <Compile Update="SFMap\map_controls\MapUnitInspector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SFMap\map_controls\MapUnitInspector.Designer.cs">
-      <DependentUpon>MapUnitInspector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapExportHeightmapDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapExportHeightmapDialog.Designer.cs">
-      <DependentUpon>MapExportHeightmapDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapImportHeightmapDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapImportHeightmapDialog.Designer.cs">
-      <DependentUpon>MapImportHeightmapDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapManageTeamCompositions.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapManageTeamCompositions.Designer.cs">
-      <DependentUpon>MapManageTeamCompositions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapMinimapSettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapMinimapSettingsForm.Designer.cs">
-      <DependentUpon>MapMinimapSettingsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapModifyTextureSet.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapModifyTextureSet.Designer.cs">
-      <DependentUpon>MapModifyTextureSet.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapOperatorHistoryViewer.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapOperatorHistoryViewer.Designer.cs">
-      <DependentUpon>MapOperatorHistoryViewer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapPromptNewMap.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapPromptNewMap.Designer.cs">
-      <DependentUpon>MapPromptNewMap.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapSelectPlatformScriptDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapSelectPlatformScriptDialog.Designer.cs">
-      <DependentUpon>MapSelectPlatformScriptDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapSelectTile.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapSelectTile.Designer.cs">
-      <DependentUpon>MapSelectTile.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapVisibilitySettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SFMap\map_dialog\MapVisibilitySettings.Designer.cs">
-      <DependentUpon>MapVisibilitySettings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SFMap\map_operators\MapOperator.cs" />
-    <Compile Include="special forms\AboutForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\AboutForm.Designer.cs">
-      <DependentUpon>AboutForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="special forms\CalculatorsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\CalculatorsForm.Designer.cs">
-      <DependentUpon>CalculatorsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="special forms\ExtractionSettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\ExtractionSettingsForm.Designer.cs">
-      <DependentUpon>ExtractionSettingsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="special forms\ExtractLangDataForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\ExtractLangDataForm.Designer.cs">
-      <DependentUpon>ExtractLangDataForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="special forms\MapEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\MapEditorForm.Designer.cs">
-      <DependentUpon>MapEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="special forms\SaveDataEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\SaveDataEditorForm.Designer.cs">
-      <DependentUpon>SaveDataEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="special forms\SQLModifierForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\SQLModifierForm.Designer.cs">
-      <DependentUpon>SQLModifierForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="special forms\TextureRepairForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\TextureRepairForm.Designer.cs">
-      <DependentUpon>TextureRepairForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="special forms\utility_forms\ShowCodeForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\utility_forms\ShowCodeForm.Designer.cs">
-      <DependentUpon>ShowCodeForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="special forms\ReferencesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\ReferencesForm.Designer.cs">
-      <DependentUpon>ReferencesForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="special forms\SFAssetManagerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\SFAssetManagerForm.Designer.cs">
-      <DependentUpon>SFAssetManagerForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="special forms\utility_forms\GetStringForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\utility_forms\GetStringForm.Designer.cs">
-      <DependentUpon>GetStringForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="special forms\SpelllforceCFFEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="special forms\SpelllforceCFFEditor.Designer.cs">
-      <DependentUpon>SpelllforceCFFEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WinFormsUtility.cs" />
-    <EmbeddedResource Include="SFCFF\calculator forms\CalcControl.resx">
-      <DependentUpon>CalcControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\calculator forms\CalcHitChanceControl.resx">
-      <DependentUpon>CalcHitChanceControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control1.resx">
-      <DependentUpon>Control1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control10.resx">
-      <DependentUpon>Control10.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control11.resx">
-      <DependentUpon>Control11.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control12.resx">
-      <DependentUpon>Control12.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control13.resx">
-      <DependentUpon>Control13.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control14.resx">
-      <DependentUpon>Control14.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control15.resx">
-      <DependentUpon>Control15.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control16.resx">
-      <DependentUpon>Control16.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control17.resx">
-      <DependentUpon>Control17.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control18.resx">
-      <DependentUpon>Control18.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control19.resx">
-      <DependentUpon>Control19.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control2.resx">
-      <DependentUpon>Control2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control20.resx">
-      <DependentUpon>Control20.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control21.resx">
-      <DependentUpon>Control21.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control22.resx">
-      <DependentUpon>Control22.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control23.resx">
-      <DependentUpon>Control23.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control24.resx">
-      <DependentUpon>Control24.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control25.resx">
-      <DependentUpon>Control25.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control26.resx">
-      <DependentUpon>Control26.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control27.resx">
-      <DependentUpon>Control27.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control28.resx">
-      <DependentUpon>Control28.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control29.resx">
-      <DependentUpon>Control29.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control3.resx">
-      <DependentUpon>Control3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control30.resx">
-      <DependentUpon>Control30.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control31.resx">
-      <DependentUpon>Control31.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control32.resx">
-      <DependentUpon>Control32.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control33.resx">
-      <DependentUpon>Control33.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control34.resx">
-      <DependentUpon>Control34.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control35.resx">
-      <DependentUpon>Control35.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control36.resx">
-      <DependentUpon>Control36.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control37.resx">
-      <DependentUpon>Control37.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control38.resx">
-      <DependentUpon>Control38.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control39.resx">
-      <DependentUpon>Control39.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control4.resx">
-      <DependentUpon>Control4.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control40.resx">
-      <DependentUpon>Control40.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control41.resx">
-      <DependentUpon>Control41.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control42.resx">
-      <DependentUpon>Control42.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control43.resx">
-      <DependentUpon>Control43.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control44.resx">
-      <DependentUpon>Control44.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control45.resx">
-      <DependentUpon>Control45.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control46.resx">
-      <DependentUpon>Control46.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control47.resx">
-      <DependentUpon>Control47.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control48.resx">
-      <DependentUpon>Control48.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control49.resx">
-      <DependentUpon>Control49.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control5.resx">
-      <DependentUpon>Control5.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control6.resx">
-      <DependentUpon>Control6.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control7.resx">
-      <DependentUpon>Control7.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control8.resx">
-      <DependentUpon>Control8.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\Control9.resx">
-      <DependentUpon>Control9.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\category forms\SFControl.resx">
-      <DependentUpon>SFControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <EmbeddedResource Include="SFCFF\helper_forms\CategorySelectForm.resx">
-      <DependentUpon>CategorySelectForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\helper_forms\CFFOperatorHistory.resx">
-      <DependentUpon>CFFOperatorHistory.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\helper_forms\PatchGamedataForm.resx">
-      <DependentUpon>PatchGamedataForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\helper_forms\SaveGamedataForm.resx">
-      <DependentUpon>SaveGamedataForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFCFF\helper_forms\LoadGamedataForm.resx">
-      <DependentUpon>LoadGamedataForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFLua\lua_controls\LuaDecTestForm.resx">
-      <DependentUpon>LuaDecTestForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFLua\lua_controls\LuaDialogBuilderForm.resx">
-      <DependentUpon>LuaDialogBuilderForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFLua\lua_sql_forms\SFLuaSQLBuildingForm.resx">
-      <DependentUpon>SFLuaSQLBuildingForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFLua\lua_sql_forms\SFLuaSQLHeadForm.resx">
-      <DependentUpon>SFLuaSQLHeadForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFLua\lua_sql_forms\SFLuaSQLItemForm.resx">
-      <DependentUpon>SFLuaSQLItemForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFLua\lua_sql_forms\SFLuaSQLObjectForm.resx">
-      <DependentUpon>SFLuaSQLObjectForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFLua\lua_sql_forms\SFLuaSQLRtsCoopSpawnForm.resx">
-      <DependentUpon>SFLuaSQLRtsCoopSpawnForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapBindstoneInspector.resx">
-      <DependentUpon>MapBindstoneInspector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapMonumentInspector.resx">
-      <DependentUpon>MapMonumentInspector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapPortalInspector.resx">
-      <DependentUpon>MapPortalInspector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapCoopCampInspector.resx">
-      <DependentUpon>MapCoopCampInspector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapDecorationInspector.resx">
-      <DependentUpon>MapDecorationInspector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapObjectInspector.resx">
-      <DependentUpon>MapObjectInspector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapLakeInspector.resx">
-      <DependentUpon>MapLakeInspector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapQuickSelectControl.resx">
-      <DependentUpon>MapQuickSelectControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapTerrainTextureControl.resx">
-      <DependentUpon>MapTerrainTextureControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapTerrainTextureInspector.resx">
-      <DependentUpon>MapTerrainTextureInspector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapBuildingInspector.resx">
-      <DependentUpon>MapBuildingInspector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_controls\MapUnitInspector.resx">
-      <DependentUpon>MapUnitInspector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_dialog\MapExportHeightmapDialog.resx">
-      <DependentUpon>MapExportHeightmapDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_dialog\MapImportHeightmapDialog.resx">
-      <DependentUpon>MapImportHeightmapDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_dialog\MapManageTeamCompositions.resx">
-      <DependentUpon>MapManageTeamCompositions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_dialog\MapMinimapSettingsForm.resx">
-      <DependentUpon>MapMinimapSettingsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_dialog\MapModifyTextureSet.resx">
-      <DependentUpon>MapModifyTextureSet.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_dialog\MapOperatorHistoryViewer.resx">
-      <DependentUpon>MapOperatorHistoryViewer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_dialog\MapPromptNewMap.resx">
-      <DependentUpon>MapPromptNewMap.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_dialog\MapSelectPlatformScriptDialog.resx">
-      <DependentUpon>MapSelectPlatformScriptDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_dialog\MapSelectTile.resx">
-      <DependentUpon>MapSelectTile.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SFMap\map_dialog\MapVisibilitySettings.resx">
-      <DependentUpon>MapVisibilitySettings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\AboutForm.resx">
-      <DependentUpon>AboutForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\CalculatorsForm.resx">
-      <DependentUpon>CalculatorsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\ExtractionSettingsForm.resx">
-      <DependentUpon>ExtractionSettingsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\ExtractLangDataForm.resx">
-      <DependentUpon>ExtractLangDataForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\MapEditorForm.resx">
-      <DependentUpon>MapEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\SaveDataEditorForm.resx">
-      <DependentUpon>SaveDataEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\SQLModifierForm.resx">
-      <DependentUpon>SQLModifierForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\TextureRepairForm.resx">
-      <DependentUpon>TextureRepairForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\utility_forms\ShowCodeForm.resx">
-      <DependentUpon>ShowCodeForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\ReferencesForm.resx">
-      <DependentUpon>ReferencesForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\SFAssetManagerForm.resx">
-      <DependentUpon>SFAssetManagerForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\utility_forms\GetStringForm.resx">
-      <DependentUpon>GetStringForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="special forms\SpelllforceCFFEditor.resx">
-      <DependentUpon>SpelllforceCFFEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="app.manifest" />
-    <None Include="OpenTK.dll.config" />
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
@@ -1059,33 +250,22 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="382940043477778432.ico" />
-    <None Include="Resources\unit_icon.png" />
-    <None Include="Resources\metadata_icon.png" />
-    <None Include="Resources\monument_icon.png" />
-    <None Include="Resources\npc_icon.png" />
-    <None Include="Resources\object_icon.png" />
-    <None Include="Resources\building_icon.png" />
-    <None Include="Resources\decoration_icon.png" />
-    <None Include="Resources\flag_icon.png" />
-    <None Include="Resources\hmap_icon.png" />
-    <None Include="Resources\lake_icon.png" />
-    <None Include="Resources\texture_icon.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SFLua\lua_dialog_controls\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SFEngine\SFEngine.csproj">
-      <Project>{dd55fde3-46ac-4558-9665-0f0cd25e5289}</Project>
-      <Name>SFEngine</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\SFEngine\SFEngine.csproj" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="OpenTK" Version="4.8.2" />
+    <PackageReference Include="OpenTK.WinForms" Version="4.0.0-pre.7" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Spellforce Data Editor.resx" />
+  </ItemGroup>
 </Project>

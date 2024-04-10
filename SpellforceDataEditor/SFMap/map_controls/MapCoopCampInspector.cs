@@ -96,7 +96,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (o == null)
             {
-                map.selection_helper.CancelSelection();
+                selection_helper.CancelSelection();
                 PanelProperties.Enabled = false;
             }
             else

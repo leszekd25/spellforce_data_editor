@@ -2,6 +2,7 @@
  * This form serves as a 3D model/animation viewer
  */
 
+using OpenTK.Mathematics;
 using OpenTK;
 using SFEngine.SF3D;
 using SFEngine.SF3D.SceneSynchro;
@@ -149,6 +150,8 @@ namespace SpellforceDataEditor.special_forms
 
         SFAssetManagerUI ui = null;
 
+        bool ready = false;
+
 
         public SFAssetManagerForm()
         {
@@ -225,6 +228,7 @@ namespace SpellforceDataEditor.special_forms
             ui = new SFAssetManagerUI();
 
             update_render = true;
+            ready = true;
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
@@ -276,10 +280,12 @@ namespace SpellforceDataEditor.special_forms
             ButtonToggleFloor.Location = new Point(glControl1.Location.X, glControl1.Location.Y + new_rcsize + 1);
 
 
-
-            SFRenderEngine.ResizeView(new Vector2(new_rcsize, new_rcsize));
-            update_render = true;
-            glControl1.MakeCurrent();
+            if (ready)
+            {
+                SFRenderEngine.ResizeView(new Vector2(new_rcsize, new_rcsize));
+                update_render = true;
+                glControl1.MakeCurrent();
+            }
         }
 
         private void HideAllPanels()
@@ -673,44 +679,52 @@ namespace SpellforceDataEditor.special_forms
 
             if (ComboBrowseMode.SelectedIndex == 2)
             {
-                SceneNodeAnimated obj_d1 = scene.root.FindNode<SceneNodeAnimated>("dynamic_mesh");
-
-                if (ListAnimations.SelectedIndex != -1)
+                if (SFRenderEngine.scene.scene_meta.is_animated)   // only if selected element is a unit...
                 {
-                    string anim_name = ListAnimations.SelectedItem.ToString();
-                    anim_name = anim_name.Substring(0, anim_name.Length - 4);
-                    if (!SFResourceManager.Animations.Load(anim_name, SFEngine.SFUnPak.FileSource.ANY, out SFAnimation anim, out int ec, obj_d1.Skeleton))
+                    SceneNode unit_node = SFRenderEngine.scene.root.FindNode<SceneNode>("unit");
+                    if (unit_node != null)
                     {
-                        StatusText.Text = "Failed to load animation " + anim_name + ", status code " + ec.ToString();
-                        dynamic_render = false;
-                        return;
-                    }
-
-                    SceneNode obj = SFRenderEngine.scene.root.FindNode<SceneNode>("unit");
-                    if (obj != null)
-                    {
-                        foreach (SceneNodeAnimated node in obj.Children)
+                        if (unit_node.children.Count != 0)
                         {
-                            if (node.Skeleton.bone_count != anim.bone_animations.Length)
+                            SceneNodeAnimated chest_node = unit_node.FindNode<SceneNodeAnimated>("Chest");
+                            if (chest_node != null)
                             {
-                                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SF3D, "SFAssetManagerForm.ListAnimations_SelectedIndexChanged(): invalid bone count!");
-                                StatusText.Text = "Invalid animation " + anim_name;
-                                dynamic_render = false;
-                                return;
+                                if (ListAnimations.SelectedIndex != -1)
+                                {
+                                    string anim_name = ListAnimations.SelectedItem.ToString();
+                                    anim_name = anim_name.Substring(0, anim_name.Length - 4);
+                                    if (!SFResourceManager.Animations.Load(anim_name, SFEngine.SFUnPak.FileSource.ANY, out SFAnimation anim, out int ec, chest_node.Skeleton))
+                                    {
+                                        StatusText.Text = "Failed to load animation " + anim_name + ", status code " + ec.ToString();
+                                        dynamic_render = false;
+                                        return;
+                                    }
+                                    
+                                    foreach (SceneNodeAnimated node in unit_node.children)
+                                    {
+                                        if (node.Skeleton.bone_count != anim.bone_animations.Length)
+                                        {
+                                            SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SF3D, "SFAssetManagerForm.ListAnimations_SelectedIndexChanged(): invalid bone count!");
+                                            StatusText.Text = "Invalid animation " + anim_name;
+                                            dynamic_render = false;
+                                            return;
+                                        }
+                                        node.SetAnimation(anim, true);
+                                        scene.scene_meta.duration = node.Animation.max_time;
+                                    }
+
+                                    scene.SetSceneTime(0f);
+                                    StatusText.Text = "Loaded animation " + anim_name;
+                                    UpdateSliderAnimation();
+                                    dynamic_render = true;
+                                    statusStrip1.Refresh();
+
+                                    ui.SetLabel2("Animation: " + anim_name);
+                                    ui.SetLabel3("Length: " + TimeSpan.FromSeconds(SFRenderEngine.scene.scene_meta.duration).ToString(@"m\:ss\.ff"));
+                                }
                             }
-                            node.SetAnimation(anim, true);
-                            scene.scene_meta.duration = node.Animation.max_time;
                         }
                     }
-
-                    scene.SetSceneTime(0f);
-                    StatusText.Text = "Loaded animation " + anim_name;
-                    UpdateSliderAnimation();
-                    dynamic_render = true;
-                    statusStrip1.Refresh();
-
-                    ui.SetLabel2("Animation: " + anim_name);
-                    ui.SetLabel3("Length: " + TimeSpan.FromSeconds(SFRenderEngine.scene.scene_meta.duration).ToString(@"m\:ss\.ff"));
                 }
             }
 
@@ -914,7 +928,6 @@ namespace SpellforceDataEditor.special_forms
             ListEntries.Items.Clear();
             ListAnimations.Items.Clear();
             ResetScene();
-            //SFResourceManager.DisposeAll();
             GC.Collect(2, GCCollectionMode.Forced, false);
 
             if (cat < 0)
@@ -935,7 +948,7 @@ namespace SpellforceDataEditor.special_forms
                 SceneNode unit_node = SFRenderEngine.scene.root.FindNode<SceneNode>("unit");
                 if (unit_node != null)
                 {
-                    if (unit_node.Children.Count != 0)
+                    if (unit_node.children.Count != 0)
                     {
                         ListAnimations.Items.Clear();
                         SceneNodeAnimated chest_node = unit_node.FindNode<SceneNodeAnimated>("Chest");
@@ -1069,7 +1082,7 @@ namespace SpellforceDataEditor.special_forms
         {
             if (node is SceneNodeSimple)
             {
-                if (node.Name != "_GRID_")
+                if (node.name != "_GRID_")
                 {
                     esd.meshes.Add(((SceneNodeSimple)node).Mesh.Name);
                     foreach (var sbm in ((SceneNodeSimple)node).Mesh.submodels)
@@ -1089,7 +1102,7 @@ namespace SpellforceDataEditor.special_forms
                 }
             }
 
-            foreach (var n in node.Children)
+            foreach (var n in node.children)
             {
                 GatherSceneResources(n, ref esd);
             }

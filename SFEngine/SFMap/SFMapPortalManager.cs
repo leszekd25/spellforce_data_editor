@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using OpenTK.Mathematics;
+using System.Collections.Generic;
 
 namespace SFEngine.SFMap
 {
@@ -48,9 +49,9 @@ namespace SFEngine.SFMap
             map.object_manager.ApplyObjectBlockFlags(ptl.grid_position, ptl.angle, 778, true);
 
             ptl.node.Position = map.heightmap.GetFixedPosition(position);
-            ptl.node.Scale = new OpenTK.Vector3(100 / 128f);
+            ptl.node.Scale = new Vector3(100 / 128f);
             ptl.node.SetAnglePlane(angle);
-            map.UpdateNodeDecal(ptl.node, new OpenTK.Vector2(position.x, position.y), OpenTK.Vector2.Zero, angle);
+            map.UpdateNodeDecal(ptl.node, new Vector2(position.x, position.y), Vector2.Zero, angle);
 
             map.heightmap.GetChunk(position).portals.Add(ptl);
             return index;
@@ -90,7 +91,7 @@ namespace SFEngine.SFMap
 
             // change visual transform
             portal.node.Position = map.heightmap.GetFixedPosition(new_pos);
-            map.UpdateNodeDecal(portal.node, new OpenTK.Vector2(portal.grid_position.x, portal.grid_position.y), OpenTK.Vector2.Zero, portal.angle);
+            map.UpdateNodeDecal(portal.node, new Vector2(portal.grid_position.x, portal.grid_position.y), Vector2.Zero, portal.angle);
         }
 
         // todo: probably account for offset?
@@ -103,7 +104,7 @@ namespace SFEngine.SFMap
             map.object_manager.ApplyObjectBlockFlags(portal.grid_position, portal.angle, 778, true);
 
             portal.node.SetAnglePlane(angle);
-            map.UpdateNodeDecal(portal.node, new OpenTK.Vector2(portal.grid_position.x, portal.grid_position.y), OpenTK.Vector2.Zero, portal.angle);
+            map.UpdateNodeDecal(portal.node, new Vector2(portal.grid_position.x, portal.grid_position.y), Vector2.Zero, portal.angle);
         }
     }
 }

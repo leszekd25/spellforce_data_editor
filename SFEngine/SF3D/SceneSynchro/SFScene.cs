@@ -3,7 +3,7 @@
  * CatElemToScene generates scene description based on provided game data element, useful for asset viewer
  */
 
-using OpenTK;
+using OpenTK.Mathematics;
 using SFEngine.SFCFF;
 using SFEngine.SFLua;
 using SFEngine.SFLua.lua_sql;
@@ -914,15 +914,6 @@ namespace SFEngine.SF3D.SceneSynchro
 
             SFSubModel3D.Cache.CurrentMatrix = cur_offset;
             SFSubModel3D.Cache.MatrixUpload(0, SFSubModel3D.Cache.CurrentMatrix);
-
-            if (Settings.DynamicMap)
-            {
-                foreach(SceneNodeBone an in an_bone_nodes.GetItems())
-                {
-                    an.TouchParents();
-                    an.TouchResultTransform();
-                }
-            }
         }
 
         public void Clear()

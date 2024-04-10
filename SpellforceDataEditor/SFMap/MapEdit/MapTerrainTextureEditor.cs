@@ -155,7 +155,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             op_texture = null;
             first_clicked = false;
 
-            MainForm.mapedittool.ui.RedrawMinimap(pixels, (byte)(SelectedTile >= 224 ? SelectedTile - 223 : SelectedTile));
+            MainForm.mapedittool.ui.RedrawMinimapTiles(pixels, (byte)(SelectedTile >= 224 ? SelectedTile - 223 : SelectedTile));
             pixels.Clear();
             MainForm.mapedittool.update_render = true;
             base.OnMouseUp(b);

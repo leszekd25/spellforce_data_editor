@@ -99,7 +99,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (o == null)
             {
-                map.selection_helper.CancelSelection();
+                selection_helper.CancelSelection();
                 PanelProperties.Enabled = false;
             }
             else
@@ -138,7 +138,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             Group.Text = unit.group.ToString();
             Unknown2.Text = unit.unknown2.ToString();
 
-            map.selection_helper.SelectUnit(unit);
+            selection_helper.SelectUnit(unit);
             if ((move_camera_on_select) || (unit_selected_from_list))
             {
                 MainForm.mapedittool.SetCameraViewPoint(unit.grid_position);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK.Mathematics;
+using System;
 using System.Collections.Generic;
 
 namespace SFEngine.SFMap
@@ -87,14 +88,14 @@ namespace SFEngine.SFMap
                 SF3D.SceneSynchro.SceneNode dec_node_i = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(dec_group.dec_id[i], i.ToString(), (Settings.ShadingQuality == 2), Settings.DecalShadows); ;
                 dec_node_i.SetParent(dec.node);
 
-                OpenTK.Vector2 offset = new OpenTK.Vector2(MathUtils.Randf(-0.4f, 0.4f), MathUtils.Randf(-0.4f, 0.4f));
-                dec_node_i.Position = new OpenTK.Vector3(
+                Vector2 offset = new Vector2(MathUtils.Randf(-0.4f, 0.4f), MathUtils.Randf(-0.4f, 0.4f));
+                dec_node_i.Position = new Vector3(
                 (position.x % SFMapHeightMapMesh.CHUNK_SIZE) + offset.X,
-                map.heightmap.GetRealZ(new OpenTK.Vector2(position.x + offset.X, map.height - position.y - 1 - offset.Y)),
+                map.heightmap.GetRealZ(new Vector2(position.x + offset.X, map.height - position.y - 1 - offset.Y)),
                 ((map.height - position.y - 1) % SFMapHeightMapMesh.CHUNK_SIZE) - offset.Y);
 
                 dec_node_i.SetAnglePlane(MathUtils.Rand() % 360);
-                dec_node_i.Scale = new OpenTK.Vector3(100 / 128f);
+                dec_node_i.Scale = new Vector3(100 / 128f);
             }
 
             // 3. add new unit in respective chunk
@@ -150,14 +151,14 @@ namespace SFEngine.SFMap
                 SF3D.SceneSynchro.SceneNode dec_node_i = SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(dec_group.dec_id[i], i.ToString(), (Settings.ShadingQuality == 2), Settings.DecalShadows); ;
                 dec_node_i.SetParent(d.node);
 
-                OpenTK.Vector2 offset = new OpenTK.Vector2(MathUtils.Randf(-0.4f, 0.4f), MathUtils.Randf(-0.4f, 0.4f));
-                dec_node_i.Position = new OpenTK.Vector3(
+                Vector2 offset = new Vector2(MathUtils.Randf(-0.4f, 0.4f), MathUtils.Randf(-0.4f, 0.4f));
+                dec_node_i.Position = new Vector3(
                 (d.grid_position.x % SFMapHeightMapMesh.CHUNK_SIZE) + offset.X,
-                map.heightmap.GetRealZ(new OpenTK.Vector2(d.grid_position.x + offset.X, map.height - d.grid_position.y - 1 - offset.Y)),
+                map.heightmap.GetRealZ(new Vector2(d.grid_position.x + offset.X, map.height - d.grid_position.y - 1 - offset.Y)),
                 ((map.height - d.grid_position.y - 1) % SFMapHeightMapMesh.CHUNK_SIZE) - offset.Y);
 
                 dec_node_i.SetAnglePlane(MathUtils.Rand() % 360);
-                dec_node_i.Scale = new OpenTK.Vector3(100 / 128f);
+                dec_node_i.Scale = new Vector3(100 / 128f);
             }
 
             d.game_id = (byte)new_id;

@@ -1,4 +1,4 @@
-﻿using OpenTK;
+﻿using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
 using SFEngine.SF3D;
 using SFEngine.SFResources;

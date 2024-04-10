@@ -1,4 +1,4 @@
-﻿using OpenTK;
+﻿using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
@@ -600,6 +600,9 @@ namespace SFEngine.SF3D
          * 
          * - getting mesh data
          * cache.Meshes[ind].<data>
+         * 
+         * - removing mesh
+         * cache.RemoveMesh[ind]
          * 
          * - closing
          * cache.Dispose();

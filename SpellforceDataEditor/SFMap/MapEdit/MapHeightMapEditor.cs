@@ -519,7 +519,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             first_clicked = false;
             only_first_click = false;
 
-            MainForm.mapedittool.ui.RedrawMinimap(pixels);
+            MainForm.mapedittool.ui.RedrawMinimapCells(pixels);
             pixels.Clear();
             MainForm.mapedittool.update_render = true;
             base.OnMouseUp(b);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK.Mathematics;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -40,7 +41,7 @@ namespace SFEngine
         public static bool OverlaysVisible { get; set; } = true;
         public static bool VisualizeHeight { get; set; } = false;
         public static bool DisplayGrid { get; set; } = false;
-        public static OpenTK.Vector4 GridColor { get; set; } = new OpenTK.Vector4(1, 1, 1, 1);
+        public static Vector4 GridColor { get; set; } = new Vector4(1, 1, 1, 1);
         public static int ObjectFadeMin { get; set; } = 170;
         public static int ObjectFadeMax { get; set; } = 220;
         public static int DecorationFade { get; set; } = 71;
@@ -207,7 +208,7 @@ namespace SFEngine
                                 g = Utility.TryParseUInt8(words[2], 255);
                                 b = Utility.TryParseUInt8(words[3], 255);
                             }
-                            GridColor = new OpenTK.Vector4(r, g, b, 255) / 255f;
+                            GridColor = new Vector4(r, g, b, 255) / 255f;
                             break;
                         case "ObjectFadeDistance":
                             if (words.Length >= 3)

@@ -3,7 +3,7 @@
  * SFAnimation is a set of SFBoneAnimation objects corresponding to a supplied skeleton
  */
 
-using OpenTK;
+using OpenTK.Mathematics;
 using SFEngine.SFResources;
 using System;
 using System.IO;

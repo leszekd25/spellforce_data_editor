@@ -5,11 +5,13 @@
  * */
 
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using SFEngine.SFResources;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.IO;
+using System.Drawing;
 
 namespace SFEngine.SF3D
 {
@@ -35,7 +37,7 @@ namespace SFEngine.SF3D
         public int mag_filter;
         public int wrap_s;
         public int wrap_t;
-        public OpenTK.Vector4 wrap_border_col;
+        public Vector4 wrap_border_col;
         public int anisotropy;
 
         public bool generate_mipmap = false;                  // for minimap
@@ -572,7 +574,7 @@ namespace SFEngine.SF3D
             return 0;
         }
 
-        static public SFTexture DynamicTexture(ushort w, ushort h, ushort d, TextureTarget target, InternalFormat ifmt, PixelFormat pfmt, PixelType ptp, int minf, int magf, int ws, int wt, OpenTK.Vector4 wbcol, int an, bool gen_mip, bool own_memory)
+        static public SFTexture DynamicTexture(ushort w, ushort h, ushort d, TextureTarget target, InternalFormat ifmt, PixelFormat pfmt, PixelType ptp, int minf, int magf, int ws, int wt, Vector4 wbcol, int an, bool gen_mip, bool own_memory)
         {
             SFTexture tex = new SFTexture()
             {
@@ -601,7 +603,7 @@ namespace SFEngine.SF3D
             return tex;
         }
 
-        static public SFTexture FrameBufferAttachment(ushort w, ushort h, uint sample_count, uint mipstart, uint mipcount, InternalFormat ifmt, PixelFormat pfmt, PixelType ptp, int minf, int magf, int ws, int wt, OpenTK.Vector4 wbcol, int an)
+        static public SFTexture FrameBufferAttachment(ushort w, ushort h, uint sample_count, uint mipstart, uint mipcount, InternalFormat ifmt, PixelFormat pfmt, PixelType ptp, int minf, int magf, int ws, int wt, Vector4 wbcol, int an)
         {
             if(sample_count > 1)
             {
@@ -644,11 +646,11 @@ namespace SFEngine.SF3D
             IntPtr idata_ptr = idata_handle.AddrOfPinnedObject();
             if (texture_target == TextureTarget.Texture2D)
             {
-                GL.TexImage2D(texture_target, lvl, (PixelInternalFormat)internal_format, width, height, 0, pixel_format, pixel_type, new IntPtr(idata_ptr.ToInt32() + idata_offset));
+                GL.TexImage2D(texture_target, lvl, (PixelInternalFormat)internal_format, width, height, 0, pixel_format, pixel_type, new IntPtr(idata_ptr.ToInt64() + idata_offset));
             }
             else if(texture_target == TextureTarget.Texture2DArray)
             {
-                GL.TexSubImage3D(texture_target, lvl, 0, 0, d, width, height, 1, pixel_format, pixel_type, new IntPtr(idata_ptr.ToInt32() + idata_offset));
+                GL.TexSubImage3D(texture_target, lvl, 0, 0, d, width, height, 1, pixel_format, pixel_type, new IntPtr(idata_ptr.ToInt64() + idata_offset));
             }
             idata_handle.Free();
 
@@ -767,7 +769,15 @@ namespace SFEngine.SF3D
                 int skip = 1 << (cur_mip);
                 int div = skip * skip;
 
-                b = new System.Drawing.Bitmap(cur_w, cur_h);
+                b = new Bitmap(cur_w, cur_h);
+                Rectangle rect = new Rectangle(0, 0, cur_w, cur_h);
+                System.Drawing.Imaging.BitmapData bd = b.LockBits(rect, System.Drawing.Imaging.ImageLockMode.WriteOnly, b.PixelFormat);
+
+                IntPtr ptr = bd.Scan0;
+                int bytes = Math.Abs(bd.Stride) * b.Height;
+                byte[] rgbValues = new byte[bytes];
+                Marshal.Copy(ptr, rgbValues, 0, bytes);
+
                 for (int j = 0; j < default_height; j += skip)
                 {
                     for (int i = 0; i < default_width; i += skip)
@@ -789,13 +799,20 @@ namespace SFEngine.SF3D
                         green /= div;
                         blue /= div;
 
-                        b.SetPixel(i / skip, cur_h - 1 - j / skip, System.Drawing.Color.FromArgb(
-                            255,
-                            red,
-                            green,
-                            blue));
+                        int k = (i / skip) + cur_w * (cur_h - 1 - (j / skip));
+
+                        rgbValues[k * 4 + 3] = 255;
+                        rgbValues[k * 4 + 2] = (byte)red;
+                        rgbValues[k * 4 + 1] = (byte)green;
+                        rgbValues[k * 4 + 0] = (byte)blue;
                     }
                 }
+
+                // Copy the RGB values back to the bitmap
+                Marshal.Copy(rgbValues, 0, ptr, bytes);
+
+                // Unlock the bits.
+                b.UnlockBits(bd);
 
                 return b;
             }

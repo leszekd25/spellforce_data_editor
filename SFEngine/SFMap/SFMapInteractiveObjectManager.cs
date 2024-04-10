@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using OpenTK.Mathematics;
+using System.Collections.Generic;
 
 namespace SFEngine.SFMap
 {
@@ -110,9 +111,9 @@ namespace SFEngine.SFMap
 
             SF3D.SceneSynchro.SceneNode _obj = obj.node;
             _obj.Position = map.heightmap.GetFixedPosition(position);
-            _obj.Scale = new OpenTK.Vector3(100 / 128f);
+            _obj.Scale = new Vector3(100 / 128f);
             _obj.SetAnglePlane(angle);
-            map.UpdateNodeDecal(_obj, new OpenTK.Vector2(position.x, position.y), OpenTK.Vector2.Zero, angle);
+            map.UpdateNodeDecal(_obj, new Vector2(position.x, position.y), Vector2.Zero, angle);
 
             map.heightmap.GetChunk(position).int_objects.Add(obj);
 
@@ -180,7 +181,7 @@ namespace SFEngine.SFMap
             // change visual transform
             float z = map.heightmap.GetZ(new_pos) / 100.0f;
             int_obj.node.Position = map.heightmap.GetFixedPosition(new_pos);
-            map.UpdateNodeDecal(int_obj.node, new OpenTK.Vector2(int_obj.grid_position.x, int_obj.grid_position.y), OpenTK.Vector2.Zero, int_obj.angle);
+            map.UpdateNodeDecal(int_obj.node, new Vector2(int_obj.grid_position.x, int_obj.grid_position.y), Vector2.Zero, int_obj.angle);
 
             return 0;
         }
@@ -196,7 +197,7 @@ namespace SFEngine.SFMap
 
             SF3D.SceneSynchro.SceneNode _obj = int_obj.node;
             _obj.SetAnglePlane(angle);
-            map.UpdateNodeDecal(int_obj.node, new OpenTK.Vector2(int_obj.grid_position.x, int_obj.grid_position.y), OpenTK.Vector2.Zero, int_obj.angle);
+            map.UpdateNodeDecal(int_obj.node, new Vector2(int_obj.grid_position.x, int_obj.grid_position.y), Vector2.Zero, int_obj.angle);
 
             return 0;
         }

@@ -1,4 +1,5 @@
-﻿using SFEngine.SF3D.SFRender;
+﻿using OpenTK.Mathematics;
+using SFEngine.SF3D.SFRender;
 using SFEngine.SFChunk;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,6 @@ namespace SFEngine.SFMap
         public SFMapLakeManager lake_manager { get; private set; } = null;
         public SFMapWeatherManager weather_manager { get; private set; } = null;
         public SFMapMetaData metadata { get; private set; } = null;
-        public SFMapSelectionHelper selection_helper { get; private set; } = new SFMapSelectionHelper();
         public SFMapOcean ocean { get; private set; } = new SFMapOcean();
         public uint PlatformID { get; private set; } = 6666;
 
@@ -388,7 +388,9 @@ namespace SFEngine.SFMap
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading lakes");
             OnMapLoadStateChange.Invoke("Loading lakes...", System.Drawing.Color.Black);
 
-            lake_manager = new SFMapLakeManager() { map = this };
+            lake_manager = new SFMapLakeManager() { map = this, index_helper = new uint[(width + 1) * (height + 1)], lake_type_helper = new sbyte[width * height] };
+            Array.Fill(lake_manager.lake_type_helper, (sbyte)-1);
+
             SFChunkFileChunk c40 = f.GetChunkByID(40);
             if (c40 != null)
             {
@@ -759,7 +761,7 @@ namespace SFEngine.SFMap
                                     SF3D.SceneSynchro.SceneNode obj_node = object_manager.objects[obj_i].node;
 
                                     string m = "editor_dummy_spawnpoint";
-                                    SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name + "_SPAWNCIRCLE");
+                                    SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.name + "_SPAWNCIRCLE");
                                 }
                                 if ((object_id >= 65) && (object_id <= 67))    // editor only
                                 {
@@ -782,7 +784,6 @@ namespace SFEngine.SFMap
             heightmap.RebuildTerrainTexture(new SFCoord(0, 0), new SFCoord(width - 1, height - 1));
 
             // selection helper stuff
-            selection_helper.AssignToMap(this);
             ocean.map = this;
             ocean.CreateOceanObject();
 
@@ -1481,7 +1482,8 @@ namespace SFEngine.SFMap
             portal_manager = new SFMapPortalManager() { map = this };
 
             // load lakes
-            lake_manager = new SFMapLakeManager() { map = this };
+            lake_manager = new SFMapLakeManager() { map = this, index_helper = new uint[(width + 1) * (height + 1)], lake_type_helper = new sbyte[width * height] };
+            Array.Fill(lake_manager.lake_type_helper, (sbyte)-1);
 
             // load weather
 
@@ -1509,7 +1511,6 @@ namespace SFEngine.SFMap
             heightmap.RebuildTerrainTexture(new SFCoord(0, 0), new SFCoord(width - 1, height - 1));
 
             // selection helper stuff
-            selection_helper.AssignToMap(this);
             ocean.map = this;
             ocean.CreateOceanObject();
 
@@ -1534,11 +1535,6 @@ namespace SFEngine.SFMap
                 metadata.Unload();             // minimap texture
             }
 
-            if (selection_helper != null)
-            {
-                selection_helper.Dispose();    // selection 3d mesh
-            }
-
             if (ocean != null)
             {
                 ocean.Dispose();
@@ -1558,21 +1554,20 @@ namespace SFEngine.SFMap
             lake_manager = null;
             heightmap = null;
             metadata = null;
-            selection_helper = null;
             ocean = null;
             //npc_manager = null;
         }
 
         // helper function for decals
         // center corresponds to world coordinate for the center (SFCOORD of the object)
-        public void UpdateNodeDecal(SF3D.SceneSynchro.SceneNode node, OpenTK.Vector2 center, OpenTK.Vector2 offset, int angle)
+        public void UpdateNodeDecal(SF3D.SceneSynchro.SceneNode node, Vector2 center, Vector2 offset, int angle)
         {
             if (heightmap == null)
             {
                 return;
             }
             // assumption: a node can only have one subnode that is a decal
-            foreach (SF3D.SceneSynchro.SceneNodeSimple n in node.Children)
+            foreach (SF3D.SceneSynchro.SceneNodeSimple n in node.children)
             {
                 if (n.IsDecal)
                 {
@@ -1582,16 +1577,16 @@ namespace SFEngine.SFMap
                         return;
                     }
 
-                    OpenTK.Vector2 bb_topleft = m_old.aabb.a.Xy;
-                    OpenTK.Vector2 bb_bottomright = m_old.aabb.b.Xy;
+                    Vector2 bb_topleft = m_old.aabb.a.Xy;
+                    Vector2 bb_bottomright = m_old.aabb.b.Xy;
 
                     SF3D.SFModel3D m_new = new SF3D.SFModel3D();
                     SF3D.SFSubModel3D sbm_new = new SF3D.SFSubModel3D();
                     SF3D.SFMaterial sfm_new = m_old.submodels[0].material;
 
-                    OpenTK.Vector3[] vertices;
-                    OpenTK.Vector3[] normals;
-                    OpenTK.Vector2[] uvs;
+                    Vector3[] vertices;
+                    Vector3[] normals;
+                    Vector2[] uvs;
                     byte[] colors;
                     uint[] indices;
 
@@ -1615,10 +1610,10 @@ namespace SFEngine.SFMap
 
                     n.Mesh = null;
                     SFResources.SFResourceManager.Models.Dispose(m_old);
-                    SFResources.SFResourceManager.Models.AddManually(m_new, "_DECAL_" + node.Name + "_" + n.Name);
+                    SFResources.SFResourceManager.Models.AddManually(m_new, "_DECAL_" + node.name + "_" + n.name);
                     n.Mesh = m_new;
                     n.Rotation = node.rotation.Inverted();
-                    n.Scale = new OpenTK.Vector3(1.28f);
+                    n.Scale = new Vector3(1.28f);
 
                     SF3D.SceneSynchro.SFDecalInfo decal_info = SFRenderEngine.scene.decal_info.elements[n.DecalIndex];
                     decal_info.topleft = map_bb_topleft;
@@ -1697,9 +1692,9 @@ namespace SFEngine.SFMap
                     sel_scale = (float)(bld_data.SelectionScaling / 2);
                 }
 
-                OpenTK.Vector2 off = building_manager.building_collision[(ushort)b.game_id].origin;
+                Vector2 off = building_manager.building_collision[(ushort)b.game_id].origin;
                 float angle = (float)(b.angle * Math.PI / 180);
-                OpenTK.Vector2 r_off = new OpenTK.Vector2(off.X, off.Y);
+                Vector2 r_off = new Vector2(off.X, off.Y);
                 r_off.X = (float)((Math.Cos(angle) * off.X) - (Math.Sin(angle) * off.Y));
                 r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
                 SFCoord offset_pos = new SFCoord((int)r_off.X, (int)r_off.Y);

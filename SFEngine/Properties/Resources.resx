@@ -572,7 +572,8 @@ float MSM_computeShadowIntensity(float proj_depth, vec4 moments)
 	vec4 sw = (z.z &lt; z.x ? vec4(z.y, z.x, 1.0, 1.0) :
 		(z.y &lt; z.x ? vec4(z.x, z.y, 0.0, 1.0) : vec4(0.0)));
 	float quotient = (sw.x*z.z-b.x*(sw.x+z.z)+b.y)/((z.z-sw.y)*(z.x-z.y));
-	return 1.0 - clamp((sw.z+sw.a*quotient)/0.98, 0.0, 1.0);  // divide by 98%?
+                   float result = (sw.z+sw.a*quotient)/0.98;
+	return 1.0 - clamp(result, 0.0, 1.0);
 }
 #endif // MSM
 
@@ -582,13 +583,16 @@ float CalculateShadow(){
         return 1.0;
 
     ProjectionCoordinates = ProjectionCoordinates * 0.5 + 0.5;
+    vec2 clamped_pc = clamp(ProjectionCoordinates.xy, 0.0, 1.0);
+    if(clamped_pc != ProjectionCoordinates.xy)
+        return 1.0;
 	
     #ifdef VSM
-    return VSM_chebyshevUpperBound(ProjectionCoordinates.z, texture2D(ShadowMap, ProjectionCoordinates.xy).rg);
-	#endif // VSM
-	#ifdef MSM
-    return MSM_computeShadowIntensity(ProjectionCoordinates.z, texture2D(ShadowMap, ProjectionCoordinates.xy));
-	#endif // MSM
+    return VSM_chebyshevUpperBound(ProjectionCoordinates.z, texture2D(ShadowMap, clamped_pc).rg);
+    #endif // VSM
+    #ifdef MSM
+    return MSM_computeShadowIntensity(ProjectionCoordinates.z, texture2D(ShadowMap, clamped_pc));
+    #endif // MSM
 }
 #endif //SHADOWS
 
@@ -623,7 +627,7 @@ float Depth()
 float ShadowFadeFactor()
 {
   #if defined SHADOWS &amp;&amp; defined SHADING
-  return clamp((Depth() - ShadowFadeStart)/(ShadowFadeEnd-ShadowFadeStart), 0.0, 1.0);
+  return clamp((Depth() - ShadowFadeStart)/(ShadowFadeEnd - ShadowFadeStart), 0.0, 1.0);
   #else
   return 0.0;
   #endif // defined SHADOWS &amp;&amp; defined SHADING
@@ -640,8 +644,8 @@ float Shade()
   #ifdef SHADOWS
   if(brightness &gt; 0.0)
   {
-	float shade_factor = pow(ShadowFadeFactor(), 2.0);
-	float shadow = CalculateShadow();
+    float shade_factor = pow(ShadowFadeFactor(), 2.0);
+    float shadow = CalculateShadow();
     brightness *= max(shade_factor, shadow);
   }
   #endif //SHADOWS

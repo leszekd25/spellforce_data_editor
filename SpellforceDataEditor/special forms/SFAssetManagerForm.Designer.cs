@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.glControl1 = new OpenTK.GLControl();
+            this.glControl1 = new OpenTK.WinForms.GLControl();
             this.ListEntries = new System.Windows.Forms.ListBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,14 +62,12 @@
             // 
             // glControl1
             // 
-            this.glControl1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.glControl1.BackColor = System.Drawing.Color.Black;
             this.glControl1.Location = new System.Drawing.Point(371, 27);
             this.glControl1.MaximumSize = new System.Drawing.Size(1024, 1024);
             this.glControl1.Name = "glControl1";
             this.glControl1.Size = new System.Drawing.Size(400, 400);
             this.glControl1.TabIndex = 0;
-            this.glControl1.VSync = false;
             this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             this.glControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseDown);
             this.glControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseMove);
@@ -329,7 +327,7 @@
 
         #endregion
 
-        private OpenTK.GLControl glControl1;
+        private OpenTK.WinForms.GLControl glControl1;
         private System.Windows.Forms.ListBox ListEntries;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.FolderBrowserDialog GameDirDialog;

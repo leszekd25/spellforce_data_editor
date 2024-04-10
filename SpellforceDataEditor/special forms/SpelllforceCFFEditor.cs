@@ -855,6 +855,14 @@ namespace SpellforceDataEditor.special_forms
         private void ElementSelect_DrawItem(object sender, DrawItemEventArgs e)
         {
             bool selected = ((e.State & DrawItemState.Selected) == DrawItemState.Selected);
+            // the check below didnt need to be there in .net framework, curious
+            if (selected)
+            {
+                if (!e.Bounds.IntersectsWith(((ListBoxNoFlicker)sender).ClientRectangle))
+                {
+                    return;
+                }
+            }
 
             int index = e.Index;
             if (index >= 0 && index < ElementSelect.Items.Count)
@@ -1934,8 +1942,9 @@ namespace SpellforceDataEditor.special_forms
                 int index = SFEngine.Utility.find_binary_index(current_indices, element_index);
                 if (index != -1)
                 {
-                    //ElementSelect.Items[index] = "";
+                    ElementSelect.SelectedIndexChanged -= ElementSelect_SelectedIndexChanged;
                     ElementSelect.Items[index] = CachedElementDisplays[ctg.category_id].get_element_string(element_index);
+                    ElementSelect.SelectedIndexChanged += ElementSelect_SelectedIndexChanged;
                 }
             }
         }

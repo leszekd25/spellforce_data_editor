@@ -1,24 +1,37 @@
-﻿using OpenTK;
+﻿using NAudio.Gui;
+using OpenTK.Mathematics;
 using System;
+using SFEngine;
+using SFEngine.SF3D;
+using SFEngine.SF3D.SceneSynchro;
+using SFEngine.SFMap;
+using SFEngine.SF3D.UI;
+using SFEngine.SFResources;
+using SFEngine.SF3D.SFRender;
+using SFEngine.SFCFF;
+using SFEngine.SFLua;
+using SFEngine.SFLua.lua_sql;
+using SFEngine.LogUtils;
 
-namespace SFEngine.SFMap
+namespace SpellforceDataEditor.SFMap
 {
     public class SFMapSelectionHelper
     {
         enum SelectionType { NONE, UNIT, BUILDING, OBJECT, INTERACTIVE_OBJECT, PORTAL, LAKE }
-
-        static SF3D.SFModel3D selection_mesh = null;
-        static SF3D.SFModel3D cursor_mesh = null;
-        SFMap map = null;
-        SF3D.SceneSynchro.SceneNodeSimple sel_obj = null;
-        SF3D.SceneSynchro.SceneNodeSimple cur_obj = null;
+        static SFModel3D selection_mesh = null;
+        static SFModel3D cursor_mesh = null;
+        static SFModel3D flood_visualizer_mesh = null;
+        SFEngine.SFMap.SFMap map = null;
+        SceneNodeSimple sel_obj = null;
+        SceneNodeSimple cur_obj = null;
+        SceneNodeSimple fld_obj = null;
         Vector2 offset = new Vector2(0, 0);
         SFCoord cursor_position = new SFCoord(0, 0);
 
         SFMapEntity selected_entity = null;
         SelectionType selection_type = SelectionType.NONE;
 
-        SF3D.SceneSynchro.SceneNode preview_entity = null;
+        SceneNode preview_entity = null;
         ushort preview_entity_angle = 0;
         ushort preview_unit_id = 0;
         ushort preview_building_id = 0;
@@ -26,11 +39,11 @@ namespace SFEngine.SFMap
         Vector2 preview_entity_offset = Vector2.Zero;
 
         // ui stuff
-        SF3D.UI.UIFont font_outline;
-        SF3D.UI.UIFont font_main;
+        UIFont font_outline;
+        UIFont font_main;
 
-        SF3D.UI.UIElementIndex label_name_outline;
-        SF3D.UI.UIElementIndex label_name;
+        UIElementIndex label_name_outline;
+        UIElementIndex label_name;
         string current_name = "";
         float current_name_width = 0.0f;
 
@@ -46,7 +59,7 @@ namespace SFEngine.SFMap
             uint[] indices;
 
             // generate mouse cursor selected position gizmo
-            cursor_mesh = new SF3D.SFModel3D();
+            cursor_mesh = new SFModel3D();
 
             float g = 0.06f;   // gizmo width
             float h = 20.0f;   // gizmo height
@@ -71,7 +84,7 @@ namespace SFEngine.SFMap
                                    0, 1, 4,   1, 5, 4,   1, 3, 5,   3, 7, 5,
                                    3, 2, 7,   2, 6, 7,   2, 0, 6,   0, 4, 6};
 
-            SF3D.SFSubModel3D sbm2 = new SF3D.SFSubModel3D();
+            SFSubModel3D sbm2 = new SFSubModel3D();
             sbm2.CreateRaw(vertices, uvs, colors, normals, indices, null);
             sbm2.material.apply_shading = false;
             sbm2.material.apply_shadow = false;
@@ -79,37 +92,83 @@ namespace SFEngine.SFMap
             sbm2.material.distance_fade = false;
             sbm2.material.transparent_pass = false;
 
-            cursor_mesh.CreateRaw(new SF3D.SFSubModel3D[] { sbm2 });
-            SFResources.SFResourceManager.Models.AddManually(cursor_mesh, "_CURSOR_");
+            cursor_mesh.CreateRaw(new SFSubModel3D[] { sbm2 });
+            SFResourceManager.Models.AddManually(cursor_mesh, "_CURSOR_");
+
+            // generate flood mesh
+            vertices = new Vector3[4];
+            uvs = new Vector2[4];
+            colors = new byte[16];
+            normals = new Vector3[4];
+            flood_visualizer_mesh = new SFModel3D();
+
+            vertices[0] = new Vector3(-1024, 0, 0);
+            vertices[1] = new Vector3(0, 0, 0);
+            vertices[2] = new Vector3(-1024, 0, 1024);
+            vertices[3] = new Vector3(0, 0, 1024);
+            for (int i = 0; i < 4; i++)
+            {
+                colors[4 * i + 0] = 0x55;
+                colors[4 * i + 1] = 0x88;
+                colors[4 * i + 2] = 0xBB;
+                colors[4 * i + 3] = 0xFF;
+                normals[i] = new Vector3(0.0f, 1.0f, 0.0f);
+            }
+
+            indices = new uint[] { 0, 1, 2,  2, 1, 3 };
+
+            SFSubModel3D sbm3 = new SFSubModel3D();
+            sbm3.CreateRaw(vertices, uvs, colors, normals, indices, null);
+            sbm3.material.apply_shading = true;
+            sbm3.material.apply_shadow = false;
+            sbm3.material.casts_shadow = false;
+            sbm3.material.distance_fade = false;
+            sbm3.material.transparent_pass = false;
+            sbm3.material.water_pass = false;
+
+            flood_visualizer_mesh.CreateRaw(new SFSubModel3D[] { sbm3 });
+            SFResourceManager.Models.AddManually(flood_visualizer_mesh, "_FLOOD_MESH_");
 
             // ui
-            font_outline = new SF3D.UI.UIFont() { space_between_letters = 2 };
+            font_outline = new UIFont() { space_between_letters = 2 };
             font_outline.Load("font_fonttable_0512_12px_outline_l9");
-            font_main = new SF3D.UI.UIFont() { space_between_letters = 2 };
+            font_main = new UIFont() { space_between_letters = 2 };
             font_main.Load("font_fonttable_0512_12px_l9");
 
-            SF3D.SFRender.SFRenderEngine.ui.AddStorage(font_outline.font_texture, 256);
-            SF3D.SFRender.SFRenderEngine.ui.AddStorage(font_main.font_texture, 256);
+            SFRenderEngine.ui.AddStorage(font_outline.font_texture, 256);
+            SFRenderEngine.ui.AddStorage(font_main.font_texture, 256);
 
-            label_name_outline = SF3D.SFRender.SFRenderEngine.ui.AddElementText(font_outline, 256, new Vector2(10, 25));
-            label_name = SF3D.SFRender.SFRenderEngine.ui.AddElementText(font_main, 256, new Vector2(10, 25));
+            label_name_outline = SFRenderEngine.ui.AddElementText(font_outline, 256, new Vector2(10, 25));
+            label_name = SFRenderEngine.ui.AddElementText(font_main, 256, new Vector2(10, 25));
 
             SetName("");
         }
 
-        public void AssignToMap(SFMap _map)
+        public void AssignToMap(SFEngine.SFMap.SFMap _map)
         {
             map = _map;
-            sel_obj = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(SF3D.SFRender.SFRenderEngine.scene.root, "_SELECTION_", "_SELECTION_");
+            sel_obj = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "_SELECTION_", "_SELECTION_");
             sel_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
-            cur_obj = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(SF3D.SFRender.SFRenderEngine.scene.root, "_CURSOR_", "_CURSOR_");
+            cur_obj = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "_CURSOR_", "_CURSOR_");
             cur_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
+            fld_obj = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "_FLOOD_MESH_", "_FLOOD_MESH_");
+            fld_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
+        }
+
+        public void SetFloodVisible(bool visible)
+        {
+            fld_obj.Visible = visible;
+        }
+
+        public void SetFloodHeight(float z)
+        {
+            fld_obj.Position = new Vector3(0, z, 0);
         }
 
         public void SetSelectionPosition(SFCoord pos)
         {
             float z = map.heightmap.GetZ(pos) / 100.0f;
-            sel_obj.Position = new OpenTK.Vector3((float)pos.x - offset.X, (float)z, (float)(map.height - pos.y - 1) + offset.Y);
+            sel_obj.Position = new Vector3((float)pos.x - offset.X, (float)z, (float)(map.height - pos.y - 1) + offset.Y);
         }
 
         public void SetSelectionVisibility(bool vis)
@@ -133,7 +192,7 @@ namespace SFEngine.SFMap
             offset = new Vector2(0, 0);
             selection_type = SelectionType.NONE;
 
-            SF3D.SFRender.SFRenderEngine.scene.selected_node = null;
+            SFRenderEngine.scene.selected_node = null;
 
             SetName("");
         }
@@ -145,9 +204,9 @@ namespace SFEngine.SFMap
             selected_entity = unit;
             SetSelectionScale(1.0f, 0.033f);
 
-            SF3D.SFRender.SFRenderEngine.scene.selected_node = unit.node;
+            SFRenderEngine.scene.selected_node = unit.node;
 
-            SetName(SFCFF.SFCategoryManager.GetUnitName((ushort)selected_entity.game_id, true));
+            SetName(SFCategoryManager.GetUnitName((ushort)selected_entity.game_id, true));
         }
 
         public void SelectBuilding(SFMapBuilding building)
@@ -157,7 +216,7 @@ namespace SFEngine.SFMap
             selected_entity = building;
 
             float sel_scale = 1.0f;
-            SFLua.lua_sql.SFLuaSQLBuildingData data = SFLua.SFLuaEnvironment.buildings[building.game_id];
+            SFLuaSQLBuildingData data = SFLuaEnvironment.buildings[building.game_id];
             if (data != null)
             {
                 sel_scale = Math.Max(1.0f, (float)(data.SelectionScaling));
@@ -165,9 +224,9 @@ namespace SFEngine.SFMap
 
             SetSelectionScale(sel_scale, 0.033f);
 
-            SF3D.SFRender.SFRenderEngine.scene.selected_node = building.node;
+            SFRenderEngine.scene.selected_node = building.node;
 
-            SetName(SFCFF.SFCategoryManager.GetBuildingName((ushort)selected_entity.game_id));
+            SetName(SFCategoryManager.GetBuildingName((ushort)selected_entity.game_id));
         }
 
         public void SelectObject(SFMapObject obj)
@@ -177,7 +236,7 @@ namespace SFEngine.SFMap
             selected_entity = obj;
 
             float sel_scale = 1.0f;
-            SFLua.lua_sql.SFLuaSQLObjectData data = SFLua.SFLuaEnvironment.objects[obj.game_id];
+            SFLuaSQLObjectData data = SFLuaEnvironment.objects[obj.game_id];
             if (data != null)
             {
                 sel_scale = Math.Max(1.0f, (float)data.SelectionScaling);
@@ -185,9 +244,9 @@ namespace SFEngine.SFMap
 
             SetSelectionScale(sel_scale, 0.033f);
 
-            SF3D.SFRender.SFRenderEngine.scene.selected_node = obj.node;
+            SFRenderEngine.scene.selected_node = obj.node;
 
-            SetName(SFCFF.SFCategoryManager.GetObjectName((ushort)selected_entity.game_id));
+            SetName(SFCategoryManager.GetObjectName((ushort)selected_entity.game_id));
         }
 
         public void SelectInteractiveObject(SFMapInteractiveObject io)
@@ -197,7 +256,7 @@ namespace SFEngine.SFMap
             selected_entity = io;
 
             float sel_scale = 1.0f;
-            SFLua.lua_sql.SFLuaSQLObjectData data = SFLua.SFLuaEnvironment.objects[io.game_id];
+            SFLuaSQLObjectData data = SFLuaEnvironment.objects[io.game_id];
             if (data != null)
             {
                 sel_scale = Math.Max(1.0f, (float)(data.SelectionScaling));
@@ -220,7 +279,7 @@ namespace SFEngine.SFMap
                     }
                     else
                     {
-                        SFCFF.SFCategoryElement elem = SFCFF.SFCategoryManager.FindElementText(
+                        SFCategoryElement elem = SFCategoryManager.FindElementText(
                             map.metadata.spawns[player].text_id, Settings.LanguageID);
                         if (elem == null)
                         {
@@ -235,10 +294,10 @@ namespace SFEngine.SFMap
             }
             else
             {
-                SetName(SFCFF.SFCategoryManager.GetObjectName((ushort)selected_entity.game_id));
+                SetName(SFCategoryManager.GetObjectName((ushort)selected_entity.game_id));
             }
 
-            SF3D.SFRender.SFRenderEngine.scene.selected_node = io.node;
+            SFRenderEngine.scene.selected_node = io.node;
         }
 
         public void SelectPortal(SFMapPortal p)
@@ -248,7 +307,7 @@ namespace SFEngine.SFMap
             selected_entity = p;
 
             float sel_scale = 1.0f;
-            SFLua.lua_sql.SFLuaSQLObjectData data = SFLua.SFLuaEnvironment.objects[778];
+            SFLuaSQLObjectData data = SFLuaEnvironment.objects[778];
             if (data != null)
             {
                 sel_scale = Math.Max(1.0f, (float)(data.SelectionScaling));
@@ -258,14 +317,14 @@ namespace SFEngine.SFMap
 
             string portal_name = Utility.S_MISSING;
             int portal_id = selected_entity.game_id;
-            int portal_index = SFCFF.SFCategoryManager.gamedata[2053].GetElementIndex(portal_id);
+            int portal_index = SFCategoryManager.gamedata[2053].GetElementIndex(portal_id);
             if (portal_index != -1)
             {
-                SFCFF.SFCategoryElement portal_data = SFCFF.SFCategoryManager.gamedata[2053][portal_index];
-                portal_name = SFCFF.SFCategoryManager.GetTextFromElement(portal_data, 5);
+                SFCategoryElement portal_data = SFCategoryManager.gamedata[2053][portal_index];
+                portal_name = SFCategoryManager.GetTextFromElement(portal_data, 5);
             }
 
-            SF3D.SFRender.SFRenderEngine.scene.selected_node = p.node;
+            SFRenderEngine.scene.selected_node = p.node;
 
             SetName(portal_name);
         }
@@ -275,7 +334,7 @@ namespace SFEngine.SFMap
             CancelSelection();
             selection_type = SelectionType.LAKE;
 
-            SF3D.SFRender.SFRenderEngine.scene.selected_node = lake.node;
+            SFRenderEngine.scene.selected_node = lake.node;
         }
 
         // should be run once per render tick
@@ -284,8 +343,8 @@ namespace SFEngine.SFMap
             // selection and ui stuff
             SetSelectionVisibility((selection_type != SelectionType.NONE) && (selection_type != SelectionType.LAKE));
 
-            SFMapHeightMap hmap = SF3D.SFRender.SFRenderEngine.scene.map.heightmap;
-            SF3D.SceneSynchro.SceneNodeCamera camera = SF3D.SFRender.SFRenderEngine.scene.camera;
+            SFMapHeightMap hmap = SFRenderEngine.scene.map.heightmap;
+            SceneNodeCamera camera = SFRenderEngine.scene.camera;
             Vector2 text_pos = new Vector2(0, 0);
 
             if (selected_entity != null)
@@ -315,8 +374,8 @@ namespace SFEngine.SFMap
 
             // todo: add more selection types
 
-            text_pos.X *= SF3D.SFRender.SFRenderEngine.render_size.X;
-            text_pos.Y *= SF3D.SFRender.SFRenderEngine.render_size.Y;
+            text_pos.X *= SFRenderEngine.render_size.X;
+            text_pos.Y *= SFRenderEngine.render_size.Y;
             text_pos.X = (float)Math.Floor(text_pos.X);
             text_pos.Y = (float)Math.Floor(text_pos.Y);
 
@@ -343,6 +402,11 @@ namespace SFEngine.SFMap
                     SetPreviewEntityGridPosition(pos);
                 }
 
+                if(fld_obj.visible)
+                {
+                    SetFloodHeight(z);
+                }
+
                 return true;
             }
             return false;
@@ -357,7 +421,7 @@ namespace SFEngine.SFMap
         {
             if (preview_entity != null)
             {
-                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(SF3D.SFRender.SFRenderEngine.scene.root.FindNode<SF3D.SceneSynchro.SceneNode>("_PREVIEW_"));
+                SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root.FindNode<SceneNode>("_PREVIEW_"));
                 preview_entity = null;
             }
 
@@ -366,7 +430,7 @@ namespace SFEngine.SFMap
         public void ResetPreview()
         {
             ClearPreview();
-            preview_entity = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeEmpty(SF3D.SFRender.SFRenderEngine.scene.root, "_PREVIEW_");
+            preview_entity = SFRenderEngine.scene.AddSceneNodeEmpty(SFRenderEngine.scene.root, "_PREVIEW_");
             preview_entity.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
 
             preview_entity_offset = Vector2.Zero;
@@ -384,20 +448,20 @@ namespace SFEngine.SFMap
             ResetPreview();
 
             // get unit
-            preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneUnit(unit_id, "_UNIT_" + unit_id.ToString()));
+            preview_entity.AddNode(SFRenderEngine.scene.AddSceneUnit(unit_id, "_UNIT_" + unit_id.ToString()));
 
-            int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
+            int unit_index = SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
             if (unit_index == -1)
             {
                 return;
             }
 
-            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
-            unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
+            SFCategoryElement unit_data = SFCategoryManager.gamedata[2024][unit_index];
+            unit_index = SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
             float unit_size = 1f;
             if (unit_index != -1)
             {
-                unit_data = SFCFF.SFCategoryManager.gamedata[2005][unit_index];
+                unit_data = SFCategoryManager.gamedata[2005][unit_index];
                 unit_size = Math.Max((ushort)unit_data[18], (ushort)40) / 100.0f;
             }
 
@@ -419,7 +483,7 @@ namespace SFEngine.SFMap
             ResetPreview();
 
             // get building
-            preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneBuilding(building_id, "_BUILDING_" + building_id.ToString()));
+            preview_entity.AddNode(SFRenderEngine.scene.AddSceneBuilding(building_id, "_BUILDING_" + building_id.ToString()));
             preview_entity.Scale = new Vector3(100 / 128f);
             map.building_manager.AddBuildingCollisionBoundary(building_id);
 
@@ -446,8 +510,8 @@ namespace SFEngine.SFMap
             map.object_manager.AddObjectCollisionBoundary(object_id);
 
             // get building
-            preview_entity.AddNode(SF3D.SFRender.SFRenderEngine.scene.AddSceneObject(object_id, "_OBJECT_" + object_id.ToString(), true, true));
-            preview_entity.Scale = new OpenTK.Vector3(100 / 128f);
+            preview_entity.AddNode(SFRenderEngine.scene.AddSceneObject(object_id, "_OBJECT_" + object_id.ToString(), true, true));
+            preview_entity.Scale = new Vector3(100 / 128f);
             SetPreviewEntityGridPosition(cursor_position);
 
             preview_object_id = object_id;
@@ -469,23 +533,23 @@ namespace SFEngine.SFMap
                 return;
             }
 
-            SF3D.SFRender.SFRenderEngine.ui.SetElementText(label_name_outline, font_outline, name);
-            SF3D.SFRender.SFRenderEngine.ui.SetElementText(label_name, font_main, name);
+            SFRenderEngine.ui.SetElementText(label_name_outline, font_outline, name);
+            SFRenderEngine.ui.SetElementText(label_name, font_main, name);
             current_name = name;
-            current_name_width = SF3D.SFRender.SFRenderEngine.ui.GetTextWidth(font_main, current_name);
+            current_name_width = SFRenderEngine.ui.GetTextWidth(font_main, current_name);
         }
 
         public void SetNamePosition(Vector2 pos)
         {
             pos.X -= current_name_width / 2;
-            SF3D.SFRender.SFRenderEngine.ui.MoveElement(label_name_outline, pos);
-            SF3D.SFRender.SFRenderEngine.ui.MoveElement(label_name, pos);
+            SFRenderEngine.ui.MoveElement(label_name_outline, pos);
+            SFRenderEngine.ui.MoveElement(label_name, pos);
         }
 
         public void GenerateSelectionMesh(float radius, float width)
         {
             // generate selection 3d model
-            SF3D.SFModel3D new_selection = new SF3D.SFModel3D();
+            SFModel3D new_selection = new SFModel3D();
 
             // torus of NxM vertices
             int bigcircle_resolution = 64;
@@ -527,7 +591,7 @@ namespace SFEngine.SFMap
                 }
             }
 
-            SF3D.SFSubModel3D sbm1 = new SF3D.SFSubModel3D();
+            SFSubModel3D sbm1 = new SFSubModel3D();
             sbm1.CreateRaw(vertices, uvs, colors, normals, indices, null);
             sbm1.material.apply_shading = false;
             sbm1.material.apply_shadow = false;
@@ -537,32 +601,35 @@ namespace SFEngine.SFMap
 
             if (sel_obj != null)
             {
-                SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(sel_obj);
-                SFResources.SFResourceManager.Models.Dispose(selection_mesh);
+                SFRenderEngine.scene.RemoveSceneNode(sel_obj);
+                SFResourceManager.Models.Dispose(selection_mesh);
             }
-            new_selection.CreateRaw(new SF3D.SFSubModel3D[] { sbm1 });
-            SFResources.SFResourceManager.Models.AddManually(new_selection, "_SELECTION_");
+            new_selection.CreateRaw(new SFSubModel3D[] { sbm1 });
+            SFResourceManager.Models.AddManually(new_selection, "_SELECTION_");
             selection_mesh = new_selection;
             if (sel_obj != null)
             {
-                SF3D.SFRender.SFRenderEngine.scene.root.AddNode(sel_obj);
+                SFRenderEngine.scene.root.AddNode(sel_obj);
                 sel_obj.Mesh = new_selection;
             }
         }
 
         public void Dispose()
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapSelectionHelper.Dispose() called");
-            SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(SF3D.SFRender.SFRenderEngine.scene.root.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("_SELECTION_"));
-            SF3D.SFRender.SFRenderEngine.scene.RemoveSceneNode(SF3D.SFRender.SFRenderEngine.scene.root.FindNode<SF3D.SceneSynchro.SceneNodeSimple>("_CURSOR_"));
-            SFResources.SFResourceManager.Models.Dispose(selection_mesh);
-            SFResources.SFResourceManager.Models.Dispose(cursor_mesh);
+            Log.Info(LogSource.SFMap, "SFMapSelectionHelper.Dispose() called");
+            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root.FindNode<SceneNodeSimple>("_SELECTION_"));
+            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root.FindNode<SceneNodeSimple>("_CURSOR_"));
+            SFRenderEngine.scene.RemoveSceneNode(SFRenderEngine.scene.root.FindNode<SceneNodeSimple>("_FLOOD_MESH_"));
+            SFResourceManager.Models.Dispose(selection_mesh);
+            SFResourceManager.Models.Dispose(cursor_mesh);
+            SFResourceManager.Models.Dispose(flood_visualizer_mesh);
             sel_obj = null;
             cur_obj = null;
+            fld_obj = null;
             ClearPreview();
 
-            SF3D.SFRender.SFRenderEngine.ui.RemoveStorage(font_outline.font_texture);
-            SF3D.SFRender.SFRenderEngine.ui.RemoveStorage(font_main.font_texture);
+            SFRenderEngine.ui.RemoveStorage(font_outline.font_texture);
+            SFRenderEngine.ui.RemoveStorage(font_main.font_texture);
             font_outline.Dispose();
             font_main.Dispose();
         }

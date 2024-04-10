@@ -1,4 +1,4 @@
-﻿using OpenTK;
+﻿using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
 using System;
 
@@ -42,8 +42,6 @@ namespace SFEngine.SFMap
             uint[] indices = { 0, 1, 2, 1, 3, 2 };
 
             SF3D.SFMaterial material = new SF3D.SFMaterial();
-            material.casts_shadow = false;
-
             string tex_name = "test_ocean_relief_4_l8";
             if (!SFResources.SFResourceManager.Textures.Load(tex_name, SFUnPak.FileSource.ANY, out material.texture, out int ec))
             {
@@ -52,7 +50,7 @@ namespace SFEngine.SFMap
             }
             else
             {
-                material.texture.SetWrapMode((int)OpenTK.Graphics.OpenGL.All.Repeat);
+                material.texture.SetWrapMode((int)All.Repeat);
             }
             material.casts_shadow = false;
             material.transparent_pass = false;

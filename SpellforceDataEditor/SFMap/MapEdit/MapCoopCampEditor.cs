@@ -76,7 +76,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         SFEngine.SF3D.SceneSynchro.SceneNode obj_node = map.object_manager.objects[obj_index].node;
 
                         string m = "editor_dummy_spawnpoint";
-                        SFEngine.SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.Name + "_SPAWNCIRCLE");
+                        SFEngine.SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(obj_node, m, obj_node.name + "_SPAWNCIRCLE");
 
                         ((map_controls.MapCoopCampInspector)MainForm.mapedittool.selected_inspector).LoadNextCoopCamp(map.metadata.coop_spawns.Count - 1);
                         Select(map.metadata.coop_spawns.Count - 1);

@@ -54,7 +54,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     }
                 }
 
-                MainForm.mapedittool.ui.RedrawMinimap();
+                MainForm.mapedittool.ui.RedrawMinimapFull();
             }
 
             TileBlocksMovement.Checked = map.heightmap.texture_manager.texture_tiledata[tile_index].blocks_movement;

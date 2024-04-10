@@ -4,7 +4,7 @@
  * Ray has maximum length provided, if the intersection happens further than the length, it will not be registered
  * */
 
-using OpenTK;
+using OpenTK.Mathematics;
 using System;
 
 namespace SFEngine.SF3D.Physics
@@ -131,7 +131,6 @@ namespace SFEngine.SF3D.Physics
             int cur_chunk_x = (int)(ray_xz.X / chunk_size);
             int cur_chunk_y = (int)(ray_xz.Y / chunk_size);
 
-            int map_w1 = hmap.width + 1;
             double tmin;
 
             bool horizontal_boundary = false;
@@ -179,17 +178,17 @@ namespace SFEngine.SF3D.Physics
 
                             int fixed_tile_y = hmap.height - cur_tile_y;
                             // check intersection with tile geometry (2 triangles)
-                            v1 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 1)) / 100.0f, cur_tile_y);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x];
-                            v2 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + 1];
-                            v3 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + - map_w1];
+                            v1 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
+                            v2 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
+                            v3 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
                             if (IntersectMollerTrumbore(v1, v2, v3, out point))
                             {
                                 return true;
                             }
 
-                            v1 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + 1];
-                            v2 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);// hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + - map_w1 + 1];
-                            v3 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1); //hmap.mesh.vertices[fixed_tile_y * map_w1 + cur_tile_x + - map_w1];
+                            v1 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
+                            v2 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
+                            v3 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
                             if (IntersectMollerTrumbore(v1, v2, v3, out point))
                             {
                                 return true;

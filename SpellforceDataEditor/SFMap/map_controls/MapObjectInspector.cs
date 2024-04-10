@@ -102,7 +102,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (o == null)
             {
-                map.selection_helper.CancelSelection();
+                selection_helper.CancelSelection();
                 PanelProperties.Enabled = false;
             }
             else
@@ -139,7 +139,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             AngleTrackbar.Value = obj.angle;
             Unknown1.Text = obj.unknown1.ToString();
 
-            map.selection_helper.SelectObject(obj);
+            selection_helper.SelectObject(obj);
             if ((move_camera_on_select) || (object_selected_from_list))
             {
                 MainForm.mapedittool.SetCameraViewPoint(obj.grid_position);

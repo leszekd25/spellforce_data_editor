@@ -1,4 +1,5 @@
-﻿using SFEngine.SF3D;
+﻿using OpenTK.Mathematics;
+using SFEngine.SF3D;
 using System;
 using System.Collections.Generic;
 
@@ -102,7 +103,7 @@ namespace SFEngine.SFMap
                     LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + game_id.ToString() + "), setting unit scale to 100%");
                 }
             }
-            unit.node.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
+            unit.node.Scale = new Vector3(unit_size * 100 / 128);
 
             if (Settings.DynamicMap)
             {
@@ -158,7 +159,7 @@ namespace SFEngine.SFMap
                     LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Could not find unit stats data (unit id = " + unit.game_id.ToString() + "), setting unit scale to 100%");
                 }
             }
-            unit.node.Scale = new OpenTK.Vector3(unit_size * 100 / 128);
+            unit.node.Scale = new Vector3(unit_size * 100 / 128);
 
             if (Settings.DynamicMap)
             {
@@ -309,7 +310,7 @@ namespace SFEngine.SFMap
                 }
                 else
                 {
-                    foreach (SF3D.SceneSynchro.SceneNodeAnimated anim_node in unit.node.Children)
+                    foreach (SF3D.SceneSynchro.SceneNodeAnimated anim_node in unit.node.children)
                     {
                         anim_node.SetAnimation(anim);
                         if (anim_node.Animation != null)

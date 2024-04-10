@@ -110,7 +110,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     }
                     else
                     {
-                        if (item_id == (short)(category[current_element, i][1]))
+                        if (item_id == (ushort)(category[current_element, i][1]))
                         {
                             cell.Value = variant_repr(i, 1);
                         }

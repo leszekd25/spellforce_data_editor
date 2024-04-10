@@ -2,7 +2,7 @@
  * UIQuadStorage holds all quad data which gets sent to GPU: vertices, uvs, colors
  * */
 
-using OpenTK;
+using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;

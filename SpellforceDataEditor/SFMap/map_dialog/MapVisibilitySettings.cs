@@ -1,4 +1,5 @@
-﻿using SFEngine.SF3D.SFRender;
+﻿using OpenTK.Mathematics;
+using SFEngine.SF3D.SFRender;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -122,7 +123,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
         {
             if (GridColorPicker.ShowDialog() == DialogResult.OK)
             {
-                SFEngine.Settings.GridColor = new OpenTK.Vector4(
+                SFEngine.Settings.GridColor = new Vector4(
                     GridColorPicker.Color.R,
                     GridColorPicker.Color.G,
                     GridColorPicker.Color.B,

@@ -5,7 +5,7 @@
  * Each node contains transform data which is updated only when needed
  * */
 
-using OpenTK;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 
@@ -13,9 +13,9 @@ namespace SFEngine.SF3D.SceneSynchro
 {
     public class SceneNode
     {
-        public string Name { get; set; } = "";
-        public SceneNode Parent { get; set; } = null;
-        public List<SceneNode> Children { get; protected set; } = new List<SceneNode>();
+        public string name = "";
+        public SceneNode parent = null;
+        public List<SceneNode> children = new List<SceneNode>();
 
         // if true, on the  next  update  local transform will be  updated
         protected Matrix4 local_transform = Matrix4.Identity;
@@ -39,9 +39,9 @@ namespace SFEngine.SF3D.SceneSynchro
                 {
                     visible = value;
                     OnVisibleSwitch();
-                    for(int i = 0; i < Children.Count; i++)
+                    for(int i = 0; i < children.Count; i++)
                     {
-                        Children[i].Visible = value;
+                        children[i].Visible = value;
                     }
                 }
             }
@@ -52,7 +52,7 @@ namespace SFEngine.SF3D.SceneSynchro
 
         public SceneNode(string n)
         {
-            Name = n;
+            name = n;
         }
 
         // adds a given node as a child of this node
@@ -63,8 +63,8 @@ namespace SFEngine.SF3D.SceneSynchro
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SceneNode.AddNode(): Node to add is null!");
                 return;
             }
-            Children.Add(node);
-            node.Parent = this;
+            children.Add(node);
+            node.parent = this;
             node.Visible = visible;
             if(node.visible)
             {
@@ -80,9 +80,9 @@ namespace SFEngine.SF3D.SceneSynchro
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SceneNode.RemoveNode(): Node to remove is null!");
                 return;
             }
-            node.Parent = null;
+            node.parent = null;
             node.Visible = false;
-            Children.Remove(node);
+            children.Remove(node);
         }
 
         // removes node from hierarchy based on provided path
@@ -91,16 +91,16 @@ namespace SFEngine.SF3D.SceneSynchro
             SceneNode n = FindNode<SceneNode>(path);
             if (n != null)
             {
-                n.Parent.RemoveNode(n);
+                n.parent.RemoveNode(n);
             }
         }
 
         // changes parent of this node from current parent to a given node
         public void SetParent(SceneNode node)
         {
-            if (Parent != null)
+            if (parent != null)
             {
-                Parent.RemoveNode(this);
+                parent.RemoveNode(this);
             }
 
             if (node != null)
@@ -129,7 +129,7 @@ namespace SFEngine.SF3D.SceneSynchro
             }
 
             needsanyupdate = true;
-            Parent?.TouchParents();
+            parent?.TouchParents();
         }
 
         // if one local transform changes, so must the result transform
@@ -155,9 +155,9 @@ namespace SFEngine.SF3D.SceneSynchro
 
             needsanyupdate = true;
             needsupdateresulttransform = true;
-            for(int i = 0; i < Children.Count; i++)
+            for(int i = 0; i < children.Count; i++)
             {
-                Children[i].TouchResultTransform();
+                children[i].TouchResultTransform();
             }
         }
 
@@ -168,9 +168,9 @@ namespace SFEngine.SF3D.SceneSynchro
             {
                 UpdateInternal(dt);
 
-                for (int i = 0; i < Children.Count; i++)
+                for (int i = 0; i < children.Count; i++)
                 {
-                    Children[i].Update(dt);
+                    children[i].Update(dt);
                 }
 
                 needsanyupdate = false;
@@ -191,9 +191,9 @@ namespace SFEngine.SF3D.SceneSynchro
 
             if (needsupdateresulttransform)
             {
-                if (Parent != null)
+                if (parent != null)
                 {
-                    result_transform = local_transform * Parent.result_transform;
+                    result_transform = local_transform * parent.result_transform;
                 }
                 else
                 {
@@ -208,9 +208,9 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             SetTimeInternal(t);
 
-            for (int i = 0; i < Children.Count; i++)
+            for (int i = 0; i < children.Count; i++)
             {
-                Children[i].SetTime(t);
+                children[i].SetTime(t);
             }
         }
 
@@ -227,13 +227,13 @@ namespace SFEngine.SF3D.SceneSynchro
         // finds a node of a given type, given a path to node
         public T FindNode<T>(string path) where T : SceneNode
         {
-            string[] names = (Name + '.' + path).Split('.');
+            string[] names = (name + '.' + path).Split('.');
             return FindNode<T>(names, 0);
         }
 
         private T FindNode<T>(string[] names, int current_index) where T : SceneNode
         {
-            if (names[current_index] == Name)
+            if (names[current_index] == name)
             {
                 if ((current_index == names.Length - 1) && (GetType() == typeof(T)))
                 {
@@ -241,9 +241,9 @@ namespace SFEngine.SF3D.SceneSynchro
                 }
 
                 T result = null;
-                for (int i = 0; i < Children.Count; i++)
+                for (int i = 0; i < children.Count; i++)
                 {
-                    result = Children[i].FindNode<T>(names, current_index + 1);
+                    result = children[i].FindNode<T>(names, current_index + 1);
                     if (result != null)
                     {
                         break;
@@ -257,12 +257,12 @@ namespace SFEngine.SF3D.SceneSynchro
         // returns full name of the node (recursive, slow)
         public string GetFullPath()
         {
-            if (Parent == null)
+            if (parent == null)
             {
-                return Name;
+                return name;
             }
 
-            return Parent.GetFullPath() + '.' + Name;
+            return parent.GetFullPath() + '.' + name;
         }
 
         // disposes node and all resources its using
@@ -270,14 +270,14 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             InternalDispose();
 
-            for (int i = 0; i < Children.Count; i++)
+            for (int i = 0; i < children.Count; i++)
             {
-                Children[i].Dispose();
+                children[i].Dispose();
             }
 
-            while (Children.Count != 0)
+            while (children.Count != 0)
             {
-                Children[0].SetParent(null);
+                children[0].SetParent(null);
             }
         }
 
@@ -288,7 +288,7 @@ namespace SFEngine.SF3D.SceneSynchro
 
         public override string ToString()
         {
-            return Name + " (" + Children.Count + " children)";
+            return name + " (" + children.Count + " children)";
         }
     }
 
@@ -419,9 +419,9 @@ namespace SFEngine.SF3D.SceneSynchro
 
                 if (needsupdateresulttransform)
                 {
-                    if (Parent != null)
+                    if (parent != null)
                     {
-                        result_transform = local_transform * Parent.result_transform;
+                        result_transform = local_transform * parent.result_transform;
                     }
                     else
                     {
@@ -604,6 +604,12 @@ namespace SFEngine.SF3D.SceneSynchro
                 BoneAnimationState.Multiply(ref skeleton.bone_inverted_state[i], ref bas, out bas);
                 bas.ToMatrix(out BoneTransforms[i]);
             }
+
+            // update bone nodes
+            for(int i = 0; i < children.Count; i++)
+            {
+                children[i].TouchResultTransform();
+            }
         }
 
         public void SetAnimationCurrentTime(float t)
@@ -668,9 +674,9 @@ namespace SFEngine.SF3D.SceneSynchro
 
                 if (needsupdateresulttransform)
                 {
-                    if (Parent != null)
+                    if (parent != null)
                     {
-                        result_transform = local_transform * Parent.result_transform;
+                        result_transform = local_transform * parent.result_transform;
                     }
                     else
                     {
@@ -766,12 +772,12 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             if (needsupdateresulttransform)
             {
-                SceneNodeAnimated pp = (SceneNodeAnimated)Parent;
+                SceneNodeAnimated pp = (SceneNodeAnimated)parent;
                 if (BoneIndex != Utility.NO_INDEX)
                 {
                     pp.Skeleton.bone_reference_state[BoneIndex].ToMatrix(out Matrix4 skel_ref);
 
-                    result_transform = local_transform * skel_ref * pp.BoneTransforms[BoneIndex] * Parent.result_transform;
+                    result_transform = local_transform * skel_ref * pp.BoneTransforms[BoneIndex] * parent.result_transform;
                 }
 
                 needsupdateresulttransform = false;
@@ -782,19 +788,19 @@ namespace SFEngine.SF3D.SceneSynchro
         public void SetBone(string name)
         {
             BoneIndex = Utility.NO_INDEX;
-            if (Parent == null)
+            if (parent == null)
             {
                 return;
             }
 
-            if (((SceneNodeAnimated)Parent).Skeleton == null)
+            if (((SceneNodeAnimated)parent).Skeleton == null)
             {
                 return;
             }
 
-            for (int i = 0; i < ((SceneNodeAnimated)Parent).Skeleton.bone_count; i++)
+            for (int i = 0; i < ((SceneNodeAnimated)parent).Skeleton.bone_count; i++)
             {
-                if (((SceneNodeAnimated)Parent).Skeleton.bone_names[i].Contains(name))
+                if (((SceneNodeAnimated)parent).Skeleton.bone_names[i].Contains(name))
                 {
                     BoneIndex = i;
                     return;
@@ -835,10 +841,10 @@ namespace SFEngine.SF3D.SceneSynchro
 
         private Vector3 lookat = new Vector3(0f, 1f, 0f);
         private Vector2 direction = Vector2.Zero;
-        private Matrix4 proj_matrix = new Matrix4();
+        private Matrix4 proj_matrix = Matrix4.Identity;
         private float aspect_ratio = 1;
-        private Matrix4 view_matrix = new Matrix4();
-        private Matrix4 viewproj_matrix = new Matrix4();
+        private Matrix4 view_matrix = Matrix4.Identity;
+        private Matrix4 viewproj_matrix = Matrix4.Identity;
 
         private Physics.Frustum frustum;
 

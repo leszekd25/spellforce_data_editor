@@ -28,2412 +28,2535 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createNewMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.operationHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.visibilitySettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.OpenMap = new System.Windows.Forms.OpenFileDialog();
-            this.DialogSaveMap = new System.Windows.Forms.SaveFileDialog();
-            this.StatusStrip = new System.Windows.Forms.ToolStrip();
-            this.StatusText = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.UpdatesText = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.SpecificText = new System.Windows.Forms.ToolStripLabel();
-            this.PanelInspector = new System.Windows.Forms.Panel();
-            this.TabPageDecorations = new System.Windows.Forms.TabPage();
-            this.label14 = new System.Windows.Forms.Label();
-            this.PanelDecalGroups = new System.Windows.Forms.Panel();
-            this.TabPageEntities = new System.Windows.Forms.TabPage();
-            this.EntityHidePreview = new System.Windows.Forms.CheckBox();
-            this.PanelMonumentType = new System.Windows.Forms.Panel();
-            this.MonumentHero = new System.Windows.Forms.RadioButton();
-            this.label15 = new System.Windows.Forms.Label();
-            this.MonumentHuman = new System.Windows.Forms.RadioButton();
-            this.MonumentElf = new System.Windows.Forms.RadioButton();
-            this.MonumentOrc = new System.Windows.Forms.RadioButton();
-            this.MonumentTroll = new System.Windows.Forms.RadioButton();
-            this.MonumentDwarf = new System.Windows.Forms.RadioButton();
-            this.MonumentDarkElf = new System.Windows.Forms.RadioButton();
-            this.EditCoopCampTypes = new System.Windows.Forms.Button();
-            this.PanelEntityPlacementSelect = new System.Windows.Forms.Panel();
-            this.EntityID = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.PanelObjectAngle = new System.Windows.Forms.Panel();
-            this.CheckRandomRange = new System.Windows.Forms.CheckBox();
-            this.AngleTrackbar = new System.Windows.Forms.TrackBar();
-            this.Angle = new System.Windows.Forms.TextBox();
-            this.label36 = new System.Windows.Forms.Label();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.RadioModeMonuments = new System.Windows.Forms.RadioButton();
-            this.label6 = new System.Windows.Forms.Label();
-            this.RadioEntityModeUnit = new System.Windows.Forms.RadioButton();
-            this.RadioEntityModeBuilding = new System.Windows.Forms.RadioButton();
-            this.RadioModeCoopCamps = new System.Windows.Forms.RadioButton();
-            this.RadioModeBindstones = new System.Windows.Forms.RadioButton();
-            this.RadioEntityModeObject = new System.Windows.Forms.RadioButton();
-            this.RadioModePortals = new System.Windows.Forms.RadioButton();
-            this.TabPageTextures = new System.Windows.Forms.TabPage();
-            this.ButtonModifyTextureSet = new System.Windows.Forms.Button();
-            this.PanelTileType = new System.Windows.Forms.Panel();
-            this.RadioTileTypeCustom = new System.Windows.Forms.RadioButton();
-            this.RadioTileTypeBase = new System.Windows.Forms.RadioButton();
-            this.label9 = new System.Windows.Forms.Label();
-            this.TabPageTerrain = new System.Windows.Forms.TabPage();
-            this.PanelLakeMode = new System.Windows.Forms.Panel();
-            this.RadioLakeSelect = new System.Windows.Forms.RadioButton();
-            this.RadioLakePaint = new System.Windows.Forms.RadioButton();
-            this.label38 = new System.Windows.Forms.Label();
-            this.PanelAtmoPreview = new System.Windows.Forms.Panel();
-            this.label37 = new System.Windows.Forms.Label();
-            this.SunAltitudeVal = new System.Windows.Forms.TextBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.SunAltitudeTrackbar = new System.Windows.Forms.TrackBar();
-            this.SunAzimuthVal = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.SunAzimuthTrackbar = new System.Windows.Forms.TrackBar();
-            this.PanelWeather = new System.Windows.Forms.Panel();
-            this.label35 = new System.Windows.Forms.Label();
-            this.label34 = new System.Windows.Forms.Label();
-            this.label33 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
-            this.label31 = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
-            this.label29 = new System.Windows.Forms.Label();
-            this.label28 = new System.Windows.Forms.Label();
-            this.WLavanight = new System.Windows.Forms.TextBox();
-            this.WSwampfog = new System.Windows.Forms.TextBox();
-            this.WDesertfog = new System.Windows.Forms.TextBox();
-            this.WLavafogBright = new System.Windows.Forms.TextBox();
-            this.WLavafog = new System.Windows.Forms.TextBox();
-            this.WStorm = new System.Windows.Forms.TextBox();
-            this.WCloud = new System.Windows.Forms.TextBox();
-            this.WClear = new System.Windows.Forms.TextBox();
-            this.label27 = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
-            this.PanelFlags = new System.Windows.Forms.Panel();
-            this.RadioFlagVision = new System.Windows.Forms.RadioButton();
-            this.RadioFlagMovement = new System.Windows.Forms.RadioButton();
-            this.label8 = new System.Windows.Forms.Label();
-            this.PanelBrushShape = new System.Windows.Forms.Panel();
-            this.BrushSizeVal = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.RadioDiamond = new System.Windows.Forms.RadioButton();
-            this.RadioCircle = new System.Windows.Forms.RadioButton();
-            this.RadioSquare = new System.Windows.Forms.RadioButton();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.BrushSizeTrackbar = new System.Windows.Forms.TrackBar();
-            this.PanelTerrainSettings = new System.Windows.Forms.Panel();
-            this.label5 = new System.Windows.Forms.Label();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.RadioIntSinusoidal = new System.Windows.Forms.RadioButton();
-            this.RadioIntSquare = new System.Windows.Forms.RadioButton();
-            this.RadioIntLinear = new System.Windows.Forms.RadioButton();
-            this.RadioIntConstant = new System.Windows.Forms.RadioButton();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.RadioModeSmooth = new System.Windows.Forms.RadioButton();
-            this.RadioModeSet = new System.Windows.Forms.RadioButton();
-            this.RadioModeRaise = new System.Windows.Forms.RadioButton();
-            this.label7 = new System.Windows.Forms.Label();
-            this.PanelStrength = new System.Windows.Forms.Panel();
-            this.TerrainValueLabel = new System.Windows.Forms.Label();
-            this.TerrainValue = new System.Windows.Forms.TextBox();
-            this.TerrainTrackbar = new System.Windows.Forms.TrackBar();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.RadioWeather = new System.Windows.Forms.RadioButton();
-            this.label1 = new System.Windows.Forms.Label();
-            this.RadioHMap = new System.Windows.Forms.RadioButton();
-            this.RadioFlags = new System.Windows.Forms.RadioButton();
-            this.RadioLakes = new System.Windows.Forms.RadioButton();
-            this.TabEditorModes = new System.Windows.Forms.TabControl();
-            this.TabPageMetadata = new System.Windows.Forms.TabPage();
-            this.ButtonMinimap = new System.Windows.Forms.Button();
-            this.ButtonTeams = new System.Windows.Forms.Button();
-            this.PanelCoopParams = new System.Windows.Forms.Panel();
-            this.label24 = new System.Windows.Forms.Label();
-            this.CoopSpawnParam34 = new System.Windows.Forms.TextBox();
-            this.label23 = new System.Windows.Forms.Label();
-            this.CoopSpawnParam33 = new System.Windows.Forms.TextBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.CoopSpawnParam32 = new System.Windows.Forms.TextBox();
-            this.label21 = new System.Windows.Forms.Label();
-            this.CoopSpawnParam24 = new System.Windows.Forms.TextBox();
-            this.label20 = new System.Windows.Forms.Label();
-            this.CoopSpawnParam23 = new System.Windows.Forms.TextBox();
-            this.label19 = new System.Windows.Forms.Label();
-            this.CoopSpawnParam22 = new System.Windows.Forms.TextBox();
-            this.label18 = new System.Windows.Forms.Label();
-            this.CoopSpawnParam14 = new System.Windows.Forms.TextBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.CoopSpawnParam13 = new System.Windows.Forms.TextBox();
-            this.CoopSpawnParam12 = new System.Windows.Forms.TextBox();
-            this.CoopSpawnParam31 = new System.Windows.Forms.TextBox();
-            this.CoopSpawnParam21 = new System.Windows.Forms.TextBox();
-            this.CoopSpawnParam11 = new System.Windows.Forms.TextBox();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.label16 = new System.Windows.Forms.Label();
-            this.MapTypeCampaign = new System.Windows.Forms.RadioButton();
-            this.MapTypeCoop = new System.Windows.Forms.RadioButton();
-            this.MapTypeMultiplayer = new System.Windows.Forms.RadioButton();
-            this.TabPageMask = new System.Windows.Forms.TabPage();
-            this.ButtonMaskClear = new System.Windows.Forms.Button();
-            this.ButtonMaskInvert = new System.Windows.Forms.Button();
-            this.PanelMaskFeature = new System.Windows.Forms.Panel();
-            this.ComboMaskFeature = new System.Windows.Forms.ComboBox();
-            this.label45 = new System.Windows.Forms.Label();
-            this.PanelMaskRandom = new System.Windows.Forms.Panel();
-            this.MaskRandomValue = new System.Windows.Forms.TextBox();
-            this.ButtonMaskRandomSeed = new System.Windows.Forms.Button();
-            this.LabelMaskRandom = new System.Windows.Forms.Label();
-            this.PanelMaskBorderType = new System.Windows.Forms.Panel();
-            this.RadioMaskBorderInner = new System.Windows.Forms.RadioButton();
-            this.RadioMaskBorderOuter = new System.Windows.Forms.RadioButton();
-            this.label44 = new System.Windows.Forms.Label();
-            this.PanelMaskAttribute = new System.Windows.Forms.Panel();
-            this.ComboMaskAttribute = new System.Windows.Forms.ComboBox();
-            this.label43 = new System.Windows.Forms.Label();
-            this.PanelMaskComparisonMode = new System.Windows.Forms.Panel();
-            this.ComboMaskSourceComparison = new System.Windows.Forms.ComboBox();
-            this.label42 = new System.Windows.Forms.Label();
-            this.PanelMaskSourceValue = new System.Windows.Forms.Panel();
-            this.MaskSourceValue = new System.Windows.Forms.TextBox();
-            this.LabelMaskSourceType = new System.Windows.Forms.Label();
-            this.ButtonSelectionApply = new System.Windows.Forms.Button();
-            this.label41 = new System.Windows.Forms.Label();
-            this.ComboSelectionOperation = new System.Windows.Forms.ComboBox();
-            this.ComboSelectionSource = new System.Windows.Forms.ComboBox();
-            this.label40 = new System.Windows.Forms.Label();
-            this.label39 = new System.Windows.Forms.Label();
-            this.ComboSelectionFilter = new System.Windows.Forms.ComboBox();
-            this.PanelUtility = new System.Windows.Forms.Panel();
-            this.TrackbarCameraSpeed = new System.Windows.Forms.TrackBar();
-            this.label25 = new System.Windows.Forms.Label();
-            this.TimerUpdatesPerSecond = new System.Windows.Forms.Timer(this.components);
-            this.PanelObjectSelector = new System.Windows.Forms.Panel();
-            this.TreeEntitytFilter = new System.Windows.Forms.TextBox();
-            this.TreeEntities = new System.Windows.Forms.TreeView();
-            this.TimerTreeEntityFilter = new System.Windows.Forms.Timer(this.components);
-            this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
-            this.QuickSelect = new SpellforceDataEditor.SFMap.map_controls.MapQuickSelectControl();
-            this.menuStrip1.SuspendLayout();
-            this.StatusStrip.SuspendLayout();
-            this.TabPageDecorations.SuspendLayout();
-            this.TabPageEntities.SuspendLayout();
-            this.PanelMonumentType.SuspendLayout();
-            this.PanelEntityPlacementSelect.SuspendLayout();
-            this.PanelObjectAngle.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.AngleTrackbar)).BeginInit();
-            this.panel5.SuspendLayout();
-            this.TabPageTextures.SuspendLayout();
-            this.PanelTileType.SuspendLayout();
-            this.TabPageTerrain.SuspendLayout();
-            this.PanelLakeMode.SuspendLayout();
-            this.PanelAtmoPreview.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SunAltitudeTrackbar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.SunAzimuthTrackbar)).BeginInit();
-            this.PanelWeather.SuspendLayout();
-            this.PanelFlags.SuspendLayout();
-            this.PanelBrushShape.SuspendLayout();
-            this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BrushSizeTrackbar)).BeginInit();
-            this.PanelTerrainSettings.SuspendLayout();
-            this.panel3.SuspendLayout();
-            this.panel4.SuspendLayout();
-            this.PanelStrength.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TerrainTrackbar)).BeginInit();
-            this.panel1.SuspendLayout();
-            this.TabEditorModes.SuspendLayout();
-            this.TabPageMetadata.SuspendLayout();
-            this.PanelCoopParams.SuspendLayout();
-            this.panel6.SuspendLayout();
-            this.TabPageMask.SuspendLayout();
-            this.PanelMaskFeature.SuspendLayout();
-            this.PanelMaskRandom.SuspendLayout();
-            this.PanelMaskBorderType.SuspendLayout();
-            this.PanelMaskAttribute.SuspendLayout();
-            this.PanelMaskComparisonMode.SuspendLayout();
-            this.PanelMaskSourceValue.SuspendLayout();
-            this.PanelUtility.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TrackbarCameraSpeed)).BeginInit();
-            this.PanelObjectSelector.SuspendLayout();
-            this.SuspendLayout();
+            components = new System.ComponentModel.Container();
+            menuStrip1 = new System.Windows.Forms.MenuStrip();
+            fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            createNewMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            saveMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            closeMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            operationHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            importHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exportHeightmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            visibilitySettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            OpenMap = new System.Windows.Forms.OpenFileDialog();
+            DialogSaveMap = new System.Windows.Forms.SaveFileDialog();
+            StatusStrip = new System.Windows.Forms.ToolStrip();
+            StatusText = new System.Windows.Forms.ToolStripLabel();
+            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            UpdatesText = new System.Windows.Forms.ToolStripLabel();
+            toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            SpecificText = new System.Windows.Forms.ToolStripLabel();
+            PanelInspector = new System.Windows.Forms.Panel();
+            TabPageDecorations = new System.Windows.Forms.TabPage();
+            label14 = new System.Windows.Forms.Label();
+            PanelDecalGroups = new System.Windows.Forms.Panel();
+            TabPageEntities = new System.Windows.Forms.TabPage();
+            QuickSelect = new SFMap.map_controls.MapQuickSelectControl();
+            EntityHidePreview = new System.Windows.Forms.CheckBox();
+            PanelMonumentType = new System.Windows.Forms.Panel();
+            MonumentHero = new System.Windows.Forms.RadioButton();
+            label15 = new System.Windows.Forms.Label();
+            MonumentHuman = new System.Windows.Forms.RadioButton();
+            MonumentElf = new System.Windows.Forms.RadioButton();
+            MonumentOrc = new System.Windows.Forms.RadioButton();
+            MonumentTroll = new System.Windows.Forms.RadioButton();
+            MonumentDwarf = new System.Windows.Forms.RadioButton();
+            MonumentDarkElf = new System.Windows.Forms.RadioButton();
+            EditCoopCampTypes = new System.Windows.Forms.Button();
+            PanelEntityPlacementSelect = new System.Windows.Forms.Panel();
+            EntityID = new System.Windows.Forms.TextBox();
+            label11 = new System.Windows.Forms.Label();
+            label10 = new System.Windows.Forms.Label();
+            PanelObjectAngle = new System.Windows.Forms.Panel();
+            CheckRandomRange = new System.Windows.Forms.CheckBox();
+            AngleTrackbar = new System.Windows.Forms.TrackBar();
+            Angle = new System.Windows.Forms.TextBox();
+            label36 = new System.Windows.Forms.Label();
+            panel5 = new System.Windows.Forms.Panel();
+            RadioModeMonuments = new System.Windows.Forms.RadioButton();
+            label6 = new System.Windows.Forms.Label();
+            RadioEntityModeUnit = new System.Windows.Forms.RadioButton();
+            RadioEntityModeBuilding = new System.Windows.Forms.RadioButton();
+            RadioModeCoopCamps = new System.Windows.Forms.RadioButton();
+            RadioModeBindstones = new System.Windows.Forms.RadioButton();
+            RadioEntityModeObject = new System.Windows.Forms.RadioButton();
+            RadioModePortals = new System.Windows.Forms.RadioButton();
+            TabPageTextures = new System.Windows.Forms.TabPage();
+            ButtonModifyTextureSet = new System.Windows.Forms.Button();
+            PanelTileType = new System.Windows.Forms.Panel();
+            RadioTileTypeCustom = new System.Windows.Forms.RadioButton();
+            RadioTileTypeBase = new System.Windows.Forms.RadioButton();
+            label9 = new System.Windows.Forms.Label();
+            TabPageTerrain = new System.Windows.Forms.TabPage();
+            PanelLakeMode = new System.Windows.Forms.Panel();
+            RadioLakeSelect = new System.Windows.Forms.RadioButton();
+            RadioLakeFlood = new System.Windows.Forms.RadioButton();
+            label38 = new System.Windows.Forms.Label();
+            PanelAtmoPreview = new System.Windows.Forms.Panel();
+            label37 = new System.Windows.Forms.Label();
+            SunAltitudeVal = new System.Windows.Forms.TextBox();
+            label13 = new System.Windows.Forms.Label();
+            SunAltitudeTrackbar = new System.Windows.Forms.TrackBar();
+            SunAzimuthVal = new System.Windows.Forms.TextBox();
+            label12 = new System.Windows.Forms.Label();
+            SunAzimuthTrackbar = new System.Windows.Forms.TrackBar();
+            PanelWeather = new System.Windows.Forms.Panel();
+            label35 = new System.Windows.Forms.Label();
+            label34 = new System.Windows.Forms.Label();
+            label33 = new System.Windows.Forms.Label();
+            label32 = new System.Windows.Forms.Label();
+            label31 = new System.Windows.Forms.Label();
+            label30 = new System.Windows.Forms.Label();
+            label29 = new System.Windows.Forms.Label();
+            label28 = new System.Windows.Forms.Label();
+            WLavanight = new System.Windows.Forms.TextBox();
+            WSwampfog = new System.Windows.Forms.TextBox();
+            WDesertfog = new System.Windows.Forms.TextBox();
+            WLavafogBright = new System.Windows.Forms.TextBox();
+            WLavafog = new System.Windows.Forms.TextBox();
+            WStorm = new System.Windows.Forms.TextBox();
+            WCloud = new System.Windows.Forms.TextBox();
+            WClear = new System.Windows.Forms.TextBox();
+            label27 = new System.Windows.Forms.Label();
+            label26 = new System.Windows.Forms.Label();
+            PanelFlags = new System.Windows.Forms.Panel();
+            RadioFlagVision = new System.Windows.Forms.RadioButton();
+            RadioFlagMovement = new System.Windows.Forms.RadioButton();
+            label8 = new System.Windows.Forms.Label();
+            PanelBrushShape = new System.Windows.Forms.Panel();
+            BrushSizeVal = new System.Windows.Forms.TextBox();
+            label3 = new System.Windows.Forms.Label();
+            panel2 = new System.Windows.Forms.Panel();
+            RadioDiamond = new System.Windows.Forms.RadioButton();
+            RadioCircle = new System.Windows.Forms.RadioButton();
+            RadioSquare = new System.Windows.Forms.RadioButton();
+            label4 = new System.Windows.Forms.Label();
+            label2 = new System.Windows.Forms.Label();
+            BrushSizeTrackbar = new System.Windows.Forms.TrackBar();
+            PanelTerrainSettings = new System.Windows.Forms.Panel();
+            label5 = new System.Windows.Forms.Label();
+            panel3 = new System.Windows.Forms.Panel();
+            RadioIntSinusoidal = new System.Windows.Forms.RadioButton();
+            RadioIntSquare = new System.Windows.Forms.RadioButton();
+            RadioIntLinear = new System.Windows.Forms.RadioButton();
+            RadioIntConstant = new System.Windows.Forms.RadioButton();
+            panel4 = new System.Windows.Forms.Panel();
+            RadioModeSmooth = new System.Windows.Forms.RadioButton();
+            RadioModeSet = new System.Windows.Forms.RadioButton();
+            RadioModeRaise = new System.Windows.Forms.RadioButton();
+            label7 = new System.Windows.Forms.Label();
+            PanelStrength = new System.Windows.Forms.Panel();
+            TerrainValueLabel = new System.Windows.Forms.Label();
+            TerrainValue = new System.Windows.Forms.TextBox();
+            TerrainTrackbar = new System.Windows.Forms.TrackBar();
+            panel1 = new System.Windows.Forms.Panel();
+            RadioWeather = new System.Windows.Forms.RadioButton();
+            label1 = new System.Windows.Forms.Label();
+            RadioHMap = new System.Windows.Forms.RadioButton();
+            RadioFlags = new System.Windows.Forms.RadioButton();
+            RadioLakes = new System.Windows.Forms.RadioButton();
+            TabEditorModes = new System.Windows.Forms.TabControl();
+            TabPageMetadata = new System.Windows.Forms.TabPage();
+            ButtonMinimap = new System.Windows.Forms.Button();
+            ButtonTeams = new System.Windows.Forms.Button();
+            PanelCoopParams = new System.Windows.Forms.Panel();
+            label24 = new System.Windows.Forms.Label();
+            CoopSpawnParam34 = new System.Windows.Forms.TextBox();
+            label23 = new System.Windows.Forms.Label();
+            CoopSpawnParam33 = new System.Windows.Forms.TextBox();
+            label22 = new System.Windows.Forms.Label();
+            CoopSpawnParam32 = new System.Windows.Forms.TextBox();
+            label21 = new System.Windows.Forms.Label();
+            CoopSpawnParam24 = new System.Windows.Forms.TextBox();
+            label20 = new System.Windows.Forms.Label();
+            CoopSpawnParam23 = new System.Windows.Forms.TextBox();
+            label19 = new System.Windows.Forms.Label();
+            CoopSpawnParam22 = new System.Windows.Forms.TextBox();
+            label18 = new System.Windows.Forms.Label();
+            CoopSpawnParam14 = new System.Windows.Forms.TextBox();
+            label17 = new System.Windows.Forms.Label();
+            CoopSpawnParam13 = new System.Windows.Forms.TextBox();
+            CoopSpawnParam12 = new System.Windows.Forms.TextBox();
+            CoopSpawnParam31 = new System.Windows.Forms.TextBox();
+            CoopSpawnParam21 = new System.Windows.Forms.TextBox();
+            CoopSpawnParam11 = new System.Windows.Forms.TextBox();
+            panel6 = new System.Windows.Forms.Panel();
+            label16 = new System.Windows.Forms.Label();
+            MapTypeCampaign = new System.Windows.Forms.RadioButton();
+            MapTypeCoop = new System.Windows.Forms.RadioButton();
+            MapTypeMultiplayer = new System.Windows.Forms.RadioButton();
+            TabPageMask = new System.Windows.Forms.TabPage();
+            ButtonMaskClear = new System.Windows.Forms.Button();
+            ButtonMaskInvert = new System.Windows.Forms.Button();
+            PanelMaskFeature = new System.Windows.Forms.Panel();
+            ComboMaskFeature = new System.Windows.Forms.ComboBox();
+            label45 = new System.Windows.Forms.Label();
+            PanelMaskRandom = new System.Windows.Forms.Panel();
+            MaskRandomValue = new System.Windows.Forms.TextBox();
+            ButtonMaskRandomSeed = new System.Windows.Forms.Button();
+            LabelMaskRandom = new System.Windows.Forms.Label();
+            PanelMaskBorderType = new System.Windows.Forms.Panel();
+            RadioMaskBorderInner = new System.Windows.Forms.RadioButton();
+            RadioMaskBorderOuter = new System.Windows.Forms.RadioButton();
+            label44 = new System.Windows.Forms.Label();
+            PanelMaskAttribute = new System.Windows.Forms.Panel();
+            ComboMaskAttribute = new System.Windows.Forms.ComboBox();
+            label43 = new System.Windows.Forms.Label();
+            PanelMaskComparisonMode = new System.Windows.Forms.Panel();
+            ComboMaskSourceComparison = new System.Windows.Forms.ComboBox();
+            label42 = new System.Windows.Forms.Label();
+            PanelMaskSourceValue = new System.Windows.Forms.Panel();
+            MaskSourceValue = new System.Windows.Forms.TextBox();
+            LabelMaskSourceType = new System.Windows.Forms.Label();
+            ButtonSelectionApply = new System.Windows.Forms.Button();
+            label41 = new System.Windows.Forms.Label();
+            ComboSelectionOperation = new System.Windows.Forms.ComboBox();
+            ComboSelectionSource = new System.Windows.Forms.ComboBox();
+            label40 = new System.Windows.Forms.Label();
+            label39 = new System.Windows.Forms.Label();
+            ComboSelectionFilter = new System.Windows.Forms.ComboBox();
+            PanelUtility = new System.Windows.Forms.Panel();
+            TrackbarCameraSpeed = new System.Windows.Forms.TrackBar();
+            label25 = new System.Windows.Forms.Label();
+            TimerUpdatesPerSecond = new System.Windows.Forms.Timer(components);
+            PanelObjectSelector = new System.Windows.Forms.Panel();
+            TreeEntitytFilter = new System.Windows.Forms.TextBox();
+            TreeEntities = new System.Windows.Forms.TreeView();
+            TimerTreeEntityFilter = new System.Windows.Forms.Timer(components);
+            TimerAnimation = new System.Windows.Forms.Timer(components);
+            menuStrip1.SuspendLayout();
+            StatusStrip.SuspendLayout();
+            TabPageDecorations.SuspendLayout();
+            TabPageEntities.SuspendLayout();
+            PanelMonumentType.SuspendLayout();
+            PanelEntityPlacementSelect.SuspendLayout();
+            PanelObjectAngle.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)AngleTrackbar).BeginInit();
+            panel5.SuspendLayout();
+            TabPageTextures.SuspendLayout();
+            PanelTileType.SuspendLayout();
+            TabPageTerrain.SuspendLayout();
+            PanelLakeMode.SuspendLayout();
+            PanelAtmoPreview.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)SunAltitudeTrackbar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)SunAzimuthTrackbar).BeginInit();
+            PanelWeather.SuspendLayout();
+            PanelFlags.SuspendLayout();
+            PanelBrushShape.SuspendLayout();
+            panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)BrushSizeTrackbar).BeginInit();
+            PanelTerrainSettings.SuspendLayout();
+            panel3.SuspendLayout();
+            panel4.SuspendLayout();
+            PanelStrength.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)TerrainTrackbar).BeginInit();
+            panel1.SuspendLayout();
+            TabEditorModes.SuspendLayout();
+            TabPageMetadata.SuspendLayout();
+            PanelCoopParams.SuspendLayout();
+            panel6.SuspendLayout();
+            TabPageMask.SuspendLayout();
+            PanelMaskFeature.SuspendLayout();
+            PanelMaskRandom.SuspendLayout();
+            PanelMaskBorderType.SuspendLayout();
+            PanelMaskAttribute.SuspendLayout();
+            PanelMaskComparisonMode.SuspendLayout();
+            PanelMaskSourceValue.SuspendLayout();
+            PanelUtility.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)TrackbarCameraSpeed).BeginInit();
+            PanelObjectSelector.SuspendLayout();
+            SuspendLayout();
             // 
             // menuStrip1
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.editToolStripMenuItem,
-            this.toolsToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1100, 24);
-            this.menuStrip1.TabIndex = 0;
-            this.menuStrip1.Text = "menuStrip1";
+            menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem, toolsToolStripMenuItem });
+            menuStrip1.Location = new System.Drawing.Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+            menuStrip1.Size = new System.Drawing.Size(1283, 24);
+            menuStrip1.TabIndex = 0;
+            menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createNewMapToolStripMenuItem,
-            this.loadToolStripMenuItem,
-            this.saveMapToolStripMenuItem,
-            this.closeMapToolStripMenuItem,
-            this.exitToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
+            fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { createNewMapToolStripMenuItem, loadToolStripMenuItem, saveMapToolStripMenuItem, closeMapToolStripMenuItem, exitToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            fileToolStripMenuItem.Text = "File";
             // 
             // createNewMapToolStripMenuItem
             // 
-            this.createNewMapToolStripMenuItem.Name = "createNewMapToolStripMenuItem";
-            this.createNewMapToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.createNewMapToolStripMenuItem.Text = "Create new map";
-            this.createNewMapToolStripMenuItem.Click += new System.EventHandler(this.createNewMapToolStripMenuItem_Click);
+            createNewMapToolStripMenuItem.Name = "createNewMapToolStripMenuItem";
+            createNewMapToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            createNewMapToolStripMenuItem.Text = "Create new map";
+            createNewMapToolStripMenuItem.Click += createNewMapToolStripMenuItem_Click;
             // 
             // loadToolStripMenuItem
             // 
-            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.loadToolStripMenuItem.Text = "Load map";
-            this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
+            loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            loadToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            loadToolStripMenuItem.Text = "Load map";
+            loadToolStripMenuItem.Click += loadToolStripMenuItem_Click;
             // 
             // saveMapToolStripMenuItem
             // 
-            this.saveMapToolStripMenuItem.Name = "saveMapToolStripMenuItem";
-            this.saveMapToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.saveMapToolStripMenuItem.Text = "Save map";
-            this.saveMapToolStripMenuItem.Click += new System.EventHandler(this.saveMapToolStripMenuItem_Click);
+            saveMapToolStripMenuItem.Name = "saveMapToolStripMenuItem";
+            saveMapToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            saveMapToolStripMenuItem.Text = "Save map";
+            saveMapToolStripMenuItem.Click += saveMapToolStripMenuItem_Click;
             // 
             // closeMapToolStripMenuItem
             // 
-            this.closeMapToolStripMenuItem.Name = "closeMapToolStripMenuItem";
-            this.closeMapToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.closeMapToolStripMenuItem.Text = "Close map";
-            this.closeMapToolStripMenuItem.Click += new System.EventHandler(this.closeMapToolStripMenuItem_Click);
+            closeMapToolStripMenuItem.Name = "closeMapToolStripMenuItem";
+            closeMapToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            closeMapToolStripMenuItem.Text = "Close map";
+            closeMapToolStripMenuItem.Click += closeMapToolStripMenuItem_Click;
             // 
             // exitToolStripMenuItem
             // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            exitToolStripMenuItem.Text = "Exit";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
             // 
             // editToolStripMenuItem
             // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.undoToolStripMenuItem,
-            this.redoToolStripMenuItem,
-            this.operationHistoryToolStripMenuItem});
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.editToolStripMenuItem.Text = "Edit";
+            editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { undoToolStripMenuItem, redoToolStripMenuItem, operationHistoryToolStripMenuItem });
+            editToolStripMenuItem.Name = "editToolStripMenuItem";
+            editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            editToolStripMenuItem.Text = "Edit";
             // 
             // undoToolStripMenuItem
             // 
-            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.undoToolStripMenuItem.Text = "Undo";
-            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
+            undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            undoToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z;
+            undoToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            undoToolStripMenuItem.Text = "Undo";
+            undoToolStripMenuItem.Click += undoToolStripMenuItem_Click;
             // 
             // redoToolStripMenuItem
             // 
-            this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.redoToolStripMenuItem.Text = "Redo";
-            this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
+            redoToolStripMenuItem.Name = "redoToolStripMenuItem";
+            redoToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y;
+            redoToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            redoToolStripMenuItem.Text = "Redo";
+            redoToolStripMenuItem.Click += redoToolStripMenuItem_Click;
             // 
             // operationHistoryToolStripMenuItem
             // 
-            this.operationHistoryToolStripMenuItem.Name = "operationHistoryToolStripMenuItem";
-            this.operationHistoryToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.operationHistoryToolStripMenuItem.Text = "Operation history...";
-            this.operationHistoryToolStripMenuItem.Click += new System.EventHandler(this.operationHistoryToolStripMenuItem_Click);
+            operationHistoryToolStripMenuItem.Name = "operationHistoryToolStripMenuItem";
+            operationHistoryToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            operationHistoryToolStripMenuItem.Text = "Operation history...";
+            operationHistoryToolStripMenuItem.Click += operationHistoryToolStripMenuItem_Click;
             // 
             // toolsToolStripMenuItem
             // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.importHeightmapToolStripMenuItem,
-            this.exportHeightmapToolStripMenuItem,
-            this.visibilitySettingsToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
-            this.toolsToolStripMenuItem.Text = "Tools";
+            toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { importHeightmapToolStripMenuItem, exportHeightmapToolStripMenuItem, visibilitySettingsToolStripMenuItem });
+            toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
+            toolsToolStripMenuItem.Text = "Tools";
             // 
             // importHeightmapToolStripMenuItem
             // 
-            this.importHeightmapToolStripMenuItem.Name = "importHeightmapToolStripMenuItem";
-            this.importHeightmapToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-            this.importHeightmapToolStripMenuItem.Text = "Import heightmap";
-            this.importHeightmapToolStripMenuItem.Click += new System.EventHandler(this.importHeightmapToolStripMenuItem_Click);
+            importHeightmapToolStripMenuItem.Name = "importHeightmapToolStripMenuItem";
+            importHeightmapToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            importHeightmapToolStripMenuItem.Text = "Import heightmap";
+            importHeightmapToolStripMenuItem.Click += importHeightmapToolStripMenuItem_Click;
             // 
             // exportHeightmapToolStripMenuItem
             // 
-            this.exportHeightmapToolStripMenuItem.Name = "exportHeightmapToolStripMenuItem";
-            this.exportHeightmapToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-            this.exportHeightmapToolStripMenuItem.Text = "Export heightmap";
-            this.exportHeightmapToolStripMenuItem.Click += new System.EventHandler(this.exportHeightmapToolStripMenuItem_Click);
+            exportHeightmapToolStripMenuItem.Name = "exportHeightmapToolStripMenuItem";
+            exportHeightmapToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            exportHeightmapToolStripMenuItem.Text = "Export heightmap";
+            exportHeightmapToolStripMenuItem.Click += exportHeightmapToolStripMenuItem_Click;
             // 
             // visibilitySettingsToolStripMenuItem
             // 
-            this.visibilitySettingsToolStripMenuItem.Name = "visibilitySettingsToolStripMenuItem";
-            this.visibilitySettingsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-            this.visibilitySettingsToolStripMenuItem.Text = "Visibility settings";
-            this.visibilitySettingsToolStripMenuItem.Click += new System.EventHandler(this.visibilitySettingsToolStripMenuItem_Click);
+            visibilitySettingsToolStripMenuItem.Name = "visibilitySettingsToolStripMenuItem";
+            visibilitySettingsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            visibilitySettingsToolStripMenuItem.Text = "Visibility settings";
+            visibilitySettingsToolStripMenuItem.Click += visibilitySettingsToolStripMenuItem_Click;
             // 
             // OpenMap
             // 
-            this.OpenMap.DefaultExt = "map";
-            this.OpenMap.Filter = "Map file|*.map";
+            OpenMap.DefaultExt = "map";
+            OpenMap.Filter = "Map file|*.map";
             // 
             // DialogSaveMap
             // 
-            this.DialogSaveMap.DefaultExt = "map";
-            this.DialogSaveMap.Filter = "Map file | *.map";
+            DialogSaveMap.DefaultExt = "map";
+            DialogSaveMap.Filter = "Map file | *.map";
             // 
             // StatusStrip
             // 
-            this.StatusStrip.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.StatusText,
-            this.toolStripSeparator1,
-            this.UpdatesText,
-            this.toolStripSeparator2,
-            this.SpecificText});
-            this.StatusStrip.Location = new System.Drawing.Point(0, 643);
-            this.StatusStrip.Name = "StatusStrip";
-            this.StatusStrip.Size = new System.Drawing.Size(1100, 25);
-            this.StatusStrip.TabIndex = 6;
-            this.StatusStrip.Text = "toolStrip1";
+            StatusStrip.Dock = System.Windows.Forms.DockStyle.Bottom;
+            StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { StatusText, toolStripSeparator1, UpdatesText, toolStripSeparator2, SpecificText });
+            StatusStrip.Location = new System.Drawing.Point(0, 746);
+            StatusStrip.Name = "StatusStrip";
+            StatusStrip.Size = new System.Drawing.Size(1283, 25);
+            StatusStrip.TabIndex = 6;
+            StatusStrip.Text = "toolStrip1";
             // 
             // StatusText
             // 
-            this.StatusText.Name = "StatusText";
-            this.StatusText.Size = new System.Drawing.Size(0, 22);
+            StatusText.Name = "StatusText";
+            StatusText.Size = new System.Drawing.Size(0, 22);
             // 
             // toolStripSeparator1
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
             // UpdatesText
             // 
-            this.UpdatesText.Name = "UpdatesText";
-            this.UpdatesText.Size = new System.Drawing.Size(0, 22);
+            UpdatesText.Name = "UpdatesText";
+            UpdatesText.Size = new System.Drawing.Size(0, 22);
             // 
             // toolStripSeparator2
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // SpecificText
             // 
-            this.SpecificText.Name = "SpecificText";
-            this.SpecificText.Size = new System.Drawing.Size(0, 22);
+            SpecificText.Name = "SpecificText";
+            SpecificText.Size = new System.Drawing.Size(0, 22);
             // 
             // PanelInspector
             // 
-            this.PanelInspector.Location = new System.Drawing.Point(822, 172);
-            this.PanelInspector.Name = "PanelInspector";
-            this.PanelInspector.Size = new System.Drawing.Size(274, 467);
-            this.PanelInspector.TabIndex = 8;
+            PanelInspector.Location = new System.Drawing.Point(959, 198);
+            PanelInspector.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelInspector.Name = "PanelInspector";
+            PanelInspector.Size = new System.Drawing.Size(320, 539);
+            PanelInspector.TabIndex = 8;
             // 
             // TabPageDecorations
             // 
-            this.TabPageDecorations.Controls.Add(this.label14);
-            this.TabPageDecorations.Controls.Add(this.PanelDecalGroups);
-            this.TabPageDecorations.Location = new System.Drawing.Point(4, 25);
-            this.TabPageDecorations.Name = "TabPageDecorations";
-            this.TabPageDecorations.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPageDecorations.Size = new System.Drawing.Size(1092, 114);
-            this.TabPageDecorations.TabIndex = 4;
-            this.TabPageDecorations.Text = "Decorations";
-            this.TabPageDecorations.UseVisualStyleBackColor = true;
+            TabPageDecorations.Controls.Add(label14);
+            TabPageDecorations.Controls.Add(PanelDecalGroups);
+            TabPageDecorations.Location = new System.Drawing.Point(4, 25);
+            TabPageDecorations.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TabPageDecorations.Name = "TabPageDecorations";
+            TabPageDecorations.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TabPageDecorations.Size = new System.Drawing.Size(1275, 136);
+            TabPageDecorations.TabIndex = 4;
+            TabPageDecorations.Text = "Decorations";
+            TabPageDecorations.UseVisualStyleBackColor = true;
             // 
             // label14
             // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(582, 0);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(94, 13);
-            this.label14.TabIndex = 0;
-            this.label14.Text = "Decoration groups";
+            label14.AutoSize = true;
+            label14.Location = new System.Drawing.Point(679, 0);
+            label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label14.Name = "label14";
+            label14.Size = new System.Drawing.Size(105, 15);
+            label14.TabIndex = 0;
+            label14.Text = "Decoration groups";
             // 
             // PanelDecalGroups
             // 
-            this.PanelDecalGroups.AutoScroll = true;
-            this.PanelDecalGroups.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.PanelDecalGroups.Location = new System.Drawing.Point(366, 15);
-            this.PanelDecalGroups.Name = "PanelDecalGroups";
-            this.PanelDecalGroups.Size = new System.Drawing.Size(512, 99);
-            this.PanelDecalGroups.TabIndex = 0;
+            PanelDecalGroups.AutoScroll = true;
+            PanelDecalGroups.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            PanelDecalGroups.Location = new System.Drawing.Point(427, 17);
+            PanelDecalGroups.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelDecalGroups.Name = "PanelDecalGroups";
+            PanelDecalGroups.Size = new System.Drawing.Size(597, 114);
+            PanelDecalGroups.TabIndex = 0;
             // 
             // TabPageEntities
             // 
-            this.TabPageEntities.Controls.Add(this.QuickSelect);
-            this.TabPageEntities.Controls.Add(this.EntityHidePreview);
-            this.TabPageEntities.Controls.Add(this.PanelMonumentType);
-            this.TabPageEntities.Controls.Add(this.EditCoopCampTypes);
-            this.TabPageEntities.Controls.Add(this.PanelEntityPlacementSelect);
-            this.TabPageEntities.Controls.Add(this.panel5);
-            this.TabPageEntities.Location = new System.Drawing.Point(4, 25);
-            this.TabPageEntities.Name = "TabPageEntities";
-            this.TabPageEntities.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPageEntities.Size = new System.Drawing.Size(1092, 114);
-            this.TabPageEntities.TabIndex = 2;
-            this.TabPageEntities.Text = "Entities";
-            this.TabPageEntities.UseVisualStyleBackColor = true;
-            // 
-            // EntityHidePreview
-            // 
-            this.EntityHidePreview.AutoSize = true;
-            this.EntityHidePreview.Location = new System.Drawing.Point(730, 94);
-            this.EntityHidePreview.Name = "EntityHidePreview";
-            this.EntityHidePreview.Size = new System.Drawing.Size(88, 17);
-            this.EntityHidePreview.TabIndex = 14;
-            this.EntityHidePreview.Text = "Hide preview";
-            this.EntityHidePreview.UseVisualStyleBackColor = true;
-            this.EntityHidePreview.CheckedChanged += new System.EventHandler(this.EntityHidePreview_CheckedChanged);
-            // 
-            // PanelMonumentType
-            // 
-            this.PanelMonumentType.Controls.Add(this.MonumentHero);
-            this.PanelMonumentType.Controls.Add(this.label15);
-            this.PanelMonumentType.Controls.Add(this.MonumentHuman);
-            this.PanelMonumentType.Controls.Add(this.MonumentElf);
-            this.PanelMonumentType.Controls.Add(this.MonumentOrc);
-            this.PanelMonumentType.Controls.Add(this.MonumentTroll);
-            this.PanelMonumentType.Controls.Add(this.MonumentDwarf);
-            this.PanelMonumentType.Controls.Add(this.MonumentDarkElf);
-            this.PanelMonumentType.Location = new System.Drawing.Point(580, 3);
-            this.PanelMonumentType.Name = "PanelMonumentType";
-            this.PanelMonumentType.Size = new System.Drawing.Size(144, 108);
-            this.PanelMonumentType.TabIndex = 13;
-            this.PanelMonumentType.Visible = false;
-            // 
-            // MonumentHero
-            // 
-            this.MonumentHero.AutoSize = true;
-            this.MonumentHero.Checked = true;
-            this.MonumentHero.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.MonumentHero.Location = new System.Drawing.Point(79, 85);
-            this.MonumentHero.Name = "MonumentHero";
-            this.MonumentHero.Size = new System.Drawing.Size(48, 17);
-            this.MonumentHero.TabIndex = 12;
-            this.MonumentHero.TabStop = true;
-            this.MonumentHero.Text = "Hero";
-            this.MonumentHero.UseVisualStyleBackColor = true;
-            this.MonumentHero.CheckedChanged += new System.EventHandler(this.MonumentHero_CheckedChanged);
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(28, 0);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(80, 13);
-            this.label15.TabIndex = 11;
-            this.label15.Text = "Monument type";
-            // 
-            // MonumentHuman
-            // 
-            this.MonumentHuman.AutoSize = true;
-            this.MonumentHuman.Location = new System.Drawing.Point(3, 16);
-            this.MonumentHuman.Name = "MonumentHuman";
-            this.MonumentHuman.Size = new System.Drawing.Size(59, 17);
-            this.MonumentHuman.TabIndex = 8;
-            this.MonumentHuman.Text = "Human";
-            this.MonumentHuman.UseVisualStyleBackColor = true;
-            this.MonumentHuman.CheckedChanged += new System.EventHandler(this.MonumentHuman_CheckedChanged);
-            // 
-            // MonumentElf
-            // 
-            this.MonumentElf.AutoSize = true;
-            this.MonumentElf.Location = new System.Drawing.Point(3, 39);
-            this.MonumentElf.Name = "MonumentElf";
-            this.MonumentElf.Size = new System.Drawing.Size(37, 17);
-            this.MonumentElf.TabIndex = 9;
-            this.MonumentElf.Text = "Elf";
-            this.MonumentElf.UseVisualStyleBackColor = true;
-            this.MonumentElf.CheckedChanged += new System.EventHandler(this.MonumentElf_CheckedChanged);
-            // 
-            // MonumentOrc
-            // 
-            this.MonumentOrc.AutoSize = true;
-            this.MonumentOrc.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.MonumentOrc.Location = new System.Drawing.Point(79, 16);
-            this.MonumentOrc.Name = "MonumentOrc";
-            this.MonumentOrc.Size = new System.Drawing.Size(42, 17);
-            this.MonumentOrc.TabIndex = 8;
-            this.MonumentOrc.Text = "Orc";
-            this.MonumentOrc.UseVisualStyleBackColor = true;
-            this.MonumentOrc.CheckedChanged += new System.EventHandler(this.MonumentOrc_CheckedChanged);
-            // 
-            // MonumentTroll
-            // 
-            this.MonumentTroll.AutoSize = true;
-            this.MonumentTroll.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.MonumentTroll.Location = new System.Drawing.Point(79, 39);
-            this.MonumentTroll.Name = "MonumentTroll";
-            this.MonumentTroll.Size = new System.Drawing.Size(45, 17);
-            this.MonumentTroll.TabIndex = 9;
-            this.MonumentTroll.Text = "Troll";
-            this.MonumentTroll.UseVisualStyleBackColor = true;
-            this.MonumentTroll.CheckedChanged += new System.EventHandler(this.MonumentTroll_CheckedChanged);
-            // 
-            // MonumentDwarf
-            // 
-            this.MonumentDwarf.AutoSize = true;
-            this.MonumentDwarf.Location = new System.Drawing.Point(3, 62);
-            this.MonumentDwarf.Name = "MonumentDwarf";
-            this.MonumentDwarf.Size = new System.Drawing.Size(53, 17);
-            this.MonumentDwarf.TabIndex = 10;
-            this.MonumentDwarf.Text = "Dwarf";
-            this.MonumentDwarf.UseVisualStyleBackColor = true;
-            this.MonumentDwarf.CheckedChanged += new System.EventHandler(this.MonumentDwarf_CheckedChanged);
-            // 
-            // MonumentDarkElf
-            // 
-            this.MonumentDarkElf.AutoSize = true;
-            this.MonumentDarkElf.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.MonumentDarkElf.Location = new System.Drawing.Point(79, 62);
-            this.MonumentDarkElf.Name = "MonumentDarkElf";
-            this.MonumentDarkElf.Size = new System.Drawing.Size(62, 17);
-            this.MonumentDarkElf.TabIndex = 10;
-            this.MonumentDarkElf.Text = "Dark elf";
-            this.MonumentDarkElf.UseVisualStyleBackColor = true;
-            this.MonumentDarkElf.CheckedChanged += new System.EventHandler(this.MonumentDarkElf_CheckedChanged);
-            // 
-            // EditCoopCampTypes
-            // 
-            this.EditCoopCampTypes.Location = new System.Drawing.Point(486, 3);
-            this.EditCoopCampTypes.Name = "EditCoopCampTypes";
-            this.EditCoopCampTypes.Size = new System.Drawing.Size(88, 108);
-            this.EditCoopCampTypes.TabIndex = 11;
-            this.EditCoopCampTypes.Text = "Edit coop camp types...";
-            this.EditCoopCampTypes.UseVisualStyleBackColor = true;
-            this.EditCoopCampTypes.Click += new System.EventHandler(this.EditCoopCampTypes_Click);
-            // 
-            // PanelEntityPlacementSelect
-            // 
-            this.PanelEntityPlacementSelect.Controls.Add(this.EntityID);
-            this.PanelEntityPlacementSelect.Controls.Add(this.label11);
-            this.PanelEntityPlacementSelect.Controls.Add(this.label10);
-            this.PanelEntityPlacementSelect.Controls.Add(this.PanelObjectAngle);
-            this.PanelEntityPlacementSelect.Location = new System.Drawing.Point(187, 3);
-            this.PanelEntityPlacementSelect.Name = "PanelEntityPlacementSelect";
-            this.PanelEntityPlacementSelect.Size = new System.Drawing.Size(293, 108);
-            this.PanelEntityPlacementSelect.TabIndex = 10;
-            // 
-            // EntityID
-            // 
-            this.EntityID.BackColor = System.Drawing.Color.DarkOrange;
-            this.EntityID.Location = new System.Drawing.Point(55, 20);
-            this.EntityID.Name = "EntityID";
-            this.EntityID.Size = new System.Drawing.Size(71, 20);
-            this.EntityID.TabIndex = 16;
-            this.EntityID.Leave += new System.EventHandler(this.EntityID_Validated);
-            this.EntityID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.EntityID_MouseDown);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(8, 23);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(18, 13);
-            this.label11.TabIndex = 13;
-            this.label11.Text = "ID";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(100, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(74, 13);
-            this.label10.TabIndex = 12;
-            this.label10.Text = "Entity to place";
-            // 
-            // PanelObjectAngle
-            // 
-            this.PanelObjectAngle.Controls.Add(this.CheckRandomRange);
-            this.PanelObjectAngle.Controls.Add(this.AngleTrackbar);
-            this.PanelObjectAngle.Controls.Add(this.Angle);
-            this.PanelObjectAngle.Controls.Add(this.label36);
-            this.PanelObjectAngle.Location = new System.Drawing.Point(5, 46);
-            this.PanelObjectAngle.Name = "PanelObjectAngle";
-            this.PanelObjectAngle.Size = new System.Drawing.Size(288, 54);
-            this.PanelObjectAngle.TabIndex = 11;
-            this.PanelObjectAngle.Visible = false;
-            // 
-            // CheckRandomRange
-            // 
-            this.CheckRandomRange.AutoSize = true;
-            this.CheckRandomRange.Location = new System.Drawing.Point(69, 30);
-            this.CheckRandomRange.Name = "CheckRandomRange";
-            this.CheckRandomRange.Size = new System.Drawing.Size(95, 17);
-            this.CheckRandomRange.TabIndex = 23;
-            this.CheckRandomRange.Text = "Random angle";
-            this.CheckRandomRange.UseVisualStyleBackColor = true;
-            this.CheckRandomRange.CheckedChanged += new System.EventHandler(this.CheckRandomRange_CheckedChanged);
-            // 
-            // AngleTrackbar
-            // 
-            this.AngleTrackbar.AutoSize = false;
-            this.AngleTrackbar.Location = new System.Drawing.Point(68, 4);
-            this.AngleTrackbar.Maximum = 359;
-            this.AngleTrackbar.Name = "AngleTrackbar";
-            this.AngleTrackbar.Size = new System.Drawing.Size(165, 20);
-            this.AngleTrackbar.TabIndex = 22;
-            this.AngleTrackbar.TickFrequency = 45;
-            this.AngleTrackbar.ValueChanged += new System.EventHandler(this.AngleTrackbar_ValueChanged);
-            // 
-            // Angle
-            // 
-            this.Angle.Location = new System.Drawing.Point(239, 4);
-            this.Angle.Name = "Angle";
-            this.Angle.Size = new System.Drawing.Size(46, 20);
-            this.Angle.TabIndex = 21;
-            this.Angle.Text = "0";
-            this.Angle.Validated += new System.EventHandler(this.Angle_Validated);
-            // 
-            // label36
-            // 
-            this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(3, 7);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(34, 13);
-            this.label36.TabIndex = 0;
-            this.label36.Text = "Angle";
-            // 
-            // panel5
-            // 
-            this.panel5.Controls.Add(this.RadioModeMonuments);
-            this.panel5.Controls.Add(this.label6);
-            this.panel5.Controls.Add(this.RadioEntityModeUnit);
-            this.panel5.Controls.Add(this.RadioEntityModeBuilding);
-            this.panel5.Controls.Add(this.RadioModeCoopCamps);
-            this.panel5.Controls.Add(this.RadioModeBindstones);
-            this.panel5.Controls.Add(this.RadioEntityModeObject);
-            this.panel5.Controls.Add(this.RadioModePortals);
-            this.panel5.Location = new System.Drawing.Point(8, 3);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(173, 108);
-            this.panel5.TabIndex = 9;
-            // 
-            // RadioModeMonuments
-            // 
-            this.RadioModeMonuments.AutoSize = true;
-            this.RadioModeMonuments.ForeColor = System.Drawing.Color.Green;
-            this.RadioModeMonuments.Location = new System.Drawing.Point(79, 85);
-            this.RadioModeMonuments.Name = "RadioModeMonuments";
-            this.RadioModeMonuments.Size = new System.Drawing.Size(80, 17);
-            this.RadioModeMonuments.TabIndex = 12;
-            this.RadioModeMonuments.Text = "Monuments";
-            this.RadioModeMonuments.UseVisualStyleBackColor = true;
-            this.RadioModeMonuments.CheckedChanged += new System.EventHandler(this.RadioModeMonuments_CheckedChanged);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(43, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(63, 13);
-            this.label6.TabIndex = 11;
-            this.label6.Text = "Editor mode";
-            // 
-            // RadioEntityModeUnit
-            // 
-            this.RadioEntityModeUnit.AutoSize = true;
-            this.RadioEntityModeUnit.Checked = true;
-            this.RadioEntityModeUnit.Location = new System.Drawing.Point(3, 16);
-            this.RadioEntityModeUnit.Name = "RadioEntityModeUnit";
-            this.RadioEntityModeUnit.Size = new System.Drawing.Size(49, 17);
-            this.RadioEntityModeUnit.TabIndex = 8;
-            this.RadioEntityModeUnit.TabStop = true;
-            this.RadioEntityModeUnit.Text = "Units";
-            this.RadioEntityModeUnit.UseVisualStyleBackColor = true;
-            this.RadioEntityModeUnit.CheckedChanged += new System.EventHandler(this.RadioEntityModeUnit_CheckedChanged);
-            // 
-            // RadioEntityModeBuilding
-            // 
-            this.RadioEntityModeBuilding.AutoSize = true;
-            this.RadioEntityModeBuilding.Location = new System.Drawing.Point(3, 39);
-            this.RadioEntityModeBuilding.Name = "RadioEntityModeBuilding";
-            this.RadioEntityModeBuilding.Size = new System.Drawing.Size(67, 17);
-            this.RadioEntityModeBuilding.TabIndex = 9;
-            this.RadioEntityModeBuilding.Text = "Buildings";
-            this.RadioEntityModeBuilding.UseVisualStyleBackColor = true;
-            this.RadioEntityModeBuilding.CheckedChanged += new System.EventHandler(this.RadioEntityModeBuilding_CheckedChanged);
-            // 
-            // RadioModeCoopCamps
-            // 
-            this.RadioModeCoopCamps.AutoSize = true;
-            this.RadioModeCoopCamps.ForeColor = System.Drawing.Color.Green;
-            this.RadioModeCoopCamps.Location = new System.Drawing.Point(79, 16);
-            this.RadioModeCoopCamps.Name = "RadioModeCoopCamps";
-            this.RadioModeCoopCamps.Size = new System.Drawing.Size(84, 17);
-            this.RadioModeCoopCamps.TabIndex = 8;
-            this.RadioModeCoopCamps.Text = "Coop camps";
-            this.RadioModeCoopCamps.UseVisualStyleBackColor = true;
-            this.RadioModeCoopCamps.CheckedChanged += new System.EventHandler(this.RadioModeCoopCamps_CheckedChanged);
-            // 
-            // RadioModeBindstones
-            // 
-            this.RadioModeBindstones.AutoSize = true;
-            this.RadioModeBindstones.ForeColor = System.Drawing.Color.Green;
-            this.RadioModeBindstones.Location = new System.Drawing.Point(79, 39);
-            this.RadioModeBindstones.Name = "RadioModeBindstones";
-            this.RadioModeBindstones.Size = new System.Drawing.Size(77, 17);
-            this.RadioModeBindstones.TabIndex = 9;
-            this.RadioModeBindstones.Text = "Bindstones";
-            this.RadioModeBindstones.UseVisualStyleBackColor = true;
-            this.RadioModeBindstones.CheckedChanged += new System.EventHandler(this.RadioModeBindstones_CheckedChanged);
-            // 
-            // RadioEntityModeObject
-            // 
-            this.RadioEntityModeObject.AutoSize = true;
-            this.RadioEntityModeObject.Location = new System.Drawing.Point(3, 62);
-            this.RadioEntityModeObject.Name = "RadioEntityModeObject";
-            this.RadioEntityModeObject.Size = new System.Drawing.Size(61, 17);
-            this.RadioEntityModeObject.TabIndex = 10;
-            this.RadioEntityModeObject.Text = "Objects";
-            this.RadioEntityModeObject.UseVisualStyleBackColor = true;
-            this.RadioEntityModeObject.CheckedChanged += new System.EventHandler(this.RadioEntityModeObject_CheckedChanged);
-            // 
-            // RadioModePortals
-            // 
-            this.RadioModePortals.AutoSize = true;
-            this.RadioModePortals.ForeColor = System.Drawing.Color.Green;
-            this.RadioModePortals.Location = new System.Drawing.Point(79, 62);
-            this.RadioModePortals.Name = "RadioModePortals";
-            this.RadioModePortals.Size = new System.Drawing.Size(57, 17);
-            this.RadioModePortals.TabIndex = 10;
-            this.RadioModePortals.Text = "Portals";
-            this.RadioModePortals.UseVisualStyleBackColor = true;
-            this.RadioModePortals.CheckedChanged += new System.EventHandler(this.RadioModePortals_CheckedChanged);
-            // 
-            // TabPageTextures
-            // 
-            this.TabPageTextures.Controls.Add(this.ButtonModifyTextureSet);
-            this.TabPageTextures.Controls.Add(this.PanelTileType);
-            this.TabPageTextures.Location = new System.Drawing.Point(4, 25);
-            this.TabPageTextures.Name = "TabPageTextures";
-            this.TabPageTextures.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPageTextures.Size = new System.Drawing.Size(1092, 114);
-            this.TabPageTextures.TabIndex = 1;
-            this.TabPageTextures.Text = "Textures";
-            this.TabPageTextures.UseVisualStyleBackColor = true;
-            // 
-            // ButtonModifyTextureSet
-            // 
-            this.ButtonModifyTextureSet.Location = new System.Drawing.Point(6, 6);
-            this.ButtonModifyTextureSet.Name = "ButtonModifyTextureSet";
-            this.ButtonModifyTextureSet.Size = new System.Drawing.Size(90, 102);
-            this.ButtonModifyTextureSet.TabIndex = 19;
-            this.ButtonModifyTextureSet.Text = "Modify texture set...";
-            this.ButtonModifyTextureSet.UseVisualStyleBackColor = true;
-            this.ButtonModifyTextureSet.Click += new System.EventHandler(this.ButtonModifyTextureSet_Click);
-            // 
-            // PanelTileType
-            // 
-            this.PanelTileType.Controls.Add(this.RadioTileTypeCustom);
-            this.PanelTileType.Controls.Add(this.RadioTileTypeBase);
-            this.PanelTileType.Controls.Add(this.label9);
-            this.PanelTileType.Location = new System.Drawing.Point(366, 6);
-            this.PanelTileType.Name = "PanelTileType";
-            this.PanelTileType.Size = new System.Drawing.Size(72, 102);
-            this.PanelTileType.TabIndex = 18;
-            // 
-            // RadioTileTypeCustom
-            // 
-            this.RadioTileTypeCustom.AutoSize = true;
-            this.RadioTileTypeCustom.Location = new System.Drawing.Point(6, 45);
-            this.RadioTileTypeCustom.Name = "RadioTileTypeCustom";
-            this.RadioTileTypeCustom.Size = new System.Drawing.Size(60, 17);
-            this.RadioTileTypeCustom.TabIndex = 16;
-            this.RadioTileTypeCustom.Text = "Custom";
-            this.RadioTileTypeCustom.UseVisualStyleBackColor = true;
-            this.RadioTileTypeCustom.CheckedChanged += new System.EventHandler(this.RadioTileTypeCustom_CheckedChanged);
-            // 
-            // RadioTileTypeBase
-            // 
-            this.RadioTileTypeBase.AutoSize = true;
-            this.RadioTileTypeBase.Checked = true;
-            this.RadioTileTypeBase.Location = new System.Drawing.Point(6, 22);
-            this.RadioTileTypeBase.Name = "RadioTileTypeBase";
-            this.RadioTileTypeBase.Size = new System.Drawing.Size(49, 17);
-            this.RadioTileTypeBase.TabIndex = 15;
-            this.RadioTileTypeBase.TabStop = true;
-            this.RadioTileTypeBase.Text = "Base";
-            this.RadioTileTypeBase.UseVisualStyleBackColor = true;
-            this.RadioTileTypeBase.CheckedChanged += new System.EventHandler(this.RadioTileTypeBase_CheckedChanged);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(3, 6);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(47, 13);
-            this.label9.TabIndex = 14;
-            this.label9.Text = "Tile type";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // TabPageTerrain
-            // 
-            this.TabPageTerrain.Controls.Add(this.PanelLakeMode);
-            this.TabPageTerrain.Controls.Add(this.PanelAtmoPreview);
-            this.TabPageTerrain.Controls.Add(this.PanelWeather);
-            this.TabPageTerrain.Controls.Add(this.PanelFlags);
-            this.TabPageTerrain.Controls.Add(this.PanelBrushShape);
-            this.TabPageTerrain.Controls.Add(this.PanelTerrainSettings);
-            this.TabPageTerrain.Controls.Add(this.PanelStrength);
-            this.TabPageTerrain.Controls.Add(this.panel1);
-            this.TabPageTerrain.Location = new System.Drawing.Point(4, 25);
-            this.TabPageTerrain.Name = "TabPageTerrain";
-            this.TabPageTerrain.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPageTerrain.Size = new System.Drawing.Size(1092, 114);
-            this.TabPageTerrain.TabIndex = 0;
-            this.TabPageTerrain.Text = "Terrain";
-            this.TabPageTerrain.UseVisualStyleBackColor = true;
-            // 
-            // PanelLakeMode
-            // 
-            this.PanelLakeMode.Controls.Add(this.RadioLakeSelect);
-            this.PanelLakeMode.Controls.Add(this.RadioLakePaint);
-            this.PanelLakeMode.Controls.Add(this.label38);
-            this.PanelLakeMode.Location = new System.Drawing.Point(758, 34);
-            this.PanelLakeMode.Name = "PanelLakeMode";
-            this.PanelLakeMode.Size = new System.Drawing.Size(207, 73);
-            this.PanelLakeMode.TabIndex = 11;
-            this.PanelLakeMode.Visible = false;
-            // 
-            // RadioLakeSelect
-            // 
-            this.RadioLakeSelect.AutoSize = true;
-            this.RadioLakeSelect.Location = new System.Drawing.Point(149, 16);
-            this.RadioLakeSelect.Name = "RadioLakeSelect";
-            this.RadioLakeSelect.Size = new System.Drawing.Size(55, 17);
-            this.RadioLakeSelect.TabIndex = 2;
-            this.RadioLakeSelect.Text = "Select";
-            this.RadioLakeSelect.UseVisualStyleBackColor = true;
-            this.RadioLakeSelect.CheckedChanged += new System.EventHandler(this.RadioLakeSelect_CheckedChanged);
-            // 
-            // RadioLakePaint
-            // 
-            this.RadioLakePaint.AutoSize = true;
-            this.RadioLakePaint.Checked = true;
-            this.RadioLakePaint.Location = new System.Drawing.Point(93, 16);
-            this.RadioLakePaint.Name = "RadioLakePaint";
-            this.RadioLakePaint.Size = new System.Drawing.Size(49, 17);
-            this.RadioLakePaint.TabIndex = 1;
-            this.RadioLakePaint.TabStop = true;
-            this.RadioLakePaint.Text = "Paint";
-            this.RadioLakePaint.UseVisualStyleBackColor = true;
-            this.RadioLakePaint.CheckedChanged += new System.EventHandler(this.RadioLakePaint_CheckedChanged);
-            // 
-            // label38
-            // 
-            this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(3, 18);
-            this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(54, 13);
-            this.label38.TabIndex = 0;
-            this.label38.Text = "Edit mode";
-            // 
-            // PanelAtmoPreview
-            // 
-            this.PanelAtmoPreview.Controls.Add(this.label37);
-            this.PanelAtmoPreview.Controls.Add(this.SunAltitudeVal);
-            this.PanelAtmoPreview.Controls.Add(this.label13);
-            this.PanelAtmoPreview.Controls.Add(this.SunAltitudeTrackbar);
-            this.PanelAtmoPreview.Controls.Add(this.SunAzimuthVal);
-            this.PanelAtmoPreview.Controls.Add(this.label12);
-            this.PanelAtmoPreview.Controls.Add(this.SunAzimuthTrackbar);
-            this.PanelAtmoPreview.Location = new System.Drawing.Point(761, 82);
-            this.PanelAtmoPreview.Name = "PanelAtmoPreview";
-            this.PanelAtmoPreview.Size = new System.Drawing.Size(265, 100);
-            this.PanelAtmoPreview.TabIndex = 18;
-            this.PanelAtmoPreview.Visible = false;
-            // 
-            // label37
-            // 
-            this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(90, 0);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(103, 13);
-            this.label37.TabIndex = 19;
-            this.label37.Text = "Atmosphere preview";
-            // 
-            // SunAltitudeVal
-            // 
-            this.SunAltitudeVal.Location = new System.Drawing.Point(74, 51);
-            this.SunAltitudeVal.Name = "SunAltitudeVal";
-            this.SunAltitudeVal.Size = new System.Drawing.Size(42, 20);
-            this.SunAltitudeVal.TabIndex = 18;
-            this.SunAltitudeVal.Text = "60";
-            this.SunAltitudeVal.Validated += new System.EventHandler(this.SunAltitudeVal_Validated);
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(3, 54);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(63, 13);
-            this.label13.TabIndex = 17;
-            this.label13.Text = "Sun altitude";
-            // 
-            // SunAltitudeTrackbar
-            // 
-            this.SunAltitudeTrackbar.AutoSize = false;
-            this.SunAltitudeTrackbar.Location = new System.Drawing.Point(122, 51);
-            this.SunAltitudeTrackbar.Maximum = 89;
-            this.SunAltitudeTrackbar.Minimum = -89;
-            this.SunAltitudeTrackbar.Name = "SunAltitudeTrackbar";
-            this.SunAltitudeTrackbar.Size = new System.Drawing.Size(104, 20);
-            this.SunAltitudeTrackbar.TabIndex = 16;
-            this.SunAltitudeTrackbar.TickFrequency = 45;
-            this.SunAltitudeTrackbar.Value = 60;
-            this.SunAltitudeTrackbar.ValueChanged += new System.EventHandler(this.SunAltitudeTrackbar_ValueChanged);
-            // 
-            // SunAzimuthVal
-            // 
-            this.SunAzimuthVal.Location = new System.Drawing.Point(74, 25);
-            this.SunAzimuthVal.Name = "SunAzimuthVal";
-            this.SunAzimuthVal.Size = new System.Drawing.Size(42, 20);
-            this.SunAzimuthVal.TabIndex = 15;
-            this.SunAzimuthVal.Text = "30";
-            this.SunAzimuthVal.Validated += new System.EventHandler(this.SunAzimuthVal_Validated);
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(3, 28);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(65, 13);
-            this.label12.TabIndex = 14;
-            this.label12.Text = "Sun azimuth";
-            // 
-            // SunAzimuthTrackbar
-            // 
-            this.SunAzimuthTrackbar.AutoSize = false;
-            this.SunAzimuthTrackbar.Location = new System.Drawing.Point(122, 25);
-            this.SunAzimuthTrackbar.Maximum = 359;
-            this.SunAzimuthTrackbar.Name = "SunAzimuthTrackbar";
-            this.SunAzimuthTrackbar.Size = new System.Drawing.Size(104, 20);
-            this.SunAzimuthTrackbar.TabIndex = 13;
-            this.SunAzimuthTrackbar.TickFrequency = 45;
-            this.SunAzimuthTrackbar.Value = 30;
-            this.SunAzimuthTrackbar.ValueChanged += new System.EventHandler(this.SunAzimuthTrackbar_ValueChanged);
-            // 
-            // PanelWeather
-            // 
-            this.PanelWeather.Controls.Add(this.label35);
-            this.PanelWeather.Controls.Add(this.label34);
-            this.PanelWeather.Controls.Add(this.label33);
-            this.PanelWeather.Controls.Add(this.label32);
-            this.PanelWeather.Controls.Add(this.label31);
-            this.PanelWeather.Controls.Add(this.label30);
-            this.PanelWeather.Controls.Add(this.label29);
-            this.PanelWeather.Controls.Add(this.label28);
-            this.PanelWeather.Controls.Add(this.WLavanight);
-            this.PanelWeather.Controls.Add(this.WSwampfog);
-            this.PanelWeather.Controls.Add(this.WDesertfog);
-            this.PanelWeather.Controls.Add(this.WLavafogBright);
-            this.PanelWeather.Controls.Add(this.WLavafog);
-            this.PanelWeather.Controls.Add(this.WStorm);
-            this.PanelWeather.Controls.Add(this.WCloud);
-            this.PanelWeather.Controls.Add(this.WClear);
-            this.PanelWeather.Controls.Add(this.label27);
-            this.PanelWeather.Controls.Add(this.label26);
-            this.PanelWeather.Location = new System.Drawing.Point(974, 3);
-            this.PanelWeather.Name = "PanelWeather";
-            this.PanelWeather.Size = new System.Drawing.Size(629, 108);
-            this.PanelWeather.TabIndex = 10;
-            this.PanelWeather.Visible = false;
-            // 
-            // label35
-            // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(483, 10);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(54, 13);
-            this.label35.TabIndex = 28;
-            this.label35.Text = "Lavanight";
-            // 
-            // label34
-            // 
-            this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(427, 10);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(57, 13);
-            this.label34.TabIndex = 27;
-            this.label34.Text = "Swampfog";
-            // 
-            // label33
-            // 
-            this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(370, 10);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(53, 13);
-            this.label33.TabIndex = 26;
-            this.label33.Text = "Desertfog";
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(286, 10);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(81, 13);
-            this.label32.TabIndex = 25;
-            this.label32.Text = "Lavafog (bright)";
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(238, 10);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(46, 13);
-            this.label31.TabIndex = 24;
-            this.label31.Text = "Lavafog";
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(190, 10);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(39, 13);
-            this.label30.TabIndex = 23;
-            this.label30.Text = "Stormy";
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(145, 10);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(39, 13);
-            this.label29.TabIndex = 22;
-            this.label29.Text = "Cloudy";
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(91, 10);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(31, 13);
-            this.label28.TabIndex = 21;
-            this.label28.Text = "Clear";
-            // 
-            // WLavanight
-            // 
-            this.WLavanight.Location = new System.Drawing.Point(486, 26);
-            this.WLavanight.Name = "WLavanight";
-            this.WLavanight.Size = new System.Drawing.Size(51, 20);
-            this.WLavanight.TabIndex = 20;
-            this.WLavanight.Validated += new System.EventHandler(this.WLavanight_Validated);
-            // 
-            // WSwampfog
-            // 
-            this.WSwampfog.Location = new System.Drawing.Point(430, 26);
-            this.WSwampfog.Name = "WSwampfog";
-            this.WSwampfog.Size = new System.Drawing.Size(50, 20);
-            this.WSwampfog.TabIndex = 19;
-            this.WSwampfog.Validated += new System.EventHandler(this.WSwampfog_Validated);
-            // 
-            // WDesertfog
-            // 
-            this.WDesertfog.Location = new System.Drawing.Point(373, 26);
-            this.WDesertfog.Name = "WDesertfog";
-            this.WDesertfog.Size = new System.Drawing.Size(50, 20);
-            this.WDesertfog.TabIndex = 18;
-            this.WDesertfog.Validated += new System.EventHandler(this.WDesertfog_Validated);
-            // 
-            // WLavafogBright
-            // 
-            this.WLavafogBright.Location = new System.Drawing.Point(289, 26);
-            this.WLavafogBright.Name = "WLavafogBright";
-            this.WLavafogBright.Size = new System.Drawing.Size(78, 20);
-            this.WLavafogBright.TabIndex = 17;
-            this.WLavafogBright.Validated += new System.EventHandler(this.WLavafogBright_Validated);
-            // 
-            // WLavafog
-            // 
-            this.WLavafog.Location = new System.Drawing.Point(241, 26);
-            this.WLavafog.Name = "WLavafog";
-            this.WLavafog.Size = new System.Drawing.Size(42, 20);
-            this.WLavafog.TabIndex = 16;
-            this.WLavafog.Validated += new System.EventHandler(this.WLavafog_Validated);
-            // 
-            // WStorm
-            // 
-            this.WStorm.Location = new System.Drawing.Point(193, 26);
-            this.WStorm.Name = "WStorm";
-            this.WStorm.Size = new System.Drawing.Size(42, 20);
-            this.WStorm.TabIndex = 15;
-            this.WStorm.Validated += new System.EventHandler(this.WStorm_Validated);
-            // 
-            // WCloud
-            // 
-            this.WCloud.Location = new System.Drawing.Point(145, 26);
-            this.WCloud.Name = "WCloud";
-            this.WCloud.Size = new System.Drawing.Size(42, 20);
-            this.WCloud.TabIndex = 14;
-            this.WCloud.Validated += new System.EventHandler(this.WCloud_Validated);
-            // 
-            // WClear
-            // 
-            this.WClear.Location = new System.Drawing.Point(94, 26);
-            this.WClear.Name = "WClear";
-            this.WClear.Size = new System.Drawing.Size(42, 20);
-            this.WClear.TabIndex = 13;
-            this.WClear.Validated += new System.EventHandler(this.WClear_Validated);
-            // 
-            // label27
-            // 
-            this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(4, 29);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(51, 13);
-            this.label27.TabIndex = 12;
-            this.label27.Text = "Value (%)";
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(4, 10);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(71, 13);
-            this.label26.TabIndex = 11;
-            this.label26.Text = "Weather type";
-            // 
-            // PanelFlags
-            // 
-            this.PanelFlags.Controls.Add(this.RadioFlagVision);
-            this.PanelFlags.Controls.Add(this.RadioFlagMovement);
-            this.PanelFlags.Controls.Add(this.label8);
-            this.PanelFlags.Location = new System.Drawing.Point(761, 3);
-            this.PanelFlags.Name = "PanelFlags";
-            this.PanelFlags.Size = new System.Drawing.Size(207, 73);
-            this.PanelFlags.TabIndex = 8;
-            this.PanelFlags.Visible = false;
-            // 
-            // RadioFlagVision
-            // 
-            this.RadioFlagVision.AutoSize = true;
-            this.RadioFlagVision.Location = new System.Drawing.Point(140, 16);
-            this.RadioFlagVision.Name = "RadioFlagVision";
-            this.RadioFlagVision.Size = new System.Drawing.Size(53, 17);
-            this.RadioFlagVision.TabIndex = 2;
-            this.RadioFlagVision.Text = "Vision";
-            this.RadioFlagVision.UseVisualStyleBackColor = true;
-            this.RadioFlagVision.CheckedChanged += new System.EventHandler(this.RadioFlagVision_CheckedChanged);
-            // 
-            // RadioFlagMovement
-            // 
-            this.RadioFlagMovement.AutoSize = true;
-            this.RadioFlagMovement.Checked = true;
-            this.RadioFlagMovement.Location = new System.Drawing.Point(59, 16);
-            this.RadioFlagMovement.Name = "RadioFlagMovement";
-            this.RadioFlagMovement.Size = new System.Drawing.Size(75, 17);
-            this.RadioFlagMovement.TabIndex = 1;
-            this.RadioFlagMovement.TabStop = true;
-            this.RadioFlagMovement.Text = "Movement";
-            this.RadioFlagMovement.UseVisualStyleBackColor = true;
-            this.RadioFlagMovement.CheckedChanged += new System.EventHandler(this.RadioFlagMovement_CheckedChanged);
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(3, 18);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(50, 13);
-            this.label8.TabIndex = 0;
-            this.label8.Text = "Flag type";
-            // 
-            // PanelBrushShape
-            // 
-            this.PanelBrushShape.Controls.Add(this.BrushSizeVal);
-            this.PanelBrushShape.Controls.Add(this.label3);
-            this.PanelBrushShape.Controls.Add(this.panel2);
-            this.PanelBrushShape.Controls.Add(this.label4);
-            this.PanelBrushShape.Controls.Add(this.label2);
-            this.PanelBrushShape.Controls.Add(this.BrushSizeTrackbar);
-            this.PanelBrushShape.Location = new System.Drawing.Point(188, 3);
-            this.PanelBrushShape.Name = "PanelBrushShape";
-            this.PanelBrushShape.Size = new System.Drawing.Size(261, 73);
-            this.PanelBrushShape.TabIndex = 8;
-            // 
-            // BrushSizeVal
-            // 
-            this.BrushSizeVal.Location = new System.Drawing.Point(62, 18);
-            this.BrushSizeVal.Name = "BrushSizeVal";
-            this.BrushSizeVal.Size = new System.Drawing.Size(42, 20);
-            this.BrushSizeVal.TabIndex = 12;
-            this.BrushSizeVal.Text = "3";
-            this.BrushSizeVal.Validated += new System.EventHandler(this.BrushSizeVal_Validated);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(29, 21);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(27, 13);
-            this.label3.TabIndex = 9;
-            this.label3.Text = "Size";
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.RadioDiamond);
-            this.panel2.Controls.Add(this.RadioCircle);
-            this.panel2.Controls.Add(this.RadioSquare);
-            this.panel2.Location = new System.Drawing.Point(62, 44);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(196, 28);
-            this.panel2.TabIndex = 8;
-            // 
-            // RadioDiamond
-            // 
-            this.RadioDiamond.AutoSize = true;
-            this.RadioDiamond.Location = new System.Drawing.Point(125, 5);
-            this.RadioDiamond.Name = "RadioDiamond";
-            this.RadioDiamond.Size = new System.Drawing.Size(67, 17);
-            this.RadioDiamond.TabIndex = 2;
-            this.RadioDiamond.Text = "Diamond";
-            this.RadioDiamond.UseVisualStyleBackColor = true;
-            this.RadioDiamond.CheckedChanged += new System.EventHandler(this.RadioDiamond_CheckedChanged);
-            // 
-            // RadioCircle
-            // 
-            this.RadioCircle.AutoSize = true;
-            this.RadioCircle.Checked = true;
-            this.RadioCircle.Location = new System.Drawing.Point(68, 5);
-            this.RadioCircle.Name = "RadioCircle";
-            this.RadioCircle.Size = new System.Drawing.Size(51, 17);
-            this.RadioCircle.TabIndex = 1;
-            this.RadioCircle.TabStop = true;
-            this.RadioCircle.Text = "Circle";
-            this.RadioCircle.UseVisualStyleBackColor = true;
-            this.RadioCircle.CheckedChanged += new System.EventHandler(this.RadioCircle_CheckedChanged);
-            // 
-            // RadioSquare
-            // 
-            this.RadioSquare.AutoSize = true;
-            this.RadioSquare.Location = new System.Drawing.Point(3, 5);
-            this.RadioSquare.Name = "RadioSquare";
-            this.RadioSquare.Size = new System.Drawing.Size(59, 17);
-            this.RadioSquare.TabIndex = 0;
-            this.RadioSquare.Text = "Square";
-            this.RadioSquare.UseVisualStyleBackColor = true;
-            this.RadioSquare.CheckedChanged += new System.EventHandler(this.RadioSquare_CheckedChanged);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(18, 51);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(38, 13);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "Shape";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(80, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(73, 13);
-            this.label2.TabIndex = 8;
-            this.label2.Text = "Brush settings";
-            // 
-            // BrushSizeTrackbar
-            // 
-            this.BrushSizeTrackbar.AutoSize = false;
-            this.BrushSizeTrackbar.Location = new System.Drawing.Point(110, 18);
-            this.BrushSizeTrackbar.Maximum = 15;
-            this.BrushSizeTrackbar.Minimum = 1;
-            this.BrushSizeTrackbar.Name = "BrushSizeTrackbar";
-            this.BrushSizeTrackbar.Size = new System.Drawing.Size(104, 20);
-            this.BrushSizeTrackbar.TabIndex = 8;
-            this.BrushSizeTrackbar.TickFrequency = 2;
-            this.BrushSizeTrackbar.Value = 3;
-            this.BrushSizeTrackbar.ValueChanged += new System.EventHandler(this.BrushSizeTrackbar_ValueChanged);
-            // 
-            // PanelTerrainSettings
-            // 
-            this.PanelTerrainSettings.Controls.Add(this.label5);
-            this.PanelTerrainSettings.Controls.Add(this.panel3);
-            this.PanelTerrainSettings.Controls.Add(this.panel4);
-            this.PanelTerrainSettings.Controls.Add(this.label7);
-            this.PanelTerrainSettings.Location = new System.Drawing.Point(452, 3);
-            this.PanelTerrainSettings.Name = "PanelTerrainSettings";
-            this.PanelTerrainSettings.Size = new System.Drawing.Size(303, 108);
-            this.PanelTerrainSettings.TabIndex = 8;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(13, 18);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(65, 13);
-            this.label5.TabIndex = 11;
-            this.label5.Text = "Interpolation";
-            // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.RadioIntSinusoidal);
-            this.panel3.Controls.Add(this.RadioIntSquare);
-            this.panel3.Controls.Add(this.RadioIntLinear);
-            this.panel3.Controls.Add(this.RadioIntConstant);
-            this.panel3.Location = new System.Drawing.Point(84, 12);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(177, 54);
-            this.panel3.TabIndex = 9;
-            // 
-            // RadioIntSinusoidal
-            // 
-            this.RadioIntSinusoidal.AutoSize = true;
-            this.RadioIntSinusoidal.Checked = true;
-            this.RadioIntSinusoidal.Location = new System.Drawing.Point(76, 28);
-            this.RadioIntSinusoidal.Name = "RadioIntSinusoidal";
-            this.RadioIntSinusoidal.Size = new System.Drawing.Size(73, 17);
-            this.RadioIntSinusoidal.TabIndex = 3;
-            this.RadioIntSinusoidal.TabStop = true;
-            this.RadioIntSinusoidal.Text = "Sinusoidal";
-            this.RadioIntSinusoidal.UseVisualStyleBackColor = true;
-            this.RadioIntSinusoidal.CheckedChanged += new System.EventHandler(this.RadioIntSinusoidal_CheckedChanged);
-            // 
-            // RadioIntSquare
-            // 
-            this.RadioIntSquare.AutoSize = true;
-            this.RadioIntSquare.Location = new System.Drawing.Point(3, 28);
-            this.RadioIntSquare.Name = "RadioIntSquare";
-            this.RadioIntSquare.Size = new System.Drawing.Size(59, 17);
-            this.RadioIntSquare.TabIndex = 2;
-            this.RadioIntSquare.Text = "Square";
-            this.RadioIntSquare.UseVisualStyleBackColor = true;
-            this.RadioIntSquare.CheckedChanged += new System.EventHandler(this.RadioIntSquare_CheckedChanged);
-            // 
-            // RadioIntLinear
-            // 
-            this.RadioIntLinear.AutoSize = true;
-            this.RadioIntLinear.Location = new System.Drawing.Point(76, 5);
-            this.RadioIntLinear.Name = "RadioIntLinear";
-            this.RadioIntLinear.Size = new System.Drawing.Size(54, 17);
-            this.RadioIntLinear.TabIndex = 1;
-            this.RadioIntLinear.Text = "Linear";
-            this.RadioIntLinear.UseVisualStyleBackColor = true;
-            this.RadioIntLinear.CheckedChanged += new System.EventHandler(this.RadioIntLinear_CheckedChanged);
-            // 
-            // RadioIntConstant
-            // 
-            this.RadioIntConstant.AutoSize = true;
-            this.RadioIntConstant.Location = new System.Drawing.Point(3, 5);
-            this.RadioIntConstant.Name = "RadioIntConstant";
-            this.RadioIntConstant.Size = new System.Drawing.Size(67, 17);
-            this.RadioIntConstant.TabIndex = 0;
-            this.RadioIntConstant.Text = "Constant";
-            this.RadioIntConstant.UseVisualStyleBackColor = true;
-            this.RadioIntConstant.CheckedChanged += new System.EventHandler(this.RadioIntConstant_CheckedChanged);
-            // 
-            // panel4
-            // 
-            this.panel4.Controls.Add(this.RadioModeSmooth);
-            this.panel4.Controls.Add(this.RadioModeSet);
-            this.panel4.Controls.Add(this.RadioModeRaise);
-            this.panel4.Location = new System.Drawing.Point(84, 75);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(177, 28);
-            this.panel4.TabIndex = 9;
-            // 
-            // RadioModeSmooth
-            // 
-            this.RadioModeSmooth.AutoSize = true;
-            this.RadioModeSmooth.Location = new System.Drawing.Point(108, 5);
-            this.RadioModeSmooth.Name = "RadioModeSmooth";
-            this.RadioModeSmooth.Size = new System.Drawing.Size(61, 17);
-            this.RadioModeSmooth.TabIndex = 2;
-            this.RadioModeSmooth.Text = "Smooth";
-            this.RadioModeSmooth.UseVisualStyleBackColor = true;
-            this.RadioModeSmooth.CheckedChanged += new System.EventHandler(this.RadioModeSmooth_CheckedChanged);
-            // 
-            // RadioModeSet
-            // 
-            this.RadioModeSet.AutoSize = true;
-            this.RadioModeSet.Location = new System.Drawing.Point(61, 5);
-            this.RadioModeSet.Name = "RadioModeSet";
-            this.RadioModeSet.Size = new System.Drawing.Size(41, 17);
-            this.RadioModeSet.TabIndex = 1;
-            this.RadioModeSet.Text = "Set";
-            this.RadioModeSet.UseVisualStyleBackColor = true;
-            this.RadioModeSet.CheckedChanged += new System.EventHandler(this.RadioModeSet_CheckedChanged);
-            // 
-            // RadioModeRaise
-            // 
-            this.RadioModeRaise.AutoSize = true;
-            this.RadioModeRaise.Checked = true;
-            this.RadioModeRaise.Location = new System.Drawing.Point(3, 5);
-            this.RadioModeRaise.Name = "RadioModeRaise";
-            this.RadioModeRaise.Size = new System.Drawing.Size(52, 17);
-            this.RadioModeRaise.TabIndex = 0;
-            this.RadioModeRaise.TabStop = true;
-            this.RadioModeRaise.Text = "Raise";
-            this.RadioModeRaise.UseVisualStyleBackColor = true;
-            this.RadioModeRaise.CheckedChanged += new System.EventHandler(this.RadioModeRaise_CheckedChanged);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(44, 82);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(34, 13);
-            this.label7.TabIndex = 16;
-            this.label7.Text = "Mode";
-            // 
-            // PanelStrength
-            // 
-            this.PanelStrength.Controls.Add(this.TerrainValueLabel);
-            this.PanelStrength.Controls.Add(this.TerrainValue);
-            this.PanelStrength.Controls.Add(this.TerrainTrackbar);
-            this.PanelStrength.Location = new System.Drawing.Point(188, 79);
-            this.PanelStrength.Name = "PanelStrength";
-            this.PanelStrength.Size = new System.Drawing.Size(261, 29);
-            this.PanelStrength.TabIndex = 17;
-            // 
-            // TerrainValueLabel
-            // 
-            this.TerrainValueLabel.AutoSize = true;
-            this.TerrainValueLabel.Location = new System.Drawing.Point(9, 6);
-            this.TerrainValueLabel.Name = "TerrainValueLabel";
-            this.TerrainValueLabel.Size = new System.Drawing.Size(47, 13);
-            this.TerrainValueLabel.TabIndex = 14;
-            this.TerrainValueLabel.Text = "Strength";
-            this.TerrainValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // TerrainValue
-            // 
-            this.TerrainValue.Location = new System.Drawing.Point(62, 3);
-            this.TerrainValue.Name = "TerrainValue";
-            this.TerrainValue.Size = new System.Drawing.Size(42, 20);
-            this.TerrainValue.TabIndex = 15;
-            this.TerrainValue.Text = "20";
-            this.TerrainValue.Validated += new System.EventHandler(this.TerrainValue_Validated);
-            // 
-            // TerrainTrackbar
-            // 
-            this.TerrainTrackbar.AutoSize = false;
-            this.TerrainTrackbar.Location = new System.Drawing.Point(110, 3);
-            this.TerrainTrackbar.Maximum = 100;
-            this.TerrainTrackbar.Name = "TerrainTrackbar";
-            this.TerrainTrackbar.Size = new System.Drawing.Size(104, 20);
-            this.TerrainTrackbar.TabIndex = 13;
-            this.TerrainTrackbar.TickFrequency = 10;
-            this.TerrainTrackbar.Value = 20;
-            this.TerrainTrackbar.ValueChanged += new System.EventHandler(this.TerrainTrackbar_ValueChanged);
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.RadioWeather);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.RadioHMap);
-            this.panel1.Controls.Add(this.RadioFlags);
-            this.panel1.Controls.Add(this.RadioLakes);
-            this.panel1.Location = new System.Drawing.Point(6, 3);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(176, 108);
-            this.panel1.TabIndex = 8;
-            // 
-            // RadioWeather
-            // 
-            this.RadioWeather.AutoSize = true;
-            this.RadioWeather.Location = new System.Drawing.Point(107, 39);
-            this.RadioWeather.Name = "RadioWeather";
-            this.RadioWeather.Size = new System.Drawing.Size(66, 17);
-            this.RadioWeather.TabIndex = 12;
-            this.RadioWeather.Text = "Weather";
-            this.RadioWeather.UseVisualStyleBackColor = true;
-            this.RadioWeather.CheckedChanged += new System.EventHandler(this.RadioWeather_CheckedChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(47, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(63, 13);
-            this.label1.TabIndex = 11;
-            this.label1.Text = "Editor mode";
-            // 
-            // RadioHMap
-            // 
-            this.RadioHMap.AutoSize = true;
-            this.RadioHMap.Checked = true;
-            this.RadioHMap.Location = new System.Drawing.Point(3, 16);
-            this.RadioHMap.Name = "RadioHMap";
-            this.RadioHMap.Size = new System.Drawing.Size(76, 17);
-            this.RadioHMap.TabIndex = 8;
-            this.RadioHMap.TabStop = true;
-            this.RadioHMap.Text = "Heightmap";
-            this.RadioHMap.UseVisualStyleBackColor = true;
-            this.RadioHMap.CheckedChanged += new System.EventHandler(this.RadioHMap_CheckedChanged);
-            // 
-            // RadioFlags
-            // 
-            this.RadioFlags.AutoSize = true;
-            this.RadioFlags.Location = new System.Drawing.Point(3, 39);
-            this.RadioFlags.Name = "RadioFlags";
-            this.RadioFlags.Size = new System.Drawing.Size(83, 17);
-            this.RadioFlags.TabIndex = 9;
-            this.RadioFlags.Text = "Terrain flags";
-            this.RadioFlags.UseVisualStyleBackColor = true;
-            this.RadioFlags.CheckedChanged += new System.EventHandler(this.RadioFlags_CheckedChanged);
-            // 
-            // RadioLakes
-            // 
-            this.RadioLakes.AutoSize = true;
-            this.RadioLakes.Location = new System.Drawing.Point(107, 16);
-            this.RadioLakes.Name = "RadioLakes";
-            this.RadioLakes.Size = new System.Drawing.Size(49, 17);
-            this.RadioLakes.TabIndex = 10;
-            this.RadioLakes.Text = "Lake";
-            this.RadioLakes.UseVisualStyleBackColor = true;
-            this.RadioLakes.CheckedChanged += new System.EventHandler(this.RadioLakes_CheckedChanged);
-            // 
-            // TabEditorModes
-            // 
-            this.TabEditorModes.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-            this.TabEditorModes.Controls.Add(this.TabPageTerrain);
-            this.TabEditorModes.Controls.Add(this.TabPageTextures);
-            this.TabEditorModes.Controls.Add(this.TabPageEntities);
-            this.TabEditorModes.Controls.Add(this.TabPageDecorations);
-            this.TabEditorModes.Controls.Add(this.TabPageMetadata);
-            this.TabEditorModes.Controls.Add(this.TabPageMask);
-            this.TabEditorModes.Enabled = false;
-            this.TabEditorModes.ItemSize = new System.Drawing.Size(160, 21);
-            this.TabEditorModes.Location = new System.Drawing.Point(0, 27);
-            this.TabEditorModes.Name = "TabEditorModes";
-            this.TabEditorModes.Padding = new System.Drawing.Point(3, 3);
-            this.TabEditorModes.SelectedIndex = 0;
-            this.TabEditorModes.Size = new System.Drawing.Size(1100, 143);
-            this.TabEditorModes.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
-            this.TabEditorModes.TabIndex = 7;
-            this.TabEditorModes.SelectedIndexChanged += new System.EventHandler(this.TabEditorModes_SelectedIndexChanged);
-            // 
-            // TabPageMetadata
-            // 
-            this.TabPageMetadata.Controls.Add(this.ButtonMinimap);
-            this.TabPageMetadata.Controls.Add(this.ButtonTeams);
-            this.TabPageMetadata.Controls.Add(this.PanelCoopParams);
-            this.TabPageMetadata.Controls.Add(this.panel6);
-            this.TabPageMetadata.Location = new System.Drawing.Point(4, 25);
-            this.TabPageMetadata.Name = "TabPageMetadata";
-            this.TabPageMetadata.Size = new System.Drawing.Size(1092, 114);
-            this.TabPageMetadata.TabIndex = 6;
-            this.TabPageMetadata.Text = "Metadata";
-            this.TabPageMetadata.UseVisualStyleBackColor = true;
-            // 
-            // ButtonMinimap
-            // 
-            this.ButtonMinimap.Location = new System.Drawing.Point(203, 3);
-            this.ButtonMinimap.Name = "ButtonMinimap";
-            this.ButtonMinimap.Size = new System.Drawing.Size(95, 108);
-            this.ButtonMinimap.TabIndex = 12;
-            this.ButtonMinimap.Text = "Minimap SFEngine.Settings...";
-            this.ButtonMinimap.UseVisualStyleBackColor = true;
-            this.ButtonMinimap.Click += new System.EventHandler(this.ButtonMinimap_Click);
-            // 
-            // ButtonTeams
-            // 
-            this.ButtonTeams.Location = new System.Drawing.Point(102, 3);
-            this.ButtonTeams.Name = "ButtonTeams";
-            this.ButtonTeams.Size = new System.Drawing.Size(95, 108);
-            this.ButtonTeams.TabIndex = 11;
-            this.ButtonTeams.Text = "Manage team compositions...";
-            this.ButtonTeams.UseVisualStyleBackColor = true;
-            this.ButtonTeams.Click += new System.EventHandler(this.ButtonTeams_Click);
-            // 
-            // PanelCoopParams
-            // 
-            this.PanelCoopParams.Controls.Add(this.label24);
-            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam34);
-            this.PanelCoopParams.Controls.Add(this.label23);
-            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam33);
-            this.PanelCoopParams.Controls.Add(this.label22);
-            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam32);
-            this.PanelCoopParams.Controls.Add(this.label21);
-            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam24);
-            this.PanelCoopParams.Controls.Add(this.label20);
-            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam23);
-            this.PanelCoopParams.Controls.Add(this.label19);
-            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam22);
-            this.PanelCoopParams.Controls.Add(this.label18);
-            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam14);
-            this.PanelCoopParams.Controls.Add(this.label17);
-            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam13);
-            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam12);
-            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam31);
-            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam21);
-            this.PanelCoopParams.Controls.Add(this.CoopSpawnParam11);
-            this.PanelCoopParams.Location = new System.Drawing.Point(304, 3);
-            this.PanelCoopParams.Name = "PanelCoopParams";
-            this.PanelCoopParams.Size = new System.Drawing.Size(482, 108);
-            this.PanelCoopParams.TabIndex = 10;
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(3, 88);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(49, 13);
-            this.label24.TabIndex = 16;
-            this.label24.Text = "3 players";
-            // 
-            // CoopSpawnParam34
-            // 
-            this.CoopSpawnParam34.Location = new System.Drawing.Point(376, 85);
-            this.CoopSpawnParam34.Name = "CoopSpawnParam34";
-            this.CoopSpawnParam34.Size = new System.Drawing.Size(100, 20);
-            this.CoopSpawnParam34.TabIndex = 11;
-            this.CoopSpawnParam34.Validated += new System.EventHandler(this.CoopSpawnParam34_Validated);
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(3, 62);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(49, 13);
-            this.label23.TabIndex = 15;
-            this.label23.Text = "2 players";
-            // 
-            // CoopSpawnParam33
-            // 
-            this.CoopSpawnParam33.Location = new System.Drawing.Point(270, 85);
-            this.CoopSpawnParam33.Name = "CoopSpawnParam33";
-            this.CoopSpawnParam33.Size = new System.Drawing.Size(100, 20);
-            this.CoopSpawnParam33.TabIndex = 10;
-            this.CoopSpawnParam33.Validated += new System.EventHandler(this.CoopSpawnParam33_Validated);
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(3, 36);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(44, 13);
-            this.label22.TabIndex = 14;
-            this.label22.Text = "1 player";
-            // 
-            // CoopSpawnParam32
-            // 
-            this.CoopSpawnParam32.Location = new System.Drawing.Point(164, 85);
-            this.CoopSpawnParam32.Name = "CoopSpawnParam32";
-            this.CoopSpawnParam32.Size = new System.Drawing.Size(100, 20);
-            this.CoopSpawnParam32.TabIndex = 9;
-            this.CoopSpawnParam32.Validated += new System.EventHandler(this.CoopSpawnParam32_Validated);
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(390, 16);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(68, 13);
-            this.label21.TabIndex = 13;
-            this.label21.Text = "Spawn delay";
-            // 
-            // CoopSpawnParam24
-            // 
-            this.CoopSpawnParam24.Location = new System.Drawing.Point(376, 59);
-            this.CoopSpawnParam24.Name = "CoopSpawnParam24";
-            this.CoopSpawnParam24.Size = new System.Drawing.Size(100, 20);
-            this.CoopSpawnParam24.TabIndex = 8;
-            this.CoopSpawnParam24.Validated += new System.EventHandler(this.CoopSpawnParam24_Validated);
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(289, 17);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(63, 13);
-            this.label20.TabIndex = 12;
-            this.label20.Text = "Begin wave";
-            // 
-            // CoopSpawnParam23
-            // 
-            this.CoopSpawnParam23.Location = new System.Drawing.Point(270, 59);
-            this.CoopSpawnParam23.Name = "CoopSpawnParam23";
-            this.CoopSpawnParam23.Size = new System.Drawing.Size(100, 20);
-            this.CoopSpawnParam23.TabIndex = 7;
-            this.CoopSpawnParam23.Validated += new System.EventHandler(this.CoopSpawnParam23_Validated);
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(187, 17);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(55, 13);
-            this.label19.TabIndex = 11;
-            this.label19.Text = "Init spawn";
-            // 
-            // CoopSpawnParam22
-            // 
-            this.CoopSpawnParam22.Location = new System.Drawing.Point(164, 59);
-            this.CoopSpawnParam22.Name = "CoopSpawnParam22";
-            this.CoopSpawnParam22.Size = new System.Drawing.Size(100, 20);
-            this.CoopSpawnParam22.TabIndex = 6;
-            this.CoopSpawnParam22.Validated += new System.EventHandler(this.CoopSpawnParam22_Validated);
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(74, 18);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(71, 13);
-            this.label18.TabIndex = 10;
-            this.label18.Text = "Max clan size";
-            // 
-            // CoopSpawnParam14
-            // 
-            this.CoopSpawnParam14.Location = new System.Drawing.Point(376, 33);
-            this.CoopSpawnParam14.Name = "CoopSpawnParam14";
-            this.CoopSpawnParam14.Size = new System.Drawing.Size(100, 20);
-            this.CoopSpawnParam14.TabIndex = 5;
-            this.CoopSpawnParam14.Validated += new System.EventHandler(this.CoopSpawnParam14_Validated);
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(161, 0);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(121, 13);
-            this.label17.TabIndex = 9;
-            this.label17.Text = "Coop spawn parameters";
-            // 
-            // CoopSpawnParam13
-            // 
-            this.CoopSpawnParam13.Location = new System.Drawing.Point(270, 33);
-            this.CoopSpawnParam13.Name = "CoopSpawnParam13";
-            this.CoopSpawnParam13.Size = new System.Drawing.Size(100, 20);
-            this.CoopSpawnParam13.TabIndex = 4;
-            this.CoopSpawnParam13.Validated += new System.EventHandler(this.CoopSpawnParam13_Validated);
-            // 
-            // CoopSpawnParam12
-            // 
-            this.CoopSpawnParam12.Location = new System.Drawing.Point(164, 33);
-            this.CoopSpawnParam12.Name = "CoopSpawnParam12";
-            this.CoopSpawnParam12.Size = new System.Drawing.Size(100, 20);
-            this.CoopSpawnParam12.TabIndex = 3;
-            this.CoopSpawnParam12.Validated += new System.EventHandler(this.CoopSpawnParam12_Validated);
-            // 
-            // CoopSpawnParam31
-            // 
-            this.CoopSpawnParam31.Location = new System.Drawing.Point(58, 85);
-            this.CoopSpawnParam31.Name = "CoopSpawnParam31";
-            this.CoopSpawnParam31.Size = new System.Drawing.Size(100, 20);
-            this.CoopSpawnParam31.TabIndex = 2;
-            this.CoopSpawnParam31.Validated += new System.EventHandler(this.CoopSpawnParam31_Validated);
-            // 
-            // CoopSpawnParam21
-            // 
-            this.CoopSpawnParam21.Location = new System.Drawing.Point(58, 59);
-            this.CoopSpawnParam21.Name = "CoopSpawnParam21";
-            this.CoopSpawnParam21.Size = new System.Drawing.Size(100, 20);
-            this.CoopSpawnParam21.TabIndex = 1;
-            this.CoopSpawnParam21.Validated += new System.EventHandler(this.CoopSpawnParam21_Validated);
-            // 
-            // CoopSpawnParam11
-            // 
-            this.CoopSpawnParam11.Location = new System.Drawing.Point(58, 33);
-            this.CoopSpawnParam11.Name = "CoopSpawnParam11";
-            this.CoopSpawnParam11.Size = new System.Drawing.Size(100, 20);
-            this.CoopSpawnParam11.TabIndex = 0;
-            this.CoopSpawnParam11.Validated += new System.EventHandler(this.CoopSpawnParam11_Validated);
-            // 
-            // panel6
-            // 
-            this.panel6.Controls.Add(this.label16);
-            this.panel6.Controls.Add(this.MapTypeCampaign);
-            this.panel6.Controls.Add(this.MapTypeCoop);
-            this.panel6.Controls.Add(this.MapTypeMultiplayer);
-            this.panel6.Location = new System.Drawing.Point(3, 3);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(93, 108);
-            this.panel6.TabIndex = 9;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(16, 0);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(51, 13);
-            this.label16.TabIndex = 11;
-            this.label16.Text = "Map type";
-            // 
-            // MapTypeCampaign
-            // 
-            this.MapTypeCampaign.AutoSize = true;
-            this.MapTypeCampaign.Location = new System.Drawing.Point(3, 16);
-            this.MapTypeCampaign.Name = "MapTypeCampaign";
-            this.MapTypeCampaign.Size = new System.Drawing.Size(72, 17);
-            this.MapTypeCampaign.TabIndex = 8;
-            this.MapTypeCampaign.Text = "Campaign";
-            this.MapTypeCampaign.UseVisualStyleBackColor = true;
-            this.MapTypeCampaign.Click += new System.EventHandler(this.MapTypeCampaign_Click);
-            // 
-            // MapTypeCoop
-            // 
-            this.MapTypeCoop.AutoSize = true;
-            this.MapTypeCoop.Location = new System.Drawing.Point(3, 39);
-            this.MapTypeCoop.Name = "MapTypeCoop";
-            this.MapTypeCoop.Size = new System.Drawing.Size(50, 17);
-            this.MapTypeCoop.TabIndex = 9;
-            this.MapTypeCoop.Text = "Coop";
-            this.MapTypeCoop.UseVisualStyleBackColor = true;
-            this.MapTypeCoop.Click += new System.EventHandler(this.MapTypeCoop_Click);
-            // 
-            // MapTypeMultiplayer
-            // 
-            this.MapTypeMultiplayer.AutoSize = true;
-            this.MapTypeMultiplayer.Location = new System.Drawing.Point(3, 62);
-            this.MapTypeMultiplayer.Name = "MapTypeMultiplayer";
-            this.MapTypeMultiplayer.Size = new System.Drawing.Size(75, 17);
-            this.MapTypeMultiplayer.TabIndex = 10;
-            this.MapTypeMultiplayer.Text = "Multiplayer";
-            this.MapTypeMultiplayer.UseVisualStyleBackColor = true;
-            this.MapTypeMultiplayer.Click += new System.EventHandler(this.MapTypeMultiplayer_Click);
-            // 
-            // TabPageMask
-            // 
-            this.TabPageMask.Controls.Add(this.ButtonMaskClear);
-            this.TabPageMask.Controls.Add(this.ButtonMaskInvert);
-            this.TabPageMask.Controls.Add(this.PanelMaskFeature);
-            this.TabPageMask.Controls.Add(this.PanelMaskRandom);
-            this.TabPageMask.Controls.Add(this.PanelMaskBorderType);
-            this.TabPageMask.Controls.Add(this.PanelMaskAttribute);
-            this.TabPageMask.Controls.Add(this.PanelMaskComparisonMode);
-            this.TabPageMask.Controls.Add(this.PanelMaskSourceValue);
-            this.TabPageMask.Controls.Add(this.ButtonSelectionApply);
-            this.TabPageMask.Controls.Add(this.label41);
-            this.TabPageMask.Controls.Add(this.ComboSelectionOperation);
-            this.TabPageMask.Controls.Add(this.ComboSelectionSource);
-            this.TabPageMask.Controls.Add(this.label40);
-            this.TabPageMask.Controls.Add(this.label39);
-            this.TabPageMask.Controls.Add(this.ComboSelectionFilter);
-            this.TabPageMask.Location = new System.Drawing.Point(4, 25);
-            this.TabPageMask.Name = "TabPageMask";
-            this.TabPageMask.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPageMask.Size = new System.Drawing.Size(1092, 114);
-            this.TabPageMask.TabIndex = 7;
-            this.TabPageMask.Text = "Mask/selection";
-            this.TabPageMask.UseVisualStyleBackColor = true;
-            // 
-            // ButtonMaskClear
-            // 
-            this.ButtonMaskClear.Location = new System.Drawing.Point(6, 59);
-            this.ButtonMaskClear.Name = "ButtonMaskClear";
-            this.ButtonMaskClear.Size = new System.Drawing.Size(70, 23);
-            this.ButtonMaskClear.TabIndex = 30;
-            this.ButtonMaskClear.Text = "Clear mask";
-            this.ButtonMaskClear.UseVisualStyleBackColor = true;
-            this.ButtonMaskClear.Click += new System.EventHandler(this.ButtonMaskClear_Click);
-            // 
-            // ButtonMaskInvert
-            // 
-            this.ButtonMaskInvert.Location = new System.Drawing.Point(6, 85);
-            this.ButtonMaskInvert.Name = "ButtonMaskInvert";
-            this.ButtonMaskInvert.Size = new System.Drawing.Size(70, 23);
-            this.ButtonMaskInvert.TabIndex = 29;
-            this.ButtonMaskInvert.Text = "Invert mask";
-            this.ButtonMaskInvert.UseVisualStyleBackColor = true;
-            this.ButtonMaskInvert.Click += new System.EventHandler(this.ButtonMaskInvert_Click);
-            // 
-            // PanelMaskFeature
-            // 
-            this.PanelMaskFeature.Controls.Add(this.ComboMaskFeature);
-            this.PanelMaskFeature.Controls.Add(this.label45);
-            this.PanelMaskFeature.Location = new System.Drawing.Point(823, 38);
-            this.PanelMaskFeature.Name = "PanelMaskFeature";
-            this.PanelMaskFeature.Size = new System.Drawing.Size(244, 30);
-            this.PanelMaskFeature.TabIndex = 28;
-            this.PanelMaskFeature.Visible = false;
-            // 
-            // ComboMaskFeature
-            // 
-            this.ComboMaskFeature.FormattingEnabled = true;
-            this.ComboMaskFeature.Items.AddRange(new object[] {
-            "Building",
-            "Object",
-            "Lake",
-            "Walkable"});
-            this.ComboMaskFeature.Location = new System.Drawing.Point(120, 3);
-            this.ComboMaskFeature.Name = "ComboMaskFeature";
-            this.ComboMaskFeature.Size = new System.Drawing.Size(121, 21);
-            this.ComboMaskFeature.TabIndex = 27;
-            this.ComboMaskFeature.Text = "Object";
-            this.ComboMaskFeature.SelectedIndexChanged += new System.EventHandler(this.ComboMaskFeature_SelectedIndexChanged);
-            // 
-            // label45
-            // 
-            this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(3, 6);
-            this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(66, 13);
-            this.label45.TabIndex = 26;
-            this.label45.Text = "Feature type";
-            // 
-            // PanelMaskRandom
-            // 
-            this.PanelMaskRandom.Controls.Add(this.MaskRandomValue);
-            this.PanelMaskRandom.Controls.Add(this.ButtonMaskRandomSeed);
-            this.PanelMaskRandom.Controls.Add(this.LabelMaskRandom);
-            this.PanelMaskRandom.Location = new System.Drawing.Point(572, 38);
-            this.PanelMaskRandom.Name = "PanelMaskRandom";
-            this.PanelMaskRandom.Size = new System.Drawing.Size(244, 30);
-            this.PanelMaskRandom.TabIndex = 25;
-            this.PanelMaskRandom.Visible = false;
-            // 
-            // MaskRandomValue
-            // 
-            this.MaskRandomValue.Location = new System.Drawing.Point(89, 3);
-            this.MaskRandomValue.Name = "MaskRandomValue";
-            this.MaskRandomValue.Size = new System.Drawing.Size(73, 20);
-            this.MaskRandomValue.TabIndex = 24;
-            this.MaskRandomValue.Leave += new System.EventHandler(this.MaskRandomValue_Leave);
-            // 
-            // ButtonMaskRandomSeed
-            // 
-            this.ButtonMaskRandomSeed.Location = new System.Drawing.Point(168, 1);
-            this.ButtonMaskRandomSeed.Name = "ButtonMaskRandomSeed";
-            this.ButtonMaskRandomSeed.Size = new System.Drawing.Size(73, 23);
-            this.ButtonMaskRandomSeed.TabIndex = 3;
-            this.ButtonMaskRandomSeed.Text = "Randomize";
-            this.ButtonMaskRandomSeed.UseVisualStyleBackColor = true;
-            this.ButtonMaskRandomSeed.Click += new System.EventHandler(this.ButtonMaskRandomSeed_Click);
-            // 
-            // LabelMaskRandom
-            // 
-            this.LabelMaskRandom.AutoSize = true;
-            this.LabelMaskRandom.Location = new System.Drawing.Point(3, 8);
-            this.LabelMaskRandom.Name = "LabelMaskRandom";
-            this.LabelMaskRandom.Size = new System.Drawing.Size(62, 13);
-            this.LabelMaskRandom.TabIndex = 22;
-            this.LabelMaskRandom.Text = "Percentage";
-            // 
-            // PanelMaskBorderType
-            // 
-            this.PanelMaskBorderType.Controls.Add(this.RadioMaskBorderInner);
-            this.PanelMaskBorderType.Controls.Add(this.RadioMaskBorderOuter);
-            this.PanelMaskBorderType.Controls.Add(this.label44);
-            this.PanelMaskBorderType.Location = new System.Drawing.Point(322, 38);
-            this.PanelMaskBorderType.Name = "PanelMaskBorderType";
-            this.PanelMaskBorderType.Size = new System.Drawing.Size(244, 30);
-            this.PanelMaskBorderType.TabIndex = 27;
-            this.PanelMaskBorderType.Visible = false;
-            // 
-            // RadioMaskBorderInner
-            // 
-            this.RadioMaskBorderInner.AutoSize = true;
-            this.RadioMaskBorderInner.Location = new System.Drawing.Point(189, 6);
-            this.RadioMaskBorderInner.Name = "RadioMaskBorderInner";
-            this.RadioMaskBorderInner.Size = new System.Drawing.Size(49, 17);
-            this.RadioMaskBorderInner.TabIndex = 2;
-            this.RadioMaskBorderInner.Text = "Inner";
-            this.RadioMaskBorderInner.UseVisualStyleBackColor = true;
-            this.RadioMaskBorderInner.CheckedChanged += new System.EventHandler(this.RadioMaskBorderInner_CheckedChanged);
-            // 
-            // RadioMaskBorderOuter
-            // 
-            this.RadioMaskBorderOuter.AutoSize = true;
-            this.RadioMaskBorderOuter.Checked = true;
-            this.RadioMaskBorderOuter.Location = new System.Drawing.Point(117, 6);
-            this.RadioMaskBorderOuter.Name = "RadioMaskBorderOuter";
-            this.RadioMaskBorderOuter.Size = new System.Drawing.Size(51, 17);
-            this.RadioMaskBorderOuter.TabIndex = 1;
-            this.RadioMaskBorderOuter.TabStop = true;
-            this.RadioMaskBorderOuter.Text = "Outer";
-            this.RadioMaskBorderOuter.UseVisualStyleBackColor = true;
-            this.RadioMaskBorderOuter.CheckedChanged += new System.EventHandler(this.RadioMaskBorderOuter_CheckedChanged);
-            // 
-            // label44
-            // 
-            this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(3, 8);
-            this.label44.Name = "label44";
-            this.label44.Size = new System.Drawing.Size(61, 13);
-            this.label44.TabIndex = 0;
-            this.label44.Text = "Border type";
-            // 
-            // PanelMaskAttribute
-            // 
-            this.PanelMaskAttribute.Controls.Add(this.ComboMaskAttribute);
-            this.PanelMaskAttribute.Controls.Add(this.label43);
-            this.PanelMaskAttribute.Location = new System.Drawing.Point(572, 3);
-            this.PanelMaskAttribute.Name = "PanelMaskAttribute";
-            this.PanelMaskAttribute.Size = new System.Drawing.Size(244, 30);
-            this.PanelMaskAttribute.TabIndex = 26;
-            this.PanelMaskAttribute.Visible = false;
-            // 
-            // ComboMaskAttribute
-            // 
-            this.ComboMaskAttribute.FormattingEnabled = true;
-            this.ComboMaskAttribute.Items.AddRange(new object[] {
-            "Terrain block",
-            "Object block",
-            "Building block",
-            "Manual block",
-            "Lake",
-            "Shore"});
-            this.ComboMaskAttribute.Location = new System.Drawing.Point(120, 3);
-            this.ComboMaskAttribute.Name = "ComboMaskAttribute";
-            this.ComboMaskAttribute.Size = new System.Drawing.Size(121, 21);
-            this.ComboMaskAttribute.TabIndex = 28;
-            this.ComboMaskAttribute.Text = "Terrain block";
-            this.ComboMaskAttribute.SelectedIndexChanged += new System.EventHandler(this.ComboMaskAttribute_SelectedIndexChanged);
-            // 
-            // label43
-            // 
-            this.label43.AutoSize = true;
-            this.label43.Location = new System.Drawing.Point(3, 8);
-            this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(46, 13);
-            this.label43.TabIndex = 0;
-            this.label43.Text = "Attribute";
-            // 
-            // PanelMaskComparisonMode
-            // 
-            this.PanelMaskComparisonMode.Controls.Add(this.ComboMaskSourceComparison);
-            this.PanelMaskComparisonMode.Controls.Add(this.label42);
-            this.PanelMaskComparisonMode.Location = new System.Drawing.Point(823, 3);
-            this.PanelMaskComparisonMode.Name = "PanelMaskComparisonMode";
-            this.PanelMaskComparisonMode.Size = new System.Drawing.Size(244, 30);
-            this.PanelMaskComparisonMode.TabIndex = 25;
-            this.PanelMaskComparisonMode.Visible = false;
-            // 
-            // ComboMaskSourceComparison
-            // 
-            this.ComboMaskSourceComparison.FormattingEnabled = true;
-            this.ComboMaskSourceComparison.Items.AddRange(new object[] {
-            "Equal",
-            "Greater or equal",
-            "Greater than",
-            "Not equal",
-            "Less than",
-            "Less or equal"});
-            this.ComboMaskSourceComparison.Location = new System.Drawing.Point(117, 3);
-            this.ComboMaskSourceComparison.Name = "ComboMaskSourceComparison";
-            this.ComboMaskSourceComparison.Size = new System.Drawing.Size(121, 21);
-            this.ComboMaskSourceComparison.TabIndex = 27;
-            this.ComboMaskSourceComparison.Text = "Equal";
-            this.ComboMaskSourceComparison.SelectedIndexChanged += new System.EventHandler(this.ComboMaskSourceComparison_SelectedIndexChanged);
-            // 
-            // label42
-            // 
-            this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(3, 6);
-            this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(91, 13);
-            this.label42.TabIndex = 26;
-            this.label42.Text = "Comparison mode";
-            // 
-            // PanelMaskSourceValue
-            // 
-            this.PanelMaskSourceValue.Controls.Add(this.MaskSourceValue);
-            this.PanelMaskSourceValue.Controls.Add(this.LabelMaskSourceType);
-            this.PanelMaskSourceValue.Location = new System.Drawing.Point(322, 3);
-            this.PanelMaskSourceValue.Name = "PanelMaskSourceValue";
-            this.PanelMaskSourceValue.Size = new System.Drawing.Size(244, 30);
-            this.PanelMaskSourceValue.TabIndex = 23;
-            this.PanelMaskSourceValue.Visible = false;
-            // 
-            // MaskSourceValue
-            // 
-            this.MaskSourceValue.Location = new System.Drawing.Point(165, 5);
-            this.MaskSourceValue.Name = "MaskSourceValue";
-            this.MaskSourceValue.Size = new System.Drawing.Size(73, 20);
-            this.MaskSourceValue.TabIndex = 24;
-            this.MaskSourceValue.Leave += new System.EventHandler(this.MaskSourceValue_Leave);
-            // 
-            // LabelMaskSourceType
-            // 
-            this.LabelMaskSourceType.AutoSize = true;
-            this.LabelMaskSourceType.Location = new System.Drawing.Point(3, 8);
-            this.LabelMaskSourceType.Name = "LabelMaskSourceType";
-            this.LabelMaskSourceType.Size = new System.Drawing.Size(16, 13);
-            this.LabelMaskSourceType.TabIndex = 22;
-            this.LabelMaskSourceType.Text = "...";
-            // 
-            // ButtonSelectionApply
-            // 
-            this.ButtonSelectionApply.Location = new System.Drawing.Point(82, 85);
-            this.ButtonSelectionApply.Name = "ButtonSelectionApply";
-            this.ButtonSelectionApply.Size = new System.Drawing.Size(234, 23);
-            this.ButtonSelectionApply.TabIndex = 21;
-            this.ButtonSelectionApply.Text = "Apply to mask";
-            this.ButtonSelectionApply.UseVisualStyleBackColor = true;
-            this.ButtonSelectionApply.Click += new System.EventHandler(this.ButtonSelectionApply_Click);
-            // 
-            // label41
-            // 
-            this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(81, 64);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(53, 13);
-            this.label41.TabIndex = 20;
-            this.label41.Text = "Operation";
-            // 
-            // ComboSelectionOperation
-            // 
-            this.ComboSelectionOperation.FormattingEnabled = true;
-            this.ComboSelectionOperation.Items.AddRange(new object[] {
-            "Do nothing",
-            "Set mask",
-            "Intersect with mask",
-            "Join with mask",
-            "Either-or with mask",
-            "Exclude from mask"});
-            this.ComboSelectionOperation.Location = new System.Drawing.Point(140, 61);
-            this.ComboSelectionOperation.Name = "ComboSelectionOperation";
-            this.ComboSelectionOperation.Size = new System.Drawing.Size(176, 21);
-            this.ComboSelectionOperation.TabIndex = 19;
-            this.ComboSelectionOperation.Text = "Set mask";
-            this.ComboSelectionOperation.SelectedIndexChanged += new System.EventHandler(this.ComboSelectionOperation_SelectedIndexChanged);
-            // 
-            // ComboSelectionSource
-            // 
-            this.ComboSelectionSource.FormattingEnabled = true;
-            this.ComboSelectionSource.Items.AddRange(new object[] {
-            "All",
-            "Paint",
-            "Mask",
-            "Terrain texture",
-            "Terrain height",
-            "Terrain slope",
-            "Terrain attribute",
-            "Feature"});
-            this.ComboSelectionSource.Location = new System.Drawing.Point(140, 8);
-            this.ComboSelectionSource.Name = "ComboSelectionSource";
-            this.ComboSelectionSource.Size = new System.Drawing.Size(176, 21);
-            this.ComboSelectionSource.TabIndex = 18;
-            this.ComboSelectionSource.Text = "Paint";
-            this.ComboSelectionSource.SelectedIndexChanged += new System.EventHandler(this.ComboSelectionSource_SelectedIndexChanged);
-            // 
-            // label40
-            // 
-            this.label40.AutoSize = true;
-            this.label40.Location = new System.Drawing.Point(93, 11);
-            this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(41, 13);
-            this.label40.TabIndex = 0;
-            this.label40.Text = "Source";
-            // 
-            // label39
-            // 
-            this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(105, 38);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(29, 13);
-            this.label39.TabIndex = 13;
-            this.label39.Text = "Filter";
-            // 
-            // ComboSelectionFilter
-            // 
-            this.ComboSelectionFilter.FormattingEnabled = true;
-            this.ComboSelectionFilter.Items.AddRange(new object[] {
-            "None",
-            "Border",
-            "Random"});
-            this.ComboSelectionFilter.Location = new System.Drawing.Point(140, 35);
-            this.ComboSelectionFilter.Name = "ComboSelectionFilter";
-            this.ComboSelectionFilter.Size = new System.Drawing.Size(176, 21);
-            this.ComboSelectionFilter.TabIndex = 12;
-            this.ComboSelectionFilter.Text = "None";
-            this.ComboSelectionFilter.SelectedIndexChanged += new System.EventHandler(this.ComboSelectionFilter_SelectedIndexChanged);
-            // 
-            // PanelUtility
-            // 
-            this.PanelUtility.Controls.Add(this.TrackbarCameraSpeed);
-            this.PanelUtility.Controls.Add(this.label25);
-            this.PanelUtility.Location = new System.Drawing.Point(822, 642);
-            this.PanelUtility.Name = "PanelUtility";
-            this.PanelUtility.Size = new System.Drawing.Size(274, 25);
-            this.PanelUtility.TabIndex = 9;
-            // 
-            // TrackbarCameraSpeed
-            // 
-            this.TrackbarCameraSpeed.AutoSize = false;
-            this.TrackbarCameraSpeed.Location = new System.Drawing.Point(84, 0);
-            this.TrackbarCameraSpeed.Maximum = 200;
-            this.TrackbarCameraSpeed.Minimum = 10;
-            this.TrackbarCameraSpeed.Name = "TrackbarCameraSpeed";
-            this.TrackbarCameraSpeed.Size = new System.Drawing.Size(104, 22);
-            this.TrackbarCameraSpeed.TabIndex = 1;
-            this.TrackbarCameraSpeed.TickFrequency = 20;
-            this.TrackbarCameraSpeed.Value = 100;
-            this.TrackbarCameraSpeed.ValueChanged += new System.EventHandler(this.TrackbarCameraSpeed_ValueChanged);
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(3, 3);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(75, 13);
-            this.label25.TabIndex = 0;
-            this.label25.Text = "Camera speed";
-            // 
-            // TimerUpdatesPerSecond
-            // 
-            this.TimerUpdatesPerSecond.Interval = 1000;
-            this.TimerUpdatesPerSecond.Tick += new System.EventHandler(this.TimerUpdatesPerSecond_Tick);
-            // 
-            // PanelObjectSelector
-            // 
-            this.PanelObjectSelector.Controls.Add(this.TreeEntitytFilter);
-            this.PanelObjectSelector.Controls.Add(this.TreeEntities);
-            this.PanelObjectSelector.Location = new System.Drawing.Point(4, 172);
-            this.PanelObjectSelector.Name = "PanelObjectSelector";
-            this.PanelObjectSelector.Size = new System.Drawing.Size(255, 467);
-            this.PanelObjectSelector.TabIndex = 10;
-            this.PanelObjectSelector.Visible = false;
-            // 
-            // TreeEntitytFilter
-            // 
-            this.TreeEntitytFilter.Location = new System.Drawing.Point(6, 444);
-            this.TreeEntitytFilter.Name = "TreeEntitytFilter";
-            this.TreeEntitytFilter.Size = new System.Drawing.Size(246, 20);
-            this.TreeEntitytFilter.TabIndex = 1;
-            this.TreeEntitytFilter.TextChanged += new System.EventHandler(this.TreeEntityFilter_TextChanged);
-            // 
-            // TreeEntities
-            // 
-            this.TreeEntities.Location = new System.Drawing.Point(6, 3);
-            this.TreeEntities.Name = "TreeEntities";
-            this.TreeEntities.Size = new System.Drawing.Size(246, 435);
-            this.TreeEntities.TabIndex = 0;
-            this.TreeEntities.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeEntities_NodeMouseClick);
-            // 
-            // TimerTreeEntityFilter
-            // 
-            this.TimerTreeEntityFilter.Interval = 500;
-            this.TimerTreeEntityFilter.Tick += new System.EventHandler(this.TimerTreeEntityFilter_Tick);
-            // 
-            // TimerAnimation
-            // 
-            this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
+            TabPageEntities.Controls.Add(QuickSelect);
+            TabPageEntities.Controls.Add(EntityHidePreview);
+            TabPageEntities.Controls.Add(PanelMonumentType);
+            TabPageEntities.Controls.Add(EditCoopCampTypes);
+            TabPageEntities.Controls.Add(PanelEntityPlacementSelect);
+            TabPageEntities.Controls.Add(panel5);
+            TabPageEntities.Location = new System.Drawing.Point(4, 25);
+            TabPageEntities.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TabPageEntities.Name = "TabPageEntities";
+            TabPageEntities.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TabPageEntities.Size = new System.Drawing.Size(1275, 136);
+            TabPageEntities.TabIndex = 2;
+            TabPageEntities.Text = "Entities";
+            TabPageEntities.UseVisualStyleBackColor = true;
             // 
             // QuickSelect
             // 
-            this.QuickSelect.Location = new System.Drawing.Point(731, 4);
-            this.QuickSelect.Margin = new System.Windows.Forms.Padding(2);
-            this.QuickSelect.Name = "QuickSelect";
-            this.QuickSelect.QsRef = null;
-            this.QuickSelect.Size = new System.Drawing.Size(480, 84);
-            this.QuickSelect.TabIndex = 15;
-            this.QuickSelect.Visible = false;
+            QuickSelect.Location = new System.Drawing.Point(853, 5);
+            QuickSelect.Margin = new System.Windows.Forms.Padding(2);
+            QuickSelect.Name = "QuickSelect";
+            QuickSelect.QsRef = null;
+            QuickSelect.Size = new System.Drawing.Size(560, 97);
+            QuickSelect.TabIndex = 15;
+            QuickSelect.Visible = false;
+            // 
+            // EntityHidePreview
+            // 
+            EntityHidePreview.AutoSize = true;
+            EntityHidePreview.Location = new System.Drawing.Point(852, 108);
+            EntityHidePreview.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            EntityHidePreview.Name = "EntityHidePreview";
+            EntityHidePreview.Size = new System.Drawing.Size(95, 19);
+            EntityHidePreview.TabIndex = 14;
+            EntityHidePreview.Text = "Hide preview";
+            EntityHidePreview.UseVisualStyleBackColor = true;
+            EntityHidePreview.CheckedChanged += EntityHidePreview_CheckedChanged;
+            // 
+            // PanelMonumentType
+            // 
+            PanelMonumentType.Controls.Add(MonumentHero);
+            PanelMonumentType.Controls.Add(label15);
+            PanelMonumentType.Controls.Add(MonumentHuman);
+            PanelMonumentType.Controls.Add(MonumentElf);
+            PanelMonumentType.Controls.Add(MonumentOrc);
+            PanelMonumentType.Controls.Add(MonumentTroll);
+            PanelMonumentType.Controls.Add(MonumentDwarf);
+            PanelMonumentType.Controls.Add(MonumentDarkElf);
+            PanelMonumentType.Location = new System.Drawing.Point(677, 3);
+            PanelMonumentType.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelMonumentType.Name = "PanelMonumentType";
+            PanelMonumentType.Size = new System.Drawing.Size(168, 125);
+            PanelMonumentType.TabIndex = 13;
+            PanelMonumentType.Visible = false;
+            // 
+            // MonumentHero
+            // 
+            MonumentHero.AutoSize = true;
+            MonumentHero.Checked = true;
+            MonumentHero.ForeColor = System.Drawing.SystemColors.WindowText;
+            MonumentHero.Location = new System.Drawing.Point(92, 98);
+            MonumentHero.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MonumentHero.Name = "MonumentHero";
+            MonumentHero.Size = new System.Drawing.Size(51, 19);
+            MonumentHero.TabIndex = 12;
+            MonumentHero.TabStop = true;
+            MonumentHero.Text = "Hero";
+            MonumentHero.UseVisualStyleBackColor = true;
+            MonumentHero.CheckedChanged += MonumentHero_CheckedChanged;
+            // 
+            // label15
+            // 
+            label15.AutoSize = true;
+            label15.Location = new System.Drawing.Point(33, 0);
+            label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label15.Name = "label15";
+            label15.Size = new System.Drawing.Size(93, 15);
+            label15.TabIndex = 11;
+            label15.Text = "Monument type";
+            // 
+            // MonumentHuman
+            // 
+            MonumentHuman.AutoSize = true;
+            MonumentHuman.Location = new System.Drawing.Point(4, 18);
+            MonumentHuman.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MonumentHuman.Name = "MonumentHuman";
+            MonumentHuman.Size = new System.Drawing.Size(65, 19);
+            MonumentHuman.TabIndex = 8;
+            MonumentHuman.Text = "Human";
+            MonumentHuman.UseVisualStyleBackColor = true;
+            MonumentHuman.CheckedChanged += MonumentHuman_CheckedChanged;
+            // 
+            // MonumentElf
+            // 
+            MonumentElf.AutoSize = true;
+            MonumentElf.Location = new System.Drawing.Point(4, 45);
+            MonumentElf.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MonumentElf.Name = "MonumentElf";
+            MonumentElf.Size = new System.Drawing.Size(38, 19);
+            MonumentElf.TabIndex = 9;
+            MonumentElf.Text = "Elf";
+            MonumentElf.UseVisualStyleBackColor = true;
+            MonumentElf.CheckedChanged += MonumentElf_CheckedChanged;
+            // 
+            // MonumentOrc
+            // 
+            MonumentOrc.AutoSize = true;
+            MonumentOrc.ForeColor = System.Drawing.SystemColors.WindowText;
+            MonumentOrc.Location = new System.Drawing.Point(92, 18);
+            MonumentOrc.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MonumentOrc.Name = "MonumentOrc";
+            MonumentOrc.Size = new System.Drawing.Size(44, 19);
+            MonumentOrc.TabIndex = 8;
+            MonumentOrc.Text = "Orc";
+            MonumentOrc.UseVisualStyleBackColor = true;
+            MonumentOrc.CheckedChanged += MonumentOrc_CheckedChanged;
+            // 
+            // MonumentTroll
+            // 
+            MonumentTroll.AutoSize = true;
+            MonumentTroll.ForeColor = System.Drawing.SystemColors.WindowText;
+            MonumentTroll.Location = new System.Drawing.Point(92, 45);
+            MonumentTroll.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MonumentTroll.Name = "MonumentTroll";
+            MonumentTroll.Size = new System.Drawing.Size(47, 19);
+            MonumentTroll.TabIndex = 9;
+            MonumentTroll.Text = "Troll";
+            MonumentTroll.UseVisualStyleBackColor = true;
+            MonumentTroll.CheckedChanged += MonumentTroll_CheckedChanged;
+            // 
+            // MonumentDwarf
+            // 
+            MonumentDwarf.AutoSize = true;
+            MonumentDwarf.Location = new System.Drawing.Point(4, 72);
+            MonumentDwarf.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MonumentDwarf.Name = "MonumentDwarf";
+            MonumentDwarf.Size = new System.Drawing.Size(56, 19);
+            MonumentDwarf.TabIndex = 10;
+            MonumentDwarf.Text = "Dwarf";
+            MonumentDwarf.UseVisualStyleBackColor = true;
+            MonumentDwarf.CheckedChanged += MonumentDwarf_CheckedChanged;
+            // 
+            // MonumentDarkElf
+            // 
+            MonumentDarkElf.AutoSize = true;
+            MonumentDarkElf.ForeColor = System.Drawing.SystemColors.WindowText;
+            MonumentDarkElf.Location = new System.Drawing.Point(92, 72);
+            MonumentDarkElf.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MonumentDarkElf.Name = "MonumentDarkElf";
+            MonumentDarkElf.Size = new System.Drawing.Size(65, 19);
+            MonumentDarkElf.TabIndex = 10;
+            MonumentDarkElf.Text = "Dark elf";
+            MonumentDarkElf.UseVisualStyleBackColor = true;
+            MonumentDarkElf.CheckedChanged += MonumentDarkElf_CheckedChanged;
+            // 
+            // EditCoopCampTypes
+            // 
+            EditCoopCampTypes.Location = new System.Drawing.Point(567, 3);
+            EditCoopCampTypes.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            EditCoopCampTypes.Name = "EditCoopCampTypes";
+            EditCoopCampTypes.Size = new System.Drawing.Size(103, 125);
+            EditCoopCampTypes.TabIndex = 11;
+            EditCoopCampTypes.Text = "Edit coop camp types...";
+            EditCoopCampTypes.UseVisualStyleBackColor = true;
+            EditCoopCampTypes.Click += EditCoopCampTypes_Click;
+            // 
+            // PanelEntityPlacementSelect
+            // 
+            PanelEntityPlacementSelect.Controls.Add(EntityID);
+            PanelEntityPlacementSelect.Controls.Add(label11);
+            PanelEntityPlacementSelect.Controls.Add(label10);
+            PanelEntityPlacementSelect.Controls.Add(PanelObjectAngle);
+            PanelEntityPlacementSelect.Location = new System.Drawing.Point(218, 3);
+            PanelEntityPlacementSelect.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelEntityPlacementSelect.Name = "PanelEntityPlacementSelect";
+            PanelEntityPlacementSelect.Size = new System.Drawing.Size(342, 125);
+            PanelEntityPlacementSelect.TabIndex = 10;
+            // 
+            // EntityID
+            // 
+            EntityID.BackColor = System.Drawing.Color.DarkOrange;
+            EntityID.Location = new System.Drawing.Point(64, 23);
+            EntityID.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            EntityID.Name = "EntityID";
+            EntityID.Size = new System.Drawing.Size(82, 23);
+            EntityID.TabIndex = 16;
+            EntityID.Leave += EntityID_Validated;
+            EntityID.MouseDown += EntityID_MouseDown;
+            // 
+            // label11
+            // 
+            label11.AutoSize = true;
+            label11.Location = new System.Drawing.Point(9, 27);
+            label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label11.Name = "label11";
+            label11.Size = new System.Drawing.Size(18, 15);
+            label11.TabIndex = 13;
+            label11.Text = "ID";
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Location = new System.Drawing.Point(117, 0);
+            label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label10.Name = "label10";
+            label10.Size = new System.Drawing.Size(82, 15);
+            label10.TabIndex = 12;
+            label10.Text = "Entity to place";
+            // 
+            // PanelObjectAngle
+            // 
+            PanelObjectAngle.Controls.Add(CheckRandomRange);
+            PanelObjectAngle.Controls.Add(AngleTrackbar);
+            PanelObjectAngle.Controls.Add(Angle);
+            PanelObjectAngle.Controls.Add(label36);
+            PanelObjectAngle.Location = new System.Drawing.Point(6, 53);
+            PanelObjectAngle.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelObjectAngle.Name = "PanelObjectAngle";
+            PanelObjectAngle.Size = new System.Drawing.Size(336, 62);
+            PanelObjectAngle.TabIndex = 11;
+            PanelObjectAngle.Visible = false;
+            // 
+            // CheckRandomRange
+            // 
+            CheckRandomRange.AutoSize = true;
+            CheckRandomRange.Location = new System.Drawing.Point(80, 35);
+            CheckRandomRange.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            CheckRandomRange.Name = "CheckRandomRange";
+            CheckRandomRange.Size = new System.Drawing.Size(103, 19);
+            CheckRandomRange.TabIndex = 23;
+            CheckRandomRange.Text = "Random angle";
+            CheckRandomRange.UseVisualStyleBackColor = true;
+            CheckRandomRange.CheckedChanged += CheckRandomRange_CheckedChanged;
+            // 
+            // AngleTrackbar
+            // 
+            AngleTrackbar.AutoSize = false;
+            AngleTrackbar.Location = new System.Drawing.Point(79, 5);
+            AngleTrackbar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            AngleTrackbar.Maximum = 359;
+            AngleTrackbar.Name = "AngleTrackbar";
+            AngleTrackbar.Size = new System.Drawing.Size(192, 23);
+            AngleTrackbar.TabIndex = 22;
+            AngleTrackbar.TickFrequency = 45;
+            AngleTrackbar.ValueChanged += AngleTrackbar_ValueChanged;
+            // 
+            // Angle
+            // 
+            Angle.Location = new System.Drawing.Point(279, 5);
+            Angle.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Angle.Name = "Angle";
+            Angle.Size = new System.Drawing.Size(53, 23);
+            Angle.TabIndex = 21;
+            Angle.Text = "0";
+            Angle.Validated += Angle_Validated;
+            // 
+            // label36
+            // 
+            label36.AutoSize = true;
+            label36.Location = new System.Drawing.Point(4, 8);
+            label36.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label36.Name = "label36";
+            label36.Size = new System.Drawing.Size(38, 15);
+            label36.TabIndex = 0;
+            label36.Text = "Angle";
+            // 
+            // panel5
+            // 
+            panel5.Controls.Add(RadioModeMonuments);
+            panel5.Controls.Add(label6);
+            panel5.Controls.Add(RadioEntityModeUnit);
+            panel5.Controls.Add(RadioEntityModeBuilding);
+            panel5.Controls.Add(RadioModeCoopCamps);
+            panel5.Controls.Add(RadioModeBindstones);
+            panel5.Controls.Add(RadioEntityModeObject);
+            panel5.Controls.Add(RadioModePortals);
+            panel5.Location = new System.Drawing.Point(9, 3);
+            panel5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            panel5.Name = "panel5";
+            panel5.Size = new System.Drawing.Size(202, 125);
+            panel5.TabIndex = 9;
+            // 
+            // RadioModeMonuments
+            // 
+            RadioModeMonuments.AutoSize = true;
+            RadioModeMonuments.ForeColor = System.Drawing.Color.Green;
+            RadioModeMonuments.Location = new System.Drawing.Point(92, 98);
+            RadioModeMonuments.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioModeMonuments.Name = "RadioModeMonuments";
+            RadioModeMonuments.Size = new System.Drawing.Size(90, 19);
+            RadioModeMonuments.TabIndex = 12;
+            RadioModeMonuments.Text = "Monuments";
+            RadioModeMonuments.UseVisualStyleBackColor = true;
+            RadioModeMonuments.CheckedChanged += RadioModeMonuments_CheckedChanged;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new System.Drawing.Point(50, 0);
+            label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(72, 15);
+            label6.TabIndex = 11;
+            label6.Text = "Editor mode";
+            // 
+            // RadioEntityModeUnit
+            // 
+            RadioEntityModeUnit.AutoSize = true;
+            RadioEntityModeUnit.Checked = true;
+            RadioEntityModeUnit.Location = new System.Drawing.Point(4, 18);
+            RadioEntityModeUnit.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioEntityModeUnit.Name = "RadioEntityModeUnit";
+            RadioEntityModeUnit.Size = new System.Drawing.Size(52, 19);
+            RadioEntityModeUnit.TabIndex = 8;
+            RadioEntityModeUnit.TabStop = true;
+            RadioEntityModeUnit.Text = "Units";
+            RadioEntityModeUnit.UseVisualStyleBackColor = true;
+            RadioEntityModeUnit.CheckedChanged += RadioEntityModeUnit_CheckedChanged;
+            // 
+            // RadioEntityModeBuilding
+            // 
+            RadioEntityModeBuilding.AutoSize = true;
+            RadioEntityModeBuilding.Location = new System.Drawing.Point(4, 45);
+            RadioEntityModeBuilding.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioEntityModeBuilding.Name = "RadioEntityModeBuilding";
+            RadioEntityModeBuilding.Size = new System.Drawing.Size(74, 19);
+            RadioEntityModeBuilding.TabIndex = 9;
+            RadioEntityModeBuilding.Text = "Buildings";
+            RadioEntityModeBuilding.UseVisualStyleBackColor = true;
+            RadioEntityModeBuilding.CheckedChanged += RadioEntityModeBuilding_CheckedChanged;
+            // 
+            // RadioModeCoopCamps
+            // 
+            RadioModeCoopCamps.AutoSize = true;
+            RadioModeCoopCamps.ForeColor = System.Drawing.Color.Green;
+            RadioModeCoopCamps.Location = new System.Drawing.Point(92, 18);
+            RadioModeCoopCamps.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioModeCoopCamps.Name = "RadioModeCoopCamps";
+            RadioModeCoopCamps.Size = new System.Drawing.Size(92, 19);
+            RadioModeCoopCamps.TabIndex = 8;
+            RadioModeCoopCamps.Text = "Coop camps";
+            RadioModeCoopCamps.UseVisualStyleBackColor = true;
+            RadioModeCoopCamps.CheckedChanged += RadioModeCoopCamps_CheckedChanged;
+            // 
+            // RadioModeBindstones
+            // 
+            RadioModeBindstones.AutoSize = true;
+            RadioModeBindstones.ForeColor = System.Drawing.Color.Green;
+            RadioModeBindstones.Location = new System.Drawing.Point(92, 45);
+            RadioModeBindstones.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioModeBindstones.Name = "RadioModeBindstones";
+            RadioModeBindstones.Size = new System.Drawing.Size(83, 19);
+            RadioModeBindstones.TabIndex = 9;
+            RadioModeBindstones.Text = "Bindstones";
+            RadioModeBindstones.UseVisualStyleBackColor = true;
+            RadioModeBindstones.CheckedChanged += RadioModeBindstones_CheckedChanged;
+            // 
+            // RadioEntityModeObject
+            // 
+            RadioEntityModeObject.AutoSize = true;
+            RadioEntityModeObject.Location = new System.Drawing.Point(4, 72);
+            RadioEntityModeObject.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioEntityModeObject.Name = "RadioEntityModeObject";
+            RadioEntityModeObject.Size = new System.Drawing.Size(65, 19);
+            RadioEntityModeObject.TabIndex = 10;
+            RadioEntityModeObject.Text = "Objects";
+            RadioEntityModeObject.UseVisualStyleBackColor = true;
+            RadioEntityModeObject.CheckedChanged += RadioEntityModeObject_CheckedChanged;
+            // 
+            // RadioModePortals
+            // 
+            RadioModePortals.AutoSize = true;
+            RadioModePortals.ForeColor = System.Drawing.Color.Green;
+            RadioModePortals.Location = new System.Drawing.Point(92, 72);
+            RadioModePortals.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioModePortals.Name = "RadioModePortals";
+            RadioModePortals.Size = new System.Drawing.Size(61, 19);
+            RadioModePortals.TabIndex = 10;
+            RadioModePortals.Text = "Portals";
+            RadioModePortals.UseVisualStyleBackColor = true;
+            RadioModePortals.CheckedChanged += RadioModePortals_CheckedChanged;
+            // 
+            // TabPageTextures
+            // 
+            TabPageTextures.Controls.Add(ButtonModifyTextureSet);
+            TabPageTextures.Controls.Add(PanelTileType);
+            TabPageTextures.Location = new System.Drawing.Point(4, 25);
+            TabPageTextures.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TabPageTextures.Name = "TabPageTextures";
+            TabPageTextures.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TabPageTextures.Size = new System.Drawing.Size(1275, 136);
+            TabPageTextures.TabIndex = 1;
+            TabPageTextures.Text = "Textures";
+            TabPageTextures.UseVisualStyleBackColor = true;
+            // 
+            // ButtonModifyTextureSet
+            // 
+            ButtonModifyTextureSet.Location = new System.Drawing.Point(7, 7);
+            ButtonModifyTextureSet.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonModifyTextureSet.Name = "ButtonModifyTextureSet";
+            ButtonModifyTextureSet.Size = new System.Drawing.Size(105, 118);
+            ButtonModifyTextureSet.TabIndex = 19;
+            ButtonModifyTextureSet.Text = "Modify texture set...";
+            ButtonModifyTextureSet.UseVisualStyleBackColor = true;
+            ButtonModifyTextureSet.Click += ButtonModifyTextureSet_Click;
+            // 
+            // PanelTileType
+            // 
+            PanelTileType.Controls.Add(RadioTileTypeCustom);
+            PanelTileType.Controls.Add(RadioTileTypeBase);
+            PanelTileType.Controls.Add(label9);
+            PanelTileType.Location = new System.Drawing.Point(427, 7);
+            PanelTileType.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelTileType.Name = "PanelTileType";
+            PanelTileType.Size = new System.Drawing.Size(84, 118);
+            PanelTileType.TabIndex = 18;
+            // 
+            // RadioTileTypeCustom
+            // 
+            RadioTileTypeCustom.AutoSize = true;
+            RadioTileTypeCustom.Location = new System.Drawing.Point(7, 52);
+            RadioTileTypeCustom.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioTileTypeCustom.Name = "RadioTileTypeCustom";
+            RadioTileTypeCustom.Size = new System.Drawing.Size(67, 19);
+            RadioTileTypeCustom.TabIndex = 16;
+            RadioTileTypeCustom.Text = "Custom";
+            RadioTileTypeCustom.UseVisualStyleBackColor = true;
+            RadioTileTypeCustom.CheckedChanged += RadioTileTypeCustom_CheckedChanged;
+            // 
+            // RadioTileTypeBase
+            // 
+            RadioTileTypeBase.AutoSize = true;
+            RadioTileTypeBase.Checked = true;
+            RadioTileTypeBase.Location = new System.Drawing.Point(7, 25);
+            RadioTileTypeBase.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioTileTypeBase.Name = "RadioTileTypeBase";
+            RadioTileTypeBase.Size = new System.Drawing.Size(49, 19);
+            RadioTileTypeBase.TabIndex = 15;
+            RadioTileTypeBase.TabStop = true;
+            RadioTileTypeBase.Text = "Base";
+            RadioTileTypeBase.UseVisualStyleBackColor = true;
+            RadioTileTypeBase.CheckedChanged += RadioTileTypeBase_CheckedChanged;
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new System.Drawing.Point(4, 7);
+            label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label9.Name = "label9";
+            label9.Size = new System.Drawing.Size(51, 15);
+            label9.TabIndex = 14;
+            label9.Text = "Tile type";
+            label9.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // TabPageTerrain
+            // 
+            TabPageTerrain.Controls.Add(PanelLakeMode);
+            TabPageTerrain.Controls.Add(PanelAtmoPreview);
+            TabPageTerrain.Controls.Add(PanelWeather);
+            TabPageTerrain.Controls.Add(PanelFlags);
+            TabPageTerrain.Controls.Add(PanelBrushShape);
+            TabPageTerrain.Controls.Add(PanelTerrainSettings);
+            TabPageTerrain.Controls.Add(PanelStrength);
+            TabPageTerrain.Controls.Add(panel1);
+            TabPageTerrain.Location = new System.Drawing.Point(4, 25);
+            TabPageTerrain.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TabPageTerrain.Name = "TabPageTerrain";
+            TabPageTerrain.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TabPageTerrain.Size = new System.Drawing.Size(1275, 136);
+            TabPageTerrain.TabIndex = 0;
+            TabPageTerrain.Text = "Terrain";
+            TabPageTerrain.UseVisualStyleBackColor = true;
+            // 
+            // PanelLakeMode
+            // 
+            PanelLakeMode.Controls.Add(RadioLakeSelect);
+            PanelLakeMode.Controls.Add(RadioLakeFlood);
+            PanelLakeMode.Controls.Add(label38);
+            PanelLakeMode.Location = new System.Drawing.Point(884, 39);
+            PanelLakeMode.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelLakeMode.Name = "PanelLakeMode";
+            PanelLakeMode.Size = new System.Drawing.Size(241, 84);
+            PanelLakeMode.TabIndex = 11;
+            PanelLakeMode.Visible = false;
+            // 
+            // RadioLakeSelect
+            // 
+            RadioLakeSelect.AutoSize = true;
+            RadioLakeSelect.Location = new System.Drawing.Point(174, 18);
+            RadioLakeSelect.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioLakeSelect.Name = "RadioLakeSelect";
+            RadioLakeSelect.Size = new System.Drawing.Size(56, 19);
+            RadioLakeSelect.TabIndex = 2;
+            RadioLakeSelect.Text = "Select";
+            RadioLakeSelect.UseVisualStyleBackColor = true;
+            RadioLakeSelect.CheckedChanged += RadioLakeSelect_CheckedChanged;
+            // 
+            // RadioLakeFlood
+            // 
+            RadioLakeFlood.AutoSize = true;
+            RadioLakeFlood.Checked = true;
+            RadioLakeFlood.Location = new System.Drawing.Point(108, 18);
+            RadioLakeFlood.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioLakeFlood.Name = "RadioLakeFlood";
+            RadioLakeFlood.Size = new System.Drawing.Size(55, 19);
+            RadioLakeFlood.TabIndex = 1;
+            RadioLakeFlood.TabStop = true;
+            RadioLakeFlood.Text = "Flood";
+            RadioLakeFlood.UseVisualStyleBackColor = true;
+            RadioLakeFlood.CheckedChanged += RadioLakeFlood_CheckedChanged;
+            // 
+            // label38
+            // 
+            label38.AutoSize = true;
+            label38.Location = new System.Drawing.Point(4, 21);
+            label38.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label38.Name = "label38";
+            label38.Size = new System.Drawing.Size(61, 15);
+            label38.TabIndex = 0;
+            label38.Text = "Edit mode";
+            // 
+            // PanelAtmoPreview
+            // 
+            PanelAtmoPreview.Controls.Add(label37);
+            PanelAtmoPreview.Controls.Add(SunAltitudeVal);
+            PanelAtmoPreview.Controls.Add(label13);
+            PanelAtmoPreview.Controls.Add(SunAltitudeTrackbar);
+            PanelAtmoPreview.Controls.Add(SunAzimuthVal);
+            PanelAtmoPreview.Controls.Add(label12);
+            PanelAtmoPreview.Controls.Add(SunAzimuthTrackbar);
+            PanelAtmoPreview.Location = new System.Drawing.Point(888, 95);
+            PanelAtmoPreview.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelAtmoPreview.Name = "PanelAtmoPreview";
+            PanelAtmoPreview.Size = new System.Drawing.Size(309, 115);
+            PanelAtmoPreview.TabIndex = 18;
+            PanelAtmoPreview.Visible = false;
+            // 
+            // label37
+            // 
+            label37.AutoSize = true;
+            label37.Location = new System.Drawing.Point(105, 0);
+            label37.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label37.Name = "label37";
+            label37.Size = new System.Drawing.Size(116, 15);
+            label37.TabIndex = 19;
+            label37.Text = "Atmosphere preview";
+            // 
+            // SunAltitudeVal
+            // 
+            SunAltitudeVal.Location = new System.Drawing.Point(86, 59);
+            SunAltitudeVal.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            SunAltitudeVal.Name = "SunAltitudeVal";
+            SunAltitudeVal.Size = new System.Drawing.Size(48, 23);
+            SunAltitudeVal.TabIndex = 18;
+            SunAltitudeVal.Text = "60";
+            SunAltitudeVal.Validated += SunAltitudeVal_Validated;
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new System.Drawing.Point(4, 62);
+            label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label13.Name = "label13";
+            label13.Size = new System.Drawing.Size(70, 15);
+            label13.TabIndex = 17;
+            label13.Text = "Sun altitude";
+            // 
+            // SunAltitudeTrackbar
+            // 
+            SunAltitudeTrackbar.AutoSize = false;
+            SunAltitudeTrackbar.Location = new System.Drawing.Point(142, 59);
+            SunAltitudeTrackbar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            SunAltitudeTrackbar.Maximum = 89;
+            SunAltitudeTrackbar.Minimum = -89;
+            SunAltitudeTrackbar.Name = "SunAltitudeTrackbar";
+            SunAltitudeTrackbar.Size = new System.Drawing.Size(121, 23);
+            SunAltitudeTrackbar.TabIndex = 16;
+            SunAltitudeTrackbar.TickFrequency = 45;
+            SunAltitudeTrackbar.Value = 60;
+            SunAltitudeTrackbar.ValueChanged += SunAltitudeTrackbar_ValueChanged;
+            // 
+            // SunAzimuthVal
+            // 
+            SunAzimuthVal.Location = new System.Drawing.Point(86, 29);
+            SunAzimuthVal.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            SunAzimuthVal.Name = "SunAzimuthVal";
+            SunAzimuthVal.Size = new System.Drawing.Size(48, 23);
+            SunAzimuthVal.TabIndex = 15;
+            SunAzimuthVal.Text = "30";
+            SunAzimuthVal.Validated += SunAzimuthVal_Validated;
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new System.Drawing.Point(4, 32);
+            label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label12.Name = "label12";
+            label12.Size = new System.Drawing.Size(73, 15);
+            label12.TabIndex = 14;
+            label12.Text = "Sun azimuth";
+            // 
+            // SunAzimuthTrackbar
+            // 
+            SunAzimuthTrackbar.AutoSize = false;
+            SunAzimuthTrackbar.Location = new System.Drawing.Point(142, 29);
+            SunAzimuthTrackbar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            SunAzimuthTrackbar.Maximum = 359;
+            SunAzimuthTrackbar.Name = "SunAzimuthTrackbar";
+            SunAzimuthTrackbar.Size = new System.Drawing.Size(121, 23);
+            SunAzimuthTrackbar.TabIndex = 13;
+            SunAzimuthTrackbar.TickFrequency = 45;
+            SunAzimuthTrackbar.Value = 30;
+            SunAzimuthTrackbar.ValueChanged += SunAzimuthTrackbar_ValueChanged;
+            // 
+            // PanelWeather
+            // 
+            PanelWeather.Controls.Add(label35);
+            PanelWeather.Controls.Add(label34);
+            PanelWeather.Controls.Add(label33);
+            PanelWeather.Controls.Add(label32);
+            PanelWeather.Controls.Add(label31);
+            PanelWeather.Controls.Add(label30);
+            PanelWeather.Controls.Add(label29);
+            PanelWeather.Controls.Add(label28);
+            PanelWeather.Controls.Add(WLavanight);
+            PanelWeather.Controls.Add(WSwampfog);
+            PanelWeather.Controls.Add(WDesertfog);
+            PanelWeather.Controls.Add(WLavafogBright);
+            PanelWeather.Controls.Add(WLavafog);
+            PanelWeather.Controls.Add(WStorm);
+            PanelWeather.Controls.Add(WCloud);
+            PanelWeather.Controls.Add(WClear);
+            PanelWeather.Controls.Add(label27);
+            PanelWeather.Controls.Add(label26);
+            PanelWeather.Location = new System.Drawing.Point(1136, 3);
+            PanelWeather.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelWeather.Name = "PanelWeather";
+            PanelWeather.Size = new System.Drawing.Size(734, 125);
+            PanelWeather.TabIndex = 10;
+            PanelWeather.Visible = false;
+            // 
+            // label35
+            // 
+            label35.AutoSize = true;
+            label35.Location = new System.Drawing.Point(564, 12);
+            label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label35.Name = "label35";
+            label35.Size = new System.Drawing.Size(59, 15);
+            label35.TabIndex = 28;
+            label35.Text = "Lavanight";
+            // 
+            // label34
+            // 
+            label34.AutoSize = true;
+            label34.Location = new System.Drawing.Point(498, 12);
+            label34.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label34.Name = "label34";
+            label34.Size = new System.Drawing.Size(64, 15);
+            label34.TabIndex = 27;
+            label34.Text = "Swampfog";
+            // 
+            // label33
+            // 
+            label33.AutoSize = true;
+            label33.Location = new System.Drawing.Point(432, 12);
+            label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label33.Name = "label33";
+            label33.Size = new System.Drawing.Size(58, 15);
+            label33.TabIndex = 26;
+            label33.Text = "Desertfog";
+            // 
+            // label32
+            // 
+            label32.AutoSize = true;
+            label32.Location = new System.Drawing.Point(334, 12);
+            label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label32.Name = "label32";
+            label32.Size = new System.Drawing.Size(92, 15);
+            label32.TabIndex = 25;
+            label32.Text = "Lavafog (bright)";
+            // 
+            // label31
+            // 
+            label31.AutoSize = true;
+            label31.Location = new System.Drawing.Point(278, 12);
+            label31.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label31.Name = "label31";
+            label31.Size = new System.Drawing.Size(49, 15);
+            label31.TabIndex = 24;
+            label31.Text = "Lavafog";
+            // 
+            // label30
+            // 
+            label30.AutoSize = true;
+            label30.Location = new System.Drawing.Point(222, 12);
+            label30.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label30.Name = "label30";
+            label30.Size = new System.Drawing.Size(45, 15);
+            label30.TabIndex = 23;
+            label30.Text = "Stormy";
+            // 
+            // label29
+            // 
+            label29.AutoSize = true;
+            label29.Location = new System.Drawing.Point(169, 12);
+            label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label29.Name = "label29";
+            label29.Size = new System.Drawing.Size(45, 15);
+            label29.TabIndex = 22;
+            label29.Text = "Cloudy";
+            // 
+            // label28
+            // 
+            label28.AutoSize = true;
+            label28.Location = new System.Drawing.Point(106, 12);
+            label28.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label28.Name = "label28";
+            label28.Size = new System.Drawing.Size(34, 15);
+            label28.TabIndex = 21;
+            label28.Text = "Clear";
+            // 
+            // WLavanight
+            // 
+            WLavanight.Location = new System.Drawing.Point(567, 30);
+            WLavanight.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            WLavanight.Name = "WLavanight";
+            WLavanight.Size = new System.Drawing.Size(59, 23);
+            WLavanight.TabIndex = 20;
+            WLavanight.Validated += WLavanight_Validated;
+            // 
+            // WSwampfog
+            // 
+            WSwampfog.Location = new System.Drawing.Point(502, 30);
+            WSwampfog.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            WSwampfog.Name = "WSwampfog";
+            WSwampfog.Size = new System.Drawing.Size(58, 23);
+            WSwampfog.TabIndex = 19;
+            WSwampfog.Validated += WSwampfog_Validated;
+            // 
+            // WDesertfog
+            // 
+            WDesertfog.Location = new System.Drawing.Point(435, 30);
+            WDesertfog.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            WDesertfog.Name = "WDesertfog";
+            WDesertfog.Size = new System.Drawing.Size(58, 23);
+            WDesertfog.TabIndex = 18;
+            WDesertfog.Validated += WDesertfog_Validated;
+            // 
+            // WLavafogBright
+            // 
+            WLavafogBright.Location = new System.Drawing.Point(337, 30);
+            WLavafogBright.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            WLavafogBright.Name = "WLavafogBright";
+            WLavafogBright.Size = new System.Drawing.Size(90, 23);
+            WLavafogBright.TabIndex = 17;
+            WLavafogBright.Validated += WLavafogBright_Validated;
+            // 
+            // WLavafog
+            // 
+            WLavafog.Location = new System.Drawing.Point(281, 30);
+            WLavafog.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            WLavafog.Name = "WLavafog";
+            WLavafog.Size = new System.Drawing.Size(48, 23);
+            WLavafog.TabIndex = 16;
+            WLavafog.Validated += WLavafog_Validated;
+            // 
+            // WStorm
+            // 
+            WStorm.Location = new System.Drawing.Point(225, 30);
+            WStorm.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            WStorm.Name = "WStorm";
+            WStorm.Size = new System.Drawing.Size(48, 23);
+            WStorm.TabIndex = 15;
+            WStorm.Validated += WStorm_Validated;
+            // 
+            // WCloud
+            // 
+            WCloud.Location = new System.Drawing.Point(169, 30);
+            WCloud.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            WCloud.Name = "WCloud";
+            WCloud.Size = new System.Drawing.Size(48, 23);
+            WCloud.TabIndex = 14;
+            WCloud.Validated += WCloud_Validated;
+            // 
+            // WClear
+            // 
+            WClear.Location = new System.Drawing.Point(110, 30);
+            WClear.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            WClear.Name = "WClear";
+            WClear.Size = new System.Drawing.Size(48, 23);
+            WClear.TabIndex = 13;
+            WClear.Validated += WClear_Validated;
+            // 
+            // label27
+            // 
+            label27.AutoSize = true;
+            label27.Location = new System.Drawing.Point(5, 33);
+            label27.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label27.Name = "label27";
+            label27.Size = new System.Drawing.Size(56, 15);
+            label27.TabIndex = 12;
+            label27.Text = "Value (%)";
+            // 
+            // label26
+            // 
+            label26.AutoSize = true;
+            label26.Location = new System.Drawing.Point(5, 12);
+            label26.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label26.Name = "label26";
+            label26.Size = new System.Drawing.Size(77, 15);
+            label26.TabIndex = 11;
+            label26.Text = "Weather type";
+            // 
+            // PanelFlags
+            // 
+            PanelFlags.Controls.Add(RadioFlagVision);
+            PanelFlags.Controls.Add(RadioFlagMovement);
+            PanelFlags.Controls.Add(label8);
+            PanelFlags.Location = new System.Drawing.Point(888, 3);
+            PanelFlags.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelFlags.Name = "PanelFlags";
+            PanelFlags.Size = new System.Drawing.Size(241, 84);
+            PanelFlags.TabIndex = 8;
+            PanelFlags.Visible = false;
+            // 
+            // RadioFlagVision
+            // 
+            RadioFlagVision.AutoSize = true;
+            RadioFlagVision.Location = new System.Drawing.Point(163, 18);
+            RadioFlagVision.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioFlagVision.Name = "RadioFlagVision";
+            RadioFlagVision.Size = new System.Drawing.Size(57, 19);
+            RadioFlagVision.TabIndex = 2;
+            RadioFlagVision.Text = "Vision";
+            RadioFlagVision.UseVisualStyleBackColor = true;
+            RadioFlagVision.CheckedChanged += RadioFlagVision_CheckedChanged;
+            // 
+            // RadioFlagMovement
+            // 
+            RadioFlagMovement.AutoSize = true;
+            RadioFlagMovement.Checked = true;
+            RadioFlagMovement.Location = new System.Drawing.Point(69, 18);
+            RadioFlagMovement.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioFlagMovement.Name = "RadioFlagMovement";
+            RadioFlagMovement.Size = new System.Drawing.Size(83, 19);
+            RadioFlagMovement.TabIndex = 1;
+            RadioFlagMovement.TabStop = true;
+            RadioFlagMovement.Text = "Movement";
+            RadioFlagMovement.UseVisualStyleBackColor = true;
+            RadioFlagMovement.CheckedChanged += RadioFlagMovement_CheckedChanged;
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new System.Drawing.Point(4, 21);
+            label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label8.Name = "label8";
+            label8.Size = new System.Drawing.Size(55, 15);
+            label8.TabIndex = 0;
+            label8.Text = "Flag type";
+            // 
+            // PanelBrushShape
+            // 
+            PanelBrushShape.Controls.Add(BrushSizeVal);
+            PanelBrushShape.Controls.Add(label3);
+            PanelBrushShape.Controls.Add(panel2);
+            PanelBrushShape.Controls.Add(label4);
+            PanelBrushShape.Controls.Add(label2);
+            PanelBrushShape.Controls.Add(BrushSizeTrackbar);
+            PanelBrushShape.Location = new System.Drawing.Point(219, 3);
+            PanelBrushShape.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelBrushShape.Name = "PanelBrushShape";
+            PanelBrushShape.Size = new System.Drawing.Size(304, 84);
+            PanelBrushShape.TabIndex = 8;
+            // 
+            // BrushSizeVal
+            // 
+            BrushSizeVal.Location = new System.Drawing.Point(72, 21);
+            BrushSizeVal.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            BrushSizeVal.Name = "BrushSizeVal";
+            BrushSizeVal.Size = new System.Drawing.Size(48, 23);
+            BrushSizeVal.TabIndex = 12;
+            BrushSizeVal.Text = "3";
+            BrushSizeVal.Validated += BrushSizeVal_Validated;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(34, 24);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(27, 15);
+            label3.TabIndex = 9;
+            label3.Text = "Size";
+            // 
+            // panel2
+            // 
+            panel2.Controls.Add(RadioDiamond);
+            panel2.Controls.Add(RadioCircle);
+            panel2.Controls.Add(RadioSquare);
+            panel2.Location = new System.Drawing.Point(72, 51);
+            panel2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            panel2.Name = "panel2";
+            panel2.Size = new System.Drawing.Size(229, 32);
+            panel2.TabIndex = 8;
+            // 
+            // RadioDiamond
+            // 
+            RadioDiamond.AutoSize = true;
+            RadioDiamond.Location = new System.Drawing.Point(146, 6);
+            RadioDiamond.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioDiamond.Name = "RadioDiamond";
+            RadioDiamond.Size = new System.Drawing.Size(74, 19);
+            RadioDiamond.TabIndex = 2;
+            RadioDiamond.Text = "Diamond";
+            RadioDiamond.UseVisualStyleBackColor = true;
+            RadioDiamond.CheckedChanged += RadioDiamond_CheckedChanged;
+            // 
+            // RadioCircle
+            // 
+            RadioCircle.AutoSize = true;
+            RadioCircle.Checked = true;
+            RadioCircle.Location = new System.Drawing.Point(79, 6);
+            RadioCircle.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioCircle.Name = "RadioCircle";
+            RadioCircle.Size = new System.Drawing.Size(55, 19);
+            RadioCircle.TabIndex = 1;
+            RadioCircle.TabStop = true;
+            RadioCircle.Text = "Circle";
+            RadioCircle.UseVisualStyleBackColor = true;
+            RadioCircle.CheckedChanged += RadioCircle_CheckedChanged;
+            // 
+            // RadioSquare
+            // 
+            RadioSquare.AutoSize = true;
+            RadioSquare.Location = new System.Drawing.Point(4, 6);
+            RadioSquare.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioSquare.Name = "RadioSquare";
+            RadioSquare.Size = new System.Drawing.Size(61, 19);
+            RadioSquare.TabIndex = 0;
+            RadioSquare.Text = "Square";
+            RadioSquare.UseVisualStyleBackColor = true;
+            RadioSquare.CheckedChanged += RadioSquare_CheckedChanged;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(21, 59);
+            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(39, 15);
+            label4.TabIndex = 10;
+            label4.Text = "Shape";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(93, 0);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(81, 15);
+            label2.TabIndex = 8;
+            label2.Text = "Brush settings";
+            // 
+            // BrushSizeTrackbar
+            // 
+            BrushSizeTrackbar.AutoSize = false;
+            BrushSizeTrackbar.Location = new System.Drawing.Point(128, 21);
+            BrushSizeTrackbar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            BrushSizeTrackbar.Maximum = 15;
+            BrushSizeTrackbar.Minimum = 1;
+            BrushSizeTrackbar.Name = "BrushSizeTrackbar";
+            BrushSizeTrackbar.Size = new System.Drawing.Size(121, 23);
+            BrushSizeTrackbar.TabIndex = 8;
+            BrushSizeTrackbar.TickFrequency = 2;
+            BrushSizeTrackbar.Value = 3;
+            BrushSizeTrackbar.ValueChanged += BrushSizeTrackbar_ValueChanged;
+            // 
+            // PanelTerrainSettings
+            // 
+            PanelTerrainSettings.Controls.Add(label5);
+            PanelTerrainSettings.Controls.Add(panel3);
+            PanelTerrainSettings.Controls.Add(panel4);
+            PanelTerrainSettings.Controls.Add(label7);
+            PanelTerrainSettings.Location = new System.Drawing.Point(527, 3);
+            PanelTerrainSettings.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelTerrainSettings.Name = "PanelTerrainSettings";
+            PanelTerrainSettings.Size = new System.Drawing.Size(354, 125);
+            PanelTerrainSettings.TabIndex = 8;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(15, 21);
+            label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(75, 15);
+            label5.TabIndex = 11;
+            label5.Text = "Interpolation";
+            // 
+            // panel3
+            // 
+            panel3.Controls.Add(RadioIntSinusoidal);
+            panel3.Controls.Add(RadioIntSquare);
+            panel3.Controls.Add(RadioIntLinear);
+            panel3.Controls.Add(RadioIntConstant);
+            panel3.Location = new System.Drawing.Point(98, 14);
+            panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            panel3.Name = "panel3";
+            panel3.Size = new System.Drawing.Size(206, 62);
+            panel3.TabIndex = 9;
+            // 
+            // RadioIntSinusoidal
+            // 
+            RadioIntSinusoidal.AutoSize = true;
+            RadioIntSinusoidal.Checked = true;
+            RadioIntSinusoidal.Location = new System.Drawing.Point(89, 32);
+            RadioIntSinusoidal.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioIntSinusoidal.Name = "RadioIntSinusoidal";
+            RadioIntSinusoidal.Size = new System.Drawing.Size(79, 19);
+            RadioIntSinusoidal.TabIndex = 3;
+            RadioIntSinusoidal.TabStop = true;
+            RadioIntSinusoidal.Text = "Sinusoidal";
+            RadioIntSinusoidal.UseVisualStyleBackColor = true;
+            RadioIntSinusoidal.CheckedChanged += RadioIntSinusoidal_CheckedChanged;
+            // 
+            // RadioIntSquare
+            // 
+            RadioIntSquare.AutoSize = true;
+            RadioIntSquare.Location = new System.Drawing.Point(4, 32);
+            RadioIntSquare.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioIntSquare.Name = "RadioIntSquare";
+            RadioIntSquare.Size = new System.Drawing.Size(61, 19);
+            RadioIntSquare.TabIndex = 2;
+            RadioIntSquare.Text = "Square";
+            RadioIntSquare.UseVisualStyleBackColor = true;
+            RadioIntSquare.CheckedChanged += RadioIntSquare_CheckedChanged;
+            // 
+            // RadioIntLinear
+            // 
+            RadioIntLinear.AutoSize = true;
+            RadioIntLinear.Location = new System.Drawing.Point(89, 6);
+            RadioIntLinear.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioIntLinear.Name = "RadioIntLinear";
+            RadioIntLinear.Size = new System.Drawing.Size(57, 19);
+            RadioIntLinear.TabIndex = 1;
+            RadioIntLinear.Text = "Linear";
+            RadioIntLinear.UseVisualStyleBackColor = true;
+            RadioIntLinear.CheckedChanged += RadioIntLinear_CheckedChanged;
+            // 
+            // RadioIntConstant
+            // 
+            RadioIntConstant.AutoSize = true;
+            RadioIntConstant.Location = new System.Drawing.Point(4, 6);
+            RadioIntConstant.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioIntConstant.Name = "RadioIntConstant";
+            RadioIntConstant.Size = new System.Drawing.Size(73, 19);
+            RadioIntConstant.TabIndex = 0;
+            RadioIntConstant.Text = "Constant";
+            RadioIntConstant.UseVisualStyleBackColor = true;
+            RadioIntConstant.CheckedChanged += RadioIntConstant_CheckedChanged;
+            // 
+            // panel4
+            // 
+            panel4.Controls.Add(RadioModeSmooth);
+            panel4.Controls.Add(RadioModeSet);
+            panel4.Controls.Add(RadioModeRaise);
+            panel4.Location = new System.Drawing.Point(98, 87);
+            panel4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            panel4.Name = "panel4";
+            panel4.Size = new System.Drawing.Size(206, 32);
+            panel4.TabIndex = 9;
+            // 
+            // RadioModeSmooth
+            // 
+            RadioModeSmooth.AutoSize = true;
+            RadioModeSmooth.Location = new System.Drawing.Point(126, 6);
+            RadioModeSmooth.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioModeSmooth.Name = "RadioModeSmooth";
+            RadioModeSmooth.Size = new System.Drawing.Size(67, 19);
+            RadioModeSmooth.TabIndex = 2;
+            RadioModeSmooth.Text = "Smooth";
+            RadioModeSmooth.UseVisualStyleBackColor = true;
+            RadioModeSmooth.CheckedChanged += RadioModeSmooth_CheckedChanged;
+            // 
+            // RadioModeSet
+            // 
+            RadioModeSet.AutoSize = true;
+            RadioModeSet.Location = new System.Drawing.Point(71, 6);
+            RadioModeSet.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioModeSet.Name = "RadioModeSet";
+            RadioModeSet.Size = new System.Drawing.Size(41, 19);
+            RadioModeSet.TabIndex = 1;
+            RadioModeSet.Text = "Set";
+            RadioModeSet.UseVisualStyleBackColor = true;
+            RadioModeSet.CheckedChanged += RadioModeSet_CheckedChanged;
+            // 
+            // RadioModeRaise
+            // 
+            RadioModeRaise.AutoSize = true;
+            RadioModeRaise.Checked = true;
+            RadioModeRaise.Location = new System.Drawing.Point(4, 6);
+            RadioModeRaise.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioModeRaise.Name = "RadioModeRaise";
+            RadioModeRaise.Size = new System.Drawing.Size(52, 19);
+            RadioModeRaise.TabIndex = 0;
+            RadioModeRaise.TabStop = true;
+            RadioModeRaise.Text = "Raise";
+            RadioModeRaise.UseVisualStyleBackColor = true;
+            RadioModeRaise.CheckedChanged += RadioModeRaise_CheckedChanged;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new System.Drawing.Point(51, 95);
+            label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label7.Name = "label7";
+            label7.Size = new System.Drawing.Size(38, 15);
+            label7.TabIndex = 16;
+            label7.Text = "Mode";
+            // 
+            // PanelStrength
+            // 
+            PanelStrength.Controls.Add(TerrainValueLabel);
+            PanelStrength.Controls.Add(TerrainValue);
+            PanelStrength.Controls.Add(TerrainTrackbar);
+            PanelStrength.Location = new System.Drawing.Point(219, 91);
+            PanelStrength.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelStrength.Name = "PanelStrength";
+            PanelStrength.Size = new System.Drawing.Size(304, 33);
+            PanelStrength.TabIndex = 17;
+            // 
+            // TerrainValueLabel
+            // 
+            TerrainValueLabel.AutoSize = true;
+            TerrainValueLabel.Location = new System.Drawing.Point(10, 7);
+            TerrainValueLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            TerrainValueLabel.Name = "TerrainValueLabel";
+            TerrainValueLabel.Size = new System.Drawing.Size(52, 15);
+            TerrainValueLabel.TabIndex = 14;
+            TerrainValueLabel.Text = "Strength";
+            TerrainValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // TerrainValue
+            // 
+            TerrainValue.Location = new System.Drawing.Point(72, 3);
+            TerrainValue.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TerrainValue.Name = "TerrainValue";
+            TerrainValue.Size = new System.Drawing.Size(48, 23);
+            TerrainValue.TabIndex = 15;
+            TerrainValue.Text = "20";
+            TerrainValue.Validated += TerrainValue_Validated;
+            // 
+            // TerrainTrackbar
+            // 
+            TerrainTrackbar.AutoSize = false;
+            TerrainTrackbar.Location = new System.Drawing.Point(128, 3);
+            TerrainTrackbar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TerrainTrackbar.Maximum = 100;
+            TerrainTrackbar.Name = "TerrainTrackbar";
+            TerrainTrackbar.Size = new System.Drawing.Size(121, 23);
+            TerrainTrackbar.TabIndex = 13;
+            TerrainTrackbar.TickFrequency = 10;
+            TerrainTrackbar.Value = 20;
+            TerrainTrackbar.ValueChanged += TerrainTrackbar_ValueChanged;
+            // 
+            // panel1
+            // 
+            panel1.Controls.Add(RadioWeather);
+            panel1.Controls.Add(label1);
+            panel1.Controls.Add(RadioHMap);
+            panel1.Controls.Add(RadioFlags);
+            panel1.Controls.Add(RadioLakes);
+            panel1.Location = new System.Drawing.Point(7, 3);
+            panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            panel1.Name = "panel1";
+            panel1.Size = new System.Drawing.Size(205, 125);
+            panel1.TabIndex = 8;
+            // 
+            // RadioWeather
+            // 
+            RadioWeather.AutoSize = true;
+            RadioWeather.Location = new System.Drawing.Point(125, 45);
+            RadioWeather.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioWeather.Name = "RadioWeather";
+            RadioWeather.Size = new System.Drawing.Size(69, 19);
+            RadioWeather.TabIndex = 12;
+            RadioWeather.Text = "Weather";
+            RadioWeather.UseVisualStyleBackColor = true;
+            RadioWeather.CheckedChanged += RadioWeather_CheckedChanged;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(55, 0);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(72, 15);
+            label1.TabIndex = 11;
+            label1.Text = "Editor mode";
+            // 
+            // RadioHMap
+            // 
+            RadioHMap.AutoSize = true;
+            RadioHMap.Checked = true;
+            RadioHMap.Location = new System.Drawing.Point(4, 18);
+            RadioHMap.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioHMap.Name = "RadioHMap";
+            RadioHMap.Size = new System.Drawing.Size(85, 19);
+            RadioHMap.TabIndex = 8;
+            RadioHMap.TabStop = true;
+            RadioHMap.Text = "Heightmap";
+            RadioHMap.UseVisualStyleBackColor = true;
+            RadioHMap.CheckedChanged += RadioHMap_CheckedChanged;
+            // 
+            // RadioFlags
+            // 
+            RadioFlags.AutoSize = true;
+            RadioFlags.Location = new System.Drawing.Point(4, 45);
+            RadioFlags.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioFlags.Name = "RadioFlags";
+            RadioFlags.Size = new System.Drawing.Size(88, 19);
+            RadioFlags.TabIndex = 9;
+            RadioFlags.Text = "Terrain flags";
+            RadioFlags.UseVisualStyleBackColor = true;
+            RadioFlags.CheckedChanged += RadioFlags_CheckedChanged;
+            // 
+            // RadioLakes
+            // 
+            RadioLakes.AutoSize = true;
+            RadioLakes.Location = new System.Drawing.Point(125, 18);
+            RadioLakes.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioLakes.Name = "RadioLakes";
+            RadioLakes.Size = new System.Drawing.Size(49, 19);
+            RadioLakes.TabIndex = 10;
+            RadioLakes.Text = "Lake";
+            RadioLakes.UseVisualStyleBackColor = true;
+            RadioLakes.CheckedChanged += RadioLakes_CheckedChanged;
+            // 
+            // TabEditorModes
+            // 
+            TabEditorModes.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
+            TabEditorModes.Controls.Add(TabPageTerrain);
+            TabEditorModes.Controls.Add(TabPageTextures);
+            TabEditorModes.Controls.Add(TabPageEntities);
+            TabEditorModes.Controls.Add(TabPageDecorations);
+            TabEditorModes.Controls.Add(TabPageMetadata);
+            TabEditorModes.Controls.Add(TabPageMask);
+            TabEditorModes.Enabled = false;
+            TabEditorModes.ItemSize = new System.Drawing.Size(160, 21);
+            TabEditorModes.Location = new System.Drawing.Point(0, 31);
+            TabEditorModes.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TabEditorModes.Name = "TabEditorModes";
+            TabEditorModes.Padding = new System.Drawing.Point(3, 3);
+            TabEditorModes.SelectedIndex = 0;
+            TabEditorModes.Size = new System.Drawing.Size(1283, 165);
+            TabEditorModes.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
+            TabEditorModes.TabIndex = 7;
+            TabEditorModes.SelectedIndexChanged += TabEditorModes_SelectedIndexChanged;
+            // 
+            // TabPageMetadata
+            // 
+            TabPageMetadata.Controls.Add(ButtonMinimap);
+            TabPageMetadata.Controls.Add(ButtonTeams);
+            TabPageMetadata.Controls.Add(PanelCoopParams);
+            TabPageMetadata.Controls.Add(panel6);
+            TabPageMetadata.Location = new System.Drawing.Point(4, 25);
+            TabPageMetadata.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TabPageMetadata.Name = "TabPageMetadata";
+            TabPageMetadata.Size = new System.Drawing.Size(1275, 136);
+            TabPageMetadata.TabIndex = 6;
+            TabPageMetadata.Text = "Metadata";
+            TabPageMetadata.UseVisualStyleBackColor = true;
+            // 
+            // ButtonMinimap
+            // 
+            ButtonMinimap.Location = new System.Drawing.Point(237, 3);
+            ButtonMinimap.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonMinimap.Name = "ButtonMinimap";
+            ButtonMinimap.Size = new System.Drawing.Size(111, 125);
+            ButtonMinimap.TabIndex = 12;
+            ButtonMinimap.Text = "Minimap SFEngine.Settings...";
+            ButtonMinimap.UseVisualStyleBackColor = true;
+            ButtonMinimap.Click += ButtonMinimap_Click;
+            // 
+            // ButtonTeams
+            // 
+            ButtonTeams.Location = new System.Drawing.Point(119, 3);
+            ButtonTeams.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonTeams.Name = "ButtonTeams";
+            ButtonTeams.Size = new System.Drawing.Size(111, 125);
+            ButtonTeams.TabIndex = 11;
+            ButtonTeams.Text = "Manage team compositions...";
+            ButtonTeams.UseVisualStyleBackColor = true;
+            ButtonTeams.Click += ButtonTeams_Click;
+            // 
+            // PanelCoopParams
+            // 
+            PanelCoopParams.Controls.Add(label24);
+            PanelCoopParams.Controls.Add(CoopSpawnParam34);
+            PanelCoopParams.Controls.Add(label23);
+            PanelCoopParams.Controls.Add(CoopSpawnParam33);
+            PanelCoopParams.Controls.Add(label22);
+            PanelCoopParams.Controls.Add(CoopSpawnParam32);
+            PanelCoopParams.Controls.Add(label21);
+            PanelCoopParams.Controls.Add(CoopSpawnParam24);
+            PanelCoopParams.Controls.Add(label20);
+            PanelCoopParams.Controls.Add(CoopSpawnParam23);
+            PanelCoopParams.Controls.Add(label19);
+            PanelCoopParams.Controls.Add(CoopSpawnParam22);
+            PanelCoopParams.Controls.Add(label18);
+            PanelCoopParams.Controls.Add(CoopSpawnParam14);
+            PanelCoopParams.Controls.Add(label17);
+            PanelCoopParams.Controls.Add(CoopSpawnParam13);
+            PanelCoopParams.Controls.Add(CoopSpawnParam12);
+            PanelCoopParams.Controls.Add(CoopSpawnParam31);
+            PanelCoopParams.Controls.Add(CoopSpawnParam21);
+            PanelCoopParams.Controls.Add(CoopSpawnParam11);
+            PanelCoopParams.Location = new System.Drawing.Point(355, 3);
+            PanelCoopParams.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelCoopParams.Name = "PanelCoopParams";
+            PanelCoopParams.Size = new System.Drawing.Size(562, 125);
+            PanelCoopParams.TabIndex = 10;
+            // 
+            // label24
+            // 
+            label24.AutoSize = true;
+            label24.Location = new System.Drawing.Point(4, 102);
+            label24.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label24.Name = "label24";
+            label24.Size = new System.Drawing.Size(53, 15);
+            label24.TabIndex = 16;
+            label24.Text = "3 players";
+            // 
+            // CoopSpawnParam34
+            // 
+            CoopSpawnParam34.Location = new System.Drawing.Point(439, 98);
+            CoopSpawnParam34.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            CoopSpawnParam34.Name = "CoopSpawnParam34";
+            CoopSpawnParam34.Size = new System.Drawing.Size(116, 23);
+            CoopSpawnParam34.TabIndex = 11;
+            CoopSpawnParam34.Validated += CoopSpawnParam34_Validated;
+            // 
+            // label23
+            // 
+            label23.AutoSize = true;
+            label23.Location = new System.Drawing.Point(4, 72);
+            label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label23.Name = "label23";
+            label23.Size = new System.Drawing.Size(53, 15);
+            label23.TabIndex = 15;
+            label23.Text = "2 players";
+            // 
+            // CoopSpawnParam33
+            // 
+            CoopSpawnParam33.Location = new System.Drawing.Point(315, 98);
+            CoopSpawnParam33.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            CoopSpawnParam33.Name = "CoopSpawnParam33";
+            CoopSpawnParam33.Size = new System.Drawing.Size(116, 23);
+            CoopSpawnParam33.TabIndex = 10;
+            CoopSpawnParam33.Validated += CoopSpawnParam33_Validated;
+            // 
+            // label22
+            // 
+            label22.AutoSize = true;
+            label22.Location = new System.Drawing.Point(4, 42);
+            label22.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label22.Name = "label22";
+            label22.Size = new System.Drawing.Size(48, 15);
+            label22.TabIndex = 14;
+            label22.Text = "1 player";
+            // 
+            // CoopSpawnParam32
+            // 
+            CoopSpawnParam32.Location = new System.Drawing.Point(191, 98);
+            CoopSpawnParam32.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            CoopSpawnParam32.Name = "CoopSpawnParam32";
+            CoopSpawnParam32.Size = new System.Drawing.Size(116, 23);
+            CoopSpawnParam32.TabIndex = 9;
+            CoopSpawnParam32.Validated += CoopSpawnParam32_Validated;
+            // 
+            // label21
+            // 
+            label21.AutoSize = true;
+            label21.Location = new System.Drawing.Point(455, 18);
+            label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label21.Name = "label21";
+            label21.Size = new System.Drawing.Size(73, 15);
+            label21.TabIndex = 13;
+            label21.Text = "Spawn delay";
+            // 
+            // CoopSpawnParam24
+            // 
+            CoopSpawnParam24.Location = new System.Drawing.Point(439, 68);
+            CoopSpawnParam24.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            CoopSpawnParam24.Name = "CoopSpawnParam24";
+            CoopSpawnParam24.Size = new System.Drawing.Size(116, 23);
+            CoopSpawnParam24.TabIndex = 8;
+            CoopSpawnParam24.Validated += CoopSpawnParam24_Validated;
+            // 
+            // label20
+            // 
+            label20.AutoSize = true;
+            label20.Location = new System.Drawing.Point(337, 20);
+            label20.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label20.Name = "label20";
+            label20.Size = new System.Drawing.Size(67, 15);
+            label20.TabIndex = 12;
+            label20.Text = "Begin wave";
+            // 
+            // CoopSpawnParam23
+            // 
+            CoopSpawnParam23.Location = new System.Drawing.Point(315, 68);
+            CoopSpawnParam23.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            CoopSpawnParam23.Name = "CoopSpawnParam23";
+            CoopSpawnParam23.Size = new System.Drawing.Size(116, 23);
+            CoopSpawnParam23.TabIndex = 7;
+            CoopSpawnParam23.Validated += CoopSpawnParam23_Validated;
+            // 
+            // label19
+            // 
+            label19.AutoSize = true;
+            label19.Location = new System.Drawing.Point(218, 20);
+            label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label19.Name = "label19";
+            label19.Size = new System.Drawing.Size(61, 15);
+            label19.TabIndex = 11;
+            label19.Text = "Init spawn";
+            // 
+            // CoopSpawnParam22
+            // 
+            CoopSpawnParam22.Location = new System.Drawing.Point(191, 68);
+            CoopSpawnParam22.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            CoopSpawnParam22.Name = "CoopSpawnParam22";
+            CoopSpawnParam22.Size = new System.Drawing.Size(116, 23);
+            CoopSpawnParam22.TabIndex = 6;
+            CoopSpawnParam22.Validated += CoopSpawnParam22_Validated;
+            // 
+            // label18
+            // 
+            label18.AutoSize = true;
+            label18.Location = new System.Drawing.Point(86, 21);
+            label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label18.Name = "label18";
+            label18.Size = new System.Drawing.Size(77, 15);
+            label18.TabIndex = 10;
+            label18.Text = "Max clan size";
+            // 
+            // CoopSpawnParam14
+            // 
+            CoopSpawnParam14.Location = new System.Drawing.Point(439, 38);
+            CoopSpawnParam14.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            CoopSpawnParam14.Name = "CoopSpawnParam14";
+            CoopSpawnParam14.Size = new System.Drawing.Size(116, 23);
+            CoopSpawnParam14.TabIndex = 5;
+            CoopSpawnParam14.Validated += CoopSpawnParam14_Validated;
+            // 
+            // label17
+            // 
+            label17.AutoSize = true;
+            label17.Location = new System.Drawing.Point(188, 0);
+            label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label17.Name = "label17";
+            label17.Size = new System.Drawing.Size(135, 15);
+            label17.TabIndex = 9;
+            label17.Text = "Coop spawn parameters";
+            // 
+            // CoopSpawnParam13
+            // 
+            CoopSpawnParam13.Location = new System.Drawing.Point(315, 38);
+            CoopSpawnParam13.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            CoopSpawnParam13.Name = "CoopSpawnParam13";
+            CoopSpawnParam13.Size = new System.Drawing.Size(116, 23);
+            CoopSpawnParam13.TabIndex = 4;
+            CoopSpawnParam13.Validated += CoopSpawnParam13_Validated;
+            // 
+            // CoopSpawnParam12
+            // 
+            CoopSpawnParam12.Location = new System.Drawing.Point(191, 38);
+            CoopSpawnParam12.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            CoopSpawnParam12.Name = "CoopSpawnParam12";
+            CoopSpawnParam12.Size = new System.Drawing.Size(116, 23);
+            CoopSpawnParam12.TabIndex = 3;
+            CoopSpawnParam12.Validated += CoopSpawnParam12_Validated;
+            // 
+            // CoopSpawnParam31
+            // 
+            CoopSpawnParam31.Location = new System.Drawing.Point(68, 98);
+            CoopSpawnParam31.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            CoopSpawnParam31.Name = "CoopSpawnParam31";
+            CoopSpawnParam31.Size = new System.Drawing.Size(116, 23);
+            CoopSpawnParam31.TabIndex = 2;
+            CoopSpawnParam31.Validated += CoopSpawnParam31_Validated;
+            // 
+            // CoopSpawnParam21
+            // 
+            CoopSpawnParam21.Location = new System.Drawing.Point(68, 68);
+            CoopSpawnParam21.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            CoopSpawnParam21.Name = "CoopSpawnParam21";
+            CoopSpawnParam21.Size = new System.Drawing.Size(116, 23);
+            CoopSpawnParam21.TabIndex = 1;
+            CoopSpawnParam21.Validated += CoopSpawnParam21_Validated;
+            // 
+            // CoopSpawnParam11
+            // 
+            CoopSpawnParam11.Location = new System.Drawing.Point(68, 38);
+            CoopSpawnParam11.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            CoopSpawnParam11.Name = "CoopSpawnParam11";
+            CoopSpawnParam11.Size = new System.Drawing.Size(116, 23);
+            CoopSpawnParam11.TabIndex = 0;
+            CoopSpawnParam11.Validated += CoopSpawnParam11_Validated;
+            // 
+            // panel6
+            // 
+            panel6.Controls.Add(label16);
+            panel6.Controls.Add(MapTypeCampaign);
+            panel6.Controls.Add(MapTypeCoop);
+            panel6.Controls.Add(MapTypeMultiplayer);
+            panel6.Location = new System.Drawing.Point(4, 3);
+            panel6.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            panel6.Name = "panel6";
+            panel6.Size = new System.Drawing.Size(108, 125);
+            panel6.TabIndex = 9;
+            // 
+            // label16
+            // 
+            label16.AutoSize = true;
+            label16.Location = new System.Drawing.Point(19, 0);
+            label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label16.Name = "label16";
+            label16.Size = new System.Drawing.Size(57, 15);
+            label16.TabIndex = 11;
+            label16.Text = "Map type";
+            // 
+            // MapTypeCampaign
+            // 
+            MapTypeCampaign.AutoSize = true;
+            MapTypeCampaign.Location = new System.Drawing.Point(4, 18);
+            MapTypeCampaign.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MapTypeCampaign.Name = "MapTypeCampaign";
+            MapTypeCampaign.Size = new System.Drawing.Size(80, 19);
+            MapTypeCampaign.TabIndex = 8;
+            MapTypeCampaign.Text = "Campaign";
+            MapTypeCampaign.UseVisualStyleBackColor = true;
+            MapTypeCampaign.Click += MapTypeCampaign_Click;
+            // 
+            // MapTypeCoop
+            // 
+            MapTypeCoop.AutoSize = true;
+            MapTypeCoop.Location = new System.Drawing.Point(4, 45);
+            MapTypeCoop.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MapTypeCoop.Name = "MapTypeCoop";
+            MapTypeCoop.Size = new System.Drawing.Size(54, 19);
+            MapTypeCoop.TabIndex = 9;
+            MapTypeCoop.Text = "Coop";
+            MapTypeCoop.UseVisualStyleBackColor = true;
+            MapTypeCoop.Click += MapTypeCoop_Click;
+            // 
+            // MapTypeMultiplayer
+            // 
+            MapTypeMultiplayer.AutoSize = true;
+            MapTypeMultiplayer.Location = new System.Drawing.Point(4, 72);
+            MapTypeMultiplayer.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MapTypeMultiplayer.Name = "MapTypeMultiplayer";
+            MapTypeMultiplayer.Size = new System.Drawing.Size(85, 19);
+            MapTypeMultiplayer.TabIndex = 10;
+            MapTypeMultiplayer.Text = "Multiplayer";
+            MapTypeMultiplayer.UseVisualStyleBackColor = true;
+            MapTypeMultiplayer.Click += MapTypeMultiplayer_Click;
+            // 
+            // TabPageMask
+            // 
+            TabPageMask.Controls.Add(ButtonMaskClear);
+            TabPageMask.Controls.Add(ButtonMaskInvert);
+            TabPageMask.Controls.Add(PanelMaskFeature);
+            TabPageMask.Controls.Add(PanelMaskRandom);
+            TabPageMask.Controls.Add(PanelMaskBorderType);
+            TabPageMask.Controls.Add(PanelMaskAttribute);
+            TabPageMask.Controls.Add(PanelMaskComparisonMode);
+            TabPageMask.Controls.Add(PanelMaskSourceValue);
+            TabPageMask.Controls.Add(ButtonSelectionApply);
+            TabPageMask.Controls.Add(label41);
+            TabPageMask.Controls.Add(ComboSelectionOperation);
+            TabPageMask.Controls.Add(ComboSelectionSource);
+            TabPageMask.Controls.Add(label40);
+            TabPageMask.Controls.Add(label39);
+            TabPageMask.Controls.Add(ComboSelectionFilter);
+            TabPageMask.Location = new System.Drawing.Point(4, 25);
+            TabPageMask.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TabPageMask.Name = "TabPageMask";
+            TabPageMask.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TabPageMask.Size = new System.Drawing.Size(1275, 136);
+            TabPageMask.TabIndex = 7;
+            TabPageMask.Text = "Mask/selection";
+            TabPageMask.UseVisualStyleBackColor = true;
+            // 
+            // ButtonMaskClear
+            // 
+            ButtonMaskClear.Location = new System.Drawing.Point(7, 68);
+            ButtonMaskClear.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonMaskClear.Name = "ButtonMaskClear";
+            ButtonMaskClear.Size = new System.Drawing.Size(82, 27);
+            ButtonMaskClear.TabIndex = 30;
+            ButtonMaskClear.Text = "Clear mask";
+            ButtonMaskClear.UseVisualStyleBackColor = true;
+            ButtonMaskClear.Click += ButtonMaskClear_Click;
+            // 
+            // ButtonMaskInvert
+            // 
+            ButtonMaskInvert.Location = new System.Drawing.Point(7, 98);
+            ButtonMaskInvert.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonMaskInvert.Name = "ButtonMaskInvert";
+            ButtonMaskInvert.Size = new System.Drawing.Size(82, 27);
+            ButtonMaskInvert.TabIndex = 29;
+            ButtonMaskInvert.Text = "Invert mask";
+            ButtonMaskInvert.UseVisualStyleBackColor = true;
+            ButtonMaskInvert.Click += ButtonMaskInvert_Click;
+            // 
+            // PanelMaskFeature
+            // 
+            PanelMaskFeature.Controls.Add(ComboMaskFeature);
+            PanelMaskFeature.Controls.Add(label45);
+            PanelMaskFeature.Location = new System.Drawing.Point(960, 44);
+            PanelMaskFeature.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelMaskFeature.Name = "PanelMaskFeature";
+            PanelMaskFeature.Size = new System.Drawing.Size(285, 35);
+            PanelMaskFeature.TabIndex = 28;
+            PanelMaskFeature.Visible = false;
+            // 
+            // ComboMaskFeature
+            // 
+            ComboMaskFeature.FormattingEnabled = true;
+            ComboMaskFeature.Items.AddRange(new object[] { "Building", "Object", "Lake", "Walkable" });
+            ComboMaskFeature.Location = new System.Drawing.Point(140, 3);
+            ComboMaskFeature.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ComboMaskFeature.Name = "ComboMaskFeature";
+            ComboMaskFeature.Size = new System.Drawing.Size(140, 23);
+            ComboMaskFeature.TabIndex = 27;
+            ComboMaskFeature.Text = "Object";
+            ComboMaskFeature.SelectedIndexChanged += ComboMaskFeature_SelectedIndexChanged;
+            // 
+            // label45
+            // 
+            label45.AutoSize = true;
+            label45.Location = new System.Drawing.Point(4, 7);
+            label45.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label45.Name = "label45";
+            label45.Size = new System.Drawing.Size(72, 15);
+            label45.TabIndex = 26;
+            label45.Text = "Feature type";
+            // 
+            // PanelMaskRandom
+            // 
+            PanelMaskRandom.Controls.Add(MaskRandomValue);
+            PanelMaskRandom.Controls.Add(ButtonMaskRandomSeed);
+            PanelMaskRandom.Controls.Add(LabelMaskRandom);
+            PanelMaskRandom.Location = new System.Drawing.Point(667, 44);
+            PanelMaskRandom.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelMaskRandom.Name = "PanelMaskRandom";
+            PanelMaskRandom.Size = new System.Drawing.Size(285, 35);
+            PanelMaskRandom.TabIndex = 25;
+            PanelMaskRandom.Visible = false;
+            // 
+            // MaskRandomValue
+            // 
+            MaskRandomValue.Location = new System.Drawing.Point(104, 3);
+            MaskRandomValue.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MaskRandomValue.Name = "MaskRandomValue";
+            MaskRandomValue.Size = new System.Drawing.Size(84, 23);
+            MaskRandomValue.TabIndex = 24;
+            MaskRandomValue.Leave += MaskRandomValue_Leave;
+            // 
+            // ButtonMaskRandomSeed
+            // 
+            ButtonMaskRandomSeed.Location = new System.Drawing.Point(196, 1);
+            ButtonMaskRandomSeed.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonMaskRandomSeed.Name = "ButtonMaskRandomSeed";
+            ButtonMaskRandomSeed.Size = new System.Drawing.Size(85, 27);
+            ButtonMaskRandomSeed.TabIndex = 3;
+            ButtonMaskRandomSeed.Text = "Randomize";
+            ButtonMaskRandomSeed.UseVisualStyleBackColor = true;
+            ButtonMaskRandomSeed.Click += ButtonMaskRandomSeed_Click;
+            // 
+            // LabelMaskRandom
+            // 
+            LabelMaskRandom.AutoSize = true;
+            LabelMaskRandom.Location = new System.Drawing.Point(4, 9);
+            LabelMaskRandom.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            LabelMaskRandom.Name = "LabelMaskRandom";
+            LabelMaskRandom.Size = new System.Drawing.Size(66, 15);
+            LabelMaskRandom.TabIndex = 22;
+            LabelMaskRandom.Text = "Percentage";
+            // 
+            // PanelMaskBorderType
+            // 
+            PanelMaskBorderType.Controls.Add(RadioMaskBorderInner);
+            PanelMaskBorderType.Controls.Add(RadioMaskBorderOuter);
+            PanelMaskBorderType.Controls.Add(label44);
+            PanelMaskBorderType.Location = new System.Drawing.Point(376, 44);
+            PanelMaskBorderType.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelMaskBorderType.Name = "PanelMaskBorderType";
+            PanelMaskBorderType.Size = new System.Drawing.Size(285, 35);
+            PanelMaskBorderType.TabIndex = 27;
+            PanelMaskBorderType.Visible = false;
+            // 
+            // RadioMaskBorderInner
+            // 
+            RadioMaskBorderInner.AutoSize = true;
+            RadioMaskBorderInner.Location = new System.Drawing.Point(220, 7);
+            RadioMaskBorderInner.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioMaskBorderInner.Name = "RadioMaskBorderInner";
+            RadioMaskBorderInner.Size = new System.Drawing.Size(52, 19);
+            RadioMaskBorderInner.TabIndex = 2;
+            RadioMaskBorderInner.Text = "Inner";
+            RadioMaskBorderInner.UseVisualStyleBackColor = true;
+            RadioMaskBorderInner.CheckedChanged += RadioMaskBorderInner_CheckedChanged;
+            // 
+            // RadioMaskBorderOuter
+            // 
+            RadioMaskBorderOuter.AutoSize = true;
+            RadioMaskBorderOuter.Checked = true;
+            RadioMaskBorderOuter.Location = new System.Drawing.Point(136, 7);
+            RadioMaskBorderOuter.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RadioMaskBorderOuter.Name = "RadioMaskBorderOuter";
+            RadioMaskBorderOuter.Size = new System.Drawing.Size(55, 19);
+            RadioMaskBorderOuter.TabIndex = 1;
+            RadioMaskBorderOuter.TabStop = true;
+            RadioMaskBorderOuter.Text = "Outer";
+            RadioMaskBorderOuter.UseVisualStyleBackColor = true;
+            RadioMaskBorderOuter.CheckedChanged += RadioMaskBorderOuter_CheckedChanged;
+            // 
+            // label44
+            // 
+            label44.AutoSize = true;
+            label44.Location = new System.Drawing.Point(4, 9);
+            label44.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label44.Name = "label44";
+            label44.Size = new System.Drawing.Size(68, 15);
+            label44.TabIndex = 0;
+            label44.Text = "Border type";
+            // 
+            // PanelMaskAttribute
+            // 
+            PanelMaskAttribute.Controls.Add(ComboMaskAttribute);
+            PanelMaskAttribute.Controls.Add(label43);
+            PanelMaskAttribute.Location = new System.Drawing.Point(667, 3);
+            PanelMaskAttribute.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelMaskAttribute.Name = "PanelMaskAttribute";
+            PanelMaskAttribute.Size = new System.Drawing.Size(285, 35);
+            PanelMaskAttribute.TabIndex = 26;
+            PanelMaskAttribute.Visible = false;
+            // 
+            // ComboMaskAttribute
+            // 
+            ComboMaskAttribute.FormattingEnabled = true;
+            ComboMaskAttribute.Items.AddRange(new object[] { "Terrain block", "Object block", "Building block", "Manual block", "Lake", "Shore" });
+            ComboMaskAttribute.Location = new System.Drawing.Point(140, 3);
+            ComboMaskAttribute.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ComboMaskAttribute.Name = "ComboMaskAttribute";
+            ComboMaskAttribute.Size = new System.Drawing.Size(140, 23);
+            ComboMaskAttribute.TabIndex = 28;
+            ComboMaskAttribute.Text = "Terrain block";
+            ComboMaskAttribute.SelectedIndexChanged += ComboMaskAttribute_SelectedIndexChanged;
+            // 
+            // label43
+            // 
+            label43.AutoSize = true;
+            label43.Location = new System.Drawing.Point(4, 9);
+            label43.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label43.Name = "label43";
+            label43.Size = new System.Drawing.Size(54, 15);
+            label43.TabIndex = 0;
+            label43.Text = "Attribute";
+            // 
+            // PanelMaskComparisonMode
+            // 
+            PanelMaskComparisonMode.Controls.Add(ComboMaskSourceComparison);
+            PanelMaskComparisonMode.Controls.Add(label42);
+            PanelMaskComparisonMode.Location = new System.Drawing.Point(960, 3);
+            PanelMaskComparisonMode.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelMaskComparisonMode.Name = "PanelMaskComparisonMode";
+            PanelMaskComparisonMode.Size = new System.Drawing.Size(285, 35);
+            PanelMaskComparisonMode.TabIndex = 25;
+            PanelMaskComparisonMode.Visible = false;
+            // 
+            // ComboMaskSourceComparison
+            // 
+            ComboMaskSourceComparison.FormattingEnabled = true;
+            ComboMaskSourceComparison.Items.AddRange(new object[] { "Equal", "Greater or equal", "Greater than", "Not equal", "Less than", "Less or equal" });
+            ComboMaskSourceComparison.Location = new System.Drawing.Point(136, 3);
+            ComboMaskSourceComparison.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ComboMaskSourceComparison.Name = "ComboMaskSourceComparison";
+            ComboMaskSourceComparison.Size = new System.Drawing.Size(140, 23);
+            ComboMaskSourceComparison.TabIndex = 27;
+            ComboMaskSourceComparison.Text = "Equal";
+            ComboMaskSourceComparison.SelectedIndexChanged += ComboMaskSourceComparison_SelectedIndexChanged;
+            // 
+            // label42
+            // 
+            label42.AutoSize = true;
+            label42.Location = new System.Drawing.Point(4, 7);
+            label42.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label42.Name = "label42";
+            label42.Size = new System.Drawing.Size(106, 15);
+            label42.TabIndex = 26;
+            label42.Text = "Comparison mode";
+            // 
+            // PanelMaskSourceValue
+            // 
+            PanelMaskSourceValue.Controls.Add(MaskSourceValue);
+            PanelMaskSourceValue.Controls.Add(LabelMaskSourceType);
+            PanelMaskSourceValue.Location = new System.Drawing.Point(376, 3);
+            PanelMaskSourceValue.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelMaskSourceValue.Name = "PanelMaskSourceValue";
+            PanelMaskSourceValue.Size = new System.Drawing.Size(285, 35);
+            PanelMaskSourceValue.TabIndex = 23;
+            PanelMaskSourceValue.Visible = false;
+            // 
+            // MaskSourceValue
+            // 
+            MaskSourceValue.Location = new System.Drawing.Point(192, 6);
+            MaskSourceValue.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MaskSourceValue.Name = "MaskSourceValue";
+            MaskSourceValue.Size = new System.Drawing.Size(84, 23);
+            MaskSourceValue.TabIndex = 24;
+            MaskSourceValue.Leave += MaskSourceValue_Leave;
+            // 
+            // LabelMaskSourceType
+            // 
+            LabelMaskSourceType.AutoSize = true;
+            LabelMaskSourceType.Location = new System.Drawing.Point(4, 9);
+            LabelMaskSourceType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            LabelMaskSourceType.Name = "LabelMaskSourceType";
+            LabelMaskSourceType.Size = new System.Drawing.Size(16, 15);
+            LabelMaskSourceType.TabIndex = 22;
+            LabelMaskSourceType.Text = "...";
+            // 
+            // ButtonSelectionApply
+            // 
+            ButtonSelectionApply.Location = new System.Drawing.Point(96, 98);
+            ButtonSelectionApply.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonSelectionApply.Name = "ButtonSelectionApply";
+            ButtonSelectionApply.Size = new System.Drawing.Size(273, 27);
+            ButtonSelectionApply.TabIndex = 21;
+            ButtonSelectionApply.Text = "Apply to mask";
+            ButtonSelectionApply.UseVisualStyleBackColor = true;
+            ButtonSelectionApply.Click += ButtonSelectionApply_Click;
+            // 
+            // label41
+            // 
+            label41.AutoSize = true;
+            label41.Location = new System.Drawing.Point(94, 74);
+            label41.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label41.Name = "label41";
+            label41.Size = new System.Drawing.Size(60, 15);
+            label41.TabIndex = 20;
+            label41.Text = "Operation";
+            // 
+            // ComboSelectionOperation
+            // 
+            ComboSelectionOperation.FormattingEnabled = true;
+            ComboSelectionOperation.Items.AddRange(new object[] { "Do nothing", "Set mask", "Intersect with mask", "Join with mask", "Either-or with mask", "Exclude from mask" });
+            ComboSelectionOperation.Location = new System.Drawing.Point(163, 70);
+            ComboSelectionOperation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ComboSelectionOperation.Name = "ComboSelectionOperation";
+            ComboSelectionOperation.Size = new System.Drawing.Size(205, 23);
+            ComboSelectionOperation.TabIndex = 19;
+            ComboSelectionOperation.Text = "Set mask";
+            ComboSelectionOperation.SelectedIndexChanged += ComboSelectionOperation_SelectedIndexChanged;
+            // 
+            // ComboSelectionSource
+            // 
+            ComboSelectionSource.FormattingEnabled = true;
+            ComboSelectionSource.Items.AddRange(new object[] { "All", "Paint", "Mask", "Terrain texture", "Terrain height", "Terrain slope", "Terrain attribute", "Feature" });
+            ComboSelectionSource.Location = new System.Drawing.Point(163, 9);
+            ComboSelectionSource.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ComboSelectionSource.Name = "ComboSelectionSource";
+            ComboSelectionSource.Size = new System.Drawing.Size(205, 23);
+            ComboSelectionSource.TabIndex = 18;
+            ComboSelectionSource.Text = "Paint";
+            ComboSelectionSource.SelectedIndexChanged += ComboSelectionSource_SelectedIndexChanged;
+            // 
+            // label40
+            // 
+            label40.AutoSize = true;
+            label40.Location = new System.Drawing.Point(108, 13);
+            label40.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label40.Name = "label40";
+            label40.Size = new System.Drawing.Size(43, 15);
+            label40.TabIndex = 0;
+            label40.Text = "Source";
+            // 
+            // label39
+            // 
+            label39.AutoSize = true;
+            label39.Location = new System.Drawing.Point(122, 44);
+            label39.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label39.Name = "label39";
+            label39.Size = new System.Drawing.Size(33, 15);
+            label39.TabIndex = 13;
+            label39.Text = "Filter";
+            // 
+            // ComboSelectionFilter
+            // 
+            ComboSelectionFilter.FormattingEnabled = true;
+            ComboSelectionFilter.Items.AddRange(new object[] { "None", "Border", "Random" });
+            ComboSelectionFilter.Location = new System.Drawing.Point(163, 40);
+            ComboSelectionFilter.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ComboSelectionFilter.Name = "ComboSelectionFilter";
+            ComboSelectionFilter.Size = new System.Drawing.Size(205, 23);
+            ComboSelectionFilter.TabIndex = 12;
+            ComboSelectionFilter.Text = "None";
+            ComboSelectionFilter.SelectedIndexChanged += ComboSelectionFilter_SelectedIndexChanged;
+            // 
+            // PanelUtility
+            // 
+            PanelUtility.Controls.Add(TrackbarCameraSpeed);
+            PanelUtility.Controls.Add(label25);
+            PanelUtility.Location = new System.Drawing.Point(959, 741);
+            PanelUtility.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelUtility.Name = "PanelUtility";
+            PanelUtility.Size = new System.Drawing.Size(320, 29);
+            PanelUtility.TabIndex = 9;
+            // 
+            // TrackbarCameraSpeed
+            // 
+            TrackbarCameraSpeed.AutoSize = false;
+            TrackbarCameraSpeed.Location = new System.Drawing.Point(98, 0);
+            TrackbarCameraSpeed.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TrackbarCameraSpeed.Maximum = 200;
+            TrackbarCameraSpeed.Minimum = 10;
+            TrackbarCameraSpeed.Name = "TrackbarCameraSpeed";
+            TrackbarCameraSpeed.Size = new System.Drawing.Size(121, 25);
+            TrackbarCameraSpeed.TabIndex = 1;
+            TrackbarCameraSpeed.TickFrequency = 20;
+            TrackbarCameraSpeed.Value = 100;
+            TrackbarCameraSpeed.ValueChanged += TrackbarCameraSpeed_ValueChanged;
+            // 
+            // label25
+            // 
+            label25.AutoSize = true;
+            label25.Location = new System.Drawing.Point(4, 3);
+            label25.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label25.Name = "label25";
+            label25.Size = new System.Drawing.Size(82, 15);
+            label25.TabIndex = 0;
+            label25.Text = "Camera speed";
+            // 
+            // TimerUpdatesPerSecond
+            // 
+            TimerUpdatesPerSecond.Interval = 1000;
+            TimerUpdatesPerSecond.Tick += TimerUpdatesPerSecond_Tick;
+            // 
+            // PanelObjectSelector
+            // 
+            PanelObjectSelector.Controls.Add(TreeEntitytFilter);
+            PanelObjectSelector.Controls.Add(TreeEntities);
+            PanelObjectSelector.Location = new System.Drawing.Point(5, 198);
+            PanelObjectSelector.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelObjectSelector.Name = "PanelObjectSelector";
+            PanelObjectSelector.Size = new System.Drawing.Size(298, 539);
+            PanelObjectSelector.TabIndex = 10;
+            PanelObjectSelector.Visible = false;
+            // 
+            // TreeEntitytFilter
+            // 
+            TreeEntitytFilter.Location = new System.Drawing.Point(7, 512);
+            TreeEntitytFilter.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TreeEntitytFilter.Name = "TreeEntitytFilter";
+            TreeEntitytFilter.Size = new System.Drawing.Size(286, 23);
+            TreeEntitytFilter.TabIndex = 1;
+            TreeEntitytFilter.TextChanged += TreeEntityFilter_TextChanged;
+            // 
+            // TreeEntities
+            // 
+            TreeEntities.Location = new System.Drawing.Point(7, 3);
+            TreeEntities.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TreeEntities.Name = "TreeEntities";
+            TreeEntities.Size = new System.Drawing.Size(286, 501);
+            TreeEntities.TabIndex = 0;
+            TreeEntities.NodeMouseClick += TreeEntities_NodeMouseClick;
+            // 
+            // TimerTreeEntityFilter
+            // 
+            TimerTreeEntityFilter.Interval = 500;
+            TimerTreeEntityFilter.Tick += TimerTreeEntityFilter_Tick;
+            // 
+            // TimerAnimation
+            // 
+            TimerAnimation.Tick += TimerAnimation_Tick;
             // 
             // MapEditorForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1100, 668);
-            this.Controls.Add(this.PanelObjectSelector);
-            this.Controls.Add(this.PanelUtility);
-            this.Controls.Add(this.PanelInspector);
-            this.Controls.Add(this.TabEditorModes);
-            this.Controls.Add(this.StatusStrip);
-            this.Controls.Add(this.menuStrip1);
-            this.KeyPreview = true;
-            this.MainMenuStrip = this.menuStrip1;
-            this.MinimumSize = new System.Drawing.Size(1005, 706);
-            this.Name = "MapEditorForm";
-            this.Text = "Map Editor";
-            this.Activated += new System.EventHandler(this.MapEditorForm_Activated);
-            this.Deactivate += new System.EventHandler(this.MapEditorForm_Deactivate);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MapEditorForm_FormClosing);
-            this.Shown += new System.EventHandler(this.MapEditorForm_Load);
-            this.Resize += new System.EventHandler(this.MapEditorForm_Resize);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
-            this.StatusStrip.ResumeLayout(false);
-            this.StatusStrip.PerformLayout();
-            this.TabPageDecorations.ResumeLayout(false);
-            this.TabPageDecorations.PerformLayout();
-            this.TabPageEntities.ResumeLayout(false);
-            this.TabPageEntities.PerformLayout();
-            this.PanelMonumentType.ResumeLayout(false);
-            this.PanelMonumentType.PerformLayout();
-            this.PanelEntityPlacementSelect.ResumeLayout(false);
-            this.PanelEntityPlacementSelect.PerformLayout();
-            this.PanelObjectAngle.ResumeLayout(false);
-            this.PanelObjectAngle.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.AngleTrackbar)).EndInit();
-            this.panel5.ResumeLayout(false);
-            this.panel5.PerformLayout();
-            this.TabPageTextures.ResumeLayout(false);
-            this.PanelTileType.ResumeLayout(false);
-            this.PanelTileType.PerformLayout();
-            this.TabPageTerrain.ResumeLayout(false);
-            this.PanelLakeMode.ResumeLayout(false);
-            this.PanelLakeMode.PerformLayout();
-            this.PanelAtmoPreview.ResumeLayout(false);
-            this.PanelAtmoPreview.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SunAltitudeTrackbar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.SunAzimuthTrackbar)).EndInit();
-            this.PanelWeather.ResumeLayout(false);
-            this.PanelWeather.PerformLayout();
-            this.PanelFlags.ResumeLayout(false);
-            this.PanelFlags.PerformLayout();
-            this.PanelBrushShape.ResumeLayout(false);
-            this.PanelBrushShape.PerformLayout();
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BrushSizeTrackbar)).EndInit();
-            this.PanelTerrainSettings.ResumeLayout(false);
-            this.PanelTerrainSettings.PerformLayout();
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
-            this.panel4.ResumeLayout(false);
-            this.panel4.PerformLayout();
-            this.PanelStrength.ResumeLayout(false);
-            this.PanelStrength.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TerrainTrackbar)).EndInit();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            this.TabEditorModes.ResumeLayout(false);
-            this.TabPageMetadata.ResumeLayout(false);
-            this.PanelCoopParams.ResumeLayout(false);
-            this.PanelCoopParams.PerformLayout();
-            this.panel6.ResumeLayout(false);
-            this.panel6.PerformLayout();
-            this.TabPageMask.ResumeLayout(false);
-            this.TabPageMask.PerformLayout();
-            this.PanelMaskFeature.ResumeLayout(false);
-            this.PanelMaskFeature.PerformLayout();
-            this.PanelMaskRandom.ResumeLayout(false);
-            this.PanelMaskRandom.PerformLayout();
-            this.PanelMaskBorderType.ResumeLayout(false);
-            this.PanelMaskBorderType.PerformLayout();
-            this.PanelMaskAttribute.ResumeLayout(false);
-            this.PanelMaskAttribute.PerformLayout();
-            this.PanelMaskComparisonMode.ResumeLayout(false);
-            this.PanelMaskComparisonMode.PerformLayout();
-            this.PanelMaskSourceValue.ResumeLayout(false);
-            this.PanelMaskSourceValue.PerformLayout();
-            this.PanelUtility.ResumeLayout(false);
-            this.PanelUtility.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TrackbarCameraSpeed)).EndInit();
-            this.PanelObjectSelector.ResumeLayout(false);
-            this.PanelObjectSelector.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1283, 771);
+            Controls.Add(PanelObjectSelector);
+            Controls.Add(PanelUtility);
+            Controls.Add(PanelInspector);
+            Controls.Add(TabEditorModes);
+            Controls.Add(StatusStrip);
+            Controls.Add(menuStrip1);
+            KeyPreview = true;
+            MainMenuStrip = menuStrip1;
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MinimumSize = new System.Drawing.Size(1170, 809);
+            Name = "MapEditorForm";
+            Text = "Map Editor";
+            Activated += MapEditorForm_Activated;
+            Deactivate += MapEditorForm_Deactivate;
+            FormClosing += MapEditorForm_FormClosing;
+            Shown += MapEditorForm_Load;
+            Resize += MapEditorForm_Resize;
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
+            StatusStrip.ResumeLayout(false);
+            StatusStrip.PerformLayout();
+            TabPageDecorations.ResumeLayout(false);
+            TabPageDecorations.PerformLayout();
+            TabPageEntities.ResumeLayout(false);
+            TabPageEntities.PerformLayout();
+            PanelMonumentType.ResumeLayout(false);
+            PanelMonumentType.PerformLayout();
+            PanelEntityPlacementSelect.ResumeLayout(false);
+            PanelEntityPlacementSelect.PerformLayout();
+            PanelObjectAngle.ResumeLayout(false);
+            PanelObjectAngle.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)AngleTrackbar).EndInit();
+            panel5.ResumeLayout(false);
+            panel5.PerformLayout();
+            TabPageTextures.ResumeLayout(false);
+            PanelTileType.ResumeLayout(false);
+            PanelTileType.PerformLayout();
+            TabPageTerrain.ResumeLayout(false);
+            PanelLakeMode.ResumeLayout(false);
+            PanelLakeMode.PerformLayout();
+            PanelAtmoPreview.ResumeLayout(false);
+            PanelAtmoPreview.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)SunAltitudeTrackbar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)SunAzimuthTrackbar).EndInit();
+            PanelWeather.ResumeLayout(false);
+            PanelWeather.PerformLayout();
+            PanelFlags.ResumeLayout(false);
+            PanelFlags.PerformLayout();
+            PanelBrushShape.ResumeLayout(false);
+            PanelBrushShape.PerformLayout();
+            panel2.ResumeLayout(false);
+            panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)BrushSizeTrackbar).EndInit();
+            PanelTerrainSettings.ResumeLayout(false);
+            PanelTerrainSettings.PerformLayout();
+            panel3.ResumeLayout(false);
+            panel3.PerformLayout();
+            panel4.ResumeLayout(false);
+            panel4.PerformLayout();
+            PanelStrength.ResumeLayout(false);
+            PanelStrength.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)TerrainTrackbar).EndInit();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            TabEditorModes.ResumeLayout(false);
+            TabPageMetadata.ResumeLayout(false);
+            PanelCoopParams.ResumeLayout(false);
+            PanelCoopParams.PerformLayout();
+            panel6.ResumeLayout(false);
+            panel6.PerformLayout();
+            TabPageMask.ResumeLayout(false);
+            TabPageMask.PerformLayout();
+            PanelMaskFeature.ResumeLayout(false);
+            PanelMaskFeature.PerformLayout();
+            PanelMaskRandom.ResumeLayout(false);
+            PanelMaskRandom.PerformLayout();
+            PanelMaskBorderType.ResumeLayout(false);
+            PanelMaskBorderType.PerformLayout();
+            PanelMaskAttribute.ResumeLayout(false);
+            PanelMaskAttribute.PerformLayout();
+            PanelMaskComparisonMode.ResumeLayout(false);
+            PanelMaskComparisonMode.PerformLayout();
+            PanelMaskSourceValue.ResumeLayout(false);
+            PanelMaskSourceValue.PerformLayout();
+            PanelUtility.ResumeLayout(false);
+            PanelUtility.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)TrackbarCameraSpeed).EndInit();
+            PanelObjectSelector.ResumeLayout(false);
+            PanelObjectSelector.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -2607,7 +2730,7 @@
         private System.Windows.Forms.Button ButtonMinimap;
         private System.Windows.Forms.Panel PanelLakeMode;
         private System.Windows.Forms.RadioButton RadioLakeSelect;
-        private System.Windows.Forms.RadioButton RadioLakePaint;
+        private System.Windows.Forms.RadioButton RadioLakeFlood;
         private System.Windows.Forms.Label label38;
         private System.Windows.Forms.TabPage TabPageMask;
         private System.Windows.Forms.Label label39;

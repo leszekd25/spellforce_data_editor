@@ -5,7 +5,7 @@
  * assumes upvector = (0, 0, 1)
  * */
 
-using OpenTK;
+using OpenTK.Mathematics;
 using System;
 
 namespace SFEngine.SF3D.Physics

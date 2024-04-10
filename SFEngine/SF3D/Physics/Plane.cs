@@ -5,7 +5,7 @@
  * are provided
  * */
 
-using OpenTK;
+using OpenTK.Mathematics;
 
 namespace SFEngine.SF3D.Physics
 {

@@ -5,14 +5,14 @@
  * Currently this interface is implemented by InterpolatedVector3 and InterpolatedQuaternion
  */
 
-using OpenTK;
+using OpenTK.Mathematics;
 using System;
 
 namespace SFEngine.SF3D
 {
     public class InterpolatedFloat
     {
-        Single[] value;
+        float[] value;
         float[] time;
         int cur_index = 0;
         float max_time = -1;
@@ -23,7 +23,7 @@ namespace SFEngine.SF3D
             time = new float[capacity];
         }
 
-        public void Add(Single v, float t)
+        public void Add(float v, float t)
         {
             if (t >= max_time)
             {
@@ -39,7 +39,7 @@ namespace SFEngine.SF3D
             }
         }
 
-        public Single Get(float t)
+        public float Get(float t)
         {
             int size = value.Length;
             if (size == 0)

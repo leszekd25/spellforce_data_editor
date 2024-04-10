@@ -2,7 +2,7 @@
  * UIElementIndex is used as an identifier for individual ui elements
  * */
 
-using OpenTK;
+using OpenTK.Mathematics;
 using System.Collections.Generic;
 
 namespace SFEngine.SF3D.UI

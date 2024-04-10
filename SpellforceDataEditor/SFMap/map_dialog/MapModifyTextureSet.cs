@@ -86,7 +86,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
                     break;
                 }
             }
-            MainForm.mapedittool.ui.RedrawMinimap();
+            MainForm.mapedittool.ui.RedrawMinimapFull();
             MainForm.mapedittool.update_render = true;
         }
     }

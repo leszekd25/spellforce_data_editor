@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Mathematics;
 using System;
 
 namespace SFEngine.SF3D
@@ -15,7 +14,7 @@ namespace SFEngine.SF3D
         public float Strength = 1.0f;
         public Vector4 Color = new Vector4(1.0f);
         public float Azimuth;    // horizontal angle with respect to 0* corresponding to (1, 0, 0), and 90* corresponding to (0, 0, -1)
-        public float Altitude;   // vertical angle with respect to 0( corresponding to (1, 0, 0), and 90* corresponding to (0, 1, 0)
+        public float Altitude;   // vertical angle with respect to 0* corresponding to (1, 0, 0), and 90* corresponding to (0, 1, 0)
         public Vector3 Direction { get; private set; } = new Vector3(0.0f, -1.0f, 0.0f);
         public float ShadowSize = 40;
         public Matrix4 LightProjection = Matrix4.CreateOrthographic(20, 20, 1, 100.0f);
@@ -71,30 +70,6 @@ namespace SFEngine.SF3D
 
     public class Atmosphere
     {
-        /*// vao used to render sky
-        static float[] vertices = new float[] {
-            -1, -1,
-            -1, 1,
-            1, -1,
-            -1, 1,
-            1, -1,
-            1, 1 };
-        static float[] uvs = new float[] {
-            0, 0,
-            0, 1,
-            1, 0,
-            0, 1,
-            1, 0,
-            1, 1 };
-
-        public static int sky_vao { get; private set; } = -1;
-
-        static int vertices_vbo = Utility.NO_INDEX;
-        static int uvs_vbo = Utility.NO_INDEX;
-
-        static int ref_count = 0;*/
-
-
         public Vector4 FogColor = new Vector4(100, 100, 100, 255) / 255f;
         public float FogStrength = 1.0f;
         public float FogStart = 0.0f;
@@ -111,26 +86,7 @@ namespace SFEngine.SF3D
 
         public Atmosphere()
         {
-            /*if (ref_count == 0)
-            {
-                sky_vao = GL.GenVertexArray();
-                GL.BindVertexArray(sky_vao);
 
-                vertices_vbo = GL.GenBuffer();
-                GL.BindBuffer(BufferTarget.ArrayBuffer, vertices_vbo);
-                GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * 4, vertices, BufferUsageHint.StaticDraw);
-                GL.EnableVertexAttribArray(0);
-                GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
-
-                uvs_vbo = GL.GenBuffer();
-                GL.BindBuffer(BufferTarget.ArrayBuffer, uvs_vbo);
-                GL.BufferData(BufferTarget.ArrayBuffer, uvs.Length * 4, uvs, BufferUsageHint.StaticDraw);
-                GL.EnableVertexAttribArray(1);
-                GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
-
-                GL.BindVertexArray(0);
-            }
-            ref_count += 1;*/
         }
 
         // azimuth from 0 to 359, altitude from -90 to 90
@@ -152,18 +108,7 @@ namespace SFEngine.SF3D
 
         public void Dispose()
         {
-            /*if (ref_count == 0)
-            {
-                return;
-            }
 
-            ref_count -= 1;
-            if (ref_count == 0)
-            {
-                GL.DeleteBuffer(uvs_vbo);
-                GL.DeleteBuffer(vertices_vbo);
-                GL.DeleteVertexArray(sky_vao);
-            }*/
         }
     }
 }

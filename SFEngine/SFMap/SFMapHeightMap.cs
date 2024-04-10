@@ -1,9 +1,11 @@
-﻿using OpenTK;
+﻿using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
 using SFEngine.SF3D;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NAudio.Gui;
+using System.Runtime.InteropServices;
 
 namespace SFEngine.SFMap
 {
@@ -238,7 +240,7 @@ namespace SFEngine.SFMap
 
             foreach (SFMapDecoration d in decorations)
             {
-                foreach (SF3D.SceneSynchro.SceneNode n in d.node.Children)   // special case, offset information is preserved that way
+                foreach (SF3D.SceneSynchro.SceneNode n in d.node.children)   // special case, offset information is preserved that way
                 {
                     n.Position = new Vector3(n.position.X, hmap.GetRealZ(new Vector2(owner.position.X + n.position.X, owner.position.Z + n.position.Z)), n.position.Z);
                 }
@@ -435,7 +437,7 @@ namespace SFEngine.SFMap
         public ushort[] flag_data;
         public SFMapHeightMapFlag overlay_flags = 0;
         public byte overlay_decal_group = 0;    // 0 - no group
-        public bool[] temporary_mask;   // for calculating islands by height
+        public byte[] temporary_mask;   // for calculating islands by height
 
         public SF3D.SceneSynchro.SceneNodeMapChunk[] chunk_nodes;
         public List<SF3D.SceneSynchro.SceneNodeMapChunk> visible_chunks = new List<SF3D.SceneSynchro.SceneNodeMapChunk>();
@@ -456,7 +458,7 @@ namespace SFEngine.SFMap
             height_data = new ushort[w * h];
             tile_data = new uint[w * h];
             flag_data = new ushort[w * h]; flag_data.Initialize();
-            temporary_mask = new bool[w * h];
+            temporary_mask = new byte[w * h];
 
             tile_data_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2D, InternalFormat.Rgba8ui, PixelFormat.RgbaInteger, PixelType.UnsignedByte, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToBorder, (int)All.ClampToBorder, Vector4.Zero, 0, false, false);
             SFResources.SFResourceManager.Textures.AddManually(tile_data_texture, "_TILES_TEXTURE_");
@@ -776,7 +778,7 @@ namespace SFEngine.SFMap
             return height_data[pos.y * width + pos.x];
         }
 
-        // returns whether a posiiton is within map bounds
+        // returns whether a position is within map bounds
         public bool FitsInMap(SFCoord p)
         {
             return ((p.x >= 0) && (p.x < width) && (p.y >= 0) && (p.y < height));
@@ -861,10 +863,7 @@ namespace SFEngine.SFMap
         // flood fill based on z difference and return result
         public HashSet<SFCoord> GetIslandByHeight(SFCoord start, short z_diff, out HashSet<SFCoord> shore)
         {
-            for (int i = 0; i < width * height; i++)
-            {
-                temporary_mask[i] = false;
-            }
+            Array.Fill(temporary_mask, (byte)0);
 
             HashSet<SFCoord> island = new HashSet<SFCoord>();
             shore = new HashSet<SFCoord>();
@@ -873,39 +872,43 @@ namespace SFEngine.SFMap
             SFCoord next_pos;
 
             ushort start_z = GetZ(start);
-            temporary_mask[start.y * width + start.x] = true;
+            temporary_mask[start.y * width + start.x] = 1;
             to_be_checked.Enqueue(start);
 
             // for each coordinate from the queue, add up to 4 neighbors to the queue if they're unchecked and fulfill the criteria
             while (to_be_checked.Count != 0)
             {
                 cur_pos = to_be_checked.Dequeue();
+                if(GetZ(cur_pos) == 0)
+                {
+                    continue;
+                }
                 // every position that's in the queue will belong to an island
                 island.Add(cur_pos);
 
                 next_pos = cur_pos; next_pos.x += 1;
-                if ((next_pos.x < width) && (temporary_mask[next_pos.y * width + next_pos.x] != true) && (GetZ(next_pos) - start_z < z_diff))
+                if ((next_pos.x < width) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) - start_z < z_diff))
                 {
                     to_be_checked.Enqueue(next_pos);
-                    temporary_mask[next_pos.y * width + next_pos.x] = true;
+                    temporary_mask[next_pos.y * width + next_pos.x] = 1;
                 }
                 next_pos = cur_pos; next_pos.y += 1;
-                if ((next_pos.y < height) && (temporary_mask[next_pos.y * width + next_pos.x] != true) && (GetZ(next_pos) - start_z < z_diff))
+                if ((next_pos.y < height) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) - start_z < z_diff))
                 {
                     to_be_checked.Enqueue(next_pos);
-                    temporary_mask[next_pos.y * width + next_pos.x] = true;
+                    temporary_mask[next_pos.y * width + next_pos.x] = 1;
                 }
                 next_pos = cur_pos; next_pos.x -= 1;
-                if ((next_pos.x >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] != true) && (GetZ(next_pos) - start_z < z_diff))
+                if ((next_pos.x >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) - start_z < z_diff))
                 {
                     to_be_checked.Enqueue(next_pos);
-                    temporary_mask[next_pos.y * width + next_pos.x] = true;
+                    temporary_mask[next_pos.y * width + next_pos.x] = 1;
                 }
                 next_pos = cur_pos; next_pos.y -= 1;
-                if ((next_pos.y >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] != true) && (GetZ(next_pos) - start_z < z_diff))
+                if ((next_pos.y >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) - start_z < z_diff))
                 {
                     to_be_checked.Enqueue(next_pos);
-                    temporary_mask[next_pos.y * width + next_pos.x] = true;
+                    temporary_mask[next_pos.y * width + next_pos.x] = 1;
                 }
             }
 
@@ -918,10 +921,7 @@ namespace SFEngine.SFMap
         // flood fill based on z difference and return result
         public HashSet<SFCoord> GetIslandByWalkable(SFCoord start)
         {
-            for (int i = 0; i < width * height; i++)
-            {
-                temporary_mask[i] = false;
-            }
+            Array.Fill(temporary_mask, (byte)0);
 
             SFMapHeightMapFlag block_flag = SFMapHeightMapFlag.ENTITY_BUILDING_COLLISION | SFMapHeightMapFlag.ENTITY_OBJECT_COLLISION | SFMapHeightMapFlag.FLAG_MOVEMENT | SFMapHeightMapFlag.LAKE_DEEP | SFMapHeightMapFlag.TERRAIN_MOVEMENT;
 
@@ -935,7 +935,7 @@ namespace SFEngine.SFMap
             SFCoord cur_pos;
             SFCoord next_pos;
 
-            temporary_mask[start.y * width + start.x] = true;
+            temporary_mask[start.y * width + start.x] = 1;
             to_be_checked.Enqueue(start);
 
             // for each coordinate from the queue, add up to 4 neighbors to the queue if they're unchecked and fulfill the criteria
@@ -946,56 +946,145 @@ namespace SFEngine.SFMap
                 island.Add(cur_pos);
 
                 next_pos = cur_pos; next_pos.x += 1;
-                if ((next_pos.x < width) && (temporary_mask[next_pos.y * width + next_pos.x] != true) && (!IsAnyFlagSet(next_pos, block_flag)))
+                if ((next_pos.x < width) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (!IsAnyFlagSet(next_pos, block_flag)))
                 {
                     to_be_checked.Enqueue(next_pos);
-                    temporary_mask[next_pos.y * width + next_pos.x] = true;
+                    temporary_mask[next_pos.y * width + next_pos.x] = 1;
                 }
                 next_pos = cur_pos; next_pos.y += 1;
-                if ((next_pos.y < height) && (temporary_mask[next_pos.y * width + next_pos.x] != true) && (!IsAnyFlagSet(next_pos, block_flag)))
+                if ((next_pos.y < height) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (!IsAnyFlagSet(next_pos, block_flag)))
                 {
                     to_be_checked.Enqueue(next_pos);
-                    temporary_mask[next_pos.y * width + next_pos.x] = true;
+                    temporary_mask[next_pos.y * width + next_pos.x] = 1;
                 }
                 next_pos = cur_pos; next_pos.x -= 1;
-                if ((next_pos.x >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] != true) && (!IsAnyFlagSet(next_pos, block_flag)))
+                if ((next_pos.x >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (!IsAnyFlagSet(next_pos, block_flag)))
                 {
                     to_be_checked.Enqueue(next_pos);
-                    temporary_mask[next_pos.y * width + next_pos.x] = true;
+                    temporary_mask[next_pos.y * width + next_pos.x] = 1;
                 }
                 next_pos = cur_pos; next_pos.y -= 1;
-                if ((next_pos.y >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] != true) && (!IsAnyFlagSet(next_pos, block_flag)))
+                if ((next_pos.y >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (!IsAnyFlagSet(next_pos, block_flag)))
                 {
                     to_be_checked.Enqueue(next_pos);
-                    temporary_mask[next_pos.y * width + next_pos.x] = true;
+                    temporary_mask[next_pos.y * width + next_pos.x] = 1;
                 }
             }
 
             return island;
         }
 
+        // used in generation of lakes
+        // returns a set of cells flooded by water at certain starting point and the coordinate of lowest depth
+        public HashSet<SFCoord> GetFloodedCells(SFCoord start, out SFCoord lowest_point)
+        {
+            Array.Fill(temporary_mask, (byte)0);
+            lowest_point = start;
+            ushort start_z = GetZ(start);
+            ushort lowest_z = start_z;
+            if(start_z == 0)
+            {
+                return new HashSet<SFCoord>();
+            }
+
+            HashSet<SFCoord> flooded = new HashSet<SFCoord>();
+            Queue<SFCoord> to_be_checked = new Queue<SFCoord>();
+            SFCoord cur_pos;
+            SFCoord next_pos;
+
+            temporary_mask[start.y * width + start.x] = 1;
+            to_be_checked.Enqueue(start);
+
+            // for each coordinate from the queue, add up to 4 neighbors to the queue if they're unchecked and fulfill the criteria
+            while (to_be_checked.Count != 0)
+            {
+                cur_pos = to_be_checked.Dequeue();
+                ushort cur_z = GetZ(cur_pos);
+                if(cur_z == 0)
+                {
+                    continue;
+                }
+                if(cur_z < lowest_z)
+                {
+                    lowest_z = cur_z;
+                    lowest_point = cur_pos;
+                }
+                // every position that's in the queue will become flooded
+                flooded.Add(cur_pos);
+
+                next_pos = cur_pos; next_pos.x += 1;
+                if ((next_pos.x < width) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) < start_z))
+                {
+                    to_be_checked.Enqueue(next_pos);
+                    temporary_mask[next_pos.y * width + next_pos.x] = 1;
+                }
+                next_pos = cur_pos; next_pos.y += 1;
+                if ((next_pos.y < height) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) < start_z))
+                {
+                    to_be_checked.Enqueue(next_pos);
+                    temporary_mask[next_pos.y * width + next_pos.x] = 1;
+                }
+                next_pos = cur_pos; next_pos.x -= 1;
+                if ((next_pos.x >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) < start_z))
+                {
+                    to_be_checked.Enqueue(next_pos);
+                    temporary_mask[next_pos.y * width + next_pos.x] = 1;
+                }
+                next_pos = cur_pos; next_pos.y -= 1;
+                if ((next_pos.y >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) < start_z))
+                {
+                    to_be_checked.Enqueue(next_pos);
+                    temporary_mask[next_pos.y * width + next_pos.x] = 1;
+                }
+            }
+
+            return flooded;
+        }
+
         public HashSet<SFCoord> GetBorder(IEnumerable<SFCoord> island)
         {
-            HashSet<SFCoord> border = new HashSet<SFCoord>();
-            foreach (SFCoord pos in island)
+            Array.Fill(temporary_mask, (byte)0);
+            GetBoxFromArea(island, out SFCoord tl, out SFCoord br);
+            tl -= new SFCoord(1, 1);
+            br += new SFCoord(1, 1);
+            if (tl.x < 0) tl.x = 0;
+            if (br.x >= width) br.x = (short)(width - 1);
+            if (tl.y < 0) tl.y = 0;
+            if (br.y >= height) br.y = (short)(height - 1);
+            foreach(SFCoord pos in island)
             {
-                SFCoord tmp;
-                tmp.x = (short)(pos.x - 1); tmp.y = pos.y;
-                if ((tmp.x >= 0) && (!island.Contains(tmp))) { border.Add(tmp); }
-                tmp.x = (short)(pos.x + 1); tmp.y = pos.y;
-                if ((tmp.x < width) && (!island.Contains(tmp))) { border.Add(tmp); }
-                tmp.x = pos.x; tmp.y = (short)(pos.y - 1);
-                if ((tmp.y >= 0) && (!island.Contains(tmp))) { border.Add(tmp); }
-                tmp.x = pos.x; tmp.y = (short)(pos.y + 1);
-                if ((tmp.y < height) && (!island.Contains(tmp))) { border.Add(tmp); }
-                tmp.x = (short)(pos.x - 1); tmp.y = (short)(pos.y - 1);
-                if ((tmp.x >= 0) && (tmp.y >= 0) && (!island.Contains(tmp))) { border.Add(tmp); }
-                tmp.x = (short)(pos.x + 1); tmp.y = (short)(pos.y - 1);
-                if ((tmp.x < width) && (tmp.y >= 0) && (!island.Contains(tmp))) { border.Add(tmp); }
-                tmp.x = (short)(pos.x - 1); tmp.y = (short)(pos.y + 1);
-                if ((tmp.x >= 0) && (tmp.y < height) && (!island.Contains(tmp))) { border.Add(tmp); }
-                tmp.x = (short)(pos.x + 1); tmp.y = (short)(pos.y + 1);
-                if ((tmp.x < width) && (tmp.y < height) && (!island.Contains(tmp))) { border.Add(tmp); }
+                temporary_mask[pos.y * width + pos.x] = 1;
+            }
+
+            HashSet<SFCoord> border = new HashSet<SFCoord>();
+            for(short i = tl.y; i <= br.y; i++)
+            {
+                for(short j = tl.x; j <= br.x; j++)
+                {
+                    if (temporary_mask[i*width+j] == 1)
+                    {
+                        continue;
+                    }
+
+                    SFCoord p = new SFCoord(j, i);
+                    SFCoord tmp;
+                    tmp.x = (short)(j - 1); tmp.y = i;
+                    if ((tmp.x >= 0) && (temporary_mask[tmp.y*width+tmp.x] == 1)) { border.Add(p); continue; }
+                    tmp.x = (short)(j + 1); tmp.y = i;
+                    if ((tmp.x < width) && (temporary_mask[tmp.y * width + tmp.x] == 1)) { border.Add(p); continue; }
+                    tmp.x = j; tmp.y = (short)(i - 1);
+                    if ((tmp.y >= 0) && (temporary_mask[tmp.y * width + tmp.x] == 1)) { border.Add(p); continue; }
+                    tmp.x = j; tmp.y = (short)(i + 1);
+                    if ((tmp.y < height) && (temporary_mask[tmp.y * width + tmp.x] == 1)) { border.Add(p); continue; }
+                    tmp.x = (short)(j - 1); tmp.y = (short)(i - 1);
+                    if ((tmp.x >= 0) && (tmp.y >= 0) && (temporary_mask[tmp.y * width + tmp.x] == 1)) { border.Add(p); continue; }
+                    tmp.x = (short)(j + 1); tmp.y = (short)(i - 1);
+                    if ((tmp.x < width) && (tmp.y >= 0) && (temporary_mask[tmp.y * width + tmp.x] == 1)) { border.Add(p); continue; }
+                    tmp.x = (short)(j - 1); tmp.y = (short)(i + 1);
+                    if ((tmp.x >= 0) && (tmp.y < height) && (temporary_mask[tmp.y * width + tmp.x] == 1)) { border.Add(p); continue; }
+                    tmp.x = (short)(j + 1); tmp.y = (short)(i + 1);
+                    if ((tmp.x < width) && (tmp.y < height) && (temporary_mask[tmp.y * width + tmp.x] == 1)) { border.Add(p); continue; }
+                }
             }
 
             return border;
@@ -1121,7 +1210,7 @@ namespace SFEngine.SFMap
                 {
                     if (((topleft.y <= decal_info.bottomright.y) && (topleft.y >= decal_info.topleft.y)) || ((bottomright.y <= decal_info.bottomright.y) && (bottomright.y >= decal_info.topleft.y)))
                     {
-                        map.UpdateNodeDecal(decal_info.decal_node.Parent, decal_info.center, decal_info.offset, decal_info.angle);
+                        map.UpdateNodeDecal(decal_info.decal_node.parent, decal_info.center, decal_info.offset, decal_info.angle);
                     }
                 }
             }

@@ -1,32 +1,45 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31702.278
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spellforce Data Editor", "SpellforceDataEditor\Spellforce Data Editor.csproj", "{DFF717D0-DD24-44E5-9EDB-3633E1A2438C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spellforce Data Editor", "SpellforceDataEditor\Spellforce Data Editor.csproj", "{DFF717D0-DD24-44E5-9EDB-3633E1A2438C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapViewerNetNative", "MapViewerNetNative\MapViewerNetNative.csproj", "{25D72628-BDB8-4B0E-8A84-FD800D1D0DFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MapViewerNetNative", "MapViewerNetNative\MapViewerNetNative.csproj", "{25D72628-BDB8-4B0E-8A84-FD800D1D0DFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFEngine", "SFEngine\SFEngine.csproj", "{DD55FDE3-46AC-4558-9665-0F0CD25E5289}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFEngine", "SFEngine\SFEngine.csproj", "{DD55FDE3-46AC-4558-9665-0F0CD25E5289}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{DFF717D0-DD24-44E5-9EDB-3633E1A2438C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DFF717D0-DD24-44E5-9EDB-3633E1A2438C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFF717D0-DD24-44E5-9EDB-3633E1A2438C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DFF717D0-DD24-44E5-9EDB-3633E1A2438C}.Debug|x86.Build.0 = Debug|Any CPU
 		{DFF717D0-DD24-44E5-9EDB-3633E1A2438C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFF717D0-DD24-44E5-9EDB-3633E1A2438C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFF717D0-DD24-44E5-9EDB-3633E1A2438C}.Release|x86.ActiveCfg = Release|Any CPU
+		{DFF717D0-DD24-44E5-9EDB-3633E1A2438C}.Release|x86.Build.0 = Release|Any CPU
 		{25D72628-BDB8-4B0E-8A84-FD800D1D0DFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{25D72628-BDB8-4B0E-8A84-FD800D1D0DFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25D72628-BDB8-4B0E-8A84-FD800D1D0DFA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{25D72628-BDB8-4B0E-8A84-FD800D1D0DFA}.Debug|x86.Build.0 = Debug|Any CPU
 		{25D72628-BDB8-4B0E-8A84-FD800D1D0DFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25D72628-BDB8-4B0E-8A84-FD800D1D0DFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25D72628-BDB8-4B0E-8A84-FD800D1D0DFA}.Release|x86.ActiveCfg = Release|Any CPU
+		{25D72628-BDB8-4B0E-8A84-FD800D1D0DFA}.Release|x86.Build.0 = Release|Any CPU
 		{DD55FDE3-46AC-4558-9665-0F0CD25E5289}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DD55FDE3-46AC-4558-9665-0F0CD25E5289}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD55FDE3-46AC-4558-9665-0F0CD25E5289}.Debug|x86.ActiveCfg = Debug|x86
+		{DD55FDE3-46AC-4558-9665-0F0CD25E5289}.Debug|x86.Build.0 = Debug|x86
 		{DD55FDE3-46AC-4558-9665-0F0CD25E5289}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD55FDE3-46AC-4558-9665-0F0CD25E5289}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD55FDE3-46AC-4558-9665-0F0CD25E5289}.Release|x86.ActiveCfg = Release|x86
+		{DD55FDE3-46AC-4558-9665-0F0CD25E5289}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

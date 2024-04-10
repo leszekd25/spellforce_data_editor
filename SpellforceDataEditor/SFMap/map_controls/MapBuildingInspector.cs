@@ -102,7 +102,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             if (o == null)
             {
-                map.selection_helper.CancelSelection();
+                selection_helper.CancelSelection();
                 ((MapEdit.MapBuildingEditor)MainForm.mapedittool.selected_editor).selected_building = -1;
                 PanelProperties.Enabled = false;
             }
@@ -141,7 +141,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             Level.Text = building.level.ToString();
             RaceID.Text = building.race_id.ToString();
 
-            map.selection_helper.SelectBuilding(building);
+            selection_helper.SelectBuilding(building);
             if ((move_camera_on_select) || (building_selected_from_list))
             {
                 MainForm.mapedittool.SetCameraViewPoint(building.grid_position);

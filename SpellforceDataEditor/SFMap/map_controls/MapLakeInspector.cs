@@ -48,7 +48,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                     SelectedLakeDepth.Text = selected_lake.z_diff.ToString();
                     SelectedLakeLevel.Text = (selected_lake.z_diff + map.heightmap.GetZ(selected_lake.start)).ToString();
 
-                    map.selection_helper.SelectLake(selected_lake);
+                    selection_helper.SelectLake(selected_lake);
                 }
                 else
                 {
@@ -57,7 +57,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             }
             if (!Enabled)
             {
-                map.selection_helper.CancelSelection();
+                selection_helper.CancelSelection();
                 selected_lake = null;
             }
         }

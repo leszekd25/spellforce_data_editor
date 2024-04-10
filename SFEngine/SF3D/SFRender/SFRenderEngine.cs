@@ -3,7 +3,7 @@
  * It takes data from SFScene and renders it using predefined shaders
  */
 
-using OpenTK;
+using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
 using SFEngine.SF3D.SceneSynchro;
 using SFEngine.SF3D.UI;
@@ -479,6 +479,10 @@ namespace SFEngine.SF3D.SFRender
         public static void ResizeView(Vector2 view_size)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFRenderEngine.ResizeView() called (view_size = " + view_size.ToString() + ")");
+            if(!initialized)
+            {
+                return;
+            }
             render_size = view_size;
             scene.camera.ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
                 (float)Math.PI / 4, view_size.X / view_size.Y, min_render_distance, max_render_distance);
@@ -1686,7 +1690,7 @@ namespace SFEngine.SF3D.SFRender
                 }
             }
 
-            foreach (SceneNode n in node.Children)
+            foreach (SceneNode n in node.children)
             {
                 RenderSelection(n);
             }
@@ -1734,76 +1738,59 @@ namespace SFEngine.SF3D.SFRender
 
             if(Settings.EnableShadows)
             {
-                if(Settings.ShadowType == Settings.ShadowMapTechnique.VSM)
+                // both shadow techniques are very similar
+                FrameBuffer fb_sm_multisample = null;
+                FrameBuffer fb_sm_base = null;
+                FrameBuffer fb_sm_hpass = null;
+                SFShader sh_sm_resolve = null;
+
+                if (Settings.ShadowType == Settings.ShadowMapTechnique.VSM)
                 {
-                    // clear existing shadowmap
-                    SetFramebuffer(shadowmap_vsm_multisample);
-                    GL.Clear(ClearBufferMask.DepthBufferBit);
-
-                    RenderShadowmap();
-
-                    // revert cull mode, disable depth test
-                    GL.Disable(EnableCap.DepthTest);
-                    SetCullEnabled(false);
-
-                    // resolve multisample
-                    UseShader(shader_vsm_resolve);
-                    GL.Uniform1(active_shader["TextureSize"], Settings.ShadowMapSize);
-                    RenderFullscreen(shadowmap_vsm_base, shadowmap_vsm_multisample.textures[0]);
-
-                    // variance/moment shadow mapping technique allows smooth shadows by simply blurring the shadowmap
-                    if (Settings.SoftShadows)
-                    {
-                        UseShader(shader_shadowmap_blur);
-                        // horizontal blur
-                        GL.Uniform1(active_shader["horizontal"], 1);
-                        RenderFullscreen(shadowmap_vsm_hpass, shadowmap_vsm_base.textures[0]);
-                        // vertical blur
-                        GL.Uniform1(active_shader["horizontal"], 0);
-                        RenderFullscreen(shadowmap_vsm_base, shadowmap_vsm_hpass.textures[0]);
-                    }
-
-                    SetTexture(0, TextureTarget.Texture2D, shadowmap_vsm_base.textures[0].tex_id);
-                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-                    // bind generated shadowmap
-                    SetTexture(1, TextureTarget.Texture2D, shadowmap_vsm_base.textures[0].tex_id);
+                    fb_sm_multisample = shadowmap_vsm_multisample;
+                    fb_sm_base = shadowmap_vsm_base;
+                    fb_sm_hpass = shadowmap_vsm_hpass;
+                    sh_sm_resolve = shader_vsm_resolve;
                 }
                 else if(Settings.ShadowType == Settings.ShadowMapTechnique.MSM)
                 {
-                    // clear existing shadowmap
-                    SetFramebuffer(shadowmap_msm_multisample);
-                    GL.Clear(ClearBufferMask.DepthBufferBit);
-
-                    RenderShadowmap();
-
-                    // revert cull mode, disable depth test
-                    GL.Disable(EnableCap.DepthTest);
-                    SetCullEnabled(false);
-
-                    // resolve multisample
-                    UseShader(shader_msm_resolve);
-                    GL.Uniform1(active_shader["TextureSize"], Settings.ShadowMapSize);
-                    RenderFullscreen(shadowmap_msm_base, shadowmap_msm_multisample.textures[0]);
-
-                    // variance/moment shadow mapping technique allows smooth shadows by simply blurring the shadowmap
-                    if (Settings.SoftShadows)
-                    {
-                        UseShader(shader_shadowmap_blur);
-                        // horizontal blur
-                        GL.Uniform1(active_shader["horizontal"], 1);
-                        RenderFullscreen(shadowmap_msm_hpass, shadowmap_msm_base.textures[0]);
-                        // vertical blur
-                        GL.Uniform1(active_shader["horizontal"], 0);
-                        RenderFullscreen(shadowmap_msm_base, shadowmap_msm_hpass.textures[0]);
-                    }
-
-                    SetTexture(0, TextureTarget.Texture2D, shadowmap_msm_base.textures[0].tex_id);
-                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-                    // bind generated shadowmap
-                    SetTexture(1, TextureTarget.Texture2D, shadowmap_msm_base.textures[0].tex_id);
+                    fb_sm_multisample = shadowmap_msm_multisample;
+                    fb_sm_base = shadowmap_msm_base;
+                    fb_sm_hpass = shadowmap_msm_hpass;
+                    sh_sm_resolve = shader_msm_resolve;
                 }
+
+                // clear existing shadowmap
+                SetFramebuffer(fb_sm_multisample);
+                GL.Clear(ClearBufferMask.DepthBufferBit);
+
+                RenderShadowmap();
+
+                // revert cull mode, disable depth test
+                GL.Disable(EnableCap.DepthTest);
+                SetCullEnabled(false);
+
+                // resolve multisample
+                UseShader(sh_sm_resolve);
+                GL.Uniform1(active_shader["TextureSize"], Settings.ShadowMapSize);
+                RenderFullscreen(fb_sm_base, fb_sm_multisample.textures[0]);
+
+                // variance/moment shadow mapping technique allows smooth shadows by simply blurring the shadowmap
+                if (Settings.SoftShadows)
+                {
+                    UseShader(shader_shadowmap_blur);
+                    // horizontal blur
+                    GL.Uniform1(active_shader["horizontal"], 1);
+                    RenderFullscreen(fb_sm_hpass, fb_sm_base.textures[0]);
+                    // vertical blur
+                    GL.Uniform1(active_shader["horizontal"], 0);
+                    RenderFullscreen(fb_sm_base, fb_sm_hpass.textures[0]);
+                }
+
+                SetTexture(0, TextureTarget.Texture2D, fb_sm_base.textures[0].tex_id);
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+                // bind generated shadowmap
+                SetTexture(1, TextureTarget.Texture2D, fb_sm_base.textures[0].tex_id);
             }
 
             // render actual view
@@ -1898,7 +1885,7 @@ namespace SFEngine.SF3D.SFRender
 
             // selection last
             // disable depth test, cull front
-            if ((scene.selected_node != null) && (scene.selected_node.Parent != null))
+            if ((scene.selected_node != null) && (scene.selected_node.parent != null))
             {
                 GL.Disable(EnableCap.DepthTest);
                 SetRenderMode(RenderMode.ONE_ONE);
