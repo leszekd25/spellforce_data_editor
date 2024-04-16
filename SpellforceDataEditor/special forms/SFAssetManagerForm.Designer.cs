@@ -54,6 +54,7 @@
             button2Extract = new System.Windows.Forms.Button();
             comboMessages = new System.Windows.Forms.ComboBox();
             ButtonToggleFloor = new System.Windows.Forms.Button();
+            ButtonToggleBoneDisplay = new System.Windows.Forms.Button();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             PanelSound.SuspendLayout();
@@ -295,11 +296,23 @@
             ButtonToggleFloor.UseVisualStyleBackColor = true;
             ButtonToggleFloor.Click += ButtonToggleFloor_Click;
             // 
+            // ButtonToggleBoneDisplay
+            // 
+            ButtonToggleBoneDisplay.Location = new System.Drawing.Point(540, 493);
+            ButtonToggleBoneDisplay.Name = "ButtonToggleBoneDisplay";
+            ButtonToggleBoneDisplay.Size = new System.Drawing.Size(91, 23);
+            ButtonToggleBoneDisplay.TabIndex = 11;
+            ButtonToggleBoneDisplay.Text = "Toggle bones";
+            ButtonToggleBoneDisplay.UseVisualStyleBackColor = true;
+            ButtonToggleBoneDisplay.Visible = false;
+            ButtonToggleBoneDisplay.Click += ButtonToggleBoneDisplay_Click;
+            // 
             // SFAssetManagerForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(899, 528);
+            Controls.Add(ButtonToggleBoneDisplay);
             Controls.Add(ButtonToggleFloor);
             Controls.Add(comboMessages);
             Controls.Add(button2Extract);
@@ -357,5 +370,6 @@
         private System.Windows.Forms.ToolStripMenuItem reloadCurrentSceneToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportSettingsToolStripMenuItem;
         private System.Windows.Forms.Button ButtonToggleFloor;
+        private System.Windows.Forms.Button ButtonToggleBoneDisplay;
     }
 }

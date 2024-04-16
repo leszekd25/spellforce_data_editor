@@ -371,7 +371,7 @@ namespace SpellforceDataEditor.special_forms
                 }
 
                 pos = new SFCoord(pos.x, map.height - pos.y - 1);
-                Vector2 final_icon_center_offset = new Vector2((float)Math.Round((float)(pos.x * minimap_size) / minimap_tex.width), (float)Math.Round((float)(pos.y * minimap_size) / minimap_tex.height));
+                Vector2 final_icon_center_offset = new Vector2(MathF.Round((float)(pos.x * minimap_size) / minimap_tex.width), MathF.Round((float)(pos.y * minimap_size) / minimap_tex.height));
                 if (icon_type == MapEditorUIIconType.BUILDING)
                 {
                     SFRenderEngine.ui.SetElementMultiQuad(image_minimap_icons_border, next_icon, new Vector2(7, 7), -(final_icon_center_offset - new Vector2(3, 3)), new Vector2(244, 54), new Vector2(251, 61), minimap_icons_colors[color_index]);

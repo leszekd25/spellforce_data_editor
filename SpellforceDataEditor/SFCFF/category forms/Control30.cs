@@ -132,7 +132,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             else if (cell.ColumnIndex == 1)
             {
                 UInt16 item_count = SFEngine.Utility.TryParseUInt16(cell.Value.ToString());
-                if (item_count == (short)(category[current_element, i][2]))
+                if (item_count == (ushort)(category[current_element, i][2]))
                 {
                     cell.Value = variant_repr(i, 2);
                 }

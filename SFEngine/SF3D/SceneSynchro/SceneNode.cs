@@ -508,7 +508,7 @@ namespace SFEngine.SF3D.SceneSynchro
         public SFAnimation Animation { get { return animation; } }
         public Matrix4[] BoneTransforms = null;
 
-        private float anim_current_time = 0;
+        public float anim_current_time = 0;
         public float AnimCurrentTime { get { return anim_current_time; } }
         public bool AnimPlaying = false;
 
@@ -580,7 +580,7 @@ namespace SFEngine.SF3D.SceneSynchro
             t -= k;
             int k2 = k + 1;
             // fix: 0 length animations broke the calculation
-            if(animation.max_time == 0)
+            if(k2 >= animation.bone_animations[0].Length)
             {
                 k2 = k;
             }

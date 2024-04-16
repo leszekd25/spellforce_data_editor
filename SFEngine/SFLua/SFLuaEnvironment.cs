@@ -252,7 +252,10 @@ namespace SFEngine.SFLua
                 }
             }
 
-            System.Diagnostics.Process.Start(SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
+            System.Diagnostics.Process proc = new System.Diagnostics.Process();
+            proc.StartInfo = new System.Diagnostics.ProcessStartInfo(SFUnPak.SFUnPak.game_directory_name + "\\" + fname);
+            proc.StartInfo.UseShellExecute = true;
+            proc.Start();
 
             return 0;
         }

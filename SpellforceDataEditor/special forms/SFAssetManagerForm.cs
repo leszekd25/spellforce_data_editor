@@ -15,6 +15,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using static System.Formats.Asn1.AsnWriter;
+using SFEngine;
 
 namespace SpellforceDataEditor.special_forms
 {
@@ -70,6 +72,7 @@ namespace SpellforceDataEditor.special_forms
             UIElementIndex label_detail1;
             UIElementIndex label_detail2;
             UIElementIndex label_detail3;
+            UIElementIndex bone_visualizer;
 
             public SFAssetManagerUI()
             {
@@ -81,6 +84,7 @@ namespace SpellforceDataEditor.special_forms
 
                 SFRenderEngine.ui.AddStorage(font_outline.font_texture, 1024);
                 SFRenderEngine.ui.AddStorage(font_main.font_texture, 1024);
+                SFRenderEngine.ui.AddStorage(SFRenderEngine.opaque_tex, 256);
 
                 label_name_outline = SFRenderEngine.ui.AddElementText(font_outline, 256, new Vector2(10, 25));
                 label_detail1_outline = SFRenderEngine.ui.AddElementText(font_outline, 256, new Vector2(10, 45));
@@ -90,11 +94,13 @@ namespace SpellforceDataEditor.special_forms
                 label_detail1 = SFRenderEngine.ui.AddElementText(font_main, 256, new Vector2(10, 45));
                 label_detail2 = SFRenderEngine.ui.AddElementText(font_main, 256, new Vector2(10, 65));
                 label_detail3 = SFRenderEngine.ui.AddElementText(font_main, 256, new Vector2(10, 85));
+                bone_visualizer = SFRenderEngine.ui.AddElementMulti(SFRenderEngine.opaque_tex, 256);
 
                 SetName("");
                 SetLabel1("");
                 SetLabel2("");
                 SetLabel3("");
+                BonesSetVisible(false);
             }
 
             public void SetName(string name)
@@ -119,6 +125,87 @@ namespace SpellforceDataEditor.special_forms
             {
                 SFRenderEngine.ui.SetElementText(label_detail3_outline, font_outline, l3);
                 SFRenderEngine.ui.SetElementText(label_detail3, font_main, l3);
+            }
+
+            public bool BonesGetVisible()
+            {
+                return SFRenderEngine.ui.GetElementVisible(bone_visualizer);
+            }
+
+            public void BonesSetVisible(bool vis)
+            {
+                SFRenderEngine.ui.SetElementVisible(bone_visualizer, vis);
+            }
+
+            public void BonesUpdate(SceneNodeAnimated anim, SceneNodeCamera camera)
+            {
+                if(!SFRenderEngine.ui.GetElementVisible(bone_visualizer))
+                {
+                    return;
+                }
+                if(anim == null)
+                {
+                    return;
+                }
+                if(anim.Skeleton == null)
+                {
+                    return;
+                }
+
+                // 1. get all bone positions
+                // 2. for each bone: if not behind camera, add quad at bone position projected into camera view
+                SFRenderEngine.ui.ClearElementMulti(bone_visualizer);
+
+                float t = 0.0f;
+                int k = 0;
+                int k2 = 0;
+                if (anim.Animation != null)
+                {
+                    t = anim.anim_current_time;
+                    MathUtils.Clamp(ref t, 0, anim.Animation.max_time);
+                    t *= SFAnimation.ANIMATION_FPS;
+                    k = (int)t;
+                    t -= k;
+                    k2 = k + 1;
+                    // fix: 0 length animations broke the calculation
+                    if (k2 >= anim.Animation.bone_animations[0].Length)
+                    {
+                        k2 = k;
+                    }
+                }
+                Quaternion q = Quaternion.FromAxisAngle(Vector3.UnitX, -MathF.PI / 2);
+                Matrix4 BoneTransform;
+
+                Vector2 quad_size = (4, 4);
+                int j = 0;
+                for(int i = 0; i < anim.Skeleton.bone_count; i++)
+                {
+                    if (anim.Animation == null)
+                    {
+                        BoneAnimationState mat = anim.Skeleton.bone_reference_state[i];
+                        mat.ToMatrix(out BoneTransform);
+                    }
+                    else
+                    {
+                        BoneAnimationState[] ba = anim.Animation.bone_animations[i];
+                        BoneAnimationState.FastLerp(in ba[k], in ba[k2], t, out BoneAnimationState bas);
+                        bas.ToMatrix(out BoneTransform);
+                    }
+
+                    Vector3 bone_pos_global = BoneTransform.Row3.Xyz;
+                    bone_pos_global = Vector3.Transform(bone_pos_global, q);
+
+                    float dot = Vector3.Dot(bone_pos_global - camera.position, camera.Lookat - camera.position);
+                    if (dot < 0)
+                    {
+                        continue;
+                    }
+
+                    Vector2 quad_loc = camera.WorldToScreen(bone_pos_global) * SFRenderEngine.render_size;
+                    SFRenderEngine.ui.SetElementMultiQuad(bone_visualizer, j, quad_size, -quad_loc+(quad_size/2.0f), Vector2.Zero, Vector2.One, (0, 0, 0, 1));
+                    j++;
+                }
+                SFRenderEngine.ui.UpdateElementAll(bone_visualizer);
             }
 
             public void Dispose()
@@ -166,6 +253,8 @@ namespace SpellforceDataEditor.special_forms
 #if DEBUG
             toolsToolStripMenuItem.Visible = true;
             ComboBrowseMode.Items.Add("[DEBUG] Particle viewer");
+
+            ButtonToggleBoneDisplay.Visible = true;
 #endif
             SFResourceManager.ListAllPakResources();
 
@@ -207,7 +296,7 @@ namespace SpellforceDataEditor.special_forms
             SFMaterial material = new SFMaterial();
 
             string tex_name = "test_lake";
-            if(!SFResourceManager.Textures.Load(tex_name, SFEngine.SFUnPak.FileSource.ANY, out material.texture, out int ec))
+            if (!SFResourceManager.Textures.Load(tex_name, SFEngine.SFUnPak.FileSource.ANY, out material.texture, out int ec))
             {
                 SFEngine.LogUtils.Log.Warning(SFEngine.LogUtils.LogSource.SF3D, "SFAssetManagerForm.SF3DManagerForm_Load(): Could not load texture (texture name = " + tex_name + ")");
                 material.texture = SFRenderEngine.opaque_tex;
@@ -394,7 +483,7 @@ namespace SpellforceDataEditor.special_forms
                 comboMessages.Show();
             }
 
-            if(ComboBrowseMode.SelectedIndex == 6)
+            if (ComboBrowseMode.SelectedIndex == 6)
             {
                 dynamic_render = true;
                 DebugExecuteParticleScript();
@@ -417,7 +506,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string model_name = ListEntries.SelectedItem.ToString();
                     model_name = model_name.Substring(0, model_name.Length - 4);
-                    if(!SFResourceManager.Models.Load(model_name, SFEngine.SFUnPak.FileSource.ANY, out SFModel3D mesh, out int ec))
+                    if (!SFResourceManager.Models.Load(model_name, SFEngine.SFUnPak.FileSource.ANY, out SFModel3D mesh, out int ec))
                     {
                         StatusText.Text = "Failed to load model " + model_name;
                         return;
@@ -452,7 +541,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string skin_name = ListEntries.SelectedItem.ToString();
                     skin_name = skin_name.Substring(0, skin_name.Length - 4);
-                    if(!SFResourceManager.Skins.Load(skin_name, SFEngine.SFUnPak.FileSource.ANY, out skin, out int ec))
+                    if (!SFResourceManager.Skins.Load(skin_name, SFEngine.SFUnPak.FileSource.ANY, out skin, out int ec))
                     {
                         StatusText.Text = "Failed to load skin " + skin_name + ", status code " + ec.ToString();
                         obj_d1.SetSkeleton(null);
@@ -464,7 +553,7 @@ namespace SpellforceDataEditor.special_forms
                     statusStrip1.Refresh();
 
                     string skel_name = skin_name;
-                    if(!SFResourceManager.Skeletons.Load(skel_name, SFEngine.SFUnPak.FileSource.ANY, out skel, out ec))
+                    if (!SFResourceManager.Skeletons.Load(skel_name, SFEngine.SFUnPak.FileSource.ANY, out skel, out ec))
                     {
                         StatusText.Text = "Failed to load skeleton " + skel_name;
                         obj_d1.SetSkeleton(null);
@@ -476,7 +565,7 @@ namespace SpellforceDataEditor.special_forms
 
                     string model_name = ListEntries.SelectedItem.ToString();
                     model_name = model_name.Substring(0, model_name.Length - 4);
-                    if(!SFResourceManager.Models.Load(model_name, SFEngine.SFUnPak.FileSource.ANY, out mesh, out ec))
+                    if (!SFResourceManager.Models.Load(model_name, SFEngine.SFUnPak.FileSource.ANY, out mesh, out ec))
                     {
                         StatusText.Text = "Failed to load model " + model_name;
                         obj_d1.SetSkeleton(null);
@@ -510,7 +599,7 @@ namespace SpellforceDataEditor.special_forms
                     string s_n = ListEntries.SelectedItem.ToString();
                     s_n = s_n.Substring(0, s_n.Length - 4);
 
-                    if(!SFResourceManager.Musics.Load(s_n, SFEngine.SFUnPak.FileSource.ANY, out StreamResource music, out int ec))
+                    if (!SFResourceManager.Musics.Load(s_n, SFEngine.SFUnPak.FileSource.ANY, out StreamResource music, out int ec))
                     {
                         StatusText.Text = "Failed to load music " + s_n;
                         return;
@@ -532,7 +621,7 @@ namespace SpellforceDataEditor.special_forms
                     string s_n = ListEntries.SelectedItem.ToString();
                     s_n = s_n.Substring(0, s_n.Length - 4);
 
-                    if(!SFResourceManager.Sounds.Load(s_n, SFEngine.SFUnPak.FileSource.ANY, out StreamResource sound, out int ec))
+                    if (!SFResourceManager.Sounds.Load(s_n, SFEngine.SFUnPak.FileSource.ANY, out StreamResource sound, out int ec))
                     {
                         StatusText.Text = "Failed to load sound " + s_n;
                         return;
@@ -555,7 +644,7 @@ namespace SpellforceDataEditor.special_forms
                     string type = s_n.Substring(s_n.Length - 4, 4);
                     s_n = s_n.Substring(0, s_n.Length - 4);
 
-                    if(!SFResourceManager.Messages.Load(s_n, SFEngine.SFUnPak.FileSource.ANY, out StreamResource msg, out int ec))
+                    if (!SFResourceManager.Messages.Load(s_n, SFEngine.SFUnPak.FileSource.ANY, out StreamResource msg, out int ec))
                     {
                         StatusText.Text = "Failed to load message " + s_n;
                         return;
@@ -653,7 +742,7 @@ namespace SpellforceDataEditor.special_forms
                 {
                     string anim_name = ListAnimations.SelectedItem.ToString();
                     anim_name = anim_name.Substring(0, anim_name.Length - 4);
-                    if(!SFResourceManager.Animations.Load(anim_name, SFEngine.SFUnPak.FileSource.ANY, out SFAnimation anim, out int ec, obj_d1.Skeleton))
+                    if (!SFResourceManager.Animations.Load(anim_name, SFEngine.SFUnPak.FileSource.ANY, out SFAnimation anim, out int ec, obj_d1.Skeleton))
                     {
                         StatusText.Text = "Failed to load animation " + anim_name + ", status code " + ec.ToString();
                         dynamic_render = false;
@@ -701,7 +790,7 @@ namespace SpellforceDataEditor.special_forms
                                         dynamic_render = false;
                                         return;
                                     }
-                                    
+
                                     foreach (SceneNodeAnimated node in unit_node.children)
                                     {
                                         if (node.Skeleton.bone_count != anim.bone_animations.Length)
@@ -810,6 +899,15 @@ namespace SpellforceDataEditor.special_forms
                 SFRenderEngine.scene.delta_timer.Restart();
                 SFRenderEngine.scene.Update(SFRenderEngine.scene.deltatime);
 
+                if(ComboBrowseMode.SelectedIndex == 1)
+                {
+                    SceneNodeAnimated obj_d1 = SFRenderEngine.scene.root.FindNode<SceneNodeAnimated>("dynamic_mesh");
+                    if (obj_d1 != null)
+                    {
+                        ui.BonesUpdate(obj_d1, SFRenderEngine.scene.camera);
+                    }
+                }
+
                 SFRenderEngine.ui.Update();
                 SFRenderEngine.scene.atmosphere.sun_light.SetupLightView(new SFEngine.SF3D.Physics.BoundingBox(new Vector3(-5, 0, -5), new Vector3(5, 30, 5)));
                 glControl1.Invalidate();
@@ -858,7 +956,7 @@ namespace SpellforceDataEditor.special_forms
                     }
                 }
                 int last_index = skel_name.LastIndexOf('_');
-                if(last_index <= 0)
+                if (last_index <= 0)
                 {
                     break;
                 }
@@ -1380,7 +1478,7 @@ namespace SpellforceDataEditor.special_forms
         {
             int script_index = 0;
 
-            switch(script_index)
+            switch (script_index)
             {
                 case 0:
                     {
@@ -1428,6 +1526,12 @@ namespace SpellforceDataEditor.special_forms
                 grid_node.Visible = !grid_node.visible;
             }
 
+            update_render = true;
+        }
+
+        private void ButtonToggleBoneDisplay_Click(object sender, EventArgs e)
+        {
+            ui.BonesSetVisible(!ui.BonesGetVisible());
             update_render = true;
         }
     }
