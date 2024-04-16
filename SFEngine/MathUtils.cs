@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using System;
+using System.Windows.Forms.ComponentModel.Com2Interop;
 
 namespace SFEngine
 {
@@ -7,12 +8,12 @@ namespace SFEngine
     {
         static Random r = new Random();
 
-        public static float Lerp(Vector2 v, float t)
+        public static float Lerp(in Vector2 v, float t)
         {
             return v[0] + t * (v[0] - v[1]);
         }
 
-        public static float Cerp(Vector4 v, float t)
+        public static float Cerp(in Vector4 v, float t)
         {
             return (2 * v[1] + t * (
                     v[2] - v[0] + t * (
@@ -20,13 +21,13 @@ namespace SFEngine
                     -v[0] + 3 * v[1] - 3 * v[2] + v[3])))) * 0.5f;
         }
 
-        public static float Bilinear(Matrix2 v, Vector2 t)
+        public static float Bilinear(in Matrix2 v, in Vector2 t)
         {
             return Lerp(new Vector2(Lerp(v.Row0, t[0]),
                                     Lerp(v.Row1, t[0])), t[1]);
         }
 
-        public static float Bicubic(Matrix4 v, Vector2 t)
+        public static float Bicubic(in Matrix4 v, in Vector2 t)
         {
             return Cerp(new Vector4(Cerp(v.Row0, t[0]),
                                     Cerp(v.Row1, t[0]),
@@ -39,7 +40,7 @@ namespace SFEngine
             return (1 / (sigma * Math.Sqrt(2 * Math.PI)) * Math.Exp(-(x * x) / (2 * sigma * sigma)));
         }
 
-        public static void Clamp<T>(ref T t, T x1, T x2) where T : IComparable<T>, IEquatable<T>
+        public static void Clamp<T>(ref T t, in T x1, in T x2) where T : IComparable<T>, IEquatable<T>
         {
             if (t.CompareTo(x1) < 0)
             {
@@ -51,7 +52,7 @@ namespace SFEngine
             }
         }
 
-        public static void Expand<T>(T t, ref T x1, ref T x2) where T : IComparable<T>, IEquatable<T>
+        public static void Expand<T>(in T t, ref T x1, ref T x2) where T : IComparable<T>, IEquatable<T>
         {
             if (t.CompareTo(x1) < 0)
             {
@@ -110,28 +111,33 @@ namespace SFEngine
         }
 
         // counterclockwise (the correct version)
-        public static Vector2 RotateVec2(Vector2 v, float angle)
+        public static void RotateVec2(in Vector2 v, float angle, out Vector2 v2)
         {
+            Vector2 tv = v;
             float s = (float)Math.Sin(angle);
             float c = (float)Math.Cos(angle);
-            return new Vector2(v.X * c - v.Y * s, v.X * s + v.Y * c);
+            v2.X = tv.X * c - tv.Y * s;
+            v2.Y = tv.X * s + tv.Y * c;
         }
 
         // clockwise
-        public static Vector2 RotateVec2Mirrored(Vector2 v, float angle)
+        public static void RotateVec2Mirrored(in Vector2 v, float angle, out Vector2 v2)
         {
+            Vector2 tv = v;
             float s = (float)Math.Sin(angle);
             float c = (float)Math.Cos(angle);
-            return new Vector2(v.X * c - v.Y * s, -v.X * s - v.Y * c);
+            v2.X = tv.X * c - tv.Y * s;
+            v2.Y = -tv.X * s - tv.Y * c;
         } 
 
-        public static Vector2 RotateVec2PivotSinCos(Vector2 v, Vector2 p, float s, float c)
+        public static void RotateVec2PivotSinCos(in Vector2 v, in Vector2 p, float s, float c, out Vector2 v2)
         {
-            Vector2 tmp = v - p;
-            return new Vector2(tmp.X * c - tmp.Y * s, tmp.X * s + tmp.Y * c) + p;
+            Vector2.Subtract(in v, in p, out Vector2 tmp);
+            v2.X = tmp.X * c - tmp.Y * s + p.X;
+            v2.Y = tmp.X * s + tmp.Y * c + p.Y;
         }
 
-        public static void RotateVec3Array(Vector3[] vs, Vector3 offset, float azimuth, float altitude)
+        public static void RotateVec3Array(Vector3[] vs, in Vector3 offset, float azimuth, float altitude)
         {
             float asin = (float)Math.Sin(azimuth);
             float acos = (float)Math.Cos(azimuth);
@@ -140,14 +146,13 @@ namespace SFEngine
 
             for (int i = 0; i < vs.Length; i++)
             {
-                vs[i] -= offset;
-
-                vs[i] = new Vector3(
-                    vs[i].X * lcos + vs[i].Z * lsin * asin + vs[i].Y * lsin * acos,
-                    vs[i].X * lsin + vs[i].Z * lcos * asin + vs[i].Y * lcos * acos,
-                    vs[i].Z * acos - vs[i].Y * asin);
-
-                vs[i] += offset;
+                Vector3 v = vs[i];
+                Vector3.Subtract(in v, in offset, out v);
+                Vector3 v2;
+                v2.X = v.X * lcos + v.Z * lsin * asin + v.Y * lsin * acos;
+                v2.Y = v.X * lsin + v.Z * lcos * asin + v.Y * lcos * acos;
+                v2.Z = v.Z * acos - v.Y * asin;
+                Vector3.Add(in v2, in offset, out vs[i]);
             }
         }
     }

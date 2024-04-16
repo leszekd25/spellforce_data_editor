@@ -977,12 +977,11 @@ namespace SpellforceDataEditor.special_forms
         Dictionary<string, TreeNode> building_tree = null;
         Dictionary<string, TreeNode> obj_tree = null;
 
-        SFMapQuickSelectHelper qs_unit = new SFMapQuickSelectHelper();
-        SFMapQuickSelectHelper qs_building = new SFMapQuickSelectHelper();
-        SFMapQuickSelectHelper qs_object = new SFMapQuickSelectHelper();
+        SFMap.SFMapQuickSelectHelper qs_unit = new SFMap.SFMapQuickSelectHelper();
+        SFMap.SFMapQuickSelectHelper qs_building = new SFMap.SFMapQuickSelectHelper();
+        SFMap.SFMapQuickSelectHelper qs_object = new SFMap.SFMapQuickSelectHelper();
 
         List<int> heightmap_mode_values = new List<int>(new int[3] { 20, 300, 5 });
-        int lake_mode_value = 50;
 
         public MapMaskSource mask_source = MapMaskSource.PAINT;
         public MapMaskOperation mask_operation = MapMaskOperation.ONE;
@@ -1794,7 +1793,7 @@ namespace SpellforceDataEditor.special_forms
 
             if (movement_vector != new Vector2(0, 0))
             {
-                movement_vector = MathUtils.RotateVec2Mirrored(movement_vector, SFRenderEngine.scene.camera.Direction.X + (float)(Math.PI / 2));
+                MathUtils.RotateVec2Mirrored(in movement_vector, SFRenderEngine.scene.camera.Direction.X + (float)(Math.PI / 2), out movement_vector);
                 movement_vector *= 60.0f * camera_speed_factor * SFRenderEngine.scene.DeltaTime;
                 MoveCameraWorldMapPos(SFRenderEngine.scene.camera.position.Xz + movement_vector);
                 update_render = true;
@@ -2594,7 +2593,7 @@ namespace SpellforceDataEditor.special_forms
         {
             map.heightmap.overlay_flags &= SFMapHeightMapFlag.EDITOR_MASK;    // only mask visible
             PanelBrushShape.Parent = TabEditorModes.TabPages[0];
-            PanelBrushShape.Location = new Point(188, 3);
+            PanelBrushShape.Location = new Point(219, 3);
             update_render = true;
 
             if (RadioHMap.Checked)
@@ -3191,7 +3190,7 @@ namespace SpellforceDataEditor.special_forms
         {
             PanelBrushShape.Parent = TabEditorModes.TabPages[1];
             PanelBrushShape.Visible = true;
-            PanelBrushShape.Location = new Point(102, 3);
+            PanelBrushShape.Location = new Point(124, 3);
 
             InspectorSet(new SFMap.map_controls.MapTerrainTextureInspector());
             ((SFMap.map_controls.MapTerrainTextureInspector)selected_inspector).SetInspectorType(GetTileType());
@@ -3263,7 +3262,7 @@ namespace SpellforceDataEditor.special_forms
         {
             EditCoopCampTypes.Location = PanelEntityPlacementSelect.Location;
             PanelMonumentType.Location = PanelEntityPlacementSelect.Location;
-            EntityHidePreview.Location = new Point(486, 94);
+            EntityHidePreview.Location = new Point(567, 114);
             QuickSelect.Location = new Point(PanelEntityPlacementSelect.Location.X + PanelEntityPlacementSelect.Width + 6, PanelEntityPlacementSelect.Location.Y);
             QuickSelect.QsRef = null;
             InspectorSelect(null);
@@ -3306,7 +3305,7 @@ namespace SpellforceDataEditor.special_forms
         }
 
         // quick select utilities
-        private SFMapQuickSelectHelper QuickSelect_GetCurrent()
+        private SFMap.SFMapQuickSelectHelper QuickSelect_GetCurrent()
         {
             if (!TabEditorModes.Enabled)
             {
@@ -4455,6 +4454,7 @@ namespace SpellforceDataEditor.special_forms
             GenerateObjectTree();
 
             PanelBrushShape.Visible = true;
+            PanelBrushShape.Location = new Point(3, 3);
             PanelDecalGroups.Location = new Point(PanelBrushShape.Location.X + PanelBrushShape.Width + 3, PanelDecalGroups.Location.Y);
 
             terrain_brush.size = (float)SFEngine.Utility.TryParseUInt8(BrushSizeVal.Text);
@@ -4746,7 +4746,8 @@ namespace SpellforceDataEditor.special_forms
             PanelMaskSourceValue.Visible = false;
             PanelMaskFeature.Visible = false;
 
-            Point loc_start = new Point(322, 3);
+            Point loc_start = ComboSelectionSource.Location;
+            loc_start.X += ComboSelectionSource.Width + 3;
 
             switch (mask_source)
             {

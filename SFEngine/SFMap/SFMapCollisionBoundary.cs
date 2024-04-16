@@ -35,7 +35,8 @@ namespace SFEngine.SFMap
 
             for (int i = 0; i < vertices.Length; i++)
             {
-                rotated_vertices[i] = MathUtils.RotateVec2PivotSinCos(vertices[i], offset, s, c) - offset;
+                MathUtils.RotateVec2PivotSinCos(in vertices[i], in offset, s, c, out rotated_vertices[i]);
+                rotated_vertices[i] -= offset;
             }
 
             Vector2 topleft, bottomright;

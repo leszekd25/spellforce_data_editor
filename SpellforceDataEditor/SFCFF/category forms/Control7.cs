@@ -234,7 +234,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             if (item_type == 1)
             {
-                string bonus_type_text = String.Copy(SFEngine.Utility.S_UNKNOWN);
+                string bonus_type_text = SFEngine.Utility.S_UNKNOWN;
                 if ((bonus_type > 0) && (bonus_type < (Byte)equipment_types.Length))
                 {
                     bonus_type_text = equipment_types[(int)bonus_type];

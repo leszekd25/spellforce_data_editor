@@ -19,17 +19,15 @@ namespace SFEngine.LogUtils
     static public class Log
     {
         // a single log entry type
-        struct LogData
+        struct LogData(LogOption o, LogSource s, string d)
         {
-            public LogOption option;
-            public LogSource source;
-            public string data;
-
-            public LogData(LogOption o, LogSource s, string d) { option = o; source = s; data = d; }
+            public LogOption option = o;
+            public LogSource source = s;
+            public string data = d;
         }
 
         static LogOption option = LogOption.NONE;                 // message types which will be written to a file
-        static List<LogData> log_list = new List<LogData>();      // messages stored here
+        static readonly List<LogData> log_list = [];      // messages stored here
 
         // these three are utility functions
 
@@ -81,18 +79,15 @@ namespace SFEngine.LogUtils
         // saves all messages to the file
         static public void SaveLog(string filename)
         {
-            FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
-            using (StreamWriter sw = new StreamWriter(fs))
+            using FileStream fs = new(filename, FileMode.Create, FileAccess.Write);
+            using StreamWriter sw = new(fs);
+            foreach (LogData ld in log_list)
             {
-                foreach (LogData ld in log_list)
+                if ((ld.option & option) != 0)
                 {
-                    if ((ld.option & option) != 0)
-                    {
-                        sw.WriteLine("[" + ld.option.ToString() + "] " + ld.source.ToString() + ": " + ld.data);
-                    }
+                    sw.WriteLine("[" + ld.option.ToString() + "] " + ld.source.ToString() + ": " + ld.data);
                 }
             }
-            fs.Close();
         }
     }
 }

@@ -42,13 +42,13 @@ namespace SFEngine.SF3D.Physics
 
         // returns distance from a given point to the plane
         // depending on the side of the plane the point is on, result will be positive or negative
-        public float DistanceTo(Vector3 v)
+        public readonly float DistanceTo(Vector3 v)
         {
             return (Vector3.Dot(normal, v) + d);
         }
 
         // returns true if a point lies on positive side of the plane, false otherwise
-        public bool SideOf(Vector3 v)
+        public readonly bool SideOf(Vector3 v)
         {
             return (Vector3.Dot(normal, v) + d) > 0;
         }

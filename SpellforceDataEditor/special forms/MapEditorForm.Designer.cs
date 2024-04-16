@@ -1751,7 +1751,7 @@
             ButtonMinimap.Name = "ButtonMinimap";
             ButtonMinimap.Size = new System.Drawing.Size(111, 125);
             ButtonMinimap.TabIndex = 12;
-            ButtonMinimap.Text = "Minimap SFEngine.Settings...";
+            ButtonMinimap.Text = "Minimap settings...";
             ButtonMinimap.UseVisualStyleBackColor = true;
             ButtonMinimap.Click += ButtonMinimap_Click;
             // 

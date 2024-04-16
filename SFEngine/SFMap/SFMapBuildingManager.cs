@@ -109,7 +109,7 @@ namespace SFEngine.SFMap
             ApplyBuildingBlockFlags(bld, true);
 
             Vector2 b_offset = building_collision[(ushort)bld.game_id].origin;
-            Vector2 b_offset_rotated = MathUtils.RotateVec2(b_offset, (float)(angle * Math.PI / 180));
+            MathUtils.RotateVec2(in b_offset, (float)(angle * Math.PI / 180), out Vector2 b_offset_rotated);
 
             bld.node.Position = map.heightmap.GetFixedPosition(position) + new Vector3(-b_offset_rotated.X, 0, b_offset_rotated.Y);
             bld.node.Scale = new Vector3(100 / 128f);
@@ -155,7 +155,7 @@ namespace SFEngine.SFMap
             ApplyBuildingBlockFlags(building, true);
 
             Vector2 b_offset = map.building_manager.building_collision[(ushort)building.game_id].origin;
-            Vector2 b_offset_rotated = MathUtils.RotateVec2(b_offset, (float)(building.angle * Math.PI / 180));
+            MathUtils.RotateVec2(in b_offset, (float)(building.angle * Math.PI / 180), out Vector2 b_offset_rotated);
 
             building.node.Position = map.heightmap.GetFixedPosition(building.grid_position) + new Vector3(b_offset_rotated.X, 0, +b_offset_rotated.Y);
             building.node.Scale = new Vector3(100 / 128f);
@@ -172,7 +172,7 @@ namespace SFEngine.SFMap
             ApplyBuildingBlockFlags(building, true);
 
             Vector2 b_offset = building_collision[(ushort)building.game_id].origin;
-            Vector2 b_offset_rotated = MathUtils.RotateVec2(b_offset, (float)(angle * Math.PI / 180));
+            MathUtils.RotateVec2(in b_offset, (float)(angle * Math.PI / 180), out Vector2 b_offset_rotated);
 
             building.node.Position = map.heightmap.GetFixedPosition(building.grid_position) + new Vector3(-b_offset_rotated.X, 0, +b_offset_rotated.Y);
             building.node.Scale = new Vector3(100 / 128f);
@@ -196,7 +196,7 @@ namespace SFEngine.SFMap
 
             // change visual transform
             Vector2 b_offset = building_collision[(ushort)building.game_id].origin;
-            Vector2 b_offset_rotated = MathUtils.RotateVec2(b_offset, (float)(building.angle * Math.PI / 180));
+            MathUtils.RotateVec2(in b_offset, (float)(building.angle * Math.PI / 180), out Vector2 b_offset_rotated);
 
             building.node.Position = map.heightmap.GetFixedPosition(new_pos) + new Vector3(-b_offset_rotated.X, 0, +b_offset_rotated.Y);
             building.node.Scale = new Vector3(100 / 128f);

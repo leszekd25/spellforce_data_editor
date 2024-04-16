@@ -45,12 +45,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         return;
                     }
 
-                    // undo/redo
                     SFCoord previous_pos = new SFCoord(0, 0);
 
                     if ((specials.Shift) && (selected_unit != SFEngine.Utility.NO_INDEX))
                     {
-                        // undo/redo
                         previous_pos = map.unit_manager.units[selected_unit].grid_position;
 
                         map.unit_manager.MoveUnit(selected_unit, pos);
@@ -64,7 +62,6 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         }
                         // create new unit and drag it until mouse released
                         int unit_index = map.unit_manager.AddUnit(new_unit_id, pos, 0, 0, 0, 0, 0);
-                        // undo/redo
                         previous_pos = pos;
 
                         ((map_controls.MapUnitInspector)MainForm.mapedittool.selected_inspector).LoadNextUnit(unit_index);
@@ -74,12 +71,10 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         map.heightmap.RefreshOverlay();
                         MainForm.mapedittool.ui.RedrawMinimapIcons();
 
-                        // undo/redo
                         MainForm.mapedittool.op_queue.Push(new map_operators.MapOperatorUnitAddOrRemove
                         { unit = map.unit_manager.units[unit_index], index = unit_index, is_adding = true });
                     }
 
-                    // undo/redo
                     if ((selected_unit != SFEngine.Utility.NO_INDEX) && (!first_click))
                     {
                         op_change_pos = new map_operators.MapOperatorEntityChangeProperty()

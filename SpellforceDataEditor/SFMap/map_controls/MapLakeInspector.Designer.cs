@@ -28,138 +28,101 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.LakeTypeIce = new System.Windows.Forms.RadioButton();
-            this.LakeTypeSwamp = new System.Windows.Forms.RadioButton();
-            this.LakeTypeLava = new System.Windows.Forms.RadioButton();
-            this.LakeTypeWater = new System.Windows.Forms.RadioButton();
-            this.label2 = new System.Windows.Forms.Label();
-            this.SelectedLakeDepth = new System.Windows.Forms.TextBox();
-            this.SelectedLakeLevel = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.panel1.SuspendLayout();
-            this.SuspendLayout();
+            label1 = new System.Windows.Forms.Label();
+            panel1 = new System.Windows.Forms.Panel();
+            LakeTypeIce = new System.Windows.Forms.RadioButton();
+            LakeTypeSwamp = new System.Windows.Forms.RadioButton();
+            LakeTypeLava = new System.Windows.Forms.RadioButton();
+            LakeTypeWater = new System.Windows.Forms.RadioButton();
+            panel1.SuspendLayout();
+            SuspendLayout();
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 5);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(54, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Lake type";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(4, 6);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(57, 15);
+            label1.TabIndex = 1;
+            label1.Text = "Lake type";
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.LakeTypeIce);
-            this.panel1.Controls.Add(this.LakeTypeSwamp);
-            this.panel1.Controls.Add(this.LakeTypeLava);
-            this.panel1.Controls.Add(this.LakeTypeWater);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Location = new System.Drawing.Point(3, 3);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(177, 92);
-            this.panel1.TabIndex = 2;
+            panel1.Controls.Add(LakeTypeIce);
+            panel1.Controls.Add(LakeTypeSwamp);
+            panel1.Controls.Add(LakeTypeLava);
+            panel1.Controls.Add(LakeTypeWater);
+            panel1.Controls.Add(label1);
+            panel1.Location = new System.Drawing.Point(4, 3);
+            panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            panel1.Name = "panel1";
+            panel1.Size = new System.Drawing.Size(206, 106);
+            panel1.TabIndex = 2;
             // 
             // LakeTypeIce
             // 
-            this.LakeTypeIce.AutoSize = true;
-            this.LakeTypeIce.Location = new System.Drawing.Point(104, 72);
-            this.LakeTypeIce.Name = "LakeTypeIce";
-            this.LakeTypeIce.Size = new System.Drawing.Size(40, 17);
-            this.LakeTypeIce.TabIndex = 5;
-            this.LakeTypeIce.TabStop = true;
-            this.LakeTypeIce.Text = "Ice";
-            this.LakeTypeIce.UseVisualStyleBackColor = true;
-            this.LakeTypeIce.Click += new System.EventHandler(this.LakeTypeIce_Click);
+            LakeTypeIce.AutoSize = true;
+            LakeTypeIce.Location = new System.Drawing.Point(121, 83);
+            LakeTypeIce.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            LakeTypeIce.Name = "LakeTypeIce";
+            LakeTypeIce.Size = new System.Drawing.Size(40, 19);
+            LakeTypeIce.TabIndex = 5;
+            LakeTypeIce.TabStop = true;
+            LakeTypeIce.Text = "Ice";
+            LakeTypeIce.UseVisualStyleBackColor = true;
+            LakeTypeIce.Click += LakeTypeIce_Click;
             // 
             // LakeTypeSwamp
             // 
-            this.LakeTypeSwamp.AutoSize = true;
-            this.LakeTypeSwamp.Location = new System.Drawing.Point(104, 26);
-            this.LakeTypeSwamp.Name = "LakeTypeSwamp";
-            this.LakeTypeSwamp.Size = new System.Drawing.Size(60, 17);
-            this.LakeTypeSwamp.TabIndex = 4;
-            this.LakeTypeSwamp.TabStop = true;
-            this.LakeTypeSwamp.Text = "Swamp";
-            this.LakeTypeSwamp.UseVisualStyleBackColor = true;
-            this.LakeTypeSwamp.Click += new System.EventHandler(this.LakeTypeSwamp_Click);
+            LakeTypeSwamp.AutoSize = true;
+            LakeTypeSwamp.Location = new System.Drawing.Point(121, 30);
+            LakeTypeSwamp.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            LakeTypeSwamp.Name = "LakeTypeSwamp";
+            LakeTypeSwamp.Size = new System.Drawing.Size(64, 19);
+            LakeTypeSwamp.TabIndex = 4;
+            LakeTypeSwamp.TabStop = true;
+            LakeTypeSwamp.Text = "Swamp";
+            LakeTypeSwamp.UseVisualStyleBackColor = true;
+            LakeTypeSwamp.Click += LakeTypeSwamp_Click;
             // 
             // LakeTypeLava
             // 
-            this.LakeTypeLava.AutoSize = true;
-            this.LakeTypeLava.Location = new System.Drawing.Point(104, 49);
-            this.LakeTypeLava.Name = "LakeTypeLava";
-            this.LakeTypeLava.Size = new System.Drawing.Size(49, 17);
-            this.LakeTypeLava.TabIndex = 3;
-            this.LakeTypeLava.TabStop = true;
-            this.LakeTypeLava.Text = "Lava";
-            this.LakeTypeLava.UseVisualStyleBackColor = true;
-            this.LakeTypeLava.Click += new System.EventHandler(this.LakeTypeLava_Click);
+            LakeTypeLava.AutoSize = true;
+            LakeTypeLava.Location = new System.Drawing.Point(121, 57);
+            LakeTypeLava.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            LakeTypeLava.Name = "LakeTypeLava";
+            LakeTypeLava.Size = new System.Drawing.Size(49, 19);
+            LakeTypeLava.TabIndex = 3;
+            LakeTypeLava.TabStop = true;
+            LakeTypeLava.Text = "Lava";
+            LakeTypeLava.UseVisualStyleBackColor = true;
+            LakeTypeLava.Click += LakeTypeLava_Click;
             // 
             // LakeTypeWater
             // 
-            this.LakeTypeWater.AutoSize = true;
-            this.LakeTypeWater.Location = new System.Drawing.Point(104, 3);
-            this.LakeTypeWater.Name = "LakeTypeWater";
-            this.LakeTypeWater.Size = new System.Drawing.Size(54, 17);
-            this.LakeTypeWater.TabIndex = 2;
-            this.LakeTypeWater.TabStop = true;
-            this.LakeTypeWater.Text = "Water";
-            this.LakeTypeWater.UseVisualStyleBackColor = true;
-            this.LakeTypeWater.Click += new System.EventHandler(this.LakeTypeWater_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 100);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(61, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Lake depth";
-            // 
-            // SelectedLakeDepth
-            // 
-            this.SelectedLakeDepth.Location = new System.Drawing.Point(107, 97);
-            this.SelectedLakeDepth.Name = "SelectedLakeDepth";
-            this.SelectedLakeDepth.Size = new System.Drawing.Size(73, 20);
-            this.SelectedLakeDepth.TabIndex = 4;
-            this.SelectedLakeDepth.Validated += new System.EventHandler(this.SelectedLakeDepth_Leave);
-            // 
-            // SelectedLakeLevel
-            // 
-            this.SelectedLakeLevel.Location = new System.Drawing.Point(107, 123);
-            this.SelectedLakeLevel.Name = "SelectedLakeLevel";
-            this.SelectedLakeLevel.Size = new System.Drawing.Size(73, 20);
-            this.SelectedLakeLevel.TabIndex = 6;
-            this.SelectedLakeLevel.Validated += new System.EventHandler(this.SelectedLakeLevel_Leave);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 126);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(56, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Lake level";
+            LakeTypeWater.AutoSize = true;
+            LakeTypeWater.Location = new System.Drawing.Point(121, 3);
+            LakeTypeWater.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            LakeTypeWater.Name = "LakeTypeWater";
+            LakeTypeWater.Size = new System.Drawing.Size(56, 19);
+            LakeTypeWater.TabIndex = 2;
+            LakeTypeWater.TabStop = true;
+            LakeTypeWater.Text = "Water";
+            LakeTypeWater.UseVisualStyleBackColor = true;
+            LakeTypeWater.Click += LakeTypeWater_Click;
             // 
             // MapLakeInspector
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.Controls.Add(this.SelectedLakeLevel);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.SelectedLakeDepth);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.panel1);
-            this.Enabled = false;
-            this.Name = "MapLakeInspector";
-            this.Size = new System.Drawing.Size(183, 162);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            Controls.Add(panel1);
+            Enabled = false;
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Name = "MapLakeInspector";
+            Size = new System.Drawing.Size(214, 187);
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            ResumeLayout(false);
         }
 
         #endregion
@@ -169,9 +132,5 @@
         private System.Windows.Forms.RadioButton LakeTypeSwamp;
         private System.Windows.Forms.RadioButton LakeTypeLava;
         private System.Windows.Forms.RadioButton LakeTypeWater;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox SelectedLakeDepth;
-        private System.Windows.Forms.TextBox SelectedLakeLevel;
-        private System.Windows.Forms.Label label3;
     }
 }

@@ -90,8 +90,7 @@ namespace SFEngine.SF3D.Physics
             // top vertices are always higher up than bottom ones
             // ignore near plane completely, it's influence is negliglble
             // start vertex Y is always above 0
-            List<Vector3> ret = new List<Vector3>();
-            ret.Add(start);
+            List<Vector3> ret = [start];
 
             // check if any cutting is needed
             float bottom_y = Math.Min(start.Y, frustum_vertices[6].Y);

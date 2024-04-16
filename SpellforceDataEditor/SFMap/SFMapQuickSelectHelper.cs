@@ -1,4 +1,4 @@
-﻿namespace SFEngine.SFMap
+﻿namespace SpellforceDataEditor.SFMap
 {
     public class SFMapQuickSelectHelper
     {

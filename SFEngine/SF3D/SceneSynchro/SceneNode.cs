@@ -11,11 +11,11 @@ using System.Collections.Generic;
 
 namespace SFEngine.SF3D.SceneSynchro
 {
-    public class SceneNode
+    public class SceneNode(string n)
     {
-        public string name = "";
+        public string name = n;
         public SceneNode parent = null;
-        public List<SceneNode> children = new List<SceneNode>();
+        public List<SceneNode> children = [];
 
         // if true, on the  next  update  local transform will be  updated
         protected Matrix4 local_transform = Matrix4.Identity;
@@ -49,11 +49,6 @@ namespace SFEngine.SF3D.SceneSynchro
         public Vector3 Position { set { position = value; TouchLocalTransform(); } }
         public Quaternion Rotation { set { rotation = value; TouchLocalTransform(); } }
         public Vector3 Scale { set { scale = value; TouchLocalTransform(); } }
-
-        public SceneNode(string n)
-        {
-            name = n;
-        }
 
         // adds a given node as a child of this node
         public void AddNode(SceneNode node)
@@ -89,19 +84,13 @@ namespace SFEngine.SF3D.SceneSynchro
         public void RemoveNode(string path)
         {
             SceneNode n = FindNode<SceneNode>(path);
-            if (n != null)
-            {
-                n.parent.RemoveNode(n);
-            }
+            n?.parent.RemoveNode(n);
         }
 
         // changes parent of this node from current parent to a given node
         public void SetParent(SceneNode node)
         {
-            if (parent != null)
-            {
-                parent.RemoveNode(this);
-            }
+            parent?.RemoveNode(this);
 
             if (node != null)
             {
@@ -293,7 +282,7 @@ namespace SFEngine.SF3D.SceneSynchro
     }
 
     // use this for displaying non-animated 3d objects
-    public class SceneNodeSimple : SceneNode
+    public class SceneNodeSimple(string n) : SceneNode(n)
     {
         private SFModel3D mesh;
         public SFModel3D Mesh
@@ -324,8 +313,6 @@ namespace SFEngine.SF3D.SceneSynchro
         public bool IsDecal = false;
         public int DecalIndex = Utility.NO_INDEX;
         public int CurrentMeshMatrixIndex = Utility.NO_INDEX;
-
-        public SceneNodeSimple(string n) : base(n) { }
 
         // removes this node from scene cache
         // assumes mesh exists
@@ -472,7 +459,7 @@ namespace SFEngine.SF3D.SceneSynchro
     }
 
     // use this for displaying animated 3d meshes
-    public class SceneNodeAnimated : SceneNode
+    public class SceneNodeAnimated(string n) : SceneNode(n)
     {
         private SFModel3D mesh = null;        // this is only for extraction convenience!
         private SFSkeleton skeleton = null;
@@ -532,8 +519,6 @@ namespace SFEngine.SF3D.SceneSynchro
         // if primary, DrivenNodes[0] = this, ensured by SFScene
         public List<SceneNodeAnimated> DrivenNodes = null;
 
-        public SceneNodeAnimated(string n) : base(n) { }
-
         public void SetSkin(SFModelSkin _skin)
         {
             Skin = _skin;
@@ -592,16 +577,19 @@ namespace SFEngine.SF3D.SceneSynchro
             MathUtils.Clamp(ref t, 0, animation.max_time);
             t *= SFAnimation.ANIMATION_FPS;
             int k = (int)t;
-            t = t - k;
+            t -= k;
+            int k2 = k + 1;
+            // fix: 0 length animations broke the calculation
+            if(animation.max_time == 0)
+            {
+                k2 = k;
+            }
 
             for (int i = 0; i < BoneTransforms.Length; i++)
             {
                 BoneAnimationState[] ba = animation.bone_animations[i];
-
-                BoneAnimationState bas;
-                BoneAnimationState.FastLerp(ref ba[k], ref ba[k + 1], t, out bas);
-
-                BoneAnimationState.Multiply(ref skeleton.bone_inverted_state[i], ref bas, out bas);
+                BoneAnimationState.FastLerp(in ba[k], in ba[k2], t, out BoneAnimationState bas);
+                BoneAnimationState.Multiply(in skeleton.bone_inverted_state[i], in bas, out bas);
                 bas.ToMatrix(out BoneTransforms[i]);
             }
 
@@ -760,13 +748,11 @@ namespace SFEngine.SF3D.SceneSynchro
 
     // this node should be attached to a SceneNodeAnimated node,
     // for example if you want a weapon node to follow an arm bone of a character node
-    public class SceneNodeBone : SceneNode
+    public class SceneNodeBone(string n) : SceneNode(n)
     {
         // parent must be SceneNodeAnimated
         private int BoneIndex = Utility.NO_INDEX;
         public int SceneIndex = Utility.NO_INDEX;
-
-        public SceneNodeBone(string n) : base(n) { }
 
         protected override void UpdateInternal(float dt)
         {
@@ -817,20 +803,15 @@ namespace SFEngine.SF3D.SceneSynchro
     }
 
     // this is mainly used as a convenience for certain operations
-    public class SceneNodeMapChunk : SceneNode
+    public class SceneNodeMapChunk(string n) : SceneNode(n)
     {
         public SFMap.SFMapHeightMapChunk MapChunk;
         public float DistanceToCamera { get; set; } = 0f;
         public float CameraHeightDifference { get; set; } = 0f;
 
-        public SceneNodeMapChunk(string n) : base(n) { }
-
         protected override void InternalDispose()
         {
-            if (MapChunk != null)
-            {
-                MapChunk.Unload();
-            }
+            MapChunk?.Unload();
         }
     }
 
@@ -839,14 +820,14 @@ namespace SFEngine.SF3D.SceneSynchro
     {
         const float MAX_DIR_Y = 1.5f;
 
-        private Vector3 lookat = new Vector3(0f, 1f, 0f);
+        private Vector3 lookat = Vector3.UnitY;
         private Vector2 direction = Vector2.Zero;
         private Matrix4 proj_matrix = Matrix4.Identity;
         private float aspect_ratio = 1;
         private Matrix4 view_matrix = Matrix4.Identity;
         private Matrix4 viewproj_matrix = Matrix4.Identity;
 
-        private Physics.Frustum frustum;
+        private readonly Physics.Frustum frustum;
 
         public Vector3 Lookat { get { return lookat; } }
         public Vector2 Direction { get { return direction; } }
@@ -936,7 +917,7 @@ namespace SFEngine.SF3D.SceneSynchro
         }
 
         // use this to shift camera around
-        public void translate(Vector3 tr)
+        public void Translate(Vector3 tr)
         {
             position += tr;
             lookat += tr;
@@ -948,7 +929,7 @@ namespace SFEngine.SF3D.SceneSynchro
             Matrix4 inv = viewproj_matrix.Inverted();
             float depth = 1.0f;
 
-            Vector4 vIn = new Vector4((2.0f * uv.X) - 1.0f, 1.0f - (2.0f * uv.Y), 2.0f * depth - 1.0f, 1.0f);
+            Vector4 vIn = ((2.0f * uv.X) - 1.0f, 1.0f - (2.0f * uv.Y), 2.0f * depth - 1.0f, 1.0f);
             Vector4 pos = vIn * inv;
 
             pos.W = 1.0f / pos.W;

@@ -31,7 +31,7 @@ namespace SFEngine.SF3D.SFRender
         static bool CurrentDistanceFade = true;
         static float CurrentFadeStart = 150.0f;
         static float CurrentFadeEnd = 200.0f;
-        static Vector4 CurrentEmissionColor = new Vector4(-1.0f);
+        static Vector4 CurrentEmissionColor = new(-1.0f);
         static bool CurrentApplyShading = true;
         static int[] CurrentTexture = new int[16];
         static int CurrentActiveTexture = Utility.NO_INDEX;
@@ -40,27 +40,27 @@ namespace SFEngine.SF3D.SFRender
 
         public static SFTexture opaque_tex { get; private set; } = null;
 
-        static SFShader shader_simple = new SFShader();
-        static SFShader shader_simple_transparency = new SFShader();
-        static SFShader shader_animated = new SFShader();
-        static SFShader shader_heightmap = new SFShader();
-        static SFShader shader_heightmap_depth_prepass = new SFShader();
-        static SFShader shader_shadowmap = new SFShader();
-        static SFShader shader_shadowmap_animated = new SFShader();
-        static SFShader shader_shadowmap_heightmap = new SFShader();
-        static SFShader shader_selection = new SFShader();
-        static SFShader shader_selection_animated = new SFShader();
-        static SFShader shader_sky = new SFShader();
-        static SFShader shader_ui = new SFShader();
+        static SFShader shader_simple = new();
+        static SFShader shader_simple_transparency = new();
+        static SFShader shader_animated = new();
+        static SFShader shader_heightmap = new();
+        static SFShader shader_heightmap_depth_prepass = new();
+        static SFShader shader_shadowmap = new();
+        static SFShader shader_shadowmap_animated = new();
+        static SFShader shader_shadowmap_heightmap = new();
+        static SFShader shader_selection = new();
+        static SFShader shader_selection_animated = new();
+        static SFShader shader_sky = new();
+        static SFShader shader_ui = new();
         static SFShader active_shader = null;
         static RenderPass current_pass = RenderPass.NONE;
 
 
-        static SFShader shader_framebuffer_simple = new SFShader();
-        static SFShader shader_framebuffer_tonemapped = new SFShader();
-        static SFShader shader_shadowmap_blur = new SFShader();
-        static SFShader shader_msm_resolve = new SFShader();
-        static SFShader shader_vsm_resolve = new SFShader();
+        static SFShader shader_framebuffer_simple = new();
+        static SFShader shader_framebuffer_tonemapped = new();
+        static SFShader shader_shadowmap_blur = new();
+        static SFShader shader_msm_resolve = new();
+        static SFShader shader_vsm_resolve = new();
 
         // VSM framebuffers
         static FrameBuffer shadowmap_vsm_multisample = null;
@@ -86,7 +86,7 @@ namespace SFEngine.SF3D.SFRender
 #if DEBUG
         public static int[] queries;
         public static int current_query = 0;
-        public static Dictionary<int, int> query_results = new Dictionary<int, int>();
+        public static Dictionary<int, int> query_results = [];
 
         private static void DebugCallback(DebugSource source,
                                     DebugType type,
@@ -130,10 +130,7 @@ namespace SFEngine.SF3D.SFRender
             }
 
             // initialize static model cache
-            if (SFSubModel3D.Cache != null)
-            {
-                SFSubModel3D.Cache.Dispose();
-            }
+            SFSubModel3D.Cache?.Dispose();
 
             SFSubModel3D.Cache = new MeshCache(true);
             SFSubModel3D.Cache.AddVertexAttribute(3, VertexAttribPointerType.Float, false);   // positions
@@ -144,10 +141,7 @@ namespace SFEngine.SF3D.SFRender
             SFSubModel3D.Cache.Init(1 << 19, 1 << 19);
 
             // initialize animated (skin) model cache
-            if (SFModelSkinChunk.Cache != null)
-            {
-                SFModelSkinChunk.Cache.Dispose();
-            }
+            SFModelSkinChunk.Cache?.Dispose();
 
             SFModelSkinChunk.Cache = new MeshCache(false);
             SFModelSkinChunk.Cache.AddVertexAttribute(3, VertexAttribPointerType.Float, false);   // positions
@@ -159,20 +153,15 @@ namespace SFEngine.SF3D.SFRender
             SFModelSkinChunk.Cache.Init(1 << 15, 1 << 15);
 
             // opaque texture is a 1x1 white pixel that's used for blending operations on models that would otherwise have no texture assigned
-            if (opaque_tex != null)
-            {
-                opaque_tex.Dispose();
-            }
+            opaque_tex?.Dispose();
 
             opaque_tex = new SFTexture();
-            byte[] tex_data = new byte[] { 255, 255, 255, 255 };
-            using (MemoryStream ms = new MemoryStream(tex_data))
+            byte[] tex_data = [255, 255, 255, 255];
+            using (MemoryStream ms = new(tex_data))
             {
-                using (BinaryReader br = new BinaryReader(ms))
-                {
-                    opaque_tex.LoadUncompressedRGBA(br, 1, 1);
-                    opaque_tex.Init();
-                }
+                using BinaryReader br = new(ms);
+                opaque_tex.LoadUncompressedRGBA(br, 1, 1);
+                opaque_tex.Init();
             }
 
             scene.atmosphere.FogStart = Settings.FogStart;
@@ -247,11 +236,11 @@ namespace SFEngine.SF3D.SFRender
             shader_heightmap.SetDefine("VSM", (Settings.ShadowType == Settings.ShadowMapTechnique.VSM));
             shader_heightmap.SetDefine("MSM", (Settings.ShadowType == Settings.ShadowMapTechnique.MSM));
 
-            shader_simple.CompileShader(new ShaderInfo[]
-            {
-                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader },
-                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader }
-            });
+            shader_simple.CompileShader(
+            [
+                new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader },
+                new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader }
+            ]);
             shader_simple.AddParameter("VP");
             shader_simple.AddParameter("DiffuseTex");
             shader_simple.AddParameter("SunColor");
@@ -291,11 +280,11 @@ namespace SFEngine.SF3D.SFRender
                 }
             }
 
-            shader_simple_transparency.CompileShader(new ShaderInfo[]
-            {
-                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader },
-                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader }
-            });
+            shader_simple_transparency.CompileShader(
+            [
+                new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader },
+                new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader }
+            ]);
             shader_simple_transparency.AddParameter("VP");
             shader_simple_transparency.AddParameter("DiffuseTex");
             shader_simple_transparency.AddParameter("SunColor");
@@ -335,11 +324,11 @@ namespace SFEngine.SF3D.SFRender
                 }
             }
 
-            shader_animated.CompileShader(new ShaderInfo[]
-            {
-                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_skel },
-                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader }
-            });
+            shader_animated.CompileShader(
+            [
+                new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_skel },
+                new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader }
+            ]);
             shader_animated.AddParameter("P");
             shader_animated.AddParameter("V");
             shader_animated.AddParameter("M");
@@ -384,21 +373,21 @@ namespace SFEngine.SF3D.SFRender
 
             if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
             {
-                shader_heightmap.CompileShader(new ShaderInfo[]
-                {
-                    new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap },
-                    new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_hmap }
-                });
+                shader_heightmap.CompileShader(
+                [
+                    new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap },
+                    new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_hmap }
+                ]);
             }
             else if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
             {
-                shader_heightmap.CompileShader(new ShaderInfo[]
-                {
-                    new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap_tesselated },
-                    new ShaderInfo() { type = ShaderType.TessControlShader, data = Properties.Resources.tcsshader_hmap_tesselated },
-                    new ShaderInfo() { type = ShaderType.TessEvaluationShader, data = Properties.Resources.tesshader_hmap_tesselated },
-                    new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_hmap }
-                });
+                shader_heightmap.CompileShader(
+                [
+                    new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap_tesselated },
+                    new() { type = ShaderType.TessControlShader, data = Properties.Resources.tcsshader_hmap_tesselated },
+                    new() { type = ShaderType.TessEvaluationShader, data = Properties.Resources.tesshader_hmap_tesselated },
+                    new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_hmap }
+                ]);
                 shader_heightmap.AddParameter("cameraPos");
             }
             shader_heightmap.AddParameter("VP");
@@ -448,21 +437,21 @@ namespace SFEngine.SF3D.SFRender
 
             if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
             {
-                shader_heightmap_depth_prepass.CompileShader(new ShaderInfo[]
-                {
-                    new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap_depth_prepass },
-                    new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_hmap_depth_prepass }
-                });
+                shader_heightmap_depth_prepass.CompileShader(
+                [
+                    new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap_depth_prepass },
+                    new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_hmap_depth_prepass }
+                ]);
             }
             else if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
             {
-                shader_heightmap_depth_prepass.CompileShader(new ShaderInfo[]
-                {
-                    new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap_tesselated },
-                    new ShaderInfo() { type = ShaderType.TessControlShader, data = Properties.Resources.tcsshader_hmap_tesselated },
-                    new ShaderInfo() { type = ShaderType.TessEvaluationShader, data = Properties.Resources.tesshader_hmap_tesselated_depth_prepass },
-                    new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_hmap_depth_prepass }
-                });
+                shader_heightmap_depth_prepass.CompileShader(
+                [
+                    new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap_tesselated },
+                    new() { type = ShaderType.TessControlShader, data = Properties.Resources.tcsshader_hmap_tesselated },
+                    new() { type = ShaderType.TessEvaluationShader, data = Properties.Resources.tesshader_hmap_tesselated_depth_prepass },
+                    new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_hmap_depth_prepass }
+                ]);
                 shader_heightmap_depth_prepass.AddParameter("cameraPos");
             }
 
@@ -956,19 +945,19 @@ namespace SFEngine.SF3D.SFRender
                 shader_shadowmap_blur.SetDefine("MSM", (Settings.ShadowType == Settings.ShadowMapTechnique.MSM));
 
                 // shader compilation
-                shader_shadowmap.CompileShader(new ShaderInfo[]
-                {
-                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap },
-                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
-                });
+                shader_shadowmap.CompileShader(
+                [
+                    new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap },
+                    new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
+                ]);
                 shader_shadowmap.AddParameter("VP");
                 shader_shadowmap.AddParameter("DiffuseTexture");
 
-                shader_shadowmap_animated.CompileShader(new ShaderInfo[]
-                {
-                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap_animated },
-                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
-                });
+                shader_shadowmap_animated.CompileShader(
+                [
+                    new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap_animated },
+                    new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
+                ]);
                 shader_shadowmap_animated.AddParameter("P");
                 shader_shadowmap_animated.AddParameter("V");
                 shader_shadowmap_animated.AddParameter("M");
@@ -977,21 +966,21 @@ namespace SFEngine.SF3D.SFRender
 
                 if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
                 {
-                    shader_shadowmap_heightmap.CompileShader(new ShaderInfo[]
-                    {
-                    new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap_heightmap },
-                    new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
-                    });
+                    shader_shadowmap_heightmap.CompileShader(
+                    [
+                        new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap_heightmap },
+                        new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
+                    ]);
                 }
                 else if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
                 {
-                    shader_shadowmap_heightmap.CompileShader(new ShaderInfo[]
-                    {
-                    new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap_tesselated },
-                    new ShaderInfo() { type = ShaderType.TessControlShader, data = Properties.Resources.tcsshader_hmap_tesselated },
-                    new ShaderInfo() { type = ShaderType.TessEvaluationShader, data = Properties.Resources.tesshader_hmap_shadowmap_tesselated },
-                    new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
-                    });
+                    shader_shadowmap_heightmap.CompileShader(
+                    [
+                        new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_hmap_tesselated },
+                        new() { type = ShaderType.TessControlShader, data = Properties.Resources.tcsshader_hmap_tesselated },
+                        new() { type = ShaderType.TessEvaluationShader, data = Properties.Resources.tesshader_hmap_shadowmap_tesselated },
+                        new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap }
+                    ]);
                     shader_shadowmap_heightmap.AddParameter("cameraPos");
                 }
                 shader_shadowmap_heightmap.AddParameter("VP");
@@ -999,88 +988,88 @@ namespace SFEngine.SF3D.SFRender
                 shader_shadowmap_heightmap.AddParameter("HeightMap");
                 shader_shadowmap_heightmap.AddParameter("DiffuseTexture");
 
-                shader_shadowmap_blur.CompileShader(new ShaderInfo[]
-                {
-                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_framebuffer },
-                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap_blur }
-                });
+                shader_shadowmap_blur.CompileShader(
+                [
+                    new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_framebuffer },
+                    new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_shadowmap_blur }
+                ]);
                 shader_shadowmap_blur.AddParameter("image");
                 shader_shadowmap_blur.AddParameter("horizontal");
 
                 if (Settings.ShadowType == Settings.ShadowMapTechnique.VSM)
                 {
-                    shader_vsm_resolve.CompileShader(new ShaderInfo[]
-                    {
-                        new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_framebuffer },
-                        new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_vsm_resolve }
-                    });
+                    shader_vsm_resolve.CompileShader(
+                    [
+                        new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_framebuffer },
+                        new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_vsm_resolve }
+                    ]);
                     shader_vsm_resolve.AddParameter("ShadowMap");
                     shader_vsm_resolve.AddParameter("TextureSize");
                 }
                 else if (Settings.ShadowType == Settings.ShadowMapTechnique.MSM)
                 {
-                    shader_msm_resolve.CompileShader(new ShaderInfo[]
-                    {
-                        new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_framebuffer },
-                        new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_msm_resolve }
-                    });
+                    shader_msm_resolve.CompileShader(
+                    [
+                        new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_framebuffer },
+                        new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_msm_resolve }
+                    ]);
                     shader_msm_resolve.AddParameter("ShadowMap");
                     shader_msm_resolve.AddParameter("TextureSize");
                 }
             }
 
-            shader_framebuffer_simple.CompileShader(new ShaderInfo[]
-            {
-                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_framebuffer },
-                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_framebuffer_simple }
-            });
+            shader_framebuffer_simple.CompileShader(
+            [
+                new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_framebuffer },
+                new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_framebuffer_simple }
+            ]);
             shader_framebuffer_simple.AddParameter("screenTexture");
 
             // set up eye candy shaders (tonemap, sky)
             if (Settings.ToneMapping)
             {
-                shader_framebuffer_tonemapped.CompileShader(new ShaderInfo[]
-                {
-                    new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_framebuffer },
-                    new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_tonemap }
-                });
+                shader_framebuffer_tonemapped.CompileShader(
+                [
+                    new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_framebuffer },
+                    new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_tonemap }
+                ]);
                 shader_framebuffer_tonemapped.AddParameter("exposure");
 
-                shader_sky.CompileShader(new ShaderInfo[]
-                {
-                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_sky },
-                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_sky }
-                });
+                shader_sky.CompileShader(
+                [
+                    new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_sky },
+                    new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_sky }
+                ]);
                 shader_sky.AddParameter("V");
                 shader_sky.AddParameter("AspectRatio");
                 shader_sky.AddParameter("AmbientColor");
                 shader_sky.AddParameter("FogColor");
             }
 
-            shader_ui.CompileShader(new ShaderInfo[]
-            {
-                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_ui },
-                new ShaderInfo() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_ui }
-            });
+            shader_ui.CompileShader(
+            [
+                new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_ui },
+                new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_ui }
+            ]);
             shader_ui.AddParameter("Tex");
             shader_ui.AddParameter("ScreenSize");
             shader_ui.AddParameter("offset");
 
-            shader_selection.CompileShader(new ShaderInfo[]
-            {
-                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap },
-                new ShaderInfo() {type = ShaderType.FragmentShader, data = Properties.Resources.fshader_selection }
-            });
+            shader_selection.CompileShader(
+            [
+                new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap },
+                new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_selection }
+            ]);
             shader_selection.AddParameter("VP");
             shader_selection.AddParameter("DiffuseTex");
             shader_selection.AddParameter("Time");
             shader_selection.AddParameter("Color");
 
-            shader_selection_animated.CompileShader(new ShaderInfo[]
-            {
-                new ShaderInfo() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap_animated },
-                new ShaderInfo() {type = ShaderType.FragmentShader, data = Properties.Resources.fshader_selection }
-            });
+            shader_selection_animated.CompileShader(
+            [
+                new() { type = ShaderType.VertexShader, data = Properties.Resources.vshader_shadowmap_animated },
+                new() { type = ShaderType.FragmentShader, data = Properties.Resources.fshader_selection }
+            ]);
             shader_selection_animated.AddParameter("M");
             shader_selection_animated.AddParameter("V");
             shader_selection_animated.AddParameter("P");
@@ -1137,8 +1126,6 @@ namespace SFEngine.SF3D.SFRender
         {
             if (Settings.EnableShadows)
             {
-                float[] col = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
-
                 if (Settings.ShadowType == Settings.ShadowMapTechnique.VSM)
                 {
                     // VSM framebuffers required:
@@ -1150,38 +1137,35 @@ namespace SFEngine.SF3D.SFRender
                     // due to the technique used, fb2 and fb4 can point to the same data
                     shadowmap_vsm_multisample = new FrameBuffer(
                         Settings.ShadowMapSize, Settings.ShadowMapSize,
-                        new FramebufferAttachmentInfo[]
-                        {
-                            new FramebufferAttachmentInfo()
+                        [
+                            new()
                             {
                                 format = PixelFormat.DepthComponent, internal_format = PixelInternalFormat.DepthComponent16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.DepthAttachment,
                                 sample_count = 4, min_filter = (int)All.Linear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToEdge, wrap_t = (int)All.ClampToEdge, anisotropy = 0
                             }
-                        });
+                        ]);
 
                     shadowmap_vsm_base = new FrameBuffer(
                         Settings.ShadowMapSize, Settings.ShadowMapSize,
-                        new FramebufferAttachmentInfo[]
-                        {
-                            new FramebufferAttachmentInfo()
+                        [
+                            new()
                             {
                                 format = PixelFormat.Rg, internal_format = PixelInternalFormat.Rg16f, pixel_type = PixelType.Float, attachment_type = FramebufferAttachment.ColorAttachment0,
                                 sample_count = 0, min_filter = (int)All.LinearMipmapLinear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToBorder, wrap_t = (int)All.ClampToBorder,
                                 wrap_border_col = new Vector4(1.0f), anisotropy = Settings.MaxAnisotropy
                             }
-                        });
+                        ]);
 
                     shadowmap_vsm_hpass = new FrameBuffer(
                         Settings.ShadowMapSize / 2, Settings.ShadowMapSize / 2,
-                        new FramebufferAttachmentInfo[]
-                        {
-                            new FramebufferAttachmentInfo()
+                        [
+                            new()
                             {
                                 format = PixelFormat.Rg, internal_format = PixelInternalFormat.Rg16f, pixel_type = PixelType.Float, attachment_type = FramebufferAttachment.ColorAttachment0,
                                 sample_count = 0, min_filter = (int)All.LinearMipmapLinear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToBorder, wrap_t = (int)All.ClampToBorder,
                                 wrap_border_col = new Vector4(1.0f), anisotropy = Settings.MaxAnisotropy
                             }
-                        });
+                        ]);
 
                 }
                 else if (Settings.ShadowType == Settings.ShadowMapTechnique.MSM)    // this will only work if antialiasing is on
@@ -1195,38 +1179,35 @@ namespace SFEngine.SF3D.SFRender
                     // due to the technique used, fb2 and fb4 can point to the same data
                     shadowmap_msm_multisample = new FrameBuffer(
                         Settings.ShadowMapSize, Settings.ShadowMapSize,
-                        new FramebufferAttachmentInfo[]
-                        {
-                            new FramebufferAttachmentInfo()
+                        [
+                            new()
                             {
                                 format = PixelFormat.DepthComponent, internal_format = PixelInternalFormat.DepthComponent16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.DepthAttachment,
                                 sample_count = 4, min_filter = (int)All.Linear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToEdge, wrap_t = (int)All.ClampToEdge, anisotropy = 0
                             }
-                        });
+                        ]);
 
                     shadowmap_msm_base = new FrameBuffer(
                         Settings.ShadowMapSize, Settings.ShadowMapSize,
-                        new FramebufferAttachmentInfo[]
-                        {
-                            new FramebufferAttachmentInfo()
+                        [
+                            new()
                             {
                                 format = PixelFormat.Rgba, internal_format = PixelInternalFormat.Rgba16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.ColorAttachment0,
                                 sample_count = 0, min_filter = (int)All.LinearMipmapLinear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToBorder, wrap_t = (int)All.ClampToBorder,
                                 wrap_border_col = new Vector4(1.0f), anisotropy = Settings.MaxAnisotropy
                             }
-                        });
+                        ]);
 
                     shadowmap_msm_hpass = new FrameBuffer(
                         Settings.ShadowMapSize / 2, Settings.ShadowMapSize / 2,
-                        new FramebufferAttachmentInfo[]
-                        {
-                            new FramebufferAttachmentInfo()
+                        [
+                            new()
                             {
                                 format = PixelFormat.Rgba, internal_format = PixelInternalFormat.Rgba16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.ColorAttachment0,
                                 sample_count = 0, min_filter = (int)All.LinearMipmapLinear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToBorder, wrap_t = (int)All.ClampToBorder,
                                 wrap_border_col = new Vector4(1.0f), anisotropy = Settings.MaxAnisotropy
                             }
-                        });
+                        ]);
                 }
             }
 
@@ -1236,44 +1217,42 @@ namespace SFEngine.SF3D.SFRender
             {
                 screenspace_framebuffer = new FrameBuffer(
                     (int)render_size.X, (int)render_size.Y,
-                    new FramebufferAttachmentInfo[]
-                    {
-                        new FramebufferAttachmentInfo()
+                    [
+                        new()
                         {
                             format = PixelFormat.Rgb, internal_format = (Settings.ToneMapping ? PixelInternalFormat.Rgb16f : PixelInternalFormat.Rgb),
                             pixel_type = (Settings.ToneMapping ? PixelType.Float : PixelType.UnsignedByte), attachment_type = FramebufferAttachment.ColorAttachment0,
                             sample_count = Settings.AntiAliasingSamples, min_filter = (int)All.Nearest, mag_filter = (int)All.Nearest, wrap_s = (int)All.ClampToEdge,
                             wrap_t = (int)All.ClampToEdge, anisotropy = 0
                         },
-                        new FramebufferAttachmentInfo()
+                        new()
                         {
                             format = PixelFormat.DepthComponent, internal_format = PixelInternalFormat.DepthComponent32, pixel_type = PixelType.Float,
                             attachment_type = FramebufferAttachment.DepthAttachment, min_filter = (int)All.Nearest, mag_filter = (int)All.Nearest,
                             wrap_s = (int)All.ClampToEdge, wrap_t = (int)All.ClampToEdge, sample_count = Settings.AntiAliasingSamples, anisotropy = 0
                         }
-                    });
+                    ]);
             }
 
             // this framebuffer stores result of anti-aliased framebuffer (if anti-aliasing is disabled, everything is drawn here)
             // tonemapping is performed in this framebuffer
             screenspace_intermediate = new FrameBuffer(
                 (int)render_size.X, (int)render_size.Y,
-                new FramebufferAttachmentInfo[]
-                {
-                    new FramebufferAttachmentInfo()
+                [
+                    new()
                     {
                         format = PixelFormat.Rgb, internal_format = (Settings.ToneMapping ? PixelInternalFormat.Rgb16f : PixelInternalFormat.Rgb),
                         pixel_type = (Settings.ToneMapping ? PixelType.Float : PixelType.UnsignedByte), attachment_type = FramebufferAttachment.ColorAttachment0,
                         sample_count = 0, min_filter = (int)All.Nearest, mag_filter = (int)All.Nearest, wrap_s = (int)All.ClampToEdge,
                         wrap_t = (int)All.ClampToEdge, anisotropy = 0
                     },
-                    new FramebufferAttachmentInfo()
+                    new()
                     {
                         format = PixelFormat.DepthComponent, internal_format = PixelInternalFormat.DepthComponent32, pixel_type = PixelType.Float,
                         attachment_type = FramebufferAttachment.DepthAttachment, min_filter = (int)All.Nearest, mag_filter = (int)All.Nearest,
                         wrap_s = (int)All.ClampToEdge, wrap_t = (int)All.ClampToEdge, sample_count = 0, anisotropy = 0
                     }
-                });
+                ]);
         }
 
 #if DEBUG

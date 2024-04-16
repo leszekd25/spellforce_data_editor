@@ -1,6 +1,8 @@
 ﻿using SFEngine.SFMap;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFMap.MapEdit
@@ -117,7 +119,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
-                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK))
                                 {
                                     continue;
                                 }
@@ -156,7 +158,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
-                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK))
                                 {
                                     continue;
                                 }
@@ -165,29 +167,6 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 if (cell_strength == 0)
                                 {
                                     continue;
-                                }
-
-                                // do not modify shores that would set lake above surface level
-                                if (map.heightmap.IsFlagSet(coord, SFMapHeightMapFlag.LAKE_SHORE))
-                                {
-                                    bool skip = false;
-                                    for (int k = 0; k < map.lake_manager.lakes.Count; k++)
-                                    {
-                                        if (map.lake_manager.lakes[k].shore.Contains(coord))
-                                        {
-                                            ushort level = (ushort)(map.lake_manager.lakes[k].z_diff + map.heightmap.GetZ(map.lake_manager.lakes[k].start));
-                                            if (level >= (ushort)Value)
-                                            {
-                                                skip = true;
-                                            }
-
-                                            break;
-                                        }
-                                    }
-                                    if (skip)
-                                    {
-                                        continue;
-                                    }
                                 }
 
                                 if (!op_height.PreOperatorHeights.ContainsKey(coord))
@@ -209,7 +188,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
-                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK))
                                 {
                                     continue;
                                 }
@@ -238,7 +217,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
-                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK))
                                 {
                                     continue;
                                 }
@@ -251,28 +230,6 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                                 ushort new_level = (ushort)(map.heightmap.height_data[j * map.width + i]
                                     + ((terrain_sum - map.heightmap.height_data[j * map.width + i]) * cell_strength * smooth_str));
-                                // do not modify shores that would set lake above or at surface level
-                                if (map.heightmap.IsFlagSet(coord, SFMapHeightMapFlag.LAKE_SHORE))
-                                {
-                                    bool skip = false;
-                                    for (int k = 0; k < map.lake_manager.lakes.Count; k++)
-                                    {
-                                        if (map.lake_manager.lakes[k].shore.Contains(coord))
-                                        {
-                                            ushort level = (ushort)(map.lake_manager.lakes[k].z_diff + map.heightmap.GetZ(map.lake_manager.lakes[k].start));
-                                            if (level >= new_level)
-                                            {
-                                                skip = true;
-                                            }
-
-                                            break;
-                                        }
-                                    }
-                                    if (skip)
-                                    {
-                                        continue;
-                                    }
-                                }
 
                                 if (!op_height.PreOperatorHeights.ContainsKey(coord))
                                 {
@@ -301,7 +258,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
-                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK))
                                 {
                                     continue;
                                 }
@@ -313,29 +270,6 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 }
 
                                 ushort new_level = (ushort)(Math.Max(0, map.heightmap.height_data[j * map.width + i] - Value * cell_strength));
-                                // do not modify shores that would set lake above surface level
-                                if (map.heightmap.IsFlagSet(coord, SFMapHeightMapFlag.LAKE_SHORE))
-                                {
-                                    bool skip = false;
-                                    ushort z = map.heightmap.height_data[j * map.width + i];
-                                    for (int k = 0; k < map.lake_manager.lakes.Count; k++)
-                                    {
-                                        if (map.lake_manager.lakes[k].shore.Contains(coord))
-                                        {
-                                            ushort level = (ushort)(map.lake_manager.lakes[k].z_diff + map.heightmap.GetZ(map.lake_manager.lakes[k].start));
-                                            if (level >= new_level)
-                                            {
-                                                skip = true;
-                                            }
-
-                                            break;
-                                        }
-                                    }
-                                    if (skip)
-                                    {
-                                        continue;
-                                    }
-                                }
 
                                 if (!op_height.PreOperatorHeights.ContainsKey(coord))
                                 {
@@ -346,10 +280,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 {
                                     if (!op_tex_correction.PreOperatorTextures.ContainsKey(coord))
                                     {
-                                        op_tex_correction.PreOperatorTextures.Add(coord, map.heightmap.GetTile(coord));//map.heightmap.tile_data[j * map.width + i]);
+                                        op_tex_correction.PreOperatorTextures.Add(coord, map.heightmap.GetTile(coord));
                                     }
 
-                                    //map.heightmap.tile_data[j * map.width + i] = 0;
                                     map.heightmap.SetTile(coord, 0);
                                     update_texture = true;
                                 }
@@ -372,7 +305,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
-                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK))
                                 {
                                     continue;
                                 }
@@ -401,7 +334,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                             {
                                 SFCoord coord = new SFCoord(i, j);
 
-                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK | SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                if (map.heightmap.IsAnyFlagSet(coord, SFMapHeightMapFlag.EDITOR_MASK))
                                 {
                                     continue;
                                 }
@@ -414,27 +347,6 @@ namespace SpellforceDataEditor.SFMap.MapEdit
 
                                 int v = (int)((terrain_sum - map.heightmap.height_data[j * map.width + i]) * cell_strength * rough_str);
                                 ushort new_level = (ushort)(Math.Min(65535, Math.Max(0, map.heightmap.height_data[j * map.width + i] - v)));
-                                if (map.heightmap.IsFlagSet(coord, SFMapHeightMapFlag.LAKE_SHORE))
-                                {
-                                    bool skip = false;
-                                    for (int k = 0; k < map.lake_manager.lakes.Count; k++)
-                                    {
-                                        if (map.lake_manager.lakes[k].shore.Contains(coord))
-                                        {
-                                            ushort level = (ushort)(map.lake_manager.lakes[k].z_diff + map.heightmap.GetZ(map.lake_manager.lakes[k].start));
-                                            if (level >= new_level)
-                                            {
-                                                skip = true;
-                                            }
-
-                                            break;
-                                        }
-                                    }
-                                    if (skip)
-                                    {
-                                        continue;
-                                    }
-                                }
 
                                 if (!op_height.PreOperatorHeights.ContainsKey(coord))
                                 {
@@ -445,10 +357,9 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                                 {
                                     if (!op_tex_correction.PreOperatorTextures.ContainsKey(coord))
                                     {
-                                        op_tex_correction.PreOperatorTextures.Add(coord, map.heightmap.GetTile(coord));//map.heightmap.tile_data[j * map.width + i]);
+                                        op_tex_correction.PreOperatorTextures.Add(coord, map.heightmap.GetTile(coord));
                                     }
 
-                                    //map.heightmap.tile_data[j * map.width + i] = 0;
                                     map.heightmap.SetTile(coord, 0);
                                     update_texture = true;
                                 }
@@ -489,6 +400,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 if (op_height.PreOperatorHeights.Count != 0)
                 {
                     op_height.Finish(map);
+                    map_operators.MapOperatorCluster op_cluster = new map_operators.MapOperatorCluster() { Revert1stSubOperatorOnRevert = true };
+                    op_cluster.SubOperators.Add(op_height);
 
                     if (op_tex_correction != null)
                     {
@@ -496,22 +409,166 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                         {
                             op_tex_correction.Finish(map);
 
-                            map_operators.MapOperatorCluster op_cluster = new map_operators.MapOperatorCluster();
-                            op_cluster.SubOperators.Add(op_height);
                             op_cluster.SubOperators.Add(op_tex_correction);
 
-                            op_cluster.Finish(map);
-                            MainForm.mapedittool.op_queue.Push(op_cluster);
-                        }
-                        else
-                        {
-                            MainForm.mapedittool.op_queue.Push(op_height);
                         }
                     }
-                    else
+
+                    // modify lakes if need be
+                    // 1. get all lakes touched by terrain operator
+                    HashSet<SFMapLake> lakes = new HashSet<SFMapLake>();
+                    foreach(SFCoord p in op_height.PreOperatorHeights.Keys)
                     {
-                        MainForm.mapedittool.op_queue.Push(op_height);
+                        int lake_index = map.lake_manager.GetLakeIndexAt(p);
+                        if (lake_index != SFEngine.Utility.NO_INDEX)
+                        {
+                            lakes.Add(map.lake_manager.lakes[lake_index]);
+                        }
                     }
+                    if(lakes.Count > 0)
+                    {
+                        HashSet<SFMapLake> removed_lakes = new HashSet<SFMapLake>();
+                        // 2. for each lake, determine cells inside lake that rose above lake level
+                        foreach(SFMapLake lake in lakes)
+                        {
+                            // lake might have been already removed
+                            if(removed_lakes.Contains(lake))
+                            {
+                                continue;
+                            }
+
+                            int lake_type = lake.type;
+                            HashSet<SFCoord> landfill_cells = new HashSet<SFCoord>();
+                            ushort lake_level;
+                            if (op_height.PreOperatorHeights.ContainsKey(lake.start))
+                            {
+                                lake_level = (ushort)(op_height.PreOperatorHeights[lake.start] + lake.z_diff);
+                            }
+                            else
+                            {
+                                lake_level = lake.GetWaterLevel(map.heightmap);
+                            }
+                            foreach(SFCoord p in lake.cells)
+                            {
+                                if(map.heightmap.GetZ(p) > lake_level)
+                                {
+                                    landfill_cells.Add(p);
+                                }
+                            }
+
+                            List<HashSet<SFCoord>> new_lake_areas;
+                            List<SFCoord> lowest_points = new List<SFCoord>();
+                            int lake_index = map.lake_manager.lakes.IndexOf(lake);
+                            bool lakes_modified_so_far = false;
+                            if (landfill_cells.Count > 0)
+                            {
+                                // split lake
+                                HashSet<SFCoord> remaining_cells = new HashSet<SFCoord>(lake.cells);
+                                remaining_cells.ExceptWith(landfill_cells);
+                                new_lake_areas = map.heightmap.SplitIsland(remaining_cells);
+                                // delete the lake
+                                map.lake_manager.RemoveLake(lake);
+                                removed_lakes.Add(lake);
+                                map_operators.MapOperatorLake op_lake_remove = new map_operators.MapOperatorLake()
+                                {
+                                    lake_index = lake_index,
+                                    type = lake_type,
+                                    pos = lake.start,
+                                    z_diff = lake.z_diff,
+                                    change_add = false
+                                };
+                                op_cluster.SubOperators.Add(op_lake_remove);
+                                MainForm.mapedittool.ui.RedrawMinimapLake(lake, false, false);
+                                lakes_modified_so_far = true;
+                            }
+                            else
+                            {
+                                new_lake_areas = [lake.cells];
+                            }
+
+                            // find lowest place in each lake area
+                            foreach (HashSet<SFCoord> area in new_lake_areas)
+                            {
+                                if(area.Count == 0)
+                                {
+                                    lowest_points.Add(new SFCoord(-1, -1));
+                                    continue;
+                                }
+                                SFCoord lowest_point = area.First();
+                                ushort lowest_z = map.heightmap.GetZ(lowest_point);
+                                foreach(SFCoord p in area)
+                                {
+                                    ushort cur_z = map.heightmap.GetZ(p);
+                                    if(cur_z < lowest_z)
+                                    {
+                                        lowest_z = cur_z;
+                                        lowest_point = p;
+                                    }
+                                }
+                                lowest_points.Add(lowest_point);
+                            }
+                            // now, calculate lakes if they were added at the given point
+                            for(int i = 0; i < new_lake_areas.Count; i++)
+                            {
+                                // area is empty, skip
+                                if (new_lake_areas[i].Count == 0)
+                                {
+                                    continue;
+                                }
+                                // lake was already made here due to another lake flood
+                                if (lakes_modified_so_far)
+                                {
+                                    if (map.heightmap.IsAnyFlagSet(lowest_points[i], SFMapHeightMapFlag.LAKE_SHALLOW | SFMapHeightMapFlag.LAKE_DEEP))
+                                    {
+                                        continue;
+                                    }
+                                }
+
+                                // make new lake
+                                List<SFMapLake> consumed_lakes = new List<SFMapLake>();
+                                List<int> consumed_lakes_indices = new List<int>();
+                                SFMapLake new_lake = map.lake_manager.AddLake(lowest_points[i], lake_level, lake_type, -1, consumed_lakes, consumed_lakes_indices);
+                                if(new_lake == null)
+                                {
+                                    continue;
+                                }
+                                int new_lake_index = map.lake_manager.lakes.Count - 1;
+
+                                map_operators.MapOperatorLake op_lake_add = new map_operators.MapOperatorLake()
+                                {
+                                    pos = new_lake.start,
+                                    z_diff = new_lake.z_diff,
+                                    type = new_lake.type,
+                                    lake_index = new_lake_index,
+                                    change_add = true
+                                };
+
+                                for (int j = 0; j < consumed_lakes.Count; j++)
+                                {
+                                    SFMapLake l = consumed_lakes[j];
+                                    int l_index = consumed_lakes_indices[j];
+                                    MainForm.mapedittool.ui.RedrawMinimapLake(l, false, false);
+
+                                    map_operators.MapOperatorLake op_lake2 = new map_operators.MapOperatorLake()
+                                    {
+                                        pos = l.start,
+                                        z_diff = l.z_diff,
+                                        type = l.type,
+                                        lake_index = l_index,
+                                        change_add = false
+                                    };
+                                    op_cluster.SubOperators.Add(op_lake2);
+                                    removed_lakes.Add(l);
+                                }
+                                op_cluster.SubOperators.Add(op_lake_add);
+                                MainForm.mapedittool.ui.RedrawMinimapLake(new_lake, true, false);
+                                lakes_modified_so_far = true;
+                            }
+                        }
+                    }
+
+                    op_cluster.Finish(map);
+                    MainForm.mapedittool.op_queue.Push(op_cluster);
                 }
             }
             op_tex_correction = null;

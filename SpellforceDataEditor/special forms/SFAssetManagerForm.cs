@@ -229,6 +229,8 @@ namespace SpellforceDataEditor.special_forms
 
             update_render = true;
             ready = true;
+
+            SFAssetManagerForm_Resize(null, null);
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
@@ -261,22 +263,22 @@ namespace SpellforceDataEditor.special_forms
 
         private void SFAssetManagerForm_Resize(object sender, EventArgs e)
         {
-            int rcheight = Math.Max(100, Height - 89);
-            int rcwidth = Math.Max(100, Width - 371);
+            int rcheight = Math.Max(100, ClientSize.Height - 59);
+            int rcwidth = Math.Max(100, ClientSize.Width - 430);
             int new_rcsize = Math.Min(rcheight, rcwidth);
             glControl1.Size = new Size(new_rcsize, new_rcsize);
 
-            int rcx = Width - new_rcsize - 16;
+            int rcx = ClientSize.Width - new_rcsize - 3;
             glControl1.Location = new Point(rcx, glControl1.Location.Y);
 
-            int listwidth = rcx - 87 - 18;
-            int listheight = Height - 342;
+            int listwidth = rcx - 99 - 18;
+            int listheight = ClientSize.Height - 342;
             ListEntries.Size = new Size(listwidth, listheight);
             PanelSound.Location = new Point(PanelSound.Location.X, ListEntries.Location.Y + listheight + 6);
             ListAnimations.Size = new Size(listwidth, ListAnimations.Height);
             ListAnimations.Location = new Point(ListAnimations.Location.X, PanelSound.Location.Y + PanelSound.Height + 6);
-            button1Extract.Location = new Point(rcx - 87, button1Extract.Location.Y);
-            button2Extract.Location = new Point(rcx - 87, ListAnimations.Location.Y);
+            button1Extract.Location = new Point(rcx - 99, button1Extract.Location.Y);
+            button2Extract.Location = new Point(rcx - 99, ListAnimations.Location.Y);
             ButtonToggleFloor.Location = new Point(glControl1.Location.X, glControl1.Location.Y + new_rcsize + 1);
 
 
@@ -792,9 +794,9 @@ namespace SpellforceDataEditor.special_forms
             if (movement_vector != new Vector2(0, 0))
             {
                 float angle = SFRenderEngine.scene.camera.Direction.X - (float)(Math.PI * 3 / 2);
-                movement_vector = SFEngine.MathUtils.RotateVec2Mirrored(movement_vector, angle);
+                SFEngine.MathUtils.RotateVec2Mirrored(in movement_vector, angle, out movement_vector);
                 movement_vector *= 6 * SFRenderEngine.scene.DeltaTime;
-                SFRenderEngine.scene.camera.translate(new Vector3(movement_vector.X, 0, movement_vector.Y));
+                SFRenderEngine.scene.camera.Translate(new Vector3(movement_vector.X, 0, movement_vector.Y));
                 update_render = true;
                 update_ui = true;
             }
@@ -868,6 +870,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void glControl1_MouseDown(object sender, MouseEventArgs e)
         {
+            glControl1.Focus();
             mouse_pressed = true;
             scroll_mouse_start = new Vector2(Cursor.Position.X, Cursor.Position.Y);
         }
@@ -915,7 +918,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void AdjustCameraZ()
         {
-            SFRenderEngine.scene.camera.translate(new Vector3(0, (2 * zoom_level) - SFRenderEngine.scene.camera.position.Y, 0));
+            SFRenderEngine.scene.camera.Translate(new Vector3(0, (2 * zoom_level) - SFRenderEngine.scene.camera.position.Y, 0));
         }
 
         public void GenerateScene(int cat, int elem)

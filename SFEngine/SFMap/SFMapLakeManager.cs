@@ -34,19 +34,6 @@ namespace SFEngine.SFMap
             return GetObjectName();
         }
 
-        public void CalculateDepth(SFMapHeightMap hmap, ushort lake_level)
-        {
-            z_diff = (short)(lake_level - hmap.GetZ(cells.ElementAt(0)));
-            foreach (SFCoord p in cells)
-            {
-                if (z_diff < (short)(lake_level - hmap.GetZ(p)))
-                {
-                    z_diff = (short)(lake_level - hmap.GetZ(p));
-                    start = p;
-                }
-            }
-        }
-
         public ushort GetWaterLevel(SFMapHeightMap hmap)
         {
             return (ushort)(hmap.GetZ(start) + z_diff);
@@ -66,26 +53,24 @@ namespace SFEngine.SFMap
 
         // ugly 4th parameter to make undo/redo work
         // uglier 5th and 6th parameters to make undo/redo work (assumed to not be null
-        public SFMapLake AddLake(SFCoord start, short z_diff, int type, int lake_index, List<SFMapLake> consumed_lakes, List<int> consumed_lakes_indices, HashSet<SFCoord> opt_lake_cells = null, HashSet<SFCoord> opt_lake_shore = null)
+        public SFMapLake AddLake(SFCoord start, ushort lake_level, int type, int lake_index, List<SFMapLake> consumed_lakes, List<int> consumed_lakes_indices)
         {
             if (lake_index == -1)
             {
                 lake_index = lakes.Count;
             }
 
-            ushort lake_level = (ushort)(map.heightmap.GetZ(start) + z_diff);
-
             SFMapLake lake = new SFMapLake();
             lakes.Insert(lake_index, lake);
             lake_visible.Insert(lake_index, true);
             lake.start = start;
-            lake.z_diff = z_diff;
+            lake.z_diff = (short)(lake_level - map.heightmap.GetZ(start));
             lake.type = type;
 
             lake.node = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(SF3D.SFRender.SFRenderEngine.scene.root, "_none_", lake.GetObjectName());
             lake.node.Position = new Vector3(0, 0, 0);
 
-            UpdateLake(lake, consumed_lakes, consumed_lakes_indices, opt_lake_cells, opt_lake_shore);
+            UpdateLake(lake, consumed_lakes, consumed_lakes_indices);
 
             if (lake.cells.Count == 0)
             {
@@ -202,7 +187,8 @@ namespace SFEngine.SFMap
         }
 
         // should be updated after lake_start or lake_depth was modified
-        public void UpdateLake(SFMapLake lake, List<SFMapLake> consumed_lakes, List<int> consumed_lakes_indices, HashSet<SFCoord> lake_cells = null, HashSet<SFCoord> lake_shore = null)
+        // if lake_cells are given, lake's start point is trusted to be the lowest
+        public void UpdateLake(SFMapLake lake, List<SFMapLake> consumed_lakes, List<int> consumed_lakes_indices)
         {
             int lake_index = lakes.IndexOf(lake);
             if (lake_index < 0)
@@ -224,17 +210,9 @@ namespace SFEngine.SFMap
 
             ushort lake_level = lake.GetWaterLevel(map.heightmap);
 
-            if(lake_cells != null)
-            {
-                lake.cells = lake_cells;
-                lake.shore = lake_shore;
-            }
-            else
-            {
-                lake.cells = map.heightmap.GetIslandByHeight(lake.start, lake.z_diff, out lake.shore);
-                lake.CalculateDepth(map.heightmap, lake_level);
-            }
-
+            lake.cells = map.heightmap.GetIslandByLevel(lake.start, lake_level, out lake.start);
+            lake.shore = map.heightmap.GetBorder(lake.cells);
+            lake.z_diff = (short)(lake_level - map.heightmap.GetZ(lake.start));
 
             // check if lake collides with other lakes
             List<SFMapLake> lakes_to_remove = new List<SFMapLake>();
@@ -261,8 +239,6 @@ namespace SFEngine.SFMap
             {
                 RemoveLake(l);
             }
-
-            lake_index = lakes.IndexOf(lake);
 
             ushort lake_z = lake.GetWaterLevel(map.heightmap);
             foreach (SFCoord p in lake.cells)
@@ -309,7 +285,6 @@ namespace SFEngine.SFMap
             int v_count = vertex_pos.Count;
             int i_count = (lake.cells.Count + lake.shore.Count) * 6;
 
-            int k = 0;
             Vector3[] vertices = new Vector3[v_count];
             Vector2[] uvs = new Vector2[v_count];
             byte[] colors = new byte[v_count * 4];

@@ -10,18 +10,19 @@ using System.IO;
 
 namespace SFEngine.SF3D
 {
-    public struct BoneAnimationState
+    public struct BoneAnimationState(in Matrix4 transform)
     {
-        public Quaternion rotation;
-        public Vector3 position;
+        static long INVOCATIONS = 0;
+        static long B11Match = 0;
+        static long B12Match = 0;
+        static long B13Match = 0;
+        static long B21Match = 0;
+        static long B22Match = 0;
 
-        public BoneAnimationState(ref Matrix4 transform)
-        {
-            rotation = transform.ExtractRotation(false);
-            position = transform.Row3.Xyz;
-        }
+        public Quaternion rotation = transform.ExtractRotation(false);
+        public Vector3 position = transform.Row3.Xyz;
 
-        public void ToMatrix(out Matrix4 transform)
+        public readonly void ToMatrix(out Matrix4 transform)
         {
             Vector3 xyz = rotation.Xyz;
             float sqx = xyz.X * xyz.X;
@@ -57,51 +58,50 @@ namespace SFEngine.SF3D
             transform.Row1.W = 0;
             transform.Row2.W = 0;
 
-            transform.Row3 = new Vector4(position, 1);
+            transform.Row3 = new(position, 1);
         }
 
-        public static void Multiply(ref BoneAnimationState bas1, ref BoneAnimationState bas2, out BoneAnimationState result)
+        public static void Multiply(in BoneAnimationState bas1, in BoneAnimationState bas2, out BoneAnimationState result)
         {
             Quaternion qtmp = bas2.rotation;
-            Vector3 tmp = bas1.position;
 
-            FastQMultiply(ref bas2.rotation, ref bas1.rotation, out result.rotation);
-            FastTransform(ref bas1.position, ref qtmp, out tmp);
-            Vector3.Add(ref tmp, ref bas2.position, out result.position);
+            FastQMultiply(in bas2.rotation, in bas1.rotation, out result.rotation);
+            FastTransform(in bas1.position, in qtmp, out Vector3 tmp);
+            Vector3.Add(in tmp, in bas2.position, out result.position);
         }
 
         // is it faster than Vector3.Transform? that's yet to be tested
-        public static void FastTransform(ref Vector3 vec, ref Quaternion quat, out Vector3 result)
+        public static void FastTransform(in Vector3 vec, in Quaternion quat, out Vector3 result)
         {
             Vector3 xyz = quat.Xyz;
-            Vector3 d = new Vector3(
+            Vector3 d = (
                 -vec.X * xyz.Y + vec.Y * xyz.X + vec.Z * quat.W,
                 vec.X * quat.W - vec.Y * xyz.Z + vec.Z * xyz.Y,
                 vec.X * xyz.Z + vec.Y * quat.W - vec.Z * xyz.X
                 );
-            Vector3 temp = new Vector3(
+            Vector3 temp = (
                 xyz.Y * d.X - xyz.Z * d.Z,
                 xyz.Z * d.Y - xyz.X * d.X,
                 xyz.X * d.Z - xyz.Y * d.Y
                 );
-            Vector3.Multiply(ref temp, 2f, out temp);
-            Vector3.Add(ref vec, ref temp, out result);
+            Vector3.Multiply(in temp, 2f, out temp);
+            Vector3.Add(in vec, in temp, out result);
         }
 
-        public static void FastLerp(ref BoneAnimationState bas1, ref BoneAnimationState bas2, float blend, out BoneAnimationState result)
+        public static void FastLerp(in BoneAnimationState bas1, in BoneAnimationState bas2, float blend, out BoneAnimationState result)
         {
-            FastQSlerp(ref bas1.rotation, ref bas2.rotation, blend, out result.rotation);
-            FastVLerp(ref bas1.position, ref bas2.position, blend, out result.position);
+            FastQSlerp(in bas1.rotation, in bas2.rotation, blend, out result.rotation);
+            FastVLerp(in bas1.position, in bas2.position, blend, out result.position);
         }
 
-        public static void FastVLerp(ref Vector3 v1, ref Vector3 v2, float blend, out Vector3 vr)
+        public static void FastVLerp(in Vector3 v1, in Vector3 v2, float blend, out Vector3 vr)
         {
             vr.X = blend * (v2.X - v1.X) + v1.X;
             vr.Y = blend * (v2.Y - v1.Y) + v1.Y;
             vr.Z = blend * (v2.Z - v1.Z) + v1.Z;
         }
 
-        public static void FastQMultiply(ref Quaternion q1, ref Quaternion q2, out Quaternion qr)
+        public static void FastQMultiply(in Quaternion q1, in Quaternion q2, out Quaternion qr)
         {
             Vector3 xyz1 = q1.Xyz;
             Vector3 xyz2 = q2.Xyz;
@@ -113,9 +113,11 @@ namespace SFEngine.SF3D
                 q1.W * q2.W - xyz1.X * xyz2.X - xyz1.Y * xyz2.Y - xyz1.Z * xyz2.Z);
         }
 
-        public static void FastQSlerp(ref Quaternion q1, ref Quaternion q2, float blend, out Quaternion qr)
+        public static void FastQSlerp(in Quaternion q1, in Quaternion q2, float blend, out Quaternion qr)
         {
-            float cosHalfAngle = q1.W * q2.W + Vector3.Dot(q1.Xyz, q2.Xyz);
+            Quaternion q2_copy = q2;
+
+            float cosHalfAngle = q1.W * q2_copy.W + Vector3.Dot(q1.Xyz, q2_copy.Xyz);
 
             if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
             {
@@ -125,8 +127,8 @@ namespace SFEngine.SF3D
             }
             else if (cosHalfAngle < 0.0f)
             {
-                q2.Xyz = -q2.Xyz;
-                q2.W = -q2.W;
+                q2_copy.Xyz = -q2_copy.Xyz;
+                q2_copy.W = -q2_copy.W;
                 cosHalfAngle = -cosHalfAngle;
             }
 
@@ -135,11 +137,11 @@ namespace SFEngine.SF3D
             if (cosHalfAngle < 0.99f)
             {
                 // do proper slerp for big angles
-                float halfAngle = (float)System.Math.Acos(cosHalfAngle);
-                float sinHalfAngle = (float)System.Math.Sin(halfAngle);
+                float halfAngle = MathF.Acos(cosHalfAngle);
+                float sinHalfAngle = MathF.Sin(halfAngle);
                 float oneOverSinHalfAngle = 1.0f / sinHalfAngle;
-                blendA = (float)System.Math.Sin(halfAngle * (1.0f - blend)) * oneOverSinHalfAngle;
-                blendB = (float)System.Math.Sin(halfAngle * blend) * oneOverSinHalfAngle;
+                blendA = MathF.Sin(halfAngle * (1.0f - blend)) * oneOverSinHalfAngle;
+                blendB = MathF.Sin(halfAngle * blend) * oneOverSinHalfAngle;
             }
             else
             {
@@ -148,18 +150,18 @@ namespace SFEngine.SF3D
                 blendB = blend;
             }
 
-            Quaternion tmp = new Quaternion(blendA * q1.Xyz + blendB * q2.Xyz, blendA * q1.W + blendB * q2.W);
-            Quaternion.Normalize(ref tmp, out qr);
+            Quaternion tmp = new(blendA * q1.Xyz + blendB * q2_copy.Xyz, blendA * q1.W + blendB * q2_copy.W);
+            Quaternion.Normalize(in tmp, out qr);
         }
 
-        public BoneAnimationState Inverse()
+        public readonly BoneAnimationState Inverse()
         {
             ToMatrix(out Matrix4 inv);
-            inv.Invert();
-            return new BoneAnimationState(ref inv);
+            Matrix4.Invert(in inv, out inv);
+            return new BoneAnimationState(in inv);
         }
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return $"{position}, {rotation}";
         }
@@ -181,12 +183,12 @@ namespace SFEngine.SF3D
                 return -10;
             }
 
-            MemoryStream ms = new MemoryStream(data, offset, data.Length - offset);
-            BinaryReader br = new BinaryReader(ms);
+            MemoryStream ms = new(data, offset, data.Length - offset);
+            BinaryReader br = new(ms);
 
             max_time = 0;
-            InterpolatedVector3 position = new InterpolatedVector3();
-            InterpolatedQuaternion rotation = new InterpolatedQuaternion();
+            InterpolatedVector3 position = new();
+            InterpolatedQuaternion rotation = new();
 
             br.ReadInt16();
             int bone_count = br.ReadInt32();
@@ -208,7 +210,7 @@ namespace SFEngine.SF3D
                         q_data[k] = br.ReadSingle();
                     }
 
-                    Quaternion q = new Quaternion(q_data[1], q_data[2], q_data[3], q_data[0]);
+                    Quaternion q = new(q_data[1], q_data[2], q_data[3], q_data[0]);
                     rotation.Add(q, q_data[4]);
                 }
                 rotation.ResolveStatic();
@@ -224,7 +226,7 @@ namespace SFEngine.SF3D
                         p_data[k] = br.ReadSingle();
                     }
 
-                    Vector3 v = new Vector3(p_data[0], p_data[1], p_data[2]);
+                    Vector3 v = (p_data[0], p_data[1], p_data[2]);
                     position.Add(v, p_data[3]);
                 }
                 position.ResolveStatic();
@@ -238,7 +240,7 @@ namespace SFEngine.SF3D
                     float t = k / ANIMATION_FPS;
                     bone_animations[i][k] = new BoneAnimationState() { position = position.Get(t), rotation = rotation.Get(t) };
                 }
-                bone_animations[i][bone_animations[i].Length - 1] = new BoneAnimationState() { position = position.Get(max_time), rotation = rotation.Get(max_time) };
+                bone_animations[i][^1] = new BoneAnimationState() { position = position.Get(max_time), rotation = rotation.Get(max_time) };
             }
 
             for (int k = 0; k < bone_animations[0].Length; k++)
@@ -247,7 +249,7 @@ namespace SFEngine.SF3D
                 {
                     if (skel.bone_parents[i] != Utility.NO_INDEX)
                     {
-                        BoneAnimationState.Multiply(ref bone_animations[i][k], ref bone_animations[skel.bone_parents[i]][k], out bone_animations[i][k]);
+                        BoneAnimationState.Multiply(in bone_animations[i][k], in bone_animations[skel.bone_parents[i]][k], out bone_animations[i][k]);
                     }
                 }
             }

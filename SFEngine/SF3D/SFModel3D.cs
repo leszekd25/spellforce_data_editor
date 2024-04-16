@@ -164,8 +164,7 @@ namespace SFEngine.SF3D
             face_indices = _indices;
             if (_material == null)
             {
-                material = new SFMaterial();
-                material.texture = SFRender.SFRenderEngine.opaque_tex;
+                material = new() { texture = SFRender.SFRenderEngine.opaque_tex };
             }
             else
             {
@@ -180,37 +179,29 @@ namespace SFEngine.SF3D
 
         public IEnumerable<Vector3> GetVertices()
         {
-            using (MemoryStream ms = new MemoryStream(vertex_data))
+            using MemoryStream ms = new(vertex_data);
+            using BinaryReader br = new(ms);
+            for (int i = 0; i < vertex_data.Length; i += 40)
             {
-                using (BinaryReader br = new BinaryReader(ms))
-                {
-                    for (int i = 0; i < vertex_data.Length; i += 40)
-                    {
-                        br.BaseStream.Position = i;
-                        float x = br.ReadSingle();
-                        float y = br.ReadSingle();
-                        float z = br.ReadSingle();
-                        yield return new Vector3(x, y, z);
-                    }
-                }
+                br.BaseStream.Position = i;
+                float x = br.ReadSingle();
+                float y = br.ReadSingle();
+                float z = br.ReadSingle();
+                yield return new Vector3(x, y, z);
             }
         }
 
         public IEnumerable<Vector3> GetNormals()
         {
-            using (MemoryStream ms = new MemoryStream(vertex_data))
+            using MemoryStream ms = new(vertex_data);
+            using BinaryReader br = new(ms);
+            for (int i = 0; i < vertex_data.Length; i += 40)
             {
-                using (BinaryReader br = new BinaryReader(ms))
-                {
-                    for (int i = 0; i < vertex_data.Length; i += 40)
-                    {
-                        br.BaseStream.Position = i + 12;
-                        float x = br.ReadSingle();
-                        float y = br.ReadSingle();
-                        float z = br.ReadSingle();
-                        yield return new Vector3(x, y, z);
-                    }
-                }
+                br.BaseStream.Position = i + 12;
+                float x = br.ReadSingle();
+                float y = br.ReadSingle();
+                float z = br.ReadSingle();
+                yield return new Vector3(x, y, z);
             }
         }
 
@@ -248,8 +239,8 @@ namespace SFEngine.SF3D
 
         public override int Load(byte[] data, int offset, object custom_data)
         {
-            MemoryStream ms = new MemoryStream(data, offset, data.Length - offset);
-            BinaryReader br = new BinaryReader(ms);
+            using MemoryStream ms = new(data, offset, data.Length - offset);
+            using BinaryReader br = new(ms);
 
             ushort[] header = new ushort[4];
             for (int i = 0; i < 4; i++)
@@ -259,11 +250,11 @@ namespace SFEngine.SF3D
 
             int modelnum = (int)header[1];
 
-            List<SFSubModel3D> tmp_submodels = new List<SFSubModel3D>();
+            List<SFSubModel3D> tmp_submodels = [];
             int failed_submodels = 0;
             for (int i = 0; i < modelnum; i++)
             {
-                SFSubModel3D sbm = new SFSubModel3D();
+                SFSubModel3D sbm = new();
                 int return_code = sbm.Load(br, data, offset);
                 if (return_code == 1)
                 {
@@ -290,7 +281,7 @@ namespace SFEngine.SF3D
                 RAMSize += sbm.RAMSize;
                 DeviceSize += sbm.DeviceSize;
             }
-            submodels = tmp_submodels.ToArray();
+            submodels = [.. tmp_submodels];
 
             // bbox
             float x1, x2, y1, y2, z1, z2;
@@ -351,7 +342,7 @@ namespace SFEngine.SF3D
             z2 = -10000;
             foreach (SFSubModel3D sbm in submodels)
             {
-                if (sbm.aabb != null)
+                if (sbm.aabb != Physics.BoundingBox.Zero)
                 {
                     x1 = Math.Min(x1, aabb.a.X);
                     x2 = Math.Max(x2, aabb.b.X);

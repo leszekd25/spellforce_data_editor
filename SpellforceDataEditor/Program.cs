@@ -38,7 +38,7 @@ namespace SpellforceDataEditor
             SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "Program.Main(): session start time: " + DateTime.Now.ToLongTimeString());
             SFEngine.Settings.Load();
             //Application.SetDefaultFont()
-            Application.SetHighDpiMode(HighDpiMode.SystemAware);  // without this, TabControl crashes when reparenting controls
+            Application.SetHighDpiMode(HighDpiMode.PerMonitor);  // without this, TabControl crashes when reparenting controls
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

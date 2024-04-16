@@ -28,301 +28,306 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.glControl1 = new OpenTK.WinForms.GLControl();
-            this.ListEntries = new System.Windows.Forms.ListBox();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.resetCameraPosiitonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.reloadCurrentSceneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.textureRepairToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.GameDirDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.StatusText = new System.Windows.Forms.ToolStripStatusLabel();
-            this.ComboBrowseMode = new System.Windows.Forms.ComboBox();
-            this.ListAnimations = new System.Windows.Forms.ListBox();
-            this.TimerAnimation = new System.Windows.Forms.Timer(this.components);
-            this.PanelSound = new System.Windows.Forms.Panel();
-            this.labelSoundDuration = new System.Windows.Forms.Label();
-            this.trackSoundDuration = new System.Windows.Forms.TrackBar();
-            this.buttonSoundStop = new System.Windows.Forms.Button();
-            this.buttonSoundPlay = new System.Windows.Forms.Button();
-            this.TimerSoundDuration = new System.Windows.Forms.Timer(this.components);
-            this.button1Extract = new System.Windows.Forms.Button();
-            this.button2Extract = new System.Windows.Forms.Button();
-            this.comboMessages = new System.Windows.Forms.ComboBox();
-            this.ButtonToggleFloor = new System.Windows.Forms.Button();
-            this.menuStrip1.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
-            this.PanelSound.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackSoundDuration)).BeginInit();
-            this.SuspendLayout();
+            components = new System.ComponentModel.Container();
+            glControl1 = new OpenTK.WinForms.GLControl();
+            ListEntries = new System.Windows.Forms.ListBox();
+            menuStrip1 = new System.Windows.Forms.MenuStrip();
+            optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            resetCameraPosiitonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            reloadCurrentSceneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exportSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            textureRepairToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            GameDirDialog = new System.Windows.Forms.FolderBrowserDialog();
+            statusStrip1 = new System.Windows.Forms.StatusStrip();
+            StatusText = new System.Windows.Forms.ToolStripStatusLabel();
+            ComboBrowseMode = new System.Windows.Forms.ComboBox();
+            ListAnimations = new System.Windows.Forms.ListBox();
+            TimerAnimation = new System.Windows.Forms.Timer(components);
+            PanelSound = new System.Windows.Forms.Panel();
+            labelSoundDuration = new System.Windows.Forms.Label();
+            trackSoundDuration = new System.Windows.Forms.TrackBar();
+            buttonSoundStop = new System.Windows.Forms.Button();
+            buttonSoundPlay = new System.Windows.Forms.Button();
+            TimerSoundDuration = new System.Windows.Forms.Timer(components);
+            button1Extract = new System.Windows.Forms.Button();
+            button2Extract = new System.Windows.Forms.Button();
+            comboMessages = new System.Windows.Forms.ComboBox();
+            ButtonToggleFloor = new System.Windows.Forms.Button();
+            menuStrip1.SuspendLayout();
+            statusStrip1.SuspendLayout();
+            PanelSound.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)trackSoundDuration).BeginInit();
+            SuspendLayout();
             // 
             // glControl1
             // 
-            this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(371, 27);
-            this.glControl1.MaximumSize = new System.Drawing.Size(1024, 1024);
-            this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(400, 400);
-            this.glControl1.TabIndex = 0;
-            this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
-            this.glControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseDown);
-            this.glControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseMove);
-            this.glControl1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseUp);
+            glControl1.API = OpenTK.Windowing.Common.ContextAPI.OpenGL;
+            glControl1.APIVersion = new System.Version(3, 3, 0, 0);
+            glControl1.BackColor = System.Drawing.Color.Black;
+            glControl1.Flags = OpenTK.Windowing.Common.ContextFlags.Default;
+            glControl1.IsEventDriven = true;
+            glControl1.Location = new System.Drawing.Point(433, 31);
+            glControl1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            glControl1.MaximumSize = new System.Drawing.Size(1195, 1182);
+            glControl1.Name = "glControl1";
+            glControl1.Profile = OpenTK.Windowing.Common.ContextProfile.Core;
+            glControl1.Size = new System.Drawing.Size(467, 462);
+            glControl1.TabIndex = 0;
+            glControl1.Paint += glControl1_Paint;
+            glControl1.MouseDown += glControl1_MouseDown;
+            glControl1.MouseMove += glControl1_MouseMove;
+            glControl1.MouseUp += glControl1_MouseUp;
             // 
             // ListEntries
             // 
-            this.ListEntries.FormattingEnabled = true;
-            this.ListEntries.Location = new System.Drawing.Point(12, 54);
-            this.ListEntries.Name = "ListEntries";
-            this.ListEntries.Size = new System.Drawing.Size(266, 147);
-            this.ListEntries.TabIndex = 1;
-            this.ListEntries.Visible = false;
-            this.ListEntries.SelectedIndexChanged += new System.EventHandler(this.ListEntries_SelectedIndexChanged);
+            ListEntries.FormattingEnabled = true;
+            ListEntries.ItemHeight = 15;
+            ListEntries.Location = new System.Drawing.Point(14, 62);
+            ListEntries.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ListEntries.Name = "ListEntries";
+            ListEntries.Size = new System.Drawing.Size(310, 169);
+            ListEntries.TabIndex = 1;
+            ListEntries.Visible = false;
+            ListEntries.SelectedIndexChanged += ListEntries_SelectedIndexChanged;
             // 
             // menuStrip1
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.optionsToolStripMenuItem,
-            this.toolsToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(771, 24);
-            this.menuStrip1.TabIndex = 2;
-            this.menuStrip1.Text = "menuStrip1";
+            menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { optionsToolStripMenuItem, toolsToolStripMenuItem });
+            menuStrip1.Location = new System.Drawing.Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+            menuStrip1.Size = new System.Drawing.Size(899, 24);
+            menuStrip1.TabIndex = 2;
+            menuStrip1.Text = "menuStrip1";
             // 
             // optionsToolStripMenuItem
             // 
-            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.resetCameraPosiitonToolStripMenuItem,
-            this.reloadCurrentSceneToolStripMenuItem,
-            this.exportSettingsToolStripMenuItem});
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.optionsToolStripMenuItem.Text = "Options";
-            // 
-            // toolsToolStripMenuItem
-            // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.textureRepairToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.toolsToolStripMenuItem.Text = "Tools";
+            optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { resetCameraPosiitonToolStripMenuItem, reloadCurrentSceneToolStripMenuItem, exportSettingsToolStripMenuItem });
+            optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            optionsToolStripMenuItem.Text = "Options";
             // 
             // resetCameraPosiitonToolStripMenuItem
             // 
-            this.resetCameraPosiitonToolStripMenuItem.Name = "resetCameraPosiitonToolStripMenuItem";
-            this.resetCameraPosiitonToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
-            this.resetCameraPosiitonToolStripMenuItem.Text = "Reset camera posiiton (Space)";
-            this.resetCameraPosiitonToolStripMenuItem.Click += new System.EventHandler(this.resetCameraPosiitonToolStripMenuItem_Click);
+            resetCameraPosiitonToolStripMenuItem.Name = "resetCameraPosiitonToolStripMenuItem";
+            resetCameraPosiitonToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            resetCameraPosiitonToolStripMenuItem.Text = "Reset camera posiiton (Space)";
+            resetCameraPosiitonToolStripMenuItem.Click += resetCameraPosiitonToolStripMenuItem_Click;
             // 
             // reloadCurrentSceneToolStripMenuItem
             // 
-            this.reloadCurrentSceneToolStripMenuItem.Name = "reloadCurrentSceneToolStripMenuItem";
-            this.reloadCurrentSceneToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
-            this.reloadCurrentSceneToolStripMenuItem.Text = "Reload current scene (Ctrl+R)";
-            this.reloadCurrentSceneToolStripMenuItem.Click += new System.EventHandler(this.reloadCurrentSceneToolStripMenuItem_Click);
+            reloadCurrentSceneToolStripMenuItem.Name = "reloadCurrentSceneToolStripMenuItem";
+            reloadCurrentSceneToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            reloadCurrentSceneToolStripMenuItem.Text = "Reload current scene (Ctrl+R)";
+            reloadCurrentSceneToolStripMenuItem.Click += reloadCurrentSceneToolStripMenuItem_Click;
             // 
             // exportSettingsToolStripMenuItem
             // 
-            this.exportSettingsToolStripMenuItem.Name = "exportSettingsToolStripMenuItem";
-            this.exportSettingsToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
-            this.exportSettingsToolStripMenuItem.Text = "Extraction settings...";
-            this.exportSettingsToolStripMenuItem.Click += new System.EventHandler(this.exportSettingsToolStripMenuItem_Click);
+            exportSettingsToolStripMenuItem.Name = "exportSettingsToolStripMenuItem";
+            exportSettingsToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            exportSettingsToolStripMenuItem.Text = "Extraction settings...";
+            exportSettingsToolStripMenuItem.Click += exportSettingsToolStripMenuItem_Click;
             // 
-            // textureRepairSettingsToolStripMenuItem
+            // toolsToolStripMenuItem
             // 
-            this.textureRepairToolStripMenuItem.Name = "textureRepairToolStripMenuItem";
-            this.textureRepairToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
-            this.textureRepairToolStripMenuItem.Text = "Texture repair...";
-            this.textureRepairToolStripMenuItem.Click += new System.EventHandler(this.textureRepairToolStripMenuItem_Click);
+            toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { textureRepairToolStripMenuItem });
+            toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
+            toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // textureRepairToolStripMenuItem
+            // 
+            textureRepairToolStripMenuItem.Name = "textureRepairToolStripMenuItem";
+            textureRepairToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            textureRepairToolStripMenuItem.Text = "Texture repair...";
+            textureRepairToolStripMenuItem.Click += textureRepairToolStripMenuItem_Click;
             // 
             // statusStrip1
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.StatusText});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 428);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(771, 22);
-            this.statusStrip1.TabIndex = 3;
-            this.statusStrip1.Text = "statusStrip1";
+            statusStrip1.AutoSize = false;
+            statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { StatusText });
+            statusStrip1.Location = new System.Drawing.Point(0, 503);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
+            statusStrip1.Size = new System.Drawing.Size(899, 25);
+            statusStrip1.TabIndex = 3;
+            statusStrip1.Text = "statusStrip1";
             // 
             // StatusText
             // 
-            this.StatusText.Name = "StatusText";
-            this.StatusText.Size = new System.Drawing.Size(0, 17);
+            StatusText.Name = "StatusText";
+            StatusText.Size = new System.Drawing.Size(0, 20);
             // 
             // ComboBrowseMode
             // 
-            this.ComboBrowseMode.FormattingEnabled = true;
-            this.ComboBrowseMode.Items.AddRange(new object[] {
-            "Meshes",
-            "Animations",
-            "Synchronize with GameData Editor",
-            "Music",
-            "Sounds",
-            "Messages"});
-            this.ComboBrowseMode.Location = new System.Drawing.Point(12, 27);
-            this.ComboBrowseMode.Name = "ComboBrowseMode";
-            this.ComboBrowseMode.Size = new System.Drawing.Size(174, 21);
-            this.ComboBrowseMode.TabIndex = 4;
-            this.ComboBrowseMode.SelectedIndexChanged += new System.EventHandler(this.ComboBrowseMode_SelectedIndexChanged);
+            ComboBrowseMode.FormattingEnabled = true;
+            ComboBrowseMode.Items.AddRange(new object[] { "Meshes", "Animations", "Synchronize with GameData Editor", "Music", "Sounds", "Messages" });
+            ComboBrowseMode.Location = new System.Drawing.Point(14, 31);
+            ComboBrowseMode.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ComboBrowseMode.Name = "ComboBrowseMode";
+            ComboBrowseMode.Size = new System.Drawing.Size(202, 23);
+            ComboBrowseMode.TabIndex = 4;
+            ComboBrowseMode.SelectedIndexChanged += ComboBrowseMode_SelectedIndexChanged;
             // 
             // ListAnimations
             // 
-            this.ListAnimations.FormattingEnabled = true;
-            this.ListAnimations.Location = new System.Drawing.Point(12, 271);
-            this.ListAnimations.Name = "ListAnimations";
-            this.ListAnimations.Size = new System.Drawing.Size(266, 147);
-            this.ListAnimations.TabIndex = 5;
-            this.ListAnimations.Visible = false;
-            this.ListAnimations.SelectedIndexChanged += new System.EventHandler(this.ListAnimations_SelectedIndexChanged);
+            ListAnimations.FormattingEnabled = true;
+            ListAnimations.ItemHeight = 15;
+            ListAnimations.Location = new System.Drawing.Point(14, 313);
+            ListAnimations.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ListAnimations.Name = "ListAnimations";
+            ListAnimations.Size = new System.Drawing.Size(310, 169);
+            ListAnimations.TabIndex = 5;
+            ListAnimations.Visible = false;
+            ListAnimations.SelectedIndexChanged += ListAnimations_SelectedIndexChanged;
             // 
             // TimerAnimation
             // 
-            this.TimerAnimation.Tick += new System.EventHandler(this.TimerAnimation_Tick);
+            TimerAnimation.Tick += TimerAnimation_Tick;
             // 
             // PanelSound
             // 
-            this.PanelSound.Controls.Add(this.labelSoundDuration);
-            this.PanelSound.Controls.Add(this.trackSoundDuration);
-            this.PanelSound.Controls.Add(this.buttonSoundStop);
-            this.PanelSound.Controls.Add(this.buttonSoundPlay);
-            this.PanelSound.Location = new System.Drawing.Point(12, 207);
-            this.PanelSound.Name = "PanelSound";
-            this.PanelSound.Size = new System.Drawing.Size(266, 58);
-            this.PanelSound.TabIndex = 6;
-            this.PanelSound.Visible = false;
+            PanelSound.Controls.Add(labelSoundDuration);
+            PanelSound.Controls.Add(trackSoundDuration);
+            PanelSound.Controls.Add(buttonSoundStop);
+            PanelSound.Controls.Add(buttonSoundPlay);
+            PanelSound.Location = new System.Drawing.Point(14, 239);
+            PanelSound.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelSound.Name = "PanelSound";
+            PanelSound.Size = new System.Drawing.Size(310, 67);
+            PanelSound.TabIndex = 6;
+            PanelSound.Visible = false;
             // 
             // labelSoundDuration
             // 
-            this.labelSoundDuration.AutoSize = true;
-            this.labelSoundDuration.Location = new System.Drawing.Point(165, 35);
-            this.labelSoundDuration.Name = "labelSoundDuration";
-            this.labelSoundDuration.Size = new System.Drawing.Size(0, 13);
-            this.labelSoundDuration.TabIndex = 3;
+            labelSoundDuration.AutoSize = true;
+            labelSoundDuration.Location = new System.Drawing.Point(192, 40);
+            labelSoundDuration.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelSoundDuration.Name = "labelSoundDuration";
+            labelSoundDuration.Size = new System.Drawing.Size(0, 15);
+            labelSoundDuration.TabIndex = 3;
             // 
             // trackSoundDuration
             // 
-            this.trackSoundDuration.AutoSize = false;
-            this.trackSoundDuration.LargeChange = 0;
-            this.trackSoundDuration.Location = new System.Drawing.Point(3, 32);
-            this.trackSoundDuration.Maximum = 1000000;
-            this.trackSoundDuration.Name = "trackSoundDuration";
-            this.trackSoundDuration.Size = new System.Drawing.Size(156, 23);
-            this.trackSoundDuration.SmallChange = 50000;
-            this.trackSoundDuration.TabIndex = 2;
-            this.trackSoundDuration.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.trackSoundDuration.Scroll += new System.EventHandler(this.trackSoundDuration_Scroll);
+            trackSoundDuration.AutoSize = false;
+            trackSoundDuration.LargeChange = 0;
+            trackSoundDuration.Location = new System.Drawing.Point(4, 37);
+            trackSoundDuration.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            trackSoundDuration.Maximum = 1000000;
+            trackSoundDuration.Name = "trackSoundDuration";
+            trackSoundDuration.Size = new System.Drawing.Size(182, 27);
+            trackSoundDuration.SmallChange = 50000;
+            trackSoundDuration.TabIndex = 2;
+            trackSoundDuration.TickStyle = System.Windows.Forms.TickStyle.None;
+            trackSoundDuration.Scroll += trackSoundDuration_Scroll;
             // 
             // buttonSoundStop
             // 
-            this.buttonSoundStop.Location = new System.Drawing.Point(84, 3);
-            this.buttonSoundStop.Name = "buttonSoundStop";
-            this.buttonSoundStop.Size = new System.Drawing.Size(75, 23);
-            this.buttonSoundStop.TabIndex = 1;
-            this.buttonSoundStop.Text = "Stop";
-            this.buttonSoundStop.UseVisualStyleBackColor = true;
-            this.buttonSoundStop.Click += new System.EventHandler(this.buttonSoundStop_Click);
+            buttonSoundStop.Location = new System.Drawing.Point(98, 3);
+            buttonSoundStop.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonSoundStop.Name = "buttonSoundStop";
+            buttonSoundStop.Size = new System.Drawing.Size(88, 27);
+            buttonSoundStop.TabIndex = 1;
+            buttonSoundStop.Text = "Stop";
+            buttonSoundStop.UseVisualStyleBackColor = true;
+            buttonSoundStop.Click += buttonSoundStop_Click;
             // 
             // buttonSoundPlay
             // 
-            this.buttonSoundPlay.Location = new System.Drawing.Point(3, 3);
-            this.buttonSoundPlay.Name = "buttonSoundPlay";
-            this.buttonSoundPlay.Size = new System.Drawing.Size(75, 23);
-            this.buttonSoundPlay.TabIndex = 0;
-            this.buttonSoundPlay.Text = "Play";
-            this.buttonSoundPlay.UseVisualStyleBackColor = true;
-            this.buttonSoundPlay.Click += new System.EventHandler(this.buttonSoundPlay_Click);
+            buttonSoundPlay.Location = new System.Drawing.Point(4, 3);
+            buttonSoundPlay.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonSoundPlay.Name = "buttonSoundPlay";
+            buttonSoundPlay.Size = new System.Drawing.Size(88, 27);
+            buttonSoundPlay.TabIndex = 0;
+            buttonSoundPlay.Text = "Play";
+            buttonSoundPlay.UseVisualStyleBackColor = true;
+            buttonSoundPlay.Click += buttonSoundPlay_Click;
             // 
             // TimerSoundDuration
             // 
-            this.TimerSoundDuration.Tick += new System.EventHandler(this.TimerSoundDuration_Tick);
+            TimerSoundDuration.Tick += TimerSoundDuration_Tick;
             // 
             // button1Extract
             // 
-            this.button1Extract.Location = new System.Drawing.Point(284, 54);
-            this.button1Extract.Name = "button1Extract";
-            this.button1Extract.Size = new System.Drawing.Size(81, 23);
-            this.button1Extract.TabIndex = 7;
-            this.button1Extract.Text = "Extract";
-            this.button1Extract.UseVisualStyleBackColor = true;
-            this.button1Extract.Visible = false;
-            this.button1Extract.Click += new System.EventHandler(this.button1Extract_Click);
+            button1Extract.Location = new System.Drawing.Point(331, 62);
+            button1Extract.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button1Extract.Name = "button1Extract";
+            button1Extract.Size = new System.Drawing.Size(94, 27);
+            button1Extract.TabIndex = 7;
+            button1Extract.Text = "Extract";
+            button1Extract.UseVisualStyleBackColor = true;
+            button1Extract.Visible = false;
+            button1Extract.Click += button1Extract_Click;
             // 
             // button2Extract
             // 
-            this.button2Extract.Location = new System.Drawing.Point(284, 271);
-            this.button2Extract.Name = "button2Extract";
-            this.button2Extract.Size = new System.Drawing.Size(81, 23);
-            this.button2Extract.TabIndex = 8;
-            this.button2Extract.Text = "Extract";
-            this.button2Extract.UseVisualStyleBackColor = true;
-            this.button2Extract.Visible = false;
-            this.button2Extract.Click += new System.EventHandler(this.button2Extract_Click);
+            button2Extract.Location = new System.Drawing.Point(331, 313);
+            button2Extract.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button2Extract.Name = "button2Extract";
+            button2Extract.Size = new System.Drawing.Size(94, 27);
+            button2Extract.TabIndex = 8;
+            button2Extract.Text = "Extract";
+            button2Extract.UseVisualStyleBackColor = true;
+            button2Extract.Visible = false;
+            button2Extract.Click += button2Extract_Click;
             // 
             // comboMessages
             // 
-            this.comboMessages.FormattingEnabled = true;
-            this.comboMessages.Items.AddRange(new object[] {
-            "Male",
-            "Female",
-            "RTS Workers",
-            "RTS Battle",
-            "NPC"});
-            this.comboMessages.Location = new System.Drawing.Point(192, 27);
-            this.comboMessages.Name = "comboMessages";
-            this.comboMessages.Size = new System.Drawing.Size(86, 21);
-            this.comboMessages.TabIndex = 9;
-            this.comboMessages.Visible = false;
-            this.comboMessages.SelectedIndexChanged += new System.EventHandler(this.comboMessages_SelectedIndexChanged);
+            comboMessages.FormattingEnabled = true;
+            comboMessages.Items.AddRange(new object[] { "Male", "Female", "RTS Workers", "RTS Battle", "NPC" });
+            comboMessages.Location = new System.Drawing.Point(224, 31);
+            comboMessages.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            comboMessages.Name = "comboMessages";
+            comboMessages.Size = new System.Drawing.Size(100, 23);
+            comboMessages.TabIndex = 9;
+            comboMessages.Visible = false;
+            comboMessages.SelectedIndexChanged += comboMessages_SelectedIndexChanged;
             // 
             // ButtonToggleFloor
             // 
-            this.ButtonToggleFloor.Location = new System.Drawing.Point(371, 428);
-            this.ButtonToggleFloor.Name = "ButtonToggleFloor";
-            this.ButtonToggleFloor.Size = new System.Drawing.Size(86, 23);
-            this.ButtonToggleFloor.TabIndex = 10;
-            this.ButtonToggleFloor.Text = "Toggle floor";
-            this.ButtonToggleFloor.UseVisualStyleBackColor = true;
-            this.ButtonToggleFloor.Click += new System.EventHandler(this.ButtonToggleFloor_Click);
+            ButtonToggleFloor.Location = new System.Drawing.Point(433, 499);
+            ButtonToggleFloor.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonToggleFloor.Name = "ButtonToggleFloor";
+            ButtonToggleFloor.Size = new System.Drawing.Size(100, 27);
+            ButtonToggleFloor.TabIndex = 10;
+            ButtonToggleFloor.Text = "Toggle floor";
+            ButtonToggleFloor.UseVisualStyleBackColor = true;
+            ButtonToggleFloor.Click += ButtonToggleFloor_Click;
             // 
             // SFAssetManagerForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(771, 450);
-            this.Controls.Add(this.ButtonToggleFloor);
-            this.Controls.Add(this.comboMessages);
-            this.Controls.Add(this.button2Extract);
-            this.Controls.Add(this.button1Extract);
-            this.Controls.Add(this.PanelSound);
-            this.Controls.Add(this.ListAnimations);
-            this.Controls.Add(this.ComboBrowseMode);
-            this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.ListEntries);
-            this.Controls.Add(this.glControl1);
-            this.Controls.Add(this.menuStrip1);
-            this.MainMenuStrip = this.menuStrip1;
-            this.MinimumSize = new System.Drawing.Size(787, 489);
-            this.Name = "SFAssetManagerForm";
-            this.Text = "Asset Viewer";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SF3DManagerForm_FormClosing);
-            this.Load += new System.EventHandler(this.SF3DManagerForm_Load);
-            this.Resize += new System.EventHandler(this.SFAssetManagerForm_Resize);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
-            this.PanelSound.ResumeLayout(false);
-            this.PanelSound.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackSoundDuration)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(899, 528);
+            Controls.Add(ButtonToggleFloor);
+            Controls.Add(comboMessages);
+            Controls.Add(button2Extract);
+            Controls.Add(button1Extract);
+            Controls.Add(PanelSound);
+            Controls.Add(ListAnimations);
+            Controls.Add(ComboBrowseMode);
+            Controls.Add(statusStrip1);
+            Controls.Add(ListEntries);
+            Controls.Add(glControl1);
+            Controls.Add(menuStrip1);
+            MainMenuStrip = menuStrip1;
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MinimumSize = new System.Drawing.Size(915, 558);
+            Name = "SFAssetManagerForm";
+            Text = "Asset Viewer";
+            FormClosing += SF3DManagerForm_FormClosing;
+            Load += SF3DManagerForm_Load;
+            Resize += SFAssetManagerForm_Resize;
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
+            PanelSound.ResumeLayout(false);
+            PanelSound.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)trackSoundDuration).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

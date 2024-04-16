@@ -18,15 +18,13 @@ namespace SFEngine.SF3D.Physics
         public Vector3 nvector_inverted;     // inverted normal
 
         float length;
-        float length2;
-        public float Length { get { return length; } set { length = value; length2 = value * value; } }
+        public float Length { get { return length; } set { length = value; } }
 
         public Ray(Vector3 s, Vector3 v)
         {
             start = s;
             vector = v;
             Length = v.Length;
-            length2 = v.LengthSquared;
             nvector = v / length;
         }
 
@@ -116,9 +114,9 @@ namespace SFEngine.SF3D.Physics
             int chunk_size = SFMap.SFMapHeightMapMesh.CHUNK_SIZE;
             int chunk_count = hmap.width / chunk_size;
 
-            Vector2 ray_start_xz = new Vector2(start.X, start.Z);
-            Vector2 ray_xz = new Vector2(start.X, start.Z);
-            Vector2 ray_grad_xz = new Vector2(nvector.X, nvector.Z);
+            Vector2 ray_start_xz = (start.X, start.Z);
+            Vector2 ray_xz = (start.X, start.Z);
+            Vector2 ray_grad_xz = (nvector.X, nvector.Z);
             if (ray_grad_xz.Length == 0)
             {
                 return false;
@@ -126,7 +124,7 @@ namespace SFEngine.SF3D.Physics
 
             float projection_coefficient = 1 / ray_grad_xz.Length;
             ray_grad_xz = ray_grad_xz.Normalized();
-            Vector2 ray_grad_abs_xz = new Vector2(Math.Abs(ray_grad_xz.X), Math.Abs(ray_grad_xz.Y));
+            Vector2 ray_grad_abs_xz = (Math.Abs(ray_grad_xz.X), Math.Abs(ray_grad_xz.Y));
 
             int cur_chunk_x = (int)(ray_xz.X / chunk_size);
             int cur_chunk_y = (int)(ray_xz.Y / chunk_size);
@@ -142,8 +140,7 @@ namespace SFEngine.SF3D.Physics
                 {
                     // chunk exists, check if chunk aabb intersects the ray
                     SFMap.SFMapHeightMapChunk chunk = hmap.chunk_nodes[cur_chunk_y * chunk_count + cur_chunk_x].MapChunk;
-                    Vector3 col_point;
-                    if (Intersect(chunk.aabb, out col_point))
+                    if (Intersect(chunk.aabb, out _))
                     {
                         // chunk potentially intersects the ray, now check chunk triangles
                         int xoffset = chunk.ix * chunk_size;
@@ -178,17 +175,17 @@ namespace SFEngine.SF3D.Physics
 
                             int fixed_tile_y = hmap.height - cur_tile_y;
                             // check intersection with tile geometry (2 triangles)
-                            v1 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
-                            v2 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
-                            v3 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
+                            v1 = (cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
+                            v2 = (cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
+                            v3 = (cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
                             if (IntersectMollerTrumbore(v1, v2, v3, out point))
                             {
                                 return true;
                             }
 
-                            v1 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
-                            v2 = new Vector3(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
-                            v3 = new Vector3(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
+                            v1 = (cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
+                            v2 = (cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
+                            v3 = (cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
                             if (IntersectMollerTrumbore(v1, v2, v3, out point))
                             {
                                 return true;
@@ -220,7 +217,7 @@ namespace SFEngine.SF3D.Physics
                             // calculate collision of ray with the tile xz (we know that it collides)
                             tmin = Math.Min(new_tile_x_dist_coeff, new_tile_y_dist_coeff);
 
-                            ray_xz = ray_xz + ray_grad_xz * (float)tmin;
+                            ray_xz += ray_grad_xz * (float)tmin;
                         }
                     }
                 }
@@ -255,7 +252,7 @@ namespace SFEngine.SF3D.Physics
                 // calculate collision of ray with the chunk xz (we know that it collides)
                 tmin = Math.Min(new_chunk_x_dist_coeff, new_chunk_y_dist_coeff);
 
-                ray_xz = ray_xz + ray_grad_xz * (float)tmin;
+                ray_xz += ray_grad_xz * (float)tmin;
 
                 if ((ray_xz - ray_start_xz).Length * projection_coefficient > Length)
                 {

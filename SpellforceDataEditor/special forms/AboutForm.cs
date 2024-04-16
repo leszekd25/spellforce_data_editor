@@ -82,17 +82,26 @@ namespace SpellforceDataEditor.special_forms
 
         private void link_wiki_Clicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start(e.Link.LinkData.ToString());
+            System.Diagnostics.Process proc = new System.Diagnostics.Process();
+            proc.StartInfo = new System.Diagnostics.ProcessStartInfo(e.Link.LinkData.ToString());
+            proc.StartInfo.UseShellExecute = true;
+            proc.Start();
         }
 
         private void link_discord_Clicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start(e.Link.LinkData.ToString());
+            System.Diagnostics.Process proc = new System.Diagnostics.Process();
+            proc.StartInfo = new System.Diagnostics.ProcessStartInfo(e.Link.LinkData.ToString());
+            proc.StartInfo.UseShellExecute = true;
+            proc.Start();
         }
 
         private void link_nexus_Clicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start(e.Link.LinkData.ToString());
+            System.Diagnostics.Process proc = new System.Diagnostics.Process();
+            proc.StartInfo = new System.Diagnostics.ProcessStartInfo(e.Link.LinkData.ToString());
+            proc.StartInfo.UseShellExecute = true;
+            proc.Start();
         }
     }
 }

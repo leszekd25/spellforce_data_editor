@@ -860,18 +860,18 @@ namespace SFEngine.SFMap
         }
 
         // used in generation of lakes
-        // flood fill based on z difference and return result
-        public HashSet<SFCoord> GetIslandByHeight(SFCoord start, short z_diff, out HashSet<SFCoord> shore)
+        // flood fill based on height and return result
+        public HashSet<SFCoord> GetIslandByLevel(SFCoord start, ushort level, out SFCoord lowest_point)
         {
             Array.Fill(temporary_mask, (byte)0);
 
             HashSet<SFCoord> island = new HashSet<SFCoord>();
-            shore = new HashSet<SFCoord>();
+            lowest_point = start;
+            ushort lowest_z = GetZ(lowest_point);
             Queue<SFCoord> to_be_checked = new Queue<SFCoord>();
             SFCoord cur_pos;
             SFCoord next_pos;
 
-            ushort start_z = GetZ(start);
             temporary_mask[start.y * width + start.x] = 1;
             to_be_checked.Enqueue(start);
 
@@ -879,40 +879,44 @@ namespace SFEngine.SFMap
             while (to_be_checked.Count != 0)
             {
                 cur_pos = to_be_checked.Dequeue();
-                if(GetZ(cur_pos) == 0)
+                ushort cur_z = GetZ(cur_pos);
+                if(cur_z == 0)
                 {
                     continue;
                 }
                 // every position that's in the queue will belong to an island
+                if(cur_z < lowest_z)
+                {
+                    lowest_z = cur_z;
+                    lowest_point = cur_pos;
+                }
                 island.Add(cur_pos);
 
                 next_pos = cur_pos; next_pos.x += 1;
-                if ((next_pos.x < width) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) - start_z < z_diff))
+                if ((next_pos.x < width) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) < level))
                 {
                     to_be_checked.Enqueue(next_pos);
                     temporary_mask[next_pos.y * width + next_pos.x] = 1;
                 }
                 next_pos = cur_pos; next_pos.y += 1;
-                if ((next_pos.y < height) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) - start_z < z_diff))
+                if ((next_pos.y < height) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) < level))
                 {
                     to_be_checked.Enqueue(next_pos);
                     temporary_mask[next_pos.y * width + next_pos.x] = 1;
                 }
                 next_pos = cur_pos; next_pos.x -= 1;
-                if ((next_pos.x >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) - start_z < z_diff))
+                if ((next_pos.x >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) < level))
                 {
                     to_be_checked.Enqueue(next_pos);
                     temporary_mask[next_pos.y * width + next_pos.x] = 1;
                 }
                 next_pos = cur_pos; next_pos.y -= 1;
-                if ((next_pos.y >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) - start_z < z_diff))
+                if ((next_pos.y >= 0) && (temporary_mask[next_pos.y * width + next_pos.x] == 0) && (GetZ(next_pos) < level))
                 {
                     to_be_checked.Enqueue(next_pos);
                     temporary_mask[next_pos.y * width + next_pos.x] = 1;
                 }
             }
-
-            shore = GetBorder(island);
 
             return island;
         }
@@ -1353,7 +1357,7 @@ namespace SFEngine.SFMap
             Vector2 b_offset_rotated = new Vector2(c * decal_offset.X - s * decal_offset.Y, s * decal_offset.X + c * decal_offset.Y);
             for (int i = 0; i < 4; i++)
             {
-                wcs_bbox_mesh[i] = MathUtils.RotateVec2PivotSinCos(wcs_bbox_mesh[i], wcs_pivot, s, c);
+                MathUtils.RotateVec2PivotSinCos(in wcs_bbox_mesh[i], in wcs_pivot, s, c, out wcs_bbox_mesh[i]);
             }
 
             // 4. calculate bounding box from the rotated vertices

@@ -1,5 +1,6 @@
 ﻿using SFEngine.SFUnPak;
 using System;
+using System.Net.Http;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -8,6 +9,7 @@ namespace SpellforceDataEditor
     public partial class MainForm : Form
     {
         // app updater
+        static HttpClient client = new HttpClient();
         Thread checknewversion_thread = null;
         bool update_finished = false;
         bool update_available = false;
@@ -78,51 +80,40 @@ namespace SpellforceDataEditor
 #endif
         }
 
-        void CheckNewVersionAvailable()
+        async void CheckNewVersionAvailable()
         {
-            System.Net.WebClient wc = new System.Net.WebClient();
-            wc.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(getVersion_completed);
-
-            // explicitly setup security protocol, github changes some things on their end
-            System.Net.ServicePointManager.Expect100Continue = true;
-            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls
-                   | System.Net.SecurityProtocolType.Tls11
-                   | System.Net.SecurityProtocolType.Tls12
-                   | System.Net.SecurityProtocolType.Tls13;
-
-            Uri dw_string = new Uri("https://raw.githubusercontent.com/leszekd25/spellforce_data_editor/with_viewer/bin/README.md");
-            wc.DownloadStringAsync(dw_string);
-        }
-
-        void getVersion_completed(object sender, System.Net.DownloadStringCompletedEventArgs e)
-        {
-            update_finished = true;
-            if (e.Cancelled)
+            // Call asynchronous network methods in a try/catch block to handle exceptions.
+            try
             {
-                SFEngine.LogUtils.Log.Warning(SFEngine.LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Could not retrieve update info");
+                string response = await client.GetStringAsync("https://raw.githubusercontent.com/leszekd25/spellforce_data_editor/with_viewer/bin/README.md");
+                // Above three lines can be replaced with new helper method below
+                // string responseBody = await client.GetStringAsync(uri);
+
+                int i = response.IndexOf("Latest version:");
+                if (i == SFEngine.Utility.NO_INDEX)
+                {
+                    SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Invalid update info");
+                    return;
+                }
+                string newest_version = response.Substring(i + "Latest version:".Length).Trim();
+                if (labelVersion.Text.IndexOf(newest_version) == SFEngine.Utility.NO_INDEX)
+                {
+                    SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "MainForm.getVersion_completed(): New editor version available");
+                    update_available = true;
+                }
+                else
+                {
+                    SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Editor is up-to-date");
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.Main, $"MainForm.getVersion_completed(): Error while retrieving update info (error code {e.HttpRequestError}");
                 return;
             }
-            if (e.Error != null)
+            finally
             {
-                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Error while retrieving update info");
-                return;
-            }
-            string str = e.Result;
-            int i = str.IndexOf("Latest version:");
-            if (i == SFEngine.Utility.NO_INDEX)
-            {
-                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Invalid update info");
-                return;
-            }
-            string newest_version = str.Substring(i + "Latest version:".Length).Trim();
-            if (labelVersion.Text.IndexOf(newest_version) == SFEngine.Utility.NO_INDEX)
-            {
-                SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "MainForm.getVersion_completed(): New editor version available");
-                update_available = true;
-            }
-            else
-            {
-                SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "MainForm.getVersion_completed(): Editor is up-to-date");
+                update_finished = true;
             }
         }
 

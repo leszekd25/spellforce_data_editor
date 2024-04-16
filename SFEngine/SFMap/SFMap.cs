@@ -406,7 +406,8 @@ namespace SFEngine.SFMap
                         short y = br.ReadInt16();
                         short z_diff = br.ReadInt16();
                         byte type = br.ReadByte();
-                        lake_manager.AddLake(new SFCoord(x, y), z_diff, type, SFEngine.Utility.NO_INDEX, consumed_lakes, consumed_lake_indices);
+                        ushort lake_level = (ushort)(heightmap.GetZ(new SFCoord(x, y)) + z_diff);
+                        lake_manager.AddLake(new SFCoord(x, y), lake_level, type, SFEngine.Utility.NO_INDEX, consumed_lakes, consumed_lake_indices);
                     }
                 }
                 c40.Close();
@@ -1683,6 +1684,9 @@ namespace SFEngine.SFMap
 
         public SFMapBuilding FindBuildingApprox(SFCoord pos)
         {
+            SFMapBuilding closest_building = null;
+            float least_dist = float.MaxValue;
+
             foreach (SFMapBuilding b in building_manager.buildings)
             {
                 float sel_scale = 0.0f;
@@ -1699,13 +1703,18 @@ namespace SFEngine.SFMap
                 r_off.Y = (float)((Math.Sin(angle) * off.X) + (Math.Cos(angle) * off.Y));
                 SFCoord offset_pos = new SFCoord((int)r_off.X, (int)r_off.Y);
 
-                if (SFCoord.Distance(b.grid_position - offset_pos, pos) <= sel_scale)
+                float dist = SFCoord.Distance(b.grid_position - offset_pos, pos);
+                if (dist <= sel_scale)
                 {
-                    return b;
+                    if (dist < least_dist)
+                    {
+                        closest_building = b;
+                        least_dist = dist;
+                    }
                 }
             }
 
-            return null;
+            return closest_building;
         }
 
         public SFMapObject FindObjectApprox(SFCoord pos)
@@ -1715,7 +1724,7 @@ namespace SFEngine.SFMap
 
             foreach (SFMapObject o in object_manager.objects)
             {
-                float sel_scale = 3.0f;
+                float sel_scale = 0.0f;
                 SFLua.lua_sql.SFLuaSQLObjectData obj_data = SFLua.SFLuaEnvironment.objects[o.game_id];
                 if (obj_data != null)
                 {

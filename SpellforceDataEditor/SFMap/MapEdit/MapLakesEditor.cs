@@ -38,20 +38,18 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 {
                     return;
                 }
-                if(edit_mode == EditMode.FLOOD)
+                first_click = true;
+                if (edit_mode == EditMode.FLOOD)
                 {
-                    HashSet<SFCoord> new_lake_area = map.heightmap.GetFloodedCells(pos, out SFCoord new_lake_pos);
-                    if(new_lake_area.Count == 0)
-                    {
-                        return;
-                    }
                     ushort lake_level = map.heightmap.GetZ(pos);
-                    short lake_depth = (short)(lake_level - map.heightmap.GetZ(new_lake_pos));
-                    HashSet<SFCoord> new_lake_shore = map.heightmap.GetBorder(new_lake_area);
 
                     List<SFMapLake> consumed_lakes = new List<SFMapLake>();
                     List<int> consumed_lakes_indices = new List<int>();
-                    SFMapLake new_lake = map.lake_manager.AddLake(new_lake_pos, lake_depth, 0, -1, consumed_lakes, consumed_lakes_indices, new_lake_area, new_lake_shore);
+                    SFMapLake new_lake = map.lake_manager.AddLake(pos, lake_level, 0, -1, consumed_lakes, consumed_lakes_indices);
+                    if(new_lake == null)
+                    {
+                        return;
+                    }
                     int new_lake_index = map.lake_manager.lakes.Count - 1;
 
                     map_operators.MapOperatorLake op_lake = new map_operators.MapOperatorLake()
@@ -101,7 +99,12 @@ namespace SpellforceDataEditor.SFMap.MapEdit
             }
             else if (button == MouseButtons.Right)
             {
-                if(edit_mode == EditMode.FLOOD)
+                if (first_click)
+                {
+                    return;
+                }
+                first_click = true;
+                if (edit_mode == EditMode.FLOOD)
                 {
                     int lake_index = map.lake_manager.GetLakeIndexAt(pos);
                     if(lake_index != SFEngine.Utility.NO_INDEX)
@@ -125,7 +128,6 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                 }
             }
 
-            first_click = true;
             MainForm.mapedittool.update_render = true;
         }
 

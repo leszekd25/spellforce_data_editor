@@ -28,189 +28,202 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.label1 = new System.Windows.Forms.Label();
-            this.bGDEditor = new System.Windows.Forms.Button();
-            this.bAssets = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.labelVersion = new System.Windows.Forms.Label();
-            this.linkEditor = new System.Windows.Forms.LinkLabel();
-            this.bMap = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.ButtonSpecifyGameDirectory = new System.Windows.Forms.Button();
-            this.ButtonAbout = new System.Windows.Forms.Button();
-            this.LabelIsSpecifiedGameDir = new System.Windows.Forms.Label();
-            this.bSQLEdit = new System.Windows.Forms.Button();
-            this.GameDirDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.bSaveData = new System.Windows.Forms.Button();
-            this.TimerCheckUpdateStatus = new System.Windows.Forms.Timer(this.components);
-            this.SuspendLayout();
+            components = new System.ComponentModel.Container();
+            label1 = new System.Windows.Forms.Label();
+            bGDEditor = new System.Windows.Forms.Button();
+            bAssets = new System.Windows.Forms.Button();
+            label2 = new System.Windows.Forms.Label();
+            labelVersion = new System.Windows.Forms.Label();
+            linkEditor = new System.Windows.Forms.LinkLabel();
+            bMap = new System.Windows.Forms.Button();
+            label3 = new System.Windows.Forms.Label();
+            ButtonSpecifyGameDirectory = new System.Windows.Forms.Button();
+            ButtonAbout = new System.Windows.Forms.Button();
+            LabelIsSpecifiedGameDir = new System.Windows.Forms.Label();
+            bSQLEdit = new System.Windows.Forms.Button();
+            GameDirDialog = new System.Windows.Forms.FolderBrowserDialog();
+            bSaveData = new System.Windows.Forms.Button();
+            TimerCheckUpdateStatus = new System.Windows.Forms.Timer(components);
+            SuspendLayout();
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(0, 13);
-            this.label1.TabIndex = 0;
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(14, 10);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(0, 15);
+            label1.TabIndex = 0;
             // 
             // bGDEditor
             // 
-            this.bGDEditor.Location = new System.Drawing.Point(131, 38);
-            this.bGDEditor.Name = "bGDEditor";
-            this.bGDEditor.Size = new System.Drawing.Size(115, 23);
-            this.bGDEditor.TabIndex = 1;
-            this.bGDEditor.Text = "GameData Editor";
-            this.bGDEditor.UseVisualStyleBackColor = true;
-            this.bGDEditor.Click += new System.EventHandler(this.bGDEditor_Click);
+            bGDEditor.Location = new System.Drawing.Point(153, 44);
+            bGDEditor.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            bGDEditor.Name = "bGDEditor";
+            bGDEditor.Size = new System.Drawing.Size(134, 27);
+            bGDEditor.TabIndex = 1;
+            bGDEditor.Text = "GameData Editor";
+            bGDEditor.UseVisualStyleBackColor = true;
+            bGDEditor.Click += bGDEditor_Click;
             // 
             // bAssets
             // 
-            this.bAssets.ForeColor = System.Drawing.Color.Crimson;
-            this.bAssets.Location = new System.Drawing.Point(252, 38);
-            this.bAssets.Name = "bAssets";
-            this.bAssets.Size = new System.Drawing.Size(115, 23);
-            this.bAssets.TabIndex = 2;
-            this.bAssets.Text = "Asset Viewer";
-            this.bAssets.UseVisualStyleBackColor = true;
-            this.bAssets.Click += new System.EventHandler(this.bAssets_Click);
+            bAssets.ForeColor = System.Drawing.Color.Crimson;
+            bAssets.Location = new System.Drawing.Point(294, 44);
+            bAssets.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            bAssets.Name = "bAssets";
+            bAssets.Size = new System.Drawing.Size(134, 27);
+            bAssets.TabIndex = 2;
+            bAssets.Text = "Asset Viewer";
+            bAssets.UseVisualStyleBackColor = true;
+            bAssets.Click += bAssets_Click;
             // 
             // label2
             // 
-            this.label2.AutoEllipsis = true;
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 9);
-            this.label2.MaximumSize = new System.Drawing.Size(100, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(100, 52);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Select tools to run! Closing this window will close all running tools.";
+            label2.AutoEllipsis = true;
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(14, 10);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.MaximumSize = new System.Drawing.Size(117, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(117, 60);
+            label2.TabIndex = 5;
+            label2.Text = "Select tools to run! Closing this window will close all running tools.";
             // 
             // labelVersion
             // 
-            this.labelVersion.AutoSize = true;
-            this.labelVersion.Location = new System.Drawing.Point(12, 130);
-            this.labelVersion.Name = "labelVersion";
-            this.labelVersion.Size = new System.Drawing.Size(70, 13);
-            this.labelVersion.TabIndex = 6;
-            this.labelVersion.Text = "26.10.2023.1";
+            labelVersion.AutoSize = true;
+            labelVersion.Location = new System.Drawing.Point(14, 150);
+            labelVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelVersion.Name = "labelVersion";
+            labelVersion.Size = new System.Drawing.Size(70, 15);
+            labelVersion.TabIndex = 6;
+            labelVersion.Text = "16.04.2024.1";
             // 
             // linkEditor
             // 
-            this.linkEditor.AutoSize = true;
-            this.linkEditor.LinkBehavior = System.Windows.Forms.LinkBehavior.AlwaysUnderline;
-            this.linkEditor.LinkColor = System.Drawing.Color.Blue;
-            this.linkEditor.Location = new System.Drawing.Point(128, 130);
-            this.linkEditor.Name = "linkEditor";
-            this.linkEditor.Size = new System.Drawing.Size(111, 13);
-            this.linkEditor.TabIndex = 7;
-            this.linkEditor.TabStop = true;
-            this.linkEditor.Text = "New version available";
-            this.linkEditor.VisitedLinkColor = System.Drawing.Color.Blue;
-            this.linkEditor.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEditor_LinkClicked);
+            linkEditor.AutoSize = true;
+            linkEditor.LinkBehavior = System.Windows.Forms.LinkBehavior.AlwaysUnderline;
+            linkEditor.LinkColor = System.Drawing.Color.Blue;
+            linkEditor.Location = new System.Drawing.Point(149, 150);
+            linkEditor.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            linkEditor.Name = "linkEditor";
+            linkEditor.Size = new System.Drawing.Size(121, 15);
+            linkEditor.TabIndex = 7;
+            linkEditor.TabStop = true;
+            linkEditor.Text = "New version available";
+            linkEditor.VisitedLinkColor = System.Drawing.Color.Blue;
+            linkEditor.LinkClicked += linkEditor_LinkClicked;
             // 
             // bMap
             // 
-            this.bMap.ForeColor = System.Drawing.Color.Crimson;
-            this.bMap.Location = new System.Drawing.Point(131, 67);
-            this.bMap.Name = "bMap";
-            this.bMap.Size = new System.Drawing.Size(115, 23);
-            this.bMap.TabIndex = 8;
-            this.bMap.Text = "Map Editor";
-            this.bMap.UseVisualStyleBackColor = true;
-            this.bMap.Click += new System.EventHandler(this.bMap_Click);
+            bMap.ForeColor = System.Drawing.Color.Crimson;
+            bMap.Location = new System.Drawing.Point(153, 77);
+            bMap.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            bMap.Name = "bMap";
+            bMap.Size = new System.Drawing.Size(134, 27);
+            bMap.TabIndex = 8;
+            bMap.Text = "Map Editor";
+            bMap.UseVisualStyleBackColor = true;
+            bMap.Click += bMap_Click;
             // 
             // label3
             // 
-            this.label3.ForeColor = System.Drawing.Color.Crimson;
-            this.label3.Location = new System.Drawing.Point(12, 67);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(108, 52);
-            this.label3.TabIndex = 9;
-            this.label3.Text = "Crimson features require specified game directory";
+            label3.ForeColor = System.Drawing.Color.Crimson;
+            label3.Location = new System.Drawing.Point(14, 77);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(126, 60);
+            label3.TabIndex = 9;
+            label3.Text = "Crimson features require specified game directory";
             // 
             // ButtonSpecifyGameDirectory
             // 
-            this.ButtonSpecifyGameDirectory.ForeColor = System.Drawing.Color.Crimson;
-            this.ButtonSpecifyGameDirectory.Location = new System.Drawing.Point(131, 9);
-            this.ButtonSpecifyGameDirectory.Name = "ButtonSpecifyGameDirectory";
-            this.ButtonSpecifyGameDirectory.Size = new System.Drawing.Size(115, 23);
-            this.ButtonSpecifyGameDirectory.TabIndex = 10;
-            this.ButtonSpecifyGameDirectory.Text = "Specify game dir...";
-            this.ButtonSpecifyGameDirectory.UseVisualStyleBackColor = true;
-            this.ButtonSpecifyGameDirectory.Click += new System.EventHandler(this.ButtonSpecifyGameDirectory_Click);
+            ButtonSpecifyGameDirectory.ForeColor = System.Drawing.Color.Crimson;
+            ButtonSpecifyGameDirectory.Location = new System.Drawing.Point(153, 10);
+            ButtonSpecifyGameDirectory.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonSpecifyGameDirectory.Name = "ButtonSpecifyGameDirectory";
+            ButtonSpecifyGameDirectory.Size = new System.Drawing.Size(134, 27);
+            ButtonSpecifyGameDirectory.TabIndex = 10;
+            ButtonSpecifyGameDirectory.Text = "Specify game dir...";
+            ButtonSpecifyGameDirectory.UseVisualStyleBackColor = true;
+            ButtonSpecifyGameDirectory.Click += ButtonSpecifyGameDirectory_Click;
             // 
             // ButtonAbout
             // 
-            this.ButtonAbout.Location = new System.Drawing.Point(252, 125);
-            this.ButtonAbout.Name = "ButtonAbout";
-            this.ButtonAbout.Size = new System.Drawing.Size(115, 23);
-            this.ButtonAbout.TabIndex = 11;
-            this.ButtonAbout.Text = "About";
-            this.ButtonAbout.UseVisualStyleBackColor = true;
-            this.ButtonAbout.Click += new System.EventHandler(this.ButtonAbout_Click);
+            ButtonAbout.Location = new System.Drawing.Point(294, 144);
+            ButtonAbout.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonAbout.Name = "ButtonAbout";
+            ButtonAbout.Size = new System.Drawing.Size(134, 27);
+            ButtonAbout.TabIndex = 11;
+            ButtonAbout.Text = "About";
+            ButtonAbout.UseVisualStyleBackColor = true;
+            ButtonAbout.Click += ButtonAbout_Click;
             // 
             // LabelIsSpecifiedGameDir
             // 
-            this.LabelIsSpecifiedGameDir.AutoSize = true;
-            this.LabelIsSpecifiedGameDir.Location = new System.Drawing.Point(252, 9);
-            this.LabelIsSpecifiedGameDir.Name = "LabelIsSpecifiedGameDir";
-            this.LabelIsSpecifiedGameDir.Size = new System.Drawing.Size(0, 13);
-            this.LabelIsSpecifiedGameDir.TabIndex = 12;
+            LabelIsSpecifiedGameDir.AutoSize = true;
+            LabelIsSpecifiedGameDir.Location = new System.Drawing.Point(294, 10);
+            LabelIsSpecifiedGameDir.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            LabelIsSpecifiedGameDir.Name = "LabelIsSpecifiedGameDir";
+            LabelIsSpecifiedGameDir.Size = new System.Drawing.Size(0, 15);
+            LabelIsSpecifiedGameDir.TabIndex = 12;
             // 
             // bSQLEdit
             // 
-            this.bSQLEdit.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.bSQLEdit.ForeColor = System.Drawing.Color.Crimson;
-            this.bSQLEdit.Location = new System.Drawing.Point(252, 67);
-            this.bSQLEdit.Name = "bSQLEdit";
-            this.bSQLEdit.Size = new System.Drawing.Size(115, 23);
-            this.bSQLEdit.TabIndex = 13;
-            this.bSQLEdit.Text = "SQL Modifier";
-            this.bSQLEdit.UseVisualStyleBackColor = false;
-            this.bSQLEdit.Click += new System.EventHandler(this.bSQLEdit_Click);
+            bSQLEdit.BackColor = System.Drawing.SystemColors.ControlLight;
+            bSQLEdit.ForeColor = System.Drawing.Color.Crimson;
+            bSQLEdit.Location = new System.Drawing.Point(294, 77);
+            bSQLEdit.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            bSQLEdit.Name = "bSQLEdit";
+            bSQLEdit.Size = new System.Drawing.Size(134, 27);
+            bSQLEdit.TabIndex = 13;
+            bSQLEdit.Text = "SQL Modifier";
+            bSQLEdit.UseVisualStyleBackColor = false;
+            bSQLEdit.Click += bSQLEdit_Click;
             // 
             // bSaveData
             // 
-            this.bSaveData.Location = new System.Drawing.Point(252, 96);
-            this.bSaveData.Name = "bSaveData";
-            this.bSaveData.Size = new System.Drawing.Size(115, 23);
-            this.bSaveData.TabIndex = 14;
-            this.bSaveData.Text = "Save Data Editor";
-            this.bSaveData.UseVisualStyleBackColor = true;
-            this.bSaveData.Visible = false;
-            this.bSaveData.Click += new System.EventHandler(this.bSaveData_Click);
+            bSaveData.Location = new System.Drawing.Point(294, 111);
+            bSaveData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            bSaveData.Name = "bSaveData";
+            bSaveData.Size = new System.Drawing.Size(134, 27);
+            bSaveData.TabIndex = 14;
+            bSaveData.Text = "Save Data Editor";
+            bSaveData.UseVisualStyleBackColor = true;
+            bSaveData.Visible = false;
+            bSaveData.Click += bSaveData_Click;
             // 
             // TimerCheckUpdateStatus
             // 
-            this.TimerCheckUpdateStatus.Interval = 1000;
-            this.TimerCheckUpdateStatus.Tick += new System.EventHandler(this.TimerCheckUpdateStatus_Tick);
+            TimerCheckUpdateStatus.Interval = 1000;
+            TimerCheckUpdateStatus.Tick += TimerCheckUpdateStatus_Tick;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(377, 158);
-            this.Controls.Add(this.bSaveData);
-            this.Controls.Add(this.bSQLEdit);
-            this.Controls.Add(this.LabelIsSpecifiedGameDir);
-            this.Controls.Add(this.ButtonAbout);
-            this.Controls.Add(this.ButtonSpecifyGameDirectory);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.bMap);
-            this.Controls.Add(this.linkEditor);
-            this.Controls.Add(this.labelVersion);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.bAssets);
-            this.Controls.Add(this.bGDEditor);
-            this.Controls.Add(this.label1);
-            this.Name = "MainForm";
-            this.Text = "SpellForce Editor";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.Load += new System.EventHandler(this.MainForm_Load);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(440, 182);
+            Controls.Add(bSaveData);
+            Controls.Add(bSQLEdit);
+            Controls.Add(LabelIsSpecifiedGameDir);
+            Controls.Add(ButtonAbout);
+            Controls.Add(ButtonSpecifyGameDirectory);
+            Controls.Add(label3);
+            Controls.Add(bMap);
+            Controls.Add(linkEditor);
+            Controls.Add(labelVersion);
+            Controls.Add(label2);
+            Controls.Add(bAssets);
+            Controls.Add(bGDEditor);
+            Controls.Add(label1);
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Name = "MainForm";
+            Text = "SpellForce Editor";
+            FormClosing += MainForm_FormClosing;
+            Load += MainForm_Load;
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

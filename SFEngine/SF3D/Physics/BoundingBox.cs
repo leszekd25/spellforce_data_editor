@@ -7,6 +7,7 @@
 
 using OpenTK.Mathematics;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SFEngine.SF3D.Physics
 {
@@ -67,14 +68,14 @@ namespace SFEngine.SF3D.Physics
                     Math.Max(ab1.b.Z, ab2.b.Z)));
         }
 
-        public BoundingBox OffsetBy(Vector3 c)
+        public readonly BoundingBox OffsetBy(Vector3 c)
         {
             return this + (c - center);
         }
 
         // returns manhattan distance between a point and the box
         // if point is inside of the box, returned value is less than 0
-        public float DistanceIsotropic(Vector3 p)
+        public readonly float DistanceIsotropic(Vector3 p)
         {
             float dx = Math.Max(a.X - p.X, p.X - b.X);
             float dy = Math.Max(a.Y - p.Y, p.Y - b.Y);
@@ -82,7 +83,7 @@ namespace SFEngine.SF3D.Physics
             return Math.Max(dx, Math.Max(dy, dz));
         }
 
-        public bool IsOutsideOfFrustum(Frustum frustum)
+        public readonly bool IsOutsideOfFrustum(Frustum frustum)
         {
             for(int i = 0; i < 6; i++)
             {
@@ -131,24 +132,29 @@ namespace SFEngine.SF3D.Physics
         }
 
         // rotate bounding box along XY plane and return new rotated box
-        public BoundingBox RotatedByAzimuthAltitude(float azimuth, float altitude)
+        public readonly BoundingBox RotatedByAzimuthAltitude(float azimuth, float altitude)
         {
             azimuth *= (float)(Math.PI / 180);
             altitude *= (float)(Math.PI / 180);
             // rotate all 8 points along the respective XY planes by azimuth, and create new bounding box from min and max of those points
-            Vector3[] vs = new Vector3[8];
-            vs[0] = new Vector3(a);
-            vs[1] = new Vector3(a.X, a.Y, b.Z); vs[2] = new Vector3(a.X, b.Y, a.Z); vs[3] = new Vector3(a.X, b.Y, b.Z);
-            vs[4] = new Vector3(b.X, a.Y, a.Z); vs[5] = new Vector3(b.X, a.Y, b.Z); vs[6] = new Vector3(b.X, b.Y, a.Z);
-            vs[7] = new Vector3(b);
-
+            Vector3[] vs =
+            [
+                new Vector3(a),
+                new Vector3(a.X, a.Y, b.Z),
+                new Vector3(a.X, b.Y, a.Z),
+                new Vector3(a.X, b.Y, b.Z),
+                new Vector3(b.X, a.Y, a.Z),
+                new Vector3(b.X, a.Y, b.Z),
+                new Vector3(b.X, b.Y, a.Z),
+                new Vector3(b),
+            ];
             MathUtils.RotateVec3Array(vs, center, azimuth, altitude);
 
             BoundingBox bb = BoundingBox.FromPoints(vs);
             return Union(bb);
         }
 
-        public BoundingBox Intersection(BoundingBox _aabb)
+        public readonly BoundingBox Intersection(BoundingBox _aabb)
         {
             float dxmin, dxmax, dymin, dymax, dzmin, dzmax, dx, dy, dz;
 
@@ -166,7 +172,7 @@ namespace SFEngine.SF3D.Physics
             return new BoundingBox(new Vector3(dxmin, dymin, dzmin), new Vector3(dxmin + dx, dymin + dy, dzmin + dz));
         }
 
-        public BoundingBox Union(BoundingBox _aabb)
+        public readonly BoundingBox Union(BoundingBox _aabb)
         {
             float dxmin, dxmax, dymin, dymax, dzmin, dzmax;
 
@@ -190,7 +196,17 @@ namespace SFEngine.SF3D.Physics
             return (b1.a != b2.a) || (b1.b != b2.b);
         }
 
+        public override readonly bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
 
-        public static BoundingBox Zero = new BoundingBox(Vector3.Zero, Vector3.Zero);
+        public override readonly int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+
+        public static readonly BoundingBox Zero = new(Vector3.Zero, Vector3.Zero);
     }
 }

@@ -27,6 +27,7 @@ namespace SpellforceDataEditor.SFMap.map_operators
     {
         public bool Finished { get; set; } = false;
         public bool ApplyOnPush { get; set; } = false;
+        public bool Revert1stSubOperatorOnRevert { get; set; } = false;  // done in lake editor to allow reverting heights BEFORE reverting lakes
         public List<IMapOperator> SubOperators = new List<IMapOperator>();
 
         public void Finish(SFEngine.SFMap.SFMap map)
@@ -44,9 +45,20 @@ namespace SpellforceDataEditor.SFMap.map_operators
 
         public void Revert(SFEngine.SFMap.SFMap map)
         {
-            for (int i = SubOperators.Count - 1; i >= 0; i--)
+            if (Revert1stSubOperatorOnRevert)
             {
-                SubOperators[i].Revert(map);
+                SubOperators[0].Revert(map);
+                for (int i = SubOperators.Count - 1; i >= 1; i--)
+                {
+                    SubOperators[i].Revert(map);
+                }
+            }
+            else
+            {
+                for (int i = SubOperators.Count - 1; i >= 0; i--)
+                {
+                    SubOperators[i].Revert(map);
+                }
             }
         }
 
@@ -293,7 +305,8 @@ namespace SpellforceDataEditor.SFMap.map_operators
             List<int> consumed_lakes_indices = new List<int>();
             if (change_add)
             {
-                map.lake_manager.AddLake(pos, z_diff, type, lake_index, consumed_lakes, consumed_lakes_indices);
+                ushort lake_level = (ushort)(map.heightmap.GetZ(pos) + z_diff);
+                map.lake_manager.AddLake(pos, lake_level, type, lake_index, consumed_lakes, consumed_lakes_indices);
             }
             else
             {
@@ -316,7 +329,8 @@ namespace SpellforceDataEditor.SFMap.map_operators
             List<int> consumed_lakes_indices = new List<int>();
             if (!change_add)
             {
-                map.lake_manager.AddLake(pos, z_diff, type, lake_index, consumed_lakes, consumed_lakes_indices);
+                ushort lake_level = (ushort)(map.heightmap.GetZ(pos) + z_diff);
+                map.lake_manager.AddLake(pos, lake_level, type, lake_index, consumed_lakes, consumed_lakes_indices);
             }
             else
             {

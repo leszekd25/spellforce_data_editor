@@ -352,7 +352,7 @@ namespace SpellforceDataEditor.SFMap
                 if (selection_type == SelectionType.BUILDING)//same with interactive object and object, todo...
                 {
                     Vector2 off = map.building_manager.building_collision[(ushort)selected_entity.game_id].origin;
-                    Vector2 r_off = MathUtils.RotateVec2(off, (float)(selected_entity.angle * Math.PI / 180));
+                    MathUtils.RotateVec2(in off, (float)(selected_entity.angle * Math.PI / 180), out Vector2 r_off);
 
                     SetSelectionOffset(r_off);
                 }
@@ -490,7 +490,7 @@ namespace SpellforceDataEditor.SFMap
             preview_building_id = building_id;
 
             Vector2 off = map.building_manager.building_collision[building_id].origin;
-            Vector2 r_off = MathUtils.RotateVec2(off, 0);
+            MathUtils.RotateVec2(in off, 0, out Vector2 r_off);
 
             preview_entity_offset = r_off;
             SetPreviewEntityGridPosition(cursor_position);

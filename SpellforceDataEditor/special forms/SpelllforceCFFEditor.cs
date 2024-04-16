@@ -1321,9 +1321,10 @@ namespace SpellforceDataEditor.special_forms
             int max_items = current_indices.Count;
             int last = Math.Min(max_items, loaded_count + elementselect_refresh_size);
 
+            SFControl element_display = CachedElementDisplays[selected_category_id];
             for (; loaded_count < last; loaded_count++)
             {
-                ElementSelect.Items.Add(ElementDisplay.get_element_string(current_indices[loaded_count]));//(ctg.GetElementString(current_indices[loaded_count]));
+                ElementSelect.Items.Add(element_display.get_element_string(current_indices[loaded_count]));
             }
 
             if (max_items == 0)
@@ -1726,6 +1727,11 @@ namespace SpellforceDataEditor.special_forms
 
         private void patchGamedataToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!SFCategoryManager.ready)
+            {
+                return;
+            }
+
             PatchGamedataForm form = new PatchGamedataForm();
 
             form.ShowDialog();
