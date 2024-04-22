@@ -1,0 +1,49 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SFEngine.SFCFF.CTG
+{
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public unsafe struct Category2002Item: ICategoryItem
+    {
+        public ushort SpellID;
+        public ushort SpellLineID;
+        public fixed byte SkillReq[12];
+        public ushort ManaCost;
+        public uint CastTime;
+        public uint RecastTime;
+        public ushort MinRange;
+        public ushort MaxRange;
+        public byte CastType1;
+        public byte CastType2;
+        public fixed int Params[10];
+        public ushort EffectPower;
+        public ushort EffectRange;
+
+        public int GetID() => SpellID;
+        public void SetID(int id) => SpellID = (ushort)id;
+    }
+
+    public class Category2002: CategoryBaseSingle<Category2002Item>
+    {
+        public override string GetName()
+        {
+            return "Spell data";
+        }
+
+        public override short GetCategoryID()
+        {
+            return 2002;
+        }
+
+        public override short GetCategoryType()
+        {
+            return 3;
+        }
+    }
+}

@@ -2,6 +2,7 @@
  * SFGameData is a structure which holds all data from a .cff file
  */
 
+using SFEngine.SFCFF.CTG;
 using SFEngine.SFChunk;
 using System;
 using System.Collections.Generic;

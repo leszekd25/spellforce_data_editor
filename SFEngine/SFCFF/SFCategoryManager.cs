@@ -243,10 +243,10 @@ namespace SFEngine.SFCFF
                     p[5] = "Duration (ms)";
                     break;
                 case 62:  //forget
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
-                    p[3] = Utility.S_UNKNOWN;
+                    p[0] = "Reduce hate by 100% (%)";
+                    p[1] = "Reduce hate by 75% (%)";
+                    p[2] = "Reduce hate by 50% (%)";
+                    p[3] = "Reduce hate by 25% (%)";
                     break;
                 case 63:  //self illusion
                     p[0] = "Illusions summoned";
@@ -470,11 +470,11 @@ namespace SFEngine.SFCFF
                     p[2] = "Cone radius (degrees)";
                     break;
                 case 164: //cloak of nor
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
+                    p[0] = "Unused";
+                    p[1] = "Duration (ms)";
                     break;
                 case 165: //unknown?
-                    p[0] = Utility.S_UNKNOWN;
+                    p[0] = "Duration (ms)";
                     break;
                 case 168: //freeze (wind archer upgrade)
                 case 169: //freeze (hurler upgrade)
@@ -513,26 +513,26 @@ namespace SFEngine.SFCFF
                     break;
                 case 177: //mental essence
                 case 181: //mental almightness
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
-                    p[3] = Utility.S_UNKNOWN;
-                    p[4] = Utility.S_UNKNOWN;
-                    p[5] = Utility.S_UNKNOWN;
+                    p[0] = "Min damage";
+                    p[1] = "Max damage";
+                    p[2] = "Min int threshold";
+                    p[3] = "Max int threshold";
+                    p[4] = "Mana steal amount";
+                    p[5] = "Befriend max lvl";
                     break;
                 case 182: //elemental almightness
                 case 183: //elemental essence
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
-                    p[3] = Utility.S_UNKNOWN;
-                    p[4] = Utility.S_UNKNOWN;
-                    p[5] = Utility.S_UNKNOWN;
-                    p[6] = Utility.S_UNKNOWN;
+                    p[0] = "Fire damage";
+                    p[1] = "Fire damage over time";
+                    p[2] = "Ice damage";
+                    p[3] = "Ice damage over time";
+                    p[4] = "Earth damage";
+                    p[5] = "Tick count";
+                    p[6] = "Tick duration (ms)";
                     break;
                 case 184: //assistance
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
+                    p[0] = "Radius";
+                    p[1] = "Max num of units";
                     p[2] = "Duration (ms)";
                     break;
                 case 186: //revenge
@@ -544,18 +544,18 @@ namespace SFEngine.SFCFF
                 case 187: //area roots
                     p[0] = "Time between ticks (ms)";
                     p[1] = "Damage per tick";
-                    p[2] = "Tick count";
-                    p[3] = "Radius";
+                    p[2] = "Radius";
+                    p[3] = "Units affected";
                     p[4] = "Max level affected";
-                    p[5] = Utility.S_UNKNOWN;
+                    p[5] = "Duration (ms)";
                     break;
                 case 189: //roots
                     p[0] = "Time between ticks (ms)";
                     p[1] = "Damage per tick";
-                    p[2] = "Tick count";
-                    p[3] = Utility.S_UNKNOWN;
+                    p[2] = "Radius";
+                    p[3] = "Units affected";
                     p[4] = "Max level affected";
-                    p[5] = Utility.S_UNKNOWN;
+                    p[5] = "Duration (ms)";
                     break;
                 case 190: //chain hallow
                 case 193: //chain pain
@@ -585,8 +585,8 @@ namespace SFEngine.SFCFF
                 case 199: //mutation
                 case 233: //mutation (chain effect)
                     p[0] = "Duration (ms)";
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
+                    p[1] = "Min attribute range (%)";
+                    p[2] = "Max attribute range (%)";
                     break;
                 case 200: //area of darkness
                     p[0] = "Duration (ms)";
@@ -595,15 +595,15 @@ namespace SFEngine.SFCFF
                     break;
                 case 207: //area freeze
                     p[0] = "Freeze duration (ms)";
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
+                    p[1] = "Radius";
+                    p[2] = "Max num of units";
                     break;
                 case 210: //feet of clay
                     p[0] = "Time between ticks (ms)";
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
-                    p[3] = Utility.S_UNKNOWN;
-                    p[4] = Utility.S_UNKNOWN;
+                    p[1] = "Slow (%)";
+                    p[2] = "Radius";
+                    p[3] = "Max num of units";
+                    p[4] = "Lvl threshold";
                     break;
                 case 211: //mirage
                     p[0] = "Health multiplier (%)";
@@ -612,8 +612,8 @@ namespace SFEngine.SFCFF
                     p[3] = "Mana cost per tick";
                     break;
                 case 213: //feedback
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
+                    p[0] = "Damage reflect (%)";
+                    p[1] = "Duration (ms)";
                     break;
                 case 215: //area hypnotize
                     p[0] = "Time between ticks (ms)";
@@ -636,23 +636,24 @@ namespace SFEngine.SFCFF
                     p[1] = "Mana per unit";
                     break;
                 case 220: //shift life
-                    p[0] = Utility.S_UNKNOWN;
-                    p[1] = Utility.S_UNKNOWN;
+                    p[0] = "Radius";
+                    p[1] = "HP limit";
                     break;
                 case 221: //riposte
-                    p[0] = Utility.S_UNKNOWN;
+                    p[0] = "Damage (%)";
                     p[1] = "Duration (ms)";
                     break;
                 case 222: //critical hits
                     p[0] = "Duration (ms)";
-                    p[1] = Utility.S_UNKNOWN;
-                    p[2] = Utility.S_UNKNOWN;
-                    p[3] = Utility.S_UNKNOWN;
-                    p[4] = Utility.S_UNKNOWN;
-                    p[5] = Utility.S_UNKNOWN;
-                    p[6] = Utility.S_UNKNOWN;
-                    p[7] = Utility.S_UNKNOWN;
-                    p[8] = Utility.S_UNKNOWN;
+                    p[1] = "Additional targets";
+                    p[2] = "Lvl threshold 1";
+                    p[3] = "Lvl threshold 2";
+                    p[4] = "Lvl threshold 3";
+                    p[5] = "Lvl threshold 4";
+                    p[6] = "Chance 1 (%)";
+                    p[7] = "Chance 2 (%)";
+                    p[8] = "Chance 3 (%)";
+                    p[9] = "Chance 4 (%)";
                     break;
                 case 229: //aura of eternity (aura effect)
                     p[0] = "Agility bonus (%)";
@@ -673,9 +674,11 @@ namespace SFEngine.SFCFF
     //it provides with general functions to perform on categories as a database
     public static class SFCategoryManager
     {
-        public static List<string> gd_dependencies = new List<string>();
+        public static List<string> gd_dependencies = new();
         public static SFGameData gamedata = new SFGameData();
         public static SFCategory hero_cache = new SFCategory();
+        //public static SFGameDataNew gamedata_new = new();
+        //public static CTG.CategoryHeroCache hero_cache = new();
 
         public static bool ready { get; private set; } = false;
 

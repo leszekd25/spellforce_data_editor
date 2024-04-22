@@ -210,6 +210,9 @@ namespace SpellforceDataEditor.special_forms
 
             public void Dispose()
             {
+                SFRenderEngine.ui.RemoveStorage(font_outline.font_texture);
+                SFRenderEngine.ui.RemoveStorage(font_main.font_texture);
+                SFRenderEngine.ui.RemoveStorage(SFRenderEngine.opaque_tex);
                 font_outline.Dispose();
                 font_main.Dispose();
             }
@@ -305,7 +308,7 @@ namespace SpellforceDataEditor.special_forms
             SFSubModel3D sbm = new SFSubModel3D();
             sbm.CreateRaw(vertices, uvs, colors, normals, indices, material);
             grid_model = new SFModel3D();
-            grid_model.CreateRaw(new SFSubModel3D[] { sbm });
+            grid_model.CreateRaw([sbm]);
             SFResourceManager.Models.AddManually(grid_model, "_GRID_");
 
             grid_node = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "_GRID_", "_GRID_");
@@ -338,12 +341,13 @@ namespace SpellforceDataEditor.special_forms
 
             SFRenderEngine.scene.Clear();
 
+            SFResourceManager.Models.Dispose(grid_model);
+
             SFSubModel3D.Cache.Dispose();
             SFModelSkinChunk.Cache.Dispose();
 
             SFRenderEngine.ui.Dispose();
             ui.Dispose();
-            SFResourceManager.DisposeAll();
             sound_engine.UnloadSound();
             glControl1.MouseWheel -= new MouseEventHandler(glControl1_MouseWheel);
 

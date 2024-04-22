@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -52,9 +53,10 @@ namespace SFEngine.SFLua
 
                 if (bscr.func == null)            //script is NOT compiled, attempt to read as text script
                 {
+                    Encoding enc = Encoding.GetEncoding(1252);
                     LuaParser.LuaTable test = new LuaParser.LuaTable();
                     LuaParser.LuaScript scr = new LuaParser.LuaScript(
-                        File.ReadAllText(SFUnPak.SFUnPak.game_directory_name + "\\" + fname));
+                        File.ReadAllText(SFUnPak.SFUnPak.game_directory_name + "\\" + fname, enc));
 
                     scr.position = scr.code.IndexOf('{');       // temporary
                     if (!test.Parse(scr))

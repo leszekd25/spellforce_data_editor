@@ -28,135 +28,139 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.MerchantGrid = new System.Windows.Forms.DataGridView();
-            this.ItemID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ItemCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ItemName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.MerchantGrid)).BeginInit();
-            this.SuspendLayout();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            label1 = new System.Windows.Forms.Label();
+            textBox1 = new System.Windows.Forms.TextBox();
+            MerchantGrid = new System.Windows.Forms.DataGridView();
+            ItemID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            ItemCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            ItemName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            button1 = new System.Windows.Forms.Button();
+            textBox2 = new System.Windows.Forms.TextBox();
+            label2 = new System.Windows.Forms.Label();
+            button2 = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)MerchantGrid).BeginInit();
+            SuspendLayout();
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(33, 22);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(66, 13);
-            this.label1.TabIndex = 49;
-            this.label1.Text = "Merchant ID";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(38, 25);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(72, 15);
+            label1.TabIndex = 49;
+            label1.Text = "Merchant ID";
             // 
             // textBox1
             // 
-            this.textBox1.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox1.Location = new System.Drawing.Point(105, 19);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(126, 20);
-            this.textBox1.TabIndex = 46;
-            this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
-            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
+            textBox1.BackColor = System.Drawing.Color.DarkOrange;
+            textBox1.Location = new System.Drawing.Point(122, 22);
+            textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new System.Drawing.Size(146, 23);
+            textBox1.TabIndex = 46;
+            textBox1.Leave += textBox1_TextChanged;
+            textBox1.MouseDown += textBox1_MouseDown;
             // 
             // MerchantGrid
             // 
-            this.MerchantGrid.AllowUserToAddRows = false;
-            this.MerchantGrid.AllowUserToDeleteRows = false;
-            this.MerchantGrid.AllowUserToResizeRows = false;
-            this.MerchantGrid.ColumnHeadersHeight = 20;
-            this.MerchantGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.MerchantGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.ItemID,
-            this.ItemCount,
-            this.ItemName});
-            this.MerchantGrid.Location = new System.Drawing.Point(36, 45);
-            this.MerchantGrid.MultiSelect = false;
-            this.MerchantGrid.Name = "MerchantGrid";
-            this.MerchantGrid.Size = new System.Drawing.Size(452, 307);
-            this.MerchantGrid.TabIndex = 52;
-            this.MerchantGrid.CellValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnCellValueChange);
-            this.MerchantGrid.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MerchantGrid_MouseDown);
+            MerchantGrid.AllowUserToAddRows = false;
+            MerchantGrid.AllowUserToDeleteRows = false;
+            MerchantGrid.AllowUserToResizeRows = false;
+            MerchantGrid.ColumnHeadersHeight = 20;
+            MerchantGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            MerchantGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { ItemID, ItemCount, ItemName });
+            MerchantGrid.Location = new System.Drawing.Point(42, 52);
+            MerchantGrid.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MerchantGrid.MultiSelect = false;
+            MerchantGrid.Name = "MerchantGrid";
+            MerchantGrid.Size = new System.Drawing.Size(527, 298);
+            MerchantGrid.TabIndex = 52;
+            MerchantGrid.CellValidated += OnCellValueChange;
+            MerchantGrid.MouseDown += MerchantGrid_MouseDown;
             // 
             // ItemID
             // 
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.Black;
-            this.ItemID.DefaultCellStyle = dataGridViewCellStyle2;
-            this.ItemID.HeaderText = "Item ID";
-            this.ItemID.Name = "ItemID";
-            this.ItemID.Width = 60;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(255, 128, 0);
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(192, 255, 192);
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
+            ItemID.DefaultCellStyle = dataGridViewCellStyle1;
+            ItemID.HeaderText = "Item ID";
+            ItemID.Name = "ItemID";
+            ItemID.Width = 60;
             // 
             // ItemCount
             // 
-            this.ItemCount.HeaderText = "Item count";
-            this.ItemCount.Name = "ItemCount";
-            this.ItemCount.Width = 80;
+            ItemCount.HeaderText = "Item count";
+            ItemCount.Name = "ItemCount";
+            ItemCount.Width = 80;
             // 
             // ItemName
             // 
-            this.ItemName.HeaderText = "Item name";
-            this.ItemName.Name = "ItemName";
-            this.ItemName.ReadOnly = true;
-            this.ItemName.Width = 250;
+            ItemName.HeaderText = "Item name";
+            ItemName.Name = "ItemName";
+            ItemName.ReadOnly = true;
+            ItemName.Width = 250;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(36, 358);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 53;
-            this.button1.Text = "Insert";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            button1.Location = new System.Drawing.Point(42, 356);
+            button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button1.Name = "button1";
+            button1.Size = new System.Drawing.Size(88, 27);
+            button1.TabIndex = 53;
+            button1.Text = "Insert";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // textBox2
             // 
-            this.textBox2.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox2.Location = new System.Drawing.Point(165, 360);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
-            this.textBox2.TabIndex = 54;
-            this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
+            textBox2.BackColor = System.Drawing.Color.DarkOrange;
+            textBox2.Location = new System.Drawing.Point(192, 358);
+            textBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox2.Name = "textBox2";
+            textBox2.Size = new System.Drawing.Size(116, 23);
+            textBox2.TabIndex = 54;
+            textBox2.MouseDown += textBox2_MouseDown;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(118, 364);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 13);
-            this.label2.TabIndex = 55;
-            this.label2.Text = "Item ID";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(138, 363);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(45, 15);
+            label2.TabIndex = 55;
+            label2.Text = "Item ID";
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(36, 387);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 56;
-            this.button2.Text = "Remove";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            button2.Location = new System.Drawing.Point(42, 390);
+            button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button2.Name = "button2";
+            button2.Size = new System.Drawing.Size(88, 27);
+            button2.TabIndex = 56;
+            button2.Text = "Remove";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // Control30
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.MerchantGrid);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox1);
-            this.Name = "Control30";
-            ((System.ComponentModel.ISupportInitialize)(this.MerchantGrid)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(button2);
+            Controls.Add(label2);
+            Controls.Add(textBox2);
+            Controls.Add(button1);
+            Controls.Add(MerchantGrid);
+            Controls.Add(label1);
+            Controls.Add(textBox1);
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Name = "Control30";
+            ((System.ComponentModel.ISupportInitialize)MerchantGrid).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

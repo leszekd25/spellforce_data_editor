@@ -153,7 +153,11 @@ namespace SFEngine.SF3D.SFRender
             SFModelSkinChunk.Cache.Init(1 << 15, 1 << 15);
 
             // opaque texture is a 1x1 white pixel that's used for blending operations on models that would otherwise have no texture assigned
-            opaque_tex?.Dispose();
+            if (opaque_tex != null)
+            {
+                ResetTexture(opaque_tex.tex_id);
+                opaque_tex.Dispose();
+            }
 
             opaque_tex = new SFTexture();
             byte[] tex_data = [255, 255, 255, 255];
