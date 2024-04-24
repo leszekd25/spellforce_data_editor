@@ -259,7 +259,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             SelectedPlayerTextID.Text = tp.text_id.ToString();
             if (SFCategoryManager.ready)
             {
-                SFCategoryElement text_elem = SFCategoryManager.FindElementText(tp.text_id, SFEngine.Settings.LanguageID);
+                SFCategoryElement text_elem = SFCategoryManager.GetTextByLanguage(tp.text_id, SFEngine.Settings.LanguageID);
                 if (text_elem != null)
                 {
                     LabelSelectedPlayerText.Text = text_elem[4].ToString();
@@ -283,7 +283,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 
             if (SFCategoryManager.ready)
             {
-                SFCategoryElement text_elem = SFCategoryManager.FindElementText(tp.text_id, SFEngine.Settings.LanguageID);
+                SFCategoryElement text_elem = SFCategoryManager.GetTextByLanguage(tp.text_id, SFEngine.Settings.LanguageID);
                 if (text_elem != null)
                 {
                     LabelSelectedPlayerText.Text = text_elem[4].ToString();

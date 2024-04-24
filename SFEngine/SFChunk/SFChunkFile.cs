@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using Windows.UI.Input.Spatial;
 
 namespace SFEngine.SFChunk
 {
@@ -78,7 +79,7 @@ namespace SFEngine.SFChunk
     public class SFChunkFile
     {
         SFChunkFileSource source = SFChunkFileSource.NONE;
-        Stream s = null;
+        public Stream stream = null;
         BinaryReader br = null;
         BinaryWriter bw = null;
         SFChunkFileHeader header;
@@ -88,7 +89,7 @@ namespace SFEngine.SFChunk
         public int OpenRaw(byte[] data, int length = -1)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.OpenRaw() called");
-            if (s != null)
+            if (stream != null)
             {
                 LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.OpenRaw(): Stream already open");
                 br.BaseStream.Position = 0;
@@ -103,14 +104,14 @@ namespace SFEngine.SFChunk
 
             if (length == -1)
             {
-                s = new MemoryStream(data);
+                stream = new MemoryStream(data);
             }
             else
             {
-                s = new MemoryStream(data, 0, length);
+                stream = new MemoryStream(data, 0, length);
             }
 
-            br = new BinaryReader(s, Encoding.GetEncoding(1252));
+            br = new BinaryReader(stream, Encoding.GetEncoding(1252));
             header = new SFChunkFileHeader();
             header.Read(br);
             if (!header.IsValid())
@@ -127,7 +128,7 @@ namespace SFEngine.SFChunk
         }
 
         // make sure you have enough bytes for that
-        public int CreateRaw(ref byte[] data, SFChunkFileType type)
+        public int CreateRaw(byte[] data, SFChunkFileType type)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.CreateFile() called");
             if (data == null)
@@ -152,8 +153,8 @@ namespace SFEngine.SFChunk
             }
             header.Checksum = 0;
 
-            s = new MemoryStream(data);
-            bw = new BinaryWriter(s);
+            stream = new MemoryStream(data);
+            bw = new BinaryWriter(stream);
 
             header.Write(bw);
             source = SFChunkFileSource.MEMORY;
@@ -166,7 +167,7 @@ namespace SFEngine.SFChunk
         public int OpenFile(string filename)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.OpenFile() called");
-            if (s != null)
+            if (stream != null)
             {
                 LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.OpenFile(): Stream already open");
                 br.BaseStream.Position = 0;
@@ -180,7 +181,7 @@ namespace SFEngine.SFChunk
             }
             try
             {
-                s = new FileStream(filename, FileMode.Open);
+                stream = new FileStream(filename, FileMode.Open);
             }
             catch (Exception)
             {
@@ -189,11 +190,11 @@ namespace SFEngine.SFChunk
             }
 
             header = new SFChunkFileHeader();
-            br = new BinaryReader(s, Encoding.GetEncoding(1252));
+            br = new BinaryReader(stream, Encoding.GetEncoding(1252));
             header.Read(br);
             if (!header.IsValid())
             {
-                s.Close();
+                stream.Close();
                 LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.OpenFile(): Header is not valid! (filename: " + filename + ")");
                 return -3;
             }
@@ -209,7 +210,7 @@ namespace SFEngine.SFChunk
             LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.CreateFile() called");
             try
             {
-                s = new FileStream(filename, FileMode.Create, FileAccess.Write);
+                stream = new FileStream(filename, FileMode.Create, FileAccess.Write);
             }
             catch (Exception)
             {
@@ -233,7 +234,7 @@ namespace SFEngine.SFChunk
             }
             header.Checksum = 0;
 
-            bw = new BinaryWriter(s);
+            bw = new BinaryWriter(stream);
             header.Write(bw);
             source = SFChunkFileSource.FILESYSTEM;
             total_size = 20;
@@ -245,7 +246,7 @@ namespace SFEngine.SFChunk
         public int Close()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.Close() called");
-            if (s == null)
+            if (stream == null)
             {
                 return 0;
             }
@@ -260,7 +261,7 @@ namespace SFEngine.SFChunk
                 bw.Close();
             }
 
-            s = null;
+            stream = null;
             br = null;
             bw = null;
             source = SFChunkFileSource.NONE;
@@ -272,7 +273,7 @@ namespace SFEngine.SFChunk
 
         public void GenerateLookupDict()
         {
-            if (s == null)
+            if (stream == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GenerateLookupDict(): Stream is not open!");
                 throw new InvalidOperationException("SFChunkFile.GenerateLookupDict(): Stream not open!");
@@ -304,10 +305,44 @@ namespace SFEngine.SFChunk
             total_size = (int)br.BaseStream.Position;
         }
 
+        public bool GetChunkSpanByID(short id, out int type, out int start, out int length, short occ_id = 0)
+        {
+            type = 0;
+            start = 0;
+            length = 0;
+
+            LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkSpanByID() called (id = " + id.ToString() + ", occurence id = " + occ_id.ToString() + ")");
+            if (stream == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkSpanByID(): Stream is not open!");
+                throw new InvalidOperationException("SFChunkFile.GetChunkSpanByID(): Stream not open!");
+            }
+            if (br == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkSpanByID(): Stream is not open for reading!");
+                throw new InvalidOperationException("SFChunkFile.GetChunkSpanByID(): Stream not open for reading!");
+            }
+            SFChunkLookupKey key = new SFChunkLookupKey(id, occ_id);
+            if (!lookup_dict.ContainsKey(key))
+            {
+                return false;
+            }
+
+            br.BaseStream.Position = lookup_dict[key];
+
+            SFChunkFileChunk chunk = new SFChunkFileChunk();
+            SFChunkFileChunkHeader chunk_header = SFChunkFileChunk.ReadChunkHeader(br);
+            type = chunk_header.ChunkDataType;
+            start = (int)br.BaseStream.Position;
+            length = chunk_header.ChunkDataLength;
+
+            return true;
+        }
+
         public SFChunkFileChunk GetChunkByID(short id, short occ_id = 0)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkByID() called (id = " + id.ToString() + ", occurence id = " + occ_id.ToString() + ")");
-            if (s == null)
+            if (stream == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetChunkByID(): Stream is not open!");
                 throw new InvalidOperationException("SFChunkFile.GetChunkByID(): Stream not open!");
@@ -339,7 +374,7 @@ namespace SFEngine.SFChunk
         public List<SFChunkFileChunk> GetAllChunks()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetAllChunks() called");
-            if (s == null)
+            if (stream == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.GetAllChunks(): Stream is not open!");
                 throw new InvalidOperationException("SFChunkFile.GetAllChunks(): Stream not open!");
@@ -379,7 +414,7 @@ namespace SFEngine.SFChunk
                 + (is_compressed ? "true" : "false") + ", data type = "
                 + data_type.ToString() + ", data length = "
                 + raw_data.Length.ToString() + ")");
-            if (s == null)
+            if (stream == null)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFChunkFile, "SFChunkFile.AddChunk(): Stream is not open!");
                 throw new InvalidOperationException("SFChunkFile.AddChunk(): Stream not open!");

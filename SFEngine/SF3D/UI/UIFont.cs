@@ -142,7 +142,7 @@ namespace SFEngine.SF3D.UI
 
         public void Dispose()
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "UIFont.Dispose() called, font texture: " + font_texture == null ? Utility.S_MISSING : font_texture.Name);
+            LogUtils.Log.Info(LogUtils.LogSource.SF3D, "UIFont.Dispose() called, font texture: " + font_texture == null ? Utility.S_ITEM_MISSING : font_texture.Name);
             
             SFResourceManager.Textures.Dispose(font_texture);
             font_texture = null;

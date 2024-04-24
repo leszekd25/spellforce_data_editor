@@ -217,7 +217,7 @@ namespace SFEngine.SFCFF
         }
 
         // unloads all stored data
-        public int Unload()
+        public int Clear()
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFGameDataNew.Unload() called");
 

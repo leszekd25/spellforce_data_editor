@@ -31,7 +31,7 @@ namespace SFEngine.SFCFF.CTG
 
         public override short GetCategoryType()
         {
-            return 8;
+            return 1;
         }
     }
 }

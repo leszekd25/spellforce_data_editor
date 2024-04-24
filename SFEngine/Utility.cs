@@ -11,9 +11,10 @@ namespace SFEngine
     public static class Utility
     {
         public const string S_NONAME = "<no name>";
-        public const string S_MISSING = "<missing>";
+        public const string S_ITEM_MISSING = "<item missing>";
+        public const string S_TEXT_MISSING = "<text missing>";
+        public const string S_LANG_MISSING = "<lang missing>";
         public const string S_UNKNOWN = "<unknown>";
-        public const string S_NONE = "<none>";
         public const int NO_INDEX = -1;
         public static CultureInfo ci { get; } = CultureInfo.CreateSpecificCulture("en-GB");
 

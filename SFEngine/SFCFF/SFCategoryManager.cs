@@ -675,10 +675,8 @@ namespace SFEngine.SFCFF
     public static class SFCategoryManager
     {
         public static List<string> gd_dependencies = new();
-        public static SFGameData gamedata = new SFGameData();
-        public static SFCategory hero_cache = new SFCategory();
-        //public static SFGameDataNew gamedata_new = new();
-        //public static CTG.CategoryHeroCache hero_cache = new();
+        public static SFGameDataNew gamedata = new();
+        public static CTG.CategoryHeroCache hero_cache = new();
 
         public static bool ready { get; private set; } = false;
 
@@ -689,13 +687,11 @@ namespace SFEngine.SFCFF
                 return;
             }
 
-            SFGameData.CalculateStatus(null, null, ref gamedata);
-
             ready = true;
             return;
         }
 
-        public static void Set(SFGameData gd)
+        public static void Set(SFGameDataNew gd)
         {
             gamedata = gd;
             ReloadHeroCache();
@@ -705,177 +701,111 @@ namespace SFEngine.SFCFF
         //searches for a text with a given ID and in a given language
         //returns a sub-element in a given language which contains text data looked for (or null if it doesnt exist)
         //returns reference to an element from db! remember to drop it later
-        public static SFCategoryElement FindElementText(int t_index, int t_lang)
+        public static string GetTextByLanguage(int t_index, int t_lang)
         {
-            if (gamedata[2016] == null)
+            if(t_index == 0)
             {
-                return null;
+                return Utility.S_NONAME;
             }
 
-            int index = gamedata[2016].FindMultipleElementIndexBinary<UInt16>(0, (UInt16)t_index);
-            if (index == Utility.NO_INDEX)
+            bool elem_found = gamedata.c2016.GetItemIndex(t_index, out int base_index);
+            if(!elem_found)
             {
-                return null;
+                return Utility.S_TEXT_MISSING;
             }
+            base_index = gamedata.c2016.Indices[base_index];
 
             int lang_index = Utility.NO_INDEX;
             int safe_index = Utility.NO_INDEX;
 
-            SFCategoryElementList e_found = gamedata[2016].element_lists[index];
-            if (e_found.Elements.Count != 0)
+            for (; base_index < gamedata.c2016.Items.Count; base_index++)
             {
-                safe_index = 0;
-            }
-
-            for (int i = 0; i < e_found.Elements.Count; i++)
-            {
-                if ((Byte)e_found[i][1] == (Byte)t_lang)
+                if (gamedata.c2016[base_index].LanguageID == (byte)t_lang)
                 {
-                    lang_index = i;
+                    lang_index = base_index;
                     break;
                 }
-                else if ((Byte)e_found[i][1] == 0)
+                else if (gamedata.c2016[base_index].LanguageID == 0)
                 {
-                    safe_index = i;
+                    safe_index = base_index;
                 }
             }
-
             if (lang_index == Utility.NO_INDEX)
             {
                 lang_index = safe_index;
             }
-
             if (lang_index == Utility.NO_INDEX)
             {
-                return null;
+                return Utility.S_LANG_MISSING;
             }
-
-            return e_found[lang_index];
-        }
-
-        //finds text string given element and column index where the element holds text IDs
-        public static string GetTextFromElement(SFCategoryElement elem, int cat_index)
-        {
-            if (elem == null)
-            {
-                return Utility.S_NONAME;
-            }
-            else
-            {
-                int text_id = (int)(UInt16)elem.variants[cat_index];
-                SFCategoryElement txt_elem = FindElementText(text_id, Settings.LanguageID);
-                if (txt_elem != null)
-                {
-                    return txt_elem.variants[4].ToString();
-                }
-                else
-                {
-                    return Utility.S_MISSING;
-                }
-            }
+            return gamedata.c2016[lang_index].GetContentString();
         }
 
         //returns a name of a given effect
         //optionally with effect level
         public static string GetEffectName(UInt16 effect_id, bool effect_level = false)
         {
-            if (gamedata[2002] == null)
+            bool eff_found = gamedata.c2002.GetItemIndex(effect_id, out int eff_index);
+            if(!eff_found)
             {
-                return Utility.S_MISSING;
+                return Utility.S_ITEM_MISSING;
             }
+            ushort spelline_id = gamedata.c2002[eff_index].SpellLineID;
 
-            SFCategoryElement effect_elem = gamedata[2002].FindElementBinary<UInt16>(0, effect_id);
-            if (effect_elem == null)
+            bool spellline_found = gamedata.c2054.GetItemIndex(spelline_id, out int spellline_index);
+            if (!spellline_found)
             {
-                return Utility.S_NONAME;
+                return Utility.S_ITEM_MISSING;
             }
+            ushort text_id = gamedata.c2054[spellline_index].TextID;
 
-            if (gamedata[2054] == null)
+            if(effect_level)
             {
-                return Utility.S_MISSING;
+                return $"{GetTextByLanguage(text_id, 1)} level {gamedata.c2002[eff_index].GetSpellLevel()}";
             }
-
-            UInt16 spell_type = (UInt16)effect_elem[1];
-            SFCategoryElement spell_elem = gamedata[2054].FindElementBinary<UInt16>(0, spell_type);
-            string txt = SFCategoryManager.GetTextFromElement(spell_elem, 1);
-            if (effect_level)
+            else
             {
-                txt += " level " + effect_elem[4].ToString();
+                return GetTextByLanguage(text_id, 1);
             }
-
-            return txt;
         }
 
         //returns a name of a given unit
         public static string GetUnitName(UInt16 unit_id, bool include_level = false)
         {
-            if (gamedata[2024] == null)
+            bool unit_found = gamedata.c2024.GetItemIndex(unit_id, out int unit_index);
+            if (!unit_found)
             {
-                return Utility.S_UNKNOWN;
+                return Utility.S_ITEM_MISSING;
             }
+            ushort name_id = gamedata.c2024[unit_index].NameID;
 
-            SFCategoryElement unit_elem = gamedata[2024].FindElementBinary<UInt16>(0, unit_id);
-            if (unit_elem == null)
+            if(include_level)
             {
-                return Utility.S_NONAME;
-            }
-
-            string txt = SFCategoryManager.GetTextFromElement(unit_elem, 1);
-
-            if (include_level)
-            {
-                ushort stats_id = (ushort)unit_elem[2];
-                if (gamedata[2005] == null)
+                ushort stats_id = gamedata.c2024[unit_index].StatsID;
+                bool stats_found = gamedata.c2005.GetItemIndex(stats_id, out int stats_index);
+                if(stats_found)
                 {
-                    txt += " (<NO_LVL_DATA>)";
-                    return txt;
+                    return $"{GetTextByLanguage(name_id, 1)} (level {gamedata.c2005[stats_index].UnitLevel})";
                 }
-                SFCategoryElement unit_stats_elem = gamedata[2005].FindElementBinary<UInt16>(0, stats_id);
-                if (unit_stats_elem == null)
+                else
                 {
-                    txt += " (<MISSING_LVL>)";
-                    return txt;
+                    return $"{GetTextByLanguage(name_id, 1)} (level <MISSING_LVL>)";
                 }
-                ushort ustats_lvl = (ushort)unit_stats_elem[1];
-                txt += " (level " + ustats_lvl.ToString() + ")";
             }
-
-            return txt;
+            else
+            {
+                return GetTextByLanguage(name_id, 1);
+            }
         }
 
         public static UInt16 GetUnitItem(UInt16 unit_id, byte slot_id)
         {
-            if (gamedata[2024] == null)
+            bool item_found = gamedata.c2025.GetItemSubIndex(unit_id, slot_id, out int item_index);
+            if(!item_found)
             {
                 return 0;
             }
-
-            SFCategoryElement unit_elem = gamedata[2024].FindElementBinary<UInt16>(0, unit_id);
-            if (unit_elem == null)
-            {
-                return 0;
-            }
-
-            if (gamedata[2025] == null)
-            {
-                return 0;
-            }
-
-            int unit_eq_index = gamedata[2025].FindMultipleElementIndexBinary(0, (UInt16)unit_id);
-            if (unit_eq_index == -1)
-            {
-                return 0;
-            }
-
-            SFCategoryElementList unit_eq = gamedata[2025].element_lists[unit_eq_index];
-            for (int i = 0; i < unit_eq.Elements.Count; i++)
-            {
-                if ((Byte)unit_eq[i][1] == slot_id)
-                {
-                    return (UInt16)unit_eq[i][2];
-                }
-            }
-            return 0;
+            return gamedata.c2025[item_index].ItemID;
         }
 
         //used for determining skill name
@@ -909,165 +839,114 @@ namespace SFEngine.SFCFF
         //returns a name of a given skill
         public static string GetSkillName(Byte skill_major, Byte skill_minor, Byte skill_lvl)
         {
-            string txt_major = "";
-            string txt_minor = "";
-
-            if (gamedata[2039] == null)
+            bool skill_found = gamedata.c2039.GetItemSubIndex(skill_major, 0, out int skill_index);
+            if (!skill_found)
             {
-                return Utility.S_UNKNOWN;
+                return Utility.S_ITEM_MISSING;
+            }
+            ushort text_id = gamedata.c2039[skill_index].TextID;
+
+            ushort minor_text_id = 0;
+            bool skill_minor_found = gamedata.c2039.GetItemSubIndex(skill_major, skill_minor, out int skill_minor_index);
+            if (skill_minor_found)
+            {
+                minor_text_id = gamedata.c2039[skill_minor_index].TextID;
             }
 
-            txt_major = SFCategoryManager.GetTextFromElement(gamedata[2039][skill_major, 0], 2);
-
-            if ((skill_major == 0) && (skill_minor != 0))
+            if ((skill_major == 0)&&(skill_minor != 0))
             {
-                txt_major = "";
-                txt_minor = GetResourceGather(skill_minor) + " gathering";
+                return $"{GetResourceGather(skill_minor)} gathering {skill_lvl}";
             }
-            else if (skill_minor != 101)
+            if (skill_minor == 101)
             {
-                try
-                {
-                    txt_minor = SFCategoryManager.GetTextFromElement(gamedata[2039][skill_major, skill_minor], 2);
-                }
-                catch (Exception)
-                {
-                    return Utility.S_UNKNOWN;
-                }
+                return $"{GetTextByLanguage(text_id, 1)} {skill_lvl}";
             }
-
-            return txt_major + " " + txt_minor + " " + skill_lvl.ToString();
+            return $"{GetTextByLanguage(text_id, 1)} {GetTextByLanguage(minor_text_id, 1)} {skill_lvl}"; 
         }
 
         //returns a name of a given race
         public static string GetRaceName(Byte race_id)
         {
-            if (gamedata[2022] == null)
+            bool race_found = gamedata.c2022.GetItemIndex(race_id, out int race_index);
+            if(!race_found)
             {
-                return Utility.S_UNKNOWN;
+                return Utility.S_ITEM_MISSING;
             }
-
-            SFCategoryElement race_elem = gamedata[2022].FindElementBinary<Byte>(0, race_id);
-            return SFCategoryManager.GetTextFromElement(race_elem, 7);
+            return GetTextByLanguage(gamedata.c2022[race_index].TextID, 1);
         }
 
         //returns a name of a given item
         public static string GetItemName(UInt16 item_id)
         {
-            if (gamedata[2003] == null)
+            bool item_found = gamedata.c2003.GetItemIndex(item_id, out int item_index);
+            if (!item_found)
             {
-                return Utility.S_UNKNOWN;
+                return Utility.S_ITEM_MISSING;
             }
-
-            SFCategoryElement item_elem = gamedata[2003].FindElementBinary<UInt16>(0, item_id);
-            return SFCategoryManager.GetTextFromElement(item_elem, 3);
+            return GetTextByLanguage(gamedata.c2003[item_index].NameID, 1);
         }
 
         //returns a name of a given building
         public static string GetBuildingName(UInt16 building_id)
         {
-            if (gamedata[2029] == null)
+            bool building_found = gamedata.c2029.GetItemIndex(building_id, out int building_index);
+            if (!building_found)
             {
-                return Utility.S_UNKNOWN;
+                return Utility.S_ITEM_MISSING;
             }
-
-            SFCategoryElement building_elem = gamedata[2029].FindElementBinary<UInt16>(0, building_id);
-            return SFCategoryManager.GetTextFromElement(building_elem, 5);
+            return GetTextByLanguage(gamedata.c2029[building_index].NameID, 1);
         }
 
         //returns a name of a given merchant
         public static string GetMerchantName(UInt16 merchant_id)
         {
-            if (gamedata[2041] == null)
+            bool merchant_found = gamedata.c2041.GetItemIndex(merchant_id, out int merchant_index);
+            if (!merchant_found)
             {
-                return Utility.S_UNKNOWN;
+                return Utility.S_ITEM_MISSING;
             }
-
-            SFCategoryElement merchant_elem = gamedata[2041].FindElementBinary<UInt16>(0, merchant_id);
-            if (merchant_elem == null)
-            {
-                return Utility.S_NONAME;
-            }
-
-            return GetUnitName((UInt16)merchant_elem[1]);
+            return GetUnitName(gamedata.c2041[merchant_index].UnitID);
         }
 
         //returns a name of a given object
         public static string GetObjectName(UInt16 object_id)
         {
-            if (gamedata[2050] == null)
+            bool object_found = gamedata.c2050.GetItemIndex(object_id, out int object_index);
+            if (!object_found)
             {
-                return Utility.S_UNKNOWN;
+                return Utility.S_ITEM_MISSING;
             }
-
-            SFCategoryElement object_elem = gamedata[2050].FindElementBinary<UInt16>(0, object_id);
-            return SFCategoryManager.GetTextFromElement(object_elem, 1);
+            return GetTextByLanguage(gamedata.c2050[object_index].NameID, 1);
         }
 
         //returns a description given its id
-        public static string GetDescriptionName(UInt16 desc_id)
+        public static string GetDescriptionName(UInt16 description_id)
         {
-            if (gamedata[2058] == null)
+            bool description_found = gamedata.c2058.GetItemIndex(description_id, out int description_index);
+            if (!description_found)
             {
-                return Utility.S_UNKNOWN;
+                return Utility.S_ITEM_MISSING;
             }
-
-            SFCategoryElement desc_elem = gamedata[2058].FindElementBinary<UInt16>(0, desc_id);
-            return SFCategoryManager.GetTextFromElement(desc_elem, 1);
+            return GetTextByLanguage(gamedata.c2058[description_index].TextID, 1);
         }
 
         //returns a rune hero/worker's name given its stats ID
         //this connection is not found in gamedata.cff and instead has to be pre-processed
         public static string GetRuneheroName(UInt16 stats_id)
         {
-            SFCategoryElement hero_elem = hero_cache.FindElementBinary<UInt16>(0, stats_id);
-            if (hero_elem == null)
+            bool stats_found = hero_cache.GetItemIndex(stats_id, out int stats_index);
+            if (!stats_found)
             {
-                return Utility.S_MISSING;
+                return Utility.S_ITEM_MISSING;
             }
-
-            return GetItemName((ushort)(hero_elem[1]));
-        }
-
-        // gets min unit level, given skill level
-        public static int GetMinUnitLevel(int level)
-        {
-            if (gamedata[2048] == null)
-            {
-                return 0;
-            }
-
-            SFCategoryElement lvl_elem = gamedata[2048].FindElement<byte>(5, (byte)level);
-            if (lvl_elem == null)
-            {
-                return 0;
-            }
-
-            return (byte)lvl_elem[0];
-        }
-
-        // gets max skill level, given unit level
-        public static int GetMaxSkillLevel(int level)
-        {
-            if (gamedata[2048] == null)
-            {
-                return 0;
-            }
-
-            SFCategoryElement lvl_elem = gamedata[2048].FindElementBinary<byte>(0, (byte)level);
-            if (lvl_elem == null)
-            {
-                return 0;
-            }
-
-            return (byte)lvl_elem[5];
+            return GetItemName(hero_cache[stats_index].RuneItemID);
         }
 
         //frees all data, only empty categories remain
         public static void UnloadAll()
         {
-            hero_cache.Unload();
-            gamedata.Unload();
+            hero_cache.Clear();
+            gamedata.Clear();
             gd_dependencies.Clear();
 
             ready = false;
@@ -1077,35 +956,19 @@ namespace SFEngine.SFCFF
 
         private static void ReloadHeroCache()
         {
-            hero_cache.Unload();
-
-            hero_cache.category_allow_multiple = false;
-            hero_cache.category_allow_subelement_id = false;
-            hero_cache.category_id = -1;
-            hero_cache.category_is_known = true;
-            hero_cache.category_name = "Hero cache (private)";
-            hero_cache.category_type = 0;
-            hero_cache.category_unknown_data = null;
-            hero_cache.elem_format = "HH";   // id1 - unit stats, id2 - rune item id
-
-            SFCategory item_category = gamedata[2003];
-            if (item_category == null)
-            {
-                return;
-            }
+            hero_cache.Clear();
 
             Dictionary<ushort, ushort> item_id_set = new Dictionary<ushort, ushort>();
             List<ushort> item_id_list = new List<ushort>();
 
-            for (int i = 0; i < item_category.elements.Count; i++)
+            for (int i = 0; i < gamedata.c2003.Items.Count; i++)
             {
-                SFCategoryElement elem = item_category[i];
-                if ((byte)(elem[1]) == 3)
+                if (gamedata.c2003.Items[i].ItemType1 == 3)
                 {
-                    if (!item_id_set.ContainsKey((ushort)(elem[4])))
+                    if (!item_id_set.ContainsKey(gamedata.c2003.Items[i].UnitStatsID))
                     {
-                        item_id_set.Add((ushort)(elem[4]), (ushort)(elem[0]));
-                        item_id_list.Add((ushort)(elem[4]));
+                        item_id_set.Add(gamedata.c2003.Items[i].UnitStatsID, gamedata.c2003.Items[i].ItemID);
+                        item_id_list.Add(gamedata.c2003.Items[i].UnitStatsID);
                     }
                 }
             }
@@ -1114,10 +977,8 @@ namespace SFEngine.SFCFF
 
             for (int i = 0; i < item_id_list.Count; i++)
             {
-                SFCategoryElement new_elem = hero_cache.GetEmptyElement();
-                new_elem[0] = item_id_list[i];
-                new_elem[1] = item_id_set[item_id_list[i]];
-                hero_cache.elements.Add(new_elem);
+                hero_cache.AddItem(i, new() 
+                { UnitStatsID = item_id_list[i], RuneItemID = item_id_set[item_id_list[i]] });
             }
         }
     }

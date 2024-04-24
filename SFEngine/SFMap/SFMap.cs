@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using SFEngine.SF3D.SFRender;
+using SFEngine.SFCFF;
 using SFEngine.SFChunk;
 using System;
 using System.Collections.Generic;
@@ -1646,16 +1647,11 @@ namespace SFEngine.SFMap
             fname = fname.Substring(li + 4, fname.Length - li - 8);
             fname = fname.ToUpper();
 
-            if (SFCFF.SFCategoryManager.gamedata[2052] == null)
+            for(int i = 0; i < SFCategoryManager.gamedata.c2052.Items.Count; i++)
             {
-                return;
-            }
-
-            foreach (SFCFF.SFCategoryElement e in SFCFF.SFCategoryManager.gamedata[2052].elements)
-            {
-                if (e[2].ToString().ToUpper() == fname)
+                if (SFCategoryManager.gamedata.c2052[i].GetHandleString().ToUpper() == fname)
                 {
-                    PlatformID = (uint)e[0];
+                    PlatformID = SFCategoryManager.gamedata.c2052[i].MapID;
                     break;
                 }
             }

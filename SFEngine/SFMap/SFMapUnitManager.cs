@@ -2,6 +2,7 @@
 using SFEngine.SF3D;
 using System;
 using System.Collections.Generic;
+using Windows.Gaming.Input;
 
 namespace SFEngine.SFMap
 {
@@ -81,29 +82,7 @@ namespace SFEngine.SFMap
             // modify object transform and appearance
             unit.node.Position = map.heightmap.GetFixedPosition(position);
             unit.node.SetAnglePlane(0);
-            // find unit scale
-            int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(game_id);
-            float unit_size = 1f;
-
-            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
-            unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
-            if (SFCFF.SFCategoryManager.gamedata[2005] == null)
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): There is no unit stats block in gamedata, setting unit scale to 100%");
-            }
-            else
-            {
-                if (unit_index != -1)
-                {
-                    unit_data = SFCFF.SFCategoryManager.gamedata[2005][unit_index];
-                    unit_size = Math.Min((ushort)200, Math.Max((ushort)unit_data[18], (ushort)50)) / 100.0f;
-                }
-                else
-                {
-                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.AddUnit(): Could not find unit stats data (unit id = " + game_id.ToString() + "), setting unit scale to 100%");
-                }
-            }
-            unit.node.Scale = new Vector3(unit_size * 100 / 128);
+            unit.node.Scale = new Vector3(GetUnitScale(game_id));
 
             if (Settings.DynamicMap)
             {
@@ -137,29 +116,7 @@ namespace SFEngine.SFMap
             // object transform
             unit.node.Position = map.heightmap.GetFixedPosition(unit.grid_position);
             unit.node.SetAnglePlane(0);
-            // find unit scale
-            int unit_index = SFCFF.SFCategoryManager.gamedata[2024].GetElementIndex(unit.game_id);
-            float unit_size = 1f;
-
-            SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024][unit_index];
-            unit_index = SFCFF.SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
-            if (SFCFF.SFCategoryManager.gamedata[2005] == null)
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): There is no unit stats block in gamedata, setting unit scale to 100%");
-            }
-            else
-            {
-                if (unit_index != -1)
-                {
-                    unit_data = SFCFF.SFCategoryManager.gamedata[2005][unit_index];
-                    unit_size = Math.Min((ushort)200, Math.Max((ushort)unit_data[18], (ushort)50)) / 100.0f;
-                }
-                else
-                {
-                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.ReplaceUnit(): Could not find unit stats data (unit id = " + unit.game_id.ToString() + "), setting unit scale to 100%");
-                }
-            }
-            unit.node.Scale = new Vector3(unit_size * 100 / 128);
+            unit.node.Scale = new Vector3(GetUnitScale(unit.game_id));
 
             if (Settings.DynamicMap)
             {
@@ -208,6 +165,27 @@ namespace SFEngine.SFMap
             }
 
             return m_group;
+        }
+
+        public float GetUnitScale(int game_id)
+        {
+            // find unit scale
+            bool unit_found = SFCFF.SFCategoryManager.gamedata.c2024.GetItemIndex(game_id, out int unit_index);
+            float unit_size = 1f;
+            if (unit_found)
+            {
+                bool unit_stats_found = SFCFF.SFCategoryManager.gamedata.c2005.GetItemIndex(SFCFF.SFCategoryManager.gamedata.c2024[unit_index].StatsID, out int unit_stats_index);
+                if (unit_stats_found)
+                {
+                    unit_size = Math.Min((ushort)200, Math.Max(SFCFF.SFCategoryManager.gamedata.c2005[unit_stats_index].UnitSize, (ushort)50)) / 100.0f;
+                }
+                else
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.GetUnitScale(): Could not find unit stats data (unit id = " + game_id.ToString() + "), setting unit scale to 100%");
+                }
+            }
+
+            return unit_size * 100 / 128;
         }
 
         // fallback
@@ -269,17 +247,17 @@ namespace SFEngine.SFMap
                 string anim_lib = SFLua.SFLuaEnvironment.items[chest_id].AnimSet;
                 if (anim_lib == "")
                 {
-                    SFCFF.SFCategoryElement unit_data = SFCFF.SFCategoryManager.gamedata[2024].FindElementBinary<UInt16>(0, (UInt16)(unit.game_id));
-                    if (unit_data == null)
+                    bool unit_found = SFCFF.SFCategoryManager.gamedata.c2024.GetItemIndex(unit.game_id, out int unit_index);
+                    if(!unit_found)
                     {
                         return "";
                     }
+                    bool unit_stats_found = SFCFF.SFCategoryManager.gamedata.c2005.GetItemIndex(SFCFF.SFCategoryManager.gamedata.c2024[unit_index].StatsID, out int unit_stats_index);
 
-                    SFCFF.SFCategoryElement unit_stats = SFCFF.SFCategoryManager.gamedata[2005].FindElementBinary<UInt16>(0, (UInt16)unit_data[2]);
                     bool is_female = false;
-                    if (unit_stats != null)
+                    if (unit_stats_found)
                     {
-                        is_female = ((Byte)unit_stats[21] % 2) == 1;
+                        is_female = (SFCFF.SFCategoryManager.gamedata.c2005[unit_stats_index].UnitFlags & 0b1) == 1;
                     }
 
                     if (is_female)

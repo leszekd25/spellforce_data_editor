@@ -4,8 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
+using System.Windows.Forms;
 
 namespace SFEngine.SFCFF
 {
@@ -79,21 +84,24 @@ namespace SFEngine.SFCFF
 
         public bool Load(SFChunkFile file)
         {
-            SFChunkFileChunk chunk = file.GetChunkByID(GetCategoryID());
-            if (chunk == null)
+            if(!file.GetChunkSpanByID(GetCategoryID(), out int type, out int start, out int length))
             {
                 return false;
             }
-            if (chunk.header.ChunkDataType != GetCategoryType())
+            if(type != GetCategoryType())
             {
                 return false;
             }
-            byte[] data = chunk.get_raw_data();
-
-            ReadOnlySpan<T> raw_data_span = MemoryMarshal.Cast<byte, T>(data);
-
-            CollectionsMarshal.SetCount(Items, raw_data_span.Length);
-            raw_data_span.CopyTo(CollectionsMarshal.AsSpan(Items));
+            int item_count;
+            unsafe
+            {
+                item_count = length / sizeof(T);
+            }
+            CollectionsMarshal.SetCount(Items, item_count);
+            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
+            Span<byte> items_span_raw = MemoryMarshal.Cast<T, byte>(items_span);
+            file.stream.Position = start;
+            file.stream.Read(items_span_raw);
 
             for (int i = 0; i < GetNumOfItems(); i++)
             {
@@ -139,6 +147,12 @@ namespace SFEngine.SFCFF
             return true;
         }
 
+        public bool AddItem(int new_index, T item)
+        {
+            Items.Insert(new_index, item);
+            return true;
+        }
+
         public bool Copy(int from_index, int new_index)
         {
             Items.Insert(new_index, Items[from_index]);
@@ -148,6 +162,12 @@ namespace SFEngine.SFCFF
         public bool Remove(int index)
         {
             Items.RemoveAt(index);
+            return true;
+        }
+
+        public bool GetID(int index, out int id)
+        {
+            id = Items[index].GetID();
             return true;
         }
 
@@ -225,6 +245,138 @@ namespace SFEngine.SFCFF
             }
 
             index = Utility.NO_INDEX;
+            return false;
+        }
+
+        public bool SetField<U>(int index, string field_name, U value) where U: struct
+        {
+            Type t = typeof(T);
+
+            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
+            if ((index < 0) || (index >= items_span.Length))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Index out of range");
+                return false;
+            }
+
+            FieldInfo fi = t.GetField(field_name);
+            if(fi == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Unknown field {field_name}");
+                return false;
+            }
+
+            Type t2 = fi.FieldType;
+            if(t2 != typeof(U))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Type of {field_name} doesnt match the argument type");
+                return false;
+            }
+
+            U cur_val = (U)fi.GetValue(items_span[index]);
+            if (!cur_val.Equals(value))
+            {
+                fi.SetValue(items_span[index], value);
+                // undo/redo stuff
+            }
+
+            todo: merge below and this
+
+            return true;
+        }
+
+        public bool SetArrayField<U>(int index, string field_name, int array_index, U value) where U: struct
+        {
+            Type t = typeof(T);
+
+            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
+            if ((index < 0) || (index >= items_span.Length))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetArrayField(): Index out of range");
+                return false;
+            }
+
+            FieldInfo fi = t.GetField(field_name);
+            if (fi == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetArrayField(): Unknown field {field_name}");
+                return false;
+            }
+
+            object[] attributes = fi.GetCustomAttributes(typeof(FixedBufferAttribute), false);
+            if((attributes == null) || (attributes.Length == 0))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetArrayField(): {field_name} is not an array");
+                return false;
+            }
+            FixedBufferAttribute fbattr = (FixedBufferAttribute)attributes[0];
+            if (fbattr.ElementType != typeof(U))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetArrayField(): Type of {field_name} doesnt match the argument type");
+                return false;
+            }
+            if ((array_index < 0) || (array_index >= fbattr.Length)) 
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetArrayField(): Array index out of range");
+                return false;
+            }
+
+            // https://stackoverflow.com/questions/30817924/obtain-non-explicit-field-offset
+            int field_offset = Marshal.ReadInt32(fi.FieldHandle.Value + (4 + IntPtr.Size)) & 0xFFFFFF;
+            unsafe
+            {
+                fixed(T* ptr = items_span)
+                {
+                    U* ptr2 = (U*)(((byte*)(&ptr[index])) + field_offset);
+                    if (!ptr2[array_index].Equals(value))
+                    {
+                        ptr2[array_index] = value;
+                        // undo/redo stugg
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public object GetField(int index, string field_name)
+        {
+            Type t = typeof(T);
+
+            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
+            if ((index < 0) || (index >= items_span.Length))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.GetField(): Index out of range");
+                return null;
+            }
+
+            FieldInfo fi = t.GetField(field_name);
+            if (fi == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.GetField(): Unknown field {field_name}");
+                return null;
+            }
+
+            return fi.GetValue(items_span[index]);
+        }
+
+        public bool Undo()
+        {
+            return false;
+        }
+
+        public bool Redo()
+        {
+            return false;
+        }
+
+        public bool CanUndo()
+        {
+            return false;
+        }
+
+        public bool CanRedo()
+        {
             return false;
         }
 
@@ -314,21 +466,24 @@ namespace SFEngine.SFCFF
 
         public bool Load(SFChunkFile file)
         {
-            SFChunkFileChunk chunk = file.GetChunkByID(GetCategoryID());
-            if (chunk == null)
+            if (!file.GetChunkSpanByID(GetCategoryID(), out int type, out int start, out int length))
             {
                 return false;
             }
-            if (chunk.header.ChunkDataType != GetCategoryType())
+            if (type != GetCategoryType())
             {
                 return false;
             }
-            byte[] data = chunk.get_raw_data();
-
-            ReadOnlySpan<T> raw_data_span = MemoryMarshal.Cast<byte, T>(data);
-
-            CollectionsMarshal.SetCount(Items, raw_data_span.Length);
-            raw_data_span.CopyTo(CollectionsMarshal.AsSpan(Items));
+            int item_count;
+            unsafe
+            {
+                item_count = length / sizeof(T);
+            }
+            CollectionsMarshal.SetCount(Items, item_count);
+            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
+            Span<byte> items_span_raw = MemoryMarshal.Cast<T, byte>(items_span);
+            file.stream.Position = start;
+            file.stream.Read(items_span_raw);
 
             CalculateIndices();
 
@@ -380,6 +535,23 @@ namespace SFEngine.SFCFF
                 main_index = Indices[new_index];
             }
             Items.Insert(main_index, new());
+            Indices.Insert(new_index, main_index);
+            AdjustIndices(new_index + 1, 1);
+            return true;
+        }
+
+        public bool AddItem(int new_index, T item)
+        {
+            int main_index;
+            if (new_index >= Indices.Count)
+            {
+                main_index = Items.Count;
+            }
+            else
+            {
+                main_index = Indices[new_index];
+            }
+            Items.Insert(new_index, item);
             Indices.Insert(new_index, main_index);
             AdjustIndices(new_index + 1, 1);
             return true;
@@ -438,6 +610,12 @@ namespace SFEngine.SFCFF
             Indices.RemoveAt(index);
             AdjustIndices(index, from_end - from_start);
 
+            return true;
+        }
+
+        public bool GetID(int index, out int id)
+        {
+            id = Items[Indices[index]].GetID();
             return true;
         }
 
@@ -536,12 +714,32 @@ namespace SFEngine.SFCFF
             return false;
         }
 
+        public bool GetItemSubItemIndex(int id, int index, out int subindex)
+        {
+            bool result = GetItemIndex(id, out subindex);
+            if (result)
+            {
+                subindex += index;
+            }
+            return result;
+        }
+
+        public int GetItemSubItemNum(int index)
+        {
+            if(index == Indices.Count-1)
+            {
+                return Items.Count - Indices[index];
+            }
+            return Indices[index + 1] - Indices[index];
+        }
+
         public bool GetItemSubIndex(int id, int subid, out int index)
         {
             if(!GetItemIndex(id, out index))
             {
                 return false;
             }
+            index = Indices[index];
 
             for(;index < Items.Count; index++)
             {
@@ -554,6 +752,82 @@ namespace SFEngine.SFCFF
                     return false;
                 }
             }
+            return false;
+        }
+
+        public bool SetField(int index, string field_name, object value)
+        {
+            Type t = typeof(T);
+
+            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
+            if ((index < 0) || (index >= items_span.Length))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Index out of range");
+                return false;
+            }
+
+            FieldInfo fi = t.GetField(field_name);
+            if (fi == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Unknown field {field_name}");
+                return false;
+            }
+
+            Type t2 = fi.FieldType;
+            if (t2 != value.GetType())
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Type of {field_name} doesnt match the argument type");
+                return false;
+            }
+
+            object cur_val = fi.GetValue(items_span[index]);
+            if (!cur_val.Equals(value))
+            {
+                fi.SetValue(items_span[index], value);
+                // undo/redo stuff
+            }
+
+            return true;
+        }
+
+        public object GetField(int index, string field_name)
+        {
+            Type t = typeof(T);
+
+            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
+            if ((index < 0) || (index >= items_span.Length))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.GetField(): Index out of range");
+                return null;
+            }
+
+            FieldInfo fi = t.GetField(field_name);
+            if (fi == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.GetField(): Unknown field {field_name}");
+                return null;
+            }
+
+            return fi.GetValue(items_span[index]);
+        }
+
+        public bool Undo()
+        {
+            return false;
+        }
+
+        public bool Redo()
+        {
+            return false;
+        }
+
+        public bool CanUndo()
+        {
+            return false;
+        }
+
+        public bool CanRedo()
+        {
             return false;
         }
 

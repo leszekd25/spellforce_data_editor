@@ -14,8 +14,8 @@ namespace SFEngine.SFCFF.CTG
         public byte EquipmentIndex;
         public ushort ItemID;
 
-        public int GetID() => ItemID;
-        public void SetID(int id) => ItemID = (ushort)id;
+        public int GetID() => UnitID;
+        public void SetID(int id) => UnitID = (ushort)id;
         public int GetSubID() => EquipmentIndex;
         public void SetSubID(int subid) => EquipmentIndex = (byte)subid;
 

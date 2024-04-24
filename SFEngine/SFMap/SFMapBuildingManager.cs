@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using System.Collections.Generic;
 using System;
+using SFEngine.SFCFF.CTG;
 
 namespace SFEngine.SFMap
 {
@@ -39,35 +40,37 @@ namespace SFEngine.SFMap
 
             // load building origin vector
             Vector2 org = new Vector2(0, 0);
-            int org_index = SFCFF.SFCategoryManager.gamedata[2029].GetElementIndex(id);
-            if (org_index != -1)
+            bool building_found = SFCFF.SFCategoryManager.gamedata.c2029.GetItemIndex(id, out int building_index);
+            if(building_found)
             {
-                SFCFF.SFCategoryElement org_data = SFCFF.SFCategoryManager.gamedata[2029][org_index]; // 6, 7
-                org.X = ((short)org_data[6]) / 140.0f;
-                org.Y = ((short)org_data[7]) / 140.0f;
+                org.X = SFCFF.SFCategoryManager.gamedata.c2029[building_index].RotCenterX / 140.0f;
+                org.Y = SFCFF.SFCategoryManager.gamedata.c2029[building_index].RotCenterY / 140.0f;
             }
 
-            // load building collision data from gamedata
-            int col_index = SFCFF.SFCategoryManager.gamedata[2030].GetElementIndex(id);
-            if (col_index == Utility.NO_INDEX)
+            bool outline_found = SFCFF.SFCategoryManager.gamedata.c2030.GetItemIndex(id, out int outline_index);
+            if (!outline_found)
             {
                 return;
             }
+            int outline_num = SFCFF.SFCategoryManager.gamedata.c2030.GetItemSubItemNum(outline_index);
+            outline_index = SFCFF.SFCategoryManager.gamedata.c2030.Indices[outline_index];
 
             SFMapCollisionBoundary cb = new SFMapCollisionBoundary() { origin = org };
-            SFCFF.SFCategoryElementList col_data = SFCFF.SFCategoryManager.gamedata[2030].element_lists[col_index];
-            for (int i = 0; i < col_data.Elements.Count; i++)
+            for (int i = 0; i < outline_num; i++)
             {
-                SFCFF.SFOutlineData outline = (SFCFF.SFOutlineData)(col_data[i][3]);
-                int vertex_count = outline.Data.Count / 2;
+                Category2030Item outline = SFCFF.SFCategoryManager.gamedata.c2030[outline_index];
+
+                int vertex_count = outline.Coords.Count / 2;
                 Vector2[] vertex_list = new Vector2[vertex_count];
                 for (int j = 0; j < vertex_count; j++)
                 {
                     vertex_list[j] = new Vector2();
-                    vertex_list[j].X = outline.Data[j * 2 + 0] / 140.0f;
-                    vertex_list[j].Y = outline.Data[j * 2 + 1] / 140.0f;
+                    vertex_list[j].X = outline.Coords[j * 2 + 0] / 140.0f;
+                    vertex_list[j].Y = outline.Coords[j * 2 + 1] / 140.0f;
                 }
                 cb.polygons.Add(new SFMapCollisionPolygon2D(vertex_list, org));
+
+                outline_index++;
             }
 
             //cb.RebuildModel3D();
@@ -89,9 +92,8 @@ namespace SFEngine.SFMap
             bld.race_id = race_id;
             if (race_id == -1)
             {
-                // find race ID in gamedata
-                int bld_id = SFCFF.SFCategoryManager.gamedata[2029].GetElementIndex(id);
-                bld.race_id = (byte)SFCFF.SFCategoryManager.gamedata[2029][bld_id][1];
+                SFCFF.SFCategoryManager.gamedata.c2029.GetItemIndex(id, out int bld_index);
+                bld.race_id = SFCFF.SFCategoryManager.gamedata.c2029[bld_index].RaceID;
             }
 
             if (index == -1)

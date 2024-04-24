@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -123,7 +124,7 @@ namespace SFEngine.SFCFF.CTG
                 item.PolygonID = br.ReadByte();
                 item.CastsShadow = br.ReadByte();
                 item.Coords = new List<short>();
-                ushort coords_num = (ushort)(br.ReadByte() * 2);
+                ushort coords_num = (ushort)(br.ReadByte());
                 for(int i = 0; i < coords_num; i++)
                 {
                     short x = br.ReadInt16();
@@ -158,7 +159,7 @@ namespace SFEngine.SFCFF.CTG
                 bw.Write(item.BuildingID);
                 bw.Write(item.PolygonID);
                 bw.Write(item.CastsShadow);
-                bw.Write((byte)item.Coords.Count * 2);
+                bw.Write((byte)(item.Coords.Count / 2));
                 for(int j = 0; j < item.Coords.Count; j++)
                 {
                     bw.Write(item.Coords[i]);
@@ -197,6 +198,23 @@ namespace SFEngine.SFCFF.CTG
                 main_index = Indices[new_index];
             }
             Items.Insert(main_index, new() { Coords = new() });
+            Indices.Insert(new_index, main_index);
+            AdjustIndices(new_index + 1, 1);
+            return true;
+        }
+
+        public bool AddItem(int new_index, Category2030Item item)
+        {
+            int main_index;
+            if (new_index >= Indices.Count)
+            {
+                main_index = Items.Count;
+            }
+            else
+            {
+                main_index = Indices[new_index];
+            }
+            Items.Insert(new_index, item);
             Indices.Insert(new_index, main_index);
             AdjustIndices(new_index + 1, 1);
             return true;
@@ -257,6 +275,12 @@ namespace SFEngine.SFCFF.CTG
             Indices.RemoveAt(index);
             AdjustIndices(index, from_end - from_start);
 
+            return true;
+        }
+
+        public bool GetID(int index, out int id)
+        {
+            id = Items[Indices[index]].GetID();
             return true;
         }
 
@@ -356,12 +380,32 @@ namespace SFEngine.SFCFF.CTG
             return false;
         }
 
+        public bool GetItemSubItemIndex(int id, int index, out int subindex)
+        {
+            bool result = GetItemIndex(id, out subindex);
+            if (result)
+            {
+                subindex += index;
+            }
+            return result;
+        }
+
+        public int GetItemSubItemNum(int index)
+        {
+            if (index == Indices.Count - 1)
+            {
+                return Items.Count - Indices[index];
+            }
+            return Indices[index + 1] - Indices[index];
+        }
+
         public bool GetItemSubIndex(int id, int subid, out int index)
         {
             if (!GetItemIndex(id, out index))
             {
                 return false;
             }
+            index = Indices[index];
 
             for (; index < Items.Count; index++)
             {
@@ -374,6 +418,82 @@ namespace SFEngine.SFCFF.CTG
                     return false;
                 }
             }
+            return false;
+        }
+
+        public bool SetField(int index, string field_name, object value)
+        {
+            Type t = typeof(Category2030Item);
+
+            Span<Category2030Item> items_span = CollectionsMarshal.AsSpan(Items);
+            if ((index < 0) || (index >= items_span.Length))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Index out of range");
+                return false;
+            }
+
+            FieldInfo fi = t.GetField(field_name);
+            if (fi == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Unknown field {field_name}");
+                return false;
+            }
+
+            Type t2 = fi.FieldType;
+            if (t2 != value.GetType())
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Type of {field_name} doesnt match the argument type");
+                return false;
+            }
+
+            object cur_val = fi.GetValue(items_span[index]);
+            if (!cur_val.Equals(value))
+            {
+                fi.SetValue(items_span[index], value);
+                // undo/redo stuff
+            }
+
+            return true;
+        }
+
+        public object GetField(int index, string field_name)
+        {
+            Type t = typeof(Category2030Item);
+
+            Span<Category2030Item> items_span = CollectionsMarshal.AsSpan(Items);
+            if ((index < 0) || (index >= items_span.Length))
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.GetField(): Index out of range");
+                return null;
+            }
+
+            FieldInfo fi = t.GetField(field_name);
+            if (fi == null)
+            {
+                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.GetField(): Unknown field {field_name}");
+                return null;
+            }
+
+            return fi.GetValue(items_span[index]);
+        }
+
+        public bool Undo()
+        {
+            return false;
+        }
+
+        public bool Redo()
+        {
+            return false;
+        }
+
+        public bool CanUndo()
+        {
+            return false;
+        }
+
+        public bool CanRedo()
+        {
             return false;
         }
 

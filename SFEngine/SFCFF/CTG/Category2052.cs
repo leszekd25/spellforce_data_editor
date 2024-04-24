@@ -17,6 +17,16 @@ namespace SFEngine.SFCFF.CTG
 
         public int GetID() => (int)MapID;
         public void SetID(int id) => MapID = (uint)id;
+
+        public string GetHandleString()
+        {
+            Encoding encoding = Encoding.GetEncoding(1252);
+
+            fixed (byte* s = Handle)
+            {
+                return (encoding.GetString(s, 64));
+            }
+        }
     }
 
     public class Category2052 : CategoryBaseSingle<Category2052Item>

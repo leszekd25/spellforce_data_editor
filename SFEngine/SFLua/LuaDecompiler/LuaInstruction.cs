@@ -129,7 +129,7 @@ namespace SFEngine.SFLua.LuaDecompiler
                 return OpCode.ToString() + "( " + ArgA.ToString() + ", " + ArgB.ToString() + ")";
             }
 
-            return Utility.S_MISSING;
+            return Utility.S_UNKNOWN;
         }
     }
 }

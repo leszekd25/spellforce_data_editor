@@ -21,6 +21,37 @@ namespace SFEngine.SFCFF.CTG
         public int GetSubID() => LanguageID;
         public void SetSubID(int subid) => LanguageID = (byte)subid;
 
+        public string GetContentString()
+        {
+            Encoding encoding;
+            switch (LanguageID)
+            {
+                case 5:
+                    encoding = Encoding.GetEncoding(1251);
+                    break;
+                case 6:
+                    encoding = Encoding.GetEncoding(1250);
+                    break;
+                default:
+                    encoding = Encoding.GetEncoding(1252);
+                    break;
+            }
+
+            fixed (byte* s = Content)
+            {
+                return (encoding.GetString(s, 512));
+            }
+        }
+
+        public string GetHandleString()
+        {
+            Encoding encoding = Encoding.GetEncoding(1252);
+
+            fixed (byte* s = Handle)
+            {
+                return (encoding.GetString(s, 50));
+            }
+        }
     }
 
     public class Category2016 : CategoryBaseMultiple<Category2016Item>

@@ -279,7 +279,7 @@ namespace SpellforceDataEditor.SFMap
                     }
                     else
                     {
-                        SFCategoryElement elem = SFCategoryManager.FindElementText(
+                        SFCategoryElement elem = SFCategoryManager.GetTextByLanguage(
                             map.metadata.spawns[player].text_id, Settings.LanguageID);
                         if (elem == null)
                         {

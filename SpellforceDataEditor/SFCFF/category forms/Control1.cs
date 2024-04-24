@@ -1,4 +1,5 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,10 +9,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control1 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2002 c2002;
+
         static int[] tracetable;
         public Control1()
         {
             InitializeComponent();
+
+            c2002 = SFCategoryManager.gamedata.c2002;
+
             tracetable = new int[10];
             for (int i = 0; i < 10; i++)
             {
@@ -47,12 +53,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(tb_effID.Text));
+            c2002.SetField(current_element, "SpellID", SFEngine.Utility.TryParseUInt16(tb_effID.Text));
         }
 
         private void tb_typeID_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt16(tb_typeID.Text));
+            c2002.SetField(current_element, "SpellLineID", SFEngine.Utility.TryParseUInt16(tb_effID.Text));
         }
 
         private void tb_req1_1_TextChanged(object sender, EventArgs e)

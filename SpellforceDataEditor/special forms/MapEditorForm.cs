@@ -3385,7 +3385,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 byte race_id = (byte)cat[i][0];
                 ushort race_name_index = (ushort)(cat[i][7]);
-                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
 
                 string race_name;
                 if (name_elem != null)
@@ -3419,7 +3419,7 @@ namespace SpellforceDataEditor.special_forms
                 int race_cat_index = cat.GetElementIndex(unit_race_id);
 
                 ushort race_name_index = (ushort)(cat[race_cat_index][7]);
-                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
                 {
@@ -3475,7 +3475,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 byte race_id = (byte)cat[i][0];
                 ushort race_name_index = (ushort)(cat[i][7]);
-                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
 
                 string race_name;
                 if (name_elem != null)
@@ -3513,7 +3513,7 @@ namespace SpellforceDataEditor.special_forms
                 int race_cat_index = cat.GetElementIndex(unit_race_id);
 
                 ushort race_name_index = (ushort)(cat[race_cat_index][7]);
-                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
                 {
@@ -3752,7 +3752,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 byte race_id = (byte)cat[i][0];
                 ushort race_name_index = (ushort)(cat[i][7]);
-                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
 
                 string race_name;
                 if (name_elem != null)
@@ -3777,7 +3777,7 @@ namespace SpellforceDataEditor.special_forms
                 int race_cat_index = cat.GetElementIndex(building_race_id);
 
                 ushort race_name_index = (ushort)(cat[race_cat_index][7]);
-                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
                 {
@@ -3835,7 +3835,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 byte race_id = (byte)cat[i][0];
                 ushort race_name_index = (ushort)(cat[i][7]);
-                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
 
                 string race_name;
                 if (name_elem != null)
@@ -3860,7 +3860,7 @@ namespace SpellforceDataEditor.special_forms
                 int race_cat_index = cat.GetElementIndex(building_race_id);
 
                 ushort race_name_index = (ushort)(cat[race_cat_index][7]);
-                SFCategoryElement name_elem = SFCategoryManager.FindElementText(race_name_index, SFEngine.Settings.LanguageID);
+                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
                 string race_name;
                 if (name_elem != null)
                 {

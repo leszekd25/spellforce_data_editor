@@ -32,6 +32,15 @@ namespace SFEngine.SF3D.SceneSynchro
         public SceneNodeSimple decal_node;
     }
 
+    public enum SFCFFMode
+    {
+        NONE,
+        ITEM,
+        UNIT,
+        BUILDING,
+        OBJECT,
+    }
+
     public class SFScene
     {
         // TODO: multiple scenes (at least one for map editor and one for asset viewer
@@ -239,11 +248,8 @@ namespace SFEngine.SF3D.SceneSynchro
             SFResourceManager.Models.AddManually(missing_node_mesh, "_MISSING_MESH_");
         }
 
-
-        // generates a scene given gamedata element
-        public void CatElemToScene(int category, int element)
+        public SFCFFMode CatToSceneMode(int category)
         {
-            scene_meta.is_animated = false;
             switch (category)
             {
                 case 2003:
@@ -254,15 +260,37 @@ namespace SFEngine.SF3D.SceneSynchro
                 case 2014:
                 case 2012:
                 case 2018:
-                    //get item id
-                    int item_id = SFCategoryManager.gamedata[category].GetElementID(element);
-                    if (item_id == Utility.NO_INDEX)
-                    {
-                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Item not found (category is " + category.ToString()
-                            + ", element is " + element.ToString() + ")");
-                        break;
-                    }
+                    return SFCFFMode.ITEM;
+                case 2029:
+                case 2030:
+                case 2031:
+                    return SFCFFMode.BUILDING;
+                case 2050:
+                case 2057:
+                case 2065:
+                    return SFCFFMode.OBJECT;
+                case 2024:
+                case 2025:
+                case 2026:
+                case 2028:
+                case 2040:
+                case 2001:
+                    return SFCFFMode.UNIT;
+                default:
+                    return SFCFFMode.NONE;
+            }
+        }
 
+        // generates a scene given gamedata element
+        public void CatElemToScene(int category, int item_id)
+        {
+            scene_meta.is_animated = false;
+
+            SFCFFMode scene_mode = CatToSceneMode(category);
+            SceneNode node = null;
+            switch (scene_mode)
+            {
+                case SFCFFMode.ITEM:
                     //find item mesh
                     string m_name = SFLuaEnvironment.GetItemMesh(item_id, false);
                     if (m_name == "")
@@ -272,68 +300,30 @@ namespace SFEngine.SF3D.SceneSynchro
                     }
 
                     //create scene
-                    SceneNodeSimple item_node = AddSceneNodeSimple(root, m_name, "item");
-                    item_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+                    node = AddSceneNodeSimple(null, m_name, "item");
                     scene_meta.name = SFCategoryManager.GetItemName((ushort)item_id);
-
                     break;
-                case 2029:
-                case 2030:
-                case 2031:
-                    //get building id
-                    int building_id = SFCategoryManager.gamedata[category].GetElementID(element);
-                    if (building_id == Utility.NO_INDEX)
-                    {
-                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Building not found (category is " + category.ToString()
-                            + ", element is " + element.ToString() + ")");
-                        break;
-                    }
-                    SceneNode building_node = AddSceneBuilding(building_id, "building");
-                    building_node.SetParent(root);
-                    building_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-                    scene_meta.name = SFCategoryManager.GetBuildingName((ushort)building_id);
-
+                case SFCFFMode.BUILDING:
+                    node = AddSceneBuilding(item_id, "building");
+                    scene_meta.name = SFCategoryManager.GetBuildingName((ushort)item_id);
                     break;
-                case 2050:
-                case 2057:
-                case 2065:
-                    //get object id
-                    int object_id = SFCategoryManager.gamedata[category].GetElementID(element);
-                    if (object_id == Utility.NO_INDEX)
-                    {
-                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Object not found (category is " + category.ToString()
-                            + ", element is " + element.ToString() + ")");
-                        break;
-                    }
-                    SceneNode object_node = AddSceneObject(object_id, "object", true, true);
-                    object_node.SetParent(root);
-                    object_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-                    scene_meta.name = SFCategoryManager.GetObjectName((ushort)object_id);
-
+                case SFCFFMode.OBJECT:
+                    node = AddSceneObject(item_id, "object", true, true);
+                    scene_meta.name = SFCategoryManager.GetObjectName((ushort)item_id);
                     break;
-                case 2024:
-                case 2025:
-                case 2026:
-                case 2028:
-                case 2040:
-                case 2001:
-                    //get unit id
-                    int unit_id = SFCategoryManager.gamedata[category].GetElementID(element);
-                    if (unit_id == Utility.NO_INDEX)
-                    {
-                        LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Unit not found (category is " + category.ToString()
-                            + ", element is " + element.ToString() + ")");
-                        break;
-                    }
-                    SceneNode unit_node = AddSceneUnit(unit_id, "unit");
-                    unit_node.SetParent(root);
-                    unit_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-                    scene_meta.name = SFCategoryManager.GetUnitName((ushort)unit_id);
-
+                case SFCFFMode.UNIT:
+                    node = AddSceneUnit(item_id, "unit");
+                    scene_meta.name = SFCategoryManager.GetUnitName((ushort)item_id);
                     scene_meta.is_animated = true;
                     break;
                 default:
                     break;
+            }
+
+            if (node != null)
+            {
+                node.SetParent(root);
+                node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
             }
         }
 
@@ -407,34 +397,19 @@ namespace SFEngine.SF3D.SceneSynchro
             SceneNode unit_node = AddSceneNodeEmpty(null, object_name);    // parent to be assigned later, likely some of the cached mapchunk nodes
 
             //find unit data element (cat 18)
-            if(SFCategoryManager.gamedata[2024] == null)
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): There is no unit data block in gamedata!");
-                return unit_node;
-            }
-            SFCategoryElement unit_data = SFCategoryManager.gamedata[2024].FindElementBinary<UInt16>(0, (UInt16)unit_id);
-            if (unit_data == null)
+            bool unit_found = SFCategoryManager.gamedata.c2024.GetItemIndex(unit_id, out int unit_index);
+            if(!unit_found)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): Unit does not exist (unit id = "
                     + unit_id + ")");
                 return unit_node;
             }
+            bool unit_stats_found = SFCategoryManager.gamedata.c2005.GetItemIndex(SFCategoryManager.gamedata.c2024[unit_index].StatsID, out int unit_stats_index);
 
-            //get unit gender
-            SFCategoryElement unit_stats;
-            if (SFCategoryManager.gamedata[2005] == null)
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): There is no unit stats data block in gamedata, setting gender to male");
-                unit_stats = null;
-            }
-            else
-            {
-                unit_stats = SFCategoryManager.gamedata[2005].FindElementBinary<UInt16>(0, (UInt16)unit_data[2]);
-            }
             bool is_female = false;
-            if (unit_stats != null)
+            if (unit_stats_found)
             {
-                is_female = ((Byte)unit_stats[21] % 2) == 1;
+                is_female = (SFCategoryManager.gamedata.c2005[unit_stats_index].UnitFlags & 0b1) == 1;
             }
 
             //get chest item (2) (animated)
@@ -461,7 +436,7 @@ namespace SFEngine.SF3D.SceneSynchro
             }
 
             //special case: monument unit, needs to be considered separately
-            string unit_handle = unit_data[10].ToString();
+            string unit_handle = SFCategoryManager.gamedata.c2024[unit_index].GetHandleString();
             if ((unit_handle.StartsWith("Unit")) && (!unit_handle.Contains("Titan")))
             {
                 chest_name += "_cold";
@@ -484,9 +459,9 @@ namespace SFEngine.SF3D.SceneSynchro
                 }
             }
             //special case: anim_name is of "figure_hero": need to also add human head (animated)
-            if ((anim_name == "figure_hero") && (unit_stats != null))
+            if ((anim_name == "figure_hero") && (unit_stats_found))
             {
-                int head_id = (UInt16)unit_stats[22];
+                int head_id = SFCategoryManager.gamedata.c2005[unit_stats_index].HeadID;
                 SFLuaSQLHeadData head_data = SFLuaEnvironment.heads[head_id];
                 if (head_data == null)
                 {
@@ -548,10 +523,10 @@ namespace SFEngine.SF3D.SceneSynchro
                 {
                     bool is_shield = false;
                     //check if it's a shield (type 9)
-                    SFCategoryElement item_data = SFCategoryManager.gamedata[2003].FindElementBinary<UInt16>(0, lhand_id);
-                    if (item_data != null)
+                    bool item_found = SFCategoryManager.gamedata.c2003.GetItemIndex(lhand_id, out int item_index);
+                    if(item_found)
                     {
-                        int item_type = (Byte)item_data[2];
+                        int item_type = SFCategoryManager.gamedata.c2003[item_index].ItemType2;
                         is_shield = item_type == 9;
                     }
                     //create bone attachment

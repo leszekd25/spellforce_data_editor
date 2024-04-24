@@ -33,7 +33,6 @@ namespace SFEngine.SFCFF
         public int GetNumOfItems();
         public int GetCurrentMaxID();
         public int GetByteCount();
-        //public bool GetCategoryChunk(SFChunkFile file, out SFChunkFileChunk chunk);
         public bool Load(SFChunkFile file);
         public bool IsLoaded();
         public bool WriteRawData(ref byte[] data);
@@ -42,11 +41,16 @@ namespace SFEngine.SFCFF
         public bool AddEmpty(int new_index);
         public bool Copy(int from_index, int new_index);
         public bool Remove(int index);
+        public bool GetID(int index, out int id);
         public bool SetID(int index, int id);
         public bool CalculateNewItemIndex(int new_id, out int index);
         public bool GetItemString(int index, SFGameData gd, out string str);
         public bool GetItemDescription(int index, SFGameData gd, out string desc);
         public bool GetItemIndex(int id, out int index);
+        public bool Undo();
+        public bool Redo();
+        public bool CanUndo();
+        public bool CanRedo();
         public List<int> QueryItems();
     }
 

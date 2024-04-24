@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using SFEngine.SFCFF.CTG;
 using System.Collections.Generic;
 
 namespace SFEngine.SFMap
@@ -36,27 +37,30 @@ namespace SFEngine.SFMap
                 return;
             }
 
-            // load building collision data from gamedata
-            int col_index = SFCFF.SFCategoryManager.gamedata[2057].GetElementIndex(id);
-            if (col_index == Utility.NO_INDEX)
+            bool outline_found = SFCFF.SFCategoryManager.gamedata.c2057.GetItemIndex(id, out int outline_index);
+            if (!outline_found)
             {
                 return;
             }
+            int outline_num = SFCFF.SFCategoryManager.gamedata.c2057.GetItemSubItemNum(outline_index);
+            outline_index = SFCFF.SFCategoryManager.gamedata.c2057.Indices[outline_index];
 
             SFMapCollisionBoundary cb = new SFMapCollisionBoundary() { origin = Vector2.Zero };
-            SFCFF.SFCategoryElementList col_data = SFCFF.SFCategoryManager.gamedata[2057].element_lists[col_index];
-            for (int i = 0; i < col_data.Elements.Count; i++)
+            for (int i = 0; i < outline_num; i++)
             {
-                SFCFF.SFOutlineData outline = (SFCFF.SFOutlineData)(col_data[i][3]);
-                int vertex_count = outline.Data.Count / 2;
+                Category2057Item outline = SFCFF.SFCategoryManager.gamedata.c2057[outline_index];
+
+                int vertex_count = outline.Coords.Count / 2;
                 Vector2[] vertex_list = new Vector2[vertex_count];
                 for (int j = 0; j < vertex_count; j++)
                 {
                     vertex_list[j] = new Vector2();
-                    vertex_list[j].X = outline.Data[j * 2 + 0] / 140.0f;
-                    vertex_list[j].Y = outline.Data[j * 2 + 1] / 140.0f;
+                    vertex_list[j].X = outline.Coords[j * 2 + 0] / 140.0f;
+                    vertex_list[j].Y = outline.Coords[j * 2 + 1] / 140.0f;
                 }
                 cb.polygons.Add(new SFMapCollisionPolygon2D(vertex_list, Vector2.Zero));
+
+                outline_index++;
             }
 
             //cb.RebuildModel3D();
@@ -184,10 +188,10 @@ namespace SFEngine.SFMap
         {
             bool blocks_terrain = false;
 
-            int col_index = SFCFF.SFCategoryManager.gamedata[2050].GetElementIndex(id);
-            if (col_index != Utility.NO_INDEX)
+            bool object_found = SFCFF.SFCategoryManager.gamedata.c2050.GetItemIndex(id, out int object_index);
+            if(object_found)
             {
-                blocks_terrain = ((byte)(SFCFF.SFCategoryManager.gamedata[2050][col_index][2]) & 1) == 1;
+                blocks_terrain = (SFCFF.SFCategoryManager.gamedata.c2050[object_index].Flags & 0b1) == 1;
             }
 
             if (!object_collision.ContainsKey(id))

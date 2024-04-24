@@ -25,6 +25,16 @@ namespace SFEngine.SFCFF.CTG
 
         public int GetID() => UnitID;
         public void SetID(int id) => UnitID = (ushort)id;
+
+        public string GetHandleString()
+        {
+            Encoding encoding = Encoding.GetEncoding(1252);
+
+            fixed (byte* s = Handle)
+            {
+                return (encoding.GetString(s, 40));
+            }
+        }
     }
 
     public class Category2024 : CategoryBaseSingle<Category2024Item>

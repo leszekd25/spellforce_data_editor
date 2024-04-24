@@ -27,6 +27,14 @@ namespace SFEngine.SFCFF.CTG
 
         public int GetID() => SpellID;
         public void SetID(int id) => SpellID = (ushort)id;
+
+        public byte GetSpellLevel()
+        {
+            fixed(byte* sr = SkillReq)
+            {
+                return SkillReq[2];
+            }
+        }
     }
 
     public class Category2002: CategoryBaseSingle<Category2002Item>
