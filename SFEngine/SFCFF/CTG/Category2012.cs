@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,15 @@ namespace SFEngine.SFCFF.CTG
         public int GetSubID() => UIIndex;
         public void SetSubID(int subid) => UIIndex = (byte)subid;
 
+        public string GetHandleString()
+        {
+            Encoding encoding = Encoding.GetEncoding(1252);
+
+            fixed (byte* s = UIHandle)
+            {
+                return (encoding.GetString(s, 64));
+            }
+        }
     }
 
     public class Category2012 : CategoryBaseMultiple<Category2012Item>

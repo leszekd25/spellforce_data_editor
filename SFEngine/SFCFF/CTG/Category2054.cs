@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,16 @@ namespace SFEngine.SFCFF.CTG
 
         public int GetID() => SpellLineID;
         public void SetID(int id) => SpellLineID = (ushort)id;
+
+        public string GetHandleString()
+        {
+            Encoding encoding = Encoding.GetEncoding(1252);
+
+            fixed (byte* s = UIHandle)
+            {
+                return (encoding.GetString(s, 64));
+            }
+        }
     }
 
     public class Category2054: CategoryBaseSingle<Category2054Item>

@@ -1,4 +1,5 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
 
@@ -6,54 +7,41 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control14 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2018 c2018;
+
         public Control14()
         {
             InitializeComponent();
+
+            c2018 = SFCategoryManager.gamedata.c2018;
+            category = c2018;
+            
             column_dict.Add("Spell item ID", new int[1] { 0 });
             column_dict.Add("Effect ID", new int[1] { 1 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
+            c2018.SetID(current_element, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt16(textBox2.Text));
+            c2018.SetField(current_element, "EffectID", SFEngine.Utility.TryParseUInt16(textBox2.Text));
         }
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0);
-            textBox2.Text = variant_repr(1);
+            textBox1.Text = c2018[current_element].SpellItemID.ToString();
+            textBox2.Text = c2018[current_element].EffectID.ToString();
         }
-
-        private void textBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox1, 2003);
-            }
-        }
-
-        private void textBox2_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox2, 2002);
-            }
-        }
-
 
 
         public override string get_element_string(int index)
         {
-            UInt16 item_id = (UInt16)category[index][0];
-            string txt_item = SFCategoryManager.GetItemName(item_id);
-            UInt16 effect_id = (UInt16)category[index][1];
-            string txt_effect = SFCategoryManager.GetEffectName(effect_id, true);
-            return category[index][0].ToString() + " " + txt_item + " | " + txt_effect;
+            UInt16 item_id = c2018[current_element].SpellItemID;
+            UInt16 effect_id = c2018[current_element].EffectID;
+            return $"{item_id} {SFCategoryManager.GetItemName(item_id)} | {SFCategoryManager.GetEffectName(effect_id, true)}";
         }
     }
 }

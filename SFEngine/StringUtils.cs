@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SFEngine.SFCFF;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -66,6 +67,34 @@ namespace SFEngine
                 }
             }
             return Utility.NO_INDEX;
+        }
+
+        static public byte[] FromString(string s, byte lang_id, int char_count)
+        {
+            Encoding encoding;
+            switch (lang_id)
+            {
+                case 5:
+                    encoding = Encoding.GetEncoding(1251);
+                    break;
+                case 6:
+                    encoding = Encoding.GetEncoding(1250);
+                    break;
+                default:
+                    encoding = Encoding.GetEncoding(1252);
+                    break;
+            }
+
+            byte[] bytes = new byte[char_count];
+            unsafe
+            {
+                fixed (char* ptr = s.AsSpan())
+                {
+                    byte* ptr2 = (byte*)&bytes;
+                    int enc_result = encoding.GetBytes(ptr, s.Length, ptr2, char_count);
+                }
+            }
+            return bytes;
         }
     }
 }

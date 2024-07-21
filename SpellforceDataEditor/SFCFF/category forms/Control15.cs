@@ -1,13 +1,21 @@
-﻿using SFEngine.SFCFF;
+﻿using SFEngine;
+using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control15 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2016 c2016;
+
         public Control15()
         {
             InitializeComponent();
+
+            c2016 = SFCategoryManager.gamedata.c2016;
+            category = c2016;
+            
             column_dict.Add("Text ID", new int[1] { 0 });
             column_dict.Add("Language ID", new int[1] { 1 });
             column_dict.Add("Text mode", new int[1] { 2 });
@@ -22,26 +30,26 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             ListLanguages.Items.Clear();
 
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for(int i = 0; i < c2016.GetItemSubItemNum(current_element); i++)
             {
-                ListLanguages.Items.Add("Language #" + ((Byte)category[current_element, i][1]).ToString());
+                ListLanguages.Items.Add($"Language #{c2016[current_element, i].LanguageID}");
             }
 
             int safe_index = SFEngine.Utility.NO_INDEX;
-            if (category.element_lists[current_element].Elements.Count != 0)
+            if (c2016.GetItemSubItemNum(current_element) != 0)
             {
                 safe_index = 0;
             }
 
             int lang_index = SFEngine.Utility.NO_INDEX;
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for (int i = 0; i < c2016.GetItemSubItemNum(current_element); i++)
             {
-                if (((Byte)category[current_element, i][1]) == 1)
+                if (c2016[current_element, i].LanguageID == 1)
                 {
                     lang_index = i;
                     break;
                 }
-                else if (((Byte)category[current_element, i][1]) == 0)
+                else if(c2016[current_element, i].LanguageID == 0)
                 {
                     safe_index = i;
                 }
@@ -57,50 +65,23 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            if (ListLanguages.SelectedIndex == -1)
-            {
-                return;
-            }
-
-            MainForm.data.op_queue.OpenCluster();
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
-            }
-
-            MainForm.data.op_queue.CloseCluster();
+            c2016.SetID(current_element, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            if (ListLanguages.SelectedIndex == -1)
+            for (int i = 0; i < c2016.GetItemSubItemNum(current_element); i++)
             {
-                return;
+                c2016.SetField(current_element, i, "Mode", SFEngine.Utility.TryParseUInt8(textBox3.Text));
             }
-
-            MainForm.data.op_queue.OpenCluster();
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                set_element_variant(current_element, i, 2, SFEngine.Utility.TryParseUInt8(textBox3.Text));
-            }
-
-            MainForm.data.op_queue.CloseCluster();
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            if (ListLanguages.SelectedIndex == -1)
+            for (int i = 0; i < c2016.GetItemSubItemNum(current_element); i++)
             {
-                return;
+                c2016.SetField(current_element, i, "Handle", StringUtils.FromString(textBox4.Text, 0, 50));
             }
-
-            MainForm.data.op_queue.OpenCluster();
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                set_element_variant(current_element, i, 3, SFString.FromString(textBox4.Text, 0, 50));
-            }
-
-            MainForm.data.op_queue.CloseCluster();
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
@@ -110,23 +91,23 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            set_element_variant(current_element, ListLanguages.SelectedIndex, 4, SFString.FromString(textBox5.Text, (byte)(category[current_element, ListLanguages.SelectedIndex][1]), 512));
+            c2016.SetField(current_element, ListLanguages.SelectedIndex, "Content", StringUtils.FromString(textBox5.Text, c2016[current_element, ListLanguages.SelectedIndex].LanguageID, 512));
         }
 
         public override void show_element()
         {
             if (ListLanguages.SelectedIndex == -1)
             {
-                textBox1.Text = SFEngine.Utility.S_NONE;
-                textBox3.Text = SFEngine.Utility.S_NONE;
-                textBox4.Text = SFEngine.Utility.S_NONE;
-                textBox5.Text = SFEngine.Utility.S_NONE;
+                textBox1.Text = SFEngine.Utility.S_UNKNOWN;
+                textBox3.Text = SFEngine.Utility.S_UNKNOWN;
+                textBox4.Text = SFEngine.Utility.S_UNKNOWN;
+                textBox5.Text = SFEngine.Utility.S_UNKNOWN;
                 return;
             }
-            textBox1.Text = variant_repr(ListLanguages.SelectedIndex, 0);
-            textBox3.Text = variant_repr(ListLanguages.SelectedIndex, 2);
-            textBox4.Text = string_repr(ListLanguages.SelectedIndex, 3);
-            textBox5.Text = string_repr(ListLanguages.SelectedIndex, 4);
+            textBox1.Text = c2016[current_element, ListLanguages.SelectedIndex].TextID.ToString();
+            textBox3.Text = c2016[current_element, ListLanguages.SelectedIndex].Mode.ToString();
+            textBox4.Text = c2016[current_element, ListLanguages.SelectedIndex].GetHandleString();
+            textBox5.Text = c2016[current_element, ListLanguages.SelectedIndex].GetContentString();
         }
 
         private void DomainLanguages_SelectedItemChanged(object sender, EventArgs e)
@@ -146,14 +127,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
-            {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = ListLanguages.SelectedIndex,
-                IsRemoving = true,
-                IsSubElement = true
-            });
+            c2016.RemoveSub(current_element, ListLanguages.SelectedIndex);
         }
 
         private void ButtonAddLang_Click(object sender, EventArgs e)
@@ -167,9 +141,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             while (true)
             {
                 bool found_lang = false;
-                for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+                for (int i = 0; i < c2016.GetItemSubItemNum(current_element); i++)
                 {
-                    if ((byte)category[current_element, i][1] == new_lang_id)
+                    if (c2016[current_element, i].LanguageID == new_lang_id)
                     {
                         new_lang_id += 1;
                         found_lang = true;
@@ -182,23 +156,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 }
             }
 
-            int new_elem_index = category.element_lists[current_element].Elements.Count;
+            int new_elem_index = c2016.GetItemSubItemNum(current_element);
 
-            SFCategoryElement new_elem = category.GetEmptyElement();
-            new_elem[0] = (UInt16)category[current_element, 0][0];
-            new_elem[1] = (Byte)new_lang_id;
-            new_elem[2] = (Byte)category[current_element, 0][2];
-            new_elem[3] = SFString.FromString(category[current_element, 0][3].ToString(), 0, 50);
-            new_elem[4] = SFString.FromString("", new_lang_id, 512);
+            Category2016Item item = new Category2016Item();
+            c2016.GetID(current_element, out int id);
+            item.SetID(id);
 
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
-            {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = new_elem_index,
-                Element = new_elem,
-                IsSubElement = true
-            });
+            c2016.AddSubItem(current_element, new_elem_index, item);
+            c2016.SetField(current_element, new_elem_index, "LanguageID", new_lang_id);
+            c2016.SetField(current_element, new_elem_index, "Mode", c2016[current_element, 0].Mode);
+            c2016.SetField(current_element, new_elem_index, "Handle", StringUtils.FromString(c2016[current_element, 0].GetHandleString(), 0, 50));
+            c2016.SetField(current_element, new_elem_index, "Content", StringUtils.FromString("", new_lang_id, 512));
         }
 
         private void ListLanguages_SelectedIndexChanged(object sender, EventArgs e)
@@ -213,13 +181,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            string txt = SFCategoryManager.GetTextFromElement(category[index, 0], 0);
-            return category[index, 0][0].ToString() + " " + txt;
+            return $"{c2016[index, 0].TextID} {SFCategoryManager.GetTextByLanguage(index, 1)}";
         }
 
         public override void on_add_subelement(int subelem_index)
         {
-            ListLanguages.Items.Insert(subelem_index, "Language #" + ((Byte)category[current_element, subelem_index][1]).ToString());
+            ListLanguages.Items.Insert(subelem_index, $"Language #{c2016[current_element, subelem_index].LanguageID}");
         }
 
         public override void on_remove_subelement(int subelem_index)
@@ -229,13 +196,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void on_update_subelement(int subelem_index)
         {
-            ListLanguages.Items[subelem_index] = "Language #" + ((Byte)category[current_element, subelem_index][1]).ToString();
+            ListLanguages.Items[subelem_index] = $"Language #{c2016[current_element, subelem_index].LanguageID}";
             if (ListLanguages.SelectedIndex == subelem_index)
             {
-                textBox1.Text = variant_repr(subelem_index, 0);
-                textBox3.Text = variant_repr(subelem_index, 2);
-                textBox4.Text = string_repr(subelem_index, 3);
-                textBox5.Text = string_repr(subelem_index, 4);
+                textBox1.Text = c2016[current_element, subelem_index].TextID.ToString();
+                textBox3.Text = c2016[current_element, subelem_index].Mode.ToString();
+                textBox4.Text = c2016[current_element, subelem_index].GetHandleString();
+                textBox5.Text = c2016[current_element, subelem_index].GetContentString();
             }
         }
     }

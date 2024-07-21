@@ -1,4 +1,5 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
 
@@ -6,9 +7,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control8 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2004 c2004;
+
         public Control8()
         {
             InitializeComponent();
+
+            c2004 = SFCategoryManager.gamedata.c2004;
+            category = c2004;
+
             column_dict.Add("Item ID", new int[1] { 0 });
             column_dict.Add("Strength", new int[1] { 1 });
             column_dict.Add("Stamina", new int[1] { 2 });
@@ -31,131 +38,129 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
+            c2004.SetField(current_element, "ItemID", SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, SFEngine.Utility.TryParseInt16(textBox4.Text));
+            c2004.SetField(current_element, "Strength", SFEngine.Utility.TryParseInt16(textBox4.Text));
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, SFEngine.Utility.TryParseInt16(textBox6.Text));
+            c2004.SetField(current_element, "Stamina", SFEngine.Utility.TryParseInt16(textBox6.Text));
         }
 
         private void textBox8_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, SFEngine.Utility.TryParseInt16(textBox8.Text));
+            c2004.SetField(current_element, "Agility", SFEngine.Utility.TryParseInt16(textBox8.Text));
         }
 
         private void textBox10_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 4, SFEngine.Utility.TryParseInt16(textBox10.Text));
+            c2004.SetField(current_element, "Dexterity", SFEngine.Utility.TryParseInt16(textBox10.Text));
         }
 
         private void textBox18_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 5, SFEngine.Utility.TryParseInt16(textBox18.Text));
+            c2004.SetField(current_element, "Health", SFEngine.Utility.TryParseInt16(textBox18.Text));
         }
 
         private void textBox12_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 6, SFEngine.Utility.TryParseInt16(textBox12.Text));
+            c2004.SetField(current_element, "Charisma", SFEngine.Utility.TryParseInt16(textBox12.Text));
         }
 
         private void textBox14_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 7, SFEngine.Utility.TryParseInt16(textBox14.Text));
+            c2004.SetField(current_element, "Intelligence", SFEngine.Utility.TryParseInt16(textBox14.Text));
         }
 
         private void textBox16_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 8, SFEngine.Utility.TryParseInt16(textBox16.Text));
+            c2004.SetField(current_element, "Wisdom", SFEngine.Utility.TryParseInt16(textBox16.Text));
         }
 
         private void textBox17_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 9, SFEngine.Utility.TryParseInt16(textBox17.Text));
+            c2004.SetField(current_element, "Mana", SFEngine.Utility.TryParseInt16(textBox17.Text));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 10, SFEngine.Utility.TryParseInt16(textBox2.Text));
+            c2004.SetField(current_element, "Armor", SFEngine.Utility.TryParseInt16(textBox2.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 11, SFEngine.Utility.TryParseInt16(textBox3.Text));
+            c2004.SetField(current_element, "ResistFire", SFEngine.Utility.TryParseInt16(textBox3.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 12, SFEngine.Utility.TryParseInt16(textBox5.Text));
+            c2004.SetField(current_element, "ResistIce", SFEngine.Utility.TryParseInt16(textBox5.Text));
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 13, SFEngine.Utility.TryParseInt16(textBox7.Text));
+            c2004.SetField(current_element, "ResistBlack", SFEngine.Utility.TryParseInt16(textBox7.Text));
         }
 
         private void textBox9_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 14, SFEngine.Utility.TryParseInt16(textBox9.Text));
+            c2004.SetField(current_element, "ResistMind", SFEngine.Utility.TryParseInt16(textBox9.Text));
         }
 
         private void textBox11_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 15, SFEngine.Utility.TryParseInt16(textBox11.Text));
+            c2004.SetField(current_element, "SpeedWalk", SFEngine.Utility.TryParseInt16(textBox11.Text));
         }
 
         private void textBox13_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 16, SFEngine.Utility.TryParseInt16(textBox13.Text));
+            c2004.SetField(current_element, "SpeedFight", SFEngine.Utility.TryParseInt16(textBox13.Text));
         }
 
         private void textBox15_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 17, SFEngine.Utility.TryParseInt16(textBox15.Text));
+            c2004.SetField(current_element, "SpeedRun", SFEngine.Utility.TryParseInt16(textBox15.Text));
         }
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0);
-            textBox4.Text = variant_repr(1);
-            textBox6.Text = variant_repr(2);
-            textBox8.Text = variant_repr(3);
-            textBox10.Text = variant_repr(4);
-            textBox18.Text = variant_repr(5);
-            textBox12.Text = variant_repr(6);
-            textBox14.Text = variant_repr(7);
-            textBox16.Text = variant_repr(8);
-            textBox17.Text = variant_repr(9);
-            textBox2.Text = variant_repr(10);
-            textBox3.Text = variant_repr(11);
-            textBox5.Text = variant_repr(12);
-            textBox7.Text = variant_repr(13);
-            textBox9.Text = variant_repr(14);
-            textBox11.Text = variant_repr(15);
-            textBox13.Text = variant_repr(16);
-            textBox15.Text = variant_repr(17);
+            Category2004Item item = c2004[current_element];
+
+            textBox1.Text = item.ItemID.ToString();
+            textBox4.Text = item.Strength.ToString();
+            textBox6.Text = item.Stamina.ToString();
+            textBox8.Text = item.Agility.ToString();
+            textBox10.Text = item.Dexterity.ToString();
+            textBox18.Text = item.Health.ToString();
+            textBox12.Text = item.Charisma.ToString();
+            textBox14.Text = item.Intelligence.ToString();
+            textBox16.Text = item.Wisdom.ToString();
+            textBox17.Text = item.Mana.ToString();
+            textBox2.Text = item.Armor.ToString();
+            textBox3.Text = item.ResistFire.ToString();
+            textBox5.Text = item.ResistIce.ToString();
+            textBox7.Text = item.ResistBlack.ToString();
+            textBox9.Text = item.ResistMind.ToString();
+            textBox11.Text = item.SpeedWalk.ToString();
+            textBox13.Text = item.SpeedFight.ToString();
+            textBox15.Text = item.SpeedCast.ToString();
         }
 
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
             {
-                step_into(textBox1, 2003);
             }
         }
 
-
-
         public override string get_element_string(int index)
         {
-            UInt16 item_id = (UInt16)category[index][0];
-            string txt = SFCategoryManager.GetItemName(item_id);
-            return category[index][0].ToString() + " " + txt;
+            c2004.GetID(index, out int id);
+            return $"{id} {SFCategoryManager.GetItemName((ushort)id)}";
         }
     }
 }

@@ -1,29 +1,32 @@
-﻿using System;
+﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
+using System;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control3 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2056 c2056;
+
         public Control3()
         {
             InitializeComponent();
+
+            c2056 = SFCategoryManager.gamedata.c2056;
+            category = c2056;
+
             column_dict.Add("Unknown", new int[6] { 0, 1, 2, 3, 4, 5 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            Byte[] data_array = SFEngine.Utility.TryParseByteArray(textBox1.Text, 6);
-            set_element_variant(current_element, 0, data_array[0]);
-            set_element_variant(current_element, 1, data_array[1]);
-            set_element_variant(current_element, 2, data_array[2]);
-            set_element_variant(current_element, 3, data_array[3]);
-            set_element_variant(current_element, 4, data_array[4]);
-            set_element_variant(current_element, 5, data_array[5]);
+            // dont actually do anything here
         }
 
         public override void show_element()
         {
-            textBox1.Text = bytearray_repr(0, 6);
+            Category2056Item item = c2056[current_element];
+            textBox1.Text = $"{item.GetData(0).ToString("X")} {item.GetData(1).ToString("X")} {item.GetData(2).ToString("X")} {item.GetData(3).ToString("X")} {item.GetData(4).ToString("X")} {item.GetData(5).ToString("X")}";
         }
     }
 }

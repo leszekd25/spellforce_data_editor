@@ -21,19 +21,34 @@ namespace SFEngine.SFCFF.CTG
         public ushort MaxRange;
         public byte CastType1;
         public byte CastType2;
-        public fixed int Params[10];
+        public fixed uint Params[10];
         public ushort EffectPower;
         public ushort EffectRange;
 
         public int GetID() => SpellID;
         public void SetID(int id) => SpellID = (ushort)id;
 
+        public byte GetSkillReq(int index)
+        {
+            if((index < 0)||(index >= 12))
+            {
+                throw new Exception();
+            }
+            return SkillReq[index];
+        }
+
+        public uint GetParam(int index)
+        {
+            if ((index < 0) || (index >= 10))
+            {
+                throw new Exception();
+            }
+            return Params[index];
+        }
+
         public byte GetSpellLevel()
         {
-            fixed(byte* sr = SkillReq)
-            {
-                return SkillReq[2];
-            }
+            return SkillReq[2];
         }
     }
 

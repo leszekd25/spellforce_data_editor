@@ -3,6 +3,7 @@ using SFEngine.SFCFF.CTG;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
@@ -17,6 +18,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             InitializeComponent();
 
             c2002 = SFCategoryManager.gamedata.c2002;
+            category = c2002;
 
             tracetable = new int[10];
             for (int i = 0; i < 10; i++)
@@ -63,157 +65,157 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_req1_1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, SFEngine.Utility.TryParseUInt8(tb_req1_1.Text));
+            c2002.SetField(current_element, "SkillReq[0]", SFEngine.Utility.TryParseUInt8(tb_req1_1.Text));
         }
 
         private void tb_req1_2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, SFEngine.Utility.TryParseUInt8(tb_req1_2.Text));
+            c2002.SetField(current_element, "SkillReq[1]", SFEngine.Utility.TryParseUInt8(tb_req1_2.Text));
         }
 
         private void tb_req1_3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 4, SFEngine.Utility.TryParseUInt8(tb_req1_3.Text));
+            c2002.SetField(current_element, "SkillReq[2]", SFEngine.Utility.TryParseUInt8(tb_req1_3.Text));
         }
 
         private void tb_req2_1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 5, SFEngine.Utility.TryParseUInt8(tb_req2_1.Text));
+            c2002.SetField(current_element, "SkillReq[3]", SFEngine.Utility.TryParseUInt8(tb_req2_1.Text));
         }
 
         private void tb_req2_2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 6, SFEngine.Utility.TryParseUInt8(tb_req2_2.Text));
+            c2002.SetField(current_element, "SkillReq[4]", SFEngine.Utility.TryParseUInt8(tb_req2_2.Text));
         }
 
         private void tb_req2_3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 7, SFEngine.Utility.TryParseUInt8(tb_req2_3.Text));
+            c2002.SetField(current_element, "SkillReq[5]", SFEngine.Utility.TryParseUInt8(tb_req2_3.Text));
         }
 
         private void tb_req3_1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 8, SFEngine.Utility.TryParseUInt8(tb_req3_1.Text));
+            c2002.SetField(current_element, "SkillReq[6]", SFEngine.Utility.TryParseUInt8(tb_req3_1.Text));
         }
 
         private void tb_req3_2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 9, SFEngine.Utility.TryParseUInt8(tb_req3_2.Text));
+            c2002.SetField(current_element, "SkillReq[7]", SFEngine.Utility.TryParseUInt8(tb_req3_2.Text));
         }
 
         private void tb_req3_3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 10, SFEngine.Utility.TryParseUInt8(tb_req3_3.Text));
+            c2002.SetField(current_element, "SkillReq[8]", SFEngine.Utility.TryParseUInt8(tb_req3_3.Text));
         }
 
         private void tb_req4_1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 11, SFEngine.Utility.TryParseUInt8(tb_req4_1.Text));
+            c2002.SetField(current_element, "SkillReq[9]", SFEngine.Utility.TryParseUInt8(tb_req4_1.Text));
         }
 
         private void tb_req4_2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 12, SFEngine.Utility.TryParseUInt8(tb_req4_2.Text));
+            c2002.SetField(current_element, "SkillReq[10]", SFEngine.Utility.TryParseUInt8(tb_req4_2.Text));
         }
 
         private void tb_req4_3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 13, SFEngine.Utility.TryParseUInt8(tb_req4_3.Text));
+            c2002.SetField(current_element, "SkillReq[11]", SFEngine.Utility.TryParseUInt8(tb_req4_3.Text));
         }
 
         private void tb_mnc_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 14, SFEngine.Utility.TryParseUInt16(tb_mnc.Text));
+            c2002.SetField(current_element, "ManaCost", SFEngine.Utility.TryParseUInt16(tb_mnc.Text));
         }
 
         private void tb_ctm_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 15, SFEngine.Utility.TryParseUInt32(tb_ctm.Text));
+            c2002.SetField(current_element, "CastTime", SFEngine.Utility.TryParseUInt32(tb_ctm.Text));
         }
 
         private void tb_rtm_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 16, SFEngine.Utility.TryParseUInt32(tb_rtm.Text));
+            c2002.SetField(current_element, "RecastTime", SFEngine.Utility.TryParseUInt32(tb_rtm.Text));
         }
 
         private void tb_rng_min_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 17, SFEngine.Utility.TryParseUInt16(tb_rng_min.Text));
+            c2002.SetField(current_element, "MinRange", SFEngine.Utility.TryParseUInt16(tb_rng_min.Text));
         }
 
         private void tb_rng_max_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 18, SFEngine.Utility.TryParseUInt16(tb_rng_max.Text));
+            c2002.SetField(current_element, "MaxRange", SFEngine.Utility.TryParseUInt16(tb_rng_max.Text));
         }
 
         private void tb_ct1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 19, SFEngine.Utility.TryParseUInt8(tb_ct1.Text));
+            c2002.SetField(current_element, "CastType1", SFEngine.Utility.TryParseUInt8(tb_ct1.Text));
         }
 
         private void tb_ct2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 20, SFEngine.Utility.TryParseUInt8(tb_ct2.Text));
+            c2002.SetField(current_element, "CastType2", SFEngine.Utility.TryParseUInt8(tb_ct2.Text));
         }
 
         private void tb_sd1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 21, SFEngine.Utility.TryParseUInt32(tb_sd1.Text));
+            c2002.SetField(current_element, "Params[0]", SFEngine.Utility.TryParseUInt32(tb_sd1.Text));
         }
 
         private void tb_sd2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 22, SFEngine.Utility.TryParseUInt32(tb_sd2.Text));
+            c2002.SetField(current_element, "Params[1]", SFEngine.Utility.TryParseUInt32(tb_sd2.Text));
         }
 
         private void tb_sd3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 23, SFEngine.Utility.TryParseUInt32(tb_sd3.Text));
+            c2002.SetField(current_element, "Params[2]", SFEngine.Utility.TryParseUInt32(tb_sd3.Text));
         }
 
         private void tb_sd4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 24, SFEngine.Utility.TryParseUInt32(tb_sd4.Text));
+            c2002.SetField(current_element, "Params[3]", SFEngine.Utility.TryParseUInt32(tb_sd4.Text));
         }
 
         private void tb_sd5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 25, SFEngine.Utility.TryParseUInt32(tb_sd5.Text));
+            c2002.SetField(current_element, "Params[4]", SFEngine.Utility.TryParseUInt32(tb_sd5.Text));
         }
 
         private void tb_sd6_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 26, SFEngine.Utility.TryParseUInt32(tb_sd6.Text));
+            c2002.SetField(current_element, "Params[5]", SFEngine.Utility.TryParseUInt32(tb_sd6.Text));
         }
 
         private void tb_sd7_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 27, SFEngine.Utility.TryParseUInt32(tb_sd7.Text));
+            c2002.SetField(current_element, "Params[6]", SFEngine.Utility.TryParseUInt32(tb_sd7.Text));
         }
 
         private void tb_sd8_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 28, SFEngine.Utility.TryParseUInt32(tb_sd8.Text));
+            c2002.SetField(current_element, "Params[7]", SFEngine.Utility.TryParseUInt32(tb_sd8.Text));
         }
 
         private void tb_sd9_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 29, SFEngine.Utility.TryParseUInt32(tb_sd9.Text));
+            c2002.SetField(current_element, "Params[8]", SFEngine.Utility.TryParseUInt32(tb_sd9.Text));
         }
 
         private void tb_sd10_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 30, SFEngine.Utility.TryParseUInt32(tb_sd10.Text));
+            c2002.SetField(current_element, "Params[9]", SFEngine.Utility.TryParseUInt32(tb_sd10.Text));
         }
 
         private void tb_effpow_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 31, SFEngine.Utility.TryParseUInt16(tb_effpow.Text));
+            c2002.SetField(current_element, "EffectPower", SFEngine.Utility.TryParseUInt16(tb_effpow.Text));
         }
 
         private void tb_effrng_Validated(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 32, SFEngine.Utility.TryParseUInt16(tb_effpow.Text));
+            c2002.SetField(current_element, "EffectRange", SFEngine.Utility.TryParseUInt16(tb_effpow.Text));
         }
 
         private void set_data_labels(string[] p)
@@ -254,129 +256,42 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            tb_effID.Text = variant_repr(0);
-            tb_typeID.Text = variant_repr(1);
-            tb_req1_1.Text = variant_repr(2);
-            tb_req1_2.Text = variant_repr(3);
-            tb_req1_3.Text = variant_repr(4);
-            tb_req2_1.Text = variant_repr(5);
-            tb_req2_2.Text = variant_repr(6);
-            tb_req2_3.Text = variant_repr(7);
-            tb_req3_1.Text = variant_repr(8);
-            tb_req3_2.Text = variant_repr(9);
-            tb_req3_3.Text = variant_repr(10);
-            tb_req4_1.Text = variant_repr(11);
-            tb_req4_2.Text = variant_repr(12);
-            tb_req4_3.Text = variant_repr(13);
-            tb_mnc.Text = variant_repr(14);
-            tb_ctm.Text = variant_repr(15);
-            tb_rtm.Text = variant_repr(16);
-            tb_rng_min.Text = variant_repr(17);
-            tb_rng_max.Text = variant_repr(18);
-            tb_ct1.Text = variant_repr(19);
-            tb_ct2.Text = variant_repr(20);
-            tb_sd1.Text = variant_repr(21);
-            tb_sd2.Text = variant_repr(22);
-            tb_sd3.Text = variant_repr(23);
-            tb_sd4.Text = variant_repr(24);
-            tb_sd5.Text = variant_repr(25);
-            tb_sd6.Text = variant_repr(26);
-            tb_sd7.Text = variant_repr(27);
-            tb_sd8.Text = variant_repr(28);
-            tb_sd9.Text = variant_repr(29);
-            tb_sd10.Text = variant_repr(30);
-            tb_effpow.Text = variant_repr(31);
-            tb_effrng.Text = variant_repr(32);
+            Category2002Item item = c2002.Items[current_element];
+            tb_effID.Text = item.SpellID.ToString();
+            tb_typeID.Text = item.SpellLineID.ToString();
+            tb_req1_1.Text = item.GetSkillReq(0).ToString();
+            tb_req1_2.Text = item.GetSkillReq(1).ToString();
+            tb_req1_3.Text = item.GetSkillReq(2).ToString();
+            tb_req2_1.Text = item.GetSkillReq(3).ToString();
+            tb_req2_2.Text = item.GetSkillReq(4).ToString();
+            tb_req2_3.Text = item.GetSkillReq(5).ToString();
+            tb_req3_1.Text = item.GetSkillReq(6).ToString();
+            tb_req3_2.Text = item.GetSkillReq(7).ToString();
+            tb_req3_3.Text = item.GetSkillReq(8).ToString();
+            tb_req4_1.Text = item.GetSkillReq(9).ToString();
+            tb_req4_2.Text = item.GetSkillReq(10).ToString();
+            tb_req4_3.Text = item.GetSkillReq(11).ToString();
+            tb_mnc.Text = item.ManaCost.ToString();
+            tb_ctm.Text = item.CastTime.ToString();
+            tb_rtm.Text = item.RecastTime.ToString();
+            tb_rng_min.Text = item.MinRange.ToString();
+            tb_rng_max.Text = item.MaxRange.ToString();
+            tb_ct1.Text = item.CastType1.ToString();
+            tb_ct2.Text = item.CastType2.ToString();
+            tb_sd1.Text = item.GetParam(0).ToString();
+            tb_sd2.Text = item.GetParam(1).ToString();
+            tb_sd3.Text = item.GetParam(2).ToString();
+            tb_sd4.Text = item.GetParam(3).ToString();
+            tb_sd5.Text = item.GetParam(4).ToString();
+            tb_sd6.Text = item.GetParam(5).ToString();
+            tb_sd7.Text = item.GetParam(6).ToString();
+            tb_sd8.Text = item.GetParam(7).ToString();
+            tb_sd9.Text = item.GetParam(8).ToString();
+            tb_sd10.Text = item.GetParam(9).ToString();
+            tb_effpow.Text = item.EffectPower.ToString();
+            tb_effrng.Text = item.EffectRange.ToString();
             set_data_labels(SFSpellDescriptor.get(SFEngine.Utility.TryParseUInt16(tb_typeID.Text)));
         }
-
-        private void tb_typeID_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(tb_typeID, 2054);
-            }
-        }
-
-        private void tb_sd1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if ((e.Button == MouseButtons.Right) && (tracetable[0] != SFEngine.Utility.NO_INDEX))
-            {
-                step_into(tb_sd1, tracetable[0]);
-            }
-        }
-
-        private void tb_sd2_MouseDown(object sender, MouseEventArgs e)
-        {
-            if ((e.Button == MouseButtons.Right) && (tracetable[1] != SFEngine.Utility.NO_INDEX))
-            {
-                step_into(tb_sd2, tracetable[1]);
-            }
-        }
-
-        private void tb_sd3_MouseDown(object sender, MouseEventArgs e)
-        {
-            if ((e.Button == MouseButtons.Right) && (tracetable[2] != SFEngine.Utility.NO_INDEX))
-            {
-                step_into(tb_sd3, tracetable[2]);
-            }
-        }
-
-        private void tb_sd4_MouseDown(object sender, MouseEventArgs e)
-        {
-            if ((e.Button == MouseButtons.Right) && (tracetable[3] != SFEngine.Utility.NO_INDEX))
-            {
-                step_into(tb_sd4, tracetable[3]);
-            }
-        }
-
-        private void tb_sd5_MouseDown(object sender, MouseEventArgs e)
-        {
-            if ((e.Button == MouseButtons.Right) && (tracetable[4] != SFEngine.Utility.NO_INDEX))
-            {
-                step_into(tb_sd5, tracetable[4]);
-            }
-        }
-
-        private void tb_sd6_MouseDown(object sender, MouseEventArgs e)
-        {
-            if ((e.Button == MouseButtons.Right) && (tracetable[5] != SFEngine.Utility.NO_INDEX))
-            {
-                step_into(tb_sd6, tracetable[5]);
-            }
-        }
-
-        private void tb_sd7_MouseDown(object sender, MouseEventArgs e)
-        {
-            if ((e.Button == MouseButtons.Right) && (tracetable[6] != SFEngine.Utility.NO_INDEX))
-            {
-                step_into(tb_sd7, tracetable[6]);
-            }
-        }
-
-        private void tb_sd8_MouseDown(object sender, MouseEventArgs e)
-        {
-            if ((e.Button == MouseButtons.Right) && (tracetable[7] != SFEngine.Utility.NO_INDEX))
-            {
-                step_into(tb_sd8, tracetable[7]);
-            }
-        }
-
-        private void tb_sd9_MouseDown(object sender, MouseEventArgs e)
-        {
-            if ((e.Button == MouseButtons.Right) && (tracetable[8] != SFEngine.Utility.NO_INDEX))
-            {
-                step_into(tb_sd9, tracetable[8]);
-            }
-        }
-        private void tb_sd10_MouseDown(object sender, MouseEventArgs e)
-        {
-            if ((e.Button == MouseButtons.Right) && (tracetable[9] != SFEngine.Utility.NO_INDEX))
-            {
-                step_into(tb_sd10, tracetable[9]);
-            }
-        }
-
 
         private string get_target_mode(Byte tm)
         {
@@ -414,48 +329,31 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            UInt16 type_id = (UInt16)category[index][1];
-
-            string stype_txt;
-            if (SFCategoryManager.gamedata[2054] == null)
+            ushort type_id = c2002[index].SpellLineID;
+            bool spellline_found = SFCategoryManager.gamedata.c2054.GetItemIndex(type_id, out int spellline_index);
+            if(spellline_found)
             {
-                stype_txt = SFEngine.Utility.S_UNKNOWN;
+                return $"{c2002[index].SpellID} {SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2054[spellline_index].TextID, 1)} level {c2002[index].GetSpellLevel()}";
             }
             else
             {
-                SFCategoryElement stype_elem = SFCategoryManager.gamedata[2054].FindElementBinary<UInt16>(0, type_id);
-                stype_txt = SFCategoryManager.GetTextFromElement(stype_elem, 1);
+                return $"{c2002[index].SpellID} {SFEngine.Utility.S_ITEM_MISSING} level {c2002[index].GetSpellLevel()}";
             }
-
-            Byte spell_level = (Byte)category[index][4];
-            return category[index][0].ToString() + " " + stype_txt + " level " + spell_level.ToString();
         }
 
         public override string get_description_string(int index)
         {
-            List<string> reqs = new List<string>();
-            for (int i = 0; i < 4; i++)
-            {
-                Byte skill_major = (Byte)category[index][2 + i * 3];
-                Byte skill_minor = (Byte)category[index][3 + i * 3];
-                Byte skill_level = (Byte)category[index][4 + i * 3];
-                if (skill_major == 0)
-                {
-                    break;
-                }
+            Category2002Item item = c2002[index];
 
-                reqs.Add(SFCategoryManager.GetSkillName(skill_major, skill_minor, skill_level));
-            }
-            string req_str = "";
-            for (int i = 0; i < reqs.Count; i++)
+            StringWriter sw = new StringWriter();
+            sw.WriteLine("Requirements: ");
+            for(int i = 0; i < 4; i++)
             {
-                req_str += reqs[i];
-                req_str += "\r\n";
+                sw.WriteLine(SFCategoryManager.GetSkillName(item.GetSkillReq(i * 3 + 0), item.GetSkillReq(i * 3 + 1), item.GetSkillReq(i * 3 + 2)));
             }
-            string target = "";
-            target += get_target_type((Byte)category[index][19]);
-            target += " " + get_target_mode((Byte)category[index][20]);
-            return "Requirements:\r\n" + req_str + "Target: " + target;
+            sw.WriteLine($"Target: {get_target_type(item.CastType1)} {get_target_mode(item.CastType2)}");
+
+            return sw.ToString();
         }
     }
 }

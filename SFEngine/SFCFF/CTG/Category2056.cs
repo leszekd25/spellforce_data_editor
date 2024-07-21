@@ -14,6 +14,14 @@ namespace SFEngine.SFCFF.CTG
 
         public int GetID() => Data[0];
         public void SetID(int id) => Data[0] = (byte)id;
+        public byte GetData(int index)
+        {
+            if((index < 0)||(index >= 6))
+            {
+                throw new Exception();
+            }
+            return Data[index];
+        }
     }
 
     public class Category2056: CategoryBaseSingle<Category2056Item>

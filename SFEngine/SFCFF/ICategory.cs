@@ -44,8 +44,6 @@ namespace SFEngine.SFCFF
         public bool GetID(int index, out int id);
         public bool SetID(int index, int id);
         public bool CalculateNewItemIndex(int new_id, out int index);
-        public bool GetItemString(int index, SFGameData gd, out string str);
-        public bool GetItemDescription(int index, SFGameData gd, out string desc);
         public bool GetItemIndex(int id, out int index);
         public bool Undo();
         public bool Redo();

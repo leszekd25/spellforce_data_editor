@@ -281,8 +281,6 @@ namespace MapViewerNetNative
             SFCategoryManager.gamedata.Load(SFUnPak.game_directory_name + "\\data\\GameData.cff");
             SFCategoryManager.manual_SetGamedata();
 
-            SFCategoryManager.gamedata.c2002.SetArrayField(0, "SkillReq", 0, (byte)0);
-
             // find all resources
             SFResourceManager.ListAllPakResources();
 

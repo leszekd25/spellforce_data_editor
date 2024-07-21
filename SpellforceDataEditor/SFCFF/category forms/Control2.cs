@@ -1,4 +1,6 @@
-﻿using SFEngine.SFCFF;
+﻿using SFEngine;
+using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -7,9 +9,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control2 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2054 c2054;
+
         public Control2()
         {
             InitializeComponent();
+
+            c2054 = SFCategoryManager.gamedata.c2054;
+            category = c2054;
+
             column_dict.Add("Spell type ID", new int[1] { 0 });
             column_dict.Add("Spell text ID", new int[1] { 1 });
             column_dict.Add("Spell flags", new int[1] { 2 });
@@ -23,126 +31,75 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
+            c2054.SetField(current_element, "SpellLineID", SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt16(textBox2.Text));
+            c2054.SetField(current_element, "TextID", SFEngine.Utility.TryParseUInt16(textBox2.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, SFEngine.Utility.TryParseUInt8(textBox3.Text));
+            c2054.SetField(current_element, "Flags", SFEngine.Utility.TryParseUInt8(textBox3.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, SFEngine.Utility.TryParseUInt8(textBox4.Text));
+            c2054.SetField(current_element, "MagicType", SFEngine.Utility.TryParseUInt8(textBox4.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 4, SFEngine.Utility.TryParseUInt8(textBox5.Text));
+            c2054.SetField(current_element, "MinLevel", SFEngine.Utility.TryParseUInt8(textBox5.Text));
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 5, SFEngine.Utility.TryParseUInt8(textBox7.Text));
+            c2054.SetField(current_element, "MaxLevel", SFEngine.Utility.TryParseUInt8(textBox7.Text));
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 6, SFEngine.Utility.TryParseUInt8(textBox6.Text));
+            c2054.SetField(current_element, "Availability", SFEngine.Utility.TryParseUInt8(textBox6.Text));
         }
 
         private void textBox8_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 7, SFString.FromString(textBox8.Text, 0, 64));// SFEngine.Utility.FixedLengthString(textBox8.Text, 64));
+            c2054.SetField(current_element, "UIHandle", StringUtils.FromString(textBox8.Text, 0, 64));
         }
 
         private void textBox9_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 8, SFEngine.Utility.TryParseUInt16(textBox9.Text));
+            c2054.SetField(current_element, "DescriptionID", SFEngine.Utility.TryParseUInt16(textBox9.Text));
         }
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0);
-            textBox2.Text = variant_repr(1);
-            textBox3.Text = variant_repr(2);
-            textBox4.Text = variant_repr(3);
-            textBox5.Text = variant_repr(4);
-            textBox7.Text = variant_repr(5);
-            textBox6.Text = variant_repr(6);
-            textBox8.Text = string_repr(7);
-            textBox9.Text = variant_repr(8);
+            Category2054Item item = c2054.Items[current_element];
+            textBox1.Text = item.SpellLineID.ToString();
+            textBox2.Text = item.TextID.ToString();
+            textBox3.Text = item.Flags.ToString();
+            textBox4.Text = item.MagicType.ToString();
+            textBox5.Text = item.MinLevel.ToString();
+            textBox7.Text = item.MaxLevel.ToString();
+            textBox6.Text = item.Availability.ToString();
+            textBox8.Text = item.GetHandleString();
+            textBox9.Text = item.DescriptionID.ToString();
 
-            textbox_repr(textBox9, 2058);
+            textbox_repr(textBox9, SFCategoryManager.gamedata.c2058);
         }
-
-        private void textBox2_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox2, 2016);
-            }
-        }
-
-        private void textBox9_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                if (SFCategoryManager.gamedata[2058] == null)
-                {
-                    return;
-                }
-
-                int cur_id = SFEngine.Utility.TryParseInt32(textBox9.Text);
-                int ind = SFCategoryManager.gamedata[2058].GetElementIndex(cur_id);
-
-                if ((ind == SFEngine.Utility.NO_INDEX) || (ind == 0))
-                {
-                    if (ind == 0)
-                    {
-                        cur_id = 2000;
-                    }
-                    // create new description
-                    int new_id;
-                    int new_ind;
-                    new_ind = SFCategoryManager.gamedata[2058].GetNextNewElementIndex(cur_id, out new_id);
-                    if (new_id > 4000)
-                    {
-                        return;
-                    }
-
-                    SFCategoryElement new_elem = new SFCategoryElement();
-                    new_elem.AddVariant((ushort)new_id);
-                    new_elem.AddVariant((ushort)0);
-                    SFCategoryManager.gamedata[2058].elements.Insert(new_ind, new_elem);
-                    SFCategoryManager.gamedata[2058].element_status.Insert(new_ind, SFCategoryElementStatus.ADDED);
-                    textBox9.Text = new_id.ToString();
-                    textBox9.BackColor = Color.DarkOrange;
-                }
-                else
-                {
-                    step_into(textBox9, 2058);
-                }
-            }
-        }
-
 
         public override string get_element_string(int index)
         {
-            string stype_txt = SFCategoryManager.GetTextFromElement(category[index], 1);
-            return category[index][0].ToString() + " " + stype_txt;
+            Category2054Item item = c2054.Items[index];
+            return $"{item.SpellLineID} {SFCategoryManager.GetTextByLanguage(item.TextID, 1)}";
         }
 
         public override string get_description_string(int index)
         {
-            string spell_name = SFCategoryManager.GetTextFromElement(category[index], 1);
-            string spell_desc = SFCategoryManager.GetDescriptionName((UInt16)category[index][8]);
-            return spell_name + "\r\n" + spell_desc;
+            Category2054Item item = c2054.Items[index];
+            return $"{SFCategoryManager.GetTextByLanguage(item.TextID, 1)}\r\n{SFCategoryManager.GetDescriptionName(item.DescriptionID)}";
         }
     }
 }

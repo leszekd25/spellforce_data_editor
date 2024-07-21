@@ -1,4 +1,6 @@
-﻿using SFEngine.SFCFF;
+﻿using SFEngine;
+using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
 
@@ -6,9 +8,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control13 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2012 c2012;
+
         public Control13()
         {
             InitializeComponent();
+
+            c2012 = SFCategoryManager.gamedata.c2012;
+            category = c2012;
+
             column_dict.Add("Item ID", new int[1] { 0 });
             column_dict.Add("Item UI index", new int[1] { 1 });
             column_dict.Add("Item UI handle", new int[1] { 2 });
@@ -17,19 +25,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void set_list_text(int i)
         {
-            Byte ui_index = (Byte)category[current_element, i][1];
+            Byte ui_index = c2012[current_element, i].UIIndex;
 
             ListUI.Items[i] = ui_index.ToString();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            MainForm.data.op_queue.OpenCluster();
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
-            }
-            MainForm.data.op_queue.CloseCluster();
+            c2012.SetID(current_element, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void checkBox1_Click(object sender, EventArgs e)
@@ -40,7 +43,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            set_element_variant(current_element, cur_selected, 3, (checkBox1.Checked ? (UInt16)1 : (UInt16)0));
+            c2012.SetField(current_element, cur_selected, "IsScaledDown", (checkBox1.Checked ? (UInt16)1 : (UInt16)0));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
@@ -51,7 +54,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            set_element_variant(current_element, cur_selected, 2, SFString.FromString(textBox4.Text, 0, 64));
+            c2012.SetField(current_element, cur_selected, "UIHandle", StringUtils.FromString(textBox4.Text, 0, 64));
         }
 
         public override void set_element(int index)
@@ -60,7 +63,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             ListUI.Items.Clear();
 
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for (int i = 0; i < c2012.GetItemSubItemNum(current_element); i++)
             {
                 ListUI.Items.Add("");
                 set_list_text(i);
@@ -71,7 +74,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0, 0);
+            textBox1.Text = c2012[current_element, 0].ItemID.ToString();
         }
 
         private void ListUI_SelectedIndexChanged(object sender, EventArgs e)
@@ -82,12 +85,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            textBox4.Text = string_repr(cur_selected, 2);
-            checkBox1.Checked = ((UInt16)(category[current_element, cur_selected][3])) == 1;
+            textBox4.Text = c2012[current_element, cur_selected].GetHandleString();
+            checkBox1.Checked = (c2012[current_element, cur_selected].IsScaledDown == 1);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            Category2012Item item = new Category2012Item();
+            c2012.GetID(current_element, out int id);
+            item.SetID(id);
+
             int new_index;
             if (ListUI.SelectedIndex == SFEngine.Utility.NO_INDEX)
             {
@@ -98,26 +105,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 new_index = ListUI.SelectedIndex;
             }
 
-            Byte max_index = 1;
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            byte max_index = 1;
+            for (int i = 0; i < c2012.GetItemSubItemNum(current_element); i++)
             {
-                max_index = Math.Max(max_index, (Byte)(category[current_element, i][1]));
+                max_index = Math.Max(max_index, c2012[current_element, i].UIIndex);
             }
-            max_index += 1;
+            item.UIIndex = (byte)(max_index + 1);
 
-            SFCategoryElement new_elem = category.GetEmptyElement();
-            new_elem[0] = (UInt16)(category[current_element, 0][0]);
-            new_elem[1] = (Byte)max_index;
-            new_elem[2] = SFString.FromString("", 0, 64);
-
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
-            {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = new_index,
-                Element = new_elem,
-                IsSubElement = true
-            });
+            c2012.AddSubItem(current_element, new_index, item);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -133,52 +128,23 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             int new_index = ListUI.SelectedIndex;
+            byte cur_ui_index = c2012[current_element, new_index].UIIndex;
+            c2012.RemoveSub(current_element, new_index);
 
-            Byte cur_spell_index = (Byte)(category[current_element, new_index][1]);
-
-            MainForm.data.op_queue.OpenCluster();
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
+            for (int i = 0; i < c2012.GetItemSubItemNum(current_element); i++)
             {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = new_index,
-                IsRemoving = true,
-                IsSubElement = true
-            });
-
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                if ((Byte)(category[current_element, i][1]) > cur_spell_index)
+                if (c2012[current_element, i].UIIndex > cur_ui_index)
                 {
-                    MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorModifyCategoryElement()
-                    {
-                        CategoryIndex = category.category_id,
-                        ElementIndex = current_element,
-                        SubElementIndex = i,
-                        VariantIndex = 1,
-                        NewVariant = (Byte)((Byte)(category[current_element, i][1]) - 1),
-                        IsSubElement = true
-                    });
+                    c2012.SetField(current_element, i, "UIIndex", (byte)(c2012[current_element, i].UIIndex - 1));
                 }
-            }
-
-            MainForm.data.op_queue.CloseCluster();
-        }
-
-        private void textBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox1, 2003);
             }
         }
 
 
         public override string get_element_string(int index)
         {
-            UInt16 item_id = (UInt16)category[index, 0][0];
-            string txt_item = SFCategoryManager.GetItemName(item_id);
-            return item_id.ToString() + " " + txt_item;
+            UInt16 item_id = c2012[index, 0].ItemID;
+            return $"{item_id} {SFCategoryManager.GetItemName(item_id)}";
         }
 
         public override void on_add_subelement(int subelem_index)
@@ -197,8 +163,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             set_list_text(subelem_index);
             if (ListUI.SelectedIndex == subelem_index)
             {
-                textBox4.Text = string_repr(subelem_index, 2);
-                checkBox1.Checked = ((UInt16)(category[current_element, subelem_index][3])) == 1;
+                textBox4.Text = c2012[current_element, subelem_index].GetHandleString();
+                checkBox1.Checked = (c2012[current_element, subelem_index].IsScaledDown == 1);
             }
         }
     }

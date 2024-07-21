@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 using System.Windows.Forms;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SFEngine.SFCFF
 {
@@ -207,13 +208,13 @@ namespace SFEngine.SFCFF
             return true;
         }
 
-        public bool GetItemString(int index, SFGameData gd, out string str)
+        public bool GetItemString(int index, SFGameDataNew gd, out string str)
         {
             str = Items[index].GetID().ToString();
             return true;
         }
 
-        public bool GetItemDescription(int index, SFGameData gd, out string desc)
+        public bool GetItemDescription(int index, SFGameDataNew gd, out string desc)
         {
             desc = $"DESC {Items[index].GetID()}";
             return true;
@@ -248,116 +249,161 @@ namespace SFEngine.SFCFF
             return false;
         }
 
-        public bool SetField<U>(int index, string field_name, U value) where U: struct
+        public void SetField<U>(int index, string field_name, U value)
         {
             Type t = typeof(T);
 
             Span<T> items_span = CollectionsMarshal.AsSpan(Items);
             if ((index < 0) || (index >= items_span.Length))
             {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Index out of range");
-                return false;
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Index out of range");
+                throw new Exception();
             }
 
-            FieldInfo fi = t.GetField(field_name);
-            if(fi == null)
+            string field_real_name = field_name;
+            ReadOnlySpan<char> field_span = field_name.AsSpan();
+            // check if theres index in field name
+            uint field_index = uint.MaxValue;
+            if (field_span[^1] == ']')
             {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Unknown field {field_name}");
-                return false;
-            }
-
-            Type t2 = fi.FieldType;
-            if(t2 != typeof(U))
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Type of {field_name} doesnt match the argument type");
-                return false;
-            }
-
-            U cur_val = (U)fi.GetValue(items_span[index]);
-            if (!cur_val.Equals(value))
-            {
-                fi.SetValue(items_span[index], value);
-                // undo/redo stuff
-            }
-
-            todo: merge below and this
-
-            return true;
-        }
-
-        public bool SetArrayField<U>(int index, string field_name, int array_index, U value) where U: struct
-        {
-            Type t = typeof(T);
-
-            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
-            if ((index < 0) || (index >= items_span.Length))
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetArrayField(): Index out of range");
-                return false;
-            }
-
-            FieldInfo fi = t.GetField(field_name);
-            if (fi == null)
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetArrayField(): Unknown field {field_name}");
-                return false;
-            }
-
-            object[] attributes = fi.GetCustomAttributes(typeof(FixedBufferAttribute), false);
-            if((attributes == null) || (attributes.Length == 0))
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetArrayField(): {field_name} is not an array");
-                return false;
-            }
-            FixedBufferAttribute fbattr = (FixedBufferAttribute)attributes[0];
-            if (fbattr.ElementType != typeof(U))
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetArrayField(): Type of {field_name} doesnt match the argument type");
-                return false;
-            }
-            if ((array_index < 0) || (array_index >= fbattr.Length)) 
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetArrayField(): Array index out of range");
-                return false;
-            }
-
-            // https://stackoverflow.com/questions/30817924/obtain-non-explicit-field-offset
-            int field_offset = Marshal.ReadInt32(fi.FieldHandle.Value + (4 + IntPtr.Size)) & 0xFFFFFF;
-            unsafe
-            {
-                fixed(T* ptr = items_span)
+                for (int i = field_span.Length - 2; i >= 0; i--)
                 {
-                    U* ptr2 = (U*)(((byte*)(&ptr[index])) + field_offset);
-                    if (!ptr2[array_index].Equals(value))
+                    if (field_span[i] == '[')
                     {
-                        ptr2[array_index] = value;
-                        // undo/redo stugg
+                        if (!uint.TryParse(field_span.Slice(i + 1, (field_span.Length - 1) - (i + 1)), out field_index))
+                        {
+                            LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Malformed array index");
+                            throw new Exception();
+                        }
+                        field_real_name = new(field_span.Slice(0, i));
+                        break;
                     }
+                }
+                if (field_index == uint.MaxValue)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Malformed array index");
+                    throw new Exception();
                 }
             }
 
-            return true;
-        }
-
-        public object GetField(int index, string field_name)
-        {
-            Type t = typeof(T);
-
-            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
-            if ((index < 0) || (index >= items_span.Length))
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.GetField(): Index out of range");
-                return null;
-            }
-
-            FieldInfo fi = t.GetField(field_name);
+            FieldInfo fi = t.GetField(field_real_name);
             if (fi == null)
             {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.GetField(): Unknown field {field_name}");
-                return null;
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Unknown field {field_real_name}");
+                throw new Exception();
             }
 
-            return fi.GetValue(items_span[index]);
+            FixedBufferAttribute fb_attr = null;
+            foreach (var attr in fi.GetCustomAttributes())
+            {
+                if (attr is FixedBufferAttribute)
+                {
+                    fb_attr = (FixedBufferAttribute)attr;
+                    break;
+                }
+            }
+            if (fb_attr == null)
+            {
+                // if there is array index supplied, error
+                if (field_index != uint.MaxValue)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Array index used in non-buffer field {field_real_name}");
+                    throw new Exception();
+                }
+                Type t2 = fi.FieldType;
+                if (t2 != typeof(U))
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Type of {field_real_name} doesnt match the argument type");
+                    throw new Exception();
+                }
+
+                U cur_val = (U)fi.GetValue(items_span[index]);
+                if (!cur_val.Equals(value))
+                {
+                    fi.SetValue(items_span[index], value);
+                    // undo/redo stuff
+                }
+            }
+            else
+            {
+                // if theres no index, set entire array with value
+                if (field_index == uint.MaxValue)
+                {
+                    Type utype = typeof(U);
+                    if (!utype.IsArray)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Attempting to assign non-array to array field {field_real_name}");
+                        throw new Exception();
+                    }
+                    Type utype_elem = utype.GetElementType();
+                    if (fb_attr.ElementType != utype_elem)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Type of {field_real_name} doesnt match the argument type");
+                        throw new Exception();
+                    }
+                    Array arr = value as Array;
+                    if (arr.Length != fb_attr.Length)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Array length does not match array field {field_real_name}");
+                        throw new Exception();
+                    }
+                    // copy
+                    // https://stackoverflow.com/questions/30817924/obtain-non-explicit-field-offset
+                    int field_offset = Marshal.ReadInt32(fi.FieldHandle.Value + (4 + IntPtr.Size)) & 0xFFFFFF;
+                    unsafe
+                    {
+                        fixed (T* ptr = items_span)
+                        {
+                            // https://stackoverflow.com/questions/63899222/how-to-get-a-pointer-to-memory-of-array-instance
+                            U* ptr2 = (U*)(((byte*)(&ptr[index])) + field_offset);
+                            GCHandle handle = GCHandle.Alloc(arr, GCHandleType.Pinned);
+                            try
+                            {
+                                IntPtr address = handle.AddrOfPinnedObject();
+                                U* ptr3 = (U*)address.ToPointer();
+                                for (int i = 0; i < fb_attr.Length; i++)
+                                {
+                                    ptr2[i] = ptr3[i];
+                                }
+                                // undo/redo stuff
+                            }
+                            finally
+                            {
+                                handle.Free();
+                            }
+                        }
+                    }
+                }
+                // otherwise, set single element of array
+                else
+                {
+                    if (fb_attr.ElementType != typeof(U))
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Type of {field_real_name} doesnt match the argument type");
+                        throw new Exception();
+                    }
+                    if (field_index >= fb_attr.Length)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Array index out of range");
+                        throw new Exception();
+                    }
+
+                    // https://stackoverflow.com/questions/30817924/obtain-non-explicit-field-offset
+                    int field_offset = Marshal.ReadInt32(fi.FieldHandle.Value + (4 + IntPtr.Size)) & 0xFFFFFF;
+                    unsafe
+                    {
+                        fixed (T* ptr = items_span)
+                        {
+                            U* ptr2 = (U*)(((byte*)(&ptr[index])) + field_offset);
+                            if (!ptr2[field_index].Equals(value))
+                            {
+                                ptr2[field_index] = value;
+                                // undo/redo stuff
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public bool Undo()
@@ -429,6 +475,26 @@ namespace SFEngine.SFCFF
         public List<T> Items = new List<T>();
         public List<int> Indices = new List<int>();
 
+        public int GetSubItemIndex(int index, int subindex)
+        {
+            int from_start = Indices[index];
+            int from_end;
+            if (index == Indices.Count - 1)
+            {
+                from_end = Items.Count;
+            }
+            else
+            {
+                from_end = Indices[index + 1];
+            }
+            if (from_start + subindex >= from_end)
+            {
+                throw new Exception();
+            }
+
+            return from_start + subindex;
+        }
+
         public T this[int index]
         {
             get
@@ -438,6 +504,18 @@ namespace SFEngine.SFCFF
             set
             {
                 Items[index] = value;
+            }
+        }
+
+        public T this[int index, int subindex]
+        {
+            get
+            {
+                return Items[GetSubItemIndex(index, subindex)];
+            }
+            set 
+            {
+                Items[GetSubItemIndex(index, subindex)] = value;
             }
         }
 
@@ -557,6 +635,25 @@ namespace SFEngine.SFCFF
             return true;
         }
 
+        public bool AddSubItem(int new_index, int new_subindex, T item)
+        {
+            if(new_index >= Indices.Count)
+            {
+                throw new Exception();
+            }
+
+            int main_index = Indices[new_index];
+            int num = GetItemSubItemNum(new_index);
+            if(new_subindex > num)
+            {
+                throw new Exception();
+            }
+
+            Items.Insert(main_index + new_subindex, item);
+            AdjustIndices(new_index + 1, 1);
+            return true;
+        }
+
         public bool Copy(int from_index, int new_index)
         {
             int from_start = Indices[from_index];
@@ -608,8 +705,31 @@ namespace SFEngine.SFCFF
                 Items.RemoveAt(from_start);
             }
             Indices.RemoveAt(index);
-            AdjustIndices(index, from_end - from_start);
+            AdjustIndices(index, from_start-from_end);
 
+            return true;
+        }
+
+        public bool RemoveSub(int index, int subindex)
+        {
+            if (index >= Indices.Count)
+            {
+                throw new Exception();
+            }
+
+            int main_index = Indices[index];
+            int num = GetItemSubItemNum(index);
+            if (subindex > num)
+            {
+                throw new Exception();
+            }
+            if(num == 1)
+            {
+                return false;
+            }
+
+            Items.RemoveAt(main_index + subindex);
+            AdjustIndices(index + 1, -1);
             return true;
         }
 
@@ -672,13 +792,13 @@ namespace SFEngine.SFCFF
             return true;
         }
 
-        public bool GetItemString(int index, SFGameData gd, out string str)
+        public bool GetItemString(int index, SFGameDataNew gd, out string str)
         {
             str = Items[Indices[index]].GetID().ToString();
             return true;
         }
 
-        public bool GetItemDescription(int index, SFGameData gd, out string desc)
+        public bool GetItemDescription(int index, SFGameDataNew gd, out string desc)
         {
             desc = $"DESC {Items[Indices[index]].GetID()}";
             return true;
@@ -714,16 +834,6 @@ namespace SFEngine.SFCFF
             return false;
         }
 
-        public bool GetItemSubItemIndex(int id, int index, out int subindex)
-        {
-            bool result = GetItemIndex(id, out subindex);
-            if (result)
-            {
-                subindex += index;
-            }
-            return result;
-        }
-
         public int GetItemSubItemNum(int index)
         {
             if(index == Indices.Count-1)
@@ -733,7 +843,7 @@ namespace SFEngine.SFCFF
             return Indices[index + 1] - Indices[index];
         }
 
-        public bool GetItemSubIndex(int id, int subid, out int index)
+        public bool GetItemSubItemIndex(int id, int subid, out int index)
         {
             if(!GetItemIndex(id, out index))
             {
@@ -755,60 +865,166 @@ namespace SFEngine.SFCFF
             return false;
         }
 
-        public bool SetField(int index, string field_name, object value)
+        public void SetField<U>(int index, string field_name, U value)
         {
             Type t = typeof(T);
 
             Span<T> items_span = CollectionsMarshal.AsSpan(Items);
             if ((index < 0) || (index >= items_span.Length))
             {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Index out of range");
-                return false;
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Index out of range");
+                throw new Exception();
             }
 
-            FieldInfo fi = t.GetField(field_name);
+            string field_real_name = field_name;
+            ReadOnlySpan<char> field_span = field_name.AsSpan();
+            // check if theres index in field name
+            uint field_index = uint.MaxValue;
+            if (field_span[^1] == ']')
+            {
+                for (int i = field_span.Length - 2; i >= 0; i--)
+                {
+                    if (field_span[i] == '[')
+                    {
+                        if (!uint.TryParse(field_span.Slice(i + 1, (field_span.Length - 1) - (i + 1)), out field_index))
+                        {
+                            LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Malformed array index");
+                            throw new Exception();
+                        }
+                        field_real_name = new(field_span.Slice(0, i));
+                        break;
+                    }
+                }
+                if (field_index == uint.MaxValue)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Malformed array index");
+                    throw new Exception();
+                }
+            }
+
+            FieldInfo fi = t.GetField(field_real_name);
             if (fi == null)
             {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Unknown field {field_name}");
-                return false;
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Unknown field {field_real_name}");
+                throw new Exception();
             }
 
-            Type t2 = fi.FieldType;
-            if (t2 != value.GetType())
+            FixedBufferAttribute fb_attr = null;
+            foreach (var attr in fi.GetCustomAttributes())
             {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Type of {field_name} doesnt match the argument type");
-                return false;
+                if (attr is FixedBufferAttribute)
+                {
+                    fb_attr = (FixedBufferAttribute)attr;
+                    break;
+                }
             }
-
-            object cur_val = fi.GetValue(items_span[index]);
-            if (!cur_val.Equals(value))
+            if (fb_attr == null)
             {
-                fi.SetValue(items_span[index], value);
-                // undo/redo stuff
-            }
+                // if there is array index supplied, error
+                if (field_index != uint.MaxValue)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Array index used in non-buffer field {field_real_name}");
+                    throw new Exception();
+                }
+                Type t2 = fi.FieldType;
+                if (t2 != typeof(U))
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Type of {field_real_name} doesnt match the argument type");
+                    throw new Exception();
+                }
 
-            return true;
+                U cur_val = (U)fi.GetValue(items_span[index]);
+                if (!cur_val.Equals(value))
+                {
+                    fi.SetValue(items_span[index], value);
+                    // undo/redo stuff
+                }
+            }
+            else
+            {
+                // if theres no index, set entire array with value
+                if (field_index == uint.MaxValue)
+                {
+                    Type utype = typeof(U);
+                    if (!utype.IsArray)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Attempting to assign non-array to array field {field_real_name}");
+                        throw new Exception();
+                    }
+                    Type utype_elem = utype.GetElementType();
+                    if (fb_attr.ElementType != utype_elem)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Type of {field_real_name} doesnt match the argument type");
+                        throw new Exception();
+                    }
+                    Array arr = value as Array;
+                    if (arr.Length != fb_attr.Length)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Array length does not match array field {field_real_name}");
+                        throw new Exception();
+                    }
+                    // copy
+                    // https://stackoverflow.com/questions/30817924/obtain-non-explicit-field-offset
+                    int field_offset = Marshal.ReadInt32(fi.FieldHandle.Value + (4 + IntPtr.Size)) & 0xFFFFFF;
+                    unsafe
+                    {
+                        fixed (T* ptr = items_span)
+                        {
+                            // https://stackoverflow.com/questions/63899222/how-to-get-a-pointer-to-memory-of-array-instance
+                            U* ptr2 = (U*)(((byte*)(&ptr[index])) + field_offset);
+                            GCHandle handle = GCHandle.Alloc(arr, GCHandleType.Pinned);
+                            try
+                            {
+                                IntPtr address = handle.AddrOfPinnedObject();
+                                U* ptr3 = (U*)address.ToPointer();
+                                for (int i = 0; i < fb_attr.Length; i++)
+                                {
+                                    ptr2[i] = ptr3[i];
+                                }
+                                // undo/redo stuff
+                            }
+                            finally
+                            {
+                                handle.Free();
+                            }
+                        }
+                    }
+                }
+                // otherwise, set single element of array
+                else
+                {
+                    if (fb_attr.ElementType != typeof(U))
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Type of {field_real_name} doesnt match the argument type");
+                        throw new Exception();
+                    }
+                    if (field_index >= fb_attr.Length)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Array index out of range");
+                        throw new Exception();
+                    }
+
+                    // https://stackoverflow.com/questions/30817924/obtain-non-explicit-field-offset
+                    int field_offset = Marshal.ReadInt32(fi.FieldHandle.Value + (4 + IntPtr.Size)) & 0xFFFFFF;
+                    unsafe
+                    {
+                        fixed (T* ptr = items_span)
+                        {
+                            U* ptr2 = (U*)(((byte*)(&ptr[index])) + field_offset);
+                            if (!ptr2[field_index].Equals(value))
+                            {
+                                ptr2[field_index] = value;
+                                // undo/redo stuff
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        public object GetField(int index, string field_name)
+        public void SetField<U>(int index, int subindex, string field_name, U value)
         {
-            Type t = typeof(T);
-
-            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
-            if ((index < 0) || (index >= items_span.Length))
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.GetField(): Index out of range");
-                return null;
-            }
-
-            FieldInfo fi = t.GetField(field_name);
-            if (fi == null)
-            {
-                LogUtils.Log.Warning(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.GetField(): Unknown field {field_name}");
-                return null;
-            }
-
-            return fi.GetValue(items_span[index]);
+            SetField(GetSubItemIndex(index, subindex), field_name, value);
         }
 
         public bool Undo()

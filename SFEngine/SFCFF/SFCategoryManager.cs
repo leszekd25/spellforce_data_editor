@@ -698,9 +698,7 @@ namespace SFEngine.SFCFF
             ready = true;
         }
 
-        //searches for a text with a given ID and in a given language
-        //returns a sub-element in a given language which contains text data looked for (or null if it doesnt exist)
-        //returns reference to an element from db! remember to drop it later
+        //searches for a text with a given ID and in a given language and returns it
         public static string GetTextByLanguage(int t_index, int t_lang)
         {
             if(t_index == 0)
@@ -713,21 +711,26 @@ namespace SFEngine.SFCFF
             {
                 return Utility.S_TEXT_MISSING;
             }
-            base_index = gamedata.c2016.Indices[base_index];
+            int start_index = gamedata.c2016.Indices[base_index];
+            int end_index = gamedata.c2016.Items.Count;
+            if (base_index != gamedata.c2016.Indices.Count-1)
+            {
+                end_index = gamedata.c2016.Indices[base_index + 1];
+            }
 
             int lang_index = Utility.NO_INDEX;
             int safe_index = Utility.NO_INDEX;
 
-            for (; base_index < gamedata.c2016.Items.Count; base_index++)
+            for (; start_index < end_index; start_index++)
             {
-                if (gamedata.c2016[base_index].LanguageID == (byte)t_lang)
+                if (gamedata.c2016[start_index].LanguageID == (byte)t_lang)
                 {
-                    lang_index = base_index;
+                    lang_index = start_index;
                     break;
                 }
-                else if (gamedata.c2016[base_index].LanguageID == 0)
+                else if (gamedata.c2016[start_index].LanguageID == 0)
                 {
-                    safe_index = base_index;
+                    safe_index = start_index;
                 }
             }
             if (lang_index == Utility.NO_INDEX)
@@ -800,7 +803,7 @@ namespace SFEngine.SFCFF
 
         public static UInt16 GetUnitItem(UInt16 unit_id, byte slot_id)
         {
-            bool item_found = gamedata.c2025.GetItemSubIndex(unit_id, slot_id, out int item_index);
+            bool item_found = gamedata.c2025.GetItemSubItemIndex(unit_id, slot_id, out int item_index);
             if(!item_found)
             {
                 return 0;
@@ -839,7 +842,7 @@ namespace SFEngine.SFCFF
         //returns a name of a given skill
         public static string GetSkillName(Byte skill_major, Byte skill_minor, Byte skill_lvl)
         {
-            bool skill_found = gamedata.c2039.GetItemSubIndex(skill_major, 0, out int skill_index);
+            bool skill_found = gamedata.c2039.GetItemSubItemIndex(skill_major, 0, out int skill_index);
             if (!skill_found)
             {
                 return Utility.S_ITEM_MISSING;
@@ -847,7 +850,7 @@ namespace SFEngine.SFCFF
             ushort text_id = gamedata.c2039[skill_index].TextID;
 
             ushort minor_text_id = 0;
-            bool skill_minor_found = gamedata.c2039.GetItemSubIndex(skill_major, skill_minor, out int skill_minor_index);
+            bool skill_minor_found = gamedata.c2039.GetItemSubItemIndex(skill_major, skill_minor, out int skill_minor_index);
             if (skill_minor_found)
             {
                 minor_text_id = gamedata.c2039[skill_minor_index].TextID;

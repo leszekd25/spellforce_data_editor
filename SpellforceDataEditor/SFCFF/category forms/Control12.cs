@@ -1,4 +1,5 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
 
@@ -6,9 +7,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control12 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2014 c2014;
+
         public Control12()
         {
             InitializeComponent();
+
+            c2014 = SFCategoryManager.gamedata.c2014;
+            category = c2014;
+
             column_dict.Add("Item ID", new int[1] { 0 });
             column_dict.Add("Item effect index", new int[1] { 1 });
             column_dict.Add("Effect ID", new int[1] { 2 });
@@ -16,7 +23,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void set_list_text(int i)
         {
-            UInt16 effect_id = (UInt16)(category[current_element, i][2]);
+            UInt16 effect_id = c2014[current_element, i].EffectID;
 
             string txt = SFCategoryManager.GetEffectName(effect_id, true);
             ListEffects.Items[i] = txt;
@@ -24,12 +31,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            MainForm.data.op_queue.OpenCluster();
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
-            }
-            MainForm.data.op_queue.CloseCluster();
+            c2014.SetID(current_element, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -40,7 +42,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            set_element_variant(current_element, cur_selected, 2, SFEngine.Utility.TryParseUInt16(textBox3.Text));
+            c2014.SetField(current_element, cur_selected, "EffectID", SFEngine.Utility.TryParseUInt16(textBox3.Text));
         }
 
         public override void set_element(int index)
@@ -49,7 +51,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             ListEffects.Items.Clear();
 
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for(int i = 0; i < c2014.GetItemSubItemNum(current_element); i++)
             {
                 ListEffects.Items.Add("");
                 set_list_text(i);
@@ -60,7 +62,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0, 0);
+            c2014.GetID(current_element, out int id);
+            textBox1.Text = id.ToString();
         }
 
         private void ListEffects_SelectedIndexChanged(object sender, EventArgs e)
@@ -71,11 +74,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            textBox3.Text = variant_repr(cur_selected, 2);
+            textBox3.Text = c2014[current_element, cur_selected].EffectID.ToString();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            Category2014Item item = new Category2014Item();
+            c2014.GetID(current_element, out int id);
+            item.SetID(id);
+
             int new_index;
             if (ListEffects.SelectedIndex == SFEngine.Utility.NO_INDEX)
             {
@@ -87,24 +94,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             Byte max_index = 0;
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for (int i = 0; i < c2014.GetItemSubItemNum(current_element); i++)
             {
-                max_index = Math.Max(max_index, (Byte)(category[current_element, i][1]));
+                max_index = Math.Max(max_index, c2014[current_element, i].EffectIndex);
             }
-            max_index += 1;
+            item.EffectIndex = (byte)(max_index + 1);
 
-            SFCategoryElement new_elem = category.GetEmptyElement();
-            new_elem[0] = (UInt16)(category[current_element, 0][0]);
-            new_elem[1] = (Byte)max_index;
-
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
-            {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = new_index,
-                Element = new_elem,
-                IsSubElement = true
-            });
+            c2014.AddSubItem(current_element, new_index, item);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -121,63 +117,24 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             int new_index = ListEffects.SelectedIndex;
 
-            Byte cur_spell_index = (Byte)(category[current_element, new_index][1]);
+            byte cur_effect_index = c2014[current_element, new_index].EffectIndex;
+            c2014.RemoveSub(current_element, new_index);
 
-            MainForm.data.op_queue.OpenCluster();
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
+            for (int i = 0; i < c2014.GetItemSubItemNum(current_element); i++)
             {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = new_index,
-                IsRemoving = true,
-                IsSubElement = true
-            });
-
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                if ((Byte)(category[current_element, i][1]) > cur_spell_index)
+                if (c2014[current_element, i].EffectIndex > cur_effect_index)
                 {
-                    MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorModifyCategoryElement()
-                    {
-                        CategoryIndex = category.category_id,
-                        ElementIndex = current_element,
-                        SubElementIndex = i,
-                        VariantIndex = 1,
-                        NewVariant = (Byte)((Byte)(category[current_element, i][1]) - 1),
-                        IsSubElement = true
-                    });
+                    c2014.SetField(current_element, i, "EffectIndex", (byte)(c2014[current_element, i].EffectIndex - 1));
                 }
-            }
-
-            MainForm.data.op_queue.CloseCluster();
-        }
-
-        private void textBox3_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox3, 2002);
-            }
-        }
-
-        private void textBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox1, 2003);
             }
         }
 
 
         public override string get_element_string(int index)
         {
-            UInt16 item_id = (UInt16)category[index, 0][0];
-            string txt_item = SFCategoryManager.GetItemName(item_id);
-
-            UInt16 effect_id = (UInt16)category[index, 0][2];
-            string txt_effect = SFCategoryManager.GetEffectName(effect_id, true);
-
-            return item_id.ToString() + " " + txt_item + " | " + txt_effect;
+            UInt16 item_id = c2014[index, 0].ItemID;
+            UInt16 effect_id = c2014[index, 0].EffectID;
+            return $"{item_id} {SFCategoryManager.GetItemName(item_id)} | {SFCategoryManager.GetEffectName(effect_id, true)}";
         }
 
         public override void on_add_subelement(int subelem_index)
@@ -196,7 +153,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             set_list_text(subelem_index);
             if (ListEffects.SelectedIndex == subelem_index)
             {
-                textBox3.Text = variant_repr(subelem_index, 2);
+                textBox3.Text = c2014[current_element, subelem_index].EffectID.ToString();
             }
         }
     }
