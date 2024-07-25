@@ -62,7 +62,6 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(126, 20);
             this.textBox2.TabIndex = 1;
-            this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
             this.textBox2.Leave += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // textBox3
@@ -121,7 +120,6 @@
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new System.Drawing.Size(126, 20);
             this.textBox9.TabIndex = 8;
-            this.textBox9.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox9_MouseDown);
             this.textBox9.Leave += new System.EventHandler(this.textBox9_TextChanged);
             // 
             // label1

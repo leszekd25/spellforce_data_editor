@@ -47,12 +47,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Update="SFCFF\calculator forms\CalcControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="SFCFF\calculator forms\CalcHitChanceControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Update="SFCFF\category forms\Control1.cs">
       <SubType>UserControl</SubType>
     </Compile>

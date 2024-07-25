@@ -1,4 +1,5 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
 
@@ -6,9 +7,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control27 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2039 c2039;
+
         public Control27()
         {
             InitializeComponent();
+
+            c2039 = SFCategoryManager.gamedata.c2039;
+            category = c2039;
+
             column_dict.Add("Skill major type", new int[1] { 0 });
             column_dict.Add("Skill minor type", new int[1] { 1 });
             column_dict.Add("Text ID", new int[1] { 2 });
@@ -16,13 +23,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            MainForm.data.op_queue.OpenCluster();
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox3.Text));
-            }
-
-            MainForm.data.op_queue.CloseCluster();
+            c2039.SetID(current_element, SFEngine.Utility.TryParseUInt16(textBox3.Text));
         }
 
         public override void set_element(int index)
@@ -31,9 +32,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             ListSkills.Items.Clear();
 
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for (int i = 0; i < c2039.GetItemSubItemNum(current_element); i++)
             {
-                string txt = SFCategoryManager.GetTextFromElement(category[current_element, i], 2);
+                string txt = SFCategoryManager.GetTextByLanguage(c2039[current_element, i].TextID, 1);
                 ListSkills.Items.Add(txt);
             }
 
@@ -42,16 +43,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            textBox3.Text = variant_repr(0, 0);
+            textBox3.Text = c2039[current_element, 0].SkillMajorID.ToString();
         }
 
-        private void textBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox1, 2016);
-            }
-        }
 
         private void ListSkills_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -60,66 +54,47 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            textBox1.Text = variant_repr(ListSkills.SelectedIndex, 2);
+            textBox1.Text = c2039[current_element, 0].TextID.ToString();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListSkills.SelectedIndex, 2, SFEngine.Utility.TryParseUInt16(textBox1.Text));
+            c2039.SetField(current_element, ListSkills.SelectedIndex, "TextID", SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SFCategoryElement elem = category[current_element, 0];
-            int index = ListSkills.Items.Count;
-
-            SFCategoryElement new_elem = category.GetEmptyElement();
-            new_elem[0] = (Byte)(category[current_element, 0][0]);
-            new_elem[1] = (Byte)index;
-
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
+            c2039.AddSubItem(current_element, ListSkills.Items.Count, new()
             {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = index,
-                Element = new_elem,
-                IsSubElement = true,
+                SkillMajorID = c2039[current_element, 0].SkillMajorID,
+                SkillMinorID = (byte)ListSkills.Items.Count,
+                TextID = 0
             });
 
-            ListSkills.SelectedIndex = index;
+            ListSkills.SelectedIndex = ListSkills.Items.Count - 1;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (category.element_lists[current_element].Elements.Count == 1)
+            if (c2039.GetItemSubItemNum(current_element) == 1)
             {
                 return;
             }
 
-            int index = ListSkills.Items.Count - 1;
+            c2039.RemoveSub(current_element, ListSkills.Items.Count - 1);
 
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
-            {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = index,
-                IsRemoving = true,
-                IsSubElement = true,
-            });
-
-            ListSkills.SelectedIndex = Math.Min(index, ListSkills.Items.Count - 1);
+            ListSkills.SelectedIndex = ListSkills.Items.Count - 1;
         }
 
 
         public override string get_element_string(int index)
         {
-            string txt = SFCategoryManager.GetTextFromElement(category[index, 0], 2);
-            return category[index, 0][0].ToString() + " " + txt;
+            return $"{c2039[index, 0].SkillMajorID} {SFCategoryManager.GetTextByLanguage(c2039[index, 0].TextID, 1)}";
         }
 
         public override void on_add_subelement(int subelem_index)
         {
-            ListSkills.Items.Add(SFCategoryManager.GetTextFromElement(category[current_element, subelem_index], 2));
+            ListSkills.Items.Add(SFCategoryManager.GetTextByLanguage(c2039[current_element, subelem_index].TextID, 1));
         }
 
         public override void on_remove_subelement(int subelem_index)
@@ -134,7 +109,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            textBox1.Text = variant_repr(subelem_index, 2);
+            textBox1.Text = c2039[current_element, subelem_index].TextID.ToString();
         }
     }
 }

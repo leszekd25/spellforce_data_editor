@@ -343,7 +343,7 @@ namespace SpellforceDataEditor.special_forms
                 return;
             }
 
-            int cat_id = ((Tuple<int, string>)CategorySelect.SelectedItem).Item1;
+            int cat_id = ((Tuple<short, string>)CategorySelect.SelectedItem).Item1;
 
             // force textboxes to validate, submitting data
             Focus();
@@ -362,7 +362,7 @@ namespace SpellforceDataEditor.special_forms
                 insert_copy_element = null;
                 insert_copy_element_list = null;
             }
-            selected_category_id = ((Tuple<int, string>)CategorySelect.SelectedItem).Item1;
+            selected_category_id = ((Tuple<short, string>)CategorySelect.SelectedItem).Item1;
             displayed_category_id = selected_category_id;
             search_active = false;
 

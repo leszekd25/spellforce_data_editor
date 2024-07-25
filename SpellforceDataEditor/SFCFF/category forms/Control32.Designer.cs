@@ -68,7 +68,6 @@
             this.textBox2.Size = new System.Drawing.Size(126, 20);
             this.textBox2.TabIndex = 10;
             this.textBox2.Leave += new System.EventHandler(this.textBox2_TextChanged);
-            this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
             // 
             // Control32
             // 

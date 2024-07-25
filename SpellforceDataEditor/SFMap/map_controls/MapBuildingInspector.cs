@@ -167,7 +167,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             }
 
             // check if new building exists
-            if (SFCategoryManager.gamedata[2029].GetElementIndex(new_building_id) == SFEngine.Utility.NO_INDEX)
+            if(!SFCategoryManager.gamedata.c2029.GetItemIndex(new_building_id, out int new_building_index))
             {
                 return;
             }
@@ -431,24 +431,6 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 {
                     ListBuildings.SelectedIndex = i;
                     return;
-                }
-            }
-        }
-
-        private void BuildingID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (MainForm.data == null)
-            {
-                return;
-            }
-
-            if (e.Button == MouseButtons.Right)
-            {
-                int elem_id = SFEngine.Utility.TryParseUInt8(BuildingID.Text);
-                int real_elem_id = SFCategoryManager.gamedata[2029].GetElementIndex(elem_id);
-                if (real_elem_id != SFEngine.Utility.NO_INDEX)
-                {
-                    MainForm.data.Tracer_StepForward(23, real_elem_id);
                 }
             }
         }

@@ -70,6 +70,26 @@ namespace SFEngine.SFCFF.CTG
         public List<Category2057Item> Items = new List<Category2057Item>();
         public List<int> Indices = new List<int>();
 
+        public int GetSubItemIndex(int index, int subindex)
+        {
+            int from_start = Indices[index];
+            int from_end;
+            if (index == Indices.Count - 1)
+            {
+                from_end = Items.Count;
+            }
+            else
+            {
+                from_end = Indices[index + 1];
+            }
+            if (from_start + subindex >= from_end)
+            {
+                throw new Exception();
+            }
+
+            return from_start + subindex;
+        }
+
         public Category2057Item this[int index]
         {
             get
@@ -279,6 +299,87 @@ namespace SFEngine.SFCFF.CTG
 
             Items.Insert(main_index + new_subindex, item);
             AdjustIndices(new_index + 1, 1);
+            return true;
+        }
+
+        public bool AddCoord(int index, int subindex, int new_coord_index, short x, short y)
+        {
+            if (index >= Indices.Count)
+            {
+                throw new Exception();
+            }
+
+            int main_index = Indices[index];
+            int num = GetItemSubItemNum(index);
+            if (subindex > num)
+            {
+                throw new Exception();
+            }
+
+            main_index += subindex;
+
+            if (new_coord_index * 2 > Items[main_index].Coords.Count)
+            {
+                throw new Exception();
+            }
+
+            Items[main_index].Coords.Insert(new_coord_index * 2 + 0, x);
+            Items[main_index].Coords.Insert(new_coord_index * 2 + 1, y);
+
+            return true;
+        }
+
+        public bool SetCoord(int index, int subindex, int coord_index, short x, short y)
+        {
+            if (index >= Indices.Count)
+            {
+                throw new Exception();
+            }
+
+            int main_index = Indices[index];
+            int num = GetItemSubItemNum(index);
+            if (subindex > num)
+            {
+                throw new Exception();
+            }
+
+            main_index += subindex;
+
+            if (coord_index * 2 >= Items[main_index].Coords.Count)
+            {
+                throw new Exception();
+            }
+
+            Items[main_index].Coords[coord_index * 2 + 0] = x;
+            Items[main_index].Coords[coord_index * 2 + 1] = y;
+
+            return true;
+        }
+
+        public bool RemoveCoord(int index, int subindex, int coord_index)
+        {
+            if (index >= Indices.Count)
+            {
+                throw new Exception();
+            }
+
+            int main_index = Indices[index];
+            int num = GetItemSubItemNum(index);
+            if (subindex > num)
+            {
+                throw new Exception();
+            }
+
+            main_index += subindex;
+
+            if (coord_index * 2 >= Items[main_index].Coords.Count)
+            {
+                throw new Exception();
+            }
+
+            Items[main_index].Coords.RemoveAt(coord_index * 2 + 0);
+            Items[main_index].Coords.RemoveAt(coord_index * 2 + 0);
+
             return true;
         }
 
@@ -661,6 +762,11 @@ namespace SFEngine.SFCFF.CTG
                     }
                 }
             }
+        }
+
+        public void SetField<U>(int index, int subindex, string field_name, U value)
+        {
+            SetField(GetSubItemIndex(index, subindex), field_name, value);
         }
 
         public bool Undo()

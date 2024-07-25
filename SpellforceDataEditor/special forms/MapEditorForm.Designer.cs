@@ -657,7 +657,6 @@
             EntityID.Size = new System.Drawing.Size(82, 23);
             EntityID.TabIndex = 16;
             EntityID.Leave += EntityID_Validated;
-            EntityID.MouseDown += EntityID_MouseDown;
             // 
             // label11
             // 

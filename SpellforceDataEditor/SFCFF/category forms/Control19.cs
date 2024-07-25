@@ -1,4 +1,5 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -42,9 +43,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private bool edit_ready = false;
 
+        Category2025 c2025;
+
         public Control19()
         {
             InitializeComponent();
+
+            c2025 = SFCategoryManager.gamedata.c2025;
+            category = c2025;
+
             column_dict.Add("Unit ID", new int[1] { 0 });
             column_dict.Add("Equipment slot", new int[1] { 1 });
             column_dict.Add("Item ID", new int[1] { 2 });
@@ -73,13 +80,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            MainForm.data.op_queue.OpenCluster();
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
-            }
-
-            MainForm.data.op_queue.CloseCluster();
+            c2025.SetID(current_element, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
 
@@ -103,9 +104,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 }
 
                 int subelem_index = SFEngine.Utility.NO_INDEX;
-                for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+                for (int i = 0; i < c2025.GetItemSubItemNum(current_element); i++)
                 {
-                    Byte item_slot = (Byte)(category[current_element, i][1]);
+                    Byte item_slot = c2025[current_element, i].EquipmentIndex;
                     if (flag == item_slot)
                     {
                         subelem_index = i;
@@ -117,32 +118,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     return;
                 }
 
-                //remove unchecked element
-                MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
-                {
-                    CategoryIndex = category.category_id,
-                    ElementIndex = current_element,
-                    SubElementIndex = subelem_index,
-                    IsRemoving = true,
-                    IsSubElement = true
-                });
+                c2025.RemoveSub(current_element, subelem_index);
             }
             else
             {
                 //add checked element
-                int count = category.element_lists[current_element].Elements.Count;
-                SFCategoryElement new_elem = category.GetEmptyElement();
-                new_elem[0] = (UInt16)(category.element_lists[current_element].GetID());
-                new_elem[1] = (Byte)flag;
-                new_elem[2] = SFEngine.Utility.TryParseUInt16(item_slots[flag].text.Text);
-
-                MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
+                int count = c2025.GetItemSubItemNum(current_element);
+                c2025.GetID(current_element, out int cur_id);
+                c2025.AddSubItem(current_element, count, new() 
                 {
-                    CategoryIndex = category.category_id,
-                    ElementIndex = current_element,
-                    SubElementIndex = count,
-                    Element = new_elem,
-                    IsSubElement = true
+                    UnitID = (ushort)cur_id,
+                    EquipmentIndex = flag,
+                    ItemID = SFEngine.Utility.TryParseUInt16(item_slots[flag].text.Text) 
                 });
             }
         }
@@ -157,21 +144,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             TextBox item_id = (TextBox)sender;
             Byte item_slot = byte.Parse((string)(((TextBox)sender).Tag));
 
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for (int i = 0; i < c2025.GetItemSubItemNum(current_element); i++)
             {
-                if ((Byte)(category[current_element, i][1]) == item_slot)
+                if (c2025[current_element, i].EquipmentIndex == item_slot)
                 {
-                    UInt16 id = SFEngine.Utility.TryParseUInt16(item_id.Text);
-
-                    MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorModifyCategoryElement()
-                    {
-                        CategoryIndex = category.category_id,
-                        ElementIndex = current_element,
-                        SubElementIndex = i,
-                        VariantIndex = 2,
-                        NewVariant = id,
-                        IsSubElement = true
-                    });
+                    c2025.SetField(current_element, i, "ItemID", SFEngine.Utility.TryParseUInt16(item_id.Text));
 
                     return;
                 }
@@ -188,10 +165,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 item_slots[i].set_checked(false);
             }
 
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for (int i = 0; i < c2025.GetItemSubItemNum(current_element); i++)
             {
-                Byte item_slot = (Byte)(category[current_element, i][1]);
-                UInt16 item_id = (UInt16)(category[current_element, i][2]);
+                Byte item_slot = c2025[current_element, i].EquipmentIndex;
+                UInt16 item_id = c2025[current_element, i].ItemID;
 
                 item_slots[item_slot].set_checked(true);
                 item_slots[item_slot].set_text(item_id, SFCategoryManager.GetItemName(item_id));
@@ -203,30 +180,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0, 0);
-        }
-
-        private void textBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox1, 2024);
-            }
-        }
-
-        private void TextboxItem_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into((TextBox)sender, 2003);
-            }
+            c2025.GetID(current_element, out int id);
+            textBox1.Text = id.ToString();
         }
 
         public override string get_element_string(int index)
         {
-            UInt16 unit_id = (UInt16)category[index, 0][0];
-            string txt_unit = SFCategoryManager.GetUnitName(unit_id);
-            return unit_id.ToString() + " " + txt_unit;
+            return $"{c2025[index, 0].UnitID} {SFCategoryManager.GetUnitName(c2025[index, 0].UnitID)}";
         }
 
         public override void on_add_subelement(int subelem_index)

@@ -74,7 +74,6 @@
             this.UnitID.Name = "UnitID";
             this.UnitID.Size = new System.Drawing.Size(132, 22);
             this.UnitID.TabIndex = 1;
-            this.UnitID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.UnitID_MouseDown);
             this.UnitID.Validated += new System.EventHandler(this.UnitID_Validated);
             // 
             // label2

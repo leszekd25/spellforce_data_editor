@@ -75,7 +75,6 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(126, 20);
             this.textBox2.TabIndex = 6;
-            this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
             this.textBox2.Leave += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // textBox3

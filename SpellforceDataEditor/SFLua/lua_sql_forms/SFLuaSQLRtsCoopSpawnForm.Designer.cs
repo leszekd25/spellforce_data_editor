@@ -101,7 +101,6 @@
             this.SelectedSpawnDataUnitID.Name = "SelectedSpawnDataUnitID";
             this.SelectedSpawnDataUnitID.Size = new System.Drawing.Size(100, 20);
             this.SelectedSpawnDataUnitID.TabIndex = 65;
-            this.SelectedSpawnDataUnitID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SelectedSpawnDataUnitID_MouseDown);
             this.SelectedSpawnDataUnitID.Validated += new System.EventHandler(this.SelectedSpawnDataUnitID_Validated);
             // 
             // label10
@@ -242,7 +241,6 @@
             this.SelectedUnitID.Name = "SelectedUnitID";
             this.SelectedUnitID.Size = new System.Drawing.Size(100, 20);
             this.SelectedUnitID.TabIndex = 50;
-            this.SelectedUnitID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SelectedUnitID_MouseDown);
             this.SelectedUnitID.Validated += new System.EventHandler(this.SelectedUnitID_Validated);
             // 
             // GroupGoal

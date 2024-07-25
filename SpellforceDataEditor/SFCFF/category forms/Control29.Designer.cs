@@ -61,7 +61,6 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(126, 20);
             this.textBox3.TabIndex = 53;
-            this.textBox3.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox3_MouseDown);
             this.textBox3.Leave += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // textBox1
@@ -80,7 +79,6 @@
             this.ButtonGoto30.TabIndex = 56;
             this.ButtonGoto30.Text = "button1";
             this.ButtonGoto30.UseVisualStyleBackColor = true;
-            this.ButtonGoto30.Click += new System.EventHandler(this.ButtonGoto30_Click);
             // 
             // ButtonGoto31
             // 
@@ -90,7 +88,6 @@
             this.ButtonGoto31.TabIndex = 57;
             this.ButtonGoto31.Text = "button2";
             this.ButtonGoto31.UseVisualStyleBackColor = true;
-            this.ButtonGoto31.Click += new System.EventHandler(this.ButtonGoto31_Click);
             // 
             // Control29
             // 

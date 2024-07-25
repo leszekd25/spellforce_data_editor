@@ -116,7 +116,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             var buildings = SFLuaEnvironment.buildings.items;
 
             buildings[selected_id].Mesh.Add("");
-            Mesh.Items.Add(SFEngine.Utility.S_MISSING);
+            Mesh.Items.Add(SFEngine.Utility.S_ITEM_MISSING);
 
             Mesh.SelectedIndex = buildings[selected_id].Mesh.Count - 1;
         }

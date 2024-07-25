@@ -59,7 +59,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     else if (!first_click)
                     {
                         ushort new_building_id = (ushort)placement_building;
-                        if (SFCategoryManager.gamedata[2029].GetElementIndex(new_building_id) == -1)
+                        if(!SFCategoryManager.gamedata.c2029.GetItemIndex(new_building_id, out int new_building_index))
                         {
                             return;
                         }

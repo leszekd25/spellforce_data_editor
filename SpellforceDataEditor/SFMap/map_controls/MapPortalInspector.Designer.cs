@@ -116,7 +116,6 @@
             this.PortalID.Name = "PortalID";
             this.PortalID.Size = new System.Drawing.Size(100, 20);
             this.PortalID.TabIndex = 1;
-            this.PortalID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PortalID_MouseDown);
             this.PortalID.Validated += new System.EventHandler(this.PortalID_Validated);
             // 
             // label2

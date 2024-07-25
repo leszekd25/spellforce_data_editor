@@ -62,15 +62,12 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return "Bindstone at " + io.grid_position.ToString();
             }
 
-            SFCategoryElement elem = SFCategoryManager.GetTextByLanguage(
-                map.metadata.spawns[player].text_id, SFEngine.Settings.LanguageID);
-            if (elem == null)
+            if (!SFCategoryManager.gamedata.c2016.GetItemIndex(map.metadata.spawns[player].text_id, out int text_index))
             {
                 return "Bindstone at " + io.grid_position.ToString();
             }
 
-            string ret = elem.variants[4].ToString();
-            return ret + " " + io.grid_position.ToString();
+            return $"{SFCategoryManager.gamedata.c2016[text_index].GetContentString()} {io.grid_position}";
 
         }
 
@@ -320,24 +317,6 @@ namespace SpellforceDataEditor.SFMap.map_controls
             });
 
             map.metadata.spawns[player].unknown = SFEngine.Utility.TryParseInt16(Unknown.Text, map.metadata.spawns[player].unknown);
-        }
-
-        private void TextID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (MainForm.data == null)
-            {
-                return;
-            }
-
-            if (e.Button == MouseButtons.Right)
-            {
-                int elem_id = SFEngine.Utility.TryParseUInt16(TextID.Text);
-                int real_elem_id = SFCategoryManager.gamedata[2016].GetElementIndex(elem_id);
-                if (real_elem_id != SFEngine.Utility.NO_INDEX)
-                {
-                    MainForm.data.Tracer_StepForward(14, real_elem_id);
-                }
-            }
         }
     }
 }

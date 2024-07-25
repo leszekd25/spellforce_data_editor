@@ -1,4 +1,5 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
 
@@ -6,9 +7,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control22 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2040 c2040;
+
         public Control22()
         {
             InitializeComponent();
+
+            c2040 = SFCategoryManager.gamedata.c2040;
+            category = c2040;
+            
             column_dict.Add("Unit ID", new int[1] { 0 });
             column_dict.Add("Slot index", new int[1] { 1 });
             column_dict.Add("Item 1 ID", new int[1] { 2 });
@@ -21,9 +28,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         int get_subelem_index_by_slot_id(int slot_id)
         {
             // get absolute index in element
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for(int i = 0; i < c2040.GetItemSubItemNum(current_element); i++)
             {
-                if ((int)(byte)category[current_element, i][1] == slot_id)
+                if (c2040[current_element, i].LootIndex == slot_id)
                 {
                     return i;
                 }
@@ -33,43 +40,37 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            MainForm.data.op_queue.OpenCluster();
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
-            }
-
-            MainForm.data.op_queue.CloseCluster();
+            c2040.SetID(current_element, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
-            set_element_variant(current_element, index, 2, SFEngine.Utility.TryParseUInt16(textBox2.Text));
+            c2040.SetField(current_element, index, "ItemID1", SFEngine.Utility.TryParseUInt16(textBox2.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
-            set_element_variant(current_element, index, 3, SFEngine.Utility.TryParseUInt8(textBox3.Text));
+            c2040.SetField(current_element, index, "ItemChance1", SFEngine.Utility.TryParseUInt8(textBox3.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
-            set_element_variant(current_element, index, 4, SFEngine.Utility.TryParseUInt16(textBox5.Text));
+            c2040.SetField(current_element, index, "ItemID2", SFEngine.Utility.TryParseUInt16(textBox5.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
-            set_element_variant(current_element, index, 5, SFEngine.Utility.TryParseUInt8(textBox4.Text));
+            c2040.SetField(current_element, index, "ItemChance2", SFEngine.Utility.TryParseUInt8(textBox4.Text));
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
-            set_element_variant(current_element, index, 6, SFEngine.Utility.TryParseUInt16(textBox7.Text));
+            c2040.SetField(current_element, index, "ItemID3", SFEngine.Utility.TryParseUInt16(textBox7.Text));
         }
 
         public override void set_element(int index)
@@ -82,15 +83,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 ListSlots.SetItemChecked(i, false);
             }
 
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for (int i = 0; i < c2040.GetItemSubItemNum(current_element); i++)
             {
-                Byte b = (Byte)category[current_element, i][1];
+                Byte b = c2040[current_element, i].LootIndex;
                 if ((b < 1) || (b > 6))
                 {
                     continue;
                 }
 
-                ListSlots.SetItemChecked(((int)((Byte)category[current_element, i][1])) - 1, true);
+                ListSlots.SetItemChecked(c2040[current_element, i].LootIndex, true);
             }
 
             for (int i = 0; i < 6; i++)
@@ -106,7 +107,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0, 0);
+            textBox1.Text = c2040[current_element, 0].UnitID.ToString();
             for (int i = 1; i <= 6; i++)
             {
                 if (get_subelem_index_by_slot_id(i) != SFEngine.Utility.NO_INDEX)
@@ -118,78 +119,30 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
         }
 
-        private void textBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox1, 2024);
-            }
-        }
-
-        private void textBox2_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox2, 2003);
-            }
-        }
-
-        private void textBox5_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox5, 2003);
-            }
-        }
-
-        private void textBox7_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox7, 2003);
-            }
-        }
-
         private void UpdateEffectiveChance()
         {
             textBox8.Text = "0"; textBox6.Text = "0"; textBox10.Text = "0";
 
             int slot_id = ListSlots.SelectedIndex + 1;
             int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
-            int item_num = 0;
-            for (int i = 0; i < 3; i++)    // check for items
-            {
-                if ((UInt16)category[current_element, index][2 + i * 2] != 0)
-                {
-                    item_num++;
-                }
-            }
 
             Single[] chances = new Single[3];
-            for (int i = 0; i < item_num; i++)
+            if (c2040[current_element, index].ItemID1 != 0)
             {
-                UInt16 item_id = (UInt16)category[current_element, index][2 + i * 2];
-                Byte data_chance = 0;
-                if (i != 2)
-                {
-                    data_chance = (Byte)category[current_element, index][3 + i * 2];
-                }
-
-                if (i == 0)
-                {
-                    chances[0] = (Single)(data_chance);
-                    textBox8.Text = chances[0].ToString();
-                }
-                else if (i == 1)
-                {
-                    chances[1] = (Single)(data_chance) * (1 - chances[0] / 100);
-                    textBox6.Text = chances[1].ToString();
-                }
-                else if (i == 2)
-                {
-                    chances[2] = 100 - chances[0] - chances[1];
-                    textBox10.Text = chances[2].ToString();
-                }
+                Byte data_chance = c2040[current_element, index].ItemChance1;
+                chances[0] = (Single)(data_chance);
+                textBox8.Text = chances[0].ToString();
+            }
+            if (c2040[current_element, index].ItemID2 != 0)
+            {
+                Byte data_chance = c2040[current_element, index].ItemChance2;
+                chances[1] = (Single)(data_chance) * (1 - chances[0] / 100);
+                textBox6.Text = chances[1].ToString();
+            }
+            if (c2040[current_element, index].ItemID3 != 0)
+            {
+                chances[2] = 100 - chances[0] - chances[1];
+                textBox10.Text = chances[2].ToString();
             }
         }
 
@@ -216,11 +169,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 item3_name.Text = "";
                 return;
             }
-            textBox2.Text = variant_repr(index, 2);
-            textBox3.Text = variant_repr(index, 3);
-            textBox5.Text = variant_repr(index, 4);
-            textBox4.Text = variant_repr(index, 5);
-            textBox7.Text = variant_repr(index, 6);
+            textBox2.Text = c2040[current_element, index].ItemID1.ToString();
+            textBox3.Text = c2040[current_element, index].ItemChance1.ToString();
+            textBox5.Text = c2040[current_element, index].ItemID2.ToString();
+            textBox4.Text = c2040[current_element, index].ItemChance2.ToString();
+            textBox7.Text = c2040[current_element, index].ItemID3.ToString();
 
             item1_name.Text = SFCategoryManager.GetItemName(SFEngine.Utility.TryParseUInt16(textBox2.Text, 0));
             item2_name.Text = SFCategoryManager.GetItemName(SFEngine.Utility.TryParseUInt16(textBox5.Text, 0));
@@ -252,46 +205,41 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 int old_item_slot = e.Index + 1;
 
-                int tmp_index = category.element_lists[current_element].GetIndexByID(old_item_slot);
+                int tmp_index = SFEngine.Utility.NO_INDEX;
+                for (int i = 0; i < c2040.GetItemSubItemNum(current_element); i++)
+                {
+                    if (c2040[current_element, i].LootIndex == old_item_slot)
+                    {
+                        tmp_index = i;
+                        break;
+                    }
+                }
+
                 if (tmp_index == SFEngine.Utility.NO_INDEX)
                 {
                     SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFCFF, "ListSlots_ItemCheck(): Could not find item at given ID (ID: " + old_item_slot.ToString() + ")");
                     throw new Exception("Could not find item at given ID");
                 }
 
-                MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
-                {
-                    CategoryIndex = category.category_id,
-                    ElementIndex = current_element,
-                    SubElementIndex = tmp_index,
-                    IsSubElement = true,
-                    IsRemoving = true,
-                });
+                c2040.RemoveSub(current_element, tmp_index);
             }
             else if (e.NewValue == CheckState.Checked)
             {
                 int new_item_slot = e.Index + 1;
 
                 int tmp_index;
-                for (tmp_index = 0; tmp_index < category.element_lists[current_element].Elements.Count; tmp_index++)
+                for (tmp_index = 0; tmp_index < c2040.GetItemSubItemNum(current_element); tmp_index++)
                 {
-                    if ((Byte)category[current_element, tmp_index][1] > new_item_slot)
+                    if (c2040[current_element, tmp_index].LootIndex > new_item_slot)
                     {
                         break;
                     }
                 }
 
-                SFCategoryElement new_elem = category.GetEmptyElement();
-                new_elem[0] = (UInt16)(category.element_lists[current_element].GetID());
-                new_elem[1] = (Byte)(e.Index + 1);
-
-                MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
+                c2040.AddSubItem(current_element, tmp_index, new()
                 {
-                    CategoryIndex = category.category_id,
-                    ElementIndex = current_element,
-                    SubElementIndex = tmp_index,
-                    Element = new_elem,
-                    IsSubElement = true,
+                    UnitID = c2040[current_element, 0].UnitID,
+                    LootIndex = (byte)(e.Index + 1),
                 });
             }
 
@@ -302,10 +250,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            UInt16 unit_id = (UInt16)category[index, 0][0];
-            int slot_count = category.element_lists[index].Elements.Count;
-            string txt_unit = SFCategoryManager.GetUnitName(unit_id);
-            return unit_id.ToString() + " " + txt_unit + " - " + slot_count.ToString() + ((slot_count == 1) ? " slot" : " slots");
+            return $"{c2040[index, 0].UnitID} {SFCategoryManager.GetUnitName(c2040[index, 0].UnitID)} - {c2040.GetItemSubItemNum(index)} {((c2040.GetItemSubItemNum(index) == 1) ? "slot" : "slots")}";
         }
 
         public override void on_add_subelement(int subelem_index)
@@ -326,11 +271,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            textBox2.Text = variant_repr(index, 2);
-            textBox3.Text = variant_repr(index, 3);
-            textBox5.Text = variant_repr(index, 4);
-            textBox4.Text = variant_repr(index, 5);
-            textBox7.Text = variant_repr(index, 6);
+            textBox2.Text = c2040[current_element, index].ItemID1.ToString();
+            textBox3.Text = c2040[current_element, index].ItemChance1.ToString();
+            textBox5.Text = c2040[current_element, index].ItemID2.ToString();
+            textBox4.Text = c2040[current_element, index].ItemChance2.ToString();
+            textBox7.Text = c2040[current_element, index].ItemID3.ToString();
 
             item1_name.Text = SFCategoryManager.GetItemName(SFEngine.Utility.TryParseUInt16(textBox2.Text, 0));
             item2_name.Text = SFCategoryManager.GetItemName(SFEngine.Utility.TryParseUInt16(textBox5.Text, 0));

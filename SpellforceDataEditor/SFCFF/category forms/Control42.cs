@@ -1,4 +1,5 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
 
@@ -6,9 +7,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control42 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2059 c2059;
+
         public Control42()
         {
             InitializeComponent();
+
+            c2059 = SFCategoryManager.gamedata.c2059;
+            category = c2059;
+
             column_dict.Add("Description ID", new int[1] { 0 });
             column_dict.Add("Text ID", new int[1] { 1 });
             column_dict.Add("Advanced text ID", new int[1] { 2 });
@@ -16,54 +23,35 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_sd3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(tb_sd3.Text));
+            c2059.SetID(current_element, SFEngine.Utility.TryParseUInt16(tb_sd3.Text));
         }
 
         private void tb_sd4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt16(tb_sd4.Text));
+            c2059.SetField(current_element, "TextID", SFEngine.Utility.TryParseUInt16(tb_sd4.Text));
         }
 
         private void sb_sd5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, SFEngine.Utility.TryParseUInt16(sb_sd5.Text));
+            c2059.SetField(current_element, "ExtTextID", SFEngine.Utility.TryParseUInt16(sb_sd5.Text));
         }
 
         public override void show_element()
         {
-            tb_sd3.Text = variant_repr(0);
-            tb_sd4.Text = variant_repr(1);
-            sb_sd5.Text = variant_repr(2);
-        }
-
-        private void tb_sd4_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(tb_sd4, 2016);
-            }
-        }
-
-        private void sb_sd5_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(sb_sd5, 2016);
-            }
+            tb_sd3.Text = c2059[current_element].ExtDescriptionID.ToString();
+            tb_sd4.Text = c2059[current_element].TextID.ToString();
+            sb_sd5.Text = c2059[current_element].ExtTextID.ToString();
         }
 
 
         public override string get_element_string(int index)
         {
-            UInt16 elem_id = (UInt16)category[index][0];
-            string txt = SFCategoryManager.GetTextFromElement(category[index], 2);
-            return elem_id.ToString() + " " + txt;
+            return $"{c2059[index].ExtDescriptionID} {SFCategoryManager.GetTextByLanguage(c2059[index].ExtTextID, 1)}";
         }
 
         public override string get_description_string(int index)
         {
-            string txt = SFCategoryManager.GetTextFromElement(category[index], 1);
-            return "Text ID: " + txt;
+            return $"Text ID: {SFCategoryManager.GetTextByLanguage(c2059[index].TextID, 1)}";
         }
     }
 }

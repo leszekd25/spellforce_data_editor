@@ -38,11 +38,9 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (SFCategoryManager.ready)
             {
                 int portal_id = portal.game_id;
-                int portal_index = SFCategoryManager.gamedata[2053].GetElementIndex(portal_id);
-                if (portal_index != SFEngine.Utility.NO_INDEX)
+                if(SFCategoryManager.gamedata.c2053.GetItemIndex(portal_id, out int portal_index))
                 {
-                    SFCategoryElement portal_data = SFCategoryManager.gamedata[2053][portal_index];
-                    ret += SFCategoryManager.GetTextFromElement(portal_data, 5);
+                    ret += SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2053[portal_index].NameID, 1);
                 }
             }
             ret += portal.grid_position.ToString();
@@ -242,24 +240,6 @@ namespace SpellforceDataEditor.SFMap.map_controls
             else
             {
                 ShowList();
-            }
-        }
-
-        private void PortalID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (MainForm.data == null)
-            {
-                return;
-            }
-
-            if (e.Button == MouseButtons.Right)
-            {
-                int elem_id = SFEngine.Utility.TryParseUInt16(PortalID.Text);
-                int real_elem_id = SFCategoryManager.gamedata[2053].GetElementIndex(elem_id);
-                if (real_elem_id != SFEngine.Utility.NO_INDEX)
-                {
-                    MainForm.data.Tracer_StepForward(38, real_elem_id);
-                }
             }
         }
     }

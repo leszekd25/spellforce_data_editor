@@ -61,7 +61,6 @@
             textBox1.Size = new System.Drawing.Size(146, 23);
             textBox1.TabIndex = 46;
             textBox1.Leave += textBox1_TextChanged;
-            textBox1.MouseDown += textBox1_MouseDown;
             // 
             // MerchantGrid
             // 
@@ -78,7 +77,6 @@
             MerchantGrid.Size = new System.Drawing.Size(527, 298);
             MerchantGrid.TabIndex = 52;
             MerchantGrid.CellValidated += OnCellValueChange;
-            MerchantGrid.MouseDown += MerchantGrid_MouseDown;
             // 
             // ItemID
             // 
@@ -122,7 +120,6 @@
             textBox2.Name = "textBox2";
             textBox2.Size = new System.Drawing.Size(116, 23);
             textBox2.TabIndex = 54;
-            textBox2.MouseDown += textBox2_MouseDown;
             // 
             // label2
             // 

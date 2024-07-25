@@ -60,7 +60,6 @@
             this.textBox2.Size = new System.Drawing.Size(126, 20);
             this.textBox2.TabIndex = 22;
             this.textBox2.Leave += new System.EventHandler(this.textBox2_TextChanged);
-            this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
             // 
             // textBox1
             // 
@@ -70,7 +69,6 @@
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 21;
             this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
-            this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
             // 
             // Control14
             // 

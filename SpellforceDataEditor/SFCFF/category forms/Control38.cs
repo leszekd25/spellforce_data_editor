@@ -1,4 +1,6 @@
-﻿using SFEngine.SFCFF;
+﻿using SFEngine;
+using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
 
@@ -6,9 +8,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control38 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2052 c2052;
+
         public Control38()
         {
             InitializeComponent();
+
+            c2052 = SFCategoryManager.gamedata.c2052;
+            category = c2052;
+
             column_dict.Add("Map ID", new int[1] { 0 });
             column_dict.Add("Unknown", new int[1] { 1 });
             column_dict.Add("Map handle", new int[1] { 2 });
@@ -17,46 +25,36 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt32(tb_effID.Text));
+            c2052.SetID(current_element, (int)SFEngine.Utility.TryParseUInt32(tb_effID.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt8(textBox3.Text));
+            c2052.SetField(current_element, "IsPersistent", SFEngine.Utility.TryParseUInt8(textBox3.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, SFString.FromString(textBox4.Text, 0, 64));// SFEngine.Utility.FixedLengthString(textBox4.Text, 64));
+            c2052.SetField(current_element, "Handle", StringUtils.FromString(textBox4.Text, 0, 64));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, SFEngine.Utility.TryParseUInt16(textBox2.Text));
+            c2052.SetField(current_element, "NameID", SFEngine.Utility.TryParseUInt16(textBox2.Text));
         }
 
         public override void show_element()
         {
-            tb_effID.Text = variant_repr(0);
-            textBox3.Text = variant_repr(1);
-            textBox4.Text = string_repr(2);
-            textBox2.Text = variant_repr(3);
-        }
-
-        private void textBox2_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox2, 2016);
-            }
+            tb_effID.Text = c2052[current_element].MapID.ToString();
+            textBox3.Text = c2052[current_element].IsPersistent.ToString();
+            textBox4.Text = c2052[current_element].GetHandleString();
+            textBox2.Text = c2052[current_element].NameID.ToString();
         }
 
 
         public override string get_element_string(int index)
         {
-            UInt32 map_id = (UInt32)category[index][0];
-            string txt = SFCategoryManager.GetTextFromElement(category[index], 3);
-            return map_id.ToString() + " " + txt;
+            return $"{c2052[index].MapID} {SFCategoryManager.GetTextByLanguage(c2052[index].NameID, 1)}";
         }
     }
 }

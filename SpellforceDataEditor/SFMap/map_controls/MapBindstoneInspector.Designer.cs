@@ -162,7 +162,6 @@
             this.TextID.Name = "TextID";
             this.TextID.Size = new System.Drawing.Size(100, 20);
             this.TextID.TabIndex = 18;
-            this.TextID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextID_MouseDown);
             this.TextID.Validated += new System.EventHandler(this.TextID_Validated);
             // 
             // label2

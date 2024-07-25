@@ -389,32 +389,27 @@ namespace SpellforceDataEditor.special_forms
             private int GetUnitRelationToMainChar(int unit_id)
             {
                 // clan player = 11
-                var unit_data = SFCategoryManager.gamedata[2024].FindElementBinary(0, (ushort)unit_id);
-                if (unit_data == null)
+                if(!SFCategoryManager.gamedata.c2024.GetItemIndex(unit_id, out int unit_data_index))
                 {
                     return 6;
                 }
 
-                var unit_stats_data = SFCategoryManager.gamedata[2005].FindElementBinary(0, (ushort)unit_data[2]);
-                if (unit_stats_data == null)
+                if (!SFCategoryManager.gamedata.c2005.GetItemIndex(SFCategoryManager.gamedata.c2024[unit_data_index].StatsID, out int unit_stats_index))
                 {
                     return 6;
                 }
 
-                var race_data = SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)unit_stats_data[2]);
-                if (race_data == null)
+                if (!SFCategoryManager.gamedata.c2022.GetItemIndex(SFCategoryManager.gamedata.c2005[unit_stats_index].UnitRace, out int race_index))
                 {
                     return 6;
                 }
 
-                var clan_data_index = SFCategoryManager.gamedata[2023].FindMultipleElementIndexBinary(0, (byte)((ushort)race_data[9]));
-                if (clan_data_index == SFEngine.Utility.NO_INDEX)
+                if(!SFCategoryManager.gamedata.c2023.GetItemSubItemIndex(0, SFCategoryManager.gamedata.c2022[race_index].FactionID, out int clan_data_index))
                 {
                     return 6;
                 }
 
-                var clan_data = SFCategoryManager.gamedata[2023].element_lists[clan_data_index];
-                var player_relation = (byte)clan_data[10][2];
+                byte player_relation = SFCategoryManager.gamedata.c2023[clan_data_index].Relation;
                 if (player_relation == 0)
                 {
                     return 1;
@@ -437,34 +432,32 @@ namespace SpellforceDataEditor.special_forms
             {
                 // clan player = 11
                 SFCategoryElement race_data;
+                int race_index = SFEngine.Utility.NO_INDEX; ;
                 if (bld.race_id == 0)
                 {
-                    var building_data = SFCategoryManager.gamedata[2029].FindElementBinary(0, (ushort)bld.game_id);
-                    if (building_data == null)
+                    if(!SFCategoryManager.gamedata.c2029.GetItemIndex(bld.game_id, out int building_index))
                     {
                         return 6;
                     }
 
-                    race_data = SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)building_data[1]);
+                    SFCategoryManager.gamedata.c2022.GetItemIndex(SFCategoryManager.gamedata.c2029[building_index].RaceID, out race_index);
                 }
                 else
                 {
-                    race_data = SFCategoryManager.gamedata[2022].FindElementBinary(0, (byte)bld.race_id);
+                    SFCategoryManager.gamedata.c2022.GetItemIndex(bld.race_id, out race_index);
                 }
 
-                if (race_data == null)
+                if (race_index == SFEngine.Utility.NO_INDEX)
                 {
                     return 6;
                 }
 
-                var clan_data_index = SFCategoryManager.gamedata[2023].FindMultipleElementIndexBinary(0, (byte)((ushort)race_data[9]));
-                if (clan_data_index == SFEngine.Utility.NO_INDEX)
+                if (!SFCategoryManager.gamedata.c2023.GetItemSubItemIndex(0, SFCategoryManager.gamedata.c2022[race_index].FactionID, out int clan_data_index))
                 {
                     return 6;
                 }
 
-                var clan_data = SFCategoryManager.gamedata[2023].element_lists[clan_data_index];
-                var player_relation = (byte)clan_data[10][2];
+                byte player_relation = SFCategoryManager.gamedata.c2023[clan_data_index].Relation;
                 if (player_relation == 0)
                 {
                     return 1;
@@ -1442,10 +1435,7 @@ namespace SpellforceDataEditor.special_forms
                 StatusText.Text = DialogSaveMap.FileName + " saved successfully";
                 if (MainForm.data != null)
                 {
-                    if (MainForm.data.op_queue.operators.Count != 0)
-                    {
-                        MainForm.data.save_data();
-                    }
+                    // save gamedata if it was changed
                 }
             }
 
@@ -3380,55 +3370,35 @@ namespace SpellforceDataEditor.special_forms
 
             unit_tree = new Dictionary<string, TreeNode>();
             // generate race nodes
-            SFCategory cat = SFCategoryManager.gamedata[2022];
-            for (int i = 0; i < cat.GetElementCount(); i++)
+            for (int i = 0; i < SFCategoryManager.gamedata.c2022.GetNumOfItems(); i++)
             {
-                byte race_id = (byte)cat[i][0];
-                ushort race_name_index = (ushort)(cat[i][7]);
-                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
+                byte race_id = SFCategoryManager.gamedata.c2022[i].RaceID;
+                string race_name = $"{race_id}. {SFCategoryManager.GetRaceName(race_id)}"; 
 
-                string race_name;
-                if (name_elem != null)
-                {
-                    race_name = name_elem[4].ToString();
-                }
-                else
-                {
-                    race_name = SFEngine.Utility.S_MISSING;
-                }
-
-                race_name = race_id.ToString() + ". " + race_name;
                 unit_tree.Add(race_name, new TreeNode(race_name));
             }
             // generate unit nodes
-            SFCategory units_cat = SFCategoryManager.gamedata[2024];
-            for (int i = 0; i < units_cat.GetElementCount(); i++)
+            for (int i = 0; i < SFCategoryManager.gamedata.c2024.GetNumOfItems(); i++)
             {
-                ushort unit_id = (ushort)units_cat[i][0];
+                ushort unit_id = SFCategoryManager.gamedata.c2024[i].UnitID;
                 string unit_name = unit_id.ToString() + ". " + SFCategoryManager.GetUnitName(unit_id, true);
 
-                ushort stats_id = (ushort)(units_cat[i][2]);
-                SFCategoryElement stats_elem = SFCategoryManager.gamedata[2005].FindElementBinary(0, stats_id);
-                if (stats_elem == null)
+                ushort stats_id = SFCategoryManager.gamedata.c2024[i].StatsID;
+                if(!SFCategoryManager.gamedata.c2005.GetItemIndex(stats_id, out int stats_index))
                 {
                     unit_tree.Add(unit_name, new TreeNode(unit_name) { Tag = unit_id });
                     continue;
                 }
 
-                byte unit_race_id = (byte)stats_elem[2];
-                int race_cat_index = cat.GetElementIndex(unit_race_id);
+                byte unit_race_id = SFCategoryManager.gamedata.c2005[stats_index].UnitRace;
+                if(!SFCategoryManager.gamedata.c2022.GetItemIndex(unit_race_id, out int race_index))
+                {
+                    unit_tree.Add(unit_name, new TreeNode(unit_name) { Tag = unit_id });
+                    continue;
+                }
 
-                ushort race_name_index = (ushort)(cat[race_cat_index][7]);
-                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
-                string race_name;
-                if (name_elem != null)
-                {
-                    race_name = name_elem[4].ToString();
-                }
-                else
-                {
-                    race_name = SFEngine.Utility.S_MISSING;
-                }
+                ushort race_name_index = SFCategoryManager.gamedata.c2022[race_index].TextID;
+                string race_name = SFCategoryManager.GetTextByLanguage(race_name_index, 1);
 
                 race_name = unit_race_id.ToString() + ". " + race_name;
                 if (unit_tree.ContainsKey(race_name))
@@ -3470,59 +3440,39 @@ namespace SpellforceDataEditor.special_forms
 
             TreeEntities.Nodes.Clear();
             // generate race nodes
-            SFCategory cat = SFCategoryManager.gamedata[2022];
-            for (int i = 0; i < cat.GetElementCount(); i++)
+            for (int i = 0; i < SFCategoryManager.gamedata.c2022.GetNumOfItems(); i++)
             {
-                byte race_id = (byte)cat[i][0];
-                ushort race_name_index = (ushort)(cat[i][7]);
-                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
+                byte race_id = SFCategoryManager.gamedata.c2022[i].RaceID;
+                ushort race_name_index = SFCategoryManager.gamedata.c2022[i].TextID;
 
-                string race_name;
-                if (name_elem != null)
-                {
-                    race_name = name_elem[4].ToString();
-                }
-                else
-                {
-                    race_name = SFEngine.Utility.S_MISSING;
-                }
-
-                race_name = race_id.ToString() + ". " + race_name;
+                string race_name = $"{race_id}. {SFCategoryManager.GetRaceName(race_id)}";
                 TreeEntities.Nodes.Add(race_name, race_name);
             }
             // generate unit nodes
-            SFCategory units_cat = SFCategoryManager.gamedata[2024];
-            for (int i = 0; i < units_cat.GetElementCount(); i++)
+            for (int i = 0; i < SFCategoryManager.gamedata.c2024.GetNumOfItems(); i++)
             {
-                ushort unit_id = (ushort)units_cat[i][0];
+                ushort unit_id = SFCategoryManager.gamedata.c2024[i].UnitID;
                 string unit_name = unit_id.ToString() + ". " + SFCategoryManager.GetUnitName(unit_id, true);
 
-                ushort stats_id = (ushort)(units_cat[i][2]);
-                SFCategoryElement stats_elem = SFCategoryManager.gamedata[2005].FindElementBinary(0, stats_id);
-                if (stats_elem == null)
+                ushort stats_id = SFCategoryManager.gamedata.c2024[i].StatsID;
+                if (!SFCategoryManager.gamedata.c2005.GetItemIndex(stats_id, out int stats_index))
                 {
                     if (unit_name.ToLower().Contains(txt))
                     {
                         TreeEntities.Nodes.Add(new TreeNode(unit_name) { Tag = unit_id });
                     }
-
                     continue;
                 }
 
-                byte unit_race_id = (byte)stats_elem[2];
-                int race_cat_index = cat.GetElementIndex(unit_race_id);
+                byte unit_race_id = SFCategoryManager.gamedata.c2005[stats_index].UnitRace;
+                if (!SFCategoryManager.gamedata.c2022.GetItemIndex(unit_race_id, out int race_index))
+                {
+                    unit_tree.Add(unit_name, new TreeNode(unit_name) { Tag = unit_id });
+                    continue;
+                }
 
-                ushort race_name_index = (ushort)(cat[race_cat_index][7]);
-                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
-                string race_name;
-                if (name_elem != null)
-                {
-                    race_name = name_elem[4].ToString();
-                }
-                else
-                {
-                    race_name = SFEngine.Utility.S_MISSING;
-                }
+                ushort race_name_index = SFCategoryManager.gamedata.c2022[race_index].TextID;
+                string race_name = SFCategoryManager.GetTextByLanguage(race_name_index, 1);
 
                 race_name = unit_race_id.ToString() + ". " + race_name;
 
@@ -3698,42 +3648,6 @@ namespace SpellforceDataEditor.special_forms
             ConfirmPlacementEntity();
         }
 
-        private void EntityID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (MainForm.data == null)
-            {
-                return;
-            }
-
-            int cat_id = -1;
-            if (RadioEntityModeUnit.Checked)
-            {
-                cat_id = 2024;
-            }
-            else if (RadioEntityModeObject.Checked)
-            {
-                cat_id = 2050;
-            }
-            else if (RadioEntityModeBuilding.Checked)
-            {
-                cat_id = 2029;
-            }
-
-            if (cat_id == -1)
-            {
-                return;
-            }
-
-            if (e.Button == MouseButtons.Right)
-            {
-                int elem_id = SFEngine.Utility.TryParseUInt16(EntityID.Text);
-                int real_elem_id = SFCategoryManager.gamedata[cat_id].GetElementIndex(elem_id);
-                if (real_elem_id != -1)
-                {
-                    MainForm.data.Tracer_StepForward(cat_id, real_elem_id);
-                }
-            }
-        }
 
         // load object picker tree
         private void GenerateBuildingTree()
@@ -3747,46 +3661,21 @@ namespace SpellforceDataEditor.special_forms
 
             building_tree = new Dictionary<string, TreeNode>();
             // generate race nodes
-            SFCategory cat = SFCategoryManager.gamedata[2022];
-            for (int i = 0; i < cat.GetElementCount(); i++)
+            for (int i = 0; i < SFCategoryManager.gamedata.c2022.GetNumOfItems(); i++)
             {
-                byte race_id = (byte)cat[i][0];
-                ushort race_name_index = (ushort)(cat[i][7]);
-                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
-
-                string race_name;
-                if (name_elem != null)
-                {
-                    race_name = name_elem[4].ToString();
-                }
-                else
-                {
-                    race_name = SFEngine.Utility.S_MISSING;
-                }
+                byte race_id = SFCategoryManager.gamedata.c2022[i].RaceID;
+                string race_name = SFCategoryManager.GetRaceName(race_id);
 
                 race_name = race_id.ToString() + ". " + race_name;
                 building_tree.Add(race_name, new TreeNode(race_name));
             }
             // generate building nodes
-            SFCategory buildings_cat = SFCategoryManager.gamedata[2029];
-            for (int i = 0; i < buildings_cat.GetElementCount(); i++)
+            for (int i = 0; i < SFCategoryManager.gamedata.c2029.GetNumOfItems(); i++)
             {
-                ushort building_id = (ushort)buildings_cat[i][0];
+                ushort building_id = SFCategoryManager.gamedata.c2029[i].BuildingID;
 
-                byte building_race_id = (byte)buildings_cat[i][1];
-                int race_cat_index = cat.GetElementIndex(building_race_id);
-
-                ushort race_name_index = (ushort)(cat[race_cat_index][7]);
-                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
-                string race_name;
-                if (name_elem != null)
-                {
-                    race_name = name_elem[4].ToString();
-                }
-                else
-                {
-                    race_name = SFEngine.Utility.S_MISSING;
-                }
+                byte building_race_id = SFCategoryManager.gamedata.c2029[i].RaceID;
+                string race_name = SFCategoryManager.GetRaceName(building_race_id);
 
                 race_name = building_race_id.ToString() + ". " + race_name;
                 string building_name = building_id.ToString() + ". " + SFCategoryManager.GetBuildingName(building_id);
@@ -3830,46 +3719,21 @@ namespace SpellforceDataEditor.special_forms
             TreeEntities.Nodes.Clear();
 
             // generate race nodes
-            SFCategory cat = SFCategoryManager.gamedata[2022];
-            for (int i = 0; i < cat.GetElementCount(); i++)
+            for (int i = 0; i < SFCategoryManager.gamedata.c2022.GetNumOfItems(); i++)
             {
-                byte race_id = (byte)cat[i][0];
-                ushort race_name_index = (ushort)(cat[i][7]);
-                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
-
-                string race_name;
-                if (name_elem != null)
-                {
-                    race_name = name_elem[4].ToString();
-                }
-                else
-                {
-                    race_name = SFEngine.Utility.S_MISSING;
-                }
+                byte race_id = SFCategoryManager.gamedata.c2022[i].RaceID;
+                string race_name = SFCategoryManager.GetRaceName(race_id);
 
                 race_name = race_id.ToString() + ". " + race_name;
                 TreeEntities.Nodes.Add(race_name, race_name);
             }
             // generate building nodes
-            SFCategory buildings_cat = SFCategoryManager.gamedata[2029];
-            for (int i = 0; i < buildings_cat.GetElementCount(); i++)
+            for (int i = 0; i < SFCategoryManager.gamedata.c2029.GetNumOfItems(); i++)
             {
-                ushort building_id = (ushort)buildings_cat[i][0];
+                ushort building_id = SFCategoryManager.gamedata.c2029[i].BuildingID;
 
-                byte building_race_id = (byte)buildings_cat[i][1];
-                int race_cat_index = cat.GetElementIndex(building_race_id);
-
-                ushort race_name_index = (ushort)(cat[race_cat_index][7]);
-                SFCategoryElement name_elem = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
-                string race_name;
-                if (name_elem != null)
-                {
-                    race_name = name_elem[4].ToString();
-                }
-                else
-                {
-                    race_name = SFEngine.Utility.S_MISSING;
-                }
+                byte building_race_id = SFCategoryManager.gamedata.c2029[i].RaceID;
+                string race_name = SFCategoryManager.GetRaceName(building_race_id);
 
                 race_name = building_race_id.ToString() + ". " + race_name;
                 string building_name = building_id.ToString() + ". " + SFCategoryManager.GetBuildingName(building_id);
@@ -3946,10 +3810,9 @@ namespace SpellforceDataEditor.special_forms
 
             obj_tree = new Dictionary<string, TreeNode>();
 
-            SFCategory cat = SFCategoryManager.gamedata[2050];
-            foreach (SFCategoryElement e in cat.elements)
+            for(int i = 0; i < SFCategoryManager.gamedata.c2050.GetNumOfItems(); i++)
             {
-                UInt16 id = (UInt16)e[0];
+                ushort id = SFCategoryManager.gamedata.c2050[i].ObjectID;
                 if ((id > 64) && (id < 128))
                 {
                     continue;
@@ -3971,7 +3834,7 @@ namespace SpellforceDataEditor.special_forms
                 }
 
                 string name = id.ToString() + ". " + SFCategoryManager.GetObjectName(id);
-                string path = e[5].ToString();
+                string path = SFCategoryManager.gamedata.c2050[i].GetHandleString();
                 string[] path_items = path.Split('/');
                 if ((path_items.Length == 1) && (path_items[0] == ""))
                 {
@@ -3993,14 +3856,14 @@ namespace SpellforceDataEditor.special_forms
 
                 tnc = obj_tree[path_items[0]];
 
-                for (int i = 1; i < path_items.Length; i++)
+                for (int j = 1; j < path_items.Length; j++)
                 {
-                    if (!tnc.Nodes.ContainsKey(path_items[i]))
+                    if (!tnc.Nodes.ContainsKey(path_items[j]))
                     {
-                        tnc.Nodes.Add(path_items[i], path_items[i]);
+                        tnc.Nodes.Add(path_items[j], path_items[j]);
                     }
 
-                    tnc = tnc.Nodes[path_items[i]];
+                    tnc = tnc.Nodes[path_items[j]];
                 }
                 tnc.Nodes.Add(new TreeNode(name) { Tag = id });
             }
@@ -4020,10 +3883,9 @@ namespace SpellforceDataEditor.special_forms
 
             TreeEntities.Nodes.Clear();
 
-            SFCategory cat = SFCategoryManager.gamedata[2050];
-            foreach (SFCategoryElement e in cat.elements)
+            for (int i = 0; i < SFCategoryManager.gamedata.c2050.GetNumOfItems(); i++)
             {
-                UInt16 id = (UInt16)e[0];
+                ushort id = SFCategoryManager.gamedata.c2050[i].ObjectID;
                 if ((id > 64) && (id < 128))
                 {
                     continue;
@@ -4045,7 +3907,7 @@ namespace SpellforceDataEditor.special_forms
                 }
 
                 string name = id.ToString() + ". " + SFCategoryManager.GetObjectName(id);
-                string path = e[5].ToString();
+                string path = SFCategoryManager.gamedata.c2050[i].GetHandleString();
                 string[] path_items = path.Split('/');
                 if ((path_items.Length == 1) && (path_items[0] == ""))
                 {
@@ -4085,14 +3947,14 @@ namespace SpellforceDataEditor.special_forms
 
                 tnc = TreeEntities.Nodes[path_items[0]];
 
-                for (int i = 1; i < path_items.Length; i++)
+                for (int j = 1; j < path_items.Length; j++)
                 {
-                    if (!tnc.Nodes.ContainsKey(path_items[i]))
+                    if (!tnc.Nodes.ContainsKey(path_items[j]))
                     {
-                        tnc.Nodes.Add(path_items[i], path_items[i]);
+                        tnc.Nodes.Add(path_items[j], path_items[j]);
                     }
 
-                    tnc = tnc.Nodes[path_items[i]];
+                    tnc = tnc.Nodes[path_items[j]];
                 }
                 tnc.Nodes.Add(new TreeNode(name) { Tag = id });
             }

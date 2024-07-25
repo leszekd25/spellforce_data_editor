@@ -94,7 +94,6 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(53, 20);
             this.textBox2.TabIndex = 29;
-            this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
             this.textBox2.Leave += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // textBox1
@@ -104,7 +103,6 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 28;
-            this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
             this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label4
@@ -142,7 +140,6 @@
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(53, 20);
             this.textBox5.TabIndex = 34;
-            this.textBox5.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox5_MouseDown);
             this.textBox5.Leave += new System.EventHandler(this.textBox5_TextChanged);
             // 
             // label7
@@ -162,7 +159,6 @@
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new System.Drawing.Size(53, 20);
             this.textBox7.TabIndex = 38;
-            this.textBox7.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox7_MouseDown);
             this.textBox7.Leave += new System.EventHandler(this.textBox7_TextChanged);
             // 
             // ListSlots

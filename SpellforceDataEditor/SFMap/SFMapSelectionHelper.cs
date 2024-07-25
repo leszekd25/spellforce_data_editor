@@ -269,7 +269,7 @@ namespace SpellforceDataEditor.SFMap
                 int player = map.metadata.FindPlayerBySpawnPos(io.grid_position);
                 if (player == -1)
                 {
-                    SetName(Utility.S_NONE);
+                    SetName(Utility.S_UNKNOWN);
                 }
                 else
                 {
@@ -279,16 +279,7 @@ namespace SpellforceDataEditor.SFMap
                     }
                     else
                     {
-                        SFCategoryElement elem = SFCategoryManager.GetTextByLanguage(
-                            map.metadata.spawns[player].text_id, Settings.LanguageID);
-                        if (elem == null)
-                        {
-                            SetName(Utility.S_MISSING);
-                        }
-                        else
-                        {
-                            SetName(elem.variants[4].ToString());
-                        }
+                        SetName(SFCategoryManager.GetTextByLanguage(map.metadata.spawns[player].text_id, Settings.LanguageID));
                     }
                 }
             }
@@ -315,13 +306,11 @@ namespace SpellforceDataEditor.SFMap
 
             SetSelectionScale(sel_scale, 0.033f);
 
-            string portal_name = Utility.S_MISSING;
+            string portal_name = Utility.S_UNKNOWN;
             int portal_id = selected_entity.game_id;
-            int portal_index = SFCategoryManager.gamedata[2053].GetElementIndex(portal_id);
-            if (portal_index != -1)
+            if(SFCategoryManager.gamedata.c2053.GetItemIndex(portal_id, out int portal_index))
             {
-                SFCategoryElement portal_data = SFCategoryManager.gamedata[2053][portal_index];
-                portal_name = SFCategoryManager.GetTextFromElement(portal_data, 5);
+                portal_name = SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2053[portal_index].NameID, Settings.LanguageID);
             }
 
             SFRenderEngine.scene.selected_node = p.node;
@@ -450,19 +439,16 @@ namespace SpellforceDataEditor.SFMap
             // get unit
             preview_entity.AddNode(SFRenderEngine.scene.AddSceneUnit(unit_id, "_UNIT_" + unit_id.ToString()));
 
-            int unit_index = SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
-            if (unit_index == -1)
+            if(!SFCategoryManager.gamedata.c2024.GetItemIndex(unit_id, out int unit_index))
             {
                 return;
             }
 
-            SFCategoryElement unit_data = SFCategoryManager.gamedata[2024][unit_index];
-            unit_index = SFCategoryManager.gamedata[2005].GetElementIndex((ushort)unit_data[2]);
             float unit_size = 1f;
+            if (SFCategoryManager.gamedata.c2005.GetItemIndex(SFCategoryManager.gamedata.c2024[unit_index].StatsID, out unit_index))
             if (unit_index != -1)
             {
-                unit_data = SFCategoryManager.gamedata[2005][unit_index];
-                unit_size = Math.Max((ushort)unit_data[18], (ushort)40) / 100.0f;
+                unit_size = Math.Max(SFCategoryManager.gamedata.c2005[unit_index].UnitSize, (ushort)40) / 100.0f;
             }
 
             preview_entity.Scale = new Vector3(unit_size * 100 / 128);

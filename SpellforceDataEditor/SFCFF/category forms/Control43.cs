@@ -1,4 +1,5 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
 
@@ -7,9 +8,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control43 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2061 c2061;
+        
         public Control43()
         {
             InitializeComponent();
+
+            c2061 = SFCategoryManager.gamedata.c2061;
+            category = c2061;
+
             column_dict.Add("Quest ID", new int[1] { 0 });
             column_dict.Add("Parent quest ID", new int[1] { 1 });
             column_dict.Add("Unknown", new int[1] { 2 });
@@ -20,83 +27,60 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt32(tb_effID.Text));
+            c2061.SetID(current_element, (int)SFEngine.Utility.TryParseUInt32(tb_effID.Text));
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt32(textBox1.Text));
+            c2061.SetField(current_element, "ParentQuestID", SFEngine.Utility.TryParseUInt32(textBox1.Text));
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, (Byte)(checkBox1.Checked ? 1 : 0));
+            c2061.SetField(current_element, "IsMainQuest", (Byte)(checkBox1.Checked ? 1 : 0));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, SFEngine.Utility.TryParseUInt16(textBox2.Text));
+            c2061.SetField(current_element, "NameID", SFEngine.Utility.TryParseUInt16(textBox2.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 4, SFEngine.Utility.TryParseUInt16(textBox3.Text));
+            c2061.SetField(current_element, "DescriptionID", SFEngine.Utility.TryParseUInt16(textBox3.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 5, SFEngine.Utility.TryParseUInt32(textBox4.Text));
+            c2061.SetField(current_element, "OrderIndex", SFEngine.Utility.TryParseUInt32(textBox4.Text));
         }
 
         public override void show_element()
         {
-            tb_effID.Text = variant_repr(0);
-            textBox1.Text = variant_repr(1);
-            checkBox1.Checked = ((Byte)category[current_element][2] != 0);
-            textBox2.Text = variant_repr(3);
-            textBox3.Text = variant_repr(4);
-            textBox4.Text = variant_repr(5);
-        }
-
-        private void textBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox1, 2061);
-            }
-        }
-
-        private void textBox2_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox2, 2016);
-            }
-        }
-
-        private void textBox3_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox3, 2016);
-            }
+            tb_effID.Text = c2061[current_element].QuestID.ToString(); 
+            textBox1.Text = c2061[current_element].ParentQuestID.ToString();
+            checkBox1.Checked = (c2061[current_element].IsMainQuest != 0);
+            textBox2.Text = c2061[current_element].NameID.ToString();
+            textBox3.Text = c2061[current_element].DescriptionID.ToString();
+            textBox4.Text = c2061[current_element].OrderIndex.ToString();
         }
 
 
         public override string get_element_string(int index)
         {
-            UInt32 elem_id = (UInt32)category[index][0];
-            string txt = SFCategoryManager.GetTextFromElement(category[index], 3);
-            return elem_id.ToString() + " " + txt;
+            return $"{c2061[index].QuestID} {SFCategoryManager.GetTextByLanguage(c2061[index].NameID, 1)}";
         }
 
         public override string get_description_string(int index)
         {
-            UInt32 quest_id = (UInt32)category[index][1];
-            SFCategoryElement quest_elem = category.FindElementBinary<UInt32>(0, quest_id);
-            string quest_name = SFCategoryManager.GetTextFromElement(quest_elem, 3);
-            string desc_text = SFCategoryManager.GetTextFromElement(category[index], 4);
-            return desc_text + "\r\n\r\nPart of quest " + quest_name;
+            if(c2061.GetItemIndex((int)c2061[index].ParentQuestID, out int pqindex))
+            {
+                return $"{SFCategoryManager.GetTextByLanguage(c2061[index].DescriptionID, 1)}\r\n\r\nPart of quest {SFCategoryManager.GetTextByLanguage(c2061[pqindex].NameID, 1)}";
+            }
+            else
+            {
+                return $"{SFCategoryManager.GetTextByLanguage(c2061[index].DescriptionID, 1)}";
+            }
         }
     }
 }

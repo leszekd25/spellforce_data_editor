@@ -1,13 +1,20 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control28 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2062 c2062;
+
         public Control28()
         {
             InitializeComponent();
+
+            c2062 = SFCategoryManager.gamedata.c2062;
+            category = c2062;
+
             column_dict.Add("Skill ID", new int[1] { 0 });
             column_dict.Add("Skill level", new int[1] { 1 });
             column_dict.Add("Strength", new int[1] { 2 });
@@ -21,48 +28,42 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            MainForm.data.op_queue.OpenCluster();
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt8(textBox1.Text));
-            }
-
-            MainForm.data.op_queue.CloseCluster();
+            c2062.SetID(current_element, SFEngine.Utility.TryParseUInt8(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 2, SFEngine.Utility.TryParseUInt8(textBox3.Text));
+            c2062.SetField(current_element, ListLevels.SelectedIndex, "Strength", SFEngine.Utility.TryParseUInt8(textBox3.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 3, SFEngine.Utility.TryParseUInt8(textBox5.Text));
+            c2062.SetField(current_element, ListLevels.SelectedIndex, "Stamina", SFEngine.Utility.TryParseUInt8(textBox5.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 4, SFEngine.Utility.TryParseUInt8(textBox4.Text));
+            c2062.SetField(current_element, ListLevels.SelectedIndex, "Agility", SFEngine.Utility.TryParseUInt8(textBox4.Text));
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 5, SFEngine.Utility.TryParseUInt8(textBox7.Text));
+            c2062.SetField(current_element, ListLevels.SelectedIndex, "Dexterity", SFEngine.Utility.TryParseUInt8(textBox7.Text));
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 6, SFEngine.Utility.TryParseUInt8(textBox6.Text));
+            c2062.SetField(current_element, ListLevels.SelectedIndex, "Charisma", SFEngine.Utility.TryParseUInt8(textBox6.Text));
         }
 
         private void textBox9_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 7, SFEngine.Utility.TryParseUInt8(textBox9.Text));
+            c2062.SetField(current_element, ListLevels.SelectedIndex, "Intelligence", SFEngine.Utility.TryParseUInt8(textBox9.Text));
         }
 
         private void textBox8_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, ListLevels.SelectedIndex, 8, SFEngine.Utility.TryParseUInt8(textBox8.Text));
+            c2062.SetField(current_element, ListLevels.SelectedIndex, "Wisdom", SFEngine.Utility.TryParseUInt8(textBox8.Text));
         }
 
         public override void set_element(int index)
@@ -71,7 +72,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             ListLevels.Items.Clear();
 
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for (int i = 0; i < c2062.GetItemSubItemNum(current_element); i++)
             {
                 ListLevels.Items.Add("Level " + (i + 1).ToString());
             }
@@ -81,7 +82,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0, 0);
+            textBox1.Text = c2062[current_element, 0].SkillMajorID.ToString();
         }
 
         private void ListLevels_SelectedIndexChanged(object sender, EventArgs e)
@@ -92,51 +93,37 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             int index = ListLevels.SelectedIndex;
-            textBox3.Text = variant_repr(index, 2);
-            textBox5.Text = variant_repr(index, 3);
-            textBox4.Text = variant_repr(index, 4);
-            textBox7.Text = variant_repr(index, 5);
-            textBox6.Text = variant_repr(index, 6);
-            textBox9.Text = variant_repr(index, 7);
-            textBox8.Text = variant_repr(index, 8);
+            textBox3.Text = c2062[current_element, index].Strength.ToString();
+            textBox5.Text = c2062[current_element, index].Stamina.ToString();
+            textBox4.Text = c2062[current_element, index].Agility.ToString();
+            textBox7.Text = c2062[current_element, index].Dexterity.ToString();
+            textBox6.Text = c2062[current_element, index].Charisma.ToString();
+            textBox9.Text = c2062[current_element, index].Intelligence.ToString();
+            textBox8.Text = c2062[current_element, index].Wisdom.ToString();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             int index = ListLevels.Items.Count;
 
-            SFCategoryElement new_elem = category.GetEmptyElement();
-            new_elem[0] = (Byte)(category[current_element, 0][0]);
-            new_elem[1] = (Byte)(index + 1);
-
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
+            c2062.AddSubItem(current_element, index, new()
             {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = index,
-                Element = new_elem,
-                IsSubElement = true
+                SkillMajorID = c2062[current_element, index].SkillMajorID,
+                SkillLevel = (byte)(index + 1)
             });
+
             ListLevels.SelectedIndex = index;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (category.element_lists[current_element].Elements.Count == 1)
+            if (c2062.GetItemSubItemNum(current_element) == 1)
             {
                 return;
             }
 
             int index = ListLevels.Items.Count - 1;
-
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
-            {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = index,
-                IsRemoving = true,
-                IsSubElement = true
-            });
+            c2062.RemoveSub(current_element, index);
 
             ListLevels.SelectedIndex = Math.Min(index, ListLevels.Items.Count - 1);
         }
@@ -144,8 +131,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            Byte skill_major = (Byte)category[index, 0][0];
-            Byte skill_level = (Byte)category[index, 0][1];
+            Byte skill_major = c2062[index, 0].SkillMajorID;
+            Byte skill_level = c2062[index, 0].SkillLevel;
             string txt_skill = SFCategoryManager.GetSkillName(skill_major, 101, skill_level);
             return txt_skill;
         }
@@ -167,15 +154,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            textBox1.Text = variant_repr(subelem_index, 0);
-
-            textBox3.Text = variant_repr(subelem_index, 2);
-            textBox5.Text = variant_repr(subelem_index, 3);
-            textBox4.Text = variant_repr(subelem_index, 4);
-            textBox7.Text = variant_repr(subelem_index, 5);
-            textBox6.Text = variant_repr(subelem_index, 6);
-            textBox9.Text = variant_repr(subelem_index, 7);
-            textBox8.Text = variant_repr(subelem_index, 8);
+            textBox1.Text = c2062[current_element, 0].SkillMajorID.ToString();
+            textBox3.Text = c2062[current_element, subelem_index].Strength.ToString();
+            textBox5.Text = c2062[current_element, subelem_index].Stamina.ToString();
+            textBox4.Text = c2062[current_element, subelem_index].Agility.ToString();
+            textBox7.Text = c2062[current_element, subelem_index].Dexterity.ToString();
+            textBox6.Text = c2062[current_element, subelem_index].Charisma.ToString();
+            textBox9.Text = c2062[current_element, subelem_index].Intelligence.ToString();
+            textBox8.Text = c2062[current_element, subelem_index].Wisdom.ToString();
         }
     }
 }

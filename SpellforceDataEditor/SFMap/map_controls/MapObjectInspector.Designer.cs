@@ -70,7 +70,6 @@
             this.ObjectID.Name = "ObjectID";
             this.ObjectID.Size = new System.Drawing.Size(100, 20);
             this.ObjectID.TabIndex = 1;
-            this.ObjectID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ObjectID_MouseDown);
             this.ObjectID.Validated += new System.EventHandler(this.ObjectID_Validated);
             // 
             // label2

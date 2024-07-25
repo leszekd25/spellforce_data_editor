@@ -1,4 +1,5 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -9,9 +10,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
     {
         private int vertex_index;
 
+        Category2057 c2057;
+
         public Control35()
         {
             InitializeComponent();
+
+            c2057 = SFCategoryManager.gamedata.c2057;
+            category = c2057;
+
             column_dict.Add("Object ID", new int[1] { 0 });
             column_dict.Add("Polygon index", new int[1] { 1 });
             column_dict.Add("Casts shadow", new int[1] { 2 });
@@ -21,13 +28,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            MainForm.data.op_queue.OpenCluster();
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
-            }
-
-            MainForm.data.op_queue.CloseCluster();
+            c2057.SetID(current_element, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
@@ -37,7 +38,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            set_element_variant(current_element, ListPolygons.SelectedIndex, 2, SFEngine.Utility.TryParseUInt8(textBox5.Text));
+            c2057.SetField(current_element, ListPolygons.SelectedIndex, "CastsShadow", SFEngine.Utility.TryParseUInt8(textBox5.Text));
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -48,10 +49,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            SFOutlineData sd = (SFOutlineData)(category[current_element, ListPolygons.SelectedIndex][3]);
-
-            textBox3.Text = sd.Data[vertex_index * 2 + 0].ToString();
-            textBox4.Text = sd.Data[vertex_index * 2 + 1].ToString();
+            textBox3.Text = c2057[current_element, ListPolygons.SelectedIndex].Coords[vertex_index * 2 + 0].ToString();
+            textBox4.Text = c2057[current_element, ListPolygons.SelectedIndex].Coords[vertex_index * 2 + 1].ToString();
         }
 
         private void listbox1_update_vertex(int v_ind)
@@ -61,8 +60,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            SFOutlineData sd = (SFOutlineData)(category[current_element, ListPolygons.SelectedIndex][3]);
-            listBox1.Items[v_ind] = sd.Data[v_ind * 2 + 0].ToString() + " | " + sd.Data[v_ind * 2 + 1].ToString();
+            listBox1.Items[v_ind] = $"{c2057[current_element, ListPolygons.SelectedIndex].Coords[v_ind * 2 + 0]} | {c2057[current_element, ListPolygons.SelectedIndex].Coords[v_ind * 2 + 1]}";
         }
 
         private void listBox1_update()
@@ -74,9 +72,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             listBox1.Items.Clear();
 
-            SFOutlineData sd = (SFOutlineData)(category[current_element, ListPolygons.SelectedIndex][3]);
-
-            for (int i = 0; i < sd.Data.Count / 2; i++)
+            for (int i = 0; i < c2057[current_element, ListPolygons.SelectedIndex].Coords.Count / 2; i++)
             {
                 listBox1.Items.Add("");
                 listbox1_update_vertex(i);
@@ -91,21 +87,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             short new_x = SFEngine.Utility.TryParseInt16(textBox3.Text);
-            if (new_x == ((SFOutlineData)(category[current_element, ListPolygons.SelectedIndex][3])).Data[vertex_index * 2 + 0])
+            short new_y = c2057[current_element, ListPolygons.SelectedIndex].Coords[vertex_index * 2 + 1];
+            if (new_x == c2057[current_element, ListPolygons.SelectedIndex].Coords[vertex_index * 2 + 0])
             {
                 return;
             }
 
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorModifyCategoryElementOutlineData()
-            {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = ListPolygons.SelectedIndex,
-                VariantIndex = 3,
-                VertexIndex = vertex_index,
-                NewX = new_x,
-                NewY = ((SFOutlineData)(category[current_element, ListPolygons.SelectedIndex][3])).Data[vertex_index * 2 + 1],
-            });
+            c2057.SetCoord(current_element, ListPolygons.SelectedIndex, vertex_index, new_x, new_y);
+
+            listBox1.SelectedIndex = vertex_index;
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
@@ -115,22 +105,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
+            short new_x = c2057[current_element, ListPolygons.SelectedIndex].Coords[vertex_index * 2 + 0];
             short new_y = SFEngine.Utility.TryParseInt16(textBox4.Text);
-            if (new_y == ((SFOutlineData)(category[current_element, ListPolygons.SelectedIndex][3])).Data[vertex_index * 2 + 1])
+            if (new_y == c2057[current_element, ListPolygons.SelectedIndex].Coords[vertex_index * 2 + 1])
             {
                 return;
             }
 
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorModifyCategoryElementOutlineData()
-            {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = ListPolygons.SelectedIndex,
-                VariantIndex = 3,
-                VertexIndex = vertex_index,
-                NewX = ((SFOutlineData)(category[current_element, ListPolygons.SelectedIndex][3])).Data[vertex_index * 2 + 0],
-                NewY = new_y,
-            });
+            c2057.SetCoord(current_element, ListPolygons.SelectedIndex, vertex_index, new_x, new_y);
+
+            listBox1.SelectedIndex = vertex_index;
         }
 
         public override void set_element(int index)
@@ -144,7 +128,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0, 0);
+            textBox1.Text = c2057[current_element, 0].ObjectID.ToString();
             vertex_index = SFEngine.Utility.NO_INDEX;
             listBox1_update();
         }
@@ -163,17 +147,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 v_index = listBox1.Items.Count;
             }
 
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElementOutlineData()
-            {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = p_index,
-                VariantIndex = 3,
-                VertexIndex = v_index,
-                X = 0,
-                Y = 0,
-                IsSubElement = true
-            });
+            c2057.AddCoord(current_element, p_index, v_index, 0, 0);
 
             listBox1.SelectedIndex = v_index;
         }
@@ -192,31 +166,22 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            if (((SFOutlineData)category[current_element, p_index][3]).Data.Count <= 2)
+            if (c2057[current_element, p_index].Coords.Count <= 2)
             {
                 return;
-            } ((SFOutlineData)category[current_element, p_index][3]).Data.RemoveAt(v_index * 2);
-            ((SFOutlineData)category[current_element, p_index][3]).Data.RemoveAt(v_index * 2);
-
-            listBox1_update();
-
-        }
-
-        private void textBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox1, 2057);
             }
+
+            c2057.RemoveCoord(current_element, p_index, v_index);
         }
+
 
         private void ListPolygons_update()
         {
             ListPolygons.Items.Clear();
 
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for (int i = 0; i < c2057.GetItemSubItemNum(current_element); i++)
             {
-                ListPolygons.Items.Add(i.ToString());
+                ListPolygons.Items.Add((i + 1).ToString());
             }
         }
 
@@ -228,7 +193,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             listBox1_update();
-            textBox5.Text = variant_repr(ListPolygons.SelectedIndex, 2);
+            textBox5.Text = c2057[current_element, ListPolygons.SelectedIndex].CastsShadow.ToString();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -239,28 +204,19 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 p_index = ListPolygons.Items.Count;
             }
 
-            SFCategoryElement elem = category[current_element, 0];
-
             Byte max_index = 0;
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for (int i = 0; i < c2057.GetItemSubItemNum(current_element); i++)
             {
-                max_index = Math.Max(max_index, (Byte)(category[current_element, i][1]));
+                max_index = Math.Max(max_index, c2057[current_element, i].PolygonID);
             }
             max_index += 1;
 
-            SFCategoryElement new_elem = category.GetEmptyElement();
-            new_elem[0] = (UInt16)(category[current_element, 0][0]);
-            new_elem[1] = (Byte)max_index;
-            new_elem[2] = (Byte)1;
-            new_elem[3] = new SFOutlineData() { Data = new List<short>() { 0, 0 } };
-
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
+            c2057.AddSubItem(current_element, p_index, new()
             {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = p_index,
-                Element = new_elem,
-                IsSubElement = true
+                ObjectID = c2057[current_element, 0].ObjectID,
+                PolygonID = max_index,
+                CastsShadow = 1,
+                Coords = new()
             });
         }
 
@@ -277,44 +233,23 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            Byte cur_spell_index = (Byte)(category[current_element, p_index][1]);
+            Byte cur_spell_index = c2057[current_element, p_index].PolygonID;
 
-            MainForm.data.op_queue.OpenCluster();
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
-            {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = p_index,
-                IsRemoving = true,
-                IsSubElement = true
-            });
+            c2057.RemoveSub(current_element, p_index);
 
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for (int i = 0; i < c2057.GetItemSubItemNum(current_element); i++)
             {
-                if ((Byte)(category[current_element, i][1]) > cur_spell_index)
+                if (c2057[current_element, i].PolygonID > cur_spell_index)
                 {
-                    MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorModifyCategoryElement()
-                    {
-                        CategoryIndex = category.category_id,
-                        ElementIndex = current_element,
-                        SubElementIndex = i,
-                        VariantIndex = 1,
-                        NewVariant = (Byte)((Byte)(category[current_element, i][1]) - 1),
-                        IsSubElement = true
-                    });
+                    c2057.SetField(current_element, i, "PolygonID", (byte)(c2057[current_element, i].PolygonID - 1));
                 }
             }
-
-            MainForm.data.op_queue.CloseCluster();
         }
 
 
         public override string get_element_string(int index)
         {
-            UInt16 object_id = (UInt16)category[index, 0][0];
-            Byte b_index = (Byte)category[index, 0][1];
-            string txt_building = SFCategoryManager.GetObjectName(object_id);
-            return object_id.ToString() + " " + txt_building + " [" + b_index.ToString() + "]";
+            return $"{c2057[index, 0].ObjectID} {SFCategoryManager.GetObjectName(c2057[index, 0].ObjectID)} [{c2057[index, 0].PolygonID + 1}]";
         }
 
         public override void on_add_subelement(int subelem_index)

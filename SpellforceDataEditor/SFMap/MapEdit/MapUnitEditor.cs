@@ -56,7 +56,8 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     else if (!first_click)
                     {
                         ushort new_unit_id = (ushort)placement_unit;
-                        if (SFCategoryManager.gamedata[2024].GetElementIndex(new_unit_id) == SFEngine.Utility.NO_INDEX)
+
+                        if (!SFCategoryManager.gamedata.c2024.GetItemIndex(new_unit_id, out int new_unit_index))
                         {
                             return;
                         }

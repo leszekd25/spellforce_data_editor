@@ -1,4 +1,6 @@
-﻿using SFEngine.SFCFF;
+﻿using SFEngine;
+using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
 
@@ -6,9 +8,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control34 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2050 c2050;
+
         public Control34()
         {
             InitializeComponent();
+
+            c2050 = SFCategoryManager.gamedata.c2050;
+            category = c2050;
+
             column_dict.Add("Object ID", new int[1] { 0 });
             column_dict.Add("Name ID", new int[1] { 1 });
             column_dict.Add("Flags", new int[1] { 2 });
@@ -22,98 +30,74 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
+            c2050.SetID(current_element, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt16(textBox3.Text));
+            c2050.SetField(current_element, "NameID", SFEngine.Utility.TryParseUInt16(textBox3.Text));
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, SFEngine.Utility.TryParseUInt8(textBox6.Text));
+            c2050.SetField(current_element, "Flags", SFEngine.Utility.TryParseUInt8(textBox6.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, SFEngine.Utility.TryParseUInt8(textBox4.Text));
+            c2050.SetField(current_element, "FlattenMode", SFEngine.Utility.TryParseUInt8(textBox4.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 4, SFEngine.Utility.TryParseUInt8(textBox5.Text));
+            c2050.SetField(current_element, "PolygonNum", SFEngine.Utility.TryParseUInt8(textBox5.Text));
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 5, SFString.FromString(textBox7.Text, 0, 40));// SFEngine.Utility.FixedLengthString(textBox7.Text, 40));
+            c2050.SetField(current_element, "Handle", StringUtils.FromString(textBox7.Text, 0, 41));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 6, SFEngine.Utility.TryParseUInt16(textBox2.Text));
+            c2050.SetField(current_element, "ResourceAmount", SFEngine.Utility.TryParseUInt16(textBox2.Text));
         }
 
         private void textBox9_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 7, SFEngine.Utility.TryParseUInt16(textBox9.Text));
+            c2050.SetField(current_element, "Width", SFEngine.Utility.TryParseUInt16(textBox9.Text));
         }
 
         private void textBox10_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 8, SFEngine.Utility.TryParseUInt16(textBox10.Text));
+            c2050.SetField(current_element, "Height", SFEngine.Utility.TryParseUInt16(textBox10.Text));
         }
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0);
-            textBox3.Text = variant_repr(1);
-            textBox6.Text = variant_repr(2);
-            textBox4.Text = variant_repr(3);
-            textBox5.Text = variant_repr(4);
-            textBox7.Text = string_repr(5);
-            textBox2.Text = variant_repr(6);
-            textBox9.Text = variant_repr(7);
-            textBox10.Text = variant_repr(8);
+            textBox1.Text = c2050[current_element].ObjectID.ToString();
+            textBox3.Text = c2050[current_element].NameID.ToString();
+            textBox6.Text = c2050[current_element].Flags.ToString();
+            textBox4.Text = c2050[current_element].FlattenMode.ToString();
+            textBox5.Text = c2050[current_element].PolygonNum.ToString();
+            textBox7.Text = c2050[current_element].GetHandleString();
+            textBox2.Text = c2050[current_element].ResourceAmount.ToString();
+            textBox9.Text = c2050[current_element].Width.ToString();
+            textBox10.Text = c2050[current_element].Height.ToString();
 
-            button_repr(ButtonGoto35, 2057, "Collision data", "Object");
-            button_repr(ButtonGoto36, 2065, "Loot", "Object");
-        }
-
-        private void textBox3_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox3, 2016);
-            }
-        }
-
-        private void ButtonGoto35_Click(object sender, EventArgs e)
-        {
-            button_step_into(ButtonGoto35, 2057);
-            button_repr(ButtonGoto35, 2057, "Collision data", "Object");
-        }
-
-        private void ButtonGoto36_Click(object sender, EventArgs e)
-        {
-            button_step_into(ButtonGoto36, 2065);
-            button_repr(ButtonGoto36, 2065, "Loot", "Object");
+            button_repr(ButtonGoto35, SFCategoryManager.gamedata.c2057, "Collision data", "Object");
+            button_repr(ButtonGoto36, SFCategoryManager.gamedata.c2065, "Loot", "Object");
         }
 
 
         public override string get_element_string(int index)
         {
-            UInt16 object_id = (UInt16)category[index][0];
-
-            string txt = SFCategoryManager.GetTextFromElement(category[index], 1);
-            string object_handle = category[index][5].ToString();
-            return object_id.ToString() + " " + object_handle + "/" + txt;
+            return $"{c2050[index].ObjectID} {c2050[index].GetHandleString()}/{SFCategoryManager.GetTextByLanguage(c2050[index].NameID, 1)}";
         }
 
         public override string get_description_string(int elem_key)
         {
-            Byte flags = (Byte)category[elem_key][2];
+            Byte flags = c2050[elem_key].Flags;
             string txt = "";
 
             if ((flags & 0x1) == 0x1)

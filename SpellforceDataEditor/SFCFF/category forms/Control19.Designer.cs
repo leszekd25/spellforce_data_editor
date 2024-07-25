@@ -77,7 +77,6 @@
             this.textBox1.Size = new System.Drawing.Size(126, 20);
             this.textBox1.TabIndex = 16;
             this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
-            this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
             // 
             // label4
             // 
@@ -112,7 +111,6 @@
             this.HelmetID.Tag = "0";
             this.HelmetID.Text = "0";
             this.HelmetID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
-            this.HelmetID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // HelmetName
             // 
@@ -143,7 +141,6 @@
             this.RightHandID.Tag = "1";
             this.RightHandID.Text = "0";
             this.RightHandID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
-            this.RightHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // CheckRightHand
             // 
@@ -187,7 +184,6 @@
             this.ChestID.Tag = "2";
             this.ChestID.Text = "0";
             this.ChestID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
-            this.ChestID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // CheckChest
             // 
@@ -231,7 +227,6 @@
             this.LeftHandID.Tag = "3";
             this.LeftHandID.Text = "0";
             this.LeftHandID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
-            this.LeftHandID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // CheckLeftHand
             // 
@@ -275,7 +270,6 @@
             this.RightRingID.Tag = "4";
             this.RightRingID.Text = "0";
             this.RightRingID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
-            this.RightRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // CheckRightRing
             // 
@@ -319,7 +313,6 @@
             this.LegsID.Tag = "5";
             this.LegsID.Text = "0";
             this.LegsID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
-            this.LegsID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // CheckLegs
             // 
@@ -363,7 +356,6 @@
             this.LeftRingID.Tag = "6";
             this.LeftRingID.Text = "0";
             this.LeftRingID.Leave += new System.EventHandler(this.TextBoxItem_Validated);
-            this.LeftRingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextboxItem_MouseDown);
             // 
             // CheckLeftRing
             // 

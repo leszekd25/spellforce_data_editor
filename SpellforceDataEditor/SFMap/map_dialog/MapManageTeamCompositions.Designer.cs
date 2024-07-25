@@ -167,7 +167,6 @@
             this.SelectedPlayerTextID.Name = "SelectedPlayerTextID";
             this.SelectedPlayerTextID.Size = new System.Drawing.Size(75, 20);
             this.SelectedPlayerTextID.TabIndex = 12;
-            this.SelectedPlayerTextID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SelectedPlayerTextID_MouseDown);
             this.SelectedPlayerTextID.Validated += new System.EventHandler(this.SelectedPlayerTextID_Validated);
             // 
             // label5

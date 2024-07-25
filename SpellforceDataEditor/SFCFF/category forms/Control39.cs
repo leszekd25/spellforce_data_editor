@@ -1,4 +1,5 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
 
@@ -6,9 +7,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control39 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2053 c2053;
+
         public Control39()
         {
             InitializeComponent();
+
+            c2053 = SFCategoryManager.gamedata.c2053;
+            category = c2053;
+
             column_dict.Add("Portal ID", new int[1] { 0 });
             column_dict.Add("Map ID", new int[1] { 1 });
             column_dict.Add("Position X", new int[1] { 2 });
@@ -19,91 +26,63 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt16(tb_effID.Text));
+            c2053.SetID(current_element, SFEngine.Utility.TryParseUInt16(tb_effID.Text));
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt32(textBox1.Text));
+            c2053.SetField(current_element, "MapID", SFEngine.Utility.TryParseUInt32(textBox1.Text));
         }
 
         private void tb_rng_min_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, SFEngine.Utility.TryParseUInt16(tb_rng_min.Text));
+            c2053.SetField(current_element, "PosX", SFEngine.Utility.TryParseUInt16(tb_rng_min.Text));
         }
 
         private void tb_rng_max_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 3, SFEngine.Utility.TryParseUInt16(tb_rng_max.Text));
+            c2053.SetField(current_element, "PosY", SFEngine.Utility.TryParseUInt16(tb_rng_max.Text));
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 4, (Byte)(checkBox1.Checked ? 1 : 0));
+            c2053.SetField(current_element, "IsDefault", (Byte)(checkBox1.Checked ? 1 : 0));
         }
 
         private void tb_req4_1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 5, SFEngine.Utility.TryParseUInt16(tb_req4_1.Text));
+            c2053.SetField(current_element, "NameID", SFEngine.Utility.TryParseUInt16(tb_req4_1.Text));
         }
 
         public override void show_element()
         {
-            tb_effID.Text = variant_repr(0);
-            textBox1.Text = variant_repr(1);
-            tb_rng_min.Text = variant_repr(2);
-            tb_rng_max.Text = variant_repr(3);
-            checkBox1.Checked = ((Byte)category[current_element][4] != 0);
-            tb_req4_1.Text = variant_repr(5);
-        }
-
-        private void textBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox1, 2052);
-            }
-        }
-
-        private void tb_req4_1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(tb_req4_1, 2016);
-            }
+            tb_effID.Text = c2053[current_element].PortalID.ToString();
+            textBox1.Text = c2053[current_element].MapID.ToString();
+            tb_rng_min.Text = c2053[current_element].PosX.ToString();
+            tb_rng_max.Text = c2053[current_element].PosY.ToString();
+            checkBox1.Checked = (c2053[current_element].IsDefault != 0);
+            tb_req4_1.Text = c2053[current_element].NameID.ToString();
         }
 
 
         public override string get_element_string(int index)
         {
-            UInt16 object_id = (UInt16)category[index][0];
-            string txt = SFCategoryManager.GetTextFromElement(category[index], 5);
-            return object_id.ToString() + " " + txt;
+            return $"{c2053[index].PortalID} {SFCategoryManager.GetTextByLanguage(c2053[index].NameID, 1)}";
         }
 
         public override string get_description_string(int index)
         {
             string map_handle = "";
-            UInt32 map_id = (UInt32)category[index][1];
-
-            if (SFCategoryManager.gamedata[2052] == null)
+            UInt32 map_id = c2053[index].MapID;
+            if(SFCategoryManager.gamedata.c2052.GetItemIndex((int)map_id, out int map_index))
             {
-                map_handle = SFEngine.Utility.S_UNKNOWN;
+                map_handle = SFCategoryManager.gamedata.c2052[map_index].GetHandleString();
             }
             else
             {
-                SFCategoryElement map_elem = SFCategoryManager.gamedata[2052].FindElementBinary<UInt32>(0, map_id);
-                if (map_elem == null)
-                {
-                    map_handle = SFEngine.Utility.S_NONAME;
-                }
-                else
-                {
-                    map_handle = map_elem[2].ToString();
-                }
+                map_handle = SFEngine.Utility.S_ITEM_MISSING;
             }
-
-            return "Map handle: " + map_handle;
+            return $"Map handle: {map_handle}";
         }
     }
 }

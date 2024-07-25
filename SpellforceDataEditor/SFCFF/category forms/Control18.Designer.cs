@@ -93,7 +93,6 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(126, 20);
             this.textBox3.TabIndex = 18;
-            this.textBox3.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox3_MouseDown);
             this.textBox3.Leave += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // textBox2
@@ -103,7 +102,6 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(126, 20);
             this.textBox2.TabIndex = 17;
-            this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
             this.textBox2.Leave += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // textBox1
@@ -267,7 +265,6 @@
             this.ButtonGoto19.TabIndex = 44;
             this.ButtonGoto19.Text = "button1";
             this.ButtonGoto19.UseVisualStyleBackColor = true;
-            this.ButtonGoto19.Click += new System.EventHandler(this.ButtonGoto19_Click);
             // 
             // ButtonGoto20
             // 
@@ -277,7 +274,6 @@
             this.ButtonGoto20.TabIndex = 45;
             this.ButtonGoto20.Text = "button2";
             this.ButtonGoto20.UseVisualStyleBackColor = true;
-            this.ButtonGoto20.Click += new System.EventHandler(this.ButtonGoto20_Click);
             // 
             // ButtonGoto21
             // 
@@ -287,7 +283,6 @@
             this.ButtonGoto21.TabIndex = 47;
             this.ButtonGoto21.Text = "button3";
             this.ButtonGoto21.UseVisualStyleBackColor = true;
-            this.ButtonGoto21.Click += new System.EventHandler(this.ButtonGoto21_Click);
             // 
             // ButtonGoto22
             // 
@@ -297,7 +292,6 @@
             this.ButtonGoto22.TabIndex = 46;
             this.ButtonGoto22.Text = "button4";
             this.ButtonGoto22.UseVisualStyleBackColor = true;
-            this.ButtonGoto22.Click += new System.EventHandler(this.ButtonGoto22_Click);
             // 
             // ButtonGoto23
             // 
@@ -307,7 +301,6 @@
             this.ButtonGoto23.TabIndex = 48;
             this.ButtonGoto23.Text = "button5";
             this.ButtonGoto23.UseVisualStyleBackColor = true;
-            this.ButtonGoto23.Click += new System.EventHandler(this.ButtonGoto23_Click);
             // 
             // label12
             // 

@@ -83,7 +83,6 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(38, 20);
             this.textBox2.TabIndex = 2;
-            this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
             this.textBox2.Leave += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // label2
@@ -155,7 +154,6 @@
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(126, 20);
             this.textBox5.TabIndex = 11;
-            this.textBox5.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox5_MouseDown);
             this.textBox5.Leave += new System.EventHandler(this.textBox5_TextChanged);
             // 
             // label6
@@ -250,7 +248,6 @@
             this.textBox11.Name = "textBox11";
             this.textBox11.Size = new System.Drawing.Size(126, 20);
             this.textBox11.TabIndex = 23;
-            this.textBox11.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox11_MouseDown);
             this.textBox11.Leave += new System.EventHandler(this.textBox11_TextChanged);
             // 
             // label11
@@ -269,7 +266,6 @@
             this.textBox12.Name = "textBox12";
             this.textBox12.Size = new System.Drawing.Size(126, 20);
             this.textBox12.TabIndex = 25;
-            this.textBox12.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox12_MouseDown);
             this.textBox12.Leave += new System.EventHandler(this.textBox12_TextChanged);
             // 
             // label12
@@ -306,7 +302,6 @@
             this.ButtonGoto25.TabIndex = 28;
             this.ButtonGoto25.Text = "button1";
             this.ButtonGoto25.UseVisualStyleBackColor = true;
-            this.ButtonGoto25.Click += new System.EventHandler(this.ButtonGoto25_Click);
             // 
             // ButtonGoto26
             // 
@@ -316,7 +311,6 @@
             this.ButtonGoto26.TabIndex = 29;
             this.ButtonGoto26.Text = "button2";
             this.ButtonGoto26.UseVisualStyleBackColor = true;
-            this.ButtonGoto26.Click += new System.EventHandler(this.ButtonGoto26_Click);
             // 
             // Control24
             // 

@@ -259,15 +259,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             SelectedPlayerTextID.Text = tp.text_id.ToString();
             if (SFCategoryManager.ready)
             {
-                SFCategoryElement text_elem = SFCategoryManager.GetTextByLanguage(tp.text_id, SFEngine.Settings.LanguageID);
-                if (text_elem != null)
-                {
-                    LabelSelectedPlayerText.Text = text_elem[4].ToString();
-                }
-                else
-                {
-                    LabelSelectedPlayerText.Text = SFEngine.Utility.S_MISSING;
-                }
+                LabelSelectedPlayerText.Text = SFCategoryManager.GetTextByLanguage(tp.text_id, SFEngine.Settings.LanguageID);
             }
             SelectedPlayerName.Text = tp.coop_map_type;
             SelectedPlayerLevelRange.Text = tp.coop_map_lvl;
@@ -283,15 +275,7 @@ namespace SpellforceDataEditor.SFMap.map_dialog
 
             if (SFCategoryManager.ready)
             {
-                SFCategoryElement text_elem = SFCategoryManager.GetTextByLanguage(tp.text_id, SFEngine.Settings.LanguageID);
-                if (text_elem != null)
-                {
-                    LabelSelectedPlayerText.Text = text_elem[4].ToString();
-                }
-                else
-                {
-                    LabelSelectedPlayerText.Text = SFEngine.Utility.S_MISSING;
-                }
+                LabelSelectedPlayerText.Text = SFCategoryManager.GetTextByLanguage(tp.text_id, SFEngine.Settings.LanguageID);
             }
 
             SelectedPlayerLevelRange.Text = tp.coop_map_lvl;
@@ -474,24 +458,6 @@ namespace SpellforceDataEditor.SFMap.map_dialog
             tp.coop_map_lvl = SelectedPlayerLevelRange.Text;
 
             UpdatePlayerDataUI(ListTeamComps.SelectedIndex, ListTeams.SelectedIndex, ListTeamMembers.SelectedIndex);
-        }
-
-        private void SelectedPlayerTextID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (MainForm.data == null)
-            {
-                return;
-            }
-
-            if (e.Button == MouseButtons.Right)
-            {
-                int elem_id = SFEngine.Utility.TryParseUInt16(SelectedPlayerTextID.Text);
-                int real_elem_id = SFCategoryManager.gamedata[2016].GetElementIndex(elem_id);
-                if (real_elem_id != -1)
-                {
-                    MainForm.data.Tracer_StepForward(14, real_elem_id);
-                }
-            }
         }
     }
 }

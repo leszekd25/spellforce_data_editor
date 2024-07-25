@@ -59,7 +59,6 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(44, 20);
             this.textBox1.TabIndex = 0;
-            this.textBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseDown);
             this.textBox1.Validated += new System.EventHandler(this.textBox1_Validated);
             // 
             // label1
@@ -80,7 +79,6 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(44, 20);
             this.textBox2.TabIndex = 2;
-            this.textBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox2_MouseDown);
             this.textBox2.Validated += new System.EventHandler(this.textBox2_Validated);
             // 
             // textBox3
@@ -91,7 +89,6 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(44, 20);
             this.textBox3.TabIndex = 4;
-            this.textBox3.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox3_MouseDown);
             this.textBox3.Validated += new System.EventHandler(this.textBox3_Validated);
             // 
             // textBox4
@@ -102,7 +99,6 @@
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(44, 20);
             this.textBox4.TabIndex = 3;
-            this.textBox4.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox4_MouseDown);
             this.textBox4.Validated += new System.EventHandler(this.textBox4_Validated);
             // 
             // textBox5
@@ -113,7 +109,6 @@
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(44, 20);
             this.textBox5.TabIndex = 8;
-            this.textBox5.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox5_MouseDown);
             this.textBox5.Validated += new System.EventHandler(this.textBox5_Validated);
             // 
             // textBox6
@@ -124,7 +119,6 @@
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(44, 20);
             this.textBox6.TabIndex = 7;
-            this.textBox6.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox6_MouseDown);
             this.textBox6.Validated += new System.EventHandler(this.textBox6_Validated);
             // 
             // textBox7
@@ -135,7 +129,6 @@
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new System.Drawing.Size(44, 20);
             this.textBox7.TabIndex = 6;
-            this.textBox7.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox7_MouseDown);
             this.textBox7.Validated += new System.EventHandler(this.textBox7_Validated);
             // 
             // textBox8
@@ -146,7 +139,6 @@
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new System.Drawing.Size(44, 20);
             this.textBox8.TabIndex = 5;
-            this.textBox8.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox8_MouseDown);
             this.textBox8.Validated += new System.EventHandler(this.textBox8_Validated);
             // 
             // textBox9
@@ -157,7 +149,6 @@
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new System.Drawing.Size(44, 20);
             this.textBox9.TabIndex = 10;
-            this.textBox9.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox9_MouseDown);
             this.textBox9.Validated += new System.EventHandler(this.textBox9_Validated);
             // 
             // textBox10
@@ -168,7 +159,6 @@
             this.textBox10.Name = "textBox10";
             this.textBox10.Size = new System.Drawing.Size(44, 20);
             this.textBox10.TabIndex = 9;
-            this.textBox10.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox10_MouseDown);
             this.textBox10.Validated += new System.EventHandler(this.textBox10_Validated);
             // 
             // label2

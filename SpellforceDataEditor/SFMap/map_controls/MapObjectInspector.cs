@@ -172,7 +172,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             }
 
             // check if new object exists
-            if (SFCategoryManager.gamedata[2050].GetElementIndex(new_object_id) == SFEngine.Utility.NO_INDEX)
+            if (!SFCategoryManager.gamedata.c2050.GetItemIndex(new_object_id, out int new_object_index))
             {
                 return;
             }
@@ -413,24 +413,6 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 {
                     ListObjects.SelectedIndex = i;
                     return;
-                }
-            }
-        }
-
-        private void ObjectID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (MainForm.data == null)
-            {
-                return;
-            }
-
-            if (e.Button == MouseButtons.Right)
-            {
-                int elem_id = SFEngine.Utility.TryParseUInt16(ObjectID.Text);
-                int real_elem_id = SFCategoryManager.gamedata[2050].GetElementIndex(elem_id);
-                if (real_elem_id != SFEngine.Utility.NO_INDEX)
-                {
-                    MainForm.data.Tracer_StepForward(33, real_elem_id);
                 }
             }
         }

@@ -98,7 +98,6 @@
             textBox2.Size = new System.Drawing.Size(146, 23);
             textBox2.TabIndex = 1;
             textBox2.Leave += textBox2_TextChanged;
-            textBox2.MouseDown += textBox2_MouseDown;
             // 
             // textBox3
             // 

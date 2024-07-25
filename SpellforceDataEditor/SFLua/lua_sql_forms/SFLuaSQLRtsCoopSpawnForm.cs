@@ -441,62 +441,6 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
         }
 
-        private void SelectedUnitID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                if (MainForm.data == null)
-                {
-                    return;
-                }
-
-                if (!SFCategoryManager.ready)
-                {
-                    return;
-                }
-
-                if (SFCategoryManager.gamedata[2024] == null)
-                {
-                    return;
-                }
-
-                ushort unit_id = SFEngine.Utility.TryParseUInt16(SelectedUnitID.Text);
-                int unit_index = SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
-                if (unit_index != -1)
-                {
-                    MainForm.data.Tracer_StepForward(17, unit_index, false);
-                }
-            }
-        }
-
-        private void SelectedSpawnDataUnitID_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                if (MainForm.data == null)
-                {
-                    return;
-                }
-
-                if (!SFCategoryManager.ready)
-                {
-                    return;
-                }
-
-                if (SFCategoryManager.gamedata[2024] == null)
-                {
-                    return;
-                }
-
-                ushort unit_id = SFEngine.Utility.TryParseUInt16(SelectedSpawnDataUnitID.Text);
-                int unit_index = SFCategoryManager.gamedata[2024].GetElementIndex(unit_id);
-                if (unit_index != -1)
-                {
-                    MainForm.data.Tracer_StepForward(17, unit_index, false);
-                }
-            }
-        }
-
         private void ButtonAddCoopSpawn_Click(object sender, EventArgs e)
         {
             int max_type = 0;

@@ -1,4 +1,5 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -9,9 +10,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
     {
         private List<Byte> combo_values = new List<Byte>();
 
+        Category2028 c2028;
+
         public Control21()
         {
             InitializeComponent();
+
+            c2028 = SFCategoryManager.gamedata.c2028;
+            category = c2028;
+
             column_dict.Add("Unit ID", new int[1] { 0 });
             column_dict.Add("Resource type", new int[1] { 1 });
             column_dict.Add("Resource amount", new int[1] { 2 });
@@ -23,33 +30,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             combo_values.Clear();
             combo_values.Add(0);    //default null value
 
-            if (SFCategoryManager.gamedata[2044] == null)
+            Category2044 c2044 = SFCategoryManager.gamedata.c2044;
+            for(int i = 0; i < c2044.GetNumOfItems(); i++)
             {
-                SFEngine.LogUtils.Log.Warning(SFEngine.LogUtils.LogSource.SFCFF, "Control21.load_resources(): Could not find category ID 2044");
-                return;
-            }
-
-            SFCategory cat_res = SFCategoryManager.gamedata[2044];
-
-            int elem_count = cat_res.GetElementCount();
-            for (int i = 0; i < elem_count; i++)
-            {
-                SFCategoryElement elem = cat_res[i];
-                string txt = SFCategoryManager.GetTextFromElement(elem, 1);
-                comboRes.Items.Add(txt);
-                combo_values.Add((Byte)elem[0]);
+                comboRes.Items.Add($"{SFCategoryManager.GetTextByLanguage(c2044[i].TextID, 1)}");
+                combo_values.Add(c2044[i].ResourceID);
             }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            MainForm.data.op_queue.OpenCluster();
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
-            {
-                set_element_variant(current_element, i, 0, SFEngine.Utility.TryParseUInt16(textBox1.Text));
-            }
-
-            MainForm.data.op_queue.CloseCluster();
+            c2028.SetID(current_element, SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
 
@@ -57,21 +48,20 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             ListResources.Items.Clear();
 
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for (int i = 0; i < c2028.GetItemSubItemNum(current_element); i++)
             {
-                int res_index = combo_values.IndexOf((Byte)category[current_element, i][1]);
+                int res_index = combo_values.IndexOf(c2028[current_element, i].ResourceType);
                 string res_name = "";
                 if ((res_index > comboRes.Items.Count) || (res_index <= 0))
                 {
-                    res_name = SFEngine.Utility.S_NONE;
+                    res_name = SFEngine.Utility.S_UNKNOWN;
                 }
                 else
                 {
                     res_name = comboRes.Items[res_index - 1].ToString();    //-1 because of null value
                 }
 
-                string elem_name = ((Byte)category[current_element, i][2]).ToString() + " " + res_name;
-                ListResources.Items.Add(elem_name);
+                ListResources.Items.Add($"{c2028[current_element, i].ResourceValue} {res_name}");
             }
         }
 
@@ -88,15 +78,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            textBox1.Text = variant_repr(0, 0);
-        }
-
-        private void textBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox1, 2024);
-            }
+            c2028.GetID(current_element, out int id);
+            textBox1.Text = id.ToString();
         }
 
         private void ListResources_SelectedIndexChanged(object sender, EventArgs e)
@@ -107,16 +90,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             int index = ListResources.SelectedIndex;
-            int found_index = combo_values.IndexOf((Byte)category[current_element, index][1]);
+            int found_index = combo_values.IndexOf(c2028[current_element, index].ResourceType);
             if ((found_index > comboRes.Items.Count) || (found_index <= 0))
             {
 
             }
             else
             {
-                comboRes.SelectedIndex = combo_values.IndexOf((Byte)category[current_element, index][1]) - 1;
+                comboRes.SelectedIndex = found_index - 1;
             }
-            textBox3.Text = variant_repr(index, 2);
+            textBox3.Text = c2028[current_element, index].ResourceValue.ToString();
         }
 
         private void comboRes_SelectedIndexChanged(object sender, EventArgs e)
@@ -127,7 +110,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             int cur_index = ListResources.SelectedIndex;
-            Byte current_res = (Byte)category[current_element, cur_index][1];
+            Byte current_res = c2028[current_element, cur_index].ResourceType;
             Byte new_res = combo_values[comboRes.SelectedIndex + 1];
             if (current_res == new_res)
             {
@@ -135,9 +118,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             // check if resource like this already exists
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count; i++)
+            for (int i = 0; i < c2028.GetItemSubItemNum(current_element); i++)
             {
-                Byte res_id = (Byte)category[current_element, i][1];
+                Byte res_id = c2028[current_element, i].ResourceType;
                 if (res_id == new_res)
                 {
                     new_res = 0;
@@ -145,42 +128,25 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 }
             }
 
-            // generate new element with reordered resources by resource id, ascending order
-
-            MainForm.data.op_queue.OpenCluster();
-            SFCategoryElement elem = category[current_element, cur_index];
-
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
+            // replace element, preserving acending resource type order
+            int new_index = c2028.GetItemSubItemNum(current_element) - 1;
+            for (int i = 0; i < new_index; i++)
             {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = cur_index,
-                IsSubElement = true,
-                IsRemoving = true,
-            });
-
-            int new_index = category.element_lists[current_element].Elements.Count - 1;
-            for (int i = 0; i < category.element_lists[current_element].Elements.Count - 1; i++)
-            {
-                if ((Byte)category[current_element, i][1] > new_res)
+                if (c2028[current_element, i].ResourceType > new_res)
                 {
                     new_index = i;
                     break;
                 }
             }
 
-            SFCategoryElement new_elem = elem.GetCopy();
-            new_elem[1] = new_res;
-
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
+            c2028.GetID(current_element, out int id);
+            c2028.RemoveSub(current_element, cur_index);
+            c2028.AddSubItem(current_element, new_index, new()
             {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = new_index,
-                Element = new_elem,
-                IsSubElement = true
+                ArmyUnitID = (ushort)id,
+                ResourceType = new_res,
+                ResourceValue = 0
             });
-            MainForm.data.op_queue.CloseCluster();
 
             ListResources.SelectedIndex = new_index;
         }
@@ -188,24 +154,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            int index = ListResources.SelectedIndex;
-            set_element_variant(current_element, index, 2, SFEngine.Utility.TryParseUInt8(textBox3.Text));
-
-            ListResources.SelectedIndex = index;
+            c2028.SetField(current_element, ListResources.SelectedIndex, "ResourceValue", SFEngine.Utility.TryParseUInt8(textBox3.Text));
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SFCategoryElement new_elem = category.GetEmptyElement();
-            new_elem[0] = (UInt16)category[current_element, 0][0];
-
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
+            c2028.AddSubItem(current_element, 0, new()
             {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = 0,
-                Element = new_elem,
-                IsSubElement = true
+                ArmyUnitID = c2028[current_element, 0].ArmyUnitID,
+                ResourceType = 0,
+                ResourceValue = 0
             });
 
             ListResources.SelectedIndex = 0;
@@ -224,24 +182,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            MainForm.data.op_queue.Push(new SFCFF.operators.CFFOperatorAddRemoveCategoryElement()
-            {
-                CategoryIndex = category.category_id,
-                ElementIndex = current_element,
-                SubElementIndex = index,
-                IsRemoving = true,
-                IsSubElement = true
-            });
-
+            c2028.RemoveSub(current_element, index);
             ListResources.SelectedIndex = Math.Max(index, ListResources.Items.Count - 1);
         }
 
 
         public override string get_element_string(int index)
         {
-            UInt16 unit_id = (UInt16)category[index, 0][0];
-            string txt_unit = SFCategoryManager.GetUnitName(unit_id);
-            return unit_id.ToString() + " " + txt_unit;
+            return $"{c2028[current_element, 0].ArmyUnitID} {SFCategoryManager.GetUnitName(c2028[current_element, 0].ArmyUnitID)}";
         }
 
         public override void on_add_subelement(int subelem_index)

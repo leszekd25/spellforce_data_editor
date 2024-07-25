@@ -42,7 +42,6 @@
             operationHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             specialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             findAllReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            calculatorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             extractLangDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             clipboardTooldebugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             patchGamedataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -140,7 +139,6 @@
             editToolStripMenuItem.Name = "editToolStripMenuItem";
             editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             editToolStripMenuItem.Text = "Edit";
-            editToolStripMenuItem.DropDownOpened += editToolStripMenuItem_DropDownOpened;
             // 
             // undoCtrlZToolStripMenuItem
             // 
@@ -149,7 +147,6 @@
             undoCtrlZToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z;
             undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             undoCtrlZToolStripMenuItem.Text = "Undo";
-            undoCtrlZToolStripMenuItem.Click += undoCtrlZToolStripMenuItem_Click;
             // 
             // redoCtrlYToolStripMenuItem
             // 
@@ -158,18 +155,16 @@
             redoCtrlYToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y;
             redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             redoCtrlYToolStripMenuItem.Text = "Redo";
-            redoCtrlYToolStripMenuItem.Click += redoCtrlYToolStripMenuItem_Click;
             // 
             // operationHistoryToolStripMenuItem
             // 
             operationHistoryToolStripMenuItem.Name = "operationHistoryToolStripMenuItem";
             operationHistoryToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             operationHistoryToolStripMenuItem.Text = "Operation history...";
-            operationHistoryToolStripMenuItem.Click += operationHistoryToolStripMenuItem_Click;
             // 
             // specialToolStripMenuItem
             // 
-            specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { findAllReferencesToolStripMenuItem, calculatorsToolStripMenuItem, extractLangDataToolStripMenuItem, clipboardTooldebugToolStripMenuItem, patchGamedataToolStripMenuItem });
+            specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { findAllReferencesToolStripMenuItem, extractLangDataToolStripMenuItem, clipboardTooldebugToolStripMenuItem, patchGamedataToolStripMenuItem });
             specialToolStripMenuItem.Name = "specialToolStripMenuItem";
             specialToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             specialToolStripMenuItem.Text = "Special";
@@ -181,14 +176,6 @@
             findAllReferencesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
             findAllReferencesToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             findAllReferencesToolStripMenuItem.Text = "Find all references...";
-            findAllReferencesToolStripMenuItem.Click += findAllReferencesToolStripMenuItem_Click;
-            // 
-            // calculatorsToolStripMenuItem
-            // 
-            calculatorsToolStripMenuItem.Name = "calculatorsToolStripMenuItem";
-            calculatorsToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            calculatorsToolStripMenuItem.Text = "Calculators...";
-            calculatorsToolStripMenuItem.Click += calculatorsToolStripMenuItem_Click;
             // 
             // extractLangDataToolStripMenuItem
             // 
@@ -196,7 +183,6 @@
             extractLangDataToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             extractLangDataToolStripMenuItem.Text = "Extract lang data...";
             extractLangDataToolStripMenuItem.Visible = false;
-            extractLangDataToolStripMenuItem.Click += extractLangDataToolStripMenuItem_Click;
             // 
             // clipboardTooldebugToolStripMenuItem
             // 
@@ -204,14 +190,12 @@
             clipboardTooldebugToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             clipboardTooldebugToolStripMenuItem.Text = "ClipboardTool (debug)";
             clipboardTooldebugToolStripMenuItem.Visible = false;
-            clipboardTooldebugToolStripMenuItem.Click += clipboardTooldebugToolStripMenuItem_Click;
             // 
             // patchGamedataToolStripMenuItem
             // 
             patchGamedataToolStripMenuItem.Name = "patchGamedataToolStripMenuItem";
             patchGamedataToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             patchGamedataToolStripMenuItem.Text = "Patch gamedata...";
-            patchGamedataToolStripMenuItem.Click += patchGamedataToolStripMenuItem_Click;
             // 
             // eXPERIMENTALLoadDiffFileToolStripMenuItem
             // 
@@ -313,7 +297,6 @@
             SearchButton.TabIndex = 9;
             SearchButton.Text = "New search";
             SearchButton.UseVisualStyleBackColor = true;
-            SearchButton.Click += SearchButton_Click;
             // 
             // panelSearch
             // 
@@ -342,7 +325,6 @@
             ClearSearchButton.TabIndex = 18;
             ClearSearchButton.Text = "Clear search";
             ClearSearchButton.UseVisualStyleBackColor = true;
-            ClearSearchButton.Click += ClearSearchButton_Click;
             // 
             // ContinueSearchButton
             // 
@@ -354,7 +336,6 @@
             ContinueSearchButton.TabIndex = 17;
             ContinueSearchButton.Text = "Continue search";
             ContinueSearchButton.UseVisualStyleBackColor = true;
-            ContinueSearchButton.Click += ContinueSearchButton_Click;
             // 
             // SearchColumnID
             // 
@@ -376,7 +357,6 @@
             checkSearchByColumn.TabIndex = 12;
             checkSearchByColumn.Text = "Search by column";
             checkSearchByColumn.UseVisualStyleBackColor = true;
-            checkSearchByColumn.CheckedChanged += checkSearchByColumn_CheckedChanged;
             // 
             // groupSearch
             // 
@@ -423,7 +403,6 @@
             ButtonElemAdd.TabIndex = 2;
             ButtonElemAdd.Text = "Add";
             ButtonElemAdd.UseVisualStyleBackColor = true;
-            ButtonElemAdd.Click += ButtonElemAdd_Click;
             // 
             // ButtonElemRemove
             // 
@@ -434,7 +413,6 @@
             ButtonElemRemove.TabIndex = 1;
             ButtonElemRemove.Text = "Remove";
             ButtonElemRemove.UseVisualStyleBackColor = true;
-            ButtonElemRemove.Click += ButtonElemRemove_Click;
             // 
             // ButtonElemInsert
             // 
@@ -445,7 +423,6 @@
             ButtonElemInsert.TabIndex = 0;
             ButtonElemInsert.Text = "Insert";
             ButtonElemInsert.UseVisualStyleBackColor = true;
-            ButtonElemInsert.Click += ButtonElemInsert_Click;
             // 
             // ElementSelect_RefreshTimer
             // 
@@ -499,7 +476,6 @@
             buttonTracerBack.Text = "Back";
             buttonTracerBack.UseVisualStyleBackColor = false;
             buttonTracerBack.Visible = false;
-            buttonTracerBack.Click += buttonTracerBack_Click;
             // 
             // label_tracedesc
             // 
@@ -530,7 +506,6 @@
             ButtonElemClear.TabIndex = 1;
             ButtonElemClear.Text = "Clear";
             ButtonElemClear.UseVisualStyleBackColor = true;
-            ButtonElemClear.Click += ButtonElemClear_Click;
             // 
             // ButtonElemCopy
             // 
@@ -541,7 +516,6 @@
             ButtonElemCopy.TabIndex = 0;
             ButtonElemCopy.Text = "Copy";
             ButtonElemCopy.UseVisualStyleBackColor = true;
-            ButtonElemCopy.Click += ButtonElemCopy_Click;
             // 
             // SpelllforceCFFEditor
             // 
@@ -623,7 +597,6 @@
         private System.Windows.Forms.Button ClearSearchButton;
         private System.Windows.Forms.ToolStripMenuItem specialToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findAllReferencesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem calculatorsToolStripMenuItem;
         private System.Windows.Forms.Button ButtonElemAdd;
         private System.Windows.Forms.ToolStripMenuItem extractLangDataToolStripMenuItem;
         private SFCFF.helper_forms.ListBoxNoFlicker ElementSelect;

@@ -72,7 +72,6 @@
             this.BuildingID.Name = "BuildingID";
             this.BuildingID.Size = new System.Drawing.Size(100, 20);
             this.BuildingID.TabIndex = 1;
-            this.BuildingID.MouseDown += new System.Windows.Forms.MouseEventHandler(this.BuildingID_MouseDown);
             this.BuildingID.Validated += new System.EventHandler(this.BuildingID_Validated);
             // 
             // label2

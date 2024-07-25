@@ -60,7 +60,7 @@ namespace SpellforceDataEditor.SFMap.MapEdit
                     else if (!first_click)
                     {
                         ushort new_object_id = 2541;
-                        if (SFCategoryManager.gamedata[2050].GetElementIndex(new_object_id) == SFEngine.Utility.NO_INDEX)
+                        if(!SFCategoryManager.gamedata.c2050.GetItemIndex(new_object_id, out int new_object_index))
                         {
                             return;
                         }

@@ -1,4 +1,5 @@
 ﻿using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
 
@@ -6,9 +7,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control49 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
+        Category2072 c2072;
         public Control49()
         {
             InitializeComponent();
+
+            c2072 = SFCategoryManager.gamedata.c2072;
+            category = c2072;
+
             column_dict.Add("Set ID", new int[1] { 0 });
             column_dict.Add("Description ID", new int[1] { 1 });
             column_dict.Add("Set type", new int[1] { 2 });
@@ -16,40 +22,30 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_effID_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 0, SFEngine.Utility.TryParseUInt8(tb_effID.Text));
+            c2072.SetID(current_element, SFEngine.Utility.TryParseUInt8(tb_effID.Text));
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 1, SFEngine.Utility.TryParseUInt16(textBox1.Text));
+            c2072.SetField(current_element, "DescriptionID", SFEngine.Utility.TryParseUInt16(textBox1.Text));
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            set_element_variant(current_element, 2, SFEngine.Utility.TryParseUInt8(textBox2.Text));
+            c2072.SetField(current_element, "ItemSetType", SFEngine.Utility.TryParseUInt8(textBox2.Text));
         }
 
         public override void show_element()
         {
-            tb_effID.Text = variant_repr(0);
-            textBox1.Text = variant_repr(1);
-            textBox2.Text = variant_repr(2);
-        }
-
-        private void textBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                step_into(textBox1, 2016);
-            }
+            tb_effID.Text = c2072[current_element].ItemSetID.ToString();
+            textBox1.Text = c2072[current_element].DescriptionID.ToString();
+            textBox2.Text = c2072[current_element].ItemSetType.ToString();
         }
 
 
         public override string get_element_string(int index)
         {
-            Byte elem_id = (Byte)category[index][0];
-            string txt = SFCategoryManager.GetTextFromElement(category[index], 1);
-            return elem_id.ToString() + " " + txt;
+            return $"{c2072[index].ItemSetID} {SFCategoryManager.GetTextByLanguage(c2072[index].DescriptionID, 1)}";
         }
     }
 }
