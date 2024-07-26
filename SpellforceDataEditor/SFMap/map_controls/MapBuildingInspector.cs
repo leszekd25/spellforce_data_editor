@@ -4,6 +4,7 @@ using SFEngine.SFMap;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -167,7 +168,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             }
 
             // check if new building exists
-            if(!SFCategoryManager.gamedata.c2029.GetItemIndex(new_building_id, out int new_building_index))
+            if (!SFCategoryManager.gamedata.c2029.GetItemIndex(new_building_id, out int new_building_index))
             {
                 return;
             }
@@ -431,6 +432,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 {
                     ListBuildings.SelectedIndex = i;
                     return;
+                }
+            }
+        }
+
+        private void BuildingID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                if (MainForm.data != null)
+                {
+                    MainForm.data.trace_id(2029, SFEngine.Utility.TryParseUInt16(BuildingID.Text));
                 }
             }
         }

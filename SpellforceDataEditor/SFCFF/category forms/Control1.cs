@@ -331,7 +331,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             ushort type_id = c2002[index].SpellLineID;
             bool spellline_found = SFCategoryManager.gamedata.c2054.GetItemIndex(type_id, out int spellline_index);
-            if(spellline_found)
+            if (spellline_found)
             {
                 return $"{c2002[index].SpellID} {SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2054[spellline_index].TextID, 1)} level {c2002[index].GetSpellLevel()}";
             }
@@ -347,13 +347,31 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             StringWriter sw = new StringWriter();
             sw.WriteLine("Requirements: ");
-            for(int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
-                sw.WriteLine(SFCategoryManager.GetSkillName(item.GetSkillReq(i * 3 + 0), item.GetSkillReq(i * 3 + 1), item.GetSkillReq(i * 3 + 2)));
+                if (item.GetSkillReq(i * 3 + 0) + item.GetSkillReq(i * 3 + 1) + item.GetSkillReq(i * 3 + 2) != 0)
+                {
+                    sw.WriteLine(SFCategoryManager.GetSkillName(item.GetSkillReq(i * 3 + 0), item.GetSkillReq(i * 3 + 1), item.GetSkillReq(i * 3 + 2)));
+                }
             }
             sw.WriteLine($"Target: {get_target_type(item.CastType1)} {get_target_mode(item.CastType2)}");
 
             return sw.ToString();
+        }
+
+        // trace
+        private void tb_typeID_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2054, tb_typeID.Text);
+        }
+
+        private void tb_sd1_MouseDown(object sender, MouseEventArgs e)
+        {
+            int i = SFEngine.Utility.TryParseInt32((string)((TextBox)sender).Tag);
+            if (tracetable[i] != SFEngine.Utility.NO_INDEX)
+            {
+                textbox_trace(e, tracetable[i], ((TextBox)sender).Text);
+            }
         }
     }
 }

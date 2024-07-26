@@ -28,81 +28,91 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.sb_sd5 = new System.Windows.Forms.TextBox();
-            this.lb_sd5 = new System.Windows.Forms.Label();
-            this.tb_sd4 = new System.Windows.Forms.TextBox();
-            this.lb_sd4 = new System.Windows.Forms.Label();
-            this.tb_sd3 = new System.Windows.Forms.TextBox();
-            this.lb_sd3 = new System.Windows.Forms.Label();
-            this.SuspendLayout();
+            sb_sd5 = new System.Windows.Forms.TextBox();
+            lb_sd5 = new System.Windows.Forms.Label();
+            tb_sd4 = new System.Windows.Forms.TextBox();
+            lb_sd4 = new System.Windows.Forms.Label();
+            tb_sd3 = new System.Windows.Forms.TextBox();
+            lb_sd3 = new System.Windows.Forms.Label();
+            SuspendLayout();
             // 
             // sb_sd5
             // 
-            this.sb_sd5.BackColor = System.Drawing.Color.DarkOrange;
-            this.sb_sd5.Location = new System.Drawing.Point(105, 71);
-            this.sb_sd5.Name = "sb_sd5";
-            this.sb_sd5.Size = new System.Drawing.Size(126, 20);
-            this.sb_sd5.TabIndex = 53;
-            this.sb_sd5.Leave += new System.EventHandler(this.sb_sd5_TextChanged);
+            sb_sd5.BackColor = System.Drawing.Color.DarkOrange;
+            sb_sd5.Location = new System.Drawing.Point(122, 82);
+            sb_sd5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            sb_sd5.Name = "sb_sd5";
+            sb_sd5.ShortcutsEnabled = false;
+            sb_sd5.Size = new System.Drawing.Size(146, 23);
+            sb_sd5.TabIndex = 53;
+            sb_sd5.Leave += sb_sd5_TextChanged;
+            sb_sd5.MouseDown += sb_sd5_MouseDown;
             // 
             // lb_sd5
             // 
-            this.lb_sd5.AutoSize = true;
-            this.lb_sd5.Location = new System.Drawing.Point(9, 74);
-            this.lb_sd5.Name = "lb_sd5";
-            this.lb_sd5.Size = new System.Drawing.Size(90, 13);
-            this.lb_sd5.TabIndex = 52;
-            this.lb_sd5.Text = "Advanced text ID";
+            lb_sd5.AutoSize = true;
+            lb_sd5.Location = new System.Drawing.Point(10, 85);
+            lb_sd5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd5.Name = "lb_sd5";
+            lb_sd5.Size = new System.Drawing.Size(97, 15);
+            lb_sd5.TabIndex = 52;
+            lb_sd5.Text = "Advanced text ID";
             // 
             // tb_sd4
             // 
-            this.tb_sd4.BackColor = System.Drawing.Color.DarkOrange;
-            this.tb_sd4.Location = new System.Drawing.Point(105, 45);
-            this.tb_sd4.Name = "tb_sd4";
-            this.tb_sd4.Size = new System.Drawing.Size(126, 20);
-            this.tb_sd4.TabIndex = 51;
-            this.tb_sd4.Leave += new System.EventHandler(this.tb_sd4_TextChanged);
+            tb_sd4.BackColor = System.Drawing.Color.DarkOrange;
+            tb_sd4.Location = new System.Drawing.Point(122, 52);
+            tb_sd4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_sd4.Name = "tb_sd4";
+            tb_sd4.ShortcutsEnabled = false;
+            tb_sd4.Size = new System.Drawing.Size(146, 23);
+            tb_sd4.TabIndex = 51;
+            tb_sd4.Leave += tb_sd4_TextChanged;
+            tb_sd4.MouseDown += tb_sd4_MouseDown;
             // 
             // lb_sd4
             // 
-            this.lb_sd4.AutoSize = true;
-            this.lb_sd4.Location = new System.Drawing.Point(57, 48);
-            this.lb_sd4.Name = "lb_sd4";
-            this.lb_sd4.Size = new System.Drawing.Size(42, 13);
-            this.lb_sd4.TabIndex = 50;
-            this.lb_sd4.Text = "Text ID";
+            lb_sd4.AutoSize = true;
+            lb_sd4.Location = new System.Drawing.Point(66, 55);
+            lb_sd4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd4.Name = "lb_sd4";
+            lb_sd4.Size = new System.Drawing.Size(42, 15);
+            lb_sd4.TabIndex = 50;
+            lb_sd4.Text = "Text ID";
             // 
             // tb_sd3
             // 
-            this.tb_sd3.Location = new System.Drawing.Point(105, 19);
-            this.tb_sd3.Name = "tb_sd3";
-            this.tb_sd3.Size = new System.Drawing.Size(126, 20);
-            this.tb_sd3.TabIndex = 49;
-            this.tb_sd3.Leave += new System.EventHandler(this.tb_sd3_TextChanged);
+            tb_sd3.Location = new System.Drawing.Point(122, 22);
+            tb_sd3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_sd3.Name = "tb_sd3";
+            tb_sd3.Size = new System.Drawing.Size(146, 23);
+            tb_sd3.TabIndex = 49;
+            tb_sd3.Leave += tb_sd3_TextChanged;
             // 
             // lb_sd3
             // 
-            this.lb_sd3.AutoSize = true;
-            this.lb_sd3.Location = new System.Drawing.Point(25, 22);
-            this.lb_sd3.Name = "lb_sd3";
-            this.lb_sd3.Size = new System.Drawing.Size(74, 13);
-            this.lb_sd3.TabIndex = 48;
-            this.lb_sd3.Text = "Description ID";
+            lb_sd3.AutoSize = true;
+            lb_sd3.Location = new System.Drawing.Point(29, 25);
+            lb_sd3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd3.Name = "lb_sd3";
+            lb_sd3.Size = new System.Drawing.Size(81, 15);
+            lb_sd3.TabIndex = 48;
+            lb_sd3.Text = "Description ID";
             // 
             // Control42
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.sb_sd5);
-            this.Controls.Add(this.lb_sd5);
-            this.Controls.Add(this.tb_sd4);
-            this.Controls.Add(this.lb_sd4);
-            this.Controls.Add(this.tb_sd3);
-            this.Controls.Add(this.lb_sd3);
-            this.Name = "Control42";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(sb_sd5);
+            Controls.Add(lb_sd5);
+            Controls.Add(tb_sd4);
+            Controls.Add(lb_sd4);
+            Controls.Add(tb_sd3);
+            Controls.Add(lb_sd3);
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Name = "Control42";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

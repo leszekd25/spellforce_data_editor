@@ -9,7 +9,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
     public partial class Control43 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
         Category2061 c2061;
-        
+
         public Control43()
         {
             InitializeComponent();
@@ -57,7 +57,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            tb_effID.Text = c2061[current_element].QuestID.ToString(); 
+            tb_effID.Text = c2061[current_element].QuestID.ToString();
             textBox1.Text = c2061[current_element].ParentQuestID.ToString();
             checkBox1.Checked = (c2061[current_element].IsMainQuest != 0);
             textBox2.Text = c2061[current_element].NameID.ToString();
@@ -73,7 +73,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_description_string(int index)
         {
-            if(c2061.GetItemIndex((int)c2061[index].ParentQuestID, out int pqindex))
+            if (c2061.GetItemIndex((int)c2061[index].ParentQuestID, out int pqindex))
             {
                 return $"{SFCategoryManager.GetTextByLanguage(c2061[index].DescriptionID, 1)}\r\n\r\nPart of quest {SFCategoryManager.GetTextByLanguage(c2061[pqindex].NameID, 1)}";
             }
@@ -81,6 +81,21 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 return $"{SFCategoryManager.GetTextByLanguage(c2061[index].DescriptionID, 1)}";
             }
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2061, textBox1.Text);
+        }
+
+        private void textBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, textBox2.Text);
+        }
+
+        private void textBox3_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, textBox3.Text);
         }
     }
 }

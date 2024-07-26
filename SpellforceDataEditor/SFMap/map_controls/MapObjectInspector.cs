@@ -416,5 +416,16 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 }
             }
         }
+
+        private void ObjectID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                if (MainForm.data != null)
+                {
+                    MainForm.data.trace_id(2050, SFEngine.Utility.TryParseUInt16(ObjectID.Text));
+                }
+            }
+        }
     }
 }

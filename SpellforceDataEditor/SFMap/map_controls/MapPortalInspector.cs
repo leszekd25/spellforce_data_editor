@@ -38,7 +38,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
             if (SFCategoryManager.ready)
             {
                 int portal_id = portal.game_id;
-                if(SFCategoryManager.gamedata.c2053.GetItemIndex(portal_id, out int portal_index))
+                if (SFCategoryManager.gamedata.c2053.GetItemIndex(portal_id, out int portal_index))
                 {
                     ret += SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2053[portal_index].NameID, 1);
                 }
@@ -240,6 +240,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
             else
             {
                 ShowList();
+            }
+        }
+
+        private void PortalID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                if (MainForm.data != null)
+                {
+                    MainForm.data.trace_id(2053, SFEngine.Utility.TryParseUInt16(PortalID.Text));
+                }
             }
         }
     }

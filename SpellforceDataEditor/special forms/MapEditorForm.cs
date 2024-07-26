@@ -91,7 +91,7 @@ namespace SpellforceDataEditor.special_forms
                 image_minimap_frame_top = SFRenderEngine.ui.AddElementImage(SFRenderEngine.opaque_tex, new Vector2(m_width, 3), new Vector2(0, 0), new Vector2(0, 0), false);
 
                 // minimap icons
-                if(!SFResourceManager.Textures.Load("ui_oth1", FileSource.PAK, out minimap_icons_tex, out int ec, new SFTexture.SFTextureLoadArgs() { IgnoreMipmapSettings = true }))
+                if (!SFResourceManager.Textures.Load("ui_oth1", FileSource.PAK, out minimap_icons_tex, out int ec, new SFTexture.SFTextureLoadArgs() { IgnoreMipmapSettings = true }))
                 {
                     SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SF3D, "MapEditorUI.InitMinimap(): Could not load texture (texture name = ui_oth1)");
                     throw new Exception("MapEditorUI.InitMinimap(): Could not load texture ui_oth1");
@@ -389,7 +389,7 @@ namespace SpellforceDataEditor.special_forms
             private int GetUnitRelationToMainChar(int unit_id)
             {
                 // clan player = 11
-                if(!SFCategoryManager.gamedata.c2024.GetItemIndex(unit_id, out int unit_data_index))
+                if (!SFCategoryManager.gamedata.c2024.GetItemIndex(unit_id, out int unit_data_index))
                 {
                     return 6;
                 }
@@ -404,7 +404,7 @@ namespace SpellforceDataEditor.special_forms
                     return 6;
                 }
 
-                if(!SFCategoryManager.gamedata.c2023.GetItemSubItemIndex(0, SFCategoryManager.gamedata.c2022[race_index].FactionID, out int clan_data_index))
+                if (!SFCategoryManager.gamedata.c2023.GetItemSubItemIndex(11, SFCategoryManager.gamedata.c2022[race_index].FactionID, out int clan_data_index))
                 {
                     return 6;
                 }
@@ -431,11 +431,10 @@ namespace SpellforceDataEditor.special_forms
             private int GetBuildingRelationToMainChar(SFMapBuilding bld)
             {
                 // clan player = 11
-                SFCategoryElement race_data;
                 int race_index = SFEngine.Utility.NO_INDEX; ;
                 if (bld.race_id == 0)
                 {
-                    if(!SFCategoryManager.gamedata.c2029.GetItemIndex(bld.game_id, out int building_index))
+                    if (!SFCategoryManager.gamedata.c2029.GetItemIndex(bld.game_id, out int building_index))
                     {
                         return 6;
                     }
@@ -452,7 +451,7 @@ namespace SpellforceDataEditor.special_forms
                     return 6;
                 }
 
-                if (!SFCategoryManager.gamedata.c2023.GetItemSubItemIndex(0, SFCategoryManager.gamedata.c2022[race_index].FactionID, out int clan_data_index))
+                if (!SFCategoryManager.gamedata.c2023.GetItemSubItemIndex(11, SFCategoryManager.gamedata.c2022[race_index].FactionID, out int clan_data_index))
                 {
                     return 6;
                 }
@@ -970,9 +969,9 @@ namespace SpellforceDataEditor.special_forms
         Dictionary<string, TreeNode> building_tree = null;
         Dictionary<string, TreeNode> obj_tree = null;
 
-        SFMap.SFMapQuickSelectHelper qs_unit = new SFMap.SFMapQuickSelectHelper();
-        SFMap.SFMapQuickSelectHelper qs_building = new SFMap.SFMapQuickSelectHelper();
-        SFMap.SFMapQuickSelectHelper qs_object = new SFMap.SFMapQuickSelectHelper();
+        SFMap.SFMapQuickSelectHelper qs_unit = new SFMap.SFMapQuickSelectHelper() { cat_id = 2024 };
+        SFMap.SFMapQuickSelectHelper qs_building = new SFMap.SFMapQuickSelectHelper() { cat_id = 2029 };
+        SFMap.SFMapQuickSelectHelper qs_object = new SFMap.SFMapQuickSelectHelper() { cat_id = 2050 };
 
         List<int> heightmap_mode_values = new List<int>(new int[3] { 20, 300, 5 });
 
@@ -2832,7 +2831,7 @@ namespace SpellforceDataEditor.special_forms
         private void UpdateValueLabel(string text, int val_index)
         {
             TerrainValueLabel.Text = text;
-            if(selected_editor is MapHeightMapEditor)
+            if (selected_editor is MapHeightMapEditor)
             {
                 ((MapHeightMapEditor)selected_editor).EditMode = GetHeightMapEditMode();
                 ((MapHeightMapEditor)selected_editor).Value = heightmap_mode_values[val_index];
@@ -3307,51 +3306,23 @@ namespace SpellforceDataEditor.special_forms
                 return null;
             }
 
-            if (RadioEntityModeUnit.Checked)
-            {
-                return qs_unit;
-            }
-
-            if (RadioEntityModeBuilding.Checked)
-            {
-                return qs_building;
-            }
-
-            if (RadioEntityModeObject.Checked)
-            {
-                return qs_object;
-            }
-
-            return null;
+            return QuickSelect.QsRef;
         }
 
-        public void external_QuickSelect_OnSet(int index, ushort id)
+        private void EntityID_MouseDown(object sender, MouseEventArgs e)
         {
-            if (QuickSelect_GetCurrent() == null)
+            if(e.Button == MouseButtons.Right)
             {
-                return;
-            }
+                if(QuickSelect.QsRef == null)
+                {
+                    return;
+                }    
 
-            QuickSelect_GetCurrent().ID[index] = id;
-        }
-
-        public int external_QuickSelect_DetermineCategory()
-        {
-            int cat_id = -1;
-            if (RadioEntityModeUnit.Checked)
-            {
-                cat_id = 2024;
+                if(MainForm.data != null)
+                {
+                    MainForm.data.trace_id(QuickSelect.QsRef.cat_id, SFEngine.Utility.TryParseUInt16(EntityID.Text));
+                }
             }
-            else if (RadioEntityModeObject.Checked)
-            {
-                cat_id = 2050;
-            }
-            else if (RadioEntityModeBuilding.Checked)
-            {
-                cat_id = 2029;
-            }
-
-            return cat_id;
         }
 
         // this tree code is very ugly, i wish you could instantiate TreeNodeCollection outside of TreeView
@@ -3373,7 +3344,7 @@ namespace SpellforceDataEditor.special_forms
             for (int i = 0; i < SFCategoryManager.gamedata.c2022.GetNumOfItems(); i++)
             {
                 byte race_id = SFCategoryManager.gamedata.c2022[i].RaceID;
-                string race_name = $"{race_id}. {SFCategoryManager.GetRaceName(race_id)}"; 
+                string race_name = $"{race_id}. {SFCategoryManager.GetRaceName(race_id)}";
 
                 unit_tree.Add(race_name, new TreeNode(race_name));
             }
@@ -3384,14 +3355,14 @@ namespace SpellforceDataEditor.special_forms
                 string unit_name = unit_id.ToString() + ". " + SFCategoryManager.GetUnitName(unit_id, true);
 
                 ushort stats_id = SFCategoryManager.gamedata.c2024[i].StatsID;
-                if(!SFCategoryManager.gamedata.c2005.GetItemIndex(stats_id, out int stats_index))
+                if (!SFCategoryManager.gamedata.c2005.GetItemIndex(stats_id, out int stats_index))
                 {
                     unit_tree.Add(unit_name, new TreeNode(unit_name) { Tag = unit_id });
                     continue;
                 }
 
                 byte unit_race_id = SFCategoryManager.gamedata.c2005[stats_index].UnitRace;
-                if(!SFCategoryManager.gamedata.c2022.GetItemIndex(unit_race_id, out int race_index))
+                if (!SFCategoryManager.gamedata.c2022.GetItemIndex(unit_race_id, out int race_index))
                 {
                     unit_tree.Add(unit_name, new TreeNode(unit_name) { Tag = unit_id });
                     continue;
@@ -3810,7 +3781,7 @@ namespace SpellforceDataEditor.special_forms
 
             obj_tree = new Dictionary<string, TreeNode>();
 
-            for(int i = 0; i < SFCategoryManager.gamedata.c2050.GetNumOfItems(); i++)
+            for (int i = 0; i < SFCategoryManager.gamedata.c2050.GetNumOfItems(); i++)
             {
                 ushort id = SFCategoryManager.gamedata.c2050[i].ObjectID;
                 if ((id > 64) && (id < 128))
@@ -4041,6 +4012,7 @@ namespace SpellforceDataEditor.special_forms
             };
 
             QuickSelect.Visible = false;
+            QuickSelect.QsRef = null;
 
             PanelEntityPlacementSelect.Visible = false;
             EditCoopCampTypes.Visible = true;
@@ -4072,6 +4044,7 @@ namespace SpellforceDataEditor.special_forms
             };
 
             QuickSelect.Visible = false;
+            QuickSelect.QsRef = null;
 
             PanelEntityPlacementSelect.Visible = false;
             EditCoopCampTypes.Visible = false;
@@ -4098,6 +4071,7 @@ namespace SpellforceDataEditor.special_forms
 
 
             QuickSelect.Visible = false;
+            QuickSelect.QsRef = null;
 
             PanelEntityPlacementSelect.Visible = false;
             EditCoopCampTypes.Visible = false;
@@ -4159,6 +4133,7 @@ namespace SpellforceDataEditor.special_forms
             };
 
             QuickSelect.Visible = false;
+            QuickSelect.QsRef = null;
 
             PanelEntityPlacementSelect.Visible = false;
             EditCoopCampTypes.Visible = false;

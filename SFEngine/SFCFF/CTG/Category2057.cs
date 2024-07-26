@@ -266,6 +266,24 @@ namespace SFEngine.SFCFF.CTG
             return true;
         }
 
+        public bool AddID(int new_index, int new_id)
+        {
+            int main_index;
+            if (new_index >= Indices.Count)
+            {
+                main_index = Items.Count;
+            }
+            else
+            {
+                main_index = Indices[new_index];
+            }
+            Items.Insert(main_index, new() { Coords = new() });
+            Indices.Insert(new_index, main_index);
+            AdjustIndices(new_index + 1, 1);
+            SetID(new_index, new_id);
+            return true;
+        }
+
         public bool AddItem(int new_index, Category2057Item item)
         {
             int main_index;
@@ -678,7 +696,8 @@ namespace SFEngine.SFCFF.CTG
                 U cur_val = (U)fi.GetValue(items_span[index]);
                 if (!cur_val.Equals(value))
                 {
-                    fi.SetValue(items_span[index], value);
+                    TypedReference tref = __makeref(items_span[index]);
+                    fi.SetValueDirect(tref, value);
                     // undo/redo stuff
                 }
             }
@@ -767,6 +786,47 @@ namespace SFEngine.SFCFF.CTG
         public void SetField<U>(int index, int subindex, string field_name, U value)
         {
             SetField(GetSubItemIndex(index, subindex), field_name, value);
+        }
+
+        public bool GetFirstUnusedID(out int id, out int index)
+        {
+            if (Indices.Count == 0)
+            {
+                id = 1;
+                index = 0;
+                return true;
+            }
+            int cur_id = 1;
+            for (int i = 0; i < Indices.Count; i++)
+            {
+                if (Items[Indices[i]].GetID() == 0)
+                {
+                    continue;
+                }
+                if (cur_id != Items[Indices[i]].GetID())
+                {
+                    id = cur_id;
+                    index = i;
+                    return true;
+                }
+                cur_id++;
+            }
+            id = Items[Indices[^1]].GetID() + 1;
+            index = Indices.Count;
+            return true;
+        }
+
+        public bool GetLastUsedID(out int id, out int index)
+        {
+            if (Indices.Count == 0)
+            {
+                id = 0;
+                index = 0;
+                return true;
+            }
+            id = Items[Indices[^1]].GetID();
+            index = Indices.Count;
+            return true;
         }
 
         public bool Undo()

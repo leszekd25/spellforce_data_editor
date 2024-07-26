@@ -54,7 +54,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            textBox1.Text = c2039[current_element, 0].TextID.ToString();
+            textBox1.Text = c2039[current_element, ListSkills.SelectedIndex].TextID.ToString();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -110,6 +110,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             textBox1.Text = c2039[current_element, subelem_index].TextID.ToString();
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, textBox1.Text);
         }
     }
 }

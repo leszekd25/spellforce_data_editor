@@ -28,118 +28,130 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label3 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.ListUI = new System.Windows.Forms.ListBox();
-            this.SuspendLayout();
+            label3 = new System.Windows.Forms.Label();
+            label1 = new System.Windows.Forms.Label();
+            textBox1 = new System.Windows.Forms.TextBox();
+            textBox4 = new System.Windows.Forms.TextBox();
+            label4 = new System.Windows.Forms.Label();
+            checkBox1 = new System.Windows.Forms.CheckBox();
+            button2 = new System.Windows.Forms.Button();
+            button1 = new System.Windows.Forms.Button();
+            ListUI = new System.Windows.Forms.ListBox();
+            SuspendLayout();
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(23, 185);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(75, 13);
-            this.label3.TabIndex = 21;
-            this.label3.Text = "Scaled down?";
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(27, 213);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(79, 15);
+            label3.TabIndex = 21;
+            label3.Text = "Scaled down?";
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(58, 22);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 13);
-            this.label1.TabIndex = 19;
-            this.label1.Text = "Item ID";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(68, 25);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(45, 15);
+            label1.TabIndex = 19;
+            label1.Text = "Item ID";
             // 
             // textBox1
             // 
-            this.textBox1.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox1.Location = new System.Drawing.Point(105, 19);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(126, 20);
-            this.textBox1.TabIndex = 16;
-            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
+            textBox1.BackColor = System.Drawing.Color.DarkOrange;
+            textBox1.Location = new System.Drawing.Point(122, 22);
+            textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox1.Name = "textBox1";
+            textBox1.ShortcutsEnabled = false;
+            textBox1.Size = new System.Drawing.Size(146, 23);
+            textBox1.TabIndex = 16;
+            textBox1.Leave += textBox1_TextChanged;
+            textBox1.MouseDown += textBox1_MouseDown;
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(104, 208);
-            this.textBox4.MaxLength = 64;
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(383, 20);
-            this.textBox4.TabIndex = 22;
-            this.textBox4.Leave += new System.EventHandler(this.textBox4_TextChanged);
+            textBox4.Location = new System.Drawing.Point(121, 240);
+            textBox4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox4.MaxLength = 64;
+            textBox4.Name = "textBox4";
+            textBox4.Size = new System.Drawing.Size(446, 23);
+            textBox4.TabIndex = 22;
+            textBox4.Leave += textBox4_TextChanged;
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(22, 211);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(76, 13);
-            this.label4.TabIndex = 23;
-            this.label4.Text = "Item UI handle";
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(26, 243);
+            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(84, 15);
+            label4.TabIndex = 23;
+            label4.Text = "Item UI handle";
             // 
             // checkBox1
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(105, 185);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(15, 14);
-            this.checkBox1.TabIndex = 24;
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.Click += new System.EventHandler(this.checkBox1_Click);
+            checkBox1.AutoSize = true;
+            checkBox1.Location = new System.Drawing.Point(122, 213);
+            checkBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new System.Drawing.Size(15, 14);
+            checkBox1.TabIndex = 24;
+            checkBox1.UseVisualStyleBackColor = true;
+            checkBox1.Click += checkBox1_Click;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(380, 74);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 45;
-            this.button2.Text = "Remove";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            button2.Location = new System.Drawing.Point(443, 85);
+            button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button2.Name = "button2";
+            button2.Size = new System.Drawing.Size(88, 27);
+            button2.TabIndex = 45;
+            button2.Text = "Remove";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(380, 45);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 44;
-            this.button1.Text = "Insert";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            button1.Location = new System.Drawing.Point(443, 52);
+            button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button1.Name = "button1";
+            button1.Size = new System.Drawing.Size(88, 27);
+            button1.TabIndex = 44;
+            button1.Text = "Insert";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // ListUI
             // 
-            this.ListUI.FormattingEnabled = true;
-            this.ListUI.Location = new System.Drawing.Point(105, 45);
-            this.ListUI.Name = "ListUI";
-            this.ListUI.Size = new System.Drawing.Size(268, 134);
-            this.ListUI.TabIndex = 43;
-            this.ListUI.SelectedIndexChanged += new System.EventHandler(this.ListUI_SelectedIndexChanged);
+            ListUI.FormattingEnabled = true;
+            ListUI.ItemHeight = 15;
+            ListUI.Location = new System.Drawing.Point(122, 52);
+            ListUI.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ListUI.Name = "ListUI";
+            ListUI.Size = new System.Drawing.Size(312, 154);
+            ListUI.TabIndex = 43;
+            ListUI.SelectedIndexChanged += ListUI_SelectedIndexChanged;
             // 
             // Control13
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.ListUI);
-            this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox1);
-            this.Name = "Control13";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(button2);
+            Controls.Add(button1);
+            Controls.Add(ListUI);
+            Controls.Add(checkBox1);
+            Controls.Add(label4);
+            Controls.Add(textBox4);
+            Controls.Add(label3);
+            Controls.Add(label1);
+            Controls.Add(textBox1);
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Name = "Control13";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

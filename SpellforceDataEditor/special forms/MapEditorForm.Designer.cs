@@ -654,9 +654,11 @@
             EntityID.Location = new System.Drawing.Point(64, 23);
             EntityID.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             EntityID.Name = "EntityID";
+            EntityID.ShortcutsEnabled = false;
             EntityID.Size = new System.Drawing.Size(82, 23);
             EntityID.TabIndex = 16;
             EntityID.Leave += EntityID_Validated;
+            EntityID.MouseDown += EntityID_MouseDown;
             // 
             // label11
             // 

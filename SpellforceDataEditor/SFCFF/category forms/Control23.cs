@@ -116,7 +116,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             Byte cur_spell_index = c2001[current_element, new_index].BuildingIndex;
 
             c2001.RemoveSub(current_element, new_index);
-            for(int i = 0; i < c2001.GetItemSubItemNum(current_element); i++)
+            for (int i = 0; i < c2001.GetItemSubItemNum(current_element); i++)
             {
                 if (c2001[current_element, i].BuildingIndex > cur_spell_index)
                 {
@@ -149,6 +149,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 textBox3.Text = c2001[current_element, subelem_index].BuildingID.ToString();
             }
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2024, textBox1.Text);
+        }
+
+        private void textBox3_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2029, textBox3.Text);
         }
     }
 }

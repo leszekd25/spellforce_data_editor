@@ -15,7 +15,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             c2040 = SFCategoryManager.gamedata.c2040;
             category = c2040;
-            
+
             column_dict.Add("Unit ID", new int[1] { 0 });
             column_dict.Add("Slot index", new int[1] { 1 });
             column_dict.Add("Item 1 ID", new int[1] { 2 });
@@ -28,9 +28,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         int get_subelem_index_by_slot_id(int slot_id)
         {
             // get absolute index in element
-            for(int i = 0; i < c2040.GetItemSubItemNum(current_element); i++)
+            for (int i = 0; i < c2040.GetItemSubItemNum(current_element); i++)
             {
-                if (c2040[current_element, i].LootIndex == slot_id)
+                if (c2040[current_element, i].LootIndex == slot_id + 1)
                 {
                     return i;
                 }
@@ -45,31 +45,31 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
+            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex);
             c2040.SetField(current_element, index, "ItemID1", SFEngine.Utility.TryParseUInt16(textBox2.Text));
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
+            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex);
             c2040.SetField(current_element, index, "ItemChance1", SFEngine.Utility.TryParseUInt8(textBox3.Text));
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
+            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex);
             c2040.SetField(current_element, index, "ItemID2", SFEngine.Utility.TryParseUInt16(textBox5.Text));
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
+            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex);
             c2040.SetField(current_element, index, "ItemChance2", SFEngine.Utility.TryParseUInt8(textBox4.Text));
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
-            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
+            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex);
             c2040.SetField(current_element, index, "ItemID3", SFEngine.Utility.TryParseUInt16(textBox7.Text));
         }
 
@@ -91,7 +91,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     continue;
                 }
 
-                ListSlots.SetItemChecked(c2040[current_element, i].LootIndex, true);
+                ListSlots.SetItemChecked(c2040[current_element, i].LootIndex - 1, true);
             }
 
             for (int i = 0; i < 6; i++)
@@ -108,12 +108,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override void show_element()
         {
             textBox1.Text = c2040[current_element, 0].UnitID.ToString();
-            for (int i = 1; i <= 6; i++)
+            for (int i = 0; i < 6; i++)
             {
                 if (get_subelem_index_by_slot_id(i) != SFEngine.Utility.NO_INDEX)
                 {
                     ListSlots.SelectedIndex = SFEngine.Utility.NO_INDEX;
-                    ListSlots.SelectedIndex = i - 1;
+                    ListSlots.SelectedIndex = i;
                     return;
                 }
             }
@@ -123,8 +123,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             textBox8.Text = "0"; textBox6.Text = "0"; textBox10.Text = "0";
 
-            int slot_id = ListSlots.SelectedIndex + 1;
-            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
+            int slot_id = ListSlots.SelectedIndex;
+            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex);
 
             Single[] chances = new Single[3];
             if (c2040[current_element, index].ItemID1 != 0)
@@ -154,7 +154,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            index = get_subelem_index_by_slot_id(index + 1);
+            index = get_subelem_index_by_slot_id(index);
             bool enable = ListSlots.GetItemChecked(ListSlots.SelectedIndex);
             textBox2.Enabled = enable;
             textBox3.Enabled = enable;
@@ -185,7 +185,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void ListSlots_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             int index = e.Index;
-            index = get_subelem_index_by_slot_id(index + 1);
+            index = get_subelem_index_by_slot_id(index);
 
             // if last checkbox unchecked, prevent
             int checked_slots = 0;
@@ -265,7 +265,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void on_update_subelement(int subelem_index)
         {
-            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex + 1);
+            int index = get_subelem_index_by_slot_id(ListSlots.SelectedIndex);
             if (index != subelem_index)
             {
                 return;
@@ -282,6 +282,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             item3_name.Text = SFCategoryManager.GetItemName(SFEngine.Utility.TryParseUInt16(textBox7.Text, 0));
 
             UpdateEffectiveChance();
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2024, textBox1.Text);
+        }
+
+        private void textBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2003, ((TextBox)sender).Text);
         }
     }
 }

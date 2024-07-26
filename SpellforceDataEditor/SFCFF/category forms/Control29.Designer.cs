@@ -28,81 +28,91 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label3 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.ButtonGoto30 = new System.Windows.Forms.Button();
-            this.ButtonGoto31 = new System.Windows.Forms.Button();
-            this.SuspendLayout();
+            label3 = new System.Windows.Forms.Label();
+            label1 = new System.Windows.Forms.Label();
+            textBox3 = new System.Windows.Forms.TextBox();
+            textBox1 = new System.Windows.Forms.TextBox();
+            ButtonGoto30 = new System.Windows.Forms.Button();
+            ButtonGoto31 = new System.Windows.Forms.Button();
+            SuspendLayout();
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(59, 45);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(40, 13);
-            this.label3.TabIndex = 55;
-            this.label3.Text = "Unit ID";
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(69, 52);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(43, 15);
+            label3.TabIndex = 55;
+            label3.Text = "Unit ID";
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(33, 22);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(66, 13);
-            this.label1.TabIndex = 54;
-            this.label1.Text = "Merchant ID";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(38, 25);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(72, 15);
+            label1.TabIndex = 54;
+            label1.Text = "Merchant ID";
             // 
             // textBox3
             // 
-            this.textBox3.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox3.Location = new System.Drawing.Point(105, 45);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(126, 20);
-            this.textBox3.TabIndex = 53;
-            this.textBox3.Leave += new System.EventHandler(this.textBox3_TextChanged);
+            textBox3.BackColor = System.Drawing.Color.DarkOrange;
+            textBox3.Location = new System.Drawing.Point(122, 52);
+            textBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox3.Name = "textBox3";
+            textBox3.ShortcutsEnabled = false;
+            textBox3.Size = new System.Drawing.Size(146, 23);
+            textBox3.TabIndex = 53;
+            textBox3.Leave += textBox3_TextChanged;
+            textBox3.MouseDown += textBox3_MouseDown;
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(105, 19);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(126, 20);
-            this.textBox1.TabIndex = 52;
-            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
+            textBox1.Location = new System.Drawing.Point(122, 22);
+            textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new System.Drawing.Size(146, 23);
+            textBox1.TabIndex = 52;
+            textBox1.Leave += textBox1_TextChanged;
             // 
             // ButtonGoto30
             // 
-            this.ButtonGoto30.Location = new System.Drawing.Point(3, 71);
-            this.ButtonGoto30.Name = "ButtonGoto30";
-            this.ButtonGoto30.Size = new System.Drawing.Size(228, 23);
-            this.ButtonGoto30.TabIndex = 56;
-            this.ButtonGoto30.Text = "button1";
-            this.ButtonGoto30.UseVisualStyleBackColor = true;
+            ButtonGoto30.Location = new System.Drawing.Point(4, 82);
+            ButtonGoto30.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonGoto30.Name = "ButtonGoto30";
+            ButtonGoto30.Size = new System.Drawing.Size(266, 27);
+            ButtonGoto30.TabIndex = 56;
+            ButtonGoto30.Text = "button1";
+            ButtonGoto30.UseVisualStyleBackColor = true;
+            ButtonGoto30.Click += ButtonGoto30_Click;
             // 
             // ButtonGoto31
             // 
-            this.ButtonGoto31.Location = new System.Drawing.Point(3, 100);
-            this.ButtonGoto31.Name = "ButtonGoto31";
-            this.ButtonGoto31.Size = new System.Drawing.Size(228, 23);
-            this.ButtonGoto31.TabIndex = 57;
-            this.ButtonGoto31.Text = "button2";
-            this.ButtonGoto31.UseVisualStyleBackColor = true;
+            ButtonGoto31.Location = new System.Drawing.Point(4, 115);
+            ButtonGoto31.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonGoto31.Name = "ButtonGoto31";
+            ButtonGoto31.Size = new System.Drawing.Size(266, 27);
+            ButtonGoto31.TabIndex = 57;
+            ButtonGoto31.Text = "button2";
+            ButtonGoto31.UseVisualStyleBackColor = true;
+            ButtonGoto31.Click += ButtonGoto31_Click;
             // 
             // Control29
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.ButtonGoto31);
-            this.Controls.Add(this.ButtonGoto30);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox1);
-            this.Name = "Control29";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(ButtonGoto31);
+            Controls.Add(ButtonGoto30);
+            Controls.Add(label3);
+            Controls.Add(label1);
+            Controls.Add(textBox3);
+            Controls.Add(textBox1);
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Name = "Control29";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

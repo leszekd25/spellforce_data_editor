@@ -3,6 +3,7 @@ using SFEngine.SFCFF;
 using SFEngine.SFCFF.CTG;
 using System;
 using System.Drawing;
+using System.Runtime.Intrinsics.X86;
 using System.Windows.Forms;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
@@ -72,6 +73,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private void textBox9_TextChanged(object sender, EventArgs e)
         {
             c2054.SetField(current_element, "DescriptionID", SFEngine.Utility.TryParseUInt16(textBox9.Text));
+            textbox_repr(textBox9, 2058);
         }
 
         public override void show_element()
@@ -87,7 +89,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox8.Text = item.GetHandleString();
             textBox9.Text = item.DescriptionID.ToString();
 
-            textbox_repr(textBox9, SFCategoryManager.gamedata.c2058);
+            textbox_repr(textBox9, 2058);
         }
 
         public override string get_element_string(int index)
@@ -100,6 +102,23 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             Category2054Item item = c2054.Items[index];
             return $"{SFCategoryManager.GetTextByLanguage(item.TextID, 1)}\r\n{SFCategoryManager.GetDescriptionName(item.DescriptionID)}";
+        }
+
+
+        // trace
+        private void textBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, textBox2.Text);
+        }
+
+        private void textBox9_MouseDown(object sender, MouseEventArgs e)
+        {
+            if(!textbox_trace(e, 2058, textBox9.Text))
+            {
+                textbox_gen_elem(textBox9, 2058);
+                c2054.SetField(current_element, "DescriptionID", SFEngine.Utility.TryParseUInt16(textBox9.Text));
+                textbox_repr(textBox9, 2058);
+            }
         }
     }
 }

@@ -42,14 +42,13 @@
             operationHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             specialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             findAllReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            extractLangDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             clipboardTooldebugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             patchGamedataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             CategorySelect = new System.Windows.Forms.ComboBox();
             ElementSelect = new SFCFF.helper_forms.ListBoxNoFlicker();
             OpenGameData = new System.Windows.Forms.OpenFileDialog();
-            SearchPanel = new System.Windows.Forms.Panel();
+            ElementDisplayPanel = new System.Windows.Forms.Panel();
             SaveGameData = new System.Windows.Forms.SaveFileDialog();
             label1 = new System.Windows.Forms.Label();
             SearchQuery = new System.Windows.Forms.TextBox();
@@ -164,7 +163,7 @@
             // 
             // specialToolStripMenuItem
             // 
-            specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { findAllReferencesToolStripMenuItem, extractLangDataToolStripMenuItem, clipboardTooldebugToolStripMenuItem, patchGamedataToolStripMenuItem });
+            specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { findAllReferencesToolStripMenuItem, clipboardTooldebugToolStripMenuItem, patchGamedataToolStripMenuItem });
             specialToolStripMenuItem.Name = "specialToolStripMenuItem";
             specialToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             specialToolStripMenuItem.Text = "Special";
@@ -176,13 +175,6 @@
             findAllReferencesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
             findAllReferencesToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             findAllReferencesToolStripMenuItem.Text = "Find all references...";
-            // 
-            // extractLangDataToolStripMenuItem
-            // 
-            extractLangDataToolStripMenuItem.Name = "extractLangDataToolStripMenuItem";
-            extractLangDataToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            extractLangDataToolStripMenuItem.Text = "Extract lang data...";
-            extractLangDataToolStripMenuItem.Visible = false;
             // 
             // clipboardTooldebugToolStripMenuItem
             // 
@@ -232,14 +224,14 @@
             OpenGameData.FileName = "GameData.cff";
             OpenGameData.Filter = "CFF file(*.cff)|*.cff";
             // 
-            // SearchPanel
+            // ElementDisplayPanel
             // 
-            SearchPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            SearchPanel.Location = new System.Drawing.Point(461, 62);
-            SearchPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            SearchPanel.Name = "SearchPanel";
-            SearchPanel.Size = new System.Drawing.Size(583, 436);
-            SearchPanel.TabIndex = 4;
+            ElementDisplayPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            ElementDisplayPanel.Location = new System.Drawing.Point(461, 62);
+            ElementDisplayPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ElementDisplayPanel.Name = "ElementDisplayPanel";
+            ElementDisplayPanel.Size = new System.Drawing.Size(583, 436);
+            ElementDisplayPanel.TabIndex = 4;
             // 
             // SaveGameData
             // 
@@ -476,6 +468,7 @@
             buttonTracerBack.Text = "Back";
             buttonTracerBack.UseVisualStyleBackColor = false;
             buttonTracerBack.Visible = false;
+            buttonTracerBack.Click += buttonTracerBack_Click;
             // 
             // label_tracedesc
             // 
@@ -528,7 +521,7 @@
             Controls.Add(statusStrip1);
             Controls.Add(panelElemManipulate);
             Controls.Add(panelSearch);
-            Controls.Add(SearchPanel);
+            Controls.Add(ElementDisplayPanel);
             Controls.Add(ElementSelect);
             Controls.Add(CategorySelect);
             Controls.Add(menuStrip1);
@@ -562,7 +555,7 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ComboBox CategorySelect;
         private System.Windows.Forms.OpenFileDialog OpenGameData;
-        private System.Windows.Forms.Panel SearchPanel;
+        private System.Windows.Forms.Panel ElementDisplayPanel;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog SaveGameData;
         private System.Windows.Forms.Label label1;
@@ -598,7 +591,6 @@
         private System.Windows.Forms.ToolStripMenuItem specialToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findAllReferencesToolStripMenuItem;
         private System.Windows.Forms.Button ButtonElemAdd;
-        private System.Windows.Forms.ToolStripMenuItem extractLangDataToolStripMenuItem;
         private SFCFF.helper_forms.ListBoxNoFlicker ElementSelect;
         private System.Windows.Forms.ToolStripMenuItem clipboardTooldebugToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem operationHistoryToolStripMenuItem;

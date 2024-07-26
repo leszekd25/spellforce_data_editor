@@ -83,23 +83,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
-            {
-            }
+            textbox_trace(e, 2003, textBox1.Text);
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
-            {
-            }
+            textbox_trace(e, 2063, textBox2.Text);
         }
 
         private void textBox3_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
-            {
-            }
+            textbox_trace(e, 2064, textBox3.Text);
         }
 
 

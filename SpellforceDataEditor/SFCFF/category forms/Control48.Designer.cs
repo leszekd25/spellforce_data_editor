@@ -28,293 +28,325 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tb_sd10 = new System.Windows.Forms.TextBox();
-            this.lb_sd10 = new System.Windows.Forms.Label();
-            this.sb_sd5 = new System.Windows.Forms.TextBox();
-            this.lb_sd5 = new System.Windows.Forms.Label();
-            this.tb_sd9 = new System.Windows.Forms.TextBox();
-            this.lb_sd9 = new System.Windows.Forms.Label();
-            this.tb_sd4 = new System.Windows.Forms.TextBox();
-            this.lb_sd4 = new System.Windows.Forms.Label();
-            this.tb_sd8 = new System.Windows.Forms.TextBox();
-            this.lb_sd8 = new System.Windows.Forms.Label();
-            this.tb_sd3 = new System.Windows.Forms.TextBox();
-            this.lb_sd3 = new System.Windows.Forms.Label();
-            this.tb_sd7 = new System.Windows.Forms.TextBox();
-            this.lb_sd7 = new System.Windows.Forms.Label();
-            this.tb_sd2 = new System.Windows.Forms.TextBox();
-            this.lb_sd2 = new System.Windows.Forms.Label();
-            this.tb_sd6 = new System.Windows.Forms.TextBox();
-            this.lb_sd6 = new System.Windows.Forms.Label();
-            this.tb_sd1 = new System.Windows.Forms.TextBox();
-            this.lb_sd1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.SuspendLayout();
+            tb_sd10 = new System.Windows.Forms.TextBox();
+            lb_sd10 = new System.Windows.Forms.Label();
+            sb_sd5 = new System.Windows.Forms.TextBox();
+            lb_sd5 = new System.Windows.Forms.Label();
+            tb_sd9 = new System.Windows.Forms.TextBox();
+            lb_sd9 = new System.Windows.Forms.Label();
+            tb_sd4 = new System.Windows.Forms.TextBox();
+            lb_sd4 = new System.Windows.Forms.Label();
+            tb_sd8 = new System.Windows.Forms.TextBox();
+            lb_sd8 = new System.Windows.Forms.Label();
+            tb_sd3 = new System.Windows.Forms.TextBox();
+            lb_sd3 = new System.Windows.Forms.Label();
+            tb_sd7 = new System.Windows.Forms.TextBox();
+            lb_sd7 = new System.Windows.Forms.Label();
+            tb_sd2 = new System.Windows.Forms.TextBox();
+            lb_sd2 = new System.Windows.Forms.Label();
+            tb_sd6 = new System.Windows.Forms.TextBox();
+            lb_sd6 = new System.Windows.Forms.Label();
+            tb_sd1 = new System.Windows.Forms.TextBox();
+            lb_sd1 = new System.Windows.Forms.Label();
+            textBox1 = new System.Windows.Forms.TextBox();
+            label1 = new System.Windows.Forms.Label();
+            textBox2 = new System.Windows.Forms.TextBox();
+            label2 = new System.Windows.Forms.Label();
+            textBox3 = new System.Windows.Forms.TextBox();
+            label3 = new System.Windows.Forms.Label();
+            SuspendLayout();
             // 
             // tb_sd10
             // 
-            this.tb_sd10.Location = new System.Drawing.Point(105, 175);
-            this.tb_sd10.Name = "tb_sd10";
-            this.tb_sd10.Size = new System.Drawing.Size(126, 20);
-            this.tb_sd10.TabIndex = 71;
-            this.tb_sd10.Leave += new System.EventHandler(this.tb_sd10_TextChanged);
+            tb_sd10.Location = new System.Drawing.Point(122, 202);
+            tb_sd10.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_sd10.Name = "tb_sd10";
+            tb_sd10.Size = new System.Drawing.Size(146, 23);
+            tb_sd10.TabIndex = 71;
+            tb_sd10.Leave += tb_sd10_TextChanged;
             // 
             // lb_sd10
             // 
-            this.lb_sd10.AutoSize = true;
-            this.lb_sd10.Location = new System.Drawing.Point(75, 178);
-            this.lb_sd10.Name = "lb_sd10";
-            this.lb_sd10.Size = new System.Drawing.Size(25, 13);
-            this.lb_sd10.TabIndex = 70;
-            this.lb_sd10.Text = "Aria";
+            lb_sd10.AutoSize = true;
+            lb_sd10.Location = new System.Drawing.Point(88, 205);
+            lb_sd10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd10.Name = "lb_sd10";
+            lb_sd10.Size = new System.Drawing.Size(28, 15);
+            lb_sd10.TabIndex = 70;
+            lb_sd10.Text = "Aria";
             // 
             // sb_sd5
             // 
-            this.sb_sd5.Location = new System.Drawing.Point(105, 123);
-            this.sb_sd5.Name = "sb_sd5";
-            this.sb_sd5.Size = new System.Drawing.Size(126, 20);
-            this.sb_sd5.TabIndex = 69;
-            this.sb_sd5.Leave += new System.EventHandler(this.sb_sd5_TextChanged);
+            sb_sd5.Location = new System.Drawing.Point(122, 142);
+            sb_sd5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            sb_sd5.Name = "sb_sd5";
+            sb_sd5.Size = new System.Drawing.Size(146, 23);
+            sb_sd5.TabIndex = 69;
+            sb_sd5.Leave += sb_sd5_TextChanged;
             // 
             // lb_sd5
             // 
-            this.lb_sd5.AutoSize = true;
-            this.lb_sd5.Location = new System.Drawing.Point(74, 126);
-            this.lb_sd5.Name = "lb_sd5";
-            this.lb_sd5.Size = new System.Drawing.Size(25, 13);
-            this.lb_sd5.TabIndex = 68;
-            this.lb_sd5.Text = "Iron";
+            lb_sd5.AutoSize = true;
+            lb_sd5.Location = new System.Drawing.Point(86, 145);
+            lb_sd5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd5.Name = "lb_sd5";
+            lb_sd5.Size = new System.Drawing.Size(28, 15);
+            lb_sd5.TabIndex = 68;
+            lb_sd5.Text = "Iron";
             // 
             // tb_sd9
             // 
-            this.tb_sd9.Location = new System.Drawing.Point(105, 149);
-            this.tb_sd9.Name = "tb_sd9";
-            this.tb_sd9.Size = new System.Drawing.Size(126, 20);
-            this.tb_sd9.TabIndex = 67;
-            this.tb_sd9.Leave += new System.EventHandler(this.tb_sd9_TextChanged);
+            tb_sd9.Location = new System.Drawing.Point(122, 172);
+            tb_sd9.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_sd9.Name = "tb_sd9";
+            tb_sd9.Size = new System.Drawing.Size(146, 23);
+            tb_sd9.TabIndex = 67;
+            tb_sd9.Leave += tb_sd9_TextChanged;
             // 
             // lb_sd9
             // 
-            this.lb_sd9.AutoSize = true;
-            this.lb_sd9.Location = new System.Drawing.Point(63, 152);
-            this.lb_sd9.Name = "lb_sd9";
-            this.lb_sd9.Size = new System.Drawing.Size(36, 13);
-            this.lb_sd9.TabIndex = 66;
-            this.lb_sd9.Text = "Lenya";
+            lb_sd9.AutoSize = true;
+            lb_sd9.Location = new System.Drawing.Point(74, 175);
+            lb_sd9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd9.Name = "lb_sd9";
+            lb_sd9.Size = new System.Drawing.Size(38, 15);
+            lb_sd9.TabIndex = 66;
+            lb_sd9.Text = "Lenya";
             // 
             // tb_sd4
             // 
-            this.tb_sd4.Location = new System.Drawing.Point(105, 97);
-            this.tb_sd4.Name = "tb_sd4";
-            this.tb_sd4.Size = new System.Drawing.Size(126, 20);
-            this.tb_sd4.TabIndex = 65;
-            this.tb_sd4.Leave += new System.EventHandler(this.tb_sd4_TextChanged);
+            tb_sd4.Location = new System.Drawing.Point(122, 112);
+            tb_sd4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_sd4.Name = "tb_sd4";
+            tb_sd4.Size = new System.Drawing.Size(146, 23);
+            tb_sd4.TabIndex = 65;
+            tb_sd4.Leave += tb_sd4_TextChanged;
             // 
             // lb_sd4
             // 
-            this.lb_sd4.AutoSize = true;
-            this.lb_sd4.Location = new System.Drawing.Point(64, 100);
-            this.lb_sd4.Name = "lb_sd4";
-            this.lb_sd4.Size = new System.Drawing.Size(35, 13);
-            this.lb_sd4.TabIndex = 64;
-            this.lb_sd4.Text = "Stone";
+            lb_sd4.AutoSize = true;
+            lb_sd4.Location = new System.Drawing.Point(75, 115);
+            lb_sd4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd4.Name = "lb_sd4";
+            lb_sd4.Size = new System.Drawing.Size(37, 15);
+            lb_sd4.TabIndex = 64;
+            lb_sd4.Text = "Stone";
             // 
             // tb_sd8
             // 
-            this.tb_sd8.Location = new System.Drawing.Point(362, 71);
-            this.tb_sd8.Name = "tb_sd8";
-            this.tb_sd8.Size = new System.Drawing.Size(126, 20);
-            this.tb_sd8.TabIndex = 63;
-            this.tb_sd8.Leave += new System.EventHandler(this.tb_sd8_TextChanged);
+            tb_sd8.Location = new System.Drawing.Point(422, 82);
+            tb_sd8.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_sd8.Name = "tb_sd8";
+            tb_sd8.Size = new System.Drawing.Size(146, 23);
+            tb_sd8.TabIndex = 63;
+            tb_sd8.Leave += tb_sd8_TextChanged;
             // 
             // lb_sd8
             // 
-            this.lb_sd8.AutoSize = true;
-            this.lb_sd8.Location = new System.Drawing.Point(259, 74);
-            this.lb_sd8.Name = "lb_sd8";
-            this.lb_sd8.Size = new System.Drawing.Size(97, 13);
-            this.lb_sd8.TabIndex = 62;
-            this.lb_sd8.Text = "Research time (ms)";
+            lb_sd8.AutoSize = true;
+            lb_sd8.Location = new System.Drawing.Point(302, 85);
+            lb_sd8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd8.Name = "lb_sd8";
+            lb_sd8.Size = new System.Drawing.Size(108, 15);
+            lb_sd8.TabIndex = 62;
+            lb_sd8.Text = "Research time (ms)";
             // 
             // tb_sd3
             // 
-            this.tb_sd3.Location = new System.Drawing.Point(105, 71);
-            this.tb_sd3.Name = "tb_sd3";
-            this.tb_sd3.Size = new System.Drawing.Size(126, 20);
-            this.tb_sd3.TabIndex = 61;
-            this.tb_sd3.Leave += new System.EventHandler(this.tb_sd3_TextChanged);
+            tb_sd3.Location = new System.Drawing.Point(122, 82);
+            tb_sd3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_sd3.Name = "tb_sd3";
+            tb_sd3.Size = new System.Drawing.Size(146, 23);
+            tb_sd3.TabIndex = 61;
+            tb_sd3.Leave += tb_sd3_TextChanged;
             // 
             // lb_sd3
             // 
-            this.lb_sd3.AutoSize = true;
-            this.lb_sd3.Location = new System.Drawing.Point(63, 74);
-            this.lb_sd3.Name = "lb_sd3";
-            this.lb_sd3.Size = new System.Drawing.Size(36, 13);
-            this.lb_sd3.TabIndex = 60;
-            this.lb_sd3.Text = "Wood";
+            lb_sd3.AutoSize = true;
+            lb_sd3.Location = new System.Drawing.Point(74, 85);
+            lb_sd3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd3.Name = "lb_sd3";
+            lb_sd3.Size = new System.Drawing.Size(39, 15);
+            lb_sd3.TabIndex = 60;
+            lb_sd3.Text = "Wood";
             // 
             // tb_sd7
             // 
-            this.tb_sd7.BackColor = System.Drawing.Color.DarkOrange;
-            this.tb_sd7.Location = new System.Drawing.Point(362, 45);
-            this.tb_sd7.Name = "tb_sd7";
-            this.tb_sd7.Size = new System.Drawing.Size(126, 20);
-            this.tb_sd7.TabIndex = 59;
-            this.tb_sd7.Leave += new System.EventHandler(this.tb_sd7_TextChanged);
+            tb_sd7.BackColor = System.Drawing.Color.DarkOrange;
+            tb_sd7.Location = new System.Drawing.Point(422, 52);
+            tb_sd7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_sd7.Name = "tb_sd7";
+            tb_sd7.ShortcutsEnabled = false;
+            tb_sd7.Size = new System.Drawing.Size(146, 23);
+            tb_sd7.TabIndex = 59;
+            tb_sd7.Leave += tb_sd7_TextChanged;
+            tb_sd7.MouseDown += tb_sd7_MouseDown;
             // 
             // lb_sd7
             // 
-            this.lb_sd7.AutoSize = true;
-            this.lb_sd7.Location = new System.Drawing.Point(250, 48);
-            this.lb_sd7.Name = "lb_sd7";
-            this.lb_sd7.Size = new System.Drawing.Size(106, 13);
-            this.lb_sd7.TabIndex = 58;
-            this.lb_sd7.Text = "Button description ID";
+            lb_sd7.AutoSize = true;
+            lb_sd7.Location = new System.Drawing.Point(292, 55);
+            lb_sd7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd7.Name = "lb_sd7";
+            lb_sd7.Size = new System.Drawing.Size(119, 15);
+            lb_sd7.TabIndex = 58;
+            lb_sd7.Text = "Button description ID";
             // 
             // tb_sd2
             // 
-            this.tb_sd2.BackColor = System.Drawing.Color.DarkOrange;
-            this.tb_sd2.Location = new System.Drawing.Point(105, 45);
-            this.tb_sd2.Name = "tb_sd2";
-            this.tb_sd2.Size = new System.Drawing.Size(126, 20);
-            this.tb_sd2.TabIndex = 57;
-            this.tb_sd2.Leave += new System.EventHandler(this.tb_sd2_TextChanged);
+            tb_sd2.BackColor = System.Drawing.Color.DarkOrange;
+            tb_sd2.Location = new System.Drawing.Point(122, 52);
+            tb_sd2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_sd2.Name = "tb_sd2";
+            tb_sd2.ShortcutsEnabled = false;
+            tb_sd2.Size = new System.Drawing.Size(146, 23);
+            tb_sd2.TabIndex = 57;
+            tb_sd2.Leave += tb_sd2_TextChanged;
+            tb_sd2.MouseDown += tb_sd2_MouseDown;
             // 
             // lb_sd2
             // 
-            this.lb_sd2.AutoSize = true;
-            this.lb_sd2.Location = new System.Drawing.Point(18, 48);
-            this.lb_sd2.Name = "lb_sd2";
-            this.lb_sd2.Size = new System.Drawing.Size(81, 13);
-            this.lb_sd2.TabIndex = 56;
-            this.lb_sd2.Text = "Button name ID";
+            lb_sd2.AutoSize = true;
+            lb_sd2.Location = new System.Drawing.Point(21, 55);
+            lb_sd2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd2.Name = "lb_sd2";
+            lb_sd2.Size = new System.Drawing.Size(90, 15);
+            lb_sd2.TabIndex = 56;
+            lb_sd2.Text = "Button name ID";
             // 
             // tb_sd6
             // 
-            this.tb_sd6.BackColor = System.Drawing.Color.DarkOrange;
-            this.tb_sd6.Location = new System.Drawing.Point(362, 19);
-            this.tb_sd6.Name = "tb_sd6";
-            this.tb_sd6.Size = new System.Drawing.Size(126, 20);
-            this.tb_sd6.TabIndex = 55;
-            this.tb_sd6.Leave += new System.EventHandler(this.tb_sd6_TextChanged);
+            tb_sd6.BackColor = System.Drawing.Color.DarkOrange;
+            tb_sd6.Location = new System.Drawing.Point(422, 22);
+            tb_sd6.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_sd6.Name = "tb_sd6";
+            tb_sd6.ShortcutsEnabled = false;
+            tb_sd6.Size = new System.Drawing.Size(146, 23);
+            tb_sd6.TabIndex = 55;
+            tb_sd6.Leave += tb_sd6_TextChanged;
+            tb_sd6.MouseDown += tb_sd6_MouseDown;
             // 
             // lb_sd6
             // 
-            this.lb_sd6.AutoSize = true;
-            this.lb_sd6.Location = new System.Drawing.Point(298, 22);
-            this.lb_sd6.Name = "lb_sd6";
-            this.lb_sd6.Size = new System.Drawing.Size(58, 13);
-            this.lb_sd6.TabIndex = 54;
-            this.lb_sd6.Text = "Building ID";
+            lb_sd6.AutoSize = true;
+            lb_sd6.Location = new System.Drawing.Point(348, 25);
+            lb_sd6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd6.Name = "lb_sd6";
+            lb_sd6.Size = new System.Drawing.Size(65, 15);
+            lb_sd6.TabIndex = 54;
+            lb_sd6.Text = "Building ID";
             // 
             // tb_sd1
             // 
-            this.tb_sd1.Location = new System.Drawing.Point(105, 19);
-            this.tb_sd1.Name = "tb_sd1";
-            this.tb_sd1.Size = new System.Drawing.Size(126, 20);
-            this.tb_sd1.TabIndex = 53;
-            this.tb_sd1.Leave += new System.EventHandler(this.tb_sd1_TextChanged);
+            tb_sd1.Location = new System.Drawing.Point(122, 22);
+            tb_sd1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_sd1.Name = "tb_sd1";
+            tb_sd1.Size = new System.Drawing.Size(146, 23);
+            tb_sd1.TabIndex = 53;
+            tb_sd1.Leave += tb_sd1_TextChanged;
             // 
             // lb_sd1
             // 
-            this.lb_sd1.AutoSize = true;
-            this.lb_sd1.Location = new System.Drawing.Point(47, 22);
-            this.lb_sd1.Name = "lb_sd1";
-            this.lb_sd1.Size = new System.Drawing.Size(52, 13);
-            this.lb_sd1.TabIndex = 52;
-            this.lb_sd1.Text = "Button ID";
+            lb_sd1.AutoSize = true;
+            lb_sd1.Location = new System.Drawing.Point(55, 25);
+            lb_sd1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd1.Name = "lb_sd1";
+            lb_sd1.Size = new System.Drawing.Size(57, 15);
+            lb_sd1.TabIndex = 52;
+            lb_sd1.Text = "Button ID";
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(105, 227);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(126, 20);
-            this.textBox1.TabIndex = 75;
-            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
+            textBox1.Location = new System.Drawing.Point(122, 262);
+            textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new System.Drawing.Size(146, 23);
+            textBox1.TabIndex = 75;
+            textBox1.Leave += textBox1_TextChanged;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(68, 230);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(31, 13);
-            this.label1.TabIndex = 74;
-            this.label1.Text = "Food";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(79, 265);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(34, 15);
+            label1.TabIndex = 74;
+            label1.Text = "Food";
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(105, 201);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(126, 20);
-            this.textBox2.TabIndex = 73;
-            this.textBox2.Leave += new System.EventHandler(this.textBox2_TextChanged);
+            textBox2.Location = new System.Drawing.Point(122, 232);
+            textBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox2.Name = "textBox2";
+            textBox2.Size = new System.Drawing.Size(146, 23);
+            textBox2.TabIndex = 73;
+            textBox2.Leave += textBox2_TextChanged;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(41, 204);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(58, 13);
-            this.label2.TabIndex = 72;
-            this.label2.Text = "Moonsilver";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(48, 235);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(66, 15);
+            label2.TabIndex = 72;
+            label2.Text = "Moonsilver";
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(105, 253);
-            this.textBox3.MaxLength = 64;
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(383, 20);
-            this.textBox3.TabIndex = 77;
-            this.textBox3.Leave += new System.EventHandler(this.textBox3_TextChanged);
+            textBox3.Location = new System.Drawing.Point(122, 292);
+            textBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox3.MaxLength = 64;
+            textBox3.Name = "textBox3";
+            textBox3.Size = new System.Drawing.Size(446, 23);
+            textBox3.TabIndex = 77;
+            textBox3.Leave += textBox3_TextChanged;
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(26, 256);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(73, 13);
-            this.label3.TabIndex = 76;
-            this.label3.Text = "Button handle";
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(30, 295);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(82, 15);
+            label3.TabIndex = 76;
+            label3.Text = "Button handle";
             // 
             // Control48
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.tb_sd10);
-            this.Controls.Add(this.lb_sd10);
-            this.Controls.Add(this.sb_sd5);
-            this.Controls.Add(this.lb_sd5);
-            this.Controls.Add(this.tb_sd9);
-            this.Controls.Add(this.lb_sd9);
-            this.Controls.Add(this.tb_sd4);
-            this.Controls.Add(this.lb_sd4);
-            this.Controls.Add(this.tb_sd8);
-            this.Controls.Add(this.lb_sd8);
-            this.Controls.Add(this.tb_sd3);
-            this.Controls.Add(this.lb_sd3);
-            this.Controls.Add(this.tb_sd7);
-            this.Controls.Add(this.lb_sd7);
-            this.Controls.Add(this.tb_sd2);
-            this.Controls.Add(this.lb_sd2);
-            this.Controls.Add(this.tb_sd6);
-            this.Controls.Add(this.lb_sd6);
-            this.Controls.Add(this.tb_sd1);
-            this.Controls.Add(this.lb_sd1);
-            this.Name = "Control48";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(textBox3);
+            Controls.Add(label3);
+            Controls.Add(textBox1);
+            Controls.Add(label1);
+            Controls.Add(textBox2);
+            Controls.Add(label2);
+            Controls.Add(tb_sd10);
+            Controls.Add(lb_sd10);
+            Controls.Add(sb_sd5);
+            Controls.Add(lb_sd5);
+            Controls.Add(tb_sd9);
+            Controls.Add(lb_sd9);
+            Controls.Add(tb_sd4);
+            Controls.Add(lb_sd4);
+            Controls.Add(tb_sd8);
+            Controls.Add(lb_sd8);
+            Controls.Add(tb_sd3);
+            Controls.Add(lb_sd3);
+            Controls.Add(tb_sd7);
+            Controls.Add(lb_sd7);
+            Controls.Add(tb_sd2);
+            Controls.Add(lb_sd2);
+            Controls.Add(tb_sd6);
+            Controls.Add(lb_sd6);
+            Controls.Add(tb_sd1);
+            Controls.Add(lb_sd1);
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Name = "Control48";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

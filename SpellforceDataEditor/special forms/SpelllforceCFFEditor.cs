@@ -14,28 +14,26 @@ namespace SpellforceDataEditor.special_forms
 {
     public partial class SpelllforceCFFEditor : Form
     {
+        struct TraceElement
+        {
+            public int cat;   // category id
+            public int elem;   // element index
+        }
+
         public bool data_loaded { get; private set; } = false;
 
         private int selected_category_id = -1;
-        private int displayed_category_id = -1;                   //tracer helper
         private int selected_element_index = -1;
-        private bool search_active = false;
 
         private SFControl ElementDisplay;        //a control which displays all element parameters
         public Dictionary<int, SFControl> CachedElementDisplays = new Dictionary<int, SFControl>();   // element names and descriptions are read from here
 
         //these parameters control item loading behavior
-        private int elementselect_refresh_size = 1000;
-        private int elementselect_refresh_rate = 50;
-        private int loaded_count = 0;
+        private int elementselect_refresh_size = 1000; // how many items per refresh are loaded
+        private int elementselect_refresh_rate = 50;   // in miliseconds
 
-        protected List<int> current_indices = new List<int>();  //list of indices corrsponding to all displayed elements
-        protected Dictionary<int, int> reverse_current_indices = new Dictionary<int, int>();    // list of elements corresponding to all displayed indices
-
-        protected SFCategoryElement insert_copy_element = null; //if there was an element copied, it's stored here
-        protected SFCategoryElementList insert_copy_element_list = null; //if there was an element copied, it's stored here - multiple allowed only
-
-        private SFDataTracer tracer = new SFDataTracer();
+        // tracer
+        List<TraceElement> trace_list = new();
 
         //constructor
         public SpelllforceCFFEditor()
@@ -80,9 +78,6 @@ namespace SpellforceDataEditor.special_forms
 
             if (success)
             {
-#if DEBUG
-                extractLangDataToolStripMenuItem.Visible = true;
-#endif
                 CategorySelect.Enabled = true;
                 foreach (var cat in SFCategoryManager.gamedata.GetCategories())
                 {
@@ -132,9 +127,6 @@ namespace SpellforceDataEditor.special_forms
         {
             SFCategoryManager.manual_SetGamedata();
 
-#if DEBUG
-            extractLangDataToolStripMenuItem.Visible = true;
-#endif
             CategorySelect.Enabled = true;
             foreach (var cat in SFCategoryManager.gamedata.GetCategories())
             {
@@ -310,11 +302,18 @@ namespace SpellforceDataEditor.special_forms
         }
 
         //spawns a new control to display element data
-        private void set_element_display(int cat)
+        private void set_category_panel(int cat)
         {
-            if ((ElementDisplay != null) && (SearchPanel.Controls.Contains(ElementDisplay)))
+            if (ElementDisplay != null)
             {
-                SearchPanel.Controls.Remove(ElementDisplay);
+                if (ElementDisplay.category.GetCategoryID() == cat)
+                {
+                    return;
+                }
+                else
+                {
+                    ElementDisplayPanel.Controls.Remove(ElementDisplay);
+                }
             }
 
             ElementDisplay = CachedElementDisplays[cat];
@@ -322,16 +321,23 @@ namespace SpellforceDataEditor.special_forms
 
             labelDescription.SendToBack();
 
-            SearchPanel.Controls.Add(ElementDisplay);
+            ElementDisplayPanel.Controls.Add(ElementDisplay);
         }
 
-        //restores element display to show elements from currently selected category
-        private void resolve_category_index()
+        private void set_displayed_element(int cat_id, int elem_index)
         {
-            if (displayed_category_id != selected_category_id)
+            set_category_panel(cat_id);
+
+            ElementDisplay.Visible = true;
+            ElementDisplay.set_element(elem_index);
+            ElementDisplay.show_element();
+
+            labelDescription.Text = ElementDisplay.get_description_string(elem_index);
+            label_tracedesc.Text = ElementDisplay.get_element_string(elem_index);
+
+            if (MainForm.viewer != null)
             {
-                displayed_category_id = selected_category_id;
-                set_element_display(displayed_category_id);
+                MainForm.viewer.GenerateScene(selected_category_id, elem_index);
             }
         }
 
@@ -359,15 +365,11 @@ namespace SpellforceDataEditor.special_forms
                 // clear copied element
                 ButtonElemAdd.BackColor = SystemColors.Control;
                 ButtonElemInsert.BackColor = SystemColors.Control;
-                insert_copy_element = null;
-                insert_copy_element_list = null;
             }
             selected_category_id = ((Tuple<short, string>)CategorySelect.SelectedItem).Item1;
-            displayed_category_id = selected_category_id;
-            search_active = false;
 
             // set display form for elements of this category
-            set_element_display(displayed_category_id);
+            set_category_panel(selected_category_id);
             ElementDisplay.Visible = false;
 
             // clear all elements and start loading new elements
@@ -399,40 +401,20 @@ namespace SpellforceDataEditor.special_forms
                 return;
             }
 
-            resolve_category_index();
-
-            selected_element_index = current_indices[ElementSelect.SelectedIndex];
-
-            ElementDisplay.Visible = true;
-            ElementDisplay.set_element(selected_element_index);
-            ElementDisplay.show_element();
-
-            labelDescription.Text = ElementDisplay.get_description_string(selected_element_index);
-
-            if (MainForm.viewer != null)
-            {
-                MainForm.viewer.GenerateScene(displayed_category_id, selected_element_index);
-            }
+            trace_clear();
+            selected_element_index = ElementSelect.SelectedIndex;
+            set_displayed_element(selected_category_id, ElementSelect.SelectedIndex);
         }
 
         //start loading all elements from a category
         public void ElementSelect_refresh(ICategory ctg)
         {
             ElementSelect.Items.Clear();
-            current_indices.Clear();
-            reverse_current_indices.Clear();
 
-            for (int i = 0; i < ctg.GetNumOfItems(); i++)
-            {
-                current_indices.Add(i);
-                reverse_current_indices.Add(i, i);
-            }
-
-            search_active = false;
             labelDescription.Text = "";
             labelStatus.Text = "Loading...";
 
-            loaded_count = 0;
+            trace_clear();
             RestartTimer();
         }
 
@@ -482,13 +464,14 @@ namespace SpellforceDataEditor.special_forms
 
             ICategory ctg = CachedElementDisplays[selected_category_id].category;
 
-            int max_items = current_indices.Count;
-            int last = Math.Min(max_items, loaded_count + elementselect_refresh_size);
+            int max_items = ctg.GetNumOfItems();
+            int loaded_items = ElementSelect.Items.Count;
+            int last = Math.Min(max_items, loaded_items + elementselect_refresh_size);
 
             SFControl element_display = CachedElementDisplays[selected_category_id];
-            for (; loaded_count < last; loaded_count++)
+            for (; loaded_items < last; loaded_items++)
             {
-                ElementSelect.Items.Add(element_display.get_element_string(current_indices[loaded_count]));
+                ElementSelect.Items.Add(element_display.get_element_string(loaded_items));
             }
 
             if (max_items == 0)
@@ -602,16 +585,11 @@ namespace SpellforceDataEditor.special_forms
             }
             ElementSelect.Items.Clear();
             ElementSelect.Enabled = false;
-            current_indices.Clear();
-            reverse_current_indices.Clear();
-            loaded_count = 0;
 
             panelElemManipulate.Visible = false;
             panelElemCopy.Visible = false;
             ButtonElemAdd.BackColor = SystemColors.Control;
             ButtonElemInsert.BackColor = SystemColors.Control;
-            insert_copy_element = null;
-            insert_copy_element_list = null;
 
             if (ElementDisplay != null)
             {
@@ -619,6 +597,7 @@ namespace SpellforceDataEditor.special_forms
             }
 
             labelDescription.Text = "";
+            label_tracedesc.Text = "";
 
             CategorySelect.Items.Clear();
             CategorySelect.Enabled = false;
@@ -627,9 +606,7 @@ namespace SpellforceDataEditor.special_forms
             ContinueSearchButton.Enabled = false;
 
             selected_category_id = -1;
-            displayed_category_id = -1;
             selected_element_index = -1;
-            search_active = false;
 
             labelStatus.Text = "";
             ProgressBar_Main.Visible = false;
@@ -669,6 +646,71 @@ namespace SpellforceDataEditor.special_forms
                     e.Cancel = true;
                 }
             }
+        }
+
+        // tracer
+        public bool trace_id(int cat_id, int elem_id)
+        {
+            if(!data_loaded)
+            {
+                return false;
+            }
+
+            // find element index
+            if(!CachedElementDisplays.ContainsKey(cat_id))
+            {
+                return false;
+            }
+
+            ICategory cat = CachedElementDisplays[cat_id].category;
+            if(!cat.GetItemIndex(elem_id, out int elem_index))
+            {
+                return false;
+            }
+
+            trace_list.Add(new() { cat = cat_id, elem = elem_index });
+            set_displayed_element(cat_id, elem_index);
+            buttonTracerBack.Visible = true;
+
+            return true;
+        }
+
+        public void trace_back()
+        {
+            if (!data_loaded)
+            {
+                return;
+            }
+
+            if (trace_list.Count == 0)
+            {
+                buttonTracerBack.Visible = false;
+                return;
+            }
+            trace_list.RemoveAt(trace_list.Count - 1);
+            if(trace_list.Count == 0)
+            {
+                set_displayed_element(selected_category_id, selected_element_index);
+                buttonTracerBack.Visible = false;
+                return;
+            }
+            set_displayed_element(trace_list[^1].cat, trace_list[^1].elem);
+        }
+
+        public void trace_clear()
+        {
+            if (!data_loaded)
+            {
+                return;
+            }
+
+            trace_list.Clear();
+            buttonTracerBack.Visible = false;
+        }
+
+        private void buttonTracerBack_Click(object sender, EventArgs e)
+        {
+            trace_back();
         }
     }
 }

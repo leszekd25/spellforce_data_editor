@@ -741,7 +741,7 @@ namespace SFEngine.SFCFF
             {
                 return Utility.S_LANG_MISSING;
             }
-            return gamedata.c2016[lang_index].GetContentString();
+            return gamedata.c2016[lang_index].GetContentString().TrimEnd('\0');
         }
 
         //returns a name of a given effect
@@ -858,13 +858,13 @@ namespace SFEngine.SFCFF
 
             if ((skill_major == 0)&&(skill_minor != 0))
             {
-                return $"{GetResourceGather(skill_minor)} gathering {skill_lvl}";
+                return $"{GetResourceGather(skill_minor)} gathering {(skill_lvl == 0? "": skill_lvl)}";
             }
             if (skill_minor == 101)
             {
-                return $"{GetTextByLanguage(text_id, 1)} {skill_lvl}";
+                return $"{GetTextByLanguage(text_id, 1)} {(skill_lvl == 0 ? "" : skill_lvl)}";
             }
-            return $"{GetTextByLanguage(text_id, 1)} {GetTextByLanguage(minor_text_id, 1)} {skill_lvl}"; 
+            return $"{GetTextByLanguage(text_id, 1)} {GetTextByLanguage(minor_text_id, 1)} {(skill_lvl == 0 ? "" : skill_lvl)}"; 
         }
 
         //returns a name of a given race

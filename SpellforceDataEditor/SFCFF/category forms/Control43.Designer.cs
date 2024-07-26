@@ -28,159 +28,177 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tb_effID = new System.Windows.Forms.TextBox();
-            this.lb_effID = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.SuspendLayout();
+            tb_effID = new System.Windows.Forms.TextBox();
+            lb_effID = new System.Windows.Forms.Label();
+            textBox1 = new System.Windows.Forms.TextBox();
+            label1 = new System.Windows.Forms.Label();
+            checkBox1 = new System.Windows.Forms.CheckBox();
+            label2 = new System.Windows.Forms.Label();
+            textBox2 = new System.Windows.Forms.TextBox();
+            label3 = new System.Windows.Forms.Label();
+            textBox3 = new System.Windows.Forms.TextBox();
+            label4 = new System.Windows.Forms.Label();
+            textBox4 = new System.Windows.Forms.TextBox();
+            label5 = new System.Windows.Forms.Label();
+            SuspendLayout();
             // 
             // tb_effID
             // 
-            this.tb_effID.Location = new System.Drawing.Point(105, 19);
-            this.tb_effID.Name = "tb_effID";
-            this.tb_effID.Size = new System.Drawing.Size(126, 20);
-            this.tb_effID.TabIndex = 3;
-            this.tb_effID.Leave += new System.EventHandler(this.tb_effID_TextChanged);
+            tb_effID.Location = new System.Drawing.Point(122, 22);
+            tb_effID.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_effID.Name = "tb_effID";
+            tb_effID.Size = new System.Drawing.Size(146, 23);
+            tb_effID.TabIndex = 3;
+            tb_effID.Leave += tb_effID_TextChanged;
             // 
             // lb_effID
             // 
-            this.lb_effID.AutoSize = true;
-            this.lb_effID.Location = new System.Drawing.Point(50, 22);
-            this.lb_effID.Name = "lb_effID";
-            this.lb_effID.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lb_effID.Size = new System.Drawing.Size(49, 13);
-            this.lb_effID.TabIndex = 2;
-            this.lb_effID.Text = "Quest ID";
-            this.lb_effID.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            lb_effID.AutoSize = true;
+            lb_effID.Location = new System.Drawing.Point(58, 25);
+            lb_effID.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_effID.Name = "lb_effID";
+            lb_effID.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            lb_effID.Size = new System.Drawing.Size(52, 15);
+            lb_effID.TabIndex = 2;
+            lb_effID.Text = "Quest ID";
+            lb_effID.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // textBox1
             // 
-            this.textBox1.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox1.Location = new System.Drawing.Point(362, 19);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(126, 20);
-            this.textBox1.TabIndex = 5;
-            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
+            textBox1.BackColor = System.Drawing.Color.DarkOrange;
+            textBox1.Location = new System.Drawing.Point(422, 22);
+            textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox1.Name = "textBox1";
+            textBox1.ShortcutsEnabled = false;
+            textBox1.Size = new System.Drawing.Size(146, 23);
+            textBox1.TabIndex = 5;
+            textBox1.Leave += textBox1_TextChanged;
+            textBox1.MouseDown += textBox1_MouseDown;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(275, 22);
-            this.label1.Name = "label1";
-            this.label1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label1.Size = new System.Drawing.Size(81, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Parent quest ID";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(321, 25);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            label1.Size = new System.Drawing.Size(87, 15);
+            label1.TabIndex = 4;
+            label1.Text = "Parent quest ID";
+            label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // checkBox1
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(105, 45);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(15, 14);
-            this.checkBox1.TabIndex = 6;
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            checkBox1.AutoSize = true;
+            checkBox1.Location = new System.Drawing.Point(122, 52);
+            checkBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new System.Drawing.Size(15, 14);
+            checkBox1.TabIndex = 6;
+            checkBox1.UseVisualStyleBackColor = true;
+            checkBox1.CheckedChanged += checkBox1_CheckedChanged;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(24, 45);
-            this.label2.Name = "label2";
-            this.label2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label2.Size = new System.Drawing.Size(75, 13);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Is main quest?";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(28, 52);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            label2.Size = new System.Drawing.Size(82, 15);
+            label2.TabIndex = 7;
+            label2.Text = "Is main quest?";
+            label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // textBox2
             // 
-            this.textBox2.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox2.Location = new System.Drawing.Point(105, 65);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(126, 20);
-            this.textBox2.TabIndex = 9;
-            this.textBox2.Leave += new System.EventHandler(this.textBox2_TextChanged);
+            textBox2.BackColor = System.Drawing.Color.DarkOrange;
+            textBox2.Location = new System.Drawing.Point(122, 75);
+            textBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox2.Name = "textBox2";
+            textBox2.ShortcutsEnabled = false;
+            textBox2.Size = new System.Drawing.Size(146, 23);
+            textBox2.TabIndex = 9;
+            textBox2.Leave += textBox2_TextChanged;
+            textBox2.MouseDown += textBox2_MouseDown;
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(21, 68);
-            this.label3.Name = "label3";
-            this.label3.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label3.Size = new System.Drawing.Size(78, 13);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Quest name ID";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(24, 78);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            label3.Size = new System.Drawing.Size(85, 15);
+            label3.TabIndex = 8;
+            label3.Text = "Quest name ID";
+            label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // textBox3
             // 
-            this.textBox3.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox3.Location = new System.Drawing.Point(362, 65);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(126, 20);
-            this.textBox3.TabIndex = 11;
-            this.textBox3.Leave += new System.EventHandler(this.textBox3_TextChanged);
+            textBox3.BackColor = System.Drawing.Color.DarkOrange;
+            textBox3.Location = new System.Drawing.Point(422, 75);
+            textBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox3.Name = "textBox3";
+            textBox3.ShortcutsEnabled = false;
+            textBox3.Size = new System.Drawing.Size(146, 23);
+            textBox3.TabIndex = 11;
+            textBox3.Leave += textBox3_TextChanged;
+            textBox3.MouseDown += textBox3_MouseDown;
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(262, 68);
-            this.label4.Name = "label4";
-            this.label4.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label4.Size = new System.Drawing.Size(94, 13);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "Description text ID";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(306, 78);
+            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            label4.Size = new System.Drawing.Size(104, 15);
+            label4.TabIndex = 10;
+            label4.Text = "Description text ID";
+            label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(105, 91);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(126, 20);
-            this.textBox4.TabIndex = 13;
-            this.textBox4.Leave += new System.EventHandler(this.textBox4_TextChanged);
+            textBox4.Location = new System.Drawing.Point(122, 105);
+            textBox4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox4.Name = "textBox4";
+            textBox4.Size = new System.Drawing.Size(146, 23);
+            textBox4.TabIndex = 13;
+            textBox4.Leave += textBox4_TextChanged;
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(9, 94);
-            this.label5.Name = "label5";
-            this.label5.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label5.Size = new System.Drawing.Size(90, 13);
-            this.label5.TabIndex = 12;
-            this.label5.Text = "Quest order index";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(10, 108);
+            label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label5.Name = "label5";
+            label5.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            label5.Size = new System.Drawing.Size(101, 15);
+            label5.TabIndex = 12;
+            label5.Text = "Quest order index";
+            label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // Control43
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.tb_effID);
-            this.Controls.Add(this.lb_effID);
-            this.Name = "Control43";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(textBox4);
+            Controls.Add(label5);
+            Controls.Add(textBox3);
+            Controls.Add(label4);
+            Controls.Add(textBox2);
+            Controls.Add(label3);
+            Controls.Add(label2);
+            Controls.Add(checkBox1);
+            Controls.Add(textBox1);
+            Controls.Add(label1);
+            Controls.Add(tb_effID);
+            Controls.Add(lb_effID);
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Name = "Control43";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

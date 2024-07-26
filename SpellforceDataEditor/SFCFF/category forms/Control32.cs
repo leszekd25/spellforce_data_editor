@@ -2,20 +2,21 @@
 using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control32 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
         Category2044 c2044;
-     
+
         public Control32()
         {
             InitializeComponent();
 
             c2044 = SFCategoryManager.gamedata.c2044;
             category = c2044;
-            
+
             column_dict.Add("Resource ID", new int[1] { 0 });
             column_dict.Add("Text ID", new int[1] { 1 });
         }
@@ -40,6 +41,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override string get_element_string(int index)
         {
             return $"{c2044[index].ResourceID} {SFCategoryManager.GetTextByLanguage(c2044[index].TextID, 1)}";
+        }
+
+        private void textBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, textBox2.Text);
         }
     }
 }

@@ -51,7 +51,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             ListEffects.Items.Clear();
 
-            for(int i = 0; i < c2014.GetItemSubItemNum(current_element); i++)
+            for (int i = 0; i < c2014.GetItemSubItemNum(current_element); i++)
             {
                 ListEffects.Items.Add("");
                 set_list_text(i);
@@ -155,6 +155,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 textBox3.Text = c2014[current_element, subelem_index].EffectID.ToString();
             }
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2003, textBox1.Text);
+        }
+
+        private void textBox3_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2002, textBox3.Text);
         }
     }
 }

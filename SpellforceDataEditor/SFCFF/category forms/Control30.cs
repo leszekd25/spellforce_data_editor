@@ -80,7 +80,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             if (cell.ColumnIndex == 0)
             {
                 UInt16 item_id = SFEngine.Utility.TryParseUInt16(cell.Value.ToString());
-                if(!SFCategoryManager.gamedata.c2003.GetItemIndex(item_id, out int item_index))
+                if (!SFCategoryManager.gamedata.c2003.GetItemIndex(item_id, out int item_index))
                 {
                     cell.Value = c2042[current_element, i].ItemID;
                 }
@@ -95,7 +95,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                         c2042.SetField(current_element, i, "ItemID", item_id);
                     }
                 }
-                
+
             }
             else if (cell.ColumnIndex == 1)
             {
@@ -184,6 +184,35 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             MerchantGrid.Rows[subelem_index].Cells[0].Value = c2042[current_element, subelem_index].ItemID;
             MerchantGrid.Rows[subelem_index].Cells[1].Value = c2042[current_element, subelem_index].Stock;
             MerchantGrid.Rows[subelem_index].Cells[2].Value = SFCategoryManager.GetItemName(c2042[current_element, subelem_index].ItemID);
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2041, textBox1.Text);
+        }
+
+        private void textBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2003, textBox2.Text);
+        }
+
+        private void MerchantGrid_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                int CurrentColumnMouseOver = MerchantGrid.HitTest(e.X, e.Y).ColumnIndex;
+                if (CurrentColumnMouseOver != 0)
+                {
+                    return;
+                }
+
+                int CurrentRowMouseOver = MerchantGrid.HitTest(e.X, e.Y).RowIndex;
+
+                DataGridViewCell cell = MerchantGrid[CurrentColumnMouseOver, CurrentRowMouseOver];
+                int item_id = SFEngine.Utility.TryParseInt32(cell.Value.ToString());
+
+                trace(2003, item_id);
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -52,6 +53,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override string get_description_string(int index)
         {
             return $"Text ID: {SFCategoryManager.GetTextByLanguage(c2059[index].TextID, 1)}";
+        }
+
+        private void tb_sd4_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, tb_sd4.Text);
+        }
+
+        private void sb_sd5_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, sb_sd5.Text);
         }
     }
 }

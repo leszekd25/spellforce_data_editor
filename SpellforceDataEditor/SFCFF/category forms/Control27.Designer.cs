@@ -28,94 +28,104 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.ListSkills = new System.Windows.Forms.ListBox();
-            this.SuspendLayout();
+            textBox1 = new System.Windows.Forms.TextBox();
+            label1 = new System.Windows.Forms.Label();
+            textBox3 = new System.Windows.Forms.TextBox();
+            label2 = new System.Windows.Forms.Label();
+            button2 = new System.Windows.Forms.Button();
+            button1 = new System.Windows.Forms.Button();
+            ListSkills = new System.Windows.Forms.ListBox();
+            SuspendLayout();
             // 
             // textBox1
             // 
-            this.textBox1.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox1.Location = new System.Drawing.Point(109, 181);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(126, 20);
-            this.textBox1.TabIndex = 0;
-            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
+            textBox1.BackColor = System.Drawing.Color.DarkOrange;
+            textBox1.Location = new System.Drawing.Point(127, 209);
+            textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox1.Name = "textBox1";
+            textBox1.ShortcutsEnabled = false;
+            textBox1.Size = new System.Drawing.Size(146, 23);
+            textBox1.TabIndex = 0;
+            textBox1.Leave += textBox1_TextChanged;
+            textBox1.MouseDown += textBox1_MouseDown;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(63, 18);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(40, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Skill ID";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(74, 21);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(42, 15);
+            label1.TabIndex = 4;
+            label1.Text = "Skill ID";
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(109, 15);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(57, 20);
-            this.textBox3.TabIndex = 6;
-            this.textBox3.Leave += new System.EventHandler(this.textBox3_TextChanged);
+            textBox3.Location = new System.Drawing.Point(127, 17);
+            textBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox3.Name = "textBox3";
+            textBox3.Size = new System.Drawing.Size(66, 23);
+            textBox3.TabIndex = 6;
+            textBox3.Leave += textBox3_TextChanged;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(61, 184);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(42, 13);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Text ID";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(71, 212);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(42, 15);
+            label2.TabIndex = 7;
+            label2.Text = "Text ID";
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(384, 70);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 51;
-            this.button2.Text = "Remove last";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            button2.Location = new System.Drawing.Point(448, 81);
+            button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button2.Name = "button2";
+            button2.Size = new System.Drawing.Size(88, 27);
+            button2.TabIndex = 51;
+            button2.Text = "Remove last";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(384, 41);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 50;
-            this.button1.Text = "Add next";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            button1.Location = new System.Drawing.Point(448, 47);
+            button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button1.Name = "button1";
+            button1.Size = new System.Drawing.Size(88, 27);
+            button1.TabIndex = 50;
+            button1.Text = "Add next";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // ListSkills
             // 
-            this.ListSkills.FormattingEnabled = true;
-            this.ListSkills.Location = new System.Drawing.Point(109, 41);
-            this.ListSkills.Name = "ListSkills";
-            this.ListSkills.Size = new System.Drawing.Size(269, 134);
-            this.ListSkills.TabIndex = 49;
-            this.ListSkills.SelectedIndexChanged += new System.EventHandler(this.ListSkills_SelectedIndexChanged);
+            ListSkills.FormattingEnabled = true;
+            ListSkills.ItemHeight = 15;
+            ListSkills.Location = new System.Drawing.Point(127, 47);
+            ListSkills.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ListSkills.Name = "ListSkills";
+            ListSkills.Size = new System.Drawing.Size(313, 154);
+            ListSkills.TabIndex = 49;
+            ListSkills.SelectedIndexChanged += ListSkills_SelectedIndexChanged;
             // 
             // Control27
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.ListSkills);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox1);
-            this.Name = "Control27";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(button2);
+            Controls.Add(button1);
+            Controls.Add(ListSkills);
+            Controls.Add(label2);
+            Controls.Add(textBox3);
+            Controls.Add(label1);
+            Controls.Add(textBox1);
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Name = "Control27";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

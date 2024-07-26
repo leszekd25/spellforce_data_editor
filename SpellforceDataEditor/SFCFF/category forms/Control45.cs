@@ -2,6 +2,7 @@
 using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -40,6 +41,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override string get_element_string(int index)
         {
             return $"{c2064[index].WeaponMaterialID} {SFCategoryManager.GetTextByLanguage(c2064[index].NameID, 1)}";
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, textBox1.Text);
         }
     }
 }

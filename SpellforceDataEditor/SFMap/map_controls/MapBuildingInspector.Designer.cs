@@ -28,285 +28,312 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.LabelBuildingName = new System.Windows.Forms.Label();
-            this.BuildingID = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.NPCID = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.PosX = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.Level = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.RaceID = new System.Windows.Forms.TextBox();
-            this.PosY = new System.Windows.Forms.TextBox();
-            this.Angle = new System.Windows.Forms.TextBox();
-            this.AngleTrackbar = new System.Windows.Forms.TrackBar();
-            this.PanelBuildingList = new System.Windows.Forms.Panel();
-            this.SearchBuildingPrevious = new System.Windows.Forms.Button();
-            this.SearchBuildingNext = new System.Windows.Forms.Button();
-            this.SearchBuildingText = new System.Windows.Forms.TextBox();
-            this.ListBuildings = new System.Windows.Forms.ListBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.ButtonResizeList = new System.Windows.Forms.Button();
-            this.PanelProperties = new System.Windows.Forms.Panel();
-            this.NPCScript = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.AngleTrackbar)).BeginInit();
-            this.PanelBuildingList.SuspendLayout();
-            this.PanelProperties.SuspendLayout();
-            this.SuspendLayout();
+            LabelBuildingName = new System.Windows.Forms.Label();
+            BuildingID = new System.Windows.Forms.TextBox();
+            label2 = new System.Windows.Forms.Label();
+            label3 = new System.Windows.Forms.Label();
+            NPCID = new System.Windows.Forms.TextBox();
+            label4 = new System.Windows.Forms.Label();
+            PosX = new System.Windows.Forms.TextBox();
+            label5 = new System.Windows.Forms.Label();
+            label6 = new System.Windows.Forms.Label();
+            Level = new System.Windows.Forms.TextBox();
+            label7 = new System.Windows.Forms.Label();
+            RaceID = new System.Windows.Forms.TextBox();
+            PosY = new System.Windows.Forms.TextBox();
+            Angle = new System.Windows.Forms.TextBox();
+            AngleTrackbar = new System.Windows.Forms.TrackBar();
+            PanelBuildingList = new System.Windows.Forms.Panel();
+            SearchBuildingPrevious = new System.Windows.Forms.Button();
+            SearchBuildingNext = new System.Windows.Forms.Button();
+            SearchBuildingText = new System.Windows.Forms.TextBox();
+            ListBuildings = new System.Windows.Forms.ListBox();
+            label1 = new System.Windows.Forms.Label();
+            ButtonResizeList = new System.Windows.Forms.Button();
+            PanelProperties = new System.Windows.Forms.Panel();
+            NPCScript = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)AngleTrackbar).BeginInit();
+            PanelBuildingList.SuspendLayout();
+            PanelProperties.SuspendLayout();
+            SuspendLayout();
             // 
             // LabelBuildingName
             // 
-            this.LabelBuildingName.AutoSize = true;
-            this.LabelBuildingName.Location = new System.Drawing.Point(95, 4);
-            this.LabelBuildingName.Name = "LabelBuildingName";
-            this.LabelBuildingName.Size = new System.Drawing.Size(0, 13);
-            this.LabelBuildingName.TabIndex = 0;
+            LabelBuildingName.AutoSize = true;
+            LabelBuildingName.Location = new System.Drawing.Point(111, 5);
+            LabelBuildingName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            LabelBuildingName.Name = "LabelBuildingName";
+            LabelBuildingName.Size = new System.Drawing.Size(0, 15);
+            LabelBuildingName.TabIndex = 0;
             // 
             // BuildingID
             // 
-            this.BuildingID.BackColor = System.Drawing.Color.DarkOrange;
-            this.BuildingID.Location = new System.Drawing.Point(98, 20);
-            this.BuildingID.Name = "BuildingID";
-            this.BuildingID.Size = new System.Drawing.Size(100, 20);
-            this.BuildingID.TabIndex = 1;
-            this.BuildingID.Validated += new System.EventHandler(this.BuildingID_Validated);
+            BuildingID.BackColor = System.Drawing.Color.DarkOrange;
+            BuildingID.Location = new System.Drawing.Point(114, 23);
+            BuildingID.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            BuildingID.Name = "BuildingID";
+            BuildingID.ShortcutsEnabled = false;
+            BuildingID.Size = new System.Drawing.Size(116, 23);
+            BuildingID.TabIndex = 1;
+            BuildingID.MouseDown += BuildingID_MouseDown;
+            BuildingID.Validated += BuildingID_Validated;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 23);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(58, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Building ID";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(4, 27);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(65, 15);
+            label2.TabIndex = 2;
+            label2.Text = "Building ID";
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 49);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(43, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "NPC ID";
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(4, 57);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(45, 15);
+            label3.TabIndex = 4;
+            label3.Text = "NPC ID";
             // 
             // NPCID
             // 
-            this.NPCID.Location = new System.Drawing.Point(98, 46);
-            this.NPCID.Name = "NPCID";
-            this.NPCID.Size = new System.Drawing.Size(100, 20);
-            this.NPCID.TabIndex = 3;
-            this.NPCID.Validated += new System.EventHandler(this.NPCID_Validated);
+            NPCID.Location = new System.Drawing.Point(114, 53);
+            NPCID.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            NPCID.Name = "NPCID";
+            NPCID.Size = new System.Drawing.Size(116, 23);
+            NPCID.TabIndex = 3;
+            NPCID.Validated += NPCID_Validated;
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 75);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(44, 13);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "Position";
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(4, 87);
+            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(50, 15);
+            label4.TabIndex = 6;
+            label4.Text = "Position";
             // 
             // PosX
             // 
-            this.PosX.Enabled = false;
-            this.PosX.Location = new System.Drawing.Point(98, 72);
-            this.PosX.Name = "PosX";
-            this.PosX.Size = new System.Drawing.Size(46, 20);
-            this.PosX.TabIndex = 5;
+            PosX.Enabled = false;
+            PosX.Location = new System.Drawing.Point(114, 83);
+            PosX.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PosX.Name = "PosX";
+            PosX.Size = new System.Drawing.Size(53, 23);
+            PosX.TabIndex = 5;
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 101);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(34, 13);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "Angle";
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(4, 117);
+            label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(38, 15);
+            label5.TabIndex = 8;
+            label5.Text = "Angle";
             // 
             // label6
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 127);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(33, 13);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "Level";
+            label6.AutoSize = true;
+            label6.Location = new System.Drawing.Point(4, 147);
+            label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(34, 15);
+            label6.TabIndex = 10;
+            label6.Text = "Level";
             // 
             // Level
             // 
-            this.Level.Location = new System.Drawing.Point(98, 124);
-            this.Level.Name = "Level";
-            this.Level.Size = new System.Drawing.Size(100, 20);
-            this.Level.TabIndex = 9;
-            this.Level.Validated += new System.EventHandler(this.Level_Validated);
+            Level.Location = new System.Drawing.Point(114, 143);
+            Level.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Level.Name = "Level";
+            Level.Size = new System.Drawing.Size(116, 23);
+            Level.TabIndex = 9;
+            Level.Validated += Level_Validated;
             // 
             // label7
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 153);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(47, 13);
-            this.label7.TabIndex = 12;
-            this.label7.Text = "Race ID";
+            label7.AutoSize = true;
+            label7.Location = new System.Drawing.Point(4, 177);
+            label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label7.Name = "label7";
+            label7.Size = new System.Drawing.Size(46, 15);
+            label7.TabIndex = 12;
+            label7.Text = "Race ID";
             // 
             // RaceID
             // 
-            this.RaceID.Location = new System.Drawing.Point(98, 150);
-            this.RaceID.Name = "RaceID";
-            this.RaceID.Size = new System.Drawing.Size(100, 20);
-            this.RaceID.TabIndex = 11;
-            this.RaceID.Validated += new System.EventHandler(this.RaceID_Validated);
+            RaceID.Location = new System.Drawing.Point(114, 173);
+            RaceID.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RaceID.Name = "RaceID";
+            RaceID.Size = new System.Drawing.Size(116, 23);
+            RaceID.TabIndex = 11;
+            RaceID.Validated += RaceID_Validated;
             // 
             // PosY
             // 
-            this.PosY.Enabled = false;
-            this.PosY.Location = new System.Drawing.Point(152, 72);
-            this.PosY.Name = "PosY";
-            this.PosY.Size = new System.Drawing.Size(46, 20);
-            this.PosY.TabIndex = 15;
+            PosY.Enabled = false;
+            PosY.Location = new System.Drawing.Point(177, 83);
+            PosY.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PosY.Name = "PosY";
+            PosY.Size = new System.Drawing.Size(53, 23);
+            PosY.TabIndex = 15;
             // 
             // Angle
             // 
-            this.Angle.Location = new System.Drawing.Point(207, 98);
-            this.Angle.Name = "Angle";
-            this.Angle.Size = new System.Drawing.Size(46, 20);
-            this.Angle.TabIndex = 16;
-            this.Angle.Validated += new System.EventHandler(this.Angle_Validated);
+            Angle.Location = new System.Drawing.Point(241, 113);
+            Angle.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Angle.Name = "Angle";
+            Angle.Size = new System.Drawing.Size(53, 23);
+            Angle.TabIndex = 16;
+            Angle.Validated += Angle_Validated;
             // 
             // AngleTrackbar
             // 
-            this.AngleTrackbar.AutoSize = false;
-            this.AngleTrackbar.Location = new System.Drawing.Point(98, 98);
-            this.AngleTrackbar.Maximum = 359;
-            this.AngleTrackbar.Name = "AngleTrackbar";
-            this.AngleTrackbar.Size = new System.Drawing.Size(100, 20);
-            this.AngleTrackbar.TabIndex = 17;
-            this.AngleTrackbar.TickFrequency = 30;
-            this.AngleTrackbar.ValueChanged += new System.EventHandler(this.AngleTrackbar_ValueChanged);
-            this.AngleTrackbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AngleTrackbar_MouseDown);
-            this.AngleTrackbar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AngleTrackbar_MouseUp);
+            AngleTrackbar.AutoSize = false;
+            AngleTrackbar.Location = new System.Drawing.Point(114, 113);
+            AngleTrackbar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            AngleTrackbar.Maximum = 359;
+            AngleTrackbar.Name = "AngleTrackbar";
+            AngleTrackbar.Size = new System.Drawing.Size(117, 23);
+            AngleTrackbar.TabIndex = 17;
+            AngleTrackbar.TickFrequency = 30;
+            AngleTrackbar.ValueChanged += AngleTrackbar_ValueChanged;
+            AngleTrackbar.MouseDown += AngleTrackbar_MouseDown;
+            AngleTrackbar.MouseUp += AngleTrackbar_MouseUp;
             // 
             // PanelBuildingList
             // 
-            this.PanelBuildingList.Controls.Add(this.SearchBuildingPrevious);
-            this.PanelBuildingList.Controls.Add(this.SearchBuildingNext);
-            this.PanelBuildingList.Controls.Add(this.SearchBuildingText);
-            this.PanelBuildingList.Controls.Add(this.ListBuildings);
-            this.PanelBuildingList.Controls.Add(this.label1);
-            this.PanelBuildingList.Controls.Add(this.ButtonResizeList);
-            this.PanelBuildingList.Location = new System.Drawing.Point(3, 203);
-            this.PanelBuildingList.Name = "PanelBuildingList";
-            this.PanelBuildingList.Size = new System.Drawing.Size(290, 214);
-            this.PanelBuildingList.TabIndex = 18;
+            PanelBuildingList.Controls.Add(SearchBuildingPrevious);
+            PanelBuildingList.Controls.Add(SearchBuildingNext);
+            PanelBuildingList.Controls.Add(SearchBuildingText);
+            PanelBuildingList.Controls.Add(ListBuildings);
+            PanelBuildingList.Controls.Add(label1);
+            PanelBuildingList.Controls.Add(ButtonResizeList);
+            PanelBuildingList.Location = new System.Drawing.Point(4, 234);
+            PanelBuildingList.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelBuildingList.Name = "PanelBuildingList";
+            PanelBuildingList.Size = new System.Drawing.Size(338, 247);
+            PanelBuildingList.TabIndex = 18;
             // 
             // SearchBuildingPrevious
             // 
-            this.SearchBuildingPrevious.Location = new System.Drawing.Point(153, 187);
-            this.SearchBuildingPrevious.Name = "SearchBuildingPrevious";
-            this.SearchBuildingPrevious.Size = new System.Drawing.Size(134, 23);
-            this.SearchBuildingPrevious.TabIndex = 23;
-            this.SearchBuildingPrevious.Text = "Find previous";
-            this.SearchBuildingPrevious.UseVisualStyleBackColor = true;
-            this.SearchBuildingPrevious.Click += new System.EventHandler(this.SearchBuildingPrevious_Click);
+            SearchBuildingPrevious.Location = new System.Drawing.Point(178, 216);
+            SearchBuildingPrevious.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            SearchBuildingPrevious.Name = "SearchBuildingPrevious";
+            SearchBuildingPrevious.Size = new System.Drawing.Size(156, 27);
+            SearchBuildingPrevious.TabIndex = 23;
+            SearchBuildingPrevious.Text = "Find previous";
+            SearchBuildingPrevious.UseVisualStyleBackColor = true;
+            SearchBuildingPrevious.Click += SearchBuildingPrevious_Click;
             // 
             // SearchBuildingNext
             // 
-            this.SearchBuildingNext.Location = new System.Drawing.Point(4, 187);
-            this.SearchBuildingNext.Name = "SearchBuildingNext";
-            this.SearchBuildingNext.Size = new System.Drawing.Size(141, 23);
-            this.SearchBuildingNext.TabIndex = 22;
-            this.SearchBuildingNext.Text = "Find next";
-            this.SearchBuildingNext.UseVisualStyleBackColor = true;
-            this.SearchBuildingNext.Click += new System.EventHandler(this.SearchBuildingNext_Click);
+            SearchBuildingNext.Location = new System.Drawing.Point(5, 216);
+            SearchBuildingNext.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            SearchBuildingNext.Name = "SearchBuildingNext";
+            SearchBuildingNext.Size = new System.Drawing.Size(164, 27);
+            SearchBuildingNext.TabIndex = 22;
+            SearchBuildingNext.Text = "Find next";
+            SearchBuildingNext.UseVisualStyleBackColor = true;
+            SearchBuildingNext.Click += SearchBuildingNext_Click;
             // 
             // SearchBuildingText
             // 
-            this.SearchBuildingText.Location = new System.Drawing.Point(4, 161);
-            this.SearchBuildingText.Name = "SearchBuildingText";
-            this.SearchBuildingText.Size = new System.Drawing.Size(283, 20);
-            this.SearchBuildingText.TabIndex = 21;
+            SearchBuildingText.Location = new System.Drawing.Point(5, 186);
+            SearchBuildingText.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            SearchBuildingText.Name = "SearchBuildingText";
+            SearchBuildingText.Size = new System.Drawing.Size(330, 23);
+            SearchBuildingText.TabIndex = 21;
             // 
             // ListBuildings
             // 
-            this.ListBuildings.FormattingEnabled = true;
-            this.ListBuildings.Location = new System.Drawing.Point(4, 32);
-            this.ListBuildings.Name = "ListBuildings";
-            this.ListBuildings.Size = new System.Drawing.Size(283, 121);
-            this.ListBuildings.TabIndex = 20;
-            this.ListBuildings.SelectedIndexChanged += new System.EventHandler(this.ListBuildings_SelectedIndexChanged);
+            ListBuildings.FormattingEnabled = true;
+            ListBuildings.ItemHeight = 15;
+            ListBuildings.Location = new System.Drawing.Point(5, 37);
+            ListBuildings.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ListBuildings.Name = "ListBuildings";
+            ListBuildings.Size = new System.Drawing.Size(330, 139);
+            ListBuildings.TabIndex = 20;
+            ListBuildings.SelectedIndexChanged += ListBuildings_SelectedIndexChanged;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(79, 13);
-            this.label1.TabIndex = 19;
-            this.label1.Text = "List of buildings";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(7, 10);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(91, 15);
+            label1.TabIndex = 19;
+            label1.Text = "List of buildings";
             // 
             // ButtonResizeList
             // 
-            this.ButtonResizeList.Location = new System.Drawing.Point(265, 4);
-            this.ButtonResizeList.Name = "ButtonResizeList";
-            this.ButtonResizeList.Size = new System.Drawing.Size(22, 22);
-            this.ButtonResizeList.TabIndex = 0;
-            this.ButtonResizeList.Text = "-";
-            this.ButtonResizeList.UseVisualStyleBackColor = true;
-            this.ButtonResizeList.Click += new System.EventHandler(this.ButtonResizeList_Click);
+            ButtonResizeList.Location = new System.Drawing.Point(309, 5);
+            ButtonResizeList.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonResizeList.Name = "ButtonResizeList";
+            ButtonResizeList.Size = new System.Drawing.Size(26, 25);
+            ButtonResizeList.TabIndex = 0;
+            ButtonResizeList.Text = "-";
+            ButtonResizeList.UseVisualStyleBackColor = true;
+            ButtonResizeList.Click += ButtonResizeList_Click;
             // 
             // PanelProperties
             // 
-            this.PanelProperties.Controls.Add(this.NPCScript);
-            this.PanelProperties.Controls.Add(this.label2);
-            this.PanelProperties.Controls.Add(this.LabelBuildingName);
-            this.PanelProperties.Controls.Add(this.AngleTrackbar);
-            this.PanelProperties.Controls.Add(this.BuildingID);
-            this.PanelProperties.Controls.Add(this.Angle);
-            this.PanelProperties.Controls.Add(this.NPCID);
-            this.PanelProperties.Controls.Add(this.PosY);
-            this.PanelProperties.Controls.Add(this.label3);
-            this.PanelProperties.Controls.Add(this.PosX);
-            this.PanelProperties.Controls.Add(this.label4);
-            this.PanelProperties.Controls.Add(this.label7);
-            this.PanelProperties.Controls.Add(this.label5);
-            this.PanelProperties.Controls.Add(this.RaceID);
-            this.PanelProperties.Controls.Add(this.Level);
-            this.PanelProperties.Controls.Add(this.label6);
-            this.PanelProperties.Enabled = false;
-            this.PanelProperties.Location = new System.Drawing.Point(3, 0);
-            this.PanelProperties.Name = "PanelProperties";
-            this.PanelProperties.Size = new System.Drawing.Size(290, 201);
-            this.PanelProperties.TabIndex = 19;
+            PanelProperties.Controls.Add(NPCScript);
+            PanelProperties.Controls.Add(label2);
+            PanelProperties.Controls.Add(LabelBuildingName);
+            PanelProperties.Controls.Add(AngleTrackbar);
+            PanelProperties.Controls.Add(BuildingID);
+            PanelProperties.Controls.Add(Angle);
+            PanelProperties.Controls.Add(NPCID);
+            PanelProperties.Controls.Add(PosY);
+            PanelProperties.Controls.Add(label3);
+            PanelProperties.Controls.Add(PosX);
+            PanelProperties.Controls.Add(label4);
+            PanelProperties.Controls.Add(label7);
+            PanelProperties.Controls.Add(label5);
+            PanelProperties.Controls.Add(RaceID);
+            PanelProperties.Controls.Add(Level);
+            PanelProperties.Controls.Add(label6);
+            PanelProperties.Enabled = false;
+            PanelProperties.Location = new System.Drawing.Point(4, 0);
+            PanelProperties.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelProperties.Name = "PanelProperties";
+            PanelProperties.Size = new System.Drawing.Size(338, 232);
+            PanelProperties.TabIndex = 19;
             // 
             // NPCScript
             // 
-            this.NPCScript.Location = new System.Drawing.Point(204, 44);
-            this.NPCScript.Name = "NPCScript";
-            this.NPCScript.Size = new System.Drawing.Size(83, 23);
-            this.NPCScript.TabIndex = 19;
-            this.NPCScript.Text = "Open script";
-            this.NPCScript.UseVisualStyleBackColor = true;
-            this.NPCScript.Click += new System.EventHandler(this.NPCScript_Click);
+            NPCScript.Location = new System.Drawing.Point(238, 51);
+            NPCScript.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            NPCScript.Name = "NPCScript";
+            NPCScript.Size = new System.Drawing.Size(97, 27);
+            NPCScript.TabIndex = 19;
+            NPCScript.Text = "Open script";
+            NPCScript.UseVisualStyleBackColor = true;
+            NPCScript.Click += NPCScript_Click;
             // 
             // MapBuildingInspector
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.Controls.Add(this.PanelProperties);
-            this.Controls.Add(this.PanelBuildingList);
-            this.Name = "MapBuildingInspector";
-            this.Size = new System.Drawing.Size(296, 420);
-            this.Load += new System.EventHandler(this.MapBuildingInspector_Load);
-            this.Resize += new System.EventHandler(this.MapBuildingInspector_Resize);
-            ((System.ComponentModel.ISupportInitialize)(this.AngleTrackbar)).EndInit();
-            this.PanelBuildingList.ResumeLayout(false);
-            this.PanelBuildingList.PerformLayout();
-            this.PanelProperties.ResumeLayout(false);
-            this.PanelProperties.PerformLayout();
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            Controls.Add(PanelProperties);
+            Controls.Add(PanelBuildingList);
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Name = "MapBuildingInspector";
+            Size = new System.Drawing.Size(345, 485);
+            Load += MapBuildingInspector_Load;
+            Resize += MapBuildingInspector_Resize;
+            ((System.ComponentModel.ISupportInitialize)AngleTrackbar).EndInit();
+            PanelBuildingList.ResumeLayout(false);
+            PanelBuildingList.PerformLayout();
+            PanelProperties.ResumeLayout(false);
+            PanelProperties.PerformLayout();
+            ResumeLayout(false);
         }
 
         #endregion

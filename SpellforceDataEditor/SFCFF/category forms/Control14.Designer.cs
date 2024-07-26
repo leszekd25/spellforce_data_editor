@@ -28,60 +28,68 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.SuspendLayout();
+            label2 = new System.Windows.Forms.Label();
+            label1 = new System.Windows.Forms.Label();
+            textBox2 = new System.Windows.Forms.TextBox();
+            textBox1 = new System.Windows.Forms.TextBox();
+            SuspendLayout();
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(50, 48);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(49, 13);
-            this.label2.TabIndex = 24;
-            this.label2.Text = "Effect ID";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(58, 55);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(51, 15);
+            label2.TabIndex = 24;
+            label2.Text = "Effect ID";
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(33, 22);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(66, 13);
-            this.label1.TabIndex = 23;
-            this.label1.Text = "Spell item ID";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(38, 25);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(73, 15);
+            label1.TabIndex = 23;
+            label1.Text = "Spell item ID";
             // 
             // textBox2
             // 
-            this.textBox2.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox2.Location = new System.Drawing.Point(105, 45);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(126, 20);
-            this.textBox2.TabIndex = 22;
-            this.textBox2.Leave += new System.EventHandler(this.textBox2_TextChanged);
+            textBox2.BackColor = System.Drawing.Color.DarkOrange;
+            textBox2.Location = new System.Drawing.Point(122, 52);
+            textBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox2.Name = "textBox2";
+            textBox2.ShortcutsEnabled = false;
+            textBox2.Size = new System.Drawing.Size(146, 23);
+            textBox2.TabIndex = 22;
+            textBox2.Leave += textBox2_TextChanged;
+            textBox2.MouseDown += textBox2_MouseDown;
             // 
             // textBox1
             // 
-            this.textBox1.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox1.Location = new System.Drawing.Point(105, 19);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(126, 20);
-            this.textBox1.TabIndex = 21;
-            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
+            textBox1.BackColor = System.Drawing.Color.DarkOrange;
+            textBox1.Location = new System.Drawing.Point(122, 22);
+            textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox1.Name = "textBox1";
+            textBox1.ShortcutsEnabled = false;
+            textBox1.Size = new System.Drawing.Size(146, 23);
+            textBox1.TabIndex = 21;
+            textBox1.Leave += textBox1_TextChanged;
+            textBox1.MouseDown += textBox1_MouseDown;
             // 
             // Control14
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
-            this.Name = "Control14";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(textBox2);
+            Controls.Add(textBox1);
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Name = "Control14";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

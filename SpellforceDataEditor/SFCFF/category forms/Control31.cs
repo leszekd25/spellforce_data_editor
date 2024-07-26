@@ -147,7 +147,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            if(ListItemTypes.SelectedIndex == Utility.NO_INDEX)
+            if (ListItemTypes.SelectedIndex == Utility.NO_INDEX)
             {
                 return;
             }
@@ -203,6 +203,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override void on_update_subelement(int subelem_index)
         {
             RefreshListItemTypes();
+        }
+
+        private void textBox5_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2029, textBox5.Text);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             c2067 = SFCategoryManager.gamedata.c2067;
             category = c2067;
-            
+
             column_dict.Add("Unit stats ID", new int[1] { 0 });
             column_dict.Add("Unit spell index", new int[1] { 1 });
             column_dict.Add("Unit spell ID", new int[1] { 2 });
@@ -51,7 +51,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             ListSpells.Items.Clear();
 
-            for(int i = 0; i < c2067.GetItemSubItemNum(current_element); i++)
+            for (int i = 0; i < c2067.GetItemSubItemNum(current_element); i++)
             {
                 ListSpells.Items.Add(SFCategoryManager.GetEffectName(c2067[current_element, i].SpellID, true));
             }
@@ -93,7 +93,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             byte max_index = 0;
-            for(int i = 0; i < c2067.GetItemSubItemNum(current_element); i++)
+            for (int i = 0; i < c2067.GetItemSubItemNum(current_element); i++)
             {
                 max_index = Math.Max(max_index, c2067[current_element, i].SpellIndex);
             }
@@ -118,7 +118,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             byte cur_spell_index = c2067[current_element, new_index].SpellIndex;
             c2067.RemoveSub(current_element, new_index);
 
-            for(int i = 0; i < c2067.GetItemSubItemNum(current_element); i++)
+            for (int i = 0; i < c2067.GetItemSubItemNum(current_element); i++)
             {
                 if (c2067[current_element, i].SpellIndex > cur_spell_index)
                 {
@@ -130,8 +130,27 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            c2067.GetID(index, out int id);
-            return $"{id} {SFCategoryManager.GetRuneheroName((ushort)id)}";
+            c2067.GetID(index, out int stats_id);
+            if (!SFCategoryManager.gamedata.c2005.GetItemIndex(stats_id, out int stats_index))
+            {
+                return $"{stats_id} {SFEngine.Utility.S_ITEM_MISSING}";
+            }
+            Category2005Item item = SFCategoryManager.gamedata.c2005[stats_index];
+
+            if (SFCategoryManager.hero_cache.GetItemIndex(item.StatsID, out int hero_index))
+            {
+                return $"{item.StatsID} {SFCategoryManager.GetRuneheroName(item.StatsID)} (lvl {item.UnitLevel})";
+            }
+
+            for (int i = 0; i < SFCategoryManager.gamedata.c2024.GetNumOfItems(); i++)
+            {
+                if (SFCategoryManager.gamedata.c2024[i].StatsID == item.StatsID)
+                {
+                    return $"{item.StatsID} {SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2024[i].NameID, 1)} (lvl {item.UnitLevel})";
+                }
+            }
+
+            return $"{item.StatsID} {SFEngine.Utility.S_ITEM_MISSING} (lvl {item.UnitLevel})";
         }
 
         public override void on_add_subelement(int subelem_index)
@@ -153,6 +172,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 textBox3.Text = c2067[current_element, subelem_index].SpellID.ToString();
             }
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2005, textBox1.Text);
+        }
+
+        private void textBox3_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2002, textBox3.Text);
         }
     }
 }

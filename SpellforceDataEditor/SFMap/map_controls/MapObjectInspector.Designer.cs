@@ -28,264 +28,289 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.LabelObjectName = new System.Windows.Forms.Label();
-            this.ObjectID = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.NPCID = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.PosX = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.Unknown1 = new System.Windows.Forms.TextBox();
-            this.PosY = new System.Windows.Forms.TextBox();
-            this.Angle = new System.Windows.Forms.TextBox();
-            this.AngleTrackbar = new System.Windows.Forms.TrackBar();
-            this.PanelObjectList = new System.Windows.Forms.Panel();
-            this.SearchObjectPrevious = new System.Windows.Forms.Button();
-            this.SearchObjectNext = new System.Windows.Forms.Button();
-            this.SearchObjectText = new System.Windows.Forms.TextBox();
-            this.ListObjects = new System.Windows.Forms.ListBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.ButtonResizeList = new System.Windows.Forms.Button();
-            this.PanelProperties = new System.Windows.Forms.Panel();
-            this.NPCScript = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.AngleTrackbar)).BeginInit();
-            this.PanelObjectList.SuspendLayout();
-            this.PanelProperties.SuspendLayout();
-            this.SuspendLayout();
+            LabelObjectName = new System.Windows.Forms.Label();
+            ObjectID = new System.Windows.Forms.TextBox();
+            label2 = new System.Windows.Forms.Label();
+            label3 = new System.Windows.Forms.Label();
+            NPCID = new System.Windows.Forms.TextBox();
+            label4 = new System.Windows.Forms.Label();
+            PosX = new System.Windows.Forms.TextBox();
+            label5 = new System.Windows.Forms.Label();
+            label6 = new System.Windows.Forms.Label();
+            Unknown1 = new System.Windows.Forms.TextBox();
+            PosY = new System.Windows.Forms.TextBox();
+            Angle = new System.Windows.Forms.TextBox();
+            AngleTrackbar = new System.Windows.Forms.TrackBar();
+            PanelObjectList = new System.Windows.Forms.Panel();
+            SearchObjectPrevious = new System.Windows.Forms.Button();
+            SearchObjectNext = new System.Windows.Forms.Button();
+            SearchObjectText = new System.Windows.Forms.TextBox();
+            ListObjects = new System.Windows.Forms.ListBox();
+            label1 = new System.Windows.Forms.Label();
+            ButtonResizeList = new System.Windows.Forms.Button();
+            PanelProperties = new System.Windows.Forms.Panel();
+            NPCScript = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)AngleTrackbar).BeginInit();
+            PanelObjectList.SuspendLayout();
+            PanelProperties.SuspendLayout();
+            SuspendLayout();
             // 
             // LabelObjectName
             // 
-            this.LabelObjectName.AutoSize = true;
-            this.LabelObjectName.Location = new System.Drawing.Point(95, 4);
-            this.LabelObjectName.Name = "LabelObjectName";
-            this.LabelObjectName.Size = new System.Drawing.Size(0, 13);
-            this.LabelObjectName.TabIndex = 0;
+            LabelObjectName.AutoSize = true;
+            LabelObjectName.Location = new System.Drawing.Point(111, 5);
+            LabelObjectName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            LabelObjectName.Name = "LabelObjectName";
+            LabelObjectName.Size = new System.Drawing.Size(0, 15);
+            LabelObjectName.TabIndex = 0;
             // 
             // ObjectID
             // 
-            this.ObjectID.BackColor = System.Drawing.Color.DarkOrange;
-            this.ObjectID.Location = new System.Drawing.Point(98, 20);
-            this.ObjectID.Name = "ObjectID";
-            this.ObjectID.Size = new System.Drawing.Size(100, 20);
-            this.ObjectID.TabIndex = 1;
-            this.ObjectID.Validated += new System.EventHandler(this.ObjectID_Validated);
+            ObjectID.BackColor = System.Drawing.Color.DarkOrange;
+            ObjectID.Location = new System.Drawing.Point(114, 23);
+            ObjectID.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ObjectID.Name = "ObjectID";
+            ObjectID.ShortcutsEnabled = false;
+            ObjectID.Size = new System.Drawing.Size(116, 23);
+            ObjectID.TabIndex = 1;
+            ObjectID.MouseDown += ObjectID_MouseDown;
+            ObjectID.Validated += ObjectID_Validated;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 23);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(52, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Object ID";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(4, 27);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(56, 15);
+            label2.TabIndex = 2;
+            label2.Text = "Object ID";
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 49);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(43, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "NPC ID";
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(4, 57);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(45, 15);
+            label3.TabIndex = 4;
+            label3.Text = "NPC ID";
             // 
             // NPCID
             // 
-            this.NPCID.Location = new System.Drawing.Point(98, 46);
-            this.NPCID.Name = "NPCID";
-            this.NPCID.Size = new System.Drawing.Size(100, 20);
-            this.NPCID.TabIndex = 3;
-            this.NPCID.Validated += new System.EventHandler(this.NPCID_Validated);
+            NPCID.Location = new System.Drawing.Point(114, 53);
+            NPCID.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            NPCID.Name = "NPCID";
+            NPCID.Size = new System.Drawing.Size(116, 23);
+            NPCID.TabIndex = 3;
+            NPCID.Validated += NPCID_Validated;
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 75);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(44, 13);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "Position";
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(4, 87);
+            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(50, 15);
+            label4.TabIndex = 6;
+            label4.Text = "Position";
             // 
             // PosX
             // 
-            this.PosX.Enabled = false;
-            this.PosX.Location = new System.Drawing.Point(98, 72);
-            this.PosX.Name = "PosX";
-            this.PosX.Size = new System.Drawing.Size(46, 20);
-            this.PosX.TabIndex = 5;
+            PosX.Enabled = false;
+            PosX.Location = new System.Drawing.Point(114, 83);
+            PosX.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PosX.Name = "PosX";
+            PosX.Size = new System.Drawing.Size(53, 23);
+            PosX.TabIndex = 5;
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 101);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(34, 13);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "Angle";
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(4, 117);
+            label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(38, 15);
+            label5.TabIndex = 8;
+            label5.Text = "Angle";
             // 
             // label6
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 127);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(53, 13);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "Unknown";
+            label6.AutoSize = true;
+            label6.Location = new System.Drawing.Point(4, 147);
+            label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(58, 15);
+            label6.TabIndex = 10;
+            label6.Text = "Unknown";
             // 
             // Unknown1
             // 
-            this.Unknown1.Location = new System.Drawing.Point(98, 124);
-            this.Unknown1.Name = "Unknown1";
-            this.Unknown1.Size = new System.Drawing.Size(100, 20);
-            this.Unknown1.TabIndex = 9;
-            this.Unknown1.Validated += new System.EventHandler(this.Unknown1_Validated);
+            Unknown1.Location = new System.Drawing.Point(114, 143);
+            Unknown1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Unknown1.Name = "Unknown1";
+            Unknown1.Size = new System.Drawing.Size(116, 23);
+            Unknown1.TabIndex = 9;
+            Unknown1.Validated += Unknown1_Validated;
             // 
             // PosY
             // 
-            this.PosY.Enabled = false;
-            this.PosY.Location = new System.Drawing.Point(152, 72);
-            this.PosY.Name = "PosY";
-            this.PosY.Size = new System.Drawing.Size(46, 20);
-            this.PosY.TabIndex = 15;
+            PosY.Enabled = false;
+            PosY.Location = new System.Drawing.Point(177, 83);
+            PosY.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PosY.Name = "PosY";
+            PosY.Size = new System.Drawing.Size(53, 23);
+            PosY.TabIndex = 15;
             // 
             // Angle
             // 
-            this.Angle.Location = new System.Drawing.Point(207, 98);
-            this.Angle.Name = "Angle";
-            this.Angle.Size = new System.Drawing.Size(46, 20);
-            this.Angle.TabIndex = 16;
-            this.Angle.Validated += new System.EventHandler(this.Angle_Validated);
+            Angle.Location = new System.Drawing.Point(241, 113);
+            Angle.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Angle.Name = "Angle";
+            Angle.Size = new System.Drawing.Size(53, 23);
+            Angle.TabIndex = 16;
+            Angle.Validated += Angle_Validated;
             // 
             // AngleTrackbar
             // 
-            this.AngleTrackbar.AutoSize = false;
-            this.AngleTrackbar.Location = new System.Drawing.Point(98, 98);
-            this.AngleTrackbar.Maximum = 359;
-            this.AngleTrackbar.Name = "AngleTrackbar";
-            this.AngleTrackbar.Size = new System.Drawing.Size(100, 20);
-            this.AngleTrackbar.TabIndex = 17;
-            this.AngleTrackbar.TickFrequency = 30;
-            this.AngleTrackbar.ValueChanged += new System.EventHandler(this.AngleTrackbar_ValueChanged);
-            this.AngleTrackbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AngleTrackbar_MouseDown);
-            this.AngleTrackbar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AngleTrackbar_MouseUp);
+            AngleTrackbar.AutoSize = false;
+            AngleTrackbar.Location = new System.Drawing.Point(114, 113);
+            AngleTrackbar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            AngleTrackbar.Maximum = 359;
+            AngleTrackbar.Name = "AngleTrackbar";
+            AngleTrackbar.Size = new System.Drawing.Size(117, 23);
+            AngleTrackbar.TabIndex = 17;
+            AngleTrackbar.TickFrequency = 30;
+            AngleTrackbar.ValueChanged += AngleTrackbar_ValueChanged;
+            AngleTrackbar.MouseDown += AngleTrackbar_MouseDown;
+            AngleTrackbar.MouseUp += AngleTrackbar_MouseUp;
             // 
             // PanelObjectList
             // 
-            this.PanelObjectList.Controls.Add(this.SearchObjectPrevious);
-            this.PanelObjectList.Controls.Add(this.SearchObjectNext);
-            this.PanelObjectList.Controls.Add(this.SearchObjectText);
-            this.PanelObjectList.Controls.Add(this.ListObjects);
-            this.PanelObjectList.Controls.Add(this.label1);
-            this.PanelObjectList.Controls.Add(this.ButtonResizeList);
-            this.PanelObjectList.Location = new System.Drawing.Point(3, 203);
-            this.PanelObjectList.Name = "PanelObjectList";
-            this.PanelObjectList.Size = new System.Drawing.Size(290, 214);
-            this.PanelObjectList.TabIndex = 18;
+            PanelObjectList.Controls.Add(SearchObjectPrevious);
+            PanelObjectList.Controls.Add(SearchObjectNext);
+            PanelObjectList.Controls.Add(SearchObjectText);
+            PanelObjectList.Controls.Add(ListObjects);
+            PanelObjectList.Controls.Add(label1);
+            PanelObjectList.Controls.Add(ButtonResizeList);
+            PanelObjectList.Location = new System.Drawing.Point(4, 234);
+            PanelObjectList.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelObjectList.Name = "PanelObjectList";
+            PanelObjectList.Size = new System.Drawing.Size(338, 247);
+            PanelObjectList.TabIndex = 18;
             // 
             // SearchObjectPrevious
             // 
-            this.SearchObjectPrevious.Location = new System.Drawing.Point(153, 187);
-            this.SearchObjectPrevious.Name = "SearchObjectPrevious";
-            this.SearchObjectPrevious.Size = new System.Drawing.Size(134, 23);
-            this.SearchObjectPrevious.TabIndex = 23;
-            this.SearchObjectPrevious.Text = "Find previous";
-            this.SearchObjectPrevious.UseVisualStyleBackColor = true;
-            this.SearchObjectPrevious.Click += new System.EventHandler(this.SearchObjectPrevious_Click);
+            SearchObjectPrevious.Location = new System.Drawing.Point(178, 216);
+            SearchObjectPrevious.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            SearchObjectPrevious.Name = "SearchObjectPrevious";
+            SearchObjectPrevious.Size = new System.Drawing.Size(156, 27);
+            SearchObjectPrevious.TabIndex = 23;
+            SearchObjectPrevious.Text = "Find previous";
+            SearchObjectPrevious.UseVisualStyleBackColor = true;
+            SearchObjectPrevious.Click += SearchObjectPrevious_Click;
             // 
             // SearchObjectNext
             // 
-            this.SearchObjectNext.Location = new System.Drawing.Point(4, 187);
-            this.SearchObjectNext.Name = "SearchObjectNext";
-            this.SearchObjectNext.Size = new System.Drawing.Size(141, 23);
-            this.SearchObjectNext.TabIndex = 22;
-            this.SearchObjectNext.Text = "Find next";
-            this.SearchObjectNext.UseVisualStyleBackColor = true;
-            this.SearchObjectNext.Click += new System.EventHandler(this.SearchObjectNext_Click);
+            SearchObjectNext.Location = new System.Drawing.Point(5, 216);
+            SearchObjectNext.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            SearchObjectNext.Name = "SearchObjectNext";
+            SearchObjectNext.Size = new System.Drawing.Size(164, 27);
+            SearchObjectNext.TabIndex = 22;
+            SearchObjectNext.Text = "Find next";
+            SearchObjectNext.UseVisualStyleBackColor = true;
+            SearchObjectNext.Click += SearchObjectNext_Click;
             // 
             // SearchObjectText
             // 
-            this.SearchObjectText.Location = new System.Drawing.Point(4, 161);
-            this.SearchObjectText.Name = "SearchObjectText";
-            this.SearchObjectText.Size = new System.Drawing.Size(283, 20);
-            this.SearchObjectText.TabIndex = 21;
+            SearchObjectText.Location = new System.Drawing.Point(5, 186);
+            SearchObjectText.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            SearchObjectText.Name = "SearchObjectText";
+            SearchObjectText.Size = new System.Drawing.Size(330, 23);
+            SearchObjectText.TabIndex = 21;
             // 
             // ListObjects
             // 
-            this.ListObjects.FormattingEnabled = true;
-            this.ListObjects.Location = new System.Drawing.Point(4, 32);
-            this.ListObjects.Name = "ListObjects";
-            this.ListObjects.Size = new System.Drawing.Size(283, 121);
-            this.ListObjects.TabIndex = 20;
-            this.ListObjects.SelectedIndexChanged += new System.EventHandler(this.ListObjects_SelectedIndexChanged);
+            ListObjects.FormattingEnabled = true;
+            ListObjects.ItemHeight = 15;
+            ListObjects.Location = new System.Drawing.Point(5, 37);
+            ListObjects.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ListObjects.Name = "ListObjects";
+            ListObjects.Size = new System.Drawing.Size(330, 139);
+            ListObjects.TabIndex = 20;
+            ListObjects.SelectedIndexChanged += ListObjects_SelectedIndexChanged;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(72, 13);
-            this.label1.TabIndex = 19;
-            this.label1.Text = "List of objects";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(7, 10);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(80, 15);
+            label1.TabIndex = 19;
+            label1.Text = "List of objects";
             // 
             // ButtonResizeList
             // 
-            this.ButtonResizeList.Location = new System.Drawing.Point(265, 4);
-            this.ButtonResizeList.Name = "ButtonResizeList";
-            this.ButtonResizeList.Size = new System.Drawing.Size(22, 22);
-            this.ButtonResizeList.TabIndex = 0;
-            this.ButtonResizeList.Text = "-";
-            this.ButtonResizeList.UseVisualStyleBackColor = true;
-            this.ButtonResizeList.Click += new System.EventHandler(this.ButtonResizeList_Click);
+            ButtonResizeList.Location = new System.Drawing.Point(309, 5);
+            ButtonResizeList.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonResizeList.Name = "ButtonResizeList";
+            ButtonResizeList.Size = new System.Drawing.Size(26, 25);
+            ButtonResizeList.TabIndex = 0;
+            ButtonResizeList.Text = "-";
+            ButtonResizeList.UseVisualStyleBackColor = true;
+            ButtonResizeList.Click += ButtonResizeList_Click;
             // 
             // PanelProperties
             // 
-            this.PanelProperties.Controls.Add(this.NPCScript);
-            this.PanelProperties.Controls.Add(this.label2);
-            this.PanelProperties.Controls.Add(this.LabelObjectName);
-            this.PanelProperties.Controls.Add(this.AngleTrackbar);
-            this.PanelProperties.Controls.Add(this.ObjectID);
-            this.PanelProperties.Controls.Add(this.Angle);
-            this.PanelProperties.Controls.Add(this.NPCID);
-            this.PanelProperties.Controls.Add(this.PosY);
-            this.PanelProperties.Controls.Add(this.label3);
-            this.PanelProperties.Controls.Add(this.PosX);
-            this.PanelProperties.Controls.Add(this.label4);
-            this.PanelProperties.Controls.Add(this.label5);
-            this.PanelProperties.Controls.Add(this.Unknown1);
-            this.PanelProperties.Controls.Add(this.label6);
-            this.PanelProperties.Enabled = false;
-            this.PanelProperties.Location = new System.Drawing.Point(3, 0);
-            this.PanelProperties.Name = "PanelProperties";
-            this.PanelProperties.Size = new System.Drawing.Size(290, 201);
-            this.PanelProperties.TabIndex = 19;
+            PanelProperties.Controls.Add(NPCScript);
+            PanelProperties.Controls.Add(label2);
+            PanelProperties.Controls.Add(LabelObjectName);
+            PanelProperties.Controls.Add(AngleTrackbar);
+            PanelProperties.Controls.Add(ObjectID);
+            PanelProperties.Controls.Add(Angle);
+            PanelProperties.Controls.Add(NPCID);
+            PanelProperties.Controls.Add(PosY);
+            PanelProperties.Controls.Add(label3);
+            PanelProperties.Controls.Add(PosX);
+            PanelProperties.Controls.Add(label4);
+            PanelProperties.Controls.Add(label5);
+            PanelProperties.Controls.Add(Unknown1);
+            PanelProperties.Controls.Add(label6);
+            PanelProperties.Enabled = false;
+            PanelProperties.Location = new System.Drawing.Point(4, 0);
+            PanelProperties.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelProperties.Name = "PanelProperties";
+            PanelProperties.Size = new System.Drawing.Size(338, 232);
+            PanelProperties.TabIndex = 19;
             // 
             // NPCScript
             // 
-            this.NPCScript.Location = new System.Drawing.Point(204, 44);
-            this.NPCScript.Name = "NPCScript";
-            this.NPCScript.Size = new System.Drawing.Size(83, 23);
-            this.NPCScript.TabIndex = 20;
-            this.NPCScript.Text = "Open script";
-            this.NPCScript.UseVisualStyleBackColor = true;
-            this.NPCScript.Click += new System.EventHandler(this.NPCScript_Click);
+            NPCScript.Location = new System.Drawing.Point(238, 51);
+            NPCScript.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            NPCScript.Name = "NPCScript";
+            NPCScript.Size = new System.Drawing.Size(97, 27);
+            NPCScript.TabIndex = 20;
+            NPCScript.Text = "Open script";
+            NPCScript.UseVisualStyleBackColor = true;
+            NPCScript.Click += NPCScript_Click;
             // 
             // MapObjectInspector
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.Controls.Add(this.PanelProperties);
-            this.Controls.Add(this.PanelObjectList);
-            this.Name = "MapObjectInspector";
-            this.Size = new System.Drawing.Size(296, 420);
-            this.Load += new System.EventHandler(this.MapObjectInspector_Load);
-            this.Resize += new System.EventHandler(this.MapObjectInspector_Resize);
-            ((System.ComponentModel.ISupportInitialize)(this.AngleTrackbar)).EndInit();
-            this.PanelObjectList.ResumeLayout(false);
-            this.PanelObjectList.PerformLayout();
-            this.PanelProperties.ResumeLayout(false);
-            this.PanelProperties.PerformLayout();
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            Controls.Add(PanelProperties);
+            Controls.Add(PanelObjectList);
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Name = "MapObjectInspector";
+            Size = new System.Drawing.Size(345, 485);
+            Load += MapObjectInspector_Load;
+            Resize += MapObjectInspector_Resize;
+            ((System.ComponentModel.ISupportInitialize)AngleTrackbar).EndInit();
+            PanelObjectList.ResumeLayout(false);
+            PanelObjectList.PerformLayout();
+            PanelProperties.ResumeLayout(false);
+            PanelProperties.PerformLayout();
+            ResumeLayout(false);
         }
 
         #endregion

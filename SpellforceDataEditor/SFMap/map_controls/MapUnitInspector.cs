@@ -162,7 +162,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return;
             }
 
-            if(!SFCategoryManager.gamedata.c2024.GetItemIndex(new_unit_id, out int new_unit_index))
+            if (!SFCategoryManager.gamedata.c2024.GetItemIndex(new_unit_id, out int new_unit_index))
             {
                 return;
             }
@@ -389,6 +389,17 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 {
                     ListUnits.SelectedIndex = i;
                     return;
+                }
+            }
+        }
+
+        private void UnitID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                if (MainForm.data != null)
+                {
+                    MainForm.data.trace_id(2024, SFEngine.Utility.TryParseUInt16(UnitID.Text));
                 }
             }
         }

@@ -119,8 +119,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox12.Text = c2029[current_element].DescriptionExtID.ToString();
             textBox13.Text = c2029[current_element].Flags.ToString();
 
-            button_repr(ButtonGoto25, SFCategoryManager.gamedata.c2030, "Collision data", "Building");
-            button_repr(ButtonGoto26, SFCategoryManager.gamedata.c2031, "Requirements", "Building");
+            button_repr(ButtonGoto25, 2030);
+            button_repr(ButtonGoto26, 2031);
         }
 
 
@@ -132,6 +132,36 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override string get_description_string(int index)
         {
             return $"Race: {SFCategoryManager.GetRaceName(c2029[index].RaceID)}\r\nRequires {SFCategoryManager.GetBuildingName(c2029[index].BuildingReqID)}";
+        }
+
+        private void textBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2022, textBox2.Text);
+        }
+
+        private void textBox5_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, textBox5.Text);
+        }
+
+        private void textBox11_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2029, textBox11.Text);
+        }
+
+        private void textBox12_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2059, textBox12.Text);
+        }
+
+        private void ButtonGoto25_Click(object sender, EventArgs e)
+        {
+            button_gen_elem(ButtonGoto25, 2030);
+        }
+
+        private void ButtonGoto26_Click(object sender, EventArgs e)
+        {
+            button_gen_elem(ButtonGoto26, 2031);
         }
     }
 }

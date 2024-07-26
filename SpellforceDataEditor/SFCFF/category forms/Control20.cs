@@ -159,5 +159,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 textBox3.Text = c2026[current_element, subelem_index].SpellID.ToString();
             }
         }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2024, textBox1.Text);
+        }
+
+        private void textBox3_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2002, textBox3.Text);
+        }
     }
 }

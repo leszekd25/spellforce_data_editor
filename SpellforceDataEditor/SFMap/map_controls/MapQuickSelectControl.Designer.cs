@@ -28,270 +28,299 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.textBox7 = new System.Windows.Forms.TextBox();
-            this.textBox8 = new System.Windows.Forms.TextBox();
-            this.textBox9 = new System.Windows.Forms.TextBox();
-            this.textBox10 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.SuspendLayout();
+            textBox1 = new System.Windows.Forms.TextBox();
+            label1 = new System.Windows.Forms.Label();
+            textBox2 = new System.Windows.Forms.TextBox();
+            textBox3 = new System.Windows.Forms.TextBox();
+            textBox4 = new System.Windows.Forms.TextBox();
+            textBox5 = new System.Windows.Forms.TextBox();
+            textBox6 = new System.Windows.Forms.TextBox();
+            textBox7 = new System.Windows.Forms.TextBox();
+            textBox8 = new System.Windows.Forms.TextBox();
+            textBox9 = new System.Windows.Forms.TextBox();
+            textBox10 = new System.Windows.Forms.TextBox();
+            label2 = new System.Windows.Forms.Label();
+            label3 = new System.Windows.Forms.Label();
+            label4 = new System.Windows.Forms.Label();
+            label5 = new System.Windows.Forms.Label();
+            label6 = new System.Windows.Forms.Label();
+            label7 = new System.Windows.Forms.Label();
+            label8 = new System.Windows.Forms.Label();
+            label9 = new System.Windows.Forms.Label();
+            label10 = new System.Windows.Forms.Label();
+            label11 = new System.Windows.Forms.Label();
+            SuspendLayout();
             // 
             // textBox1
             // 
-            this.textBox1.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox1.Location = new System.Drawing.Point(2, 33);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(44, 20);
-            this.textBox1.TabIndex = 0;
-            this.textBox1.Validated += new System.EventHandler(this.textBox1_Validated);
+            textBox1.BackColor = System.Drawing.Color.DarkOrange;
+            textBox1.Location = new System.Drawing.Point(2, 38);
+            textBox1.Margin = new System.Windows.Forms.Padding(2);
+            textBox1.Name = "textBox1";
+            textBox1.ShortcutsEnabled = false;
+            textBox1.Size = new System.Drawing.Size(51, 23);
+            textBox1.TabIndex = 0;
+            textBox1.Tag = "0";
+            textBox1.MouseDown += textBox9_MouseDown;
+            textBox1.Validated += textBox9_Validated_1;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(224, 0);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(66, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Quick select";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(261, 0);
+            label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(71, 15);
+            label1.TabIndex = 1;
+            label1.Text = "Quick select";
             // 
             // textBox2
             // 
-            this.textBox2.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox2.Location = new System.Drawing.Point(50, 33);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(44, 20);
-            this.textBox2.TabIndex = 2;
-            this.textBox2.Validated += new System.EventHandler(this.textBox2_Validated);
+            textBox2.BackColor = System.Drawing.Color.DarkOrange;
+            textBox2.Location = new System.Drawing.Point(58, 38);
+            textBox2.Margin = new System.Windows.Forms.Padding(2);
+            textBox2.Name = "textBox2";
+            textBox2.ShortcutsEnabled = false;
+            textBox2.Size = new System.Drawing.Size(51, 23);
+            textBox2.TabIndex = 2;
+            textBox2.Tag = "1";
+            textBox2.MouseDown += textBox9_MouseDown;
+            textBox2.Validated += textBox9_Validated_1;
             // 
             // textBox3
             // 
-            this.textBox3.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox3.Location = new System.Drawing.Point(97, 33);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(44, 20);
-            this.textBox3.TabIndex = 4;
-            this.textBox3.Validated += new System.EventHandler(this.textBox3_Validated);
+            textBox3.BackColor = System.Drawing.Color.DarkOrange;
+            textBox3.Location = new System.Drawing.Point(113, 38);
+            textBox3.Margin = new System.Windows.Forms.Padding(2);
+            textBox3.Name = "textBox3";
+            textBox3.ShortcutsEnabled = false;
+            textBox3.Size = new System.Drawing.Size(51, 23);
+            textBox3.TabIndex = 4;
+            textBox3.Tag = "2";
+            textBox3.MouseDown += textBox9_MouseDown;
+            textBox3.Validated += textBox9_Validated_1;
             // 
             // textBox4
             // 
-            this.textBox4.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox4.Location = new System.Drawing.Point(144, 33);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(44, 20);
-            this.textBox4.TabIndex = 3;
-            this.textBox4.Validated += new System.EventHandler(this.textBox4_Validated);
+            textBox4.BackColor = System.Drawing.Color.DarkOrange;
+            textBox4.Location = new System.Drawing.Point(168, 38);
+            textBox4.Margin = new System.Windows.Forms.Padding(2);
+            textBox4.Name = "textBox4";
+            textBox4.ShortcutsEnabled = false;
+            textBox4.Size = new System.Drawing.Size(51, 23);
+            textBox4.TabIndex = 3;
+            textBox4.Tag = "3";
+            textBox4.MouseDown += textBox9_MouseDown;
+            textBox4.Validated += textBox9_Validated_1;
             // 
             // textBox5
             // 
-            this.textBox5.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox5.Location = new System.Drawing.Point(191, 33);
-            this.textBox5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(44, 20);
-            this.textBox5.TabIndex = 8;
-            this.textBox5.Validated += new System.EventHandler(this.textBox5_Validated);
+            textBox5.BackColor = System.Drawing.Color.DarkOrange;
+            textBox5.Location = new System.Drawing.Point(223, 38);
+            textBox5.Margin = new System.Windows.Forms.Padding(2);
+            textBox5.Name = "textBox5";
+            textBox5.ShortcutsEnabled = false;
+            textBox5.Size = new System.Drawing.Size(51, 23);
+            textBox5.TabIndex = 8;
+            textBox5.Tag = "4";
+            textBox5.MouseDown += textBox9_MouseDown;
+            textBox5.Validated += textBox9_Validated_1;
             // 
             // textBox6
             // 
-            this.textBox6.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox6.Location = new System.Drawing.Point(238, 33);
-            this.textBox6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(44, 20);
-            this.textBox6.TabIndex = 7;
-            this.textBox6.Validated += new System.EventHandler(this.textBox6_Validated);
+            textBox6.BackColor = System.Drawing.Color.DarkOrange;
+            textBox6.Location = new System.Drawing.Point(278, 38);
+            textBox6.Margin = new System.Windows.Forms.Padding(2);
+            textBox6.Name = "textBox6";
+            textBox6.ShortcutsEnabled = false;
+            textBox6.Size = new System.Drawing.Size(51, 23);
+            textBox6.TabIndex = 7;
+            textBox6.Tag = "5";
+            textBox6.MouseDown += textBox9_MouseDown;
+            textBox6.Validated += textBox9_Validated_1;
             // 
             // textBox7
             // 
-            this.textBox7.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox7.Location = new System.Drawing.Point(286, 33);
-            this.textBox7.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(44, 20);
-            this.textBox7.TabIndex = 6;
-            this.textBox7.Validated += new System.EventHandler(this.textBox7_Validated);
+            textBox7.BackColor = System.Drawing.Color.DarkOrange;
+            textBox7.Location = new System.Drawing.Point(334, 38);
+            textBox7.Margin = new System.Windows.Forms.Padding(2);
+            textBox7.Name = "textBox7";
+            textBox7.ShortcutsEnabled = false;
+            textBox7.Size = new System.Drawing.Size(51, 23);
+            textBox7.TabIndex = 6;
+            textBox7.Tag = "6";
+            textBox7.MouseDown += textBox9_MouseDown;
+            textBox7.Validated += textBox9_Validated_1;
             // 
             // textBox8
             // 
-            this.textBox8.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox8.Location = new System.Drawing.Point(333, 33);
-            this.textBox8.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(44, 20);
-            this.textBox8.TabIndex = 5;
-            this.textBox8.Validated += new System.EventHandler(this.textBox8_Validated);
+            textBox8.BackColor = System.Drawing.Color.DarkOrange;
+            textBox8.Location = new System.Drawing.Point(388, 38);
+            textBox8.Margin = new System.Windows.Forms.Padding(2);
+            textBox8.Name = "textBox8";
+            textBox8.ShortcutsEnabled = false;
+            textBox8.Size = new System.Drawing.Size(51, 23);
+            textBox8.TabIndex = 5;
+            textBox8.Tag = "7";
+            textBox8.MouseDown += textBox9_MouseDown;
+            textBox8.Validated += textBox9_Validated_1;
             // 
             // textBox9
             // 
-            this.textBox9.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox9.Location = new System.Drawing.Point(380, 33);
-            this.textBox9.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(44, 20);
-            this.textBox9.TabIndex = 10;
-            this.textBox9.Validated += new System.EventHandler(this.textBox9_Validated);
+            textBox9.BackColor = System.Drawing.Color.DarkOrange;
+            textBox9.Location = new System.Drawing.Point(443, 38);
+            textBox9.Margin = new System.Windows.Forms.Padding(2);
+            textBox9.Name = "textBox9";
+            textBox9.ShortcutsEnabled = false;
+            textBox9.Size = new System.Drawing.Size(51, 23);
+            textBox9.TabIndex = 10;
+            textBox9.Tag = "8";
+            textBox9.MouseDown += textBox9_MouseDown;
+            textBox9.Validated += textBox9_Validated_1;
             // 
             // textBox10
             // 
-            this.textBox10.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox10.Location = new System.Drawing.Point(428, 33);
-            this.textBox10.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.textBox10.Name = "textBox10";
-            this.textBox10.Size = new System.Drawing.Size(44, 20);
-            this.textBox10.TabIndex = 9;
-            this.textBox10.Validated += new System.EventHandler(this.textBox10_Validated);
+            textBox10.BackColor = System.Drawing.Color.DarkOrange;
+            textBox10.Location = new System.Drawing.Point(499, 38);
+            textBox10.Margin = new System.Windows.Forms.Padding(2);
+            textBox10.Name = "textBox10";
+            textBox10.ShortcutsEnabled = false;
+            textBox10.Size = new System.Drawing.Size(51, 23);
+            textBox10.TabIndex = 9;
+            textBox10.Tag = "9";
+            textBox10.MouseDown += textBox9_MouseDown;
+            textBox10.Validated += textBox9_Validated_1;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(0, 18);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(20, 13);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "#1";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(0, 21);
+            label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(20, 15);
+            label2.TabIndex = 11;
+            label2.Text = "#1";
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(47, 18);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(20, 13);
-            this.label3.TabIndex = 12;
-            this.label3.Text = "#2";
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(55, 21);
+            label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(20, 15);
+            label3.TabIndex = 12;
+            label3.Text = "#2";
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(94, 18);
-            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(20, 13);
-            this.label4.TabIndex = 13;
-            this.label4.Text = "#3";
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(110, 21);
+            label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(20, 15);
+            label4.TabIndex = 13;
+            label4.Text = "#3";
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(142, 18);
-            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(20, 13);
-            this.label5.TabIndex = 14;
-            this.label5.Text = "#4";
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(166, 21);
+            label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(20, 15);
+            label5.TabIndex = 14;
+            label5.Text = "#4";
             // 
             // label6
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(189, 18);
-            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(20, 13);
-            this.label6.TabIndex = 15;
-            this.label6.Text = "#5";
+            label6.AutoSize = true;
+            label6.Location = new System.Drawing.Point(220, 21);
+            label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(20, 15);
+            label6.TabIndex = 15;
+            label6.Text = "#5";
             // 
             // label7
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(238, 18);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(20, 13);
-            this.label7.TabIndex = 16;
-            this.label7.Text = "#6";
+            label7.AutoSize = true;
+            label7.Location = new System.Drawing.Point(278, 21);
+            label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label7.Name = "label7";
+            label7.Size = new System.Drawing.Size(20, 15);
+            label7.TabIndex = 16;
+            label7.Text = "#6";
             // 
             // label8
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(286, 18);
-            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(20, 13);
-            this.label8.TabIndex = 17;
-            this.label8.Text = "#7";
+            label8.AutoSize = true;
+            label8.Location = new System.Drawing.Point(334, 21);
+            label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label8.Name = "label8";
+            label8.Size = new System.Drawing.Size(20, 15);
+            label8.TabIndex = 17;
+            label8.Text = "#7";
             // 
             // label9
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(331, 18);
-            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(20, 13);
-            this.label9.TabIndex = 18;
-            this.label9.Text = "#8";
+            label9.AutoSize = true;
+            label9.Location = new System.Drawing.Point(386, 21);
+            label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label9.Name = "label9";
+            label9.Size = new System.Drawing.Size(20, 15);
+            label9.TabIndex = 18;
+            label9.Text = "#8";
             // 
             // label10
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(378, 18);
-            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(20, 13);
-            this.label10.TabIndex = 19;
-            this.label10.Text = "#9";
+            label10.AutoSize = true;
+            label10.Location = new System.Drawing.Point(441, 21);
+            label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label10.Name = "label10";
+            label10.Size = new System.Drawing.Size(20, 15);
+            label10.TabIndex = 19;
+            label10.Text = "#9";
             // 
             // label11
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(425, 18);
-            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(20, 13);
-            this.label11.TabIndex = 20;
-            this.label11.Text = "#0";
+            label11.AutoSize = true;
+            label11.Location = new System.Drawing.Point(496, 21);
+            label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label11.Name = "label11";
+            label11.Size = new System.Drawing.Size(20, 15);
+            label11.TabIndex = 20;
+            label11.Text = "#0";
             // 
             // MapQuickSelectControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.label11);
-            this.Controls.Add(this.label10);
-            this.Controls.Add(this.label9);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.textBox9);
-            this.Controls.Add(this.textBox10);
-            this.Controls.Add(this.textBox5);
-            this.Controls.Add(this.textBox6);
-            this.Controls.Add(this.textBox7);
-            this.Controls.Add(this.textBox8);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.Name = "MapQuickSelectControl";
-            this.Size = new System.Drawing.Size(480, 84);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(label11);
+            Controls.Add(label10);
+            Controls.Add(label9);
+            Controls.Add(label8);
+            Controls.Add(label7);
+            Controls.Add(label6);
+            Controls.Add(label5);
+            Controls.Add(label4);
+            Controls.Add(label3);
+            Controls.Add(label2);
+            Controls.Add(textBox9);
+            Controls.Add(textBox10);
+            Controls.Add(textBox5);
+            Controls.Add(textBox6);
+            Controls.Add(textBox7);
+            Controls.Add(textBox8);
+            Controls.Add(textBox3);
+            Controls.Add(textBox4);
+            Controls.Add(textBox2);
+            Controls.Add(label1);
+            Controls.Add(textBox1);
+            Margin = new System.Windows.Forms.Padding(2);
+            Name = "MapQuickSelectControl";
+            Size = new System.Drawing.Size(560, 97);
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

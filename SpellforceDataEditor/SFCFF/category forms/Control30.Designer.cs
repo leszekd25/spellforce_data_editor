@@ -58,9 +58,11 @@
             textBox1.Location = new System.Drawing.Point(122, 22);
             textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             textBox1.Name = "textBox1";
+            textBox1.ShortcutsEnabled = false;
             textBox1.Size = new System.Drawing.Size(146, 23);
             textBox1.TabIndex = 46;
             textBox1.Leave += textBox1_TextChanged;
+            textBox1.MouseDown += textBox1_MouseDown;
             // 
             // MerchantGrid
             // 
@@ -77,6 +79,7 @@
             MerchantGrid.Size = new System.Drawing.Size(527, 298);
             MerchantGrid.TabIndex = 52;
             MerchantGrid.CellValidated += OnCellValueChange;
+            MerchantGrid.MouseDown += MerchantGrid_MouseDown;
             // 
             // ItemID
             // 
@@ -118,8 +121,10 @@
             textBox2.Location = new System.Drawing.Point(192, 358);
             textBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             textBox2.Name = "textBox2";
+            textBox2.ShortcutsEnabled = false;
             textBox2.Size = new System.Drawing.Size(116, 23);
             textBox2.TabIndex = 54;
+            textBox2.MouseDown += textBox2_MouseDown;
             // 
             // label2
             // 

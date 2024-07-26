@@ -210,5 +210,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             RefreshListResources();
         }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2029, textBox1.Text);
+        }
     }
 }

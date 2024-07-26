@@ -1,5 +1,6 @@
 ﻿using SFEngine.SFMap;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SpellforceDataEditor.SFMap.map_controls
 {
@@ -115,6 +116,27 @@ namespace SpellforceDataEditor.SFMap.map_controls
             MainForm.mapedittool.update_render = true;
 
             MainForm.mapedittool.UpdateDecGroup(selected_dec_group);
+        }
+
+        private void DecGroupData_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                if (MainForm.data != null)
+                {
+                    int CurrentColumnMouseOver = DecGroupData.HitTest(e.X, e.Y).ColumnIndex;
+                    if (CurrentColumnMouseOver != 0)
+                    {
+                        return;
+                    }
+
+                    int CurrentRowMouseOver = DecGroupData.HitTest(e.X, e.Y).RowIndex;
+
+                    DataGridViewCell cell = DecGroupData[CurrentColumnMouseOver, CurrentRowMouseOver];
+                    int item_id = SFEngine.Utility.TryParseInt32(cell.Value.ToString());
+                    MainForm.data.trace_id(2050, item_id);
+                }
+            }
         }
     }
 }

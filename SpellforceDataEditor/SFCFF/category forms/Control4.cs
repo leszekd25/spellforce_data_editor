@@ -194,39 +194,38 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox24.Text = item.EquipmentMode.ToString();
 
             // button repr
-            button_repr(ButtonGoto5, SFCategoryManager.gamedata.c2006, "Hero/Worker skills", "Unit/Hero data");
-            button_repr(ButtonGoto6, SFCategoryManager.gamedata.c2067, "Hero spells", "Unit/Hero data");
+            button_repr(ButtonGoto5, 2006);
+            button_repr(ButtonGoto6, 2067);
         }
 
         private void ButtonGoto5_Click(object sender, EventArgs e)
         {
-            button_repr(ButtonGoto5, SFCategoryManager.gamedata.c2006, "Hero/Worker skills", "Unit/Hero data");
+            button_gen_elem(ButtonGoto5, 2006);
         }
 
         private void ButtonGoto6_Click(object sender, EventArgs e)
         {
-            button_repr(ButtonGoto6, SFCategoryManager.gamedata.c2067, "Hero spells", "Unit/Hero data");
+            button_gen_elem(ButtonGoto6, 2067);
         }
 
 
         public override string get_element_string(int index)
         {
             Category2005Item item = c2005[index];
-            for(int i = 0; i < SFCategoryManager.gamedata.c2024.GetNumOfItems(); i++)
+
+            if (SFCategoryManager.hero_cache.GetItemIndex(item.StatsID, out int hero_index))
+            {
+                return $"{item.StatsID} {SFCategoryManager.GetRuneheroName(item.StatsID)} (lvl {item.UnitLevel})";
+            }
+
+            for (int i = 0; i < SFCategoryManager.gamedata.c2024.GetNumOfItems(); i++)
             {
                 if (SFCategoryManager.gamedata.c2024[i].StatsID == item.StatsID)
                 {
-                    bool text_found = SFCategoryManager.gamedata.c2016.GetItemIndex(SFCategoryManager.gamedata.c2024[i].NameID, out int text_index);
-                    if (text_found)
-                    {
-                        return $"{item.StatsID} {SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2024[i].NameID, 1)} (lvl {item.UnitLevel})";
-                    }
-                    else
-                    {
-                        return $"{item.StatsID} {SFCategoryManager.GetRuneheroName(item.StatsID)} (lvl {item.UnitLevel})";
-                    }
+                    return $"{item.StatsID} {SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2024[i].NameID, 1)} (lvl {item.UnitLevel})";
                 }
             }
+
             return $"{item.StatsID} {SFEngine.Utility.S_ITEM_MISSING} (lvl {item.UnitLevel})";
         }
 
@@ -234,7 +233,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             Category2005Item item = c2005[current_element];
             StringWriter sw = new StringWriter();
-            
+
             sw.WriteLine($"This unit race: {SFCategoryManager.GetRaceName(item.UnitRace)}");
 
             int hp = item.Stamina;
@@ -253,11 +252,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 sw.WriteLine($"WARNING: Invalid stats unit level {lvl + 1}");
             }
             sw.WriteLine($"Unit gender: {((item.UnitFlags & 0b1) == 0b1 ? "female" : "male")}");
-            if((item.UnitFlags & 0b10) == 0b10)
+            if ((item.UnitFlags & 0b10) == 0b10)
             {
                 sw.WriteLine("This unit is unkillable");
             }
             return sw.ToString();
+        }
+
+        // trace
+        private void textBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2022, textBox2.Text);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace SFEngine.SFCFF.CTG
     {
         public ushort ArmyUnitID;
         public byte ResourceType;
-        public ushort ResourceValue;
+        public byte ResourceValue;
 
         public int GetID() => ArmyUnitID;
         public void SetID(int id) => ArmyUnitID = (ushort)id;

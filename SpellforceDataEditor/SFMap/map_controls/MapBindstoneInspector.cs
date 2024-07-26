@@ -318,5 +318,16 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
             map.metadata.spawns[player].unknown = SFEngine.Utility.TryParseInt16(Unknown.Text, map.metadata.spawns[player].unknown);
         }
+
+        private void TextID_MouseDown(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Right)
+            {
+                if(MainForm.data != null)
+                {
+                    MainForm.data.trace_id(2016, SFEngine.Utility.TryParseUInt16(TextID.Text));
+                }
+            }
+        }
     }
 }

@@ -2,6 +2,7 @@
 using SFEngine.SFCFF.CTG;
 using System;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SpellforceDataEditor.SFCFF.category_forms
 {
@@ -74,7 +75,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             string map_handle = "";
             UInt32 map_id = c2053[index].MapID;
-            if(SFCategoryManager.gamedata.c2052.GetItemIndex((int)map_id, out int map_index))
+            if (SFCategoryManager.gamedata.c2052.GetItemIndex((int)map_id, out int map_index))
             {
                 map_handle = SFCategoryManager.gamedata.c2052[map_index].GetHandleString();
             }
@@ -83,6 +84,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 map_handle = SFEngine.Utility.S_ITEM_MISSING;
             }
             return $"Map handle: {map_handle}";
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2052, textBox1.Text);
+        }
+
+        private void tb_req4_1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, tb_req4_1.Text);
         }
     }
 }

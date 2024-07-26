@@ -25,7 +25,7 @@ namespace SFEngine.SFCFF.CTG
     {
         public override string GetName()
         {
-            return "Unit general data/link with unit stats";
+            return "Quest hierarchy/description data";
         }
 
         public override short GetCategoryID()

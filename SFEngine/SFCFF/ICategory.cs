@@ -39,12 +39,15 @@ namespace SFEngine.SFCFF
         public bool Clear();
         public bool Sort();
         public bool AddEmpty(int new_index);
+        public bool AddID(int new_index, int new_id);
         public bool Copy(int from_index, int new_index);
         public bool Remove(int index);
         public bool GetID(int index, out int id);
         public bool SetID(int index, int id);
         public bool CalculateNewItemIndex(int new_id, out int index);
         public bool GetItemIndex(int id, out int index);
+        public bool GetFirstUnusedID(out int id, out int index);  // returns the unused ID and the index at which an item with that ID can be inserted
+        public bool GetLastUsedID(out int id, out int index);  // returns ID of the last element, and the index is equal to item count
         public bool Undo();
         public bool Redo();
         public bool CanUndo();

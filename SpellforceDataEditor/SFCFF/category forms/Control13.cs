@@ -167,5 +167,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 checkBox1.Checked = (c2012[current_element, subelem_index].IsScaledDown == 1);
             }
         }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2003, textBox1.Text);
+        }
     }
 }

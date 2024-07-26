@@ -35,14 +35,29 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox1.Text = c2041[current_element].MerchantID.ToString();
             textBox3.Text = c2041[current_element].UnitID.ToString();
 
-            button_repr(ButtonGoto30, SFCategoryManager.gamedata.c2042, "Inventory", "Merchant");
-            button_repr(ButtonGoto31, SFCategoryManager.gamedata.c2047, "Sell/Buy rate", "Merchant");
+            button_repr(ButtonGoto30, 2042);
+            button_repr(ButtonGoto31, 2047);
         }
 
 
         public override string get_element_string(int index)
         {
-            return $"{c2041[current_element].MerchantID} {SFCategoryManager.GetUnitName(c2041[current_element].UnitID)}";
+            return $"{c2041[index].MerchantID} {SFCategoryManager.GetUnitName(c2041[index].UnitID)}";
+        }
+
+        private void textBox3_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2024, textBox3.Text);
+        }
+
+        private void ButtonGoto30_Click(object sender, EventArgs e)
+        {
+            button_gen_elem(ButtonGoto30, 2042);
+        }
+
+        private void ButtonGoto31_Click(object sender, EventArgs e)
+        {
+            button_gen_elem(ButtonGoto31, 2047);
         }
     }
 }

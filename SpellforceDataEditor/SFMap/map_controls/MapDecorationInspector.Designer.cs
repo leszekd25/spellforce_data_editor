@@ -28,80 +28,87 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.DecGroupName = new System.Windows.Forms.Label();
-            this.DecGroupData = new System.Windows.Forms.DataGridView();
-            this.ObjID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Weight = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            ((System.ComponentModel.ISupportInitialize)(this.DecGroupData)).BeginInit();
-            this.SuspendLayout();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            label1 = new System.Windows.Forms.Label();
+            DecGroupName = new System.Windows.Forms.Label();
+            DecGroupData = new System.Windows.Forms.DataGridView();
+            ObjID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            Weight = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            ((System.ComponentModel.ISupportInitialize)DecGroupData).BeginInit();
+            SuspendLayout();
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(135, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Selected decoration group:";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(4, 0);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(149, 15);
+            label1.TabIndex = 0;
+            label1.Text = "Selected decoration group:";
             // 
             // DecGroupName
             // 
-            this.DecGroupName.AutoSize = true;
-            this.DecGroupName.Location = new System.Drawing.Point(144, 0);
-            this.DecGroupName.Name = "DecGroupName";
-            this.DecGroupName.Size = new System.Drawing.Size(0, 13);
-            this.DecGroupName.TabIndex = 1;
+            DecGroupName.AutoSize = true;
+            DecGroupName.Location = new System.Drawing.Point(168, 0);
+            DecGroupName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            DecGroupName.Name = "DecGroupName";
+            DecGroupName.Size = new System.Drawing.Size(0, 15);
+            DecGroupName.TabIndex = 1;
             // 
             // DecGroupData
             // 
-            this.DecGroupData.AllowUserToAddRows = false;
-            this.DecGroupData.AllowUserToDeleteRows = false;
-            this.DecGroupData.AllowUserToResizeColumns = false;
-            this.DecGroupData.AllowUserToResizeRows = false;
-            this.DecGroupData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DecGroupData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.ObjID,
-            this.Weight});
-            this.DecGroupData.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
-            this.DecGroupData.Location = new System.Drawing.Point(6, 41);
-            this.DecGroupData.MultiSelect = false;
-            this.DecGroupData.Name = "DecGroupData";
-            this.DecGroupData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.DecGroupData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.DecGroupData.Size = new System.Drawing.Size(168, 282);
-            this.DecGroupData.TabIndex = 2;
-            this.DecGroupData.Visible = false;
-            this.DecGroupData.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.DecGroupData_CellEndEdit);
+            DecGroupData.AllowUserToAddRows = false;
+            DecGroupData.AllowUserToDeleteRows = false;
+            DecGroupData.AllowUserToResizeColumns = false;
+            DecGroupData.AllowUserToResizeRows = false;
+            DecGroupData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            DecGroupData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { ObjID, Weight });
+            DecGroupData.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            DecGroupData.Location = new System.Drawing.Point(7, 47);
+            DecGroupData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            DecGroupData.MultiSelect = false;
+            DecGroupData.Name = "DecGroupData";
+            DecGroupData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            DecGroupData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            DecGroupData.Size = new System.Drawing.Size(196, 325);
+            DecGroupData.TabIndex = 2;
+            DecGroupData.Visible = false;
+            DecGroupData.CellEndEdit += DecGroupData_CellEndEdit;
+            DecGroupData.MouseDown += DecGroupData_MouseDown;
             // 
             // ObjID
             // 
-            this.ObjID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.ObjID.HeaderText = "Object ID";
-            this.ObjID.Name = "ObjID";
-            this.ObjID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ObjID.Width = 58;
+            ObjID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.DarkOrange;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.Aquamarine;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
+            ObjID.DefaultCellStyle = dataGridViewCellStyle1;
+            ObjID.HeaderText = "Object ID";
+            ObjID.Name = "ObjID";
+            ObjID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            ObjID.Width = 62;
             // 
             // Weight
             // 
-            this.Weight.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.Weight.HeaderText = "Weight";
-            this.Weight.Name = "Weight";
-            this.Weight.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Weight.Width = 47;
+            Weight.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            Weight.HeaderText = "Weight";
+            Weight.Name = "Weight";
+            Weight.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            Weight.Width = 51;
             // 
             // MapDecorationInspector
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.Controls.Add(this.DecGroupData);
-            this.Controls.Add(this.DecGroupName);
-            this.Controls.Add(this.label1);
-            this.Name = "MapDecorationInspector";
-            this.Size = new System.Drawing.Size(181, 372);
-            ((System.ComponentModel.ISupportInitialize)(this.DecGroupData)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            Controls.Add(DecGroupData);
+            Controls.Add(DecGroupName);
+            Controls.Add(label1);
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Name = "MapDecorationInspector";
+            Size = new System.Drawing.Size(211, 429);
+            ((System.ComponentModel.ISupportInitialize)DecGroupData).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

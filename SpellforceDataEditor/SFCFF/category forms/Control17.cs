@@ -110,7 +110,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2023[index].GetID()} {clan_names[c2023[index].GetID()-1]}";
+            return $"{c2023[index, 0].GetID()} {clan_names[c2023[index, 0].GetID()-1]}";
         }
 
         public override void on_update_subelement(int subelem_index)

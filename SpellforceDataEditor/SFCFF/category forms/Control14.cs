@@ -15,7 +15,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             c2018 = SFCategoryManager.gamedata.c2018;
             category = c2018;
-            
+
             column_dict.Add("Spell item ID", new int[1] { 0 });
             column_dict.Add("Effect ID", new int[1] { 1 });
         }
@@ -39,9 +39,19 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            UInt16 item_id = c2018[current_element].SpellItemID;
-            UInt16 effect_id = c2018[current_element].EffectID;
+            UInt16 item_id = c2018[index].SpellItemID;
+            UInt16 effect_id = c2018[index].EffectID;
             return $"{item_id} {SFCategoryManager.GetItemName(item_id)} | {SFCategoryManager.GetEffectName(effect_id, true)}";
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2003, textBox1.Text);
+        }
+
+        private void textBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2002, textBox2.Text);
         }
     }
 }

@@ -132,8 +132,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override string get_element_string(int index)
         {
             Byte skill_major = c2062[index, 0].SkillMajorID;
-            Byte skill_level = c2062[index, 0].SkillLevel;
-            string txt_skill = SFCategoryManager.GetSkillName(skill_major, 101, skill_level);
+            string txt_skill = SFCategoryManager.GetSkillName(skill_major, 101, 0);
             return txt_skill;
         }
 
@@ -154,7 +153,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            textBox1.Text = c2062[current_element, 0].SkillMajorID.ToString();
+            textBox1.Text = c2062[current_element, subelem_index].SkillMajorID.ToString();
             textBox3.Text = c2062[current_element, subelem_index].Strength.ToString();
             textBox5.Text = c2062[current_element, subelem_index].Stamina.ToString();
             textBox4.Text = c2062[current_element, subelem_index].Agility.ToString();

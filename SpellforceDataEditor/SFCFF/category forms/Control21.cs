@@ -31,7 +31,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             combo_values.Add(0);    //default null value
 
             Category2044 c2044 = SFCategoryManager.gamedata.c2044;
-            for(int i = 0; i < c2044.GetNumOfItems(); i++)
+            for (int i = 0; i < c2044.GetNumOfItems(); i++)
             {
                 comboRes.Items.Add($"{SFCategoryManager.GetTextByLanguage(c2044[i].TextID, 1)}");
                 combo_values.Add(c2044[i].ResourceID);
@@ -189,7 +189,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2028[current_element, 0].ArmyUnitID} {SFCategoryManager.GetUnitName(c2028[current_element, 0].ArmyUnitID)}";
+            return $"{c2028[index, 0].ArmyUnitID} {SFCategoryManager.GetUnitName(c2028[index, 0].ArmyUnitID)}";
         }
 
         public override void on_add_subelement(int subelem_index)
@@ -205,6 +205,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override void on_update_subelement(int subelem_index)
         {
             RefreshListResources();
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2024, textBox1.Text);
         }
     }
 }

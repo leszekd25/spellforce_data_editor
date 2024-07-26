@@ -71,7 +71,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         private int GetItemsChecked()
         {
             int n = 0;
-            for(int i = 0; i < 7; i++)
+            for (int i = 0; i < 7; i++)
             {
                 n += (item_slots[i].active ? 1 : 0);
             }
@@ -98,7 +98,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             //if it's the last checked flag, disallow unchecking it
             if (ch.Checked)
             {
-                if(GetItemsChecked() == 1)
+                if (GetItemsChecked() == 1)
                 {
                     return;
                 }
@@ -125,11 +125,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 //add checked element
                 int count = c2025.GetItemSubItemNum(current_element);
                 c2025.GetID(current_element, out int cur_id);
-                c2025.AddSubItem(current_element, count, new() 
+                c2025.AddSubItem(current_element, count, new()
                 {
                     UnitID = (ushort)cur_id,
                     EquipmentIndex = flag,
-                    ItemID = SFEngine.Utility.TryParseUInt16(item_slots[flag].text.Text) 
+                    ItemID = SFEngine.Utility.TryParseUInt16(item_slots[flag].text.Text)
                 });
             }
         }
@@ -160,7 +160,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             current_element = index;
             edit_ready = false;
 
-            for(int i = 0; i < 7; i++)
+            for (int i = 0; i < 7; i++)
             {
                 item_slots[i].set_checked(false);
             }
@@ -202,6 +202,16 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override void on_update_subelement(int subelem_index)
         {
             set_element(current_element);
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2024, textBox1.Text);
+        }
+
+        private void LeftRingID_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2003, ((TextBox)sender).Text);
         }
     }
 }

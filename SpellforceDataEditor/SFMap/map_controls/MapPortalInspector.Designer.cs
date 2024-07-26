@@ -28,166 +28,182 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.PanelPortalList = new System.Windows.Forms.Panel();
-            this.ListPortals = new System.Windows.Forms.ListBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.ButtonResizeList = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.PosX = new System.Windows.Forms.TextBox();
-            this.PosY = new System.Windows.Forms.TextBox();
-            this.PortalID = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.PanelProperties = new System.Windows.Forms.Panel();
-            this.AngleTrackbar = new System.Windows.Forms.TrackBar();
-            this.Angle = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.PanelPortalList.SuspendLayout();
-            this.PanelProperties.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.AngleTrackbar)).BeginInit();
-            this.SuspendLayout();
+            PanelPortalList = new System.Windows.Forms.Panel();
+            ListPortals = new System.Windows.Forms.ListBox();
+            label1 = new System.Windows.Forms.Label();
+            ButtonResizeList = new System.Windows.Forms.Button();
+            label4 = new System.Windows.Forms.Label();
+            PosX = new System.Windows.Forms.TextBox();
+            PosY = new System.Windows.Forms.TextBox();
+            PortalID = new System.Windows.Forms.TextBox();
+            label2 = new System.Windows.Forms.Label();
+            PanelProperties = new System.Windows.Forms.Panel();
+            AngleTrackbar = new System.Windows.Forms.TrackBar();
+            Angle = new System.Windows.Forms.TextBox();
+            label6 = new System.Windows.Forms.Label();
+            PanelPortalList.SuspendLayout();
+            PanelProperties.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)AngleTrackbar).BeginInit();
+            SuspendLayout();
             // 
             // PanelPortalList
             // 
-            this.PanelPortalList.Controls.Add(this.ListPortals);
-            this.PanelPortalList.Controls.Add(this.label1);
-            this.PanelPortalList.Controls.Add(this.ButtonResizeList);
-            this.PanelPortalList.Location = new System.Drawing.Point(3, 202);
-            this.PanelPortalList.Name = "PanelPortalList";
-            this.PanelPortalList.Size = new System.Drawing.Size(290, 159);
-            this.PanelPortalList.TabIndex = 20;
+            PanelPortalList.Controls.Add(ListPortals);
+            PanelPortalList.Controls.Add(label1);
+            PanelPortalList.Controls.Add(ButtonResizeList);
+            PanelPortalList.Location = new System.Drawing.Point(4, 233);
+            PanelPortalList.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelPortalList.Name = "PanelPortalList";
+            PanelPortalList.Size = new System.Drawing.Size(338, 183);
+            PanelPortalList.TabIndex = 20;
             // 
             // ListPortals
             // 
-            this.ListPortals.FormattingEnabled = true;
-            this.ListPortals.Location = new System.Drawing.Point(4, 32);
-            this.ListPortals.Name = "ListPortals";
-            this.ListPortals.Size = new System.Drawing.Size(283, 121);
-            this.ListPortals.TabIndex = 20;
-            this.ListPortals.SelectedIndexChanged += new System.EventHandler(this.ListPortals_SelectedIndexChanged);
+            ListPortals.FormattingEnabled = true;
+            ListPortals.ItemHeight = 15;
+            ListPortals.Location = new System.Drawing.Point(5, 37);
+            ListPortals.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ListPortals.Name = "ListPortals";
+            ListPortals.Size = new System.Drawing.Size(330, 139);
+            ListPortals.TabIndex = 20;
+            ListPortals.SelectedIndexChanged += ListPortals_SelectedIndexChanged;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(69, 13);
-            this.label1.TabIndex = 19;
-            this.label1.Text = "List of portals";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(7, 10);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(78, 15);
+            label1.TabIndex = 19;
+            label1.Text = "List of portals";
             // 
             // ButtonResizeList
             // 
-            this.ButtonResizeList.Location = new System.Drawing.Point(265, 4);
-            this.ButtonResizeList.Name = "ButtonResizeList";
-            this.ButtonResizeList.Size = new System.Drawing.Size(22, 22);
-            this.ButtonResizeList.TabIndex = 0;
-            this.ButtonResizeList.Text = "-";
-            this.ButtonResizeList.UseVisualStyleBackColor = true;
-            this.ButtonResizeList.Click += new System.EventHandler(this.ButtonResizeList_Click);
+            ButtonResizeList.Location = new System.Drawing.Point(309, 5);
+            ButtonResizeList.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonResizeList.Name = "ButtonResizeList";
+            ButtonResizeList.Size = new System.Drawing.Size(26, 25);
+            ButtonResizeList.TabIndex = 0;
+            ButtonResizeList.Text = "-";
+            ButtonResizeList.UseVisualStyleBackColor = true;
+            ButtonResizeList.Click += ButtonResizeList_Click;
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 32);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(44, 13);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "Position";
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(4, 37);
+            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(50, 15);
+            label4.TabIndex = 6;
+            label4.Text = "Position";
             // 
             // PosX
             // 
-            this.PosX.Enabled = false;
-            this.PosX.Location = new System.Drawing.Point(98, 29);
-            this.PosX.Name = "PosX";
-            this.PosX.Size = new System.Drawing.Size(46, 20);
-            this.PosX.TabIndex = 5;
+            PosX.Enabled = false;
+            PosX.Location = new System.Drawing.Point(114, 33);
+            PosX.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PosX.Name = "PosX";
+            PosX.Size = new System.Drawing.Size(53, 23);
+            PosX.TabIndex = 5;
             // 
             // PosY
             // 
-            this.PosY.Enabled = false;
-            this.PosY.Location = new System.Drawing.Point(152, 29);
-            this.PosY.Name = "PosY";
-            this.PosY.Size = new System.Drawing.Size(46, 20);
-            this.PosY.TabIndex = 15;
+            PosY.Enabled = false;
+            PosY.Location = new System.Drawing.Point(177, 33);
+            PosY.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PosY.Name = "PosY";
+            PosY.Size = new System.Drawing.Size(53, 23);
+            PosY.TabIndex = 15;
             // 
             // PortalID
             // 
-            this.PortalID.BackColor = System.Drawing.Color.DarkOrange;
-            this.PortalID.Location = new System.Drawing.Point(98, 3);
-            this.PortalID.Name = "PortalID";
-            this.PortalID.Size = new System.Drawing.Size(100, 20);
-            this.PortalID.TabIndex = 1;
-            this.PortalID.Validated += new System.EventHandler(this.PortalID_Validated);
+            PortalID.BackColor = System.Drawing.Color.DarkOrange;
+            PortalID.Location = new System.Drawing.Point(114, 3);
+            PortalID.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PortalID.Name = "PortalID";
+            PortalID.ShortcutsEnabled = false;
+            PortalID.Size = new System.Drawing.Size(116, 23);
+            PortalID.TabIndex = 1;
+            PortalID.MouseDown += PortalID_MouseDown;
+            PortalID.Validated += PortalID_Validated;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 6);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(48, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Portal ID";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(4, 7);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(52, 15);
+            label2.TabIndex = 2;
+            label2.Text = "Portal ID";
             // 
             // PanelProperties
             // 
-            this.PanelProperties.Controls.Add(this.AngleTrackbar);
-            this.PanelProperties.Controls.Add(this.Angle);
-            this.PanelProperties.Controls.Add(this.label6);
-            this.PanelProperties.Controls.Add(this.label2);
-            this.PanelProperties.Controls.Add(this.PortalID);
-            this.PanelProperties.Controls.Add(this.PosY);
-            this.PanelProperties.Controls.Add(this.PosX);
-            this.PanelProperties.Controls.Add(this.label4);
-            this.PanelProperties.Enabled = false;
-            this.PanelProperties.Location = new System.Drawing.Point(3, 0);
-            this.PanelProperties.Name = "PanelProperties";
-            this.PanelProperties.Size = new System.Drawing.Size(290, 201);
-            this.PanelProperties.TabIndex = 21;
+            PanelProperties.Controls.Add(AngleTrackbar);
+            PanelProperties.Controls.Add(Angle);
+            PanelProperties.Controls.Add(label6);
+            PanelProperties.Controls.Add(label2);
+            PanelProperties.Controls.Add(PortalID);
+            PanelProperties.Controls.Add(PosY);
+            PanelProperties.Controls.Add(PosX);
+            PanelProperties.Controls.Add(label4);
+            PanelProperties.Enabled = false;
+            PanelProperties.Location = new System.Drawing.Point(4, 0);
+            PanelProperties.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PanelProperties.Name = "PanelProperties";
+            PanelProperties.Size = new System.Drawing.Size(338, 232);
+            PanelProperties.TabIndex = 21;
             // 
             // AngleTrackbar
             // 
-            this.AngleTrackbar.AutoSize = false;
-            this.AngleTrackbar.Location = new System.Drawing.Point(98, 55);
-            this.AngleTrackbar.Maximum = 359;
-            this.AngleTrackbar.Name = "AngleTrackbar";
-            this.AngleTrackbar.Size = new System.Drawing.Size(100, 20);
-            this.AngleTrackbar.TabIndex = 20;
-            this.AngleTrackbar.TickFrequency = 45;
-            this.AngleTrackbar.ValueChanged += new System.EventHandler(this.AngleTrackbar_ValueChanged);
-            this.AngleTrackbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AngleTrackbar_MouseDown);
-            this.AngleTrackbar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AngleTrackbar_MouseUp);
+            AngleTrackbar.AutoSize = false;
+            AngleTrackbar.Location = new System.Drawing.Point(114, 63);
+            AngleTrackbar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            AngleTrackbar.Maximum = 359;
+            AngleTrackbar.Name = "AngleTrackbar";
+            AngleTrackbar.Size = new System.Drawing.Size(117, 23);
+            AngleTrackbar.TabIndex = 20;
+            AngleTrackbar.TickFrequency = 45;
+            AngleTrackbar.ValueChanged += AngleTrackbar_ValueChanged;
+            AngleTrackbar.MouseDown += AngleTrackbar_MouseDown;
+            AngleTrackbar.MouseUp += AngleTrackbar_MouseUp;
             // 
             // Angle
             // 
-            this.Angle.Location = new System.Drawing.Point(205, 58);
-            this.Angle.Name = "Angle";
-            this.Angle.Size = new System.Drawing.Size(46, 20);
-            this.Angle.TabIndex = 19;
-            this.Angle.Validated += new System.EventHandler(this.Angle_Validated);
+            Angle.Location = new System.Drawing.Point(239, 67);
+            Angle.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Angle.Name = "Angle";
+            Angle.Size = new System.Drawing.Size(53, 23);
+            Angle.TabIndex = 19;
+            Angle.Validated += Angle_Validated;
             // 
             // label6
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 61);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(34, 13);
-            this.label6.TabIndex = 18;
-            this.label6.Text = "Angle";
+            label6.AutoSize = true;
+            label6.Location = new System.Drawing.Point(4, 70);
+            label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(38, 15);
+            label6.TabIndex = 18;
+            label6.Text = "Angle";
             // 
             // MapPortalInspector
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.Controls.Add(this.PanelProperties);
-            this.Controls.Add(this.PanelPortalList);
-            this.Name = "MapPortalInspector";
-            this.Size = new System.Drawing.Size(298, 365);
-            this.Load += new System.EventHandler(this.MapPortalInspector_Load);
-            this.PanelPortalList.ResumeLayout(false);
-            this.PanelPortalList.PerformLayout();
-            this.PanelProperties.ResumeLayout(false);
-            this.PanelProperties.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.AngleTrackbar)).EndInit();
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            Controls.Add(PanelProperties);
+            Controls.Add(PanelPortalList);
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Name = "MapPortalInspector";
+            Size = new System.Drawing.Size(348, 421);
+            Load += MapPortalInspector_Load;
+            PanelPortalList.ResumeLayout(false);
+            PanelPortalList.PerformLayout();
+            PanelProperties.ResumeLayout(false);
+            PanelProperties.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)AngleTrackbar).EndInit();
+            ResumeLayout(false);
         }
 
         #endregion

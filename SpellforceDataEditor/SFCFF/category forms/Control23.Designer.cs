@@ -28,93 +28,105 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label3 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.ListBuildings = new System.Windows.Forms.ListBox();
-            this.SuspendLayout();
+            label3 = new System.Windows.Forms.Label();
+            label1 = new System.Windows.Forms.Label();
+            textBox3 = new System.Windows.Forms.TextBox();
+            textBox1 = new System.Windows.Forms.TextBox();
+            button2 = new System.Windows.Forms.Button();
+            button1 = new System.Windows.Forms.Button();
+            ListBuildings = new System.Windows.Forms.ListBox();
+            SuspendLayout();
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(40, 188);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(58, 13);
-            this.label3.TabIndex = 39;
-            this.label3.Text = "Building ID";
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(47, 217);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(65, 15);
+            label3.TabIndex = 39;
+            label3.Text = "Building ID";
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(59, 22);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(40, 13);
-            this.label1.TabIndex = 37;
-            this.label1.Text = "Unit ID";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(69, 25);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(43, 15);
+            label1.TabIndex = 37;
+            label1.Text = "Unit ID";
             // 
             // textBox3
             // 
-            this.textBox3.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox3.Location = new System.Drawing.Point(105, 185);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(126, 20);
-            this.textBox3.TabIndex = 36;
-            this.textBox3.Leave += new System.EventHandler(this.textBox3_TextChanged);
+            textBox3.BackColor = System.Drawing.Color.DarkOrange;
+            textBox3.Location = new System.Drawing.Point(122, 213);
+            textBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox3.Name = "textBox3";
+            textBox3.ShortcutsEnabled = false;
+            textBox3.Size = new System.Drawing.Size(146, 23);
+            textBox3.TabIndex = 36;
+            textBox3.Leave += textBox3_TextChanged;
+            textBox3.MouseDown += textBox3_MouseDown;
             // 
             // textBox1
             // 
-            this.textBox1.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox1.Location = new System.Drawing.Point(105, 19);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(126, 20);
-            this.textBox1.TabIndex = 34;
-            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
+            textBox1.BackColor = System.Drawing.Color.DarkOrange;
+            textBox1.Location = new System.Drawing.Point(122, 22);
+            textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox1.Name = "textBox1";
+            textBox1.ShortcutsEnabled = false;
+            textBox1.Size = new System.Drawing.Size(146, 23);
+            textBox1.TabIndex = 34;
+            textBox1.Leave += textBox1_TextChanged;
+            textBox1.MouseDown += textBox1_MouseDown;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(380, 74);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 42;
-            this.button2.Text = "Remove";
-            this.button2.UseVisualStyleBackColor = true;
+            button2.Location = new System.Drawing.Point(443, 85);
+            button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button2.Name = "button2";
+            button2.Size = new System.Drawing.Size(88, 27);
+            button2.TabIndex = 42;
+            button2.Text = "Remove";
+            button2.UseVisualStyleBackColor = true;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(380, 45);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 41;
-            this.button1.Text = "Insert";
-            this.button1.UseVisualStyleBackColor = true;
+            button1.Location = new System.Drawing.Point(443, 52);
+            button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button1.Name = "button1";
+            button1.Size = new System.Drawing.Size(88, 27);
+            button1.TabIndex = 41;
+            button1.Text = "Insert";
+            button1.UseVisualStyleBackColor = true;
             // 
             // ListBuildings
             // 
-            this.ListBuildings.FormattingEnabled = true;
-            this.ListBuildings.Location = new System.Drawing.Point(105, 45);
-            this.ListBuildings.Name = "ListBuildings";
-            this.ListBuildings.Size = new System.Drawing.Size(268, 134);
-            this.ListBuildings.TabIndex = 40;
-            this.ListBuildings.SelectedIndexChanged += new System.EventHandler(this.ListBuildings_SelectedIndexChanged);
+            ListBuildings.FormattingEnabled = true;
+            ListBuildings.ItemHeight = 15;
+            ListBuildings.Location = new System.Drawing.Point(122, 52);
+            ListBuildings.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ListBuildings.Name = "ListBuildings";
+            ListBuildings.Size = new System.Drawing.Size(312, 154);
+            ListBuildings.TabIndex = 40;
+            ListBuildings.SelectedIndexChanged += ListBuildings_SelectedIndexChanged;
             // 
             // Control23
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.ListBuildings);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox1);
-            this.Name = "Control23";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(button2);
+            Controls.Add(button1);
+            Controls.Add(ListBuildings);
+            Controls.Add(label3);
+            Controls.Add(label1);
+            Controls.Add(textBox3);
+            Controls.Add(textBox1);
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Name = "Control23";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

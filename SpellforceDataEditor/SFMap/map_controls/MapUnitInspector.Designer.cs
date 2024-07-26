@@ -28,316 +28,317 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.LabelUnitName = new System.Windows.Forms.Label();
-            this.UnitID = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.NPCID = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.PosX = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.Unknown1 = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.Group = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.Unknown2 = new System.Windows.Forms.TextBox();
-            this.PosY = new System.Windows.Forms.TextBox();
-            this.Flags = new System.Windows.Forms.TextBox();
-            this.PanelUnitList = new System.Windows.Forms.Panel();
-            this.SearchUnitPrevious = new System.Windows.Forms.Button();
-            this.SearchUnitNext = new System.Windows.Forms.Button();
-            this.SearchUnitText = new System.Windows.Forms.TextBox();
-            this.ListUnits = new System.Windows.Forms.ListBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.ButtonResizeList = new System.Windows.Forms.Button();
-            this.PanelProperties = new System.Windows.Forms.Panel();
-            this.NPCScript = new System.Windows.Forms.Button();
-            this.PanelUnitList.SuspendLayout();
-            this.PanelProperties.SuspendLayout();
-            this.SuspendLayout();
+            LabelUnitName = new System.Windows.Forms.Label();
+            UnitID = new System.Windows.Forms.TextBox();
+            label2 = new System.Windows.Forms.Label();
+            label3 = new System.Windows.Forms.Label();
+            NPCID = new System.Windows.Forms.TextBox();
+            label4 = new System.Windows.Forms.Label();
+            PosX = new System.Windows.Forms.TextBox();
+            label5 = new System.Windows.Forms.Label();
+            label6 = new System.Windows.Forms.Label();
+            Unknown1 = new System.Windows.Forms.TextBox();
+            label7 = new System.Windows.Forms.Label();
+            Group = new System.Windows.Forms.TextBox();
+            label8 = new System.Windows.Forms.Label();
+            Unknown2 = new System.Windows.Forms.TextBox();
+            PosY = new System.Windows.Forms.TextBox();
+            Flags = new System.Windows.Forms.TextBox();
+            PanelUnitList = new System.Windows.Forms.Panel();
+            SearchUnitPrevious = new System.Windows.Forms.Button();
+            SearchUnitNext = new System.Windows.Forms.Button();
+            SearchUnitText = new System.Windows.Forms.TextBox();
+            ListUnits = new System.Windows.Forms.ListBox();
+            label1 = new System.Windows.Forms.Label();
+            ButtonResizeList = new System.Windows.Forms.Button();
+            PanelProperties = new System.Windows.Forms.Panel();
+            NPCScript = new System.Windows.Forms.Button();
+            PanelUnitList.SuspendLayout();
+            PanelProperties.SuspendLayout();
+            SuspendLayout();
             // 
             // LabelUnitName
             // 
-            this.LabelUnitName.AutoSize = true;
-            this.LabelUnitName.Location = new System.Drawing.Point(127, 5);
-            this.LabelUnitName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.LabelUnitName.Name = "LabelUnitName";
-            this.LabelUnitName.Size = new System.Drawing.Size(0, 16);
-            this.LabelUnitName.TabIndex = 0;
+            LabelUnitName.AutoSize = true;
+            LabelUnitName.Location = new System.Drawing.Point(111, 5);
+            LabelUnitName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            LabelUnitName.Name = "LabelUnitName";
+            LabelUnitName.Size = new System.Drawing.Size(0, 15);
+            LabelUnitName.TabIndex = 0;
             // 
             // UnitID
             // 
-            this.UnitID.BackColor = System.Drawing.Color.DarkOrange;
-            this.UnitID.Location = new System.Drawing.Point(131, 25);
-            this.UnitID.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.UnitID.Name = "UnitID";
-            this.UnitID.Size = new System.Drawing.Size(132, 22);
-            this.UnitID.TabIndex = 1;
-            this.UnitID.Validated += new System.EventHandler(this.UnitID_Validated);
+            UnitID.BackColor = System.Drawing.Color.DarkOrange;
+            UnitID.Location = new System.Drawing.Point(115, 23);
+            UnitID.Margin = new System.Windows.Forms.Padding(4);
+            UnitID.Name = "UnitID";
+            UnitID.ShortcutsEnabled = false;
+            UnitID.Size = new System.Drawing.Size(116, 23);
+            UnitID.TabIndex = 1;
+            UnitID.MouseDown += UnitID_MouseDown;
+            UnitID.Validated += UnitID_Validated;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(4, 28);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(47, 16);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Unit ID";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(4, 26);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(43, 15);
+            label2.TabIndex = 2;
+            label2.Text = "Unit ID";
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(4, 60);
-            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(52, 16);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "NPC ID";
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(4, 56);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(45, 15);
+            label3.TabIndex = 4;
+            label3.Text = "NPC ID";
             // 
             // NPCID
             // 
-            this.NPCID.Location = new System.Drawing.Point(131, 57);
-            this.NPCID.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.NPCID.Name = "NPCID";
-            this.NPCID.Size = new System.Drawing.Size(132, 22);
-            this.NPCID.TabIndex = 3;
-            this.NPCID.Validated += new System.EventHandler(this.NPCID_Validated);
+            NPCID.Location = new System.Drawing.Point(115, 53);
+            NPCID.Margin = new System.Windows.Forms.Padding(4);
+            NPCID.Name = "NPCID";
+            NPCID.Size = new System.Drawing.Size(116, 23);
+            NPCID.TabIndex = 3;
+            NPCID.Validated += NPCID_Validated;
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(4, 92);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(56, 16);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "Position";
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(4, 86);
+            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(50, 15);
+            label4.TabIndex = 6;
+            label4.Text = "Position";
             // 
             // PosX
             // 
-            this.PosX.Enabled = false;
-            this.PosX.Location = new System.Drawing.Point(131, 89);
-            this.PosX.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.PosX.Name = "PosX";
-            this.PosX.Size = new System.Drawing.Size(60, 22);
-            this.PosX.TabIndex = 5;
+            PosX.Enabled = false;
+            PosX.Location = new System.Drawing.Point(115, 83);
+            PosX.Margin = new System.Windows.Forms.Padding(4);
+            PosX.Name = "PosX";
+            PosX.Size = new System.Drawing.Size(53, 23);
+            PosX.TabIndex = 5;
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(4, 124);
-            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(42, 16);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "Flags";
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(4, 116);
+            label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(34, 15);
+            label5.TabIndex = 8;
+            label5.Text = "Flags";
             // 
             // label6
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(4, 156);
-            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(63, 16);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "Unknown";
+            label6.AutoSize = true;
+            label6.Location = new System.Drawing.Point(4, 146);
+            label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(58, 15);
+            label6.TabIndex = 10;
+            label6.Text = "Unknown";
             // 
             // Unknown1
             // 
-            this.Unknown1.Location = new System.Drawing.Point(131, 153);
-            this.Unknown1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.Unknown1.Name = "Unknown1";
-            this.Unknown1.Size = new System.Drawing.Size(132, 22);
-            this.Unknown1.TabIndex = 9;
-            this.Unknown1.Validated += new System.EventHandler(this.Unknown1_Validated);
+            Unknown1.Location = new System.Drawing.Point(115, 143);
+            Unknown1.Margin = new System.Windows.Forms.Padding(4);
+            Unknown1.Name = "Unknown1";
+            Unknown1.Size = new System.Drawing.Size(116, 23);
+            Unknown1.TabIndex = 9;
+            Unknown1.Validated += Unknown1_Validated;
             // 
             // label7
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(4, 188);
-            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(45, 16);
-            this.label7.TabIndex = 12;
-            this.label7.Text = "Group";
+            label7.AutoSize = true;
+            label7.Location = new System.Drawing.Point(4, 176);
+            label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label7.Name = "label7";
+            label7.Size = new System.Drawing.Size(40, 15);
+            label7.TabIndex = 12;
+            label7.Text = "Group";
             // 
             // Group
             // 
-            this.Group.Location = new System.Drawing.Point(131, 185);
-            this.Group.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.Group.Name = "Group";
-            this.Group.Size = new System.Drawing.Size(132, 22);
-            this.Group.TabIndex = 11;
-            this.Group.Validated += new System.EventHandler(this.Group_Validated);
+            Group.Location = new System.Drawing.Point(115, 173);
+            Group.Margin = new System.Windows.Forms.Padding(4);
+            Group.Name = "Group";
+            Group.Size = new System.Drawing.Size(116, 23);
+            Group.TabIndex = 11;
+            Group.Validated += Group_Validated;
             // 
             // label8
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(4, 220);
-            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(73, 16);
-            this.label8.TabIndex = 14;
-            this.label8.Text = "Unknown 2";
+            label8.AutoSize = true;
+            label8.Location = new System.Drawing.Point(4, 206);
+            label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label8.Name = "label8";
+            label8.Size = new System.Drawing.Size(67, 15);
+            label8.TabIndex = 14;
+            label8.Text = "Unknown 2";
             // 
             // Unknown2
             // 
-            this.Unknown2.Location = new System.Drawing.Point(131, 217);
-            this.Unknown2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.Unknown2.Name = "Unknown2";
-            this.Unknown2.Size = new System.Drawing.Size(132, 22);
-            this.Unknown2.TabIndex = 13;
-            this.Unknown2.Validated += new System.EventHandler(this.Unknown2_Validated);
+            Unknown2.Location = new System.Drawing.Point(115, 203);
+            Unknown2.Margin = new System.Windows.Forms.Padding(4);
+            Unknown2.Name = "Unknown2";
+            Unknown2.Size = new System.Drawing.Size(116, 23);
+            Unknown2.TabIndex = 13;
+            Unknown2.Validated += Unknown2_Validated;
             // 
             // PosY
             // 
-            this.PosY.Enabled = false;
-            this.PosY.Location = new System.Drawing.Point(203, 89);
-            this.PosY.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.PosY.Name = "PosY";
-            this.PosY.Size = new System.Drawing.Size(60, 22);
-            this.PosY.TabIndex = 15;
+            PosY.Enabled = false;
+            PosY.Location = new System.Drawing.Point(178, 83);
+            PosY.Margin = new System.Windows.Forms.Padding(4);
+            PosY.Name = "PosY";
+            PosY.Size = new System.Drawing.Size(53, 23);
+            PosY.TabIndex = 15;
             // 
             // Flags
             // 
-            this.Flags.Location = new System.Drawing.Point(130, 121);
-            this.Flags.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.Flags.Name = "Flags";
-            this.Flags.Size = new System.Drawing.Size(133, 22);
-            this.Flags.TabIndex = 16;
-            this.Flags.Validated += new System.EventHandler(this.Flags_Validated);
+            Flags.Location = new System.Drawing.Point(114, 113);
+            Flags.Margin = new System.Windows.Forms.Padding(4);
+            Flags.Name = "Flags";
+            Flags.Size = new System.Drawing.Size(117, 23);
+            Flags.TabIndex = 16;
+            Flags.Validated += Flags_Validated;
             // 
             // PanelUnitList
             // 
-            this.PanelUnitList.Controls.Add(this.SearchUnitPrevious);
-            this.PanelUnitList.Controls.Add(this.SearchUnitNext);
-            this.PanelUnitList.Controls.Add(this.SearchUnitText);
-            this.PanelUnitList.Controls.Add(this.ListUnits);
-            this.PanelUnitList.Controls.Add(this.label1);
-            this.PanelUnitList.Controls.Add(this.ButtonResizeList);
-            this.PanelUnitList.Location = new System.Drawing.Point(4, 250);
-            this.PanelUnitList.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.PanelUnitList.Name = "PanelUnitList";
-            this.PanelUnitList.Size = new System.Drawing.Size(387, 263);
-            this.PanelUnitList.TabIndex = 18;
+            PanelUnitList.Controls.Add(SearchUnitPrevious);
+            PanelUnitList.Controls.Add(SearchUnitNext);
+            PanelUnitList.Controls.Add(SearchUnitText);
+            PanelUnitList.Controls.Add(ListUnits);
+            PanelUnitList.Controls.Add(label1);
+            PanelUnitList.Controls.Add(ButtonResizeList);
+            PanelUnitList.Location = new System.Drawing.Point(4, 234);
+            PanelUnitList.Margin = new System.Windows.Forms.Padding(4);
+            PanelUnitList.Name = "PanelUnitList";
+            PanelUnitList.Size = new System.Drawing.Size(339, 247);
+            PanelUnitList.TabIndex = 18;
             // 
             // SearchUnitPrevious
             // 
-            this.SearchUnitPrevious.Location = new System.Drawing.Point(204, 230);
-            this.SearchUnitPrevious.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.SearchUnitPrevious.Name = "SearchUnitPrevious";
-            this.SearchUnitPrevious.Size = new System.Drawing.Size(179, 28);
-            this.SearchUnitPrevious.TabIndex = 23;
-            this.SearchUnitPrevious.Text = "Find previous";
-            this.SearchUnitPrevious.UseVisualStyleBackColor = true;
-            this.SearchUnitPrevious.Click += new System.EventHandler(this.SearchUnitPrevious_Click);
+            SearchUnitPrevious.Location = new System.Drawing.Point(178, 216);
+            SearchUnitPrevious.Margin = new System.Windows.Forms.Padding(4);
+            SearchUnitPrevious.Name = "SearchUnitPrevious";
+            SearchUnitPrevious.Size = new System.Drawing.Size(157, 26);
+            SearchUnitPrevious.TabIndex = 23;
+            SearchUnitPrevious.Text = "Find previous";
+            SearchUnitPrevious.UseVisualStyleBackColor = true;
+            SearchUnitPrevious.Click += SearchUnitPrevious_Click;
             // 
             // SearchUnitNext
             // 
-            this.SearchUnitNext.Location = new System.Drawing.Point(5, 230);
-            this.SearchUnitNext.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.SearchUnitNext.Name = "SearchUnitNext";
-            this.SearchUnitNext.Size = new System.Drawing.Size(188, 28);
-            this.SearchUnitNext.TabIndex = 22;
-            this.SearchUnitNext.Text = "Find next";
-            this.SearchUnitNext.UseVisualStyleBackColor = true;
-            this.SearchUnitNext.Click += new System.EventHandler(this.SearchUnitNext_Click);
+            SearchUnitNext.Location = new System.Drawing.Point(4, 216);
+            SearchUnitNext.Margin = new System.Windows.Forms.Padding(4);
+            SearchUnitNext.Name = "SearchUnitNext";
+            SearchUnitNext.Size = new System.Drawing.Size(164, 26);
+            SearchUnitNext.TabIndex = 22;
+            SearchUnitNext.Text = "Find next";
+            SearchUnitNext.UseVisualStyleBackColor = true;
+            SearchUnitNext.Click += SearchUnitNext_Click;
             // 
             // SearchUnitText
             // 
-            this.SearchUnitText.Location = new System.Drawing.Point(5, 198);
-            this.SearchUnitText.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.SearchUnitText.Name = "SearchUnitText";
-            this.SearchUnitText.Size = new System.Drawing.Size(376, 22);
-            this.SearchUnitText.TabIndex = 21;
+            SearchUnitText.Location = new System.Drawing.Point(4, 186);
+            SearchUnitText.Margin = new System.Windows.Forms.Padding(4);
+            SearchUnitText.Name = "SearchUnitText";
+            SearchUnitText.Size = new System.Drawing.Size(330, 23);
+            SearchUnitText.TabIndex = 21;
             // 
             // ListUnits
             // 
-            this.ListUnits.FormattingEnabled = true;
-            this.ListUnits.ItemHeight = 16;
-            this.ListUnits.Location = new System.Drawing.Point(5, 39);
-            this.ListUnits.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.ListUnits.Name = "ListUnits";
-            this.ListUnits.Size = new System.Drawing.Size(376, 148);
-            this.ListUnits.TabIndex = 20;
-            this.ListUnits.SelectedIndexChanged += new System.EventHandler(this.ListUnits_SelectedIndexChanged);
+            ListUnits.FormattingEnabled = true;
+            ListUnits.ItemHeight = 15;
+            ListUnits.Location = new System.Drawing.Point(4, 37);
+            ListUnits.Margin = new System.Windows.Forms.Padding(4);
+            ListUnits.Name = "ListUnits";
+            ListUnits.Size = new System.Drawing.Size(330, 139);
+            ListUnits.TabIndex = 20;
+            ListUnits.SelectedIndexChanged += ListUnits_SelectedIndexChanged;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 11);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(72, 16);
-            this.label1.TabIndex = 19;
-            this.label1.Text = "List of units";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(7, 10);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(68, 15);
+            label1.TabIndex = 19;
+            label1.Text = "List of units";
             // 
             // ButtonResizeList
             // 
-            this.ButtonResizeList.Location = new System.Drawing.Point(353, 5);
-            this.ButtonResizeList.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.ButtonResizeList.Name = "ButtonResizeList";
-            this.ButtonResizeList.Size = new System.Drawing.Size(29, 27);
-            this.ButtonResizeList.TabIndex = 0;
-            this.ButtonResizeList.Text = "-";
-            this.ButtonResizeList.UseVisualStyleBackColor = true;
-            this.ButtonResizeList.Click += new System.EventHandler(this.ButtonResizeList_Click);
+            ButtonResizeList.Location = new System.Drawing.Point(309, 5);
+            ButtonResizeList.Margin = new System.Windows.Forms.Padding(4);
+            ButtonResizeList.Name = "ButtonResizeList";
+            ButtonResizeList.Size = new System.Drawing.Size(25, 25);
+            ButtonResizeList.TabIndex = 0;
+            ButtonResizeList.Text = "-";
+            ButtonResizeList.UseVisualStyleBackColor = true;
+            ButtonResizeList.Click += ButtonResizeList_Click;
             // 
             // PanelProperties
             // 
-            this.PanelProperties.Controls.Add(this.NPCScript);
-            this.PanelProperties.Controls.Add(this.label2);
-            this.PanelProperties.Controls.Add(this.LabelUnitName);
-            this.PanelProperties.Controls.Add(this.UnitID);
-            this.PanelProperties.Controls.Add(this.Flags);
-            this.PanelProperties.Controls.Add(this.NPCID);
-            this.PanelProperties.Controls.Add(this.PosY);
-            this.PanelProperties.Controls.Add(this.label3);
-            this.PanelProperties.Controls.Add(this.label8);
-            this.PanelProperties.Controls.Add(this.PosX);
-            this.PanelProperties.Controls.Add(this.Unknown2);
-            this.PanelProperties.Controls.Add(this.label4);
-            this.PanelProperties.Controls.Add(this.label7);
-            this.PanelProperties.Controls.Add(this.label5);
-            this.PanelProperties.Controls.Add(this.Group);
-            this.PanelProperties.Controls.Add(this.Unknown1);
-            this.PanelProperties.Controls.Add(this.label6);
-            this.PanelProperties.Enabled = false;
-            this.PanelProperties.Location = new System.Drawing.Point(4, 0);
-            this.PanelProperties.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.PanelProperties.Name = "PanelProperties";
-            this.PanelProperties.Size = new System.Drawing.Size(387, 247);
-            this.PanelProperties.TabIndex = 19;
+            PanelProperties.Controls.Add(NPCScript);
+            PanelProperties.Controls.Add(label2);
+            PanelProperties.Controls.Add(LabelUnitName);
+            PanelProperties.Controls.Add(UnitID);
+            PanelProperties.Controls.Add(Flags);
+            PanelProperties.Controls.Add(NPCID);
+            PanelProperties.Controls.Add(PosY);
+            PanelProperties.Controls.Add(label3);
+            PanelProperties.Controls.Add(label8);
+            PanelProperties.Controls.Add(PosX);
+            PanelProperties.Controls.Add(Unknown2);
+            PanelProperties.Controls.Add(label4);
+            PanelProperties.Controls.Add(label7);
+            PanelProperties.Controls.Add(label5);
+            PanelProperties.Controls.Add(Group);
+            PanelProperties.Controls.Add(Unknown1);
+            PanelProperties.Controls.Add(label6);
+            PanelProperties.Enabled = false;
+            PanelProperties.Location = new System.Drawing.Point(4, 0);
+            PanelProperties.Margin = new System.Windows.Forms.Padding(4);
+            PanelProperties.Name = "PanelProperties";
+            PanelProperties.Size = new System.Drawing.Size(339, 232);
+            PanelProperties.TabIndex = 19;
             // 
             // NPCScript
             // 
-            this.NPCScript.Location = new System.Drawing.Point(272, 54);
-            this.NPCScript.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.NPCScript.Name = "NPCScript";
-            this.NPCScript.Size = new System.Drawing.Size(111, 28);
-            this.NPCScript.TabIndex = 18;
-            this.NPCScript.Text = "Open script";
-            this.NPCScript.UseVisualStyleBackColor = true;
-            this.NPCScript.Click += new System.EventHandler(this.NPCScript_Click);
+            NPCScript.Location = new System.Drawing.Point(238, 51);
+            NPCScript.Margin = new System.Windows.Forms.Padding(4);
+            NPCScript.Name = "NPCScript";
+            NPCScript.Size = new System.Drawing.Size(97, 26);
+            NPCScript.TabIndex = 18;
+            NPCScript.Text = "Open script";
+            NPCScript.UseVisualStyleBackColor = true;
+            NPCScript.Click += NPCScript_Click;
             // 
             // MapUnitInspector
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.Controls.Add(this.PanelProperties);
-            this.Controls.Add(this.PanelUnitList);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.Name = "MapUnitInspector";
-            this.Size = new System.Drawing.Size(395, 517);
-            this.Load += new System.EventHandler(this.MapUnitInspector_Load);
-            this.Resize += new System.EventHandler(this.MapUnitInspector_Resize);
-            this.PanelUnitList.ResumeLayout(false);
-            this.PanelUnitList.PerformLayout();
-            this.PanelProperties.ResumeLayout(false);
-            this.PanelProperties.PerformLayout();
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            Controls.Add(PanelProperties);
+            Controls.Add(PanelUnitList);
+            Margin = new System.Windows.Forms.Padding(4);
+            Name = "MapUnitInspector";
+            Size = new System.Drawing.Size(346, 485);
+            Load += MapUnitInspector_Load;
+            Resize += MapUnitInspector_Resize;
+            PanelUnitList.ResumeLayout(false);
+            PanelUnitList.PerformLayout();
+            PanelProperties.ResumeLayout(false);
+            PanelProperties.PerformLayout();
+            ResumeLayout(false);
         }
 
         #endregion

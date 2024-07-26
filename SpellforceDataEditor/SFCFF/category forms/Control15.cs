@@ -181,7 +181,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2016[index, 0].TextID} {SFCategoryManager.GetTextByLanguage(index, 1)}";
+            return $"{c2016[index, 0].TextID} {SFCategoryManager.GetTextByLanguage(c2016[index, 0].TextID, 1)}";
         }
 
         public override void on_add_subelement(int subelem_index)

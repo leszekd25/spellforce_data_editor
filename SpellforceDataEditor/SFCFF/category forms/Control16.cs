@@ -216,5 +216,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             return flag_text + ai_flag_text;
         }
+
+        private void textBox9_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, textBox9.Text);
+        }
+
+        private void textBox10_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2023, textBox10.Text);
+        }
     }
 }

@@ -207,7 +207,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             Byte max_index = 0;
             for (int i = 0; i < c2030.GetItemSubItemNum(current_element); i++)
             {
-                max_index = Math.Max(max_index, c2030[current_element, i].PolygonID); 
+                max_index = Math.Max(max_index, c2030[current_element, i].PolygonID);
             }
             max_index += 1;
 
@@ -249,7 +249,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2030[index, 0].BuildingID} {SFCategoryManager.GetBuildingName(c2030[index, 0].BuildingID)} [{c2030[index, 0].PolygonID + 1}]";
+            return $"{c2030[index, 0].BuildingID} {SFCategoryManager.GetBuildingName(c2030[index, 0].BuildingID)} [{c2030.GetItemSubItemNum(index)}]";
         }
 
         public override void on_add_subelement(int subelem_index)
@@ -270,6 +270,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             listBox1_update();
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2029, textBox1.Text);
         }
     }
 }

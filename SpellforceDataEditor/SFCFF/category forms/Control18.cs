@@ -105,11 +105,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox13.Text = c2024[current_element].GetHandleString();
             textBox10.Text = c2024[current_element].CanBePlaced.ToString();
 
-            button_repr(ButtonGoto19, SFCategoryManager.gamedata.c2025, "Equipment", "Unit");
-            button_repr(ButtonGoto20, SFCategoryManager.gamedata.c2026, "Spells", "Unit");
-            button_repr(ButtonGoto21, SFCategoryManager.gamedata.c2028, "Resource requirements", "Unit");
-            button_repr(ButtonGoto22, SFCategoryManager.gamedata.c2040, "Loot", "Unit");
-            button_repr(ButtonGoto23, SFCategoryManager.gamedata.c2001, "Upgrade data", "Unit");
+            button_repr(ButtonGoto19, 2025);
+            button_repr(ButtonGoto20, 2026);
+            button_repr(ButtonGoto21, 2028);
+            button_repr(ButtonGoto22, 2040);
+            button_repr(ButtonGoto23, 2001);
         }
 
         private int calculate_total_xp(UInt32 xp_gain, UInt16 xp_falloff)
@@ -138,6 +138,41 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             UInt32 xp_gain = c2024[index].ExperienceGain;
             UInt16 xp_falloff = c2024[index].ExperienceFalloff;
             return "Max XP gained from this unit: " + calculate_total_xp(xp_gain, xp_falloff).ToString();
+        }
+
+        private void ButtonGoto19_Click(object sender, EventArgs e)
+        {
+            button_gen_elem(ButtonGoto19, 2025);
+        }
+
+        private void ButtonGoto20_Click(object sender, EventArgs e)
+        {
+            button_gen_elem(ButtonGoto20, 2026);
+        }
+
+        private void ButtonGoto21_Click(object sender, EventArgs e)
+        {
+            button_gen_elem(ButtonGoto21, 2028);
+        }
+
+        private void ButtonGoto22_Click(object sender, EventArgs e)
+        {
+            button_gen_elem(ButtonGoto22, 2040);
+        }
+
+        private void ButtonGoto23_Click(object sender, EventArgs e)
+        {
+            button_gen_elem(ButtonGoto23, 2001);
+        }
+
+        private void textBox3_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2005, textBox3.Text);
+        }
+
+        private void textBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, textBox2.Text);
         }
     }
 }

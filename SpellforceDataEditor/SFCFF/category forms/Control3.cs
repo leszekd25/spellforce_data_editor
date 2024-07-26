@@ -26,7 +26,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override void show_element()
         {
             Category2056Item item = c2056[current_element];
-            textBox1.Text = $"{item.GetData(0).ToString("X")} {item.GetData(1).ToString("X")} {item.GetData(2).ToString("X")} {item.GetData(3).ToString("X")} {item.GetData(4).ToString("X")} {item.GetData(5).ToString("X")}";
+            textBox1.Text = $"{item.GetData(0).ToString("X2")} {item.GetData(1).ToString("X2")} {item.GetData(2).ToString("X2")} {item.GetData(3).ToString("X2")} {item.GetData(4).ToString("X2")} {item.GetData(5).ToString("X2")}";
         }
     }
 }

@@ -24,7 +24,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             c2003 = SFCategoryManager.gamedata.c2003;
             category = c2003;
-            
+
             column_dict.Add("Item ID", new int[1] { 0 });
             column_dict.Add("Item type 1", new int[1] { 1 });
             column_dict.Add("Item type 2", new int[1] { 2 });
@@ -108,48 +108,48 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox7.Text = item.BuyValue.ToString();
             textBox9.Text = item.ItemSetID.ToString();
 
-            button_repr(ButtonGoto8, SFCategoryManager.gamedata.c2004, "Armor stats", "Item");
-            button_repr(ButtonGoto9, SFCategoryManager.gamedata.c2013, "Scroll link", "Item");
-            button_repr(ButtonGoto10, SFCategoryManager.gamedata.c2015, "Weapon data", "Item");
-            button_repr(ButtonGoto11, SFCategoryManager.gamedata.c2017, "Requirements", "Item");
-            button_repr(ButtonGoto12, SFCategoryManager.gamedata.c2014, "Spell effects", "Item");
-            button_repr(ButtonGoto13, SFCategoryManager.gamedata.c2012, "UI data", "Item");
-            button_repr(ButtonGoto14, SFCategoryManager.gamedata.c2018, "Spell link", "Item");
+            button_repr(ButtonGoto8, 2004);
+            button_repr(ButtonGoto9, 2013);
+            button_repr(ButtonGoto10, 2015);
+            button_repr(ButtonGoto11, 2017);
+            button_repr(ButtonGoto12, 2014);
+            button_repr(ButtonGoto13, 2012);
+            button_repr(ButtonGoto14, 2018);
         }
 
         private void ButtonGoto8_Click(object sender, EventArgs e)
         {
-            button_repr(ButtonGoto8, SFCategoryManager.gamedata.c2004, "Armor stats", "Item");
+            button_gen_elem(ButtonGoto8, 2004);
         }
 
         private void ButtonGoto9_Click(object sender, EventArgs e)
         {
-            button_repr(ButtonGoto9, SFCategoryManager.gamedata.c2013, "Scroll link", "Item");
+            button_gen_elem(ButtonGoto9, 2013);
         }
 
         private void ButtonGoto10_Click(object sender, EventArgs e)
         {
-            button_repr(ButtonGoto10, SFCategoryManager.gamedata.c2015, "Weapon data", "Item");
+            button_gen_elem(ButtonGoto10, 2015);
         }
 
         private void ButtonGoto11_Click(object sender, EventArgs e)
         {
-            button_repr(ButtonGoto11, SFCategoryManager.gamedata.c2017, "Requirements", "Item");
+            button_gen_elem(ButtonGoto11, 2017);
         }
 
         private void ButtonGoto12_Click(object sender, EventArgs e)
         {
-            button_repr(ButtonGoto12, SFCategoryManager.gamedata.c2014, "Spell effects", "Item");
+            button_gen_elem(ButtonGoto12, 2014);
         }
 
         private void ButtonGoto13_Click(object sender, EventArgs e)
         {
-            button_repr(ButtonGoto13, SFCategoryManager.gamedata.c2012, "UI data", "Item");
+            button_gen_elem(ButtonGoto13, 2012);
         }
 
         private void ButtonGoto14_Click(object sender, EventArgs e)
         {
-            button_repr(ButtonGoto14, SFCategoryManager.gamedata.c2018, "Spell link", "Item");
+            button_gen_elem(ButtonGoto14, 2018);
         }
 
 
@@ -197,7 +197,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     break;
             }
 
-            if(item.ItemSetID != 0)
+            if (item.ItemSetID != 0)
             {
                 bool set_found = SFCategoryManager.gamedata.c2072.GetItemIndex(item.ItemSetID, out int set_index);
                 if (set_found)
@@ -236,6 +236,31 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             return sw.ToString();
+        }
+
+        private void textBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, textBox2.Text);
+        }
+
+        private void textBox9_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2072, textBox9.Text);
+        }
+
+        private void textBox3_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2005, textBox3.Text);
+        }
+
+        private void textBox4_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2024, textBox4.Text);
+        }
+
+        private void textBox5_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2029, textBox5.Text);
         }
     }
 }

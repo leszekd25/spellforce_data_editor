@@ -43,5 +43,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             return $"{c2051[index].NPCID} {SFCategoryManager.GetTextByLanguage(c2051[index].TextID, 1)}";
         }
+
+        private void textBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, textBox2.Text);
+        }
     }
 }

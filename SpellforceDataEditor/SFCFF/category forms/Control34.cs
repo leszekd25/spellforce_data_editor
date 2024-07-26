@@ -85,8 +85,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             textBox9.Text = c2050[current_element].Width.ToString();
             textBox10.Text = c2050[current_element].Height.ToString();
 
-            button_repr(ButtonGoto35, SFCategoryManager.gamedata.c2057, "Collision data", "Object");
-            button_repr(ButtonGoto36, SFCategoryManager.gamedata.c2065, "Loot", "Object");
+            button_repr(ButtonGoto35, 2057);
+            button_repr(ButtonGoto36, 2065);
         }
 
 
@@ -126,6 +126,21 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             return txt;
+        }
+
+        private void textBox3_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, textBox3.Text);
+        }
+
+        private void ButtonGoto35_Click(object sender, EventArgs e)
+        {
+            button_gen_elem(ButtonGoto35, 2057);
+        }
+
+        private void ButtonGoto36_Click(object sender, EventArgs e)
+        {
+            button_gen_elem(ButtonGoto36, 2065);
         }
     }
 }

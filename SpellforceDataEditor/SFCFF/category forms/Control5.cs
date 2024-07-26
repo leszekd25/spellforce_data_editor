@@ -15,7 +15,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             c2006 = SFCategoryManager.gamedata.c2006;
             category = c2006;
-            
+
             column_dict.Add("Unit stats ID", new int[1] { 0 });
             column_dict.Add("Unit major skill", new int[1] { 1 });
             column_dict.Add("Unit minor skill", new int[1] { 2 });
@@ -92,7 +92,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             int start_index = c2006.GetSubItemIndex(current_element, 0);
             int num = c2006.GetItemSubItemNum(current_element);
-            for(int i = 0; i < num; i++)
+            for (int i = 0; i < num; i++)
             {
                 ListSkills.Items.Add("");
                 set_list_text(i);
@@ -146,25 +146,27 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            c2006.GetID(current_element, out int stats_id);
-
-            for(int i = 0; i < SFCategoryManager.gamedata.c2024.GetNumOfItems(); i++)
+            c2006.GetID(index, out int stats_id);
+            if (!SFCategoryManager.gamedata.c2005.GetItemIndex(stats_id, out int stats_index))
             {
-                if (SFCategoryManager.gamedata.c2024[i].StatsID == stats_id)
+                return $"{stats_id} {SFEngine.Utility.S_ITEM_MISSING}";
+            }
+            Category2005Item item = SFCategoryManager.gamedata.c2005[stats_index];
+
+            if (SFCategoryManager.hero_cache.GetItemIndex(item.StatsID, out int hero_index))
+            {
+                return $"{item.StatsID} {SFCategoryManager.GetRuneheroName(item.StatsID)} (lvl {item.UnitLevel})";
+            }
+
+            for (int i = 0; i < SFCategoryManager.gamedata.c2024.GetNumOfItems(); i++)
+            {
+                if (SFCategoryManager.gamedata.c2024[i].StatsID == item.StatsID)
                 {
-                    bool text_found = SFCategoryManager.gamedata.c2016.GetItemIndex(SFCategoryManager.gamedata.c2024[i].NameID, out int text_index);
-                    if (text_found)
-                    {
-                        return $"{stats_id} {SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2024[i].NameID, 1)}";
-                    }
-                    else
-                    {
-                        return $"{stats_id} {SFCategoryManager.GetRuneheroName((ushort)stats_id)}";
-                    }
+                    return $"{item.StatsID} {SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2024[i].NameID, 1)} (lvl {item.UnitLevel})";
                 }
             }
-            return $"{stats_id} {SFEngine.Utility.S_ITEM_MISSING}";
 
+            return $"{item.StatsID} {SFEngine.Utility.S_ITEM_MISSING} (lvl {item.UnitLevel})";
         }
 
         public override void on_add_subelement(int subelem_index)
@@ -189,6 +191,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 textBox4.Text = item.SkillMinorID.ToString();
                 textBox2.Text = item.SkillLevel.ToString();
             }
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2005, textBox1.Text);
         }
     }
 }

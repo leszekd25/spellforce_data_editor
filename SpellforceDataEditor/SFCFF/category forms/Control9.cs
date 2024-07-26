@@ -39,21 +39,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
-            {
-            }
+            textbox_trace(e, 2003, textBox1.Text);
         }
 
         private void textBox2_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
-            {
-            }
+            textbox_trace(e, 2003, textBox2.Text);
         }
 
         public override string get_element_string(int index)
         {
-            return $"{SFCategoryManager.GetItemName(c2013[current_element].ItemID)} | {SFCategoryManager.GetItemName(c2013[current_element].InstalledScrollItemID)}";
+            return $"{SFCategoryManager.GetItemName(c2013[index].ItemID)} | {SFCategoryManager.GetItemName(c2013[index].InstalledScrollItemID)}";
         }
     }
 }

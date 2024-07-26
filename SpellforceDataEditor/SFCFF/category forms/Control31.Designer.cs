@@ -28,117 +28,129 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.comboItemType = new System.Windows.Forms.ComboBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.ListItemTypes = new System.Windows.Forms.ListBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.SuspendLayout();
+            comboItemType = new System.Windows.Forms.ComboBox();
+            button2 = new System.Windows.Forms.Button();
+            button1 = new System.Windows.Forms.Button();
+            ListItemTypes = new System.Windows.Forms.ListBox();
+            label4 = new System.Windows.Forms.Label();
+            label5 = new System.Windows.Forms.Label();
+            label6 = new System.Windows.Forms.Label();
+            textBox4 = new System.Windows.Forms.TextBox();
+            textBox5 = new System.Windows.Forms.TextBox();
+            SuspendLayout();
             // 
             // comboItemType
             // 
-            this.comboItemType.FormattingEnabled = true;
-            this.comboItemType.Location = new System.Drawing.Point(105, 185);
-            this.comboItemType.Name = "comboItemType";
-            this.comboItemType.Size = new System.Drawing.Size(126, 21);
-            this.comboItemType.TabIndex = 58;
-            this.comboItemType.SelectedIndexChanged += new System.EventHandler(this.comboItemType_SelectedIndexChanged);
-            this.comboItemType.Invalidated += new System.Windows.Forms.InvalidateEventHandler(this.comboItemType_SelectedIndexChanged);
+            comboItemType.FormattingEnabled = true;
+            comboItemType.Location = new System.Drawing.Point(122, 213);
+            comboItemType.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            comboItemType.Name = "comboItemType";
+            comboItemType.Size = new System.Drawing.Size(146, 23);
+            comboItemType.TabIndex = 58;
+            comboItemType.SelectedIndexChanged += comboItemType_SelectedIndexChanged;
+            comboItemType.Invalidated += comboItemType_SelectedIndexChanged;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(380, 74);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 57;
-            this.button2.Text = "Remove";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            button2.Location = new System.Drawing.Point(443, 85);
+            button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button2.Name = "button2";
+            button2.Size = new System.Drawing.Size(88, 27);
+            button2.TabIndex = 57;
+            button2.Text = "Remove";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(380, 45);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 56;
-            this.button1.Text = "Insert";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            button1.Location = new System.Drawing.Point(443, 52);
+            button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button1.Name = "button1";
+            button1.Size = new System.Drawing.Size(88, 27);
+            button1.TabIndex = 56;
+            button1.Text = "Insert";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // ListItemTypes
             // 
-            this.ListItemTypes.FormattingEnabled = true;
-            this.ListItemTypes.Location = new System.Drawing.Point(105, 45);
-            this.ListItemTypes.Name = "ListItemTypes";
-            this.ListItemTypes.Size = new System.Drawing.Size(269, 134);
-            this.ListItemTypes.TabIndex = 55;
-            this.ListItemTypes.SelectedIndexChanged += new System.EventHandler(this.ListItemTypes_SelectedIndexChanged);
+            ListItemTypes.FormattingEnabled = true;
+            ListItemTypes.ItemHeight = 15;
+            ListItemTypes.Location = new System.Drawing.Point(122, 52);
+            ListItemTypes.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ListItemTypes.Name = "ListItemTypes";
+            ListItemTypes.Size = new System.Drawing.Size(313, 154);
+            ListItemTypes.TabIndex = 55;
+            ListItemTypes.SelectedIndexChanged += ListItemTypes_SelectedIndexChanged;
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 215);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(91, 13);
-            this.label4.TabIndex = 54;
-            this.label4.Text = "Price multiplier (%)";
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(9, 248);
+            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(108, 15);
+            label4.TabIndex = 54;
+            label4.Text = "Price multiplier (%)";
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(49, 188);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(50, 13);
-            this.label5.TabIndex = 53;
-            this.label5.Text = "Item type";
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(57, 217);
+            label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(57, 15);
+            label5.TabIndex = 53;
+            label5.Text = "Item type";
             // 
             // label6
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(33, 22);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(66, 13);
-            this.label6.TabIndex = 52;
-            this.label6.Text = "Merchant ID";
+            label6.AutoSize = true;
+            label6.Location = new System.Drawing.Point(38, 25);
+            label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(72, 15);
+            label6.TabIndex = 52;
+            label6.Text = "Merchant ID";
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(105, 212);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(126, 20);
-            this.textBox4.TabIndex = 51;
-            this.textBox4.Invalidated += new System.Windows.Forms.InvalidateEventHandler(this.textBox4_TextChanged);
+            textBox4.Location = new System.Drawing.Point(122, 245);
+            textBox4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox4.Name = "textBox4";
+            textBox4.Size = new System.Drawing.Size(146, 23);
+            textBox4.TabIndex = 51;
+            textBox4.Invalidated += textBox4_TextChanged;
             // 
             // textBox5
             // 
-            this.textBox5.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox5.Location = new System.Drawing.Point(105, 19);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(126, 20);
-            this.textBox5.TabIndex = 50;
-            this.textBox5.Invalidated += new System.Windows.Forms.InvalidateEventHandler(this.textBox5_TextChanged);
+            textBox5.BackColor = System.Drawing.Color.DarkOrange;
+            textBox5.Location = new System.Drawing.Point(122, 22);
+            textBox5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox5.Name = "textBox5";
+            textBox5.ShortcutsEnabled = false;
+            textBox5.Size = new System.Drawing.Size(146, 23);
+            textBox5.TabIndex = 50;
+            textBox5.Invalidated += textBox5_TextChanged;
+            textBox5.MouseDown += textBox5_MouseDown;
             // 
             // Control31
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.comboItemType);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.ListItemTypes);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.textBox5);
-            this.Name = "Control31";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(comboItemType);
+            Controls.Add(button2);
+            Controls.Add(button1);
+            Controls.Add(ListItemTypes);
+            Controls.Add(label4);
+            Controls.Add(label5);
+            Controls.Add(label6);
+            Controls.Add(textBox4);
+            Controls.Add(textBox5);
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Name = "Control31";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

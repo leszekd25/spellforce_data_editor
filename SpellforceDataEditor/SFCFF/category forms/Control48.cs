@@ -124,5 +124,20 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         {
             return $"{SFCategoryManager.GetDescriptionName(c2036[index].ButtonDescriptionID)}\r\n\r\nUpgraded in building: {SFCategoryManager.GetBuildingName(c2036[index].BuildingID)}";
         }
+
+        private void tb_sd6_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2029, tb_sd6.Text);
+        }
+
+        private void tb_sd2_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2016, tb_sd2.Text);
+        }
+
+        private void tb_sd7_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2058, tb_sd7.Text);
+        }
     }
 }

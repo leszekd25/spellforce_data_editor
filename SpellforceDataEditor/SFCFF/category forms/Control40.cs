@@ -29,7 +29,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override void show_element()
         {
-            tb_req4_1.Text = $"{c2055[current_element].B1:X} {c2055[current_element].B2:X} {c2055[current_element].B3:X}";
+            tb_req4_1.Text = $"{c2055[current_element].B1:X2} {c2055[current_element].B2:X2} {c2055[current_element].B3:X2}";
         }
     }
 }

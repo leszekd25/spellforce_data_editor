@@ -28,63 +28,69 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.tb_effID = new System.Windows.Forms.TextBox();
-            this.lb_effID = new System.Windows.Forms.Label();
-            this.SuspendLayout();
+            textBox1 = new System.Windows.Forms.TextBox();
+            label1 = new System.Windows.Forms.Label();
+            tb_effID = new System.Windows.Forms.TextBox();
+            lb_effID = new System.Windows.Forms.Label();
+            SuspendLayout();
             // 
             // textBox1
             // 
-            this.textBox1.BackColor = System.Drawing.Color.DarkOrange;
-            this.textBox1.Location = new System.Drawing.Point(105, 45);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(126, 20);
-            this.textBox1.TabIndex = 13;
-            this.textBox1.Leave += new System.EventHandler(this.textBox1_TextChanged);
+            textBox1.BackColor = System.Drawing.Color.DarkOrange;
+            textBox1.Location = new System.Drawing.Point(122, 52);
+            textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBox1.Name = "textBox1";
+            textBox1.ShortcutsEnabled = false;
+            textBox1.Size = new System.Drawing.Size(146, 23);
+            textBox1.TabIndex = 13;
+            textBox1.Leave += textBox1_TextChanged;
+            textBox1.MouseDown += textBox1_MouseDown;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(57, 48);
-            this.label1.Name = "label1";
-            this.label1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label1.Size = new System.Drawing.Size(42, 13);
-            this.label1.TabIndex = 12;
-            this.label1.Text = "Text ID";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(66, 55);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            label1.Size = new System.Drawing.Size(42, 15);
+            label1.TabIndex = 12;
+            label1.Text = "Text ID";
+            label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // tb_effID
             // 
-            this.tb_effID.Location = new System.Drawing.Point(105, 19);
-            this.tb_effID.Name = "tb_effID";
-            this.tb_effID.Size = new System.Drawing.Size(126, 20);
-            this.tb_effID.TabIndex = 11;
-            this.tb_effID.Leave += new System.EventHandler(this.tb_effID_TextChanged);
+            tb_effID.Location = new System.Drawing.Point(122, 22);
+            tb_effID.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_effID.Name = "tb_effID";
+            tb_effID.Size = new System.Drawing.Size(146, 23);
+            tb_effID.TabIndex = 11;
+            tb_effID.Leave += tb_effID_TextChanged;
             // 
             // lb_effID
             // 
-            this.lb_effID.AutoSize = true;
-            this.lb_effID.Location = new System.Drawing.Point(12, 22);
-            this.lb_effID.Name = "lb_effID";
-            this.lb_effID.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lb_effID.Size = new System.Drawing.Size(87, 13);
-            this.lb_effID.TabIndex = 10;
-            this.lb_effID.Text = "Weapon material";
-            this.lb_effID.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            lb_effID.AutoSize = true;
+            lb_effID.Location = new System.Drawing.Point(14, 25);
+            lb_effID.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_effID.Name = "lb_effID";
+            lb_effID.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            lb_effID.Size = new System.Drawing.Size(97, 15);
+            lb_effID.TabIndex = 10;
+            lb_effID.Text = "Weapon material";
+            lb_effID.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // Control45
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.tb_effID);
-            this.Controls.Add(this.lb_effID);
-            this.Name = "Control45";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(textBox1);
+            Controls.Add(label1);
+            Controls.Add(tb_effID);
+            Controls.Add(lb_effID);
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Name = "Control45";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

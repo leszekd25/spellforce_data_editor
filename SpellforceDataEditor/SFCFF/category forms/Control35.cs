@@ -249,7 +249,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2057[index, 0].ObjectID} {SFCategoryManager.GetObjectName(c2057[index, 0].ObjectID)} [{c2057[index, 0].PolygonID + 1}]";
+            return $"{c2057[index, 0].ObjectID} {SFCategoryManager.GetObjectName(c2057[index, 0].ObjectID)} [{c2057.GetItemSubItemNum(index)}]";
         }
 
         public override void on_add_subelement(int subelem_index)
@@ -270,6 +270,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             listBox1_update();
+        }
+
+        private void textBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            textbox_trace(e, 2050, textBox1.Text);
         }
     }
 }

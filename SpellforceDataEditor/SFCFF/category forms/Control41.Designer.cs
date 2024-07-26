@@ -28,59 +28,65 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tb_sd2 = new System.Windows.Forms.TextBox();
-            this.lb_sd2 = new System.Windows.Forms.Label();
-            this.tb_sd1 = new System.Windows.Forms.TextBox();
-            this.lb_sd1 = new System.Windows.Forms.Label();
-            this.SuspendLayout();
+            tb_sd2 = new System.Windows.Forms.TextBox();
+            lb_sd2 = new System.Windows.Forms.Label();
+            tb_sd1 = new System.Windows.Forms.TextBox();
+            lb_sd1 = new System.Windows.Forms.Label();
+            SuspendLayout();
             // 
             // tb_sd2
             // 
-            this.tb_sd2.BackColor = System.Drawing.Color.DarkOrange;
-            this.tb_sd2.Location = new System.Drawing.Point(105, 45);
-            this.tb_sd2.Name = "tb_sd2";
-            this.tb_sd2.Size = new System.Drawing.Size(126, 20);
-            this.tb_sd2.TabIndex = 39;
-            this.tb_sd2.Leave += new System.EventHandler(this.tb_sd2_TextChanged);
+            tb_sd2.BackColor = System.Drawing.Color.DarkOrange;
+            tb_sd2.Location = new System.Drawing.Point(122, 52);
+            tb_sd2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_sd2.Name = "tb_sd2";
+            tb_sd2.ShortcutsEnabled = false;
+            tb_sd2.Size = new System.Drawing.Size(146, 23);
+            tb_sd2.TabIndex = 39;
+            tb_sd2.Leave += tb_sd2_TextChanged;
+            tb_sd2.MouseDown += tb_sd2_MouseDown;
             // 
             // lb_sd2
             // 
-            this.lb_sd2.AutoSize = true;
-            this.lb_sd2.Location = new System.Drawing.Point(57, 48);
-            this.lb_sd2.Name = "lb_sd2";
-            this.lb_sd2.Size = new System.Drawing.Size(42, 13);
-            this.lb_sd2.TabIndex = 38;
-            this.lb_sd2.Text = "Text ID";
+            lb_sd2.AutoSize = true;
+            lb_sd2.Location = new System.Drawing.Point(66, 55);
+            lb_sd2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd2.Name = "lb_sd2";
+            lb_sd2.Size = new System.Drawing.Size(42, 15);
+            lb_sd2.TabIndex = 38;
+            lb_sd2.Text = "Text ID";
             // 
             // tb_sd1
             // 
-            this.tb_sd1.Location = new System.Drawing.Point(105, 19);
-            this.tb_sd1.Name = "tb_sd1";
-            this.tb_sd1.Size = new System.Drawing.Size(126, 20);
-            this.tb_sd1.TabIndex = 37;
-            this.tb_sd1.Leave += new System.EventHandler(this.tb_sd1_TextChanged);
+            tb_sd1.Location = new System.Drawing.Point(122, 22);
+            tb_sd1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tb_sd1.Name = "tb_sd1";
+            tb_sd1.Size = new System.Drawing.Size(146, 23);
+            tb_sd1.TabIndex = 37;
+            tb_sd1.Leave += tb_sd1_TextChanged;
             // 
             // lb_sd1
             // 
-            this.lb_sd1.AutoSize = true;
-            this.lb_sd1.Location = new System.Drawing.Point(25, 22);
-            this.lb_sd1.Name = "lb_sd1";
-            this.lb_sd1.Size = new System.Drawing.Size(74, 13);
-            this.lb_sd1.TabIndex = 36;
-            this.lb_sd1.Text = "Description ID";
+            lb_sd1.AutoSize = true;
+            lb_sd1.Location = new System.Drawing.Point(29, 25);
+            lb_sd1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lb_sd1.Name = "lb_sd1";
+            lb_sd1.Size = new System.Drawing.Size(81, 15);
+            lb_sd1.TabIndex = 36;
+            lb_sd1.Text = "Description ID";
             // 
             // Control41
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.tb_sd2);
-            this.Controls.Add(this.lb_sd2);
-            this.Controls.Add(this.tb_sd1);
-            this.Controls.Add(this.lb_sd1);
-            this.Name = "Control41";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(tb_sd2);
+            Controls.Add(lb_sd2);
+            Controls.Add(tb_sd1);
+            Controls.Add(lb_sd1);
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Name = "Control41";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

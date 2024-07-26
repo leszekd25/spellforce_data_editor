@@ -95,9 +95,11 @@
             textBox2.Location = new System.Drawing.Point(422, 22);
             textBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             textBox2.Name = "textBox2";
+            textBox2.ShortcutsEnabled = false;
             textBox2.Size = new System.Drawing.Size(146, 23);
             textBox2.TabIndex = 1;
             textBox2.Leave += textBox2_TextChanged;
+            textBox2.MouseDown += textBox2_MouseDown;
             // 
             // textBox3
             // 

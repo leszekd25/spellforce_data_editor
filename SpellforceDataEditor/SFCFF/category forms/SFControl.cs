@@ -69,7 +69,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         }
 
         // sets button text (a helper function)
-        public void button_repr(Button bt, ICategory cat_i, string label1, string label2)
+        public void button_repr(Button bt, int cat_id)
         {
             if (bt == null)
             {
@@ -81,23 +81,29 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
+            if (!MainForm.data.CachedElementDisplays.TryGetValue(cat_id, out SFControl sfc))
+            {
+                return;
+            }
+            ICategory cat = sfc.category;
+
             category.GetID(current_element, out int cur_id);
 
-            bt.Tag = !cat_i.GetItemIndex(cur_id, out int real_elem_id);
+            bt.Tag = !cat.GetItemIndex(cur_id, out int real_elem_id);
             if ((bool)bt.Tag)
             {
-                bt.Text = String.Format("Add {0} for this {1}", label1, label2);
+                bt.Text = String.Format("Add {0} for this {1}", cat.GetName(), category.GetName());
                 bt.BackColor = Color.Yellow;
             }
             else
             {
-                bt.Text = String.Format("Go to {0} of this {1}", label1, label2);
+                bt.Text = String.Format("Go to {0} of this {1}", cat.GetName(), category.GetName());
                 bt.BackColor = Color.DarkOrange;
             }
         }
 
         // sets textbox (a helper function)
-        public void textbox_repr(TextBox tb, ICategory cat_i)
+        public void textbox_repr(TextBox tb, int cat_id)
         {
             if (tb == null)
             {
@@ -109,10 +115,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            int cur_id = SFEngine.Utility.TryParseInt32(tb.Text);
+            tb.BackColor = Color.White;
 
-            bool found_index = cat_i.GetItemIndex(cur_id, out int real_elem_id);
-            if ((found_index) || (real_elem_id == 0))
+            if (!MainForm.data.CachedElementDisplays.TryGetValue(cat_id, out SFControl sfc))
+            {
+                return;
+            }
+            ICategory cat = sfc.category;
+
+            int cur_id = SFEngine.Utility.TryParseInt32(tb.Text);
+            bool found_index = cat.GetItemIndex(cur_id, out int real_elem_id);
+            if ((!found_index) || (real_elem_id == 0))
             {
                 tb.BackColor = Color.Yellow;
             }
@@ -120,6 +133,60 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 tb.BackColor = Color.DarkOrange;
             }
+        }
+
+        // tracer helpers
+        public bool trace(int cat_id, int elem_id)
+        {
+            return MainForm.data.trace_id(cat_id, elem_id);
+        }
+
+        public bool textbox_trace(MouseEventArgs e, int cat_id, string elem_id_str)
+        {
+            if(e.Button != MouseButtons.Right)
+            {
+                return true;
+            }
+
+            int elem_id = SFEngine.Utility.TryParseInt32(elem_id_str);
+
+            return trace(cat_id, elem_id);
+        }
+
+        public bool textbox_gen_elem(TextBox tb, int cat_id)
+        {
+            if(!MainForm.data.CachedElementDisplays.TryGetValue(cat_id, out SFControl sfc))
+            {
+                return false;
+            }
+
+            ICategory cat = sfc.category;
+            cat.GetFirstUnusedID(out int new_elem_id, out int new_elem_index);
+            cat.AddID(new_elem_index, new_elem_id);
+            tb.Text = new_elem_id.ToString();
+            return true;
+        }
+
+        public bool button_gen_elem(Button tb, int cat_id)
+        {
+            if (!MainForm.data.CachedElementDisplays.TryGetValue(cat_id, out SFControl sfc))
+            {
+                return false;
+            }
+
+            ICategory cat = sfc.category;
+            category.GetID(current_element, out int cur_id);
+
+            if (!cat.CalculateNewItemIndex(cur_id, out int elem_index))
+            {
+                trace(cat_id, cur_id);
+            }
+            else
+            {
+                cat.AddID(elem_index, cur_id);
+                button_repr(tb, cat_id);
+            }
+            return true;
         }
 
         public virtual string get_element_string(int elem_key)
