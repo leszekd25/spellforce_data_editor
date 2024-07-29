@@ -154,7 +154,6 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 return;
             }
 
-            index = get_subelem_index_by_slot_id(index);
             bool enable = ListSlots.GetItemChecked(ListSlots.SelectedIndex);
             textBox2.Enabled = enable;
             textBox3.Enabled = enable;
@@ -169,6 +168,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 item3_name.Text = "";
                 return;
             }
+
+            index = get_subelem_index_by_slot_id(index);
+            if (index == SFEngine.Utility.NO_INDEX)
+            {
+                return;
+            }
+
             textBox2.Text = c2040[current_element, index].ItemID1.ToString();
             textBox3.Text = c2040[current_element, index].ItemChance1.ToString();
             textBox5.Text = c2040[current_element, index].ItemID2.ToString();

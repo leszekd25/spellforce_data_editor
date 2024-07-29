@@ -54,7 +54,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 string res_name = "";
                 if ((res_index > comboRes.Items.Count) || (res_index <= 0))
                 {
-                    res_name = SFEngine.Utility.S_UNKNOWN;
+                    res_name = SFEngine.Utility.S_ITEM_MISSING;
                 }
                 else
                 {
@@ -111,20 +111,23 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             int cur_index = ListResources.SelectedIndex;
             Byte current_res = c2028[current_element, cur_index].ResourceType;
+            Byte current_val = c2028[current_element, cur_index].ResourceValue;
             Byte new_res = combo_values[comboRes.SelectedIndex + 1];
+
+            // if same resource was selected, exit early
             if (current_res == new_res)
             {
                 return;
             }
 
-            // check if resource like this already exists
+            // check if resource like this already exists, exit early if so
             for (int i = 0; i < c2028.GetItemSubItemNum(current_element); i++)
             {
                 Byte res_id = c2028[current_element, i].ResourceType;
                 if (res_id == new_res)
                 {
-                    new_res = 0;
-                    break;
+                    comboRes.SelectedIndex = combo_values.IndexOf(current_res) - 1;
+                    return;
                 }
             }
 
@@ -138,15 +141,19 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     break;
                 }
             }
+            if(cur_index >= new_index)
+            {
+                cur_index += 1;
+            }
 
             c2028.GetID(current_element, out int id);
-            c2028.RemoveSub(current_element, cur_index);
             c2028.AddSubItem(current_element, new_index, new()
             {
                 ArmyUnitID = (ushort)id,
                 ResourceType = new_res,
-                ResourceValue = 0
+                ResourceValue = current_val
             });
+            c2028.RemoveSub(current_element, cur_index);
 
             ListResources.SelectedIndex = new_index;
         }

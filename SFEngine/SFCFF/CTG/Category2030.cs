@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 
 namespace SFEngine.SFCFF.CTG
 {
+    public delegate void dOnVertex2030Added(int elem_index, int subelem_index, int v_index);
+    public delegate void dOnVertex2030Modified(int elem_index, int subelem_index, int v_index);
+    public delegate void dOnVertex2030Removed(int elem_index, int subelem_index, int v_index);
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct Category2030Item: ICategorySubItem
     {
@@ -31,6 +35,15 @@ namespace SFEngine.SFCFF.CTG
     {
         int CurrentMaxID;
         bool Loaded;
+
+        dOnElementAdded OnElementAdded;
+        dOnElementRemoved OnElementRemoved;
+        dOnSubElementAdded OnSubElementAdded;
+        dOnSubElementModified OnSubElementModified;
+        dOnSubElementRemoved OnSubElementRemoved;
+        dOnVertex2030Added OnVertexAdded;
+        dOnVertex2030Modified OnVertexModified;
+        dOnVertex2030Removed OnVertexRemoved;
 
         public virtual string GetName()
         {
@@ -96,10 +109,6 @@ namespace SFEngine.SFCFF.CTG
             {
                 return Items[index];
             }
-            set
-            {
-                Items[index] = value;
-            }
         }
 
         public Category2030Item this[int index, int subindex]
@@ -122,25 +131,6 @@ namespace SFEngine.SFCFF.CTG
                 }
 
                 return Items[Indices[index] + subindex];
-            }
-            set
-            {
-                int from_start = Indices[index];
-                int from_end;
-                if (index == Indices.Count - 1)
-                {
-                    from_end = Items.Count;
-                }
-                else
-                {
-                    from_end = Indices[index + 1];
-                }
-                if (from_start + subindex >= from_end)
-                {
-                    throw new Exception();
-                }
-
-                Items[Indices[index] + subindex] = value;
             }
         }
 
@@ -263,6 +253,7 @@ namespace SFEngine.SFCFF.CTG
             Items.Insert(main_index, new() { Coords = new() });
             Indices.Insert(new_index, main_index);
             AdjustIndices(new_index + 1, 1);
+            OnElementAdded?.Invoke(GetCategoryID(), new_index);
             return true;
         }
 
@@ -280,6 +271,7 @@ namespace SFEngine.SFCFF.CTG
             Items.Insert(main_index, new() { Coords = new() });
             Indices.Insert(new_index, main_index);
             AdjustIndices(new_index + 1, 1);
+            OnElementAdded?.Invoke(GetCategoryID(), new_index);
             SetID(new_index, new_id);
             return true;
         }
@@ -298,6 +290,7 @@ namespace SFEngine.SFCFF.CTG
             Items.Insert(new_index, item);
             Indices.Insert(new_index, main_index);
             AdjustIndices(new_index + 1, 1);
+            OnElementAdded?.Invoke(GetCategoryID(), new_index);
             return true;
         }
 
@@ -317,6 +310,26 @@ namespace SFEngine.SFCFF.CTG
 
             Items.Insert(main_index + new_subindex, item);
             AdjustIndices(new_index + 1, 1);
+            OnSubElementAdded.Invoke(GetCategoryID(), new_index, new_subindex);
+            return true;
+        }
+
+        public bool SetSubItem(int index, int subindex, Category2030Item item)
+        {
+            if (index >= Indices.Count)
+            {
+                throw new Exception();
+            }
+
+            int main_index = Indices[index];
+            int num = GetItemSubItemNum(index);
+            if (subindex >= num)
+            {
+                throw new Exception();
+            }
+
+            Items[main_index + subindex] = item;
+            OnSubElementModified?.Invoke(GetCategoryID(), index, subindex);
             return true;
         }
 
@@ -343,6 +356,7 @@ namespace SFEngine.SFCFF.CTG
 
             Items[main_index].Coords.Insert(new_coord_index * 2 + 0, x);
             Items[main_index].Coords.Insert(new_coord_index * 2 + 1, y);
+            OnVertexAdded?.Invoke(index, subindex, new_coord_index);
 
             return true;
         }
@@ -370,6 +384,7 @@ namespace SFEngine.SFCFF.CTG
 
             Items[main_index].Coords[coord_index * 2 + 0] = x;
             Items[main_index].Coords[coord_index * 2 + 1] = y;
+            OnVertexModified?.Invoke(index, subindex, coord_index);
 
             return true;
         }
@@ -397,6 +412,7 @@ namespace SFEngine.SFCFF.CTG
 
             Items[main_index].Coords.RemoveAt(coord_index * 2 + 0);
             Items[main_index].Coords.RemoveAt(coord_index * 2 + 0);
+            OnVertexRemoved?.Invoke(index, subindex, coord_index);
 
             return true;
         }
@@ -432,6 +448,7 @@ namespace SFEngine.SFCFF.CTG
             }
             Indices.Insert(new_index, main_index);
             AdjustIndices(new_index + 1, from_end - from_start);
+            OnElementAdded?.Invoke(GetCategoryID(), new_index);
 
             return true;
         }
@@ -455,6 +472,7 @@ namespace SFEngine.SFCFF.CTG
             }
             Indices.RemoveAt(index);
             AdjustIndices(index, from_start - from_end);
+            OnElementRemoved?.Invoke(GetCategoryID(), index);
 
             return true;
         }
@@ -479,6 +497,7 @@ namespace SFEngine.SFCFF.CTG
 
             Items.RemoveAt(main_index + subindex);
             AdjustIndices(index + 1, -1);
+            OnSubElementRemoved?.Invoke(GetCategoryID(), index, subindex);
             return true;
         }
 
@@ -506,6 +525,7 @@ namespace SFEngine.SFCFF.CTG
                 Category2030Item item = Items[i];
                 item.SetID(id);
                 Items[i] = item;
+                OnSubElementModified?.Invoke(GetCategoryID(), index, i - from_start);
             }
 
             return true;
@@ -625,7 +645,7 @@ namespace SFEngine.SFCFF.CTG
             return false;
         }
 
-        public void SetField<U>(int index, string field_name, U value)
+        public bool SetField<U>(int index, string field_name, U value)
         {
             Type t = typeof(Category2030Item);
 
@@ -699,6 +719,8 @@ namespace SFEngine.SFCFF.CTG
                     TypedReference tref = __makeref(items_span[index]);
                     fi.SetValueDirect(tref, value);
                     // undo/redo stuff
+
+                    return true;
                 }
             }
             else
@@ -738,11 +760,11 @@ namespace SFEngine.SFCFF.CTG
                             {
                                 IntPtr address = handle.AddrOfPinnedObject();
                                 U* ptr3 = (U*)address.ToPointer();
-                                for (int i = 0; i < fb_attr.Length; i++)
-                                {
-                                    ptr2[i] = ptr3[i];
-                                }
+                                int arrsize = fb_attr.Length * Marshal.SizeOf(utype_elem);
+                                Buffer.MemoryCopy(ptr3, ptr2, arrsize, arrsize);
                                 // undo/redo stuff
+
+                                return true;
                             }
                             finally
                             {
@@ -776,16 +798,23 @@ namespace SFEngine.SFCFF.CTG
                             {
                                 ptr2[field_index] = value;
                                 // undo/redo stuff
+
+                                return true;
                             }
                         }
                     }
                 }
             }
+
+            return false;
         }
 
         public void SetField<U>(int index, int subindex, string field_name, U value)
         {
-            SetField(GetSubItemIndex(index, subindex), field_name, value);
+            if (SetField(GetSubItemIndex(index, subindex), field_name, value))
+            {
+                OnSubElementModified?.Invoke(GetCategoryID(), index, subindex);
+            }
         }
 
         public bool GetFirstUnusedID(out int id, out int index)
@@ -847,6 +876,72 @@ namespace SFEngine.SFCFF.CTG
         public bool CanRedo()
         {
             return false;
+        }
+
+        public bool SetOnElementAddedCallback(dOnElementAdded cb)
+        {
+            OnElementAdded = cb;
+            return true;
+        }
+
+        public bool SetOnElementModifiedCallback(dOnElementModified cb)
+        {
+            return false;
+        }
+
+        public bool SetOnElementRemovedCallback(dOnElementRemoved cb)
+        {
+            OnElementRemoved = cb;
+            return true;
+        }
+
+        public bool SetOnSubElementModifiedCallback(dOnSubElementModified cb)
+        {
+            OnSubElementModified = cb;
+            return true;
+        }
+
+        public bool SetOnSubElementAddedCallback(dOnSubElementAdded cb)
+        {
+            OnSubElementAdded = cb;
+            return true;
+        }
+
+        public bool SetOnSubElementRemovedCallback(dOnSubElementRemoved cb)
+        {
+            OnSubElementRemoved = cb;
+            return true;
+        }
+
+        public bool SetOnVertexAdded(dOnVertex2030Added cb)
+        {
+            OnVertexAdded = cb;
+            return true;
+        }
+
+        public bool SetOnVertexModified(dOnVertex2030Modified cb)
+        {
+            OnVertexModified = cb;
+            return true;
+        }
+
+        public bool SetOnVertexRemoved(dOnVertex2030Removed cb)
+        {
+            OnVertexRemoved = cb;
+            return true;
+        }
+
+        public bool ClearCallbacks()
+        {
+            OnElementAdded = null;
+            OnElementRemoved = null;
+            OnSubElementAdded = null;
+            OnSubElementModified = null;
+            OnSubElementRemoved = null;
+            OnVertexAdded = null;
+            OnVertexModified = null;
+            OnVertexRemoved = null;
+            return true;
         }
 
         public List<int> QueryItems()

@@ -87,7 +87,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox10_TextChanged(object sender, EventArgs e)
         {
-            c2024.SetField(current_element, "DescriptionID", SFEngine.Utility.TryParseUInt8(textBox10.Text));
+            c2024.SetField(current_element, "CanBePlaced", SFEngine.Utility.TryParseUInt8(textBox10.Text));
         }
 
         public override void show_element()
@@ -130,7 +130,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2024[index].GetID().ToString()} {SFCategoryManager.GetTextByLanguage(c2024[index].NameID, 1)}";
+            return $"{c2024[index].GetID()} {SFCategoryManager.GetTextByLanguage(c2024[index].NameID, 1)}";
         }
 
         public override string get_description_string(int index)

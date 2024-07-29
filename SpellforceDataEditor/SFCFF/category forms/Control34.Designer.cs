@@ -159,6 +159,7 @@
             // 
             // textBox5
             // 
+            textBox5.Enabled = false;
             textBox5.Location = new System.Drawing.Point(525, 112);
             textBox5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             textBox5.Name = "textBox5";

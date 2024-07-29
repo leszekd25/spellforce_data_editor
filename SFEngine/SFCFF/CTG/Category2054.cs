@@ -11,15 +11,15 @@ namespace SFEngine.SFCFF.CTG
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct Category2054Item: ICategoryItem
     {
-        public ushort SpellLineID;
-        public ushort TextID;
-        public byte Flags;
-        public byte MagicType;
-        public byte MinLevel;
-        public byte MaxLevel;
-        public byte Availability;
-        public fixed byte UIHandle[64];
-        public ushort DescriptionID;
+        public ushort SpellLineID;    // 0
+        public ushort TextID;         // 2
+        public byte Flags;            // 4
+        public byte MagicType;        // 5
+        public byte MinLevel;         // 6
+        public byte MaxLevel;         // 7
+        public byte Availability;     // 8
+        public fixed byte UIHandle[64];  // 9
+        public ushort DescriptionID;  // 73
 
         public int GetID() => SpellLineID;
         public void SetID(int id) => SpellLineID = (ushort)id;

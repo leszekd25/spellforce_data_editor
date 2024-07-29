@@ -121,6 +121,7 @@
             textBox4.Size = new System.Drawing.Size(146, 23);
             textBox4.TabIndex = 51;
             textBox4.Invalidated += textBox4_TextChanged;
+            textBox4.Validated += textBox4_Validated;
             // 
             // textBox5
             // 

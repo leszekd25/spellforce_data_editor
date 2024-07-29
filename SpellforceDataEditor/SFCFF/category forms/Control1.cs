@@ -60,7 +60,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_typeID_TextChanged(object sender, EventArgs e)
         {
-            c2002.SetField(current_element, "SpellLineID", SFEngine.Utility.TryParseUInt16(tb_effID.Text));
+            c2002.SetField(current_element, "SpellLineID", SFEngine.Utility.TryParseUInt16(tb_typeID.Text));
         }
 
         private void tb_req1_1_TextChanged(object sender, EventArgs e)
@@ -215,7 +215,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void tb_effrng_Validated(object sender, EventArgs e)
         {
-            c2002.SetField(current_element, "EffectRange", SFEngine.Utility.TryParseUInt16(tb_effpow.Text));
+            c2002.SetField(current_element, "EffectRange", SFEngine.Utility.TryParseUInt16(tb_effrng.Text));
         }
 
         private void set_data_labels(string[] p)

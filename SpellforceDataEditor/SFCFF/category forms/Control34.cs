@@ -135,7 +135,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void ButtonGoto35_Click(object sender, EventArgs e)
         {
-            button_gen_elem(ButtonGoto35, 2057);
+            if(button_gen_elem(ButtonGoto35, 2057))
+            {
+                SFCategoryManager.gamedata.c2057.GetItemIndex(c2050[current_element].GetID(), out int object_index);
+                c2050.SetField(current_element, "PolygonNum", (byte)SFCategoryManager.gamedata.c2057.GetItemSubItemNum(object_index));
+            }
         }
 
         private void ButtonGoto36_Click(object sender, EventArgs e)

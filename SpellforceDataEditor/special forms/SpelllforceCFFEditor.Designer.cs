@@ -395,6 +395,7 @@
             ButtonElemAdd.TabIndex = 2;
             ButtonElemAdd.Text = "Add";
             ButtonElemAdd.UseVisualStyleBackColor = true;
+            ButtonElemAdd.Click += ButtonElemAdd_Click;
             // 
             // ButtonElemRemove
             // 
@@ -405,6 +406,7 @@
             ButtonElemRemove.TabIndex = 1;
             ButtonElemRemove.Text = "Remove";
             ButtonElemRemove.UseVisualStyleBackColor = true;
+            ButtonElemRemove.Click += ButtonElemRemove_Click;
             // 
             // ButtonElemInsert
             // 
@@ -415,6 +417,7 @@
             ButtonElemInsert.TabIndex = 0;
             ButtonElemInsert.Text = "Insert";
             ButtonElemInsert.UseVisualStyleBackColor = true;
+            ButtonElemInsert.Click += ButtonElemInsert_Click;
             // 
             // ElementSelect_RefreshTimer
             // 
@@ -499,6 +502,7 @@
             ButtonElemClear.TabIndex = 1;
             ButtonElemClear.Text = "Clear";
             ButtonElemClear.UseVisualStyleBackColor = true;
+            ButtonElemClear.Click += ButtonElemClear_Click;
             // 
             // ButtonElemCopy
             // 
@@ -509,6 +513,7 @@
             ButtonElemCopy.TabIndex = 0;
             ButtonElemCopy.Text = "Copy";
             ButtonElemCopy.UseVisualStyleBackColor = true;
+            ButtonElemCopy.Click += ButtonElemCopy_Click;
             // 
             // SpelllforceCFFEditor
             // 

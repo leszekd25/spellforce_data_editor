@@ -20,6 +20,10 @@ namespace SFEngine.SFCFF
         int CurrentMaxID;
         bool Loaded = false;
 
+        dOnElementAdded OnElementAdded;
+        dOnElementModified OnElementModified;
+        dOnElementRemoved OnElementRemoved;
+
         public virtual string GetName()
         {
             return "";
@@ -62,10 +66,6 @@ namespace SFEngine.SFCFF
             get
             {
                 return Items[index];
-            }
-            set
-            {
-                Items[index] = value;
             }
         }
 
@@ -145,12 +145,14 @@ namespace SFEngine.SFCFF
         public bool AddEmpty(int new_index)
         {
             Items.Insert(new_index, new());
+            OnElementAdded?.Invoke(GetCategoryID(), new_index);
             return true;
         }
 
         public bool AddID(int new_index, int new_id)
         {
             Items.Insert(new_index, new());
+            OnElementAdded?.Invoke(GetCategoryID(), new_index);
             SetID(new_index, new_id);
             return true;
         }
@@ -158,18 +160,28 @@ namespace SFEngine.SFCFF
         public bool AddItem(int new_index, T item)
         {
             Items.Insert(new_index, item);
+            OnElementAdded?.Invoke(GetCategoryID(), new_index);
+            return true;
+        }
+
+        public bool SetItem(int index, T item)
+        {
+            Items[index] = item;
+            OnElementModified?.Invoke(GetCategoryID(), index);
             return true;
         }
 
         public bool Copy(int from_index, int new_index)
         {
             Items.Insert(new_index, Items[from_index]);
+            OnElementAdded?.Invoke(GetCategoryID(), new_index);
             return true;
         }
 
         public bool Remove(int index)
         {
             Items.RemoveAt(index);
+            OnElementRemoved?.Invoke(GetCategoryID(), index);
             return true;
         }
 
@@ -183,6 +195,7 @@ namespace SFEngine.SFCFF
         {
             Span<T> span = CollectionsMarshal.AsSpan(Items);
             span[index].SetID(id);
+            OnElementModified?.Invoke(GetCategoryID(), index);
             return true;
         }
 
@@ -330,6 +343,7 @@ namespace SFEngine.SFCFF
                     TypedReference tref = __makeref(items_span[index]);
                     fi.SetValueDirect(tref, value);
                     // undo/redo stuff
+                    OnElementModified?.Invoke(GetCategoryID(), index);
                 }
             }
             else
@@ -369,11 +383,10 @@ namespace SFEngine.SFCFF
                             {
                                 IntPtr address = handle.AddrOfPinnedObject();
                                 U* ptr3 = (U*)address.ToPointer();
-                                for (int i = 0; i < fb_attr.Length; i++)
-                                {
-                                    ptr2[i] = ptr3[i];
-                                }
+                                int arrsize = fb_attr.Length * Marshal.SizeOf(utype_elem);
+                                Buffer.MemoryCopy(ptr3, ptr2, arrsize, arrsize);
                                 // undo/redo stuff
+                                OnElementModified?.Invoke(GetCategoryID(), index);
                             }
                             finally
                             {
@@ -407,6 +420,7 @@ namespace SFEngine.SFCFF
                             {
                                 ptr2[field_index] = value;
                                 // undo/redo stuff
+                                OnElementModified?.Invoke(GetCategoryID(), index);
                             }
                         }
                     }
@@ -475,6 +489,47 @@ namespace SFEngine.SFCFF
             return false;
         }
 
+        public bool SetOnElementAddedCallback(dOnElementAdded cb)
+        {
+            OnElementAdded = cb;
+            return true;
+        }
+
+        public bool SetOnElementModifiedCallback(dOnElementModified cb)
+        {
+            OnElementModified = cb;
+            return true;
+        }
+
+        public bool SetOnElementRemovedCallback(dOnElementRemoved cb)
+        {
+            OnElementRemoved = cb;
+            return true;
+        }
+
+        public bool SetOnSubElementAddedCallback(dOnSubElementAdded cb)
+        {
+            return false;
+        }
+
+        public bool SetOnSubElementModifiedCallback(dOnSubElementModified cb)
+        {
+            return false;
+        }
+
+        public bool SetOnSubElementRemovedCallback(dOnSubElementRemoved cb)
+        {
+            return false;
+        }
+
+        public bool ClearCallbacks()
+        {
+            OnElementAdded = null;
+            OnElementModified = null;
+            OnElementRemoved = null;
+            return true;
+        }
+
         public List<int> QueryItems()
         {
             return null;
@@ -485,6 +540,12 @@ namespace SFEngine.SFCFF
     {
         int CurrentMaxID;
         bool Loaded;
+
+        dOnElementAdded OnElementAdded;
+        dOnElementRemoved OnElementRemoved;
+        dOnSubElementAdded OnSubElementAdded;
+        dOnSubElementModified OnSubElementModified;
+        dOnSubElementRemoved OnSubElementRemoved;
 
         public virtual string GetName()
         {
@@ -550,10 +611,6 @@ namespace SFEngine.SFCFF
             {
                 return Items[index];
             }
-            set
-            {
-                Items[index] = value;
-            }
         }
 
         public T this[int index, int subindex]
@@ -561,10 +618,6 @@ namespace SFEngine.SFCFF
             get
             {
                 return Items[GetSubItemIndex(index, subindex)];
-            }
-            set 
-            {
-                Items[GetSubItemIndex(index, subindex)] = value;
             }
         }
 
@@ -664,6 +717,7 @@ namespace SFEngine.SFCFF
             Items.Insert(main_index, new());
             Indices.Insert(new_index, main_index);
             AdjustIndices(new_index + 1, 1);
+            OnElementAdded?.Invoke(GetCategoryID(), new_index);
             return true;
         }
 
@@ -681,6 +735,7 @@ namespace SFEngine.SFCFF
             Items.Insert(main_index, new());
             Indices.Insert(new_index, main_index);
             AdjustIndices(new_index + 1, 1);
+            OnElementAdded?.Invoke(GetCategoryID(), new_index);
             SetID(new_index, new_id);
             return true;
         }
@@ -699,8 +754,10 @@ namespace SFEngine.SFCFF
             Items.Insert(new_index, item);
             Indices.Insert(new_index, main_index);
             AdjustIndices(new_index + 1, 1);
+            OnElementAdded?.Invoke(GetCategoryID(), new_index);
             return true;
         }
+
 
         public bool AddSubItem(int new_index, int new_subindex, T item)
         {
@@ -718,6 +775,26 @@ namespace SFEngine.SFCFF
 
             Items.Insert(main_index + new_subindex, item);
             AdjustIndices(new_index + 1, 1);
+            OnSubElementAdded?.Invoke(GetCategoryID(), new_index, new_subindex);
+            return true;
+        }
+
+        public bool SetSubItem(int index, int subindex, T item)
+        {
+            if (index >= Indices.Count)
+            {
+                throw new Exception();
+            }
+
+            int main_index = Indices[index];
+            int num = GetItemSubItemNum(index);
+            if (subindex >= num)
+            {
+                throw new Exception();
+            }
+
+            Items[main_index + subindex] = item;
+            OnSubElementModified?.Invoke(GetCategoryID(), index, subindex);
             return true;
         }
 
@@ -750,6 +827,7 @@ namespace SFEngine.SFCFF
             }
             Indices.Insert(new_index, main_index);
             AdjustIndices(new_index + 1, from_end - from_start);
+            OnElementAdded?.Invoke(GetCategoryID(), new_index);
 
             return true;
         }
@@ -773,6 +851,7 @@ namespace SFEngine.SFCFF
             }
             Indices.RemoveAt(index);
             AdjustIndices(index, from_start-from_end);
+            OnElementRemoved?.Invoke(GetCategoryID(), index);
 
             return true;
         }
@@ -797,6 +876,7 @@ namespace SFEngine.SFCFF
 
             Items.RemoveAt(main_index + subindex);
             AdjustIndices(index + 1, -1);
+            OnSubElementRemoved?.Invoke(GetCategoryID(), index, subindex);
             return true;
         }
 
@@ -823,6 +903,7 @@ namespace SFEngine.SFCFF
             for(int i = from_start; i <= from_end; i++)
             {
                 span[i].SetID(id);
+                OnSubElementModified?.Invoke(GetCategoryID(), index, i-from_start);
             }
 
             return true;
@@ -932,7 +1013,7 @@ namespace SFEngine.SFCFF
             return false;
         }
 
-        public void SetField<U>(int index, string field_name, U value)
+        public bool SetField<U>(int index, string field_name, U value)
         {
             Type t = typeof(T);
 
@@ -1006,6 +1087,8 @@ namespace SFEngine.SFCFF
                     TypedReference tref = __makeref(items_span[index]);
                     fi.SetValueDirect(tref, value);
                     // undo/redo stuff
+
+                    return true;
                 }
             }
             else
@@ -1045,11 +1128,11 @@ namespace SFEngine.SFCFF
                             {
                                 IntPtr address = handle.AddrOfPinnedObject();
                                 U* ptr3 = (U*)address.ToPointer();
-                                for (int i = 0; i < fb_attr.Length; i++)
-                                {
-                                    ptr2[i] = ptr3[i];
-                                }
+                                int arrsize = fb_attr.Length * Marshal.SizeOf(utype_elem);
+                                Buffer.MemoryCopy(ptr3, ptr2, arrsize, arrsize);
                                 // undo/redo stuff
+
+                                return true;
                             }
                             finally
                             {
@@ -1083,16 +1166,23 @@ namespace SFEngine.SFCFF
                             {
                                 ptr2[field_index] = value;
                                 // undo/redo stuff
+
+                                return true;
                             }
                         }
                     }
                 }
             }
+
+            return false;
         }
 
         public void SetField<U>(int index, int subindex, string field_name, U value)
         {
-            SetField(GetSubItemIndex(index, subindex), field_name, value);
+            if(SetField(GetSubItemIndex(index, subindex), field_name, value))
+            {
+                OnSubElementModified?.Invoke(GetCategoryID(), index, subindex);
+            }
         }
 
         public bool GetFirstUnusedID(out int id, out int index)
@@ -1154,6 +1244,51 @@ namespace SFEngine.SFCFF
         public bool CanRedo()
         {
             return false;
+        }
+
+        public bool SetOnElementAddedCallback(dOnElementAdded cb)
+        {
+            OnElementAdded = cb;
+            return true;
+        }
+
+        public bool SetOnElementModifiedCallback(dOnElementModified cb)
+        {
+            return false;
+        }
+
+        public bool SetOnElementRemovedCallback(dOnElementRemoved cb)
+        {
+            OnElementRemoved = cb;
+            return true;
+        }
+
+        public bool SetOnSubElementAddedCallback(dOnSubElementAdded cb)
+        {
+            OnSubElementAdded = cb;
+            return true;
+        }
+
+        public bool SetOnSubElementModifiedCallback(dOnSubElementModified cb)
+        {
+            OnSubElementModified = cb;
+            return true;
+        }
+
+        public bool SetOnSubElementRemovedCallback(dOnSubElementRemoved cb)
+        {
+            OnSubElementRemoved = cb;
+            return true;
+        }
+
+        public bool ClearCallbacks()
+        {
+            OnElementAdded = null;
+            OnElementRemoved = null;
+            OnSubElementAdded = null;
+            OnSubElementModified = null;
+            OnSubElementRemoved = null;
+            return true;
         }
 
         public List<int> QueryItems()

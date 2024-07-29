@@ -166,7 +166,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2016.SetField(current_element, new_elem_index, "LanguageID", new_lang_id);
             c2016.SetField(current_element, new_elem_index, "Mode", c2016[current_element, 0].Mode);
             c2016.SetField(current_element, new_elem_index, "Handle", StringUtils.FromString(c2016[current_element, 0].GetHandleString(), 0, 50));
-            c2016.SetField(current_element, new_elem_index, "Content", StringUtils.FromString("", new_lang_id, 512));
+            c2016.SetField(current_element, new_elem_index, "Content", StringUtils.FromString(SFEngine.Utility.S_TEXT_MISSING, new_lang_id, 512));
         }
 
         private void ListLanguages_SelectedIndexChanged(object sender, EventArgs e)

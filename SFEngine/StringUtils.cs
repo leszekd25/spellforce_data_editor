@@ -90,8 +90,10 @@ namespace SFEngine
             {
                 fixed (char* ptr = s.AsSpan())
                 {
-                    byte* ptr2 = (byte*)&bytes;
-                    int enc_result = encoding.GetBytes(ptr, s.Length, ptr2, char_count);
+                    fixed (byte* ptr2 = &bytes[0])
+                    {
+                        int enc_result = encoding.GetBytes(ptr, s.Length, ptr2, char_count);
+                    }
                 }
             }
             return bytes;

@@ -156,7 +156,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void ButtonGoto25_Click(object sender, EventArgs e)
         {
-            button_gen_elem(ButtonGoto25, 2030);
+            if (button_gen_elem(ButtonGoto25, 2030))
+            {
+                SFCategoryManager.gamedata.c2030.GetItemIndex(c2029[current_element].GetID(), out int building_index);
+                c2029.SetField(current_element, "NumOfPolygons", (byte)SFCategoryManager.gamedata.c2030.GetItemSubItemNum(building_index));
+            }
         }
 
         private void ButtonGoto26_Click(object sender, EventArgs e)

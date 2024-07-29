@@ -230,6 +230,7 @@
             // 
             // textBox9
             // 
+            textBox9.Enabled = false;
             textBox9.Location = new System.Drawing.Point(422, 112);
             textBox9.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             textBox9.Name = "textBox9";

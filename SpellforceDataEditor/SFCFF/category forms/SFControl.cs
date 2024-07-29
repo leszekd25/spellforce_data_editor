@@ -9,7 +9,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
     public partial class SFControl : UserControl
     {
         public ICategory category { get; protected set; }
-        protected int current_element;                          //current element displayed by this control
+        public int current_element;                          //current element displayed by this control
         protected Dictionary<string, int[]> column_dict;        //used for choosing a column for search function
         //this dictionary uses column name as a key, and a column index as a value
 

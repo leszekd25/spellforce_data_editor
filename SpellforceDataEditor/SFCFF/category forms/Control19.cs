@@ -1,4 +1,5 @@
-﻿using SFEngine.SFCFF;
+﻿using SFEngine;
+using SFEngine.SFCFF;
 using SFEngine.SFCFF.CTG;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,6 @@ namespace SpellforceDataEditor.SFCFF.category_forms
     {
         struct ItemSlotUI
         {
-            public bool active;
             public int slot_id;
             public CheckBox box;
             public TextBox text;
@@ -18,7 +18,6 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             public ItemSlotUI(int id, CheckBox b, TextBox t, Label l)
             {
-                active = false;
                 slot_id = id;
                 box = b;
                 text = t;
@@ -27,7 +26,6 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             public void set_checked(bool b)
             {
-                active = b;
                 box.Checked = b;
                 text.Enabled = b;
             }
@@ -73,7 +71,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             int n = 0;
             for (int i = 0; i < 7; i++)
             {
-                n += (item_slots[i].active ? 1 : 0);
+                n += (item_slots[i].box.Checked ? 1 : 0);
             }
             return n;
         }
@@ -119,18 +117,22 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 }
 
                 c2025.RemoveSub(current_element, subelem_index);
+                item_slots[flag].set_checked(false);
             }
             else
             {
                 //add checked element
                 int count = c2025.GetItemSubItemNum(current_element);
                 c2025.GetID(current_element, out int cur_id);
+                ushort item_id = SFEngine.Utility.TryParseUInt16(item_slots[flag].text.Text);
                 c2025.AddSubItem(current_element, count, new()
                 {
                     UnitID = (ushort)cur_id,
                     EquipmentIndex = flag,
-                    ItemID = SFEngine.Utility.TryParseUInt16(item_slots[flag].text.Text)
+                    ItemID = item_id
                 });
+                item_slots[flag].set_checked(true);
+                item_slots[flag].set_text(item_id, SFCategoryManager.GetItemName(item_id));
             }
         }
 
@@ -163,6 +165,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             for (int i = 0; i < 7; i++)
             {
                 item_slots[i].set_checked(false);
+                item_slots[i].set_text(0, Utility.S_ITEM_MISSING);
             }
 
             for (int i = 0; i < c2025.GetItemSubItemNum(current_element); i++)

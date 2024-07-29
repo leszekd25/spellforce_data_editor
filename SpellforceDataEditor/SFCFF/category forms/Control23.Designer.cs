@@ -90,6 +90,7 @@
             button2.TabIndex = 42;
             button2.Text = "Remove";
             button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // button1
             // 
@@ -100,6 +101,7 @@
             button1.TabIndex = 41;
             button1.Text = "Insert";
             button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // ListBuildings
             // 

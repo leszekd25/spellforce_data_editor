@@ -95,22 +95,26 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2012.GetID(current_element, out int id);
             item.SetID(id);
 
-            int new_index;
-            if (ListUI.SelectedIndex == SFEngine.Utility.NO_INDEX)
+            // add new subelement, id being the lowest not occuring subelement
+            byte new_subid;
+            for(new_subid = 1; ;new_subid++)
             {
-                new_index = ListUI.Items.Count - 1;
+                bool found = false;
+                for(int i = 0; i < c2012.GetItemSubItemNum(current_element); i++)
+                {
+                    if (c2012[current_element, i].GetSubID() == new_subid)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found)
+                {
+                    break;
+                }
             }
-            else
-            {
-                new_index = ListUI.SelectedIndex;
-            }
-
-            byte max_index = 1;
-            for (int i = 0; i < c2012.GetItemSubItemNum(current_element); i++)
-            {
-                max_index = Math.Max(max_index, c2012[current_element, i].UIIndex);
-            }
-            item.UIIndex = (byte)(max_index + 1);
+            int new_index = new_subid - 1;
+            item.UIIndex = new_subid;
 
             c2012.AddSubItem(current_element, new_index, item);
         }

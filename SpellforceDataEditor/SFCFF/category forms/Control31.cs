@@ -42,6 +42,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2047.SetID(current_element, SFEngine.Utility.TryParseUInt16(textBox5.Text));
         }
 
+        private void textBox4_Validated(object sender, EventArgs e)
+        {
+            c2047.SetField(current_element, ListItemTypes.SelectedIndex, "PriceMultiplier", SFEngine.Utility.TryParseUInt16(textBox4.Text));
+        }
+
 
         private void RefreshListItemTypes()
         {
@@ -51,9 +56,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 int res_index = c2047[current_element, i].ItemType;
                 string res_name = "";
-                if (res_index == 0)
+                if ((res_index > comboItemType.Items.Count) || (res_index == 0))
                 {
-                    res_name = SFEngine.Utility.S_UNKNOWN;
+                    res_name = SFEngine.Utility.S_ITEM_MISSING;
                 }
                 else
                 {
@@ -116,12 +121,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 Byte res_id = c2047[current_element, i].ItemType;
                 if (res_id == new_res)
                 {
-                    new_res = 0;
-                    break;
+                    comboItemType.SelectedIndex = current_res - 1;
+                    return;
                 }
             }
 
-            c2047.RemoveSub(current_element, cur_index);
 
             // generate new element with reordered resources by resource id, ascending order
             int new_index = c2047.GetItemSubItemNum(current_element) - 1;
@@ -133,6 +137,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     break;
                 }
             }
+            if (cur_index >= new_index)
+            {
+                cur_index += 1;
+            }
 
             c2047.AddSubItem(current_element, new_index, new()
             {
@@ -140,6 +148,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 ItemType = new_res,
                 PriceMultiplier = current_mul
             });
+            c2047.RemoveSub(current_element, cur_index);
 
             ListItemTypes.SelectedIndex = new_index;
         }

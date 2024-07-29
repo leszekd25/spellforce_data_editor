@@ -18,6 +18,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             c2030 = SFCategoryManager.gamedata.c2030;
             category = c2030;
+            c2030.SetOnVertexAdded(on_add_vertex);
+            c2030.SetOnVertexModified(on_modify_vertex);
+            c2030.SetOnVertexRemoved(on_remove_vertex);
 
             column_dict.Add("Building ID", new int[1] { 0 });
             column_dict.Add("Polygon index", new int[1] { 1 });
@@ -65,12 +68,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void listBox1_update()
         {
+            listBox1.Items.Clear();
+
             if (ListPolygons.SelectedIndex == -1)
             {
                 return;
             }
-
-            listBox1.Items.Clear();
 
             for (int i = 0; i < c2030[current_element, ListPolygons.SelectedIndex].Coords.Count / 2; i++)
             {
@@ -255,11 +258,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override void on_add_subelement(int subelem_index)
         {
             set_element(current_element);
+            SFCategoryManager.gamedata.c2029.GetItemIndex(c2030[current_element].GetID(), out int building_index);
+            SFCategoryManager.gamedata.c2029.SetField(building_index, "NumOfPolygons", (byte)c2030.GetItemSubItemNum(current_element));
         }
 
         public override void on_remove_subelement(int subelem_index)
         {
             set_element(current_element);
+            SFCategoryManager.gamedata.c2029.GetItemIndex(c2030[current_element].GetID(), out int building_index);
+            SFCategoryManager.gamedata.c2029.SetField(building_index, "NumOfPolygons", (byte)c2030.GetItemSubItemNum(current_element));
         }
 
         public override void on_update_subelement(int subelem_index)
@@ -270,6 +277,61 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
 
             listBox1_update();
+        }
+
+        private void on_add_vertex(int elem_index, int subelem_index, int v_index)
+        {
+            if(Parent == null)
+            {
+                return;
+            }
+            if(elem_index != current_element)
+            {
+                return;
+            }
+            if(subelem_index != ListPolygons.SelectedIndex)
+            {
+                return;
+            }
+
+            listBox1.Items.Insert(v_index, "");
+            listbox1_update_vertex(v_index);
+        }
+
+        private void on_modify_vertex(int elem_index, int subelem_index, int v_index)
+        {
+            if (Parent == null)
+            {
+                return;
+            }
+            if (elem_index != current_element)
+            {
+                return;
+            }
+            if (subelem_index != ListPolygons.SelectedIndex)
+            {
+                return;
+            }
+
+            listbox1_update_vertex(v_index);
+        }
+
+        private void on_remove_vertex(int elem_index, int subelem_index, int v_index)
+        {
+            if (Parent == null)
+            {
+                return;
+            }
+            if (elem_index != current_element)
+            {
+                return;
+            }
+            if (subelem_index != ListPolygons.SelectedIndex)
+            {
+                return;
+            }
+
+            listBox1.Items.RemoveAt(v_index);
         }
 
         private void textBox1_MouseDown(object sender, MouseEventArgs e)

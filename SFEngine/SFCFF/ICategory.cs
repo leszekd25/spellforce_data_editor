@@ -11,6 +11,13 @@ using System.Collections;
 
 namespace SFEngine.SFCFF
 {
+    public delegate void dOnElementAdded(int cat_id, int elem_index);
+    public delegate void dOnElementModified(int cat_id, int elem_index);
+    public delegate void dOnElementRemoved(int cat_id, int elem_index);
+    public delegate void dOnSubElementAdded(int cat_id, int elem_index, int subelem_index);
+    public delegate void dOnSubElementModified(int cat_id, int elem_index, int subelem_index);
+    public delegate void dOnSubElementRemoved(int cat_id, int elem_index, int subelem_index);
+
     /* each category should have the following capabilities:
      *  - store items in ascending order
         - load all data from file in an efficient manner
@@ -52,6 +59,13 @@ namespace SFEngine.SFCFF
         public bool Redo();
         public bool CanUndo();
         public bool CanRedo();
+        public bool SetOnElementAddedCallback(dOnElementAdded cb);
+        public bool SetOnElementModifiedCallback(dOnElementModified cb);
+        public bool SetOnElementRemovedCallback(dOnElementRemoved cb);
+        public bool SetOnSubElementAddedCallback(dOnSubElementAdded cb);
+        public bool SetOnSubElementModifiedCallback(dOnSubElementModified cb);
+        public bool SetOnSubElementRemovedCallback(dOnSubElementRemoved cb);
+        public bool ClearCallbacks();
         public List<int> QueryItems();
     }
 

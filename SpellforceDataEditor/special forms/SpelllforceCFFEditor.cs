@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using Windows.Security.ExchangeActiveSyncProvisioning;
 
 
 namespace SpellforceDataEditor.special_forms
@@ -22,8 +23,9 @@ namespace SpellforceDataEditor.special_forms
 
         public bool data_loaded { get; private set; } = false;
 
-        private int selected_category_id = -1;
-        private int selected_element_index = -1;
+        private int selected_category_id = SFEngine.Utility.NO_INDEX;
+        private int selected_element_index = SFEngine.Utility.NO_INDEX;
+        private int copied_element_index = SFEngine.Utility.NO_INDEX;
 
         private SFControl ElementDisplay;        //a control which displays all element parameters
         public Dictionary<int, SFControl> CachedElementDisplays = new Dictionary<int, SFControl>();   // element names and descriptions are read from here
@@ -83,6 +85,12 @@ namespace SpellforceDataEditor.special_forms
                 {
                     CategorySelect.Items.Add(Tuple.Create(cat.GetCategoryID(), cat.GetName()));
                     CachedElementDisplays.Add(cat.GetCategoryID(), get_element_display_from_category(cat.GetCategoryID()));
+                    cat.SetOnElementAddedCallback(CFF_OnElementAdded);
+                    cat.SetOnElementModifiedCallback(CFF_OnElementModified);
+                    cat.SetOnElementRemovedCallback(CFF_OnElementRemoved);
+                    cat.SetOnSubElementAddedCallback(CFF_OnSubElementAdded);
+                    cat.SetOnSubElementModifiedCallback(CFF_OnSubElementModified);
+                    cat.SetOnSubElementRemovedCallback(CFF_OnSubElementRemoved);
                 }
 
                 data_loaded = true;
@@ -132,6 +140,12 @@ namespace SpellforceDataEditor.special_forms
             {
                 CategorySelect.Items.Add(Tuple.Create(cat.GetCategoryID(), cat.GetName()));
                 CachedElementDisplays.Add(cat.GetCategoryID(), get_element_display_from_category(cat.GetCategoryID()));
+                cat.SetOnElementAddedCallback(CFF_OnElementAdded);
+                cat.SetOnElementModifiedCallback(CFF_OnElementModified);
+                cat.SetOnElementRemovedCallback(CFF_OnElementRemoved);
+                cat.SetOnSubElementAddedCallback(CFF_OnSubElementAdded);
+                cat.SetOnSubElementModifiedCallback(CFF_OnSubElementModified);
+                cat.SetOnSubElementRemovedCallback(CFF_OnSubElementRemoved);
             }
 
             data_loaded = true;
@@ -337,7 +351,8 @@ namespace SpellforceDataEditor.special_forms
 
             if (MainForm.viewer != null)
             {
-                MainForm.viewer.GenerateScene(selected_category_id, elem_index);
+                ElementDisplay.category.GetID(elem_index, out int elem_id);
+                MainForm.viewer.GenerateScene(selected_category_id, elem_id);
             }
         }
 
@@ -367,6 +382,7 @@ namespace SpellforceDataEditor.special_forms
                 ButtonElemInsert.BackColor = SystemColors.Control;
             }
             selected_category_id = ((Tuple<short, string>)CategorySelect.SelectedItem).Item1;
+            clear_copied();
 
             // set display form for elements of this category
             set_category_panel(selected_category_id);
@@ -413,6 +429,7 @@ namespace SpellforceDataEditor.special_forms
 
             labelDescription.Text = "";
             labelStatus.Text = "Loading...";
+            clear_copied();
 
             trace_clear();
             RestartTimer();
@@ -544,7 +561,7 @@ namespace SpellforceDataEditor.special_forms
         //actually clear all data and close gamedata.cff
         public DialogResult close_data()
         {
-            //ask first to close currend gamedata.cff, if user clicks Cancel, function return immediately
+            //ask first to close current gamedata.cff, if user clicks Cancel, function return immediately
             DialogResult result;
             if (!data_loaded)
             {
@@ -571,11 +588,14 @@ namespace SpellforceDataEditor.special_forms
                 return result;
             }
 
+
             foreach (var elemd in CachedElementDisplays)
             {
+                elemd.Value.category.ClearCallbacks();
                 elemd.Value.Dispose();
             }
             CachedElementDisplays.Clear();
+            ElementDisplay = null;
 
             //close everything
             if (ElementSelect_RefreshTimer.Enabled)
@@ -591,11 +611,6 @@ namespace SpellforceDataEditor.special_forms
             ButtonElemAdd.BackColor = SystemColors.Control;
             ButtonElemInsert.BackColor = SystemColors.Control;
 
-            if (ElementDisplay != null)
-            {
-                ElementDisplay.Visible = false;
-            }
-
             labelDescription.Text = "";
             label_tracedesc.Text = "";
 
@@ -605,8 +620,9 @@ namespace SpellforceDataEditor.special_forms
             panelSearch.Visible = false;
             ContinueSearchButton.Enabled = false;
 
-            selected_category_id = -1;
-            selected_element_index = -1;
+            selected_category_id = SFEngine.Utility.NO_INDEX;
+            selected_element_index = SFEngine.Utility.NO_INDEX;
+            copied_element_index = SFEngine.Utility.NO_INDEX;
 
             labelStatus.Text = "";
             ProgressBar_Main.Visible = false;
@@ -648,22 +664,29 @@ namespace SpellforceDataEditor.special_forms
             }
         }
 
+        private void clear_copied()
+        {
+            copied_element_index = SFEngine.Utility.NO_INDEX;
+            ButtonElemAdd.BackColor = System.Drawing.SystemColors.ControlLight;
+            ButtonElemInsert.BackColor = System.Drawing.SystemColors.ControlLight;
+        }
+
         // tracer
         public bool trace_id(int cat_id, int elem_id)
         {
-            if(!data_loaded)
+            if (!data_loaded)
             {
                 return false;
             }
 
             // find element index
-            if(!CachedElementDisplays.ContainsKey(cat_id))
+            if (!CachedElementDisplays.ContainsKey(cat_id))
             {
                 return false;
             }
 
             ICategory cat = CachedElementDisplays[cat_id].category;
-            if(!cat.GetItemIndex(elem_id, out int elem_index))
+            if (!cat.GetItemIndex(elem_id, out int elem_index))
             {
                 return false;
             }
@@ -688,7 +711,7 @@ namespace SpellforceDataEditor.special_forms
                 return;
             }
             trace_list.RemoveAt(trace_list.Count - 1);
-            if(trace_list.Count == 0)
+            if (trace_list.Count == 0)
             {
                 set_displayed_element(selected_category_id, selected_element_index);
                 buttonTracerBack.Visible = false;
@@ -711,6 +734,286 @@ namespace SpellforceDataEditor.special_forms
         private void buttonTracerBack_Click(object sender, EventArgs e)
         {
             trace_back();
+        }
+
+        // CFF callbacks
+        public void CFF_OnElementAdded(int cat_id, int elem_index)
+        {
+            if (!data_loaded)
+            {
+                return;
+            }
+
+            // if selected category is the same, add the element to the list and select the element
+            if (selected_category_id == cat_id)
+            {
+                // find index
+                int list_index = elem_index;
+
+                ElementSelect.Items.Insert(list_index, CachedElementDisplays[cat_id].get_element_string(elem_index));
+                ElementSelect.SelectedIndex = list_index;
+
+                // update copied element reference
+                if(copied_element_index != SFEngine.Utility.NO_INDEX)
+                {
+                    if(elem_index <= copied_element_index)
+                    {
+                        copied_element_index += 1;
+                    }
+                }
+            }
+        }
+
+
+        public void CFF_OnElementModified(int cat_id, int elem_index)
+        {
+            if (!data_loaded)
+            {
+                return;
+            }
+
+            // if selected category is the same, change elem text
+            if (selected_category_id == cat_id)
+            {
+                // find index
+                int list_index = elem_index;
+
+                ElementSelect.SelectedIndexChanged -= ElementSelect_SelectedIndexChanged;
+                ElementSelect.Items[list_index] = CachedElementDisplays[cat_id].get_element_string(elem_index);
+                ElementSelect.SelectedIndexChanged += ElementSelect_SelectedIndexChanged;
+            }
+
+            // if displayed element is the same, change description
+            if (ElementDisplay == null)
+            {
+                return;
+            }
+            if ((ElementDisplay.category.GetCategoryID() == cat_id) && (ElementDisplay.current_element == elem_index))
+            {
+                labelDescription.Text = ElementDisplay.get_description_string(elem_index);
+                label_tracedesc.Text = ElementDisplay.get_element_string(elem_index);
+            }
+        }
+
+        public void CFF_OnElementRemoved(int cat_id, int elem_index)
+        {
+            if (!data_loaded)
+            {
+                return;
+            }
+
+            // if selected category is the same, add the element to the list and select the element
+            if (selected_category_id == cat_id)
+            {
+                // find index
+                int list_index = elem_index;
+                int cur_list_index = ElementSelect.SelectedIndex;
+
+                ElementSelect.Items.RemoveAt(list_index);
+
+                // update copied element reference
+                if (copied_element_index != SFEngine.Utility.NO_INDEX)
+                {
+                    if (elem_index == copied_element_index)
+                    {
+                        clear_copied();
+                    }
+                    else if (elem_index < copied_element_index)
+                    {
+                        copied_element_index -= 1;
+                    }
+                }
+
+                // reselect the right element
+                if (cur_list_index == list_index)
+                {
+                    if (cur_list_index == ElementSelect.Items.Count)
+                    {
+                        ElementSelect.SelectedIndex = cur_list_index - 1;
+                    }
+                    else
+                    {
+                        ElementSelect.SelectedIndex = cur_list_index;
+                    }
+                }
+            }
+        }
+
+        public void CFF_OnSubElementAdded(int cat_id, int elem_index, int subelem_index)
+        {
+            if (!data_loaded)
+            {
+                return;
+            }
+
+            // if selected category is the same, change elem text
+            if (selected_category_id == cat_id)
+            {
+                // find index
+                int list_index = elem_index;
+                ElementSelect.SelectedIndexChanged -= ElementSelect_SelectedIndexChanged;
+                ElementSelect.Items[list_index] = CachedElementDisplays[cat_id].get_element_string(elem_index);
+                ElementSelect.SelectedIndexChanged += ElementSelect_SelectedIndexChanged;
+            }
+
+            // if displayed element is the same, change description
+            if (ElementDisplay == null)
+            {
+                return;
+            }
+            if ((ElementDisplay.category.GetCategoryID() == cat_id) && (ElementDisplay.current_element == elem_index))
+            {
+                ElementDisplay.on_add_subelement(subelem_index);
+                labelDescription.Text = ElementDisplay.get_description_string(elem_index);
+                label_tracedesc.Text = ElementDisplay.get_element_string(elem_index);
+            }
+        }
+
+        public void CFF_OnSubElementModified(int cat_id, int elem_index, int subelem_index)
+        {
+            if (!data_loaded)
+            {
+                return;
+            }
+
+            // if selected category is the same, change elem text
+            if (selected_category_id == cat_id)
+            {
+                // find index
+                int list_index = elem_index;
+                ElementSelect.SelectedIndexChanged -= ElementSelect_SelectedIndexChanged;
+                ElementSelect.Items[list_index] = CachedElementDisplays[cat_id].get_element_string(elem_index);
+                ElementSelect.SelectedIndexChanged += ElementSelect_SelectedIndexChanged;
+            }
+
+            // if displayed element is the same, change description
+            if (ElementDisplay == null)
+            {
+                return;
+            }
+            if ((ElementDisplay.category.GetCategoryID() == cat_id) && (ElementDisplay.current_element == elem_index))
+            {
+                ElementDisplay.on_update_subelement(subelem_index);
+                labelDescription.Text = ElementDisplay.get_description_string(elem_index);
+                label_tracedesc.Text = ElementDisplay.get_element_string(elem_index);
+            }
+        }
+
+        public void CFF_OnSubElementRemoved(int cat_id, int elem_index, int subelem_index)
+        {
+            if (!data_loaded)
+            {
+                return;
+            }
+
+            // if selected category is the same, change elem text
+            if (selected_category_id == cat_id)
+            {
+                // find index
+                int list_index = elem_index;
+                ElementSelect.SelectedIndexChanged -= ElementSelect_SelectedIndexChanged;
+                ElementSelect.Items[list_index] = CachedElementDisplays[cat_id].get_element_string(elem_index);
+                ElementSelect.SelectedIndexChanged += ElementSelect_SelectedIndexChanged;
+            }
+
+            // if displayed element is the same, change description
+            if (ElementDisplay == null)
+            {
+                return;
+            }
+            if ((ElementDisplay.category.GetCategoryID() == cat_id) && (ElementDisplay.current_element == elem_index))
+            {
+                ElementDisplay.on_remove_subelement(subelem_index);
+                labelDescription.Text = ElementDisplay.get_description_string(elem_index);
+                label_tracedesc.Text = ElementDisplay.get_element_string(elem_index);
+            }
+        }
+
+        // add/insert/remove/copy/clear
+        private void ButtonElemAdd_Click(object sender, EventArgs e)
+        {
+            // add empty
+            if (!data_loaded)
+            {
+                return;
+            }
+
+            ICategory cat = CachedElementDisplays[selected_category_id].category;
+            // get max id
+            cat.GetLastUsedID(out int max_id, out int max_index);
+
+            if (copied_element_index == SFEngine.Utility.NO_INDEX)
+            {
+                cat.AddID(max_index, max_id + 1);
+            }
+            else
+            {
+                cat.Copy(copied_element_index, max_index);
+                cat.SetID(max_index, max_id + 1);
+            }
+        }
+
+        private void ButtonElemInsert_Click(object sender, EventArgs e)
+        {
+            // add empty
+            if (!data_loaded)
+            {
+                return;
+            }
+
+            int elem_index = ElementSelect.SelectedIndex;
+            if (elem_index == SFEngine.Utility.NO_INDEX)
+            {
+                return;
+            }
+
+            // if cant insert new elem here, stop
+            ICategory cat = CachedElementDisplays[selected_category_id].category;
+            cat.GetID(elem_index, out int cur_id);
+            if (!cat.CalculateNewItemIndex(cur_id + 1, out int new_index))
+            {
+                return;
+            }
+
+            if (copied_element_index == SFEngine.Utility.NO_INDEX)
+            {
+                cat.AddID(new_index, cur_id + 1);
+            }
+            else
+            {
+                cat.Copy(copied_element_index, new_index);
+                cat.SetID(new_index, cur_id + 1);
+            }
+        }
+
+        private void ButtonElemRemove_Click(object sender, EventArgs e)
+        {
+            if (!data_loaded)
+            {
+                return;
+            }
+
+            int elem_index = ElementSelect.SelectedIndex;
+            if (elem_index == SFEngine.Utility.NO_INDEX)
+            {
+                return;
+            }
+
+            // remove selected item
+            ICategory cat = CachedElementDisplays[selected_category_id].category;
+            cat.Remove(elem_index);
+        }
+
+        private void ButtonElemCopy_Click(object sender, EventArgs e)
+        {
+            copied_element_index = ElementSelect.SelectedIndex;
+            ButtonElemAdd.BackColor = System.Drawing.Color.DarkOrange;
+            ButtonElemInsert.BackColor = System.Drawing.Color.DarkOrange;
+        }
+
+        private void ButtonElemClear_Click(object sender, EventArgs e)
+        {
+            clear_copied();
         }
     }
 }

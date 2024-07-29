@@ -123,7 +123,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         private void textBox15_TextChanged(object sender, EventArgs e)
         {
-            c2004.SetField(current_element, "SpeedRun", SFEngine.Utility.TryParseInt16(textBox15.Text));
+            c2004.SetField(current_element, "SpeedCast", SFEngine.Utility.TryParseInt16(textBox15.Text));
         }
 
         public override void show_element()

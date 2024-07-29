@@ -51,7 +51,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 int res_index = combo_values.IndexOf(c2031[current_element, i].ResourceID);
                 string res_name = "";
-                if (res_index == 0)
+                if ((res_index > comboRes.Items.Count) || (res_index == 0))
                 {
                     res_name = SFEngine.Utility.S_ITEM_MISSING;
                 }
@@ -96,7 +96,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             }
             else
             {
-                comboRes.SelectedIndex = combo_values.IndexOf(c2031[current_element, index].ResourceID) - 1;
+                comboRes.SelectedIndex = found_index - 1;
             }
             textBox3.Text = c2031[current_element, index].ResourceRequirement.ToString();
         }
@@ -125,12 +125,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 Byte res_id = c2031[current_element, i].ResourceID;
                 if (res_id == new_res)
                 {
-                    new_res = 0;
-                    break;
+                    comboRes.SelectedIndex = combo_values.IndexOf(current_res) - 1;
+                    return;
                 }
             }
 
-            c2031.RemoveSub(current_element, cur_index);
 
             int new_index = c2031.GetItemSubItemNum(current_element) - 1;
             for (int i = 0; i < new_index; i++)
@@ -141,9 +140,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                     break;
                 }
             }
-            if (new_index == SFEngine.Utility.NO_INDEX)
+            if (cur_index >= new_index)
             {
-                new_index = 0;
+                cur_index += 1;
             }
 
             c2031.AddSubItem(current_element, new_index, new()
@@ -152,6 +151,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 ResourceID = new_res,
                 ResourceRequirement = current_req
             });
+            c2031.RemoveSub(current_element, cur_index);
 
             ListResources.SelectedIndex = new_index;
         }
@@ -193,7 +193,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2031[index, 0].BuildingID} {SFCategoryManager.GetBuildingName(c2031[index, 0].BuildingID)} [{c2031[current_element, 0].ResourceID}]";
+            return $"{c2031[index, 0].BuildingID} {SFCategoryManager.GetBuildingName(c2031[index, 0].BuildingID)}";
         }
 
         public override void on_add_subelement(int subelem_index)
