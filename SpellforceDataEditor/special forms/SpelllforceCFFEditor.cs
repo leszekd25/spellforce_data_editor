@@ -5,6 +5,7 @@ using SpellforceDataEditor.SFCFF.category_forms;
 using SpellforceDataEditor.SFCFF.helper_forms;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -37,6 +38,10 @@ namespace SpellforceDataEditor.special_forms
         // tracer
         List<TraceElement> trace_list = new();
 
+        // undo/redo
+        public UndoRedoQueue urq = new();
+        CFFOperatorHistory undoredo_form = null;
+
         //constructor
         public SpelllforceCFFEditor()
         {
@@ -47,6 +52,9 @@ namespace SpellforceDataEditor.special_forms
                 mapeditor_set_gamedata();
                 MessageBox.Show("Gamedata editor is now synchronized with map editor! Any changes saved will permanently alter gamedata in your Spellforce directory.");
             }
+
+            urq.OnUndoStateChange = OnUndoStateChange;
+            urq.OnRedoStateChange = OnRedoStateChange;
 
 #if DEBUG
             clipboardTooldebugToolStripMenuItem.Visible = true;
@@ -91,6 +99,8 @@ namespace SpellforceDataEditor.special_forms
                     cat.SetOnSubElementAddedCallback(CFF_OnSubElementAdded);
                     cat.SetOnSubElementModifiedCallback(CFF_OnSubElementModified);
                     cat.SetOnSubElementRemovedCallback(CFF_OnSubElementRemoved);
+                    cat.EnableUndoRedo(urq);
+
                 }
 
                 data_loaded = true;
@@ -146,6 +156,7 @@ namespace SpellforceDataEditor.special_forms
                 cat.SetOnSubElementAddedCallback(CFF_OnSubElementAdded);
                 cat.SetOnSubElementModifiedCallback(CFF_OnSubElementModified);
                 cat.SetOnSubElementRemovedCallback(CFF_OnSubElementRemoved);
+                cat.EnableUndoRedo(urq);
             }
 
             data_loaded = true;
@@ -606,6 +617,11 @@ namespace SpellforceDataEditor.special_forms
             ElementSelect.Items.Clear();
             ElementSelect.Enabled = false;
 
+            if(undoredo_form != null)
+            {
+                undoredo_form.Close();
+            }
+
             panelElemManipulate.Visible = false;
             panelElemCopy.Visible = false;
             ButtonElemAdd.BackColor = SystemColors.Control;
@@ -631,6 +647,7 @@ namespace SpellforceDataEditor.special_forms
 
             SFCategoryManager.UnloadAll();
 
+            urq.Clear();
             data_loaded = false;
 
             Text = "GameData Editor";
@@ -754,9 +771,9 @@ namespace SpellforceDataEditor.special_forms
                 ElementSelect.SelectedIndex = list_index;
 
                 // update copied element reference
-                if(copied_element_index != SFEngine.Utility.NO_INDEX)
+                if (copied_element_index != SFEngine.Utility.NO_INDEX)
                 {
-                    if(elem_index <= copied_element_index)
+                    if (elem_index <= copied_element_index)
                     {
                         copied_element_index += 1;
                     }
@@ -790,6 +807,8 @@ namespace SpellforceDataEditor.special_forms
             }
             if ((ElementDisplay.category.GetCategoryID() == cat_id) && (ElementDisplay.current_element == elem_index))
             {
+                ElementDisplay.set_element(elem_index);
+                ElementDisplay.show_element();
                 labelDescription.Text = ElementDisplay.get_description_string(elem_index);
                 label_tracedesc.Text = ElementDisplay.get_element_string(elem_index);
             }
@@ -835,6 +854,18 @@ namespace SpellforceDataEditor.special_forms
                     {
                         ElementSelect.SelectedIndex = cur_list_index;
                     }
+                }
+            }
+            else
+            {
+                // if displayed element is the same, it must mean it was traced - move tracer back
+                if (ElementDisplay == null)
+                {
+                    return;
+                }
+                if ((ElementDisplay.category.GetCategoryID() == cat_id) && (ElementDisplay.current_element == elem_index))
+                {
+                    trace_back();
                 }
             }
         }
@@ -1014,6 +1045,85 @@ namespace SpellforceDataEditor.special_forms
         private void ButtonElemClear_Click(object sender, EventArgs e)
         {
             clear_copied();
+        }
+
+        // undo/redo
+
+        void Undo()
+        {
+            urq.Undo();
+            undoredo_form?.OnUndo();
+        }
+
+        void Redo()
+        {
+            urq.Redo();
+            undoredo_form?.OnRedo();
+        }
+
+        private void OnUndoStateChange(bool state)
+        {
+            undoCtrlZToolStripMenuItem.Enabled = state;
+        }
+
+        private void OnRedoStateChange(bool state)
+        {
+            redoCtrlYToolStripMenuItem.Enabled = state;
+        }
+
+        private void OnPush(IUndoRedo iur)
+        {
+            undoredo_form?.OnPush(iur);
+        }
+
+        private void OnPop()
+        {
+            undoredo_form?.OnPop();
+        }
+
+        private void undoCtrlZToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Undo();
+        }
+
+        private void redoCtrlYToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Redo();
+        }
+
+        private void operationHistoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(!data_loaded)
+            {
+                return;
+            }
+
+            if(undoredo_form != null)
+            {
+                undoredo_form.Focus();
+                return;
+            }
+
+            undoredo_form = new();
+            undoredo_form.FormClosed += undoredo_form_FormClosed;
+            undoredo_form.Show();
+
+            urq.OnPush = OnPush;
+            urq.OnPop = OnPop;
+        }
+
+        private void undoredo_form_FormClosed(object sender, EventArgs e)
+        {
+            if(undoredo_form == null)
+            {
+                return;
+            }
+
+            undoredo_form.FormClosed -= undoredo_form_FormClosed;
+            urq.OnPush = null;
+            urq.OnPop = null;
+
+            undoredo_form = null;
         }
     }
 }

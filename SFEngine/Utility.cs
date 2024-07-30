@@ -18,6 +18,9 @@ namespace SFEngine
         public const int NO_INDEX = -1;
         public static CultureInfo ci { get; } = CultureInfo.CreateSpecificCulture("en-GB");
 
+        [DllImport("msvcrt.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int memcmp(IntPtr a1, IntPtr a2, uint count);
+
         //functions which try to convert a string to the respective type
         static public SByte TryParseInt8(string s, SByte def = 0)
         {
@@ -427,6 +430,11 @@ namespace SFEngine
             T[] new_arr = new T[current_len * 2];
             Array.Copy(arr, new_arr, current_len);
             arr = new_arr;
+        }
+
+        static public unsafe bool MemoryEqual<T, U>(T* p1, U* p2, uint bytecount)
+        {
+            return memcmp((IntPtr)p1, (IntPtr)p2, bytecount) == 0;
         }
     }
 }

@@ -29,21 +29,29 @@ namespace SFEngine.SFCFF.CTG
         public void SetID(int id) => ObjectID = (ushort)id;
         public int GetSubID() => PolygonID;
         public void SetSubID(int subid) => PolygonID = (byte)subid;
+
+        public void CopyTo(ref Category2057Item item)
+        {
+            item.ObjectID = ObjectID;
+            item.PolygonID = PolygonID;
+            item.CastsShadow = CastsShadow;
+            item.Coords = new List<short>(Coords);
+        }
     }
 
     public class Category2057 : ICategory
     {
-        int CurrentMaxID;
         bool Loaded;
+        UndoRedoQueue urq;
 
-        dOnElementAdded OnElementAdded;
-        dOnElementRemoved OnElementRemoved;
-        dOnSubElementAdded OnSubElementAdded;
-        dOnSubElementModified OnSubElementModified;
-        dOnSubElementRemoved OnSubElementRemoved;
-        dOnVertex2057Added OnVertexAdded;
-        dOnVertex2057Modified OnVertexModified;
-        dOnVertex2057Removed OnVertexRemoved;
+        public dOnElementAdded OnElementAdded;
+        public dOnElementRemoved OnElementRemoved;
+        public dOnSubElementAdded OnSubElementAdded;
+        public dOnSubElementModified OnSubElementModified;
+        public dOnSubElementRemoved OnSubElementRemoved;
+        public dOnVertex2057Added OnVertexAdded;
+        public dOnVertex2057Modified OnVertexModified;
+        public dOnVertex2057Removed OnVertexRemoved;
 
         public virtual string GetName()
         {
@@ -63,11 +71,6 @@ namespace SFEngine.SFCFF.CTG
         public int GetNumOfItems()
         {
             return Indices.Count;
-        }
-
-        public int GetCurrentMaxID()
-        {
-            return CurrentMaxID;
         }
 
         public int GetByteCount()
@@ -115,22 +118,7 @@ namespace SFEngine.SFCFF.CTG
         {
             get
             {
-                int from_start = Indices[index];
-                int from_end;
-                if (index == Indices.Count - 1)
-                {
-                    from_end = Items.Count;
-                }
-                else
-                {
-                    from_end = Indices[index + 1];
-                }
-                if (from_start + subindex >= from_end)
-                {
-                    throw new Exception();
-                }
-
-                return Items[Indices[index] + subindex];
+                return Items[GetSubItemIndex(index, subindex)];
             }
         }
 
@@ -144,12 +132,11 @@ namespace SFEngine.SFCFF.CTG
                 {
                     cur_item_id = item_id;
                     Indices.Add(i);
-                    CurrentMaxID = Math.Max(CurrentMaxID, item_id);
                 }
             }
         }
 
-        void AdjustIndices(int index_start, int increment)
+        public void AdjustIndices(int index_start, int increment)
         {
             for (int i = index_start; i < Indices.Count; i++)
             {
@@ -170,7 +157,7 @@ namespace SFEngine.SFCFF.CTG
             }
             BinaryReader br = chunk.Open();
 
-            while (br.BaseStream.Position < br.BaseStream.Length)
+            while(br.BaseStream.Position < br.BaseStream.Length)
             {
                 Category2057Item item = new Category2057Item();
                 item.ObjectID = br.ReadUInt16();
@@ -178,7 +165,7 @@ namespace SFEngine.SFCFF.CTG
                 item.CastsShadow = br.ReadByte();
                 item.Coords = new List<short>();
                 ushort coords_num = (ushort)(br.ReadByte());
-                for (int i = 0; i < coords_num; i++)
+                for(int i = 0; i < coords_num; i++)
                 {
                     short x = br.ReadInt16();
                     short y = br.ReadInt16();
@@ -206,14 +193,14 @@ namespace SFEngine.SFCFF.CTG
             using MemoryStream ms = new MemoryStream(data);
             using BinaryWriter bw = new BinaryWriter(ms);
 
-            for (int i = 0; i < Items.Count; i++)
+            for(int i = 0; i < Items.Count; i++)
             {
                 Category2057Item item = Items[i];
                 bw.Write(item.ObjectID);
                 bw.Write(item.PolygonID);
                 bw.Write(item.CastsShadow);
                 bw.Write((byte)(item.Coords.Count / 2));
-                for (int j = 0; j < item.Coords.Count; j++)
+                for(int j = 0; j < item.Coords.Count; j++)
                 {
                     bw.Write(item.Coords[i]);
                 }
@@ -226,7 +213,7 @@ namespace SFEngine.SFCFF.CTG
         {
             Items.Clear();
             Indices.Clear();
-            CurrentMaxID = 0;
+            urq = null;
             Loaded = false;
             return true;
         }
@@ -241,178 +228,116 @@ namespace SFEngine.SFCFF.CTG
 
         public bool AddEmpty(int new_index)
         {
-            int main_index;
-            if (new_index >= Indices.Count)
+            IUndoRedo iur = new UndoRedoElementAdd2057()
             {
-                main_index = Items.Count;
-            }
-            else
-            {
-                main_index = Indices[new_index];
-            }
-            Items.Insert(main_index, new() { Coords = new() });
-            Indices.Insert(new_index, main_index);
-            AdjustIndices(new_index + 1, 1);
-            OnElementAdded?.Invoke(GetCategoryID(), new_index);
+                cat = this,
+                index = new_index,
+                item = new() { Coords = new() }
+            };
+            iur.Commit(urq);
+
             return true;
         }
 
         public bool AddID(int new_index, int new_id)
         {
-            int main_index;
-            if (new_index >= Indices.Count)
+            Category2057Item item = new() { Coords = new() };
+            item.SetID(new_id);
+
+            IUndoRedo iur = new UndoRedoElementAdd2057()
             {
-                main_index = Items.Count;
-            }
-            else
-            {
-                main_index = Indices[new_index];
-            }
-            Items.Insert(main_index, new() { Coords = new() });
-            Indices.Insert(new_index, main_index);
-            AdjustIndices(new_index + 1, 1);
-            OnElementAdded?.Invoke(GetCategoryID(), new_index);
-            SetID(new_index, new_id);
+                cat = this,
+                index = new_index,
+                item = item
+            };
+            iur.Commit(urq);
+
             return true;
         }
 
         public bool AddItem(int new_index, Category2057Item item)
         {
-            int main_index;
-            if (new_index >= Indices.Count)
+            IUndoRedo iur = new UndoRedoElementAdd2057()
             {
-                main_index = Items.Count;
-            }
-            else
-            {
-                main_index = Indices[new_index];
-            }
-            Items.Insert(new_index, item);
-            Indices.Insert(new_index, main_index);
-            AdjustIndices(new_index + 1, 1);
-            OnElementAdded?.Invoke(GetCategoryID(), new_index);
+                cat = this,
+                index = new_index,
+                item = item
+            };
+            iur.Commit(urq);
+
             return true;
         }
 
         public bool AddSubItem(int new_index, int new_subindex, Category2057Item item)
         {
-            if (new_index >= Indices.Count)
+            IUndoRedo iur = new UndoRedoSubElementAdd2057()
             {
-                throw new Exception();
-            }
+                cat = this,
+                index = new_index,
+                subindex = new_subindex,
+                item = item
+            };
+            iur.Commit(urq);
 
-            int main_index = Indices[new_index];
-            int num = GetItemSubItemNum(new_index);
-            if (new_subindex > num)
-            {
-                throw new Exception();
-            }
-
-            Items.Insert(main_index + new_subindex, item);
-            AdjustIndices(new_index + 1, 1);
-            OnSubElementAdded.Invoke(GetCategoryID(), new_index, new_subindex);
             return true;
         }
 
         public bool SetSubItem(int index, int subindex, Category2057Item item)
         {
-            if (index >= Indices.Count)
+            IUndoRedo iur = new UndoRedoSubElementReplace2057()
             {
-                throw new Exception();
-            }
+                cat = this,
+                index = index,
+                subindex = subindex,
+                new_item = item
+            };
+            iur.Commit(urq);
 
-            int main_index = Indices[index];
-            int num = GetItemSubItemNum(index);
-            if (subindex >= num)
-            {
-                throw new Exception();
-            }
-
-            Items[main_index + subindex] = item;
-            OnSubElementModified?.Invoke(GetCategoryID(), index, subindex);
             return true;
         }
 
         public bool AddCoord(int index, int subindex, int new_coord_index, short x, short y)
         {
-            if (index >= Indices.Count)
+            IUndoRedo iur = new UndoRedoVertexAdd2057()
             {
-                throw new Exception();
-            }
-
-            int main_index = Indices[index];
-            int num = GetItemSubItemNum(index);
-            if (subindex > num)
-            {
-                throw new Exception();
-            }
-
-            main_index += subindex;
-
-            if (new_coord_index * 2 > Items[main_index].Coords.Count)
-            {
-                throw new Exception();
-            }
-
-            Items[main_index].Coords.Insert(new_coord_index * 2 + 0, x);
-            Items[main_index].Coords.Insert(new_coord_index * 2 + 1, y);
-            OnVertexAdded?.Invoke(index, subindex, new_coord_index);
+                cat = this,
+                index = index,
+                subindex = subindex,
+                v_index = new_coord_index,
+                new_x = x,
+                new_y = y
+            };
+            iur.Commit(urq);
 
             return true;
         }
 
         public bool SetCoord(int index, int subindex, int coord_index, short x, short y)
         {
-            if (index >= Indices.Count)
+            IUndoRedo iur = new UndoRedoVertexModify2057()
             {
-                throw new Exception();
-            }
-
-            int main_index = Indices[index];
-            int num = GetItemSubItemNum(index);
-            if (subindex > num)
-            {
-                throw new Exception();
-            }
-
-            main_index += subindex;
-
-            if (coord_index * 2 >= Items[main_index].Coords.Count)
-            {
-                throw new Exception();
-            }
-
-            Items[main_index].Coords[coord_index * 2 + 0] = x;
-            Items[main_index].Coords[coord_index * 2 + 1] = y;
-            OnVertexModified?.Invoke(index, subindex, coord_index);
+                cat = this,
+                index = index,
+                subindex = subindex,
+                v_index = coord_index,
+                new_x = x,
+                new_y = y
+            };
+            iur.Commit(urq);
 
             return true;
         }
 
         public bool RemoveCoord(int index, int subindex, int coord_index)
         {
-            if (index >= Indices.Count)
+            IUndoRedo iur = new UndoRedoVertexRemove2057()
             {
-                throw new Exception();
-            }
-
-            int main_index = Indices[index];
-            int num = GetItemSubItemNum(index);
-            if (subindex > num)
-            {
-                throw new Exception();
-            }
-
-            main_index += subindex;
-
-            if (coord_index * 2 >= Items[main_index].Coords.Count)
-            {
-                throw new Exception();
-            }
-
-            Items[main_index].Coords.RemoveAt(coord_index * 2 + 0);
-            Items[main_index].Coords.RemoveAt(coord_index * 2 + 0);
-            OnVertexRemoved?.Invoke(index, subindex, coord_index);
+                cat = this,
+                index = index,
+                subindex = subindex,
+                v_index = coord_index,
+            };
+            iur.Commit(urq);
 
             return true;
         }
@@ -430,74 +355,52 @@ namespace SFEngine.SFCFF.CTG
                 from_end = Indices[from_index + 1] - 1;
             }
 
-            int main_index;
-            if (new_index >= Indices.Count)
+            urq?.OpenCluster();
+            IUndoRedo iur = new UndoRedoElementAdd2057()
             {
-                main_index = Items.Count;
-            }
-            else
+                cat = this,
+                index = new_index,
+                item = Items[from_start]
+            };
+            iur.Commit(urq);
+            for (int i = 1; i <= (from_end - from_start); i++)
             {
-                main_index = Indices[new_index];
+                IUndoRedo iur2 = new UndoRedoSubElementAdd2057()
+                {
+                    cat = this,
+                    index = new_index,
+                    subindex = i,
+                    item = Items[from_start + i]
+                };
+                iur2.Commit(urq);
             }
-
-            for (int i = 0; i <= (from_end - from_start); i++)
-            {
-                Category2057Item item = Items[from_start + i];
-                item.Coords = new List<short>(item.Coords);
-                Items.Insert(main_index + i, item);
-            }
-            Indices.Insert(new_index, main_index);
-            AdjustIndices(new_index + 1, from_end - from_start);
-            OnElementAdded?.Invoke(GetCategoryID(), new_index);
+            urq?.CloseCluster();
 
             return true;
         }
 
         public bool Remove(int index)
         {
-            int from_start = Indices[index];
-            int from_end;
-            if (index == Indices.Count - 1)
+            IUndoRedo iur = new UndoRedoElementRemove2057()
             {
-                from_end = Items.Count - 1;
-            }
-            else
-            {
-                from_end = Indices[index + 1] - 1;
-            }
-
-            for (int i = 0; i <= (from_end - from_start); i++)
-            {
-                Items.RemoveAt(from_start);
-            }
-            Indices.RemoveAt(index);
-            AdjustIndices(index, from_start - from_end);
-            OnElementRemoved?.Invoke(GetCategoryID(), index);
+                cat = this,
+                index = index,
+            };
+            iur.Commit(urq);
 
             return true;
         }
 
         public bool RemoveSub(int index, int subindex)
         {
-            if (index >= Indices.Count)
+            IUndoRedo iur = new UndoRedoSubElementRemove2057()
             {
-                throw new Exception();
-            }
+                cat = this,
+                index = index,
+                subindex = subindex
+            };
+            iur.Commit(urq);
 
-            int main_index = Indices[index];
-            int num = GetItemSubItemNum(index);
-            if (subindex > num)
-            {
-                throw new Exception();
-            }
-            if (num == 1)
-            {
-                return false;
-            }
-
-            Items.RemoveAt(main_index + subindex);
-            AdjustIndices(index + 1, -1);
-            OnSubElementRemoved?.Invoke(GetCategoryID(), index, subindex);
             return true;
         }
 
@@ -509,24 +412,13 @@ namespace SFEngine.SFCFF.CTG
 
         public bool SetID(int index, int id)
         {
-            int from_start = Indices[index];
-            int from_end;
-            if (index == Indices.Count - 1)
+            IUndoRedo iur = new UndoRedoElementSetID2057()
             {
-                from_end = Items.Count - 1;
-            }
-            else
-            {
-                from_end = Indices[index + 1] - 1;
-            }
-
-            for (int i = from_start; i <= from_end; i++)
-            {
-                Category2057Item item = Items[i];
-                item.SetID(id);
-                Items[i] = item;
-                OnSubElementModified?.Invoke(GetCategoryID(), index, i - from_start);
-            }
+                cat = this,
+                index = index,
+                new_id = id
+            };
+            iur.Commit(urq);
 
             return true;
         }
@@ -645,176 +537,17 @@ namespace SFEngine.SFCFF.CTG
             return false;
         }
 
-        public bool SetField<U>(int index, string field_name, U value)
-        {
-            Type t = typeof(Category2057Item);
-
-            Span<Category2057Item> items_span = CollectionsMarshal.AsSpan(Items);
-            if ((index < 0) || (index >= items_span.Length))
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Index out of range");
-                throw new Exception();
-            }
-
-            string field_real_name = field_name;
-            ReadOnlySpan<char> field_span = field_name.AsSpan();
-            // check if theres index in field name
-            uint field_index = uint.MaxValue;
-            if (field_span[^1] == ']')
-            {
-                for (int i = field_span.Length - 2; i >= 0; i--)
-                {
-                    if (field_span[i] == '[')
-                    {
-                        if (!uint.TryParse(field_span.Slice(i + 1, (field_span.Length - 1) - (i + 1)), out field_index))
-                        {
-                            LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Malformed array index");
-                            throw new Exception();
-                        }
-                        field_real_name = new(field_span.Slice(0, i));
-                        break;
-                    }
-                }
-                if (field_index == uint.MaxValue)
-                {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Malformed array index");
-                    throw new Exception();
-                }
-            }
-
-            FieldInfo fi = t.GetField(field_real_name);
-            if (fi == null)
-            {
-                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Unknown field {field_real_name}");
-                throw new Exception();
-            }
-
-            FixedBufferAttribute fb_attr = null;
-            foreach (var attr in fi.GetCustomAttributes())
-            {
-                if (attr is FixedBufferAttribute)
-                {
-                    fb_attr = (FixedBufferAttribute)attr;
-                    break;
-                }
-            }
-            if (fb_attr == null)
-            {
-                // if there is array index supplied, error
-                if (field_index != uint.MaxValue)
-                {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Array index used in non-buffer field {field_real_name}");
-                    throw new Exception();
-                }
-                Type t2 = fi.FieldType;
-                if (t2 != typeof(U))
-                {
-                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Type of {field_real_name} doesnt match the argument type");
-                    throw new Exception();
-                }
-
-                U cur_val = (U)fi.GetValue(items_span[index]);
-                if (!cur_val.Equals(value))
-                {
-                    TypedReference tref = __makeref(items_span[index]);
-                    fi.SetValueDirect(tref, value);
-                    // undo/redo stuff
-
-                    return true;
-                }
-            }
-            else
-            {
-                // if theres no index, set entire array with value
-                if (field_index == uint.MaxValue)
-                {
-                    Type utype = typeof(U);
-                    if (!utype.IsArray)
-                    {
-                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Attempting to assign non-array to array field {field_real_name}");
-                        throw new Exception();
-                    }
-                    Type utype_elem = utype.GetElementType();
-                    if (fb_attr.ElementType != utype_elem)
-                    {
-                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Type of {field_real_name} doesnt match the argument type");
-                        throw new Exception();
-                    }
-                    Array arr = value as Array;
-                    if (arr.Length != fb_attr.Length)
-                    {
-                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Array length does not match array field {field_real_name}");
-                        throw new Exception();
-                    }
-                    // copy
-                    // https://stackoverflow.com/questions/30817924/obtain-non-explicit-field-offset
-                    int field_offset = Marshal.ReadInt32(fi.FieldHandle.Value + (4 + IntPtr.Size)) & 0xFFFFFF;
-                    unsafe
-                    {
-                        fixed (Category2057Item* ptr = items_span)
-                        {
-                            // https://stackoverflow.com/questions/63899222/how-to-get-a-pointer-to-memory-of-array-instance
-                            U* ptr2 = (U*)(((byte*)(&ptr[index])) + field_offset);
-                            GCHandle handle = GCHandle.Alloc(arr, GCHandleType.Pinned);
-                            try
-                            {
-                                IntPtr address = handle.AddrOfPinnedObject();
-                                U* ptr3 = (U*)address.ToPointer();
-                                int arrsize = fb_attr.Length * Marshal.SizeOf(utype_elem);
-                                Buffer.MemoryCopy(ptr3, ptr2, arrsize, arrsize);
-                                // undo/redo stuff
-
-                                return true;
-                            }
-                            finally
-                            {
-                                handle.Free();
-                            }
-                        }
-                    }
-                }
-                // otherwise, set single element of array
-                else
-                {
-                    if (fb_attr.ElementType != typeof(U))
-                    {
-                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Type of {field_real_name} doesnt match the argument type");
-                        throw new Exception();
-                    }
-                    if (field_index >= fb_attr.Length)
-                    {
-                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Array index out of range");
-                        throw new Exception();
-                    }
-
-                    // https://stackoverflow.com/questions/30817924/obtain-non-explicit-field-offset
-                    int field_offset = Marshal.ReadInt32(fi.FieldHandle.Value + (4 + IntPtr.Size)) & 0xFFFFFF;
-                    unsafe
-                    {
-                        fixed (Category2057Item* ptr = items_span)
-                        {
-                            U* ptr2 = (U*)(((byte*)(&ptr[index])) + field_offset);
-                            if (!ptr2[field_index].Equals(value))
-                            {
-                                ptr2[field_index] = value;
-                                // undo/redo stuff
-
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
-
         public void SetField<U>(int index, int subindex, string field_name, U value)
         {
-            if (SetField(GetSubItemIndex(index, subindex), field_name, value))
+            IUndoRedo iur = new UndoRedoSubElementSetField2057<U>()
             {
-                OnSubElementModified?.Invoke(GetCategoryID(), index, subindex);
-            }
+                cat = this,
+                index = index,
+                subindex = subindex,
+                field_name = field_name,
+                value = value
+            };
+            iur.Commit(urq);
         }
 
         public bool GetFirstUnusedID(out int id, out int index)
@@ -858,24 +591,10 @@ namespace SFEngine.SFCFF.CTG
             return true;
         }
 
-        public bool Undo()
+        public bool EnableUndoRedo(UndoRedoQueue queue)
         {
-            return false;
-        }
-
-        public bool Redo()
-        {
-            return false;
-        }
-
-        public bool CanUndo()
-        {
-            return false;
-        }
-
-        public bool CanRedo()
-        {
-            return false;
+            urq = queue;
+            return true;
         }
 
         public bool SetOnElementAddedCallback(dOnElementAdded cb)
@@ -895,15 +614,15 @@ namespace SFEngine.SFCFF.CTG
             return true;
         }
 
-        public bool SetOnSubElementAddedCallback(dOnSubElementAdded cb)
-        {
-            OnSubElementAdded = cb;
-            return true;
-        }
-
         public bool SetOnSubElementModifiedCallback(dOnSubElementModified cb)
         {
             OnSubElementModified = cb;
+            return true;
+        }
+
+        public bool SetOnSubElementAddedCallback(dOnSubElementAdded cb)
+        {
+            OnSubElementAdded = cb;
             return true;
         }
 
@@ -947,6 +666,743 @@ namespace SFEngine.SFCFF.CTG
         public List<int> QueryItems()
         {
             return null;
+        }
+    }
+
+    public class UndoRedoElementAdd2057 : IUndoRedo
+    {
+        public Category2057 cat;
+        public int index;
+        public Category2057Item item;
+
+        public bool Init()
+        {
+            Redo();
+            return true;
+        }
+
+        public void Undo()
+        {
+            int main_index;
+            if (index >= cat.Indices.Count)
+            {
+                main_index = cat.Items.Count;
+            }
+            else
+            {
+                main_index = cat.Indices[index];
+            }
+
+            cat.Items.RemoveAt(main_index);
+            cat.Indices.RemoveAt(index);
+            cat.AdjustIndices(index, -1);
+            cat.OnElementRemoved?.Invoke(cat.GetCategoryID(), index);
+        }
+
+        public void Redo()
+        {
+            int main_index;
+            if (index >= cat.Indices.Count)
+            {
+                main_index = cat.Items.Count;
+            }
+            else
+            {
+                main_index = cat.Indices[index];
+            }
+            cat.Items.Insert(main_index, item);
+            cat.Indices.Insert(index, main_index);
+            cat.AdjustIndices(index + 1, 1);
+            cat.OnElementAdded?.Invoke(cat.GetCategoryID(), index);
+        }
+
+        public override string ToString()
+        {
+            return $"{cat.GetName()}: Add item at index {index}";
+        }
+    }
+
+    public class UndoRedoElementSetID2057 : IUndoRedo
+    {
+        public Category2057 cat;
+        public int index;
+        public int new_id;
+        int previous_id;
+
+        public bool Init()
+        {
+            if (index >= cat.Indices.Count)
+            {
+                throw new Exception();
+            }
+
+            cat.GetID(index, out previous_id);
+            if(previous_id == new_id)
+            {
+                return false;
+            }
+            Redo();
+            return true;
+        }
+
+        public void Undo()
+        {
+            Span<Category2057Item> span = CollectionsMarshal.AsSpan(cat.Items);
+            int from_start = cat.Indices[index];
+            int from_end;
+            if (index == cat.Indices.Count - 1)
+            {
+                from_end = cat.Items.Count - 1;
+            }
+            else
+            {
+                from_end = cat.Indices[index + 1] - 1;
+            }
+
+            for (int i = from_start; i <= from_end; i++)
+            {
+                span[i].SetID(previous_id);
+                cat.OnSubElementModified?.Invoke(cat.GetCategoryID(), index, i - from_start);
+            }
+        }
+
+        public void Redo()
+        {
+            Span<Category2057Item> span = CollectionsMarshal.AsSpan(cat.Items);
+            int from_start = cat.Indices[index];
+            int from_end;
+            if (index == cat.Indices.Count - 1)
+            {
+                from_end = cat.Items.Count - 1;
+            }
+            else
+            {
+                from_end = cat.Indices[index + 1] - 1;
+            }
+
+            for (int i = from_start; i <= from_end; i++)
+            {
+                span[i].SetID(new_id);
+                cat.OnSubElementModified?.Invoke(cat.GetCategoryID(), index, i - from_start);
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{cat.GetName()}: Set ID of item at index {index}";
+        }
+    }
+
+    public class UndoRedoElementRemove2057 : IUndoRedo
+    {
+        public Category2057 cat;
+        public int index;
+        List<Category2057Item> item;
+
+        public bool Init()
+        {
+            int main_index;
+            if (index >= cat.Indices.Count)
+            {
+                throw new Exception();
+            }
+            main_index = cat.Indices[index];
+
+            item = new();
+            for (int i = 0; i < cat.GetItemSubItemNum(index); i++)
+            {
+                Category2057Item it = new();
+                cat.Items[main_index + i].CopyTo(ref it);
+                item.Add(it);
+            }
+
+            Redo();
+            return true;
+        }
+
+        public void Undo()
+        {
+            int main_index;
+            if (index >= cat.Indices.Count)
+            {
+                main_index = cat.Items.Count;
+            }
+            else
+            {
+                main_index = cat.Indices[index];
+            }
+
+            for (int i = 0; i < item.Count; i++)
+            {
+                cat.Items.Insert(main_index + i, item[i]);
+            }
+            cat.Indices.Insert(index, main_index);
+            cat.AdjustIndices(index + 1, item.Count);
+            cat.OnElementAdded?.Invoke(cat.GetCategoryID(), index);
+        }
+
+        public void Redo()
+        {
+            int from_start = cat.Indices[index];
+            int from_end;
+            if (index == cat.Indices.Count - 1)
+            {
+                from_end = cat.Items.Count - 1;
+            }
+            else
+            {
+                from_end = cat.Indices[index + 1] - 1;
+            }
+
+            for (int i = 0; i <= (from_end - from_start); i++)
+            {
+                cat.Items.RemoveAt(from_start);
+            }
+            cat.Indices.RemoveAt(index);
+            cat.AdjustIndices(index, from_start - from_end);
+            cat.OnElementRemoved?.Invoke(cat.GetCategoryID(), index);
+        }
+
+        public override string ToString()
+        {
+            return $"{cat.GetName()}: Remove item at index {index}";
+        }
+    }
+
+    public class UndoRedoSubElementAdd2057 : IUndoRedo
+    {
+        public Category2057 cat;
+        public int index;
+        public int subindex;
+        public Category2057Item item;
+
+        public bool Init()
+        {
+            if (index >= cat.Indices.Count)
+            {
+                throw new Exception();
+            }
+            if (subindex > cat.GetItemSubItemNum(index))
+            {
+                throw new Exception();
+            }
+
+            Redo();
+            return true;
+        }
+
+        public void Undo()
+        {
+            int main_index = cat.Indices[index];
+            cat.Items.RemoveAt(main_index + subindex);
+            cat.AdjustIndices(index + 1, -1);
+            cat.OnSubElementRemoved?.Invoke(cat.GetCategoryID(), index, subindex);
+        }
+
+        public void Redo()
+        {
+            int main_index = cat.Indices[index];
+            cat.Items.Insert(main_index + subindex, item);
+            cat.AdjustIndices(index + 1, 1);
+            cat.OnSubElementAdded?.Invoke(cat.GetCategoryID(), index, subindex);
+        }
+
+        public override string ToString()
+        {
+            return $"{cat.GetName()}: Add subitem at index {index}, {subindex}";
+        }
+    }
+
+    public class UndoRedoSubElementReplace2057 : IUndoRedo
+    {
+        public Category2057 cat;
+        public int index;
+        public int subindex;
+        public Category2057Item new_item;
+        Category2057Item previous_item;
+
+        public bool Init()
+        {
+            if (index >= cat.Indices.Count)
+            {
+                throw new Exception();
+            }
+            if (subindex > cat.GetItemSubItemNum(index))
+            {
+                throw new Exception();
+            }
+
+            cat[index, subindex].CopyTo(ref previous_item);
+            Redo();
+            return true;
+        }
+
+        public void Undo()
+        {
+            int main_index = cat.Indices[index];
+            cat.Items[main_index + subindex] = previous_item;
+            cat.OnSubElementModified?.Invoke(cat.GetCategoryID(), index, subindex);
+        }
+
+        public void Redo()
+        {
+            int main_index = cat.Indices[index];
+            cat.Items[main_index + subindex] = new_item;
+            cat.OnSubElementModified?.Invoke(cat.GetCategoryID(), index, subindex);
+        }
+
+        public override string ToString()
+        {
+            return $"{cat.GetName()}: Replace subitem at index {index}, {subindex}";
+        }
+    }
+
+    public class UndoRedoSubElementRemove2057 : IUndoRedo
+    {
+        public Category2057 cat;
+        public int index;
+        public int subindex;
+        Category2057Item item;
+
+        public bool Init()
+        {
+            if (index >= cat.Indices.Count)
+            {
+                throw new Exception();
+            }
+            if (subindex > cat.GetItemSubItemNum(index))
+            {
+                throw new Exception();
+            }
+
+            cat[index, subindex].CopyTo(ref item);
+            Redo();
+            return true;
+        }
+
+        public void Undo()
+        {
+            int main_index = cat.Indices[index];
+            cat.Items.Insert(main_index + subindex, item);
+            cat.AdjustIndices(index + 1, 1);
+            cat.OnSubElementAdded?.Invoke(cat.GetCategoryID(), index, subindex);
+        }
+
+        public void Redo()
+        {
+            int main_index = cat.Indices[index];
+            cat.Items.RemoveAt(main_index + subindex);
+            cat.AdjustIndices(index + 1, -1);
+            cat.OnSubElementRemoved?.Invoke(cat.GetCategoryID(), index, subindex);
+        }
+
+        public override string ToString()
+        {
+            return $"{cat.GetName()}: Remove subitem at index {index}, {subindex}";
+        }
+    }
+
+    public class UndoRedoSubElementSetField2057<U> : IUndoRedo
+    {
+        public Category2057 cat;
+        public int index;
+        public int subindex;
+        public string field_name;
+        public U value;
+        Category2057Item new_item;
+        Category2057Item previous_item;
+        bool initialized = false;
+        bool valid = false;
+
+        public bool Init()
+        {
+            if (index >= cat.Indices.Count)
+            {
+                throw new Exception();
+            }
+            if (subindex > cat.GetItemSubItemNum(index))
+            {
+                throw new Exception();
+            }
+
+            // this is fine, because we NEVER modify coords with this
+            previous_item = cat[index, subindex];
+            Redo();
+            if(!valid)
+            {
+                return false;
+            }
+            new_item = cat[index, subindex];
+            initialized = true;
+            return true;
+        }
+
+        public void Undo()
+        {
+            int main_index = cat.Indices[index];
+            cat.Items[main_index + subindex] = previous_item;
+            cat.OnSubElementModified?.Invoke(cat.GetCategoryID(), index, subindex);
+        }
+
+        public void Redo()
+        {
+            if (initialized)
+            {
+                int main_index = cat.Indices[index];
+                cat.Items[main_index + subindex] = new_item;
+                cat.OnSubElementModified?.Invoke(cat.GetCategoryID(), index, subindex);
+            }
+            else
+            {
+                bool result = false;
+                Type t = typeof(Category2057Item);
+
+                int real_index = cat.GetSubItemIndex(index, subindex);
+                Span<Category2057Item> items_span = CollectionsMarshal.AsSpan(cat.Items);
+                if ((real_index < 0) || (real_index >= items_span.Length))
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Index out of range");
+                    throw new Exception();
+                }
+
+                string field_real_name = field_name;
+                ReadOnlySpan<char> field_span = field_name.AsSpan();
+                // check if theres index in field name
+                uint field_index = uint.MaxValue;
+                if (field_span[^1] == ']')
+                {
+                    for (int i = field_span.Length - 2; i >= 0; i--)
+                    {
+                        if (field_span[i] == '[')
+                        {
+                            if (!uint.TryParse(field_span.Slice(i + 1, (field_span.Length - 1) - (i + 1)), out field_index))
+                            {
+                                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Malformed array index");
+                                throw new Exception();
+                            }
+                            field_real_name = new(field_span.Slice(0, i));
+                            break;
+                        }
+                    }
+                    if (field_index == uint.MaxValue)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Malformed array index");
+                        throw new Exception();
+                    }
+                }
+
+                FieldInfo fi = t.GetField(field_real_name);
+                if (fi == null)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Unknown field {field_real_name}");
+                    throw new Exception();
+                }
+
+                FixedBufferAttribute fb_attr = null;
+                foreach (var attr in fi.GetCustomAttributes())
+                {
+                    if (attr is FixedBufferAttribute)
+                    {
+                        fb_attr = (FixedBufferAttribute)attr;
+                        break;
+                    }
+                }
+                if (fb_attr == null)
+                {
+                    // if there is array index supplied, error
+                    if (field_index != uint.MaxValue)
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Array index used in non-buffer field {field_real_name}");
+                        throw new Exception();
+                    }
+                    Type t2 = fi.FieldType;
+                    if (t2 != typeof(U))
+                    {
+                        LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Type of {field_real_name} doesnt match the argument type");
+                        throw new Exception();
+                    }
+
+                    U cur_val = (U)fi.GetValue(items_span[real_index]);
+                    if (!cur_val.Equals(value))
+                    {
+                        TypedReference tref = __makeref(items_span[real_index]);
+                        fi.SetValueDirect(tref, value);
+                        // undo/redo stuff
+
+                        result = true;
+                    }
+                }
+                else
+                {
+                    // if theres no index, set entire array with value
+                    if (field_index == uint.MaxValue)
+                    {
+                        Type utype = typeof(U);
+                        if (!utype.IsArray)
+                        {
+                            LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Attempting to assign non-array to array field {field_real_name}");
+                            throw new Exception();
+                        }
+                        Type utype_elem = utype.GetElementType();
+                        if (fb_attr.ElementType != utype_elem)
+                        {
+                            LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Type of {field_real_name} doesnt match the argument type");
+                            throw new Exception();
+                        }
+                        Array arr = value as Array;
+                        if (arr.Length != fb_attr.Length)
+                        {
+                            LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseMultiple<{t.Name}>.SetField(): Array length does not match array field {field_real_name}");
+                            throw new Exception();
+                        }
+                        // copy
+                        // https://stackoverflow.com/questions/30817924/obtain-non-explicit-field-offset
+                        int field_offset = Marshal.ReadInt32(fi.FieldHandle.Value + (4 + IntPtr.Size)) & 0xFFFFFF;
+                        unsafe
+                        {
+                            fixed (Category2057Item* ptr = items_span)
+                            {
+                                // https://stackoverflow.com/questions/63899222/how-to-get-a-pointer-to-memory-of-array-instance
+                                U* ptr2 = (U*)(((byte*)(&ptr[real_index])) + field_offset);
+                                GCHandle handle = GCHandle.Alloc(arr, GCHandleType.Pinned);
+                                try
+                                {
+                                    IntPtr address = handle.AddrOfPinnedObject();
+                                    U* ptr3 = (U*)address.ToPointer();
+                                    int arrsize = fb_attr.Length * Marshal.SizeOf(utype_elem);
+                                    if (!Utility.MemoryEqual(ptr3, ptr2, (uint)arrsize))
+                                    {
+                                        Buffer.MemoryCopy(ptr3, ptr2, arrsize, arrsize);
+                                        // undo/redo stuff
+
+                                        result = true;
+                                    }
+                                }
+                                finally
+                                {
+                                    handle.Free();
+                                }
+                            }
+                        }
+                    }
+                    // otherwise, set single element of array
+                    else
+                    {
+                        if (fb_attr.ElementType != typeof(U))
+                        {
+                            LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Type of {field_real_name} doesnt match the argument type");
+                            throw new Exception();
+                        }
+                        if (field_index >= fb_attr.Length)
+                        {
+                            LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"CategoryBaseSingle<{t.Name}>.SetField(): Array index out of range");
+                            throw new Exception();
+                        }
+
+                        // https://stackoverflow.com/questions/30817924/obtain-non-explicit-field-offset
+                        int field_offset = Marshal.ReadInt32(fi.FieldHandle.Value + (4 + IntPtr.Size)) & 0xFFFFFF;
+                        unsafe
+                        {
+                            fixed (Category2057Item* ptr = items_span)
+                            {
+                                U* ptr2 = (U*)(((byte*)(&ptr[real_index])) + field_offset);
+                                if (!ptr2[field_index].Equals(value))
+                                {
+                                    ptr2[field_index] = value;
+                                    // undo/redo stuff
+
+                                    result = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (result)
+                {
+                    valid = true;
+                    cat.OnSubElementModified?.Invoke(cat.GetCategoryID(), index, subindex);
+                }
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{cat.GetName()}: Modify subitem at index {index}, {subindex} (field: {field_name}, new value: {value}";
+        }
+    }
+
+    public class UndoRedoVertexAdd2057 : IUndoRedo
+    {
+        public Category2057 cat;
+        public int index;
+        public int subindex;
+        public int v_index;
+        public short new_x;
+        public short new_y;
+
+        public bool Init()
+        {
+            if (index >= cat.Indices.Count)
+            {
+                throw new Exception();
+            }
+            if (subindex >= cat.GetItemSubItemNum(index))
+            {
+                throw new Exception();
+            }
+            if (v_index * 2 > cat[index, subindex].Coords.Count)
+            {
+                throw new Exception();
+            }
+
+            Redo();
+            return true;
+        }
+
+        public void Undo()
+        {
+            int main_index = cat.Indices[index];
+            main_index += subindex;
+
+            cat.Items[main_index].Coords.RemoveAt(v_index * 2 + 0);
+            cat.Items[main_index].Coords.RemoveAt(v_index * 2 + 0);
+            cat.OnVertexRemoved?.Invoke(index, subindex, v_index);
+        }
+
+        public void Redo()
+        {
+            int main_index = cat.Indices[index];
+            main_index += subindex;
+
+            cat.Items[main_index].Coords.Insert(v_index * 2 + 0, new_x);
+            cat.Items[main_index].Coords.Insert(v_index * 2 + 1, new_y);
+            cat.OnVertexAdded?.Invoke(index, subindex, v_index);
+        }
+
+        public override string ToString()
+        {
+            return $"{cat.GetName()}: Add vertex at index {index}, {subindex}, {v_index} (x: {new_x}, y: {new_y})";
+        }
+    }
+
+    public class UndoRedoVertexModify2057 : IUndoRedo
+    {
+        public Category2057 cat;
+        public int index;
+        public int subindex;
+        public int v_index;
+        public short new_x;
+        public short new_y;
+        short previous_x;
+        short previous_y;
+
+        public bool Init()
+        {
+            if (index >= cat.Indices.Count)
+            {
+                throw new Exception();
+            }
+            if (subindex >= cat.GetItemSubItemNum(index))
+            {
+                throw new Exception();
+            }
+            if (v_index * 2 >= cat[index, subindex].Coords.Count)
+            {
+                throw new Exception();
+            }
+
+            previous_x = cat[index, subindex].Coords[v_index * 2 + 0];
+            previous_y = cat[index, subindex].Coords[v_index * 2 + 1];
+            if ((previous_x == new_x) && (previous_y == new_y))
+            {
+                return false;
+            }
+
+            Redo();
+            return true;
+        }
+
+        public void Undo()
+        {
+            int main_index = cat.Indices[index];
+            main_index += subindex;
+
+            cat.Items[main_index].Coords[v_index * 2 + 0] = previous_x;
+            cat.Items[main_index].Coords[v_index * 2 + 1] = previous_y;
+            cat.OnVertexModified?.Invoke(index, subindex, v_index);
+        }
+
+        public void Redo()
+        {
+            int main_index = cat.Indices[index];
+            main_index += subindex;
+
+            cat.Items[main_index].Coords[v_index * 2 + 0] = new_x;
+            cat.Items[main_index].Coords[v_index * 2 + 1] = new_y;
+            cat.OnVertexModified?.Invoke(index, subindex, v_index);
+        }
+
+        public override string ToString()
+        {
+            return $"{cat.GetName()}: Modify vertex at index {index}, {subindex}, {v_index} (new x: {new_x}, new y: {new_y})";
+        }
+    }
+
+    public class UndoRedoVertexRemove2057 : IUndoRedo
+    {
+        public Category2057 cat;
+        public int index;
+        public int subindex;
+        public int v_index;
+        short previous_x;
+        short previous_y;
+
+        public bool Init()
+        {
+            if (index >= cat.Indices.Count)
+            {
+                throw new Exception();
+            }
+            if (subindex >= cat.GetItemSubItemNum(index))
+            {
+                throw new Exception();
+            }
+            if (v_index * 2 >= cat[index, subindex].Coords.Count)
+            {
+                throw new Exception();
+            }
+
+            previous_x = cat[index, subindex].Coords[v_index * 2 + 0];
+            previous_y = cat[index, subindex].Coords[v_index * 2 + 1];
+
+            Redo();
+            return true;
+        }
+
+        public void Undo()
+        {
+            int main_index = cat.Indices[index];
+            main_index += subindex;
+
+            cat.Items[main_index].Coords.Insert(v_index * 2 + 0, previous_x);
+            cat.Items[main_index].Coords.Insert(v_index * 2 + 1, previous_y);
+            cat.OnVertexAdded?.Invoke(index, subindex, v_index);
+        }
+
+        public void Redo()
+        {
+            int main_index = cat.Indices[index];
+            main_index += subindex;
+
+            cat.Items[main_index].Coords.RemoveAt(v_index * 2 + 0);
+            cat.Items[main_index].Coords.RemoveAt(v_index * 2 + 0);
+            cat.OnVertexRemoved?.Invoke(index, subindex, v_index);
+        }
+
+        public override string ToString()
+        {
+            return $"{cat.GetName()}: Remove vertex at index {index}, {subindex}, {v_index}";
         }
     }
 }

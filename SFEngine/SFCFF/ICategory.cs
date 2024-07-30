@@ -8,6 +8,8 @@ using SFEngine.SFChunk;
 using System.Runtime.CompilerServices;
 using SFEngine.SFCFF.CTG;
 using System.Collections;
+using SFEngine.SFLua.LuaDecompiler;
+using OpenTK.Windowing.Common.Input;
 
 namespace SFEngine.SFCFF
 {
@@ -38,7 +40,6 @@ namespace SFEngine.SFCFF
         public short GetCategoryID();
         public short GetCategoryType();
         public int GetNumOfItems();
-        public int GetCurrentMaxID();
         public int GetByteCount();
         public bool Load(SFChunkFile file);
         public bool IsLoaded();
@@ -55,10 +56,7 @@ namespace SFEngine.SFCFF
         public bool GetItemIndex(int id, out int index);
         public bool GetFirstUnusedID(out int id, out int index);  // returns the unused ID and the index at which an item with that ID can be inserted
         public bool GetLastUsedID(out int id, out int index);  // returns ID of the last element, and the index is equal to item count
-        public bool Undo();
-        public bool Redo();
-        public bool CanUndo();
-        public bool CanRedo();
+        public bool EnableUndoRedo(UndoRedoQueue queue);   // once enabled, it cant be disabled unless Clear() is called
         public bool SetOnElementAddedCallback(dOnElementAdded cb);
         public bool SetOnElementModifiedCallback(dOnElementModified cb);
         public bool SetOnElementRemovedCallback(dOnElementRemoved cb);
@@ -89,6 +87,240 @@ namespace SFEngine.SFCFF
                 return GetSubID().CompareTo(item.GetSubID());
             }
             return result;
+        }
+    }
+
+    // undo/redo
+    public interface IUndoRedo
+    {
+        public bool Init();    // most operators will call Redo() here at the end; returns whether the operator did its job; if not, it wont be added to queue
+        public void Undo();
+        public void Redo();
+
+        public void Commit(UndoRedoQueue urq)
+        {
+            if (urq != null)
+            {
+                urq.Push(this);
+            }
+            else
+            {
+                Redo();
+            }
+        }
+    }
+
+    public class UndoRedoCluster : IUndoRedo
+    {
+        public List<IUndoRedo> items = new();
+
+        // this operator is unique: it doesnt call Redo() directly
+        public bool Init()
+        {
+            List<int> items_to_remove = new();
+            for (int i = 0; i < items.Count; i++)
+            {
+                if(!items[i].Init())
+                {
+                    items_to_remove.Add(i);
+                }
+            }
+            for(int i = 0; i < items_to_remove.Count; i++)
+            {
+                items.RemoveAt(i);
+            }
+            if(items.Count == 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public void Undo()
+        {
+            for(int i = items.Count-1; i >= 0; i--)
+            {
+                items[i].Undo();
+            }
+        }
+
+        public void Redo()
+        {
+            for(int i = 0; i < items.Count; i++)
+            {
+                items[i].Redo();
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"Multiple modifications [{items.Count}]";
+        }
+    }
+
+    public delegate void dOnPush(IUndoRedo iur);
+    public delegate void dOnPop();
+    public delegate void dOnUndoStateChange(bool state);
+    public delegate void dOnRedoStateChange(bool state);
+
+    public class UndoRedoQueue
+    {
+        List<IUndoRedo> queue = new();
+        UndoRedoCluster current_cluster = null;
+        int current_index = SFEngine.Utility.NO_INDEX;
+
+        public dOnUndoStateChange OnUndoStateChange;
+        public dOnRedoStateChange OnRedoStateChange;
+        public dOnPush OnPush;
+        public dOnPop OnPop;
+
+        public IUndoRedo this[int index]
+        {
+            get
+            {
+                return queue[index];
+            }
+        }
+
+        public int GetCurrentIndex()
+        {
+            return current_index;
+        }
+
+        public int GetNumOfItems()
+        {
+            return queue.Count;
+        }
+
+        public bool IsClusterOpen()
+        {
+            return (current_cluster != null);
+        }
+
+        public void OpenCluster()
+        {
+            if(IsClusterOpen())
+            {
+                return;
+            }
+
+            current_cluster = new();
+        }
+
+        public void CloseCluster()
+        {
+            UndoRedoCluster cl = current_cluster;
+            current_cluster = null;
+
+            if(cl.items.Count == 0)
+            {
+                return;
+            }
+            if(cl.items.Count == 1)
+            {
+                Push(cl.items[0]);
+                return;
+            }
+            Push(cl);
+        }
+
+        public void Push(IUndoRedo item)
+        {
+            if (IsClusterOpen())
+            {
+                current_cluster.items.Add(item);
+            }
+            else
+            {
+                if (!item.Init())
+                {
+                    return;
+                }
+
+                while (current_index < queue.Count - 1)
+                {
+                    queue.RemoveAt(queue.Count - 1);
+                    OnPop?.Invoke();
+                }
+                queue.Add(item);
+                current_index++;
+                OnPush?.Invoke(item);
+
+                OnRedoStateChange?.Invoke(false);
+                OnUndoStateChange?.Invoke(true);
+            }
+        }
+
+        public void Pop()
+        {
+            if (IsClusterOpen())
+            {
+                current_cluster.items.RemoveAt(current_cluster.items.Count - 1);
+            }
+            else
+            {
+                queue.RemoveAt(queue.Count - 1);
+                OnPop?.Invoke();
+                if(current_index == queue.Count)
+                {
+                    current_index--;
+                    OnRedoStateChange?.Invoke(false);
+                }
+            }
+        }
+
+        public void Undo()
+        {
+            if(current_index == SFEngine.Utility.NO_INDEX)
+            {
+                return;
+            }
+
+            queue[current_index].Undo();
+            current_index--;
+            OnRedoStateChange?.Invoke(true);
+
+            if(current_index == SFEngine.Utility.NO_INDEX)
+            {
+                OnUndoStateChange?.Invoke(false);
+            }
+        }
+
+        public void Redo()
+        {
+            if(current_index == queue.Count - 1)
+            {
+                return;
+            }
+
+            current_index++;
+            queue[current_index].Redo();
+            OnUndoStateChange?.Invoke(true);
+
+            if(current_index == queue.Count - 1)
+            {
+                OnRedoStateChange?.Invoke(false);
+            }
+        }
+
+        public bool CanUndo()
+        {
+            return (current_index != SFEngine.Utility.NO_INDEX);
+        }
+
+        public bool CanRedo()
+        {
+            return (current_index != queue.Count - 1);
+        }
+
+        public void Clear()
+        {
+            current_cluster = null;
+            queue.Clear();
+            current_index = SFEngine.Utility.NO_INDEX;
+            OnUndoStateChange?.Invoke(false);
+            OnRedoStateChange?.Invoke(false);
         }
     }
 }
