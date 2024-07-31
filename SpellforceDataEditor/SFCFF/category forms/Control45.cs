@@ -17,8 +17,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2064 = SFCategoryManager.gamedata.c2064;
             category = c2064;
 
-            column_dict.Add("Weapon material", new int[1] { 0 });
-            column_dict.Add("Text ID", new int[1] { 1 });
+            column_dict.Add("Weapon material", "WeaponMaterialID");
+            column_dict.Add("Text ID", "NameID");
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)

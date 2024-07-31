@@ -15,14 +15,14 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2048 = SFCategoryManager.gamedata.c2048;
             category = c2048;
             
-            column_dict.Add("Level", new int[1] { 0 });
-            column_dict.Add("Health factor", new int[1] { 1 });
-            column_dict.Add("Mana factor", new int[1] { 2 });
-            column_dict.Add("Experience required", new int[1] { 3 });
-            column_dict.Add("Attribute point limit", new int[1] { 4 });
-            column_dict.Add("Skill point limit", new int[1] { 5 });
-            column_dict.Add("Damage factor", new int[1] { 6 });
-            column_dict.Add("Armor class factor", new int[1] { 7 });
+            column_dict.Add("Level", "Level");
+            column_dict.Add("Health factor", "HealthFactor");
+            column_dict.Add("Mana factor", "ManaFactor");
+            column_dict.Add("Experience required", "ExperienceRequired");
+            column_dict.Add("Attribute point limit", "AttributePointLimit");
+            column_dict.Add("Skill point limit", "SkillPointLimit");
+            column_dict.Add("Damage factor", "DamageFactor");
+            column_dict.Add("Armor class factor", "ArmorClassFactor");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

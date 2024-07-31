@@ -17,15 +17,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2050 = SFCategoryManager.gamedata.c2050;
             category = c2050;
 
-            column_dict.Add("Object ID", new int[1] { 0 });
-            column_dict.Add("Name ID", new int[1] { 1 });
-            column_dict.Add("Flags", new int[1] { 2 });
-            column_dict.Add("Flatten mode", new int[1] { 3 });
-            column_dict.Add("Collision polygons", new int[1] { 4 });
-            column_dict.Add("Object handle", new int[1] { 5 });
-            column_dict.Add("Resource amount", new int[1] { 6 });
-            column_dict.Add("Width", new int[1] { 7 });
-            column_dict.Add("Height", new int[1] { 8 });
+            column_dict.Add("Object ID", "ObjectID");
+            column_dict.Add("Name ID", "NameID");
+            column_dict.Add("Flags", "Flags");
+            column_dict.Add("Flatten mode", "FlattenMode");
+            column_dict.Add("Collision polygons", "PolygonNum");
+            column_dict.Add("Object handle", "Handle");
+            column_dict.Add("Resource amount", "ResourceAmount");
+            column_dict.Add("Width", "Width");
+            column_dict.Add("Height", "Height");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

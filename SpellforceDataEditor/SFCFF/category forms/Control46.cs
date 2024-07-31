@@ -15,9 +15,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2032 = SFCategoryManager.gamedata.c2032;
             category = c2032;
 
-            column_dict.Add("Terrain ID", new int[1] { 0 });
-            column_dict.Add("Block value", new int[1] { 1 });
-            column_dict.Add("Cultivation flags", new int[1] { 2 });
+            column_dict.Add("Terrain ID", "TerrainID");
+            column_dict.Add("Block value", "BlockValue");
+            column_dict.Add("Cultivation flags", "CultivationFlags");
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)

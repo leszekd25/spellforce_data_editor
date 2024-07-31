@@ -19,9 +19,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2028 = SFCategoryManager.gamedata.c2028;
             category = c2028;
 
-            column_dict.Add("Unit ID", new int[1] { 0 });
-            column_dict.Add("Resource type", new int[1] { 1 });
-            column_dict.Add("Resource amount", new int[1] { 2 });
+            column_dict.Add("Unit ID", "ArmyUnitID");
+            column_dict.Add("Resource type", "ResourceType");
+            column_dict.Add("Resource amount", "ResourceValue");
         }
 
         private void load_resources()

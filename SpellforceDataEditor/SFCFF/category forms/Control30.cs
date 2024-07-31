@@ -17,9 +17,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2042 = SFCategoryManager.gamedata.c2042;
             category = c2042;
 
-            column_dict.Add("Merchant ID", new int[1] { 0 });
-            column_dict.Add("Item ID", new int[1] { 1 });
-            column_dict.Add("Item quantity", new int[1] { 2 });
+            column_dict.Add("Merchant ID", "MerchantID");
+            column_dict.Add("Item ID", "ItemID");
+            column_dict.Add("Item quantity", "Stock");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

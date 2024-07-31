@@ -40,9 +40,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2023 = SFCategoryManager.gamedata.c2023;
             category = c2023;
 
-            column_dict.Add("Clan ID", new int[1] { 0 });
-            column_dict.Add("Clan ID 2", new int[1] { 1 });
-            column_dict.Add("Relation", new int[1] { 2 });
+            column_dict.Add("Clan ID", "ClanID");
+            column_dict.Add("Clan ID 2", "ClanID2");
+            column_dict.Add("Relation", "Relation");
         }
 
         public override void set_element(int index)

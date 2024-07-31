@@ -17,10 +17,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2052 = SFCategoryManager.gamedata.c2052;
             category = c2052;
 
-            column_dict.Add("Map ID", new int[1] { 0 });
-            column_dict.Add("Unknown", new int[1] { 1 });
-            column_dict.Add("Map handle", new int[1] { 2 });
-            column_dict.Add("Name ID", new int[1] { 3 });
+            column_dict.Add("Map ID", "MapID");
+            column_dict.Add("Unknown", "IsPersistent");
+            column_dict.Add("Map handle", "Handle");
+            column_dict.Add("Name ID", "NameID");
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)

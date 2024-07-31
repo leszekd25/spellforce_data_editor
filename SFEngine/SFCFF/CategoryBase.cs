@@ -13,6 +13,10 @@ using System.Reflection.Metadata.Ecma335;
 using System.Windows.Forms;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Diagnostics.Metrics;
+using Windows.UI.Composition.Interactions;
+using SFEngine.SFLua.LuaDecompiler;
+using OpenTK.Windowing.Common.Input;
+using System.Reflection.Metadata;
 
 namespace SFEngine.SFCFF
 {
@@ -401,9 +405,171 @@ namespace SFEngine.SFCFF
             return true;
         }
 
-        public List<int> QueryItems()
+        public virtual List<string> GetSearchableFields()
         {
-            return null;
+            return Utility.GetFields<T>();
+        }
+
+        public List<int> QueryItems(object value, string field_name, SearchOption option)
+        {
+            if(field_name == "")  // search all fields
+            {
+                HashSet<int> result = new();
+                List<int> intermediate = new();
+                foreach(var f in GetSearchableFields())
+                {
+                    intermediate.Clear();
+                    QueryItemsField(value, f, option, intermediate);
+                    result.UnionWith(intermediate);
+                }
+                return result.ToList();
+            }
+            else
+            {
+                List<int> result = new();
+                QueryItemsField(value, field_name, option, result);
+                return result;
+            }
+        }
+
+        void QueryItemsField(object value, string field_name, SearchOption option, List<int> result)
+        {
+            try
+            {
+                Utility.GetFieldData<T>(field_name, out uint field_offset, out Type ft, out uint field_num);
+                if ((option & SearchOption.IS_NUMBER) != SearchOption.NONE)
+                {
+                    bool as_flag = (option & SearchOption.NUMBER_AS_BITMASK) != SearchOption.NONE;
+                    if (field_num != 1)
+                    {
+                        return;
+                    }
+                    int num = (int)value;
+                    if (ft == typeof(byte))
+                    {
+                        QueryItemsFieldNumber<byte>(num, field_offset, as_flag, result);
+                    }
+                    else if (ft == typeof(sbyte))
+                    {
+                        QueryItemsFieldNumber<sbyte>(num, field_offset, as_flag, result);
+                    }
+                    else if (ft == typeof(ushort))
+                    {
+                        QueryItemsFieldNumber<ushort>(num, field_offset, as_flag, result);
+                    }
+                    else if (ft == typeof(short))
+                    {
+                        QueryItemsFieldNumber<short>(num, field_offset, as_flag, result);
+                    }
+                    else if (ft == typeof(uint))
+                    {
+                        QueryItemsFieldNumber<uint>(num, field_offset, as_flag, result);
+                    }
+                    else if (ft == typeof(int))
+                    {
+                        QueryItemsFieldNumber<int>(num, field_offset, as_flag, result);
+                    }
+                }
+                else if((option & SearchOption.IS_STRING) != SearchOption.NONE)
+                {
+                    if (field_num == 1)
+                    {
+                        return;
+                    }
+                    if(ft != typeof(byte))
+                    {
+                        return;
+                    }
+
+                    string str = (string)value;
+                    QueryItemsFieldString(str, field_offset, field_num, (option & SearchOption.NUMBER_AS_BITMASK) != SearchOption.NONE, result);
+                }
+                else
+                {
+                    return;
+                }
+            }
+            catch(Exception ex)
+            {
+                return;
+            }
+        }
+
+        void QueryItemsFieldNumber<U>(int num, uint field_offset, bool as_flag, List<int> result)
+        {
+            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
+            int cur_value = 0;
+            unsafe
+            {
+                fixed (T* ptr = items_span)
+                {
+                    if (as_flag)
+                    {
+                        for (int i = 0; i < items_span.Length; i++)
+                        {
+                            U* ptr2 = (U*)(((byte*)(&ptr[i])) + field_offset);
+                            cur_value = Convert.ToInt32(*ptr2);
+
+                            if (cur_value == num)
+                            {
+                                result.Add(i);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < items_span.Length; i++)
+                        {
+                            U* ptr2 = (U*)(((byte*)(&ptr[i])) + field_offset);
+                            cur_value = Convert.ToInt32(*ptr2);
+
+                            if (cur_value == num)
+                            {
+                                result.Add(i);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        void QueryItemsFieldString(string str, uint field_offset, uint field_size, bool ignore_case, List<int> result)
+        {
+            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
+            Encoding encoding = Encoding.GetEncoding(1252);
+            unsafe
+            {
+                fixed (T* ptr = items_span)
+                {
+                    if (ignore_case)
+                    {
+                        str = str.ToLowerInvariant();
+                        for(int i = 0; i < items_span.Length; i++)
+                        {
+                            byte* ptr2 = (((byte*)(&ptr[i])) + field_offset);
+
+                            string str2 = encoding.GetString(ptr2, (int)field_size).ToLowerInvariant();
+                            if(str2.Contains(str))
+                            {
+                                result.Add(i);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < items_span.Length; i++)
+                        {
+                            byte* ptr2 = (((byte*)(&ptr[i])) + field_offset);
+
+                            string str2 = encoding.GetString(ptr2, (int)field_size);
+                            if (str2.Contains(str))
+                            {
+                                result.Add(i);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -1272,9 +1438,187 @@ namespace SFEngine.SFCFF
             return true;
         }
 
-        public List<int> QueryItems()
+        public virtual List<string> GetSearchableFields()
         {
-            return null;
+            return Utility.GetFields<T>();
+        }
+
+        public List<int> QueryItems(object value, string field_name, SearchOption option)
+        {
+            if (field_name == "")  // search all fields
+            {
+                HashSet<int> result = new();
+                List<int> intermediate = new();
+                foreach (var f in GetSearchableFields())
+                {
+                    intermediate.Clear();
+                    QueryItemsField(value, f, option, intermediate);
+                    result.UnionWith(intermediate);
+                }
+                return result.ToList();
+            }
+            else
+            {
+                List<int> result = new();
+                QueryItemsField(value, field_name, option, result);
+                return result;
+            }
+        }
+
+        void QueryItemsField(object value, string field_name, SearchOption option, List<int> result)
+        {
+            try
+            {
+                Utility.GetFieldData<T>(field_name, out uint field_offset, out Type ft, out uint field_num);
+                if ((option & SearchOption.IS_NUMBER) != SearchOption.NONE)
+                {
+                    bool as_flag = (option & SearchOption.NUMBER_AS_BITMASK) != SearchOption.NONE;
+                    if (field_num != 1)
+                    {
+                        return;
+                    }
+                    int num = (int)value;
+                    if (ft == typeof(byte))
+                    {
+                        QueryItemsFieldNumber<byte>(num, field_offset, as_flag, result);
+                    }
+                    else if (ft == typeof(sbyte))
+                    {
+                        QueryItemsFieldNumber<sbyte>(num, field_offset, as_flag, result);
+                    }
+                    else if (ft == typeof(ushort))
+                    {
+                        QueryItemsFieldNumber<ushort>(num, field_offset, as_flag, result);
+                    }
+                    else if (ft == typeof(short))
+                    {
+                        QueryItemsFieldNumber<short>(num, field_offset, as_flag, result);
+                    }
+                    else if (ft == typeof(uint))
+                    {
+                        QueryItemsFieldNumber<uint>(num, field_offset, as_flag, result);
+                    }
+                    else if (ft == typeof(int))
+                    {
+                        QueryItemsFieldNumber<int>(num, field_offset, as_flag, result);
+                    }
+                }
+                else if ((option & SearchOption.IS_STRING) != SearchOption.NONE)
+                {
+                    if (field_num == 1)
+                    {
+                        return;
+                    }
+                    if (ft != typeof(byte))
+                    {
+                        return;
+                    }
+
+                    string str = (string)value;
+                    QueryItemsFieldString(str, field_offset, field_num, (option & SearchOption.NUMBER_AS_BITMASK) != SearchOption.NONE, result);
+                }
+                else
+                {
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+        }
+
+        void QueryItemsFieldNumber<U>(int num, uint field_offset, bool as_flag, List<int> result)
+        {
+            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
+            int cur_value = 0;
+            unsafe
+            {
+                fixed (T* ptr = items_span)
+                {
+                    if (as_flag)
+                    {
+                        for (int i = 0; i < Indices.Count; i++)
+                        {
+                            for (int j = 0; j < GetItemSubItemNum(i); j++)
+                            {
+                                U* ptr2 = (U*)(((byte*)(&ptr[Indices[i]+j])) + field_offset);
+                                cur_value = Convert.ToInt32(*ptr2);
+
+                                if (cur_value == num)
+                                {
+                                    result.Add(i);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < Indices.Count; i++)
+                        {
+                            for (int j = 0; j < GetItemSubItemNum(i); j++)
+                            {
+                                U* ptr2 = (U*)(((byte*)(&ptr[Indices[i] + j])) + field_offset);
+                                cur_value = Convert.ToInt32(*ptr2);
+
+                                if (cur_value == num)
+                                {
+                                    result.Add(i);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        void QueryItemsFieldString(string str, uint field_offset, uint field_size, bool ignore_case, List<int> result)
+        {
+            Span<T> items_span = CollectionsMarshal.AsSpan(Items);
+            Encoding encoding = Encoding.GetEncoding(1252);
+            unsafe
+            {
+                fixed (T* ptr = items_span)
+                {
+                    if (ignore_case)
+                    {
+                        str = str.ToLowerInvariant();
+                        for (int i = 0; i < Indices.Count; i++)
+                        {
+                            for (int j = 0; j < GetItemSubItemNum(i); j++)
+                            {
+                                byte* ptr2 = (((byte*)(&ptr[Indices[i] + j])) + field_offset);
+
+                                string str2 = encoding.GetString(ptr2, (int)field_size).ToLowerInvariant();
+                                if (str2.Contains(str))
+                                {
+                                    result.Add(i);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < Indices.Count; i++)
+                        {
+                            for (int j = 0; j < GetItemSubItemNum(i); j++)
+                            {
+                                byte* ptr2 = (((byte*)(&ptr[Indices[i] + j])) + field_offset);
+
+                                string str2 = encoding.GetString(ptr2, (int)field_size);
+                                if (str2.Contains(str))
+                                {
+                                    result.Add(i);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

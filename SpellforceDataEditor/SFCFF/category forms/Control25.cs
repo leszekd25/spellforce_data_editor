@@ -22,10 +22,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2030.SetOnVertexModified(on_modify_vertex);
             c2030.SetOnVertexRemoved(on_remove_vertex);
 
-            column_dict.Add("Building ID", new int[1] { 0 });
-            column_dict.Add("Polygon index", new int[1] { 1 });
-            column_dict.Add("Casts shadow", new int[1] { 2 });
-            column_dict.Add("Vertex count", new int[1] { 3 });
+            column_dict.Add("Building ID", "BuildingID");
+            column_dict.Add("Polygon index", "PolygonID");
+            column_dict.Add("Casts shadow", "CastsShadow");
             vertex_index = SFEngine.Utility.NO_INDEX;
         }
 

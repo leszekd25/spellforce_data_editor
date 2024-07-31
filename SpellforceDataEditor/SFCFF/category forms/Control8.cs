@@ -16,24 +16,24 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2004 = SFCategoryManager.gamedata.c2004;
             category = c2004;
 
-            column_dict.Add("Item ID", new int[1] { 0 });
-            column_dict.Add("Strength", new int[1] { 1 });
-            column_dict.Add("Stamina", new int[1] { 2 });
-            column_dict.Add("Agility", new int[1] { 3 });
-            column_dict.Add("Dexterity", new int[1] { 4 });
-            column_dict.Add("Health", new int[1] { 5 });
-            column_dict.Add("Charisma", new int[1] { 6 });
-            column_dict.Add("Intelligence", new int[1] { 7 });
-            column_dict.Add("Wisdom", new int[1] { 8 });
-            column_dict.Add("Mana", new int[1] { 9 });
-            column_dict.Add("Armor", new int[1] { 10 });
-            column_dict.Add("Fire resistance", new int[1] { 11 });
-            column_dict.Add("Ice resistance", new int[1] { 12 });
-            column_dict.Add("Black resistance", new int[1] { 13 });
-            column_dict.Add("Mind resistance", new int[1] { 14 });
-            column_dict.Add("Walking speed", new int[1] { 15 });
-            column_dict.Add("Fighting speed", new int[1] { 16 });
-            column_dict.Add("Casting speed", new int[1] { 17 });
+            column_dict.Add("Item ID", "ItemID");
+            column_dict.Add("Strength", "Strength");
+            column_dict.Add("Stamina", "Stamina");
+            column_dict.Add("Agility", "Agility");
+            column_dict.Add("Dexterity", "Dexterity");
+            column_dict.Add("Health", "Health");
+            column_dict.Add("Charisma", "Charisma");
+            column_dict.Add("Intelligence", "Intelligence");
+            column_dict.Add("Wisdom", "Wisdom");
+            column_dict.Add("Mana", "Mana");
+            column_dict.Add("Armor", "Armor");
+            column_dict.Add("Fire resistance", "ResistFire");
+            column_dict.Add("Ice resistance", "ResistIce");
+            column_dict.Add("Black resistance", "ResistBlack");
+            column_dict.Add("Mind resistance", "ResistMind");
+            column_dict.Add("Walking speed", "SpeedWalk");
+            column_dict.Add("Fighting speed", "SpeedFight");
+            column_dict.Add("Casting speed", "SpeedCast");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

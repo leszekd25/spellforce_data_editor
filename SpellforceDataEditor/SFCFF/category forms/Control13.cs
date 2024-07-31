@@ -17,10 +17,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2012 = SFCategoryManager.gamedata.c2012;
             category = c2012;
 
-            column_dict.Add("Item ID", new int[1] { 0 });
-            column_dict.Add("Item UI index", new int[1] { 1 });
-            column_dict.Add("Item UI handle", new int[1] { 2 });
-            column_dict.Add("Scaled down?", new int[1] { 3 });
+            column_dict.Add("Item ID", "ItemID");
+            column_dict.Add("Item UI index", "UIIndex");
+            column_dict.Add("Item UI handle", "UIHandle");
+            column_dict.Add("Scaled down?", "IsScaledDown");
         }
 
         private void set_list_text(int i)

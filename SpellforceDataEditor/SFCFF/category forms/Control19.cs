@@ -50,9 +50,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2025 = SFCategoryManager.gamedata.c2025;
             category = c2025;
 
-            column_dict.Add("Unit ID", new int[1] { 0 });
-            column_dict.Add("Equipment slot", new int[1] { 1 });
-            column_dict.Add("Item ID", new int[1] { 2 });
+            column_dict.Add("Unit ID", "UnitID");
+            column_dict.Add("Equipment slot", "EquipmentIndex");
+            column_dict.Add("Item ID", "ItemID");
 
             item_slots = new ItemSlotUI[]
             {

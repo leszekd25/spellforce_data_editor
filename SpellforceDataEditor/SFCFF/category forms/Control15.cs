@@ -16,11 +16,11 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2016 = SFCategoryManager.gamedata.c2016;
             category = c2016;
             
-            column_dict.Add("Text ID", new int[1] { 0 });
-            column_dict.Add("Language ID", new int[1] { 1 });
-            column_dict.Add("Text mode", new int[1] { 2 });
-            column_dict.Add("Text handle", new int[1] { 3 });
-            column_dict.Add("Text content", new int[1] { 4 });
+            column_dict.Add("Text ID", "TextID");
+            column_dict.Add("Language ID", "LanguageID");
+            column_dict.Add("Text mode", "Mode");
+            column_dict.Add("Text handle", "Handle");
+            column_dict.Add("Text content", "Content");
 
         }
 

@@ -17,8 +17,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2044 = SFCategoryManager.gamedata.c2044;
             category = c2044;
 
-            column_dict.Add("Resource ID", new int[1] { 0 });
-            column_dict.Add("Text ID", new int[1] { 1 });
+            column_dict.Add("Resource ID", "ResourceID");
+            column_dict.Add("Text ID", "TextID");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

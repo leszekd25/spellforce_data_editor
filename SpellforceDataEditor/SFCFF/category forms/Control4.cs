@@ -18,30 +18,30 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2005 = SFCategoryManager.gamedata.c2005;
             category = c2005;
 
-            column_dict.Add("Unit stats ID", new int[1] { 0 });
-            column_dict.Add("Unit level", new int[1] { 1 });
-            column_dict.Add("Unit race ID", new int[1] { 2 });
-            column_dict.Add("Agility", new int[1] { 3 });
-            column_dict.Add("Dexterity", new int[1] { 4 });
-            column_dict.Add("Charisma", new int[1] { 5 });
-            column_dict.Add("Intelligence", new int[1] { 6 });
-            column_dict.Add("Stamina", new int[1] { 7 });
-            column_dict.Add("Strength", new int[1] { 8 });
-            column_dict.Add("Wisdom", new int[1] { 9 });
-            column_dict.Add("Random init", new int[1] { 10 });
-            column_dict.Add("Fire resistance", new int[1] { 11 });
-            column_dict.Add("Ice resistance", new int[1] { 12 });
-            column_dict.Add("Black resistance", new int[1] { 13 });
-            column_dict.Add("Mind resistance", new int[1] { 14 });
-            column_dict.Add("Walk speed", new int[1] { 15 });
-            column_dict.Add("Fight speed", new int[1] { 16 });
-            column_dict.Add("Cast speed", new int[1] { 17 });
-            column_dict.Add("Unit size", new int[1] { 18 });
-            column_dict.Add("Mana usage", new int[1] { 19 });
-            column_dict.Add("Spawn base time", new int[1] { 20 });
-            column_dict.Add("Unit flags", new int[1] { 21 });
-            column_dict.Add("Head ID", new int[1] { 22 });
-            column_dict.Add("Equipment mode", new int[1] { 23 });
+            column_dict.Add("Unit stats ID", "StatsID");
+            column_dict.Add("Unit level", "UnitLevel");
+            column_dict.Add("Unit race ID", "UnitRace");
+            column_dict.Add("Agility", "Agility");
+            column_dict.Add("Dexterity", "Dexterity");
+            column_dict.Add("Charisma", "Charisma");
+            column_dict.Add("Intelligence", "Intelligence");
+            column_dict.Add("Stamina", "Stamina");
+            column_dict.Add("Strength", "Strength");
+            column_dict.Add("Wisdom", "Wisdom");
+            column_dict.Add("Random init", "RandomInit");
+            column_dict.Add("Fire resistance", "ResistanceFire");
+            column_dict.Add("Ice resistance", "ResistanceIce");
+            column_dict.Add("Black resistance", "ResistanceBlack");
+            column_dict.Add("Mind resistance", "ResistanceMind");
+            column_dict.Add("Walk speed", "SpeedWalk");
+            column_dict.Add("Fight speed", "SpeedFight");
+            column_dict.Add("Cast speed", "SpeedCast");
+            column_dict.Add("Unit size", "UnitSize");
+            column_dict.Add("Mana usage", "ManaUsage");
+            column_dict.Add("Spawn base time", "SpawnBaseTime");
+            column_dict.Add("Unit flags", "UnitFlags");
+            column_dict.Add("Head ID", "HeadID");
+            column_dict.Add("Equipment mode", "EquipmentMode");
 
         }
 

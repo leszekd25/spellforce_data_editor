@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
+using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Windows.Forms;
 using Windows.Security.ExchangeActiveSyncProvisioning;
@@ -41,6 +43,9 @@ namespace SpellforceDataEditor.special_forms
         // undo/redo
         public UndoRedoQueue urq = new();
         CFFOperatorHistory undoredo_form = null;
+
+        // search
+        CategorySearchForm search_form = null;
 
         //constructor
         public SpelllforceCFFEditor()
@@ -370,6 +375,7 @@ namespace SpellforceDataEditor.special_forms
         //what happens when you choose category from a list
         private void CategorySelect_SelectedIndexChanged(object sender, EventArgs e)
         {
+            ClearSearch();
             if (CategorySelect.SelectedIndex == -1)
             {
                 return;
@@ -407,14 +413,12 @@ namespace SpellforceDataEditor.special_forms
             SearchColumnID.Items.Clear();
             SearchColumnID.SelectedIndex = -1;
             SearchColumnID.Text = "";
-            Dictionary<string, int[]>.KeyCollection keys = ElementDisplay.get_column_descriptions();
-            foreach (string s in keys)
+            foreach (string s in ElementDisplay.column_dict.Keys)
             {
                 SearchColumnID.Items.Add(s);
             }
 
             panelSearch.Visible = true;
-            ClearSearchButton.Enabled = false;
             ContinueSearchButton.Enabled = false;
         }
 
@@ -617,9 +621,13 @@ namespace SpellforceDataEditor.special_forms
             ElementSelect.Items.Clear();
             ElementSelect.Enabled = false;
 
-            if(undoredo_form != null)
+            if (undoredo_form != null)
             {
                 undoredo_form.Close();
+            }
+            if (search_form != null)
+            {
+                search_form.Close();
             }
 
             panelElemManipulate.Visible = false;
@@ -764,6 +772,8 @@ namespace SpellforceDataEditor.special_forms
             // if selected category is the same, add the element to the list and select the element
             if (selected_category_id == cat_id)
             {
+                search_form?.OnItemAdd(cat_id, elem_index);
+
                 // find index
                 int list_index = elem_index;
 
@@ -792,6 +802,7 @@ namespace SpellforceDataEditor.special_forms
             // if selected category is the same, change elem text
             if (selected_category_id == cat_id)
             {
+                search_form?.OnItemModify(cat_id, elem_index);
                 // find index
                 int list_index = elem_index;
 
@@ -824,6 +835,8 @@ namespace SpellforceDataEditor.special_forms
             // if selected category is the same, add the element to the list and select the element
             if (selected_category_id == cat_id)
             {
+                search_form?.OnItemRemove(cat_id, elem_index);
+
                 // find index
                 int list_index = elem_index;
                 int cur_list_index = ElementSelect.SelectedIndex;
@@ -880,6 +893,7 @@ namespace SpellforceDataEditor.special_forms
             // if selected category is the same, change elem text
             if (selected_category_id == cat_id)
             {
+                search_form?.OnItemModify(cat_id, elem_index);
                 // find index
                 int list_index = elem_index;
                 ElementSelect.SelectedIndexChanged -= ElementSelect_SelectedIndexChanged;
@@ -910,6 +924,7 @@ namespace SpellforceDataEditor.special_forms
             // if selected category is the same, change elem text
             if (selected_category_id == cat_id)
             {
+                search_form?.OnItemModify(cat_id, elem_index);
                 // find index
                 int list_index = elem_index;
                 ElementSelect.SelectedIndexChanged -= ElementSelect_SelectedIndexChanged;
@@ -940,6 +955,7 @@ namespace SpellforceDataEditor.special_forms
             // if selected category is the same, change elem text
             if (selected_category_id == cat_id)
             {
+                search_form?.OnItemModify(cat_id, elem_index);
                 // find index
                 int list_index = elem_index;
                 ElementSelect.SelectedIndexChanged -= ElementSelect_SelectedIndexChanged;
@@ -1093,12 +1109,12 @@ namespace SpellforceDataEditor.special_forms
 
         private void operationHistoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(!data_loaded)
+            if (!data_loaded)
             {
                 return;
             }
 
-            if(undoredo_form != null)
+            if (undoredo_form != null)
             {
                 undoredo_form.Focus();
                 return;
@@ -1114,7 +1130,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void undoredo_form_FormClosed(object sender, EventArgs e)
         {
-            if(undoredo_form == null)
+            if (undoredo_form == null)
             {
                 return;
             }
@@ -1124,6 +1140,126 @@ namespace SpellforceDataEditor.special_forms
             urq.OnPop = null;
 
             undoredo_form = null;
+            ContinueSearchButton.Enabled = false;
         }
+
+        // search
+
+        void OpenSearchForm()
+        {
+            if (!data_loaded)
+            {
+                return;
+            }
+            if (search_form != null)
+            {
+                search_form.Focus();
+                return;
+            }
+
+            search_form = new CategorySearchForm();
+            search_form.Show();
+            search_form.FormClosed += search_form_FormClosed;
+        }
+
+        void search_form_FormClosed(object sender, EventArgs e)
+        {
+            if (search_form == null)
+            {
+                return;
+            }
+
+            search_form.FormClosed -= search_form_FormClosed;
+            search_form = null;
+        }
+
+        private void checkSearchByColumn_CheckedChanged(object sender, EventArgs e)
+        {
+            SearchColumnID.Enabled = checkSearchByColumn.Enabled;
+        }
+
+        private List<int> DoSearch()
+        {
+            ICategory cat = CachedElementDisplays[selected_category_id].category;
+            SearchOption so = SearchOption.NONE;
+            List<int> result;
+            string field_name = "";
+            if (checkSearchByColumn.Checked)
+            {
+                if (SearchColumnID.SelectedIndex != SFEngine.Utility.NO_INDEX)
+                {
+                    field_name = CachedElementDisplays[selected_category_id].column_dict[SearchColumnID.Items[SearchColumnID.SelectedIndex].ToString()];
+                }
+            }
+
+            if (radioSearchText.Checked)
+            {
+                so |= SearchOption.IS_STRING | SearchOption.IGNORE_CASE;
+                string value = SearchQuery.Text;
+                result = cat.QueryItems(value, field_name, so);
+
+                // also search names
+                if (field_name == "")
+                {
+                    List<int> element_string_result = new();
+                    for(int i = 0; i < ElementSelect.Items.Count; i++)
+                    {
+                        string s = ElementSelect.Items[i].ToString();
+                        if(s.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            element_string_result.Add(i);
+                        }
+                    }
+                    result = result.Union(element_string_result).ToList();
+                    result.Sort();
+                }
+            }
+            else
+            {
+                so |= SearchOption.IS_NUMBER;
+                if (radioSearchFlag.Checked)
+                {
+                    so |= SearchOption.NUMBER_AS_BITMASK;
+                }
+                int value = SFEngine.Utility.TryParseInt32(SearchQuery.Text);
+                result = cat.QueryItems(value, field_name, so);
+            }
+            return result;
+        }
+
+        private void ClearSearch()
+        {
+            if(search_form != null)
+            {
+                search_form.Clear();
+            }
+
+            ContinueSearchButton.Enabled = false;
+        }
+
+        private void SearchButton_Click(object sender, EventArgs e)
+        {
+            OpenSearchForm();
+
+            List<int> result = DoSearch();
+
+            ICategory cat = CachedElementDisplays[selected_category_id].category;
+            search_form.Populate(cat.GetCategoryID(), result);
+
+            ContinueSearchButton.Enabled = true;
+        }
+
+        private void ContinueSearchButton_Click(object sender, EventArgs e)
+        {
+            OpenSearchForm();
+
+            List<int> result = DoSearch();
+
+            ICategory cat = CachedElementDisplays[selected_category_id].category;
+            search_form.Update(cat.GetCategoryID(), result);
+
+            ContinueSearchButton.Enabled = true;
+        }
+
     }
 }

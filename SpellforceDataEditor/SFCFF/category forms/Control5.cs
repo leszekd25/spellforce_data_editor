@@ -16,10 +16,10 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2006 = SFCategoryManager.gamedata.c2006;
             category = c2006;
 
-            column_dict.Add("Unit stats ID", new int[1] { 0 });
-            column_dict.Add("Unit major skill", new int[1] { 1 });
-            column_dict.Add("Unit minor skill", new int[1] { 2 });
-            column_dict.Add("Unit skill level", new int[1] { 3 });
+            column_dict.Add("Unit stats ID", "UnitStatsID");
+            column_dict.Add("Unit major skill", "SkillMajorID");
+            column_dict.Add("Unit minor skill", "SkillMinorID");
+            column_dict.Add("Unit skill level", "SkillLevel");
         }
 
         private void set_list_text(int i)

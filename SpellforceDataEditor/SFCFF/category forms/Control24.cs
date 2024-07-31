@@ -16,20 +16,20 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2029 = SFCategoryManager.gamedata.c2029;
             category = c2029;
 
-            column_dict.Add("Building ID", new int[1] { 0 });
-            column_dict.Add("Race ID", new int[1] { 1 });
-            column_dict.Add("Can enter", new int[1] { 2 });
-            column_dict.Add("Slots", new int[1] { 3 });
-            column_dict.Add("Health", new int[1] { 4 });
-            column_dict.Add("Name ID", new int[1] { 5 });
-            column_dict.Add("Center of rotation X", new int[1] { 6 });
-            column_dict.Add("Center of rotation Y", new int[1] { 7 });
-            column_dict.Add("Collision polygons", new int[1] { 8 });
-            column_dict.Add("Worker cycle time", new int[1] { 9 });
-            column_dict.Add("Required building ID", new int[1] { 10 });
-            column_dict.Add("Initial angle", new int[1] { 11 });
-            column_dict.Add("Extended description ID", new int[1] { 12 });
-            column_dict.Add("Flags", new int[1] { 13 });
+            column_dict.Add("Building ID", "BuildingID");
+            column_dict.Add("Race ID", "RaceID");
+            column_dict.Add("Can enter", "CanEnter");
+            column_dict.Add("Slots", "Slots");
+            column_dict.Add("Health", "Health");
+            column_dict.Add("Name ID", "NameID");
+            column_dict.Add("Center of rotation X", "RotCenterX");
+            column_dict.Add("Center of rotation Y", "RotCenterY");
+            column_dict.Add("Collision polygons", "NumOfPolygons");
+            column_dict.Add("Worker cycle time", "WorkerCycleTime");
+            column_dict.Add("Required building ID", "BuildingReqID");
+            column_dict.Add("Initial angle", "InitialAngle");
+            column_dict.Add("Extended description ID", "DescriptionExtID");
+            column_dict.Add("Flags", "Flags");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

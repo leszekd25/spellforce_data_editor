@@ -16,8 +16,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2018 = SFCategoryManager.gamedata.c2018;
             category = c2018;
 
-            column_dict.Add("Spell item ID", new int[1] { 0 });
-            column_dict.Add("Effect ID", new int[1] { 1 });
+            column_dict.Add("Spell item ID", "SpellItemID");
+            column_dict.Add("Effect ID", "EffectID");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

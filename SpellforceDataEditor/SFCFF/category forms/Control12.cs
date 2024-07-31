@@ -16,9 +16,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2014 = SFCategoryManager.gamedata.c2014;
             category = c2014;
 
-            column_dict.Add("Item ID", new int[1] { 0 });
-            column_dict.Add("Item effect index", new int[1] { 1 });
-            column_dict.Add("Effect ID", new int[1] { 2 });
+            column_dict.Add("Item ID", "ItemID");
+            column_dict.Add("Item effect index", "EffectIndex");
+            column_dict.Add("Effect ID", "EffectID");
         }
 
         private void set_list_text(int i)

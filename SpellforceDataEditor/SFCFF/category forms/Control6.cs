@@ -16,9 +16,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2067 = SFCategoryManager.gamedata.c2067;
             category = c2067;
 
-            column_dict.Add("Unit stats ID", new int[1] { 0 });
-            column_dict.Add("Unit spell index", new int[1] { 1 });
-            column_dict.Add("Unit spell ID", new int[1] { 2 });
+            column_dict.Add("Unit stats ID", "UnitStatsID");
+            column_dict.Add("Unit spell index", "SpellIndex");
+            column_dict.Add("Unit spell ID", "SpellID");
         }
 
         private void set_list_text(int i)

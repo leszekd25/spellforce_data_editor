@@ -25,17 +25,17 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2003 = SFCategoryManager.gamedata.c2003;
             category = c2003;
 
-            column_dict.Add("Item ID", new int[1] { 0 });
-            column_dict.Add("Item type 1", new int[1] { 1 });
-            column_dict.Add("Item type 2", new int[1] { 2 });
-            column_dict.Add("Item name ID", new int[1] { 3 });
-            column_dict.Add("Unit stats ID", new int[1] { 4 });
-            column_dict.Add("Army unit ID", new int[1] { 5 });
-            column_dict.Add("Building ID", new int[1] { 6 });
-            column_dict.Add("Unknown", new int[1] { 7 });
-            column_dict.Add("Selling price", new int[1] { 8 });
-            column_dict.Add("Buying price", new int[1] { 9 });
-            column_dict.Add("Item set ID", new int[1] { 10 });
+            column_dict.Add("Item ID", "ItemID");
+            column_dict.Add("Item type 1", "ItemType1");
+            column_dict.Add("Item type 2", "ItemType2");
+            column_dict.Add("Item name ID", "NameID");
+            column_dict.Add("Unit stats ID", "UnitStatsI");
+            column_dict.Add("Army unit ID", "ArmyUnitID");
+            column_dict.Add("Building ID", "BuildingID");
+            column_dict.Add("Flags", "Option");
+            column_dict.Add("Selling price", "SellValue");
+            column_dict.Add("Buying price", "BuyValue");
+            column_dict.Add("Item set ID", "ItemSetID");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

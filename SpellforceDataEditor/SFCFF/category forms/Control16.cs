@@ -19,27 +19,27 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2022 = SFCategoryManager.gamedata.c2022;
             category = c2022;
 
-            column_dict.Add("Race ID", new int[1] { 0 });
-            column_dict.Add("Visibility range (day)", new int[1] { 1 });
-            column_dict.Add("Visibility range (night)", new int[1] { 2 });
-            column_dict.Add("Hearing range", new int[1] { 3 });
-            column_dict.Add("Aggro range factor", new int[1] { 4 });
-            column_dict.Add("Moral", new int[1] { 5 });
-            column_dict.Add("Aggresiveness", new int[1] { 6 });
-            column_dict.Add("Race text ID", new int[1] { 7 });
-            column_dict.Add("Race flags", new int[1] { 8 });
-            column_dict.Add("Clan ID", new int[1] { 9 });
-            column_dict.Add("Damage taken (blunt)", new int[1] { 10 });
-            column_dict.Add("Damage taken (slash)", new int[1] { 11 });
-            column_dict.Add("AI flags", new int[1] { 12 });
-            column_dict.Add("Group size (min)", new int[1] { 13 });
-            column_dict.Add("Group size (max)", new int[1] { 14 });
-            column_dict.Add("Group chance", new int[1] { 15 });
-            column_dict.Add("Group formation", new int[1] { 16 });
-            column_dict.Add("Flee", new int[1] { 17 });
-            column_dict.Add("Retreat on damage", new int[1] { 18 });
-            column_dict.Add("Retreat follow", new int[1] { 19 });
-            column_dict.Add("Attack time factor", new int[1] { 20 });
+            column_dict.Add("Race ID", "RaceID");
+            column_dict.Add("Visibility range (day)", "VisRangeDay");
+            column_dict.Add("Visibility range (night)", "VisRangeNight");
+            column_dict.Add("Hearing range", "HearRange");
+            column_dict.Add("Aggro range factor", "AggroRangeFactor");
+            column_dict.Add("Moral", "Moral");
+            column_dict.Add("Aggresiveness", "Aggresiveness");
+            column_dict.Add("Race text ID", "TextID");
+            column_dict.Add("Race flags", "Flags");
+            column_dict.Add("Clan ID", "FactionID");
+            column_dict.Add("Damage taken (blunt)", "DmgTakenBlunt");
+            column_dict.Add("Damage taken (slash)", "DmgTakenSlash");
+            column_dict.Add("AI flags", "AIFlags");
+            column_dict.Add("Group size (min)", "GroupSizeMin");
+            column_dict.Add("Group size (max)", "GroupSizeMax");
+            column_dict.Add("Group chance", "GroupChance");
+            column_dict.Add("Group formation", "GroupFormation");
+            column_dict.Add("Flee", "Flee");
+            column_dict.Add("Retreat on damage", "RetreatOnDmg");
+            column_dict.Add("Retreat follow", "RetreatFollow");
+            column_dict.Add("Attack time factor", "AttackSpeedFactor");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

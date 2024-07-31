@@ -21,9 +21,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2047 = SFCategoryManager.gamedata.c2047;
             category = c2047;
 
-            column_dict.Add("Merchant ID", new int[1] { 0 });
-            column_dict.Add("Item type", new int[1] { 1 });
-            column_dict.Add("Price multiplier", new int[1] { 2 });
+            column_dict.Add("Merchant ID", "MerchantID");
+            column_dict.Add("Item type", "ItemType");
+            column_dict.Add("Price multiplier", "PriceMultiplier");
         }
 
         private void load_item_types()

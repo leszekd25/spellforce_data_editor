@@ -56,7 +56,6 @@
             radioSearchText = new System.Windows.Forms.RadioButton();
             SearchButton = new System.Windows.Forms.Button();
             panelSearch = new System.Windows.Forms.Panel();
-            ClearSearchButton = new System.Windows.Forms.Button();
             ContinueSearchButton = new System.Windows.Forms.Button();
             SearchColumnID = new System.Windows.Forms.ComboBox();
             checkSearchByColumn = new System.Windows.Forms.CheckBox();
@@ -144,7 +143,7 @@
             undoCtrlZToolStripMenuItem.Enabled = false;
             undoCtrlZToolStripMenuItem.Name = "undoCtrlZToolStripMenuItem";
             undoCtrlZToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z;
-            undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             undoCtrlZToolStripMenuItem.Text = "Undo";
             undoCtrlZToolStripMenuItem.Click += undoCtrlZToolStripMenuItem_Click;
             // 
@@ -153,14 +152,14 @@
             redoCtrlYToolStripMenuItem.Enabled = false;
             redoCtrlYToolStripMenuItem.Name = "redoCtrlYToolStripMenuItem";
             redoCtrlYToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y;
-            redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             redoCtrlYToolStripMenuItem.Text = "Redo";
             redoCtrlYToolStripMenuItem.Click += redoCtrlYToolStripMenuItem_Click;
             // 
             // operationHistoryToolStripMenuItem
             // 
             operationHistoryToolStripMenuItem.Name = "operationHistoryToolStripMenuItem";
-            operationHistoryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            operationHistoryToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             operationHistoryToolStripMenuItem.Text = "Operation history...";
             operationHistoryToolStripMenuItem.Click += operationHistoryToolStripMenuItem_Click;
             // 
@@ -292,10 +291,10 @@
             SearchButton.TabIndex = 9;
             SearchButton.Text = "New search";
             SearchButton.UseVisualStyleBackColor = true;
+            SearchButton.Click += SearchButton_Click;
             // 
             // panelSearch
             // 
-            panelSearch.Controls.Add(ClearSearchButton);
             panelSearch.Controls.Add(ContinueSearchButton);
             panelSearch.Controls.Add(SearchColumnID);
             panelSearch.Controls.Add(checkSearchByColumn);
@@ -310,17 +309,6 @@
             panelSearch.TabIndex = 10;
             panelSearch.Visible = false;
             // 
-            // ClearSearchButton
-            // 
-            ClearSearchButton.Enabled = false;
-            ClearSearchButton.Location = new System.Drawing.Point(176, 127);
-            ClearSearchButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            ClearSearchButton.Name = "ClearSearchButton";
-            ClearSearchButton.Size = new System.Drawing.Size(167, 27);
-            ClearSearchButton.TabIndex = 18;
-            ClearSearchButton.Text = "Clear search";
-            ClearSearchButton.UseVisualStyleBackColor = true;
-            // 
             // ContinueSearchButton
             // 
             ContinueSearchButton.Enabled = false;
@@ -331,6 +319,7 @@
             ContinueSearchButton.TabIndex = 17;
             ContinueSearchButton.Text = "Continue search";
             ContinueSearchButton.UseVisualStyleBackColor = true;
+            ContinueSearchButton.Click += ContinueSearchButton_Click;
             // 
             // SearchColumnID
             // 
@@ -352,6 +341,7 @@
             checkSearchByColumn.TabIndex = 12;
             checkSearchByColumn.Text = "Search by column";
             checkSearchByColumn.UseVisualStyleBackColor = true;
+            checkSearchByColumn.CheckedChanged += checkSearchByColumn_CheckedChanged;
             // 
             // groupSearch
             // 
@@ -595,7 +585,6 @@
         private System.Windows.Forms.Panel panelElemCopy;
         private System.Windows.Forms.Button ButtonElemClear;
         private System.Windows.Forms.Button ButtonElemCopy;
-        private System.Windows.Forms.Button ClearSearchButton;
         private System.Windows.Forms.ToolStripMenuItem specialToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findAllReferencesToolStripMenuItem;
         private System.Windows.Forms.Button ButtonElemAdd;

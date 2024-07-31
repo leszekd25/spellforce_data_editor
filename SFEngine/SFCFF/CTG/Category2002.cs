@@ -68,5 +68,45 @@ namespace SFEngine.SFCFF.CTG
         {
             return 3;
         }
+
+        public override List<string> GetSearchableFields()
+        {
+            return new()
+            {
+                "SpellID",
+                "SpellLineID",
+                "SkillReq[0]",
+                "SkillReq[1]",
+                "SkillReq[2]",
+                "SkillReq[3]",
+                "SkillReq[4]",
+                "SkillReq[5]",
+                "SkillReq[6]",
+                "SkillReq[7]",
+                "SkillReq[8]",
+                "SkillReq[9]",
+                "SkillReq[10]",
+                "SkillReq[11]",
+                "ManaCost",
+                "CastTime",
+                "RecastTime",
+                "MinRange",
+                "MaxRange",
+                "CastType1",
+                "CastType2",
+                "Params[0]",
+                "Params[1]",
+                "Params[2]",
+                "Params[3]",
+                "Params[4]",
+                "Params[5]",
+                "Params[6]",
+                "Params[7]",
+                "Params[8]",
+                "Params[9]",
+                "EffectPower",
+                "EffectRange"
+            };
+        }
     }
 }

@@ -26,31 +26,39 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 tracetable[i] = 0;
             }
 
-            column_dict.Add("Spell effect ID", new int[1] { 0 });
-            column_dict.Add("Spell type ID", new int[1] { 1 });
-            column_dict.Add("Requirement 1 1", new int[1] { 2 }); column_dict.Add("Requirement 1 2", new int[1] { 3 }); column_dict.Add("Requirement 1 3", new int[1] { 4 });
-            column_dict.Add("Requirement 2 1", new int[1] { 5 }); column_dict.Add("Requirement 2 2", new int[1] { 6 }); column_dict.Add("Requirement 2 3", new int[1] { 7 });
-            column_dict.Add("Requirement 3 1", new int[1] { 8 }); column_dict.Add("Requirement 3 2", new int[1] { 9 }); column_dict.Add("Requirement 3 3", new int[1] { 10 });
-            column_dict.Add("Requirement 4 1", new int[1] { 11 }); column_dict.Add("Requirement 4 2", new int[1] { 12 }); column_dict.Add("Requirement 4 3", new int[1] { 13 });
-            column_dict.Add("Mana cost", new int[1] { 14 });
-            column_dict.Add("Cast time", new int[1] { 15 });
-            column_dict.Add("Recast time", new int[1] { 16 });
-            column_dict.Add("Minimum range", new int[1] { 17 });
-            column_dict.Add("Maximum range", new int[1] { 18 });
-            column_dict.Add("Casting type 1", new int[1] { 19 });
-            column_dict.Add("Casting type 2", new int[1] { 20 });
-            column_dict.Add("Spell data 1", new int[1] { 21 });
-            column_dict.Add("Spell data 2", new int[1] { 22 });
-            column_dict.Add("Spell data 3", new int[1] { 23 });
-            column_dict.Add("Spell data 4", new int[1] { 24 });
-            column_dict.Add("Spell data 5", new int[1] { 25 });
-            column_dict.Add("Spell data 6", new int[1] { 26 });
-            column_dict.Add("Spell data 7", new int[1] { 27 });
-            column_dict.Add("Spell data 8", new int[1] { 28 });
-            column_dict.Add("Spell data 9", new int[1] { 29 });
-            column_dict.Add("Spell data 10", new int[1] { 30 });
-            column_dict.Add("Effect power", new int[1] { 31 });
-            column_dict.Add("Effect range", new int[1] { 32 });
+            column_dict.Add("Spell effect ID", "SpellID");
+            column_dict.Add("Spell type ID", "SpellLineID");
+            column_dict.Add("Requirement 1 1", "SkillReq[0]");
+            column_dict.Add("Requirement 1 2", "SkillReq[1]");
+            column_dict.Add("Requirement 1 3", "SkillReq[2]");
+            column_dict.Add("Requirement 2 1", "SkillReq[3]"); 
+            column_dict.Add("Requirement 2 2", "SkillReq[4]");
+            column_dict.Add("Requirement 2 3", "SkillReq[5]");
+            column_dict.Add("Requirement 3 1", "SkillReq[6]");
+            column_dict.Add("Requirement 3 2", "SkillReq[7]");
+            column_dict.Add("Requirement 3 3", "SkillReq[8]");
+            column_dict.Add("Requirement 4 1", "SkillReq[9]");
+            column_dict.Add("Requirement 4 2", "SkillReq[10]"); 
+            column_dict.Add("Requirement 4 3", "SkillReq[11]");
+            column_dict.Add("Mana cost", "ManaCost");
+            column_dict.Add("Cast time", "CastTime");
+            column_dict.Add("Recast time", "RecastTime");
+            column_dict.Add("Minimum range", "MinRange");
+            column_dict.Add("Maximum range", "MaxRange");
+            column_dict.Add("Casting type 1", "CastType1");
+            column_dict.Add("Casting type 2", "CastType2");
+            column_dict.Add("Spell data 1", "Params[0]");
+            column_dict.Add("Spell data 2", "Params[1]");
+            column_dict.Add("Spell data 3", "Params[2]");
+            column_dict.Add("Spell data 4", "Params[3]");
+            column_dict.Add("Spell data 5", "Params[4]");
+            column_dict.Add("Spell data 6", "Params[5]");
+            column_dict.Add("Spell data 7", "Params[6]");
+            column_dict.Add("Spell data 8", "Params[7]");
+            column_dict.Add("Spell data 9", "Params[8]");
+            column_dict.Add("Spell data 10", "Params[9]");
+            column_dict.Add("Effect power", "EffectPower");
+            column_dict.Add("Effect range", "EffectRange");
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)

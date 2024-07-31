@@ -1,9 +1,13 @@
-﻿using System;
+﻿using OpenTK.Windowing.Common.Input;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SFEngine
 {
@@ -430,6 +434,103 @@ namespace SFEngine
             T[] new_arr = new T[current_len * 2];
             Array.Copy(arr, new_arr, current_len);
             arr = new_arr;
+        }
+
+        // only use with structs with pack = 1 andd value type fields, or fixed buffer fields
+        static public void GetFieldData<T>(string field_name, out uint field_offset, out Type field_type, out uint field_num)
+        {
+            field_offset = 0;
+            field_type = null;
+            field_num = 0;
+
+            // index, member, value
+            Type t = typeof(T);
+
+            string field_real_name = field_name;
+            ReadOnlySpan<char> field_span = field_name.AsSpan();
+            // check if theres index in field name
+            uint field_index = uint.MaxValue;
+            if (field_span[^1] == ']')
+            {
+                for (int i = field_span.Length - 2; i >= 0; i--)
+                {
+                    if (field_span[i] == '[')
+                    {
+                        if (!uint.TryParse(field_span.Slice(i + 1, (field_span.Length - 1) - (i + 1)), out field_index))
+                        {
+                            LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"Utility.GetFieldData<{t.Name}>: Malformed array index");
+                            throw new Exception();
+                        }
+                        field_real_name = new(field_span.Slice(0, i));
+                        break;
+                    }
+                }
+                if (field_index == uint.MaxValue)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"Utility.GetFieldData<{t.Name}>: Malformed array index");
+                    throw new Exception();
+                }
+            }
+
+            FieldInfo fi = t.GetField(field_real_name);
+            if (fi == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"Utility.GetFieldData<{t.Name}>: Unknown field {field_real_name}");
+                throw new Exception();
+            }
+
+            FixedBufferAttribute fb_attr = null;
+            foreach (var attr in fi.GetCustomAttributes())
+            {
+                if (attr is FixedBufferAttribute)
+                {
+                    fb_attr = (FixedBufferAttribute)attr;
+                    break;
+                }
+            }
+            if (fb_attr == null)
+            {
+                // if there is array index supplied, error
+                if (field_index != uint.MaxValue)
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"Utility.GetFieldData<{t.Name}>: Array index used in non-buffer field {field_real_name}");
+                    throw new Exception();
+                }
+                Type t2 = fi.FieldType;
+
+                field_offset = (uint)Marshal.OffsetOf<T>(field_real_name);
+                field_type = t2;
+                field_num = 1;
+            }
+            else
+            {
+                // if theres no index, set entire array with value
+                if (field_index == uint.MaxValue)
+                {
+                    field_offset = (uint)(Marshal.ReadInt32(fi.FieldHandle.Value + (4 + IntPtr.Size)) & 0xFFFFFF);
+                    field_type = fb_attr.ElementType;
+                    field_num = (uint)fb_attr.Length;
+                }
+                // otherwise, set single element of array
+                else
+                {
+                    field_offset = (uint)(field_index*Marshal.SizeOf(fb_attr.ElementType) + Marshal.ReadInt32(fi.FieldHandle.Value + (4 + IntPtr.Size)) & 0xFFFFFF);
+                    field_type = fb_attr.ElementType;
+                    field_num = 1;
+                }
+            }
+        }
+
+        static public List<string> GetFields<T>()
+        {
+            List<string> result = new();
+            Type t = typeof(T);
+            foreach(var f in t.GetFields())
+            {
+                result.Add(f.Name);
+            }
+
+            return result;
         }
 
         static public unsafe bool MemoryEqual<T, U>(T* p1, U* p2, uint bytecount)

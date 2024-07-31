@@ -17,12 +17,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2053 = SFCategoryManager.gamedata.c2053;
             category = c2053;
 
-            column_dict.Add("Portal ID", new int[1] { 0 });
-            column_dict.Add("Map ID", new int[1] { 1 });
-            column_dict.Add("Position X", new int[1] { 2 });
-            column_dict.Add("Position Y", new int[1] { 3 });
-            column_dict.Add("Unknown", new int[1] { 4 });
-            column_dict.Add("Name ID", new int[1] { 5 });
+            column_dict.Add("Portal ID", "PortalID");
+            column_dict.Add("Map ID", "MapID");
+            column_dict.Add("Position X", "PosX");
+            column_dict.Add("Position Y", "PosY");
+            column_dict.Add("Is default", "IsDefault");
+            column_dict.Add("Name ID", "NameID");
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)

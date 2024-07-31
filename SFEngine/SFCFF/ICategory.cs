@@ -20,6 +20,17 @@ namespace SFEngine.SFCFF
     public delegate void dOnSubElementModified(int cat_id, int elem_index, int subelem_index);
     public delegate void dOnSubElementRemoved(int cat_id, int elem_index, int subelem_index);
 
+
+    [Flags]
+    public enum SearchOption
+    {
+        NONE = 0x0,
+        IS_NUMBER = 0x1,
+        IS_STRING = 0x2,
+        IGNORE_CASE = 0x1000,
+        NUMBER_AS_BITMASK = 0x2000,
+    }
+
     /* each category should have the following capabilities:
      *  - store items in ascending order
         - load all data from file in an efficient manner
@@ -64,7 +75,8 @@ namespace SFEngine.SFCFF
         public bool SetOnSubElementModifiedCallback(dOnSubElementModified cb);
         public bool SetOnSubElementRemovedCallback(dOnSubElementRemoved cb);
         public bool ClearCallbacks();
-        public List<int> QueryItems();
+        public List<string> GetSearchableFields();
+        public List<int> QueryItems(object value, string field_name, SearchOption option);
     }
 
     public interface ICategoryItem: IComparable<ICategoryItem>

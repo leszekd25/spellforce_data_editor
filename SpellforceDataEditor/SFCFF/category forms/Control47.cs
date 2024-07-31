@@ -14,8 +14,6 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             c2049 = SFCategoryManager.gamedata.c2049;
             category = c2049;
-
-            column_dict.Add("Head ID", new int[1] { 0 });
         }
 
         private void tb_effID_TextChanged(object sender, EventArgs e)

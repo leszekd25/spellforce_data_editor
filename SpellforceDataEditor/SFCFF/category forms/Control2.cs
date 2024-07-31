@@ -19,15 +19,15 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2054 = SFCategoryManager.gamedata.c2054;
             category = c2054;
 
-            column_dict.Add("Spell type ID", new int[1] { 0 });
-            column_dict.Add("Spell text ID", new int[1] { 1 });
-            column_dict.Add("Spell flags", new int[1] { 2 });
-            column_dict.Add("Spell magic type", new int[1] { 3 });
-            column_dict.Add("Minimum level", new int[1] { 4 });
-            column_dict.Add("Maximum level", new int[1] { 5 });
-            column_dict.Add("Availability", new int[1] { 6 });
-            column_dict.Add("Spell UI handle", new int[1] { 7 });
-            column_dict.Add("Description ID", new int[1] { 8 });
+            column_dict.Add("Spell type ID", "SpellLineID");
+            column_dict.Add("Spell text ID", "TextID");
+            column_dict.Add("Spell flags", "Flags");
+            column_dict.Add("Spell magic type", "MagicType");
+            column_dict.Add("Minimum level", "MinLevel");
+            column_dict.Add("Maximum level", "MaxLevel");
+            column_dict.Add("Availability", "Availability");
+            column_dict.Add("Spell UI handle", "UIHandle");
+            column_dict.Add("Description ID", "DescriptionID");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

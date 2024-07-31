@@ -16,8 +16,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2013 = SFCategoryManager.gamedata.c2013;
             category = c2013;
 
-            column_dict.Add("Inventory item ID", new int[1] { 0 });
-            column_dict.Add("Installed item ID", new int[1] { 1 });
+            column_dict.Add("Inventory item ID", "ItemID");
+            column_dict.Add("Installed item ID", "InstalledScrollItemID");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

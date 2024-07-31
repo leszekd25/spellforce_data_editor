@@ -19,9 +19,9 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2031 = SFCategoryManager.gamedata.c2031;
             category = c2031;
 
-            column_dict.Add("Building ID", new int[1] { 0 });
-            column_dict.Add("Resource type", new int[1] { 1 });
-            column_dict.Add("Resource amount", new int[1] { 2 });
+            column_dict.Add("Building ID", "BuildingID");
+            column_dict.Add("Resource type", "ResourceID");
+            column_dict.Add("Resource amount", "ResourceRequirement");
         }
 
         private void load_resources()

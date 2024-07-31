@@ -16,18 +16,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             c2024 = SFCategoryManager.gamedata.c2024;
             category = c2024;
 
-            column_dict.Add("Unit ID", new int[1] { 0 });
-            column_dict.Add("Unit name ID", new int[1] { 1 });
-            column_dict.Add("Unit stats ID", new int[1] { 2 });
-            column_dict.Add("Experience gain", new int[1] { 3 });
-            column_dict.Add("Experience falloff", new int[1] { 4 });
-            column_dict.Add("Money in copper", new int[1] { 5 });
-            column_dict.Add("Gold variance", new int[1] { 6 });
-            column_dict.Add("Rangedness", new int[1] { 7 });
-            column_dict.Add("Meat amount", new int[1] { 8 });
-            column_dict.Add("Armor", new int[1] { 9 });
-            column_dict.Add("Unit handle", new int[1] { 10 });
-            column_dict.Add("Placeable in map editor", new int[1] { 11 });
+            column_dict.Add("Unit ID", "UnitID");
+            column_dict.Add("Unit name ID", "NameID");
+            column_dict.Add("Unit stats ID", "StatsID");
+            column_dict.Add("Experience gain", "ExperienceGain");
+            column_dict.Add("Experience falloff", "ExperienceFalloff");
+            column_dict.Add("Money in copper", "CopperLoot");
+            column_dict.Add("Gold variance", "CopperVariance");
+            column_dict.Add("Rangedness", "Rangedness");
+            column_dict.Add("Meat amount", "MeatValue");
+            column_dict.Add("Armor", "Armor");
+            column_dict.Add("Unit handle", "Handle");
+            column_dict.Add("Placeable in map editor", "CanBePlaced");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

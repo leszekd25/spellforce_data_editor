@@ -32,5 +32,10 @@ namespace SFEngine.SFCFF.CTG
         {
             return 1;
         }
+
+        public override List<string> GetSearchableFields()
+        {
+            return new() { };
+        }
     }
 }

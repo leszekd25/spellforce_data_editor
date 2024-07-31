@@ -14,8 +14,6 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             c2056 = SFCategoryManager.gamedata.c2056;
             category = c2056;
-
-            column_dict.Add("Unknown", new int[6] { 0, 1, 2, 3, 4, 5 });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
